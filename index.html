@@ -180,7 +180,7 @@ section{ position:relative; }
 .nav-logo-img img{ height:54px; width:auto; display:block; }
 .nav-tabs{
   display:flex; align-items:center; gap:26px; overflow-x:auto; scrollbar-width:none;
-  padding-bottom:2px; margin-left:auto; padding-right:110px;
+  padding-bottom:2px; margin-left:auto; min-width:0;
 }
 .nav-tabs::-webkit-scrollbar{ display:none; }
 .nav-tab{
@@ -197,11 +197,10 @@ section{ position:relative; }
 .nav-tab.is-cta:hover{ background: var(--blue-light); color: var(--butter); }
 
 .nav-clock{
-  position:absolute; right:32px; top:50%; transform: translateY(-50%);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   background: rgba(4,70,93,0.32); border:1px solid rgba(125,183,206,0.4);
   color: var(--offwhite); border-radius:12px;
-  padding:6px 14px; line-height:1.2; flex-shrink:0; z-index:2;
+  padding:6px 14px; line-height:1.2; flex-shrink:0; margin-left:14px;
 }
 .nav-clock-time{ font-weight:800; font-size:.92rem; letter-spacing:.5px; }
 .nav-clock-date{ font-weight:700; font-size:.58rem; letter-spacing:.08em; text-transform:uppercase; color: rgba(250,249,244,0.7); }
@@ -604,9 +603,9 @@ section{ position:relative; }
 .results-bubble-wrap{ position:relative; z-index:5; margin-bottom:-18px; margin-left:-70px; }
 .results-bubble{
   display:inline-block; background: var(--white); color: var(--blue-dark);
-  font-family: var(--font-display); letter-spacing:1px; font-weight:400; font-size:2.9rem;
-  padding:28px 46px; border-radius:34px; position:relative;
-  box-shadow: var(--shadow-soft);
+  font-family: var(--font-display); letter-spacing:1px; font-weight:400; font-size: clamp(1.5rem, 6vw, 2.9rem);
+  padding: clamp(16px, 4vw, 28px) clamp(22px, 6vw, 46px); border-radius:34px; position:relative;
+  box-shadow: var(--shadow-soft); max-width: 92vw;
 }
 .results-bubble::before{
   content:""; position:absolute; left:30px; bottom:-12px; width:28px; height:28px;
@@ -840,7 +839,7 @@ a.info-value:hover{ text-decoration:underline; }
   .c2{ top:340px; left:10px; }
   .c4{ bottom:0; right:20px; }
   .f-videos{ top:0; right:0; }
-  .f-ideias{ left:240px; bottom:80px; }
+  .f-ideias{ left:190px; bottom:150px; }
   .about-panel-body{ grid-template-columns:1fr; }
   .about-photo-panel{ margin:0; }
   .about-photo{ min-height:280px; }
@@ -867,9 +866,12 @@ a.info-value:hover{ text-decoration:underline; }
   .result-card:nth-child(even) .result-info, .result-card:nth-child(even) .result-chart{ order:initial; }
   .widgets-grid{ grid-template-columns: 1fr; }
   .files-grid{ grid-template-columns: repeat(2,1fr); }
-  .feedback-grid{ gap:26px; }
-  .feedback-folder{ flex-basis:260px; }
+  .feedback-grid{ gap:26px; margin-top:12px; }
+  .feedback-folder{ flex-basis:260px; height:300px; }
   .nav-logo{ font-size:1.3rem; }
+  .nav-clock{ padding:5px 10px; margin-left:8px; }
+  .nav-clock-date{ display:none; }
+  .results-bubble-wrap{ margin-left:0; padding-left:20px; }
 
   .finder-app-body{ grid-template-columns: 1fr; }
   .finder-sidebar{
@@ -906,10 +908,10 @@ a.info-value:hover{ text-decoration:underline; }
       <a href="#feedbacks" class="nav-tab">Feedbacks</a>
       <a href="#contato" class="nav-tab is-cta">Solicitar proposta</a>
     </nav>
-  </div>
-  <div class="nav-clock" id="navClock">
-    <span class="nav-clock-time" id="navClockTime">--:--</span>
-    <span class="nav-clock-date" id="navClockDate">-- DE ---</span>
+    <div class="nav-clock" id="navClock">
+      <span class="nav-clock-time" id="navClockTime">--:--</span>
+      <span class="nav-clock-date" id="navClockDate">-- DE ---</span>
+    </div>
   </div>
 </header>
 
@@ -1436,7 +1438,7 @@ a.info-value:hover{ text-decoration:underline; }
       </div>
       <div class="services-window-body">
         <h2 class="section-title">o que as marcas acham do meu trabalho</h2>
-        <p class="services-sub">arraste pro lado e passe o cursor por cima das pastas pra ler.</p>
+        <p class="services-sub">arraste pro lado e toque nas pastas pra ler.</p>
       </div>
     </div>
   </div>

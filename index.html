@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bruna Medeiros — Creator</title>
 <meta name="description" content="Portfólio digital de Bruna Medeiros, criadora de conteúdo audiovisual.">
+<link rel="icon" type="image/png" href="favicon.png">
 
 <!-- ============================================================
      FONTES DO GOOGLE (Montserrat + Pinyon Script)
@@ -298,7 +299,7 @@ section{ position:relative; }
   background: var(--white); border-radius:6px; box-shadow: var(--shadow-soft); padding:8px;
 }
 .hero-photo-card-label{ display:block; margin-top:8px; font-size:.68rem; font-weight:700; color: var(--blue-dark); }
-.c1{ position:absolute; top:160px; right:370px; }
+.c1{ position:absolute; top:160px; right:300px; }
 .c2{ position:absolute; top:520px; left:40px; }
 .c4{ position:absolute; bottom:140px; right:150px; }
 
@@ -830,14 +831,14 @@ a.info-value:hover{ text-decoration:underline; }
   .hero-intro{ width: 360px; padding: 24px 22px; top:100px; }
   .hero-actions{ flex-wrap:nowrap; gap:8px; }
   .hero-actions .btn{ flex:1; min-width:0; padding:12px 10px; font-size:.78rem; white-space:normal; }
-  .hero-viewer{ left: 360px; top:0; width: 380px; }
-  .hero-viewer .scene-placeholder{ height: 460px; }
+  .hero-viewer{ left: 320px; top:0; width: clamp(180px, 28vw, 300px); }
+  .hero-viewer .scene-placeholder{ height: 380px; }
   .vt-view{ display:none; }
   .vt-tools{ gap:6px; }
   .vt-icon svg{ width:13px; height:13px; }
-  .c1{ top:150px; right:10px; }
+  .c1{ top:150px; right:10px; width:130px; }
   .c2{ top:340px; left:10px; }
-  .c4{ bottom:0; right:20px; }
+  .c4{ bottom:0; right:10px; width:130px; }
   .f-videos{ top:0; right:0; }
   .f-ideias{ left:190px; bottom:150px; }
   .about-panel-body{ grid-template-columns:1fr; }
@@ -847,6 +848,13 @@ a.info-value:hover{ text-decoration:underline; }
   .files-grid{ grid-template-columns: repeat(3,1fr); }
   .contact-grid{ grid-template-columns:1fr; }
   .finder-app-body{ grid-template-columns: 190px 1fr; }
+}
+
+@media (min-width: 1281px) and (max-width: 1900px){
+  .hero-viewer{ width: clamp(200px, 19.5vw, 460px); }
+  .hero-viewer .scene-placeholder{ height: 480px; }
+  .c1{ right:10px; width:150px; }
+  .c4{ right:10px; width:150px; }
 }
 
 @media (max-width: 768px){

@@ -316,7 +316,7 @@ section{ position:relative; }
 }
 .hero-folder-card span{ font-size:.7rem; font-weight:700; color: var(--blue-dark); text-transform:uppercase; letter-spacing:.04em; }
 .f-videos{ top:30px; right:80px; }
-.f-ideias{ bottom:150px; left:340px; }
+.f-ideias{ top:169px; right:80px; }
 
 /* dock estilo mac, com ícones de apps coloridos (ilustração autoral, não reproduz ícones da Apple) */
 .hero-dock{
@@ -840,7 +840,7 @@ a.info-value:hover{ text-decoration:underline; }
   .c2{ top:340px; left:10px; }
   .c4{ bottom:0; right:10px; width:130px; }
   .f-videos{ top:0; right:0; }
-  .f-ideias{ left:190px; bottom:150px; }
+  .f-ideias{ top:139px; right:0; }
   .about-panel-body{ grid-template-columns:1fr; }
   .about-photo-panel{ margin:0; }
   .about-photo{ min-height:280px; }
@@ -851,10 +851,9 @@ a.info-value:hover{ text-decoration:underline; }
 }
 
 @media (min-width: 1281px) and (max-width: 1900px){
-  .hero-viewer{ width: clamp(200px, 19.5vw, 460px); }
-  .hero-viewer .scene-placeholder{ height: 480px; }
-  .c1{ right:10px; width:150px; }
-  .c4{ right:10px; width:150px; }
+  .hero-viewer{ width: clamp(280px, 34vw, 560px); }
+  .hero-viewer .scene-placeholder{ height: 560px; }
+  .c4{ right:0px; width:110px; }
 }
 
 @media (max-width: 768px){
@@ -1005,20 +1004,6 @@ a.info-value:hover{ text-decoration:underline; }
         <!-- cursor decorativo -->
 
         <!-- cartões de foto espalhados -->
-        <div class="hero-photo-card-wrap c2 desktop-only">
-          <div class="hero-photo-card">
-            <!-- SUBSTITUA POR UMA FOTO REAL -->
-            <div class="scene-placeholder"><div class="scene-cloud c-1"></div><div class="scene-hill"></div></div>
-          </div>
-          <span class="hero-photo-card-label">[alterar texto]</span>
-        </div>
-        <div class="hero-photo-card-wrap c4 desktop-only">
-          <div class="hero-photo-card">
-            <!-- SUBSTITUA POR UMA FOTO REAL -->
-            <div class="scene-placeholder"><div class="scene-cloud c-1"></div><div class="scene-hill"></div></div>
-          </div>
-          <span class="hero-photo-card-label">[alterar texto]</span>
-        </div>
 
         <!-- pastas -->
         <div class="hero-folder-card f-videos desktop-only">

@@ -45,13 +45,15 @@ window.Auth = {
   },
 
   // Guarda de autenticação: roda no topo de páginas protegidas.
-  // Se não houver sessão, redireciona para login.html e retorna null.
+  // Se não houver sessão, redireciona para /login/ e retorna null.
   // Se houver, retorna o usuário logado.
+  // Usa caminho absoluto (começando com /) porque o painel e o login
+  // vivem em pastas diferentes do site (/painel-admin/ e /login/).
   async checkAuth() {
     const session = await this.getSession();
 
     if (!session) {
-      window.location.href = 'login.html';
+      window.location.href = '/login/';
       return null;
     }
 
@@ -61,7 +63,7 @@ window.Auth = {
   // Encerra a sessão e volta para a tela de login.
   async logout() {
     await sb.auth.signOut();
-    window.location.href = 'login.html';
+    window.location.href = '/login/';
   },
 
   // Envia o e-mail de recuperação de senha do Supabase Auth.
@@ -72,3 +74,4 @@ window.Auth = {
     }
   },
 };
+

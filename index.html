@@ -387,7 +387,7 @@ body.lock-active{ overflow:hidden; height:100vh; }
 
 /* ---- versão mobile ---- */
 .hero-mobile{ margin-top: 26px; }
-.hero-mobile .hero-mobile-photo{ max-width:340px; margin: 0 auto 22px; }
+.hero-mobile .hero-mobile-photo{ max-width:340px; margin: 0 auto 22px; border-width:0; }
 .hero-mobile-photo .scene-placeholder{ height:360px; }
 .hero-mobile-strip{ display:flex; gap:14px; overflow-x:auto; padding-bottom:6px; scrollbar-width:none; }
 .hero-mobile-strip::-webkit-scrollbar{ display:none; }
@@ -669,6 +669,7 @@ body.lock-active{ overflow:hidden; height:100vh; }
   content:""; position:absolute; left:30px; bottom:-12px; width:28px; height:28px;
   background: var(--white); clip-path: polygon(0 0, 100% 0, 0 100%);
 }
+.results-track{ display:contents; }
 .result-card{
   display:grid; grid-template-columns: 1.2fr .8fr; gap:0; background: var(--white);
   border-radius:20px; overflow:hidden; box-shadow: var(--shadow-soft); margin-bottom:28px;
@@ -928,7 +929,18 @@ a.info-value:hover{ text-decoration:underline; }
   .hero-actions .btn{ flex:1; min-width:0; padding:12px 10px; font-size:.78rem; white-space:normal; }
   .result-card, .result-card:nth-child(even){ grid-template-columns: 1fr; }
   .result-card:nth-child(even) .result-info, .result-card:nth-child(even) .result-chart{ order:initial; }
-  .widgets-grid{ grid-template-columns: 1fr; }
+  .results-track{
+    display:flex; gap:18px; overflow-x:auto; scroll-snap-type:x mandatory;
+    padding-bottom:10px; margin:0 -20px; padding-left:20px; padding-right:20px; scrollbar-width:none;
+  }
+  .results-track::-webkit-scrollbar{ display:none; }
+  .results-track .result-card{ flex:0 0 84%; scroll-snap-align:start; margin-bottom:0; }
+  .widgets-grid{
+    display:flex; grid-template-columns:none; overflow-x:auto; scroll-snap-type:x mandatory;
+    gap:18px; padding-bottom:10px; margin:44px -20px 0; padding-left:20px; padding-right:20px; scrollbar-width:none;
+  }
+  .widgets-grid::-webkit-scrollbar{ display:none; }
+  .widget-glass{ flex:0 0 82%; scroll-snap-align:start; min-height:340px; padding:38px 30px; }
   .files-grid{ grid-template-columns: repeat(2,1fr); }
   .feedback-grid{ gap:26px; margin-top:12px; }
   .feedback-folder{ flex-basis:260px; height:300px; }
@@ -1102,19 +1114,9 @@ a.info-value:hover{ text-decoration:underline; }
                 <span class="fname">Bruna_Medeiros</span>
               </div>
             </div>
-            <!-- SUBSTITUA ESTE PLACEHOLDER PELA FOTO PRINCIPAL DA BRUNA -->
             <div class="scene-placeholder">
-              <div class="scene-cloud c-1"></div>
-              <div class="scene-cloud c-2"></div>
-              <div class="scene-hill"></div>
+              <img src="fotos/hero.jpg" alt="Bruna Medeiros" style="width:100%;height:100%;object-fit:cover;display:block;">
             </div>
-          </div>
-          <div class="hero-mobile-strip">
-            <div class="hero-mini-card"><strong data-pt="vídeos" data-en="videos">vídeos</strong><span data-pt="pasta de vídeos" data-en="video folder">pasta de vídeos</span></div>
-            <div class="hero-mini-card"><strong data-pt="ideias" data-en="ideas">ideias</strong><span data-pt="pasta de referências" data-en="reference folder">pasta de referências</span></div>
-            <div class="hero-mini-card"><strong data-pt="[alterar texto]" data-en="[change text]">[alterar texto]</strong><span data-pt="foto de conteúdo" data-en="content photo">foto de conteúdo</span></div>
-            <div class="hero-mini-card"><strong data-pt="[alterar texto]" data-en="[change text]">[alterar texto]</strong><span data-pt="foto de conteúdo" data-en="content photo">foto de conteúdo</span></div>
-            <div class="hero-mini-card"><strong data-pt="[alterar texto]" data-en="[change text]">[alterar texto]</strong><span data-pt="foto de conteúdo" data-en="content photo">foto de conteúdo</span></div>
           </div>
         </div>
 
@@ -1396,6 +1398,7 @@ a.info-value:hover{ text-decoration:underline; }
 
     <!-- Todos os números abaixo são placeholders. Substitua pelos dados reais de cada campanha. -->
 
+    <div class="results-track">
     <div class="result-card">
       <div class="result-info">
         <div class="fname">case_01.report</div>
@@ -1454,6 +1457,7 @@ a.info-value:hover{ text-decoration:underline; }
         <div class="metric-row"><span class="metric-label" data-pt="Conversão" data-en="Conversion">Conversão</span><div class="metric-bar"><div class="metric-fill" style="--val:20%"></div></div><span class="metric-value">[ % ]</span></div>
         <div class="metric-note" data-pt="* substituir pelos dados reais da campanha" data-en="* replace with the campaign's real data">* substituir pelos dados reais da campanha</div>
       </div>
+    </div>
     </div>
 
   </div>

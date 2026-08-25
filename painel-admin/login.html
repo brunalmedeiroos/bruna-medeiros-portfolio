@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Login - Painel Administrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-body">
+
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="logo">meu<span class="logo-dot">.</span>painel</div>
+
+      <h1>Acesso restrito</h1>
+      <p class="subtitle">Faça login para ver os números do seu portfólio.</p>
+
+      <div id="msg-erro" class="banner banner-erro" hidden></div>
+      <div id="msg-sucesso" class="banner banner-sucesso" hidden></div>
+
+      <!-- Formulário de login -->
+      <form id="form-login">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" required autocomplete="username" placeholder="voce@email.com">
+
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" required autocomplete="current-password" placeholder="Sua senha">
+
+        <button type="submit" id="btn-entrar" class="btn-primary">Entrar</button>
+
+        <a href="#" id="link-esqueci" class="link-esqueci">Esqueci minha senha</a>
+      </form>
+
+      <!-- Formulário de recuperação de senha (some/aparece no lugar do login) -->
+      <form id="form-recuperar" hidden>
+        <label for="email-recuperar">E-mail</label>
+        <input type="email" id="email-recuperar" required placeholder="voce@email.com">
+
+        <button type="submit" id="btn-recuperar" class="btn-primary">Enviar link de recuperação</button>
+
+        <a href="#" id="link-voltar" class="link-esqueci">Voltar para o login</a>
+      </form>
+    </div>
+  </div>
+
+  <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // ---- Lógica da página de login ----
+
+    const formLogin = document.getElementById('form-login');
+    const formRecuperar = document.getElementById('form-recuperar');
+    const linkEsqueci = document.getElementById('link-esqueci');
+    const linkVoltar = document.getElementById('link-voltar');
+    const msgErro = document.getElementById('msg-erro');
+    const msgSucesso = document.getElementById('msg-sucesso');
+    const btnEntrar = document.getElementById('btn-entrar');
+    const btnRecuperar = document.getElementById('btn-recuperar');
+
+    function esconderMensagens() {
+      msgErro.hidden = true;
+      msgSucesso.hidden = true;
+    }
+
+    // Se já existir uma sessão ativa, pula direto para o painel.
+    (async () => {
+      const session = await Auth.getSession();
+      if (session) {
+        window.location.href = 'painel.html';
+      }
+    })();
+
+    // Alterna entre o formulário de login e o de recuperação de senha.
+    linkEsqueci.addEventListener('click', (e) => {
+      e.preventDefault();
+      esconderMensagens();
+      formLogin.hidden = true;
+      formRecuperar.hidden = false;
+    });
+
+    linkVoltar.addEventListener('click', (e) => {
+      e.preventDefault();
+      esconderMensagens();
+      formRecuperar.hidden = true;
+      formLogin.hidden = false;
+    });
+
+    // Envio do login.
+    formLogin.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      esconderMensagens();
+
+      const email = document.getElementById('email').value.trim();
+      const senha = document.getElementById('senha').value;
+
+      btnEntrar.disabled = true;
+      btnEntrar.textContent = 'Entrando...';
+
+      try {
+        await Auth.login(email, senha);
+        window.location.href = 'painel.html';
+      } catch (err) {
+        msgErro.textContent = err.message || 'Não foi possível entrar. Tente novamente.';
+        msgErro.hidden = false;
+        btnEntrar.disabled = false;
+        btnEntrar.textContent = 'Entrar';
+      }
+    });
+
+    // Envio da recuperação de senha.
+    formRecuperar.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      esconderMensagens();
+
+      const email = document.getElementById('email-recuperar').value.trim();
+
+      btnRecuperar.disabled = true;
+      btnRecuperar.textContent = 'Enviando...';
+
+      try {
+        await Auth.recuperarSenha(email);
+        msgSucesso.textContent = 'Enviamos um link de recuperação para o seu e-mail.';
+        msgSucesso.hidden = false;
+      } catch (err) {
+        msgErro.textContent = 'Não foi possível enviar o link. Verifique o e-mail informado.';
+        msgErro.hidden = false;
+      } finally {
+        btnRecuperar.disabled = false;
+        btnRecuperar.textContent = 'Enviar link de recuperação';
+      }
+    });
+  </script>
+</body>
+</html>

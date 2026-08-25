@@ -251,11 +251,18 @@ body.lock-active{ overflow:hidden; height:100vh; }
 .nav-clock-time{ font-weight:800; font-size:.92rem; letter-spacing:.5px; }
 .nav-clock-date{ font-weight:700; font-size:.58rem; letter-spacing:.08em; text-transform:uppercase; color: rgba(250,249,244,0.7); }
 .lang-toggle{
-  flex-shrink:0; margin-left:14px; border:1.5px solid var(--blue-dark); background:transparent;
-  color: var(--blue-dark); font-weight:800; font-size:.78rem; letter-spacing:.05em;
-  padding:8px 13px; border-radius:10px; cursor:pointer; transition: background .2s ease, color .2s ease;
+  flex-shrink:0; margin-left:14px; display:flex; align-items:center; gap:2px;
+  border:1.5px solid var(--blue-dark); background:transparent;
+  padding:3px; border-radius:12px;
 }
-.lang-toggle:hover{ background: var(--blue-dark); color: var(--offwhite); }
+.lang-option{
+  border:none; background:transparent; color: var(--blue-dark);
+  font-family: inherit; font-weight:800; font-size:.78rem; letter-spacing:.05em;
+  padding:6px 11px; border-radius:9px; cursor:pointer; transition: background .2s ease, color .2s ease;
+}
+.lang-option:hover{ background: rgba(4,70,93,0.12); }
+.lang-option.is-active{ background: var(--blue-dark); color: var(--offwhite); }
+.lang-option.is-active:hover{ background: var(--blue-dark); }
 
 /* =====================================================================
    01 — HERO — o computador da Bruna (tela cheia, sem moldura)
@@ -932,7 +939,8 @@ a.info-value:hover{ text-decoration:underline; }
   .feedback-folder{ flex-basis:260px; height:300px; }
   .nav-logo{ font-size:1.3rem; }
   .nav-clock{ padding:5px 10px; margin-left:8px; }
-  .lang-toggle{ padding:6px 10px; font-size:.7rem; margin-left:8px; }
+  .lang-toggle{ margin-left:8px; }
+  .lang-option{ padding:5px 8px; font-size:.7rem; }
   .nav-clock-date{ display:none; }
   .results-bubble-wrap{ margin-left:0; padding-left:20px; }
 
@@ -988,7 +996,10 @@ a.info-value:hover{ text-decoration:underline; }
       <a href="#feedbacks" class="nav-tab" data-pt="Feedbacks" data-en="Feedback">Feedbacks</a>
       <a href="#contato" class="nav-tab is-cta" data-pt="Solicitar proposta" data-en="Request a proposal">Solicitar proposta</a>
     </nav>
-    <button type="button" class="lang-toggle" id="langToggle" data-pt="EN" data-en="PT" aria-label="Switch language / Mudar idioma">EN</button>
+    <div class="lang-toggle" id="langToggle" role="group" aria-label="Switch language / Mudar idioma">
+      <button type="button" class="lang-option" data-lang="pt">PT</button>
+      <button type="button" class="lang-option" data-lang="en">EN</button>
+    </div>
     <div class="nav-clock" id="navClock">
       <span class="nav-clock-time" id="navClockTime">--:--</span>
       <span class="nav-clock-date" id="navClockDate">-- DE ---</span>
@@ -1859,10 +1870,17 @@ a.info-value:hover{ text-decoration:underline; }
       updateFinderCount(visibleNow);
     }
     localStorage.setItem('portfolioLang', lang);
+    if (langToggle){
+      langToggle.querySelectorAll('.lang-option').forEach(function(btn){
+        btn.classList.toggle('is-active', btn.getAttribute('data-lang') === lang);
+      });
+    }
   }
   if (langToggle){
-    langToggle.addEventListener('click', function(){
-      applyLang(currentLang === 'pt' ? 'en' : 'pt');
+    langToggle.querySelectorAll('.lang-option').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        applyLang(btn.getAttribute('data-lang'));
+      });
     });
   }
   applyLang(currentLang);

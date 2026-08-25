@@ -165,6 +165,44 @@ section{ position:relative; }
 }
 
 /* =====================================================================
+   TELA DE BLOQUEIO — abre o "computador" antes do hero
+===================================================================== */
+.lock-screen{
+  position: fixed; inset:0; z-index: 3000;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px;
+  background:
+    linear-gradient(rgba(4,70,93,0.55), rgba(4,70,93,0.55)),
+    repeating-linear-gradient(90deg, var(--hero-stripe-blue) 0px, var(--hero-stripe-blue) 64px, var(--butter) 64px, var(--butter) 128px);
+  transition: opacity .6s ease, visibility .6s ease;
+}
+.lock-screen.is-unlocking{ opacity:0; visibility:hidden; pointer-events:none; }
+.lock-avatar{
+  width:132px; height:132px; border-radius:50%; overflow:hidden;
+  border:3px solid rgba(255,255,255,0.85); box-shadow: 0 20px 45px rgba(4,70,93,0.4);
+  animation: lockAvatarIn .7s cubic-bezier(.2,.8,.2,1) both;
+}
+.lock-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+.lock-name{
+  font-family: var(--font-script); font-size:2.2rem; color: var(--offwhite);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  animation: lockFadeUp .6s .15s cubic-bezier(.2,.8,.2,1) both;
+}
+.lock-dots{ display:flex; gap:16px; animation: lockFadeUp .6s .3s cubic-bezier(.2,.8,.2,1) both; }
+.lock-dot{
+  width:13px; height:13px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.7);
+  background:transparent; transition: background .15s ease, transform .15s ease;
+}
+.lock-dot.is-filled{ background: var(--offwhite); animation: lockDotPop .3s ease; }
+.lock-hint{
+  margin-top:4px; font-size:.76rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  color: rgba(250,249,244,0.65); animation: lockFadeUp .6s .4s cubic-bezier(.2,.8,.2,1) both; cursor:pointer;
+}
+@keyframes lockAvatarIn{ from{ opacity:0; transform: scale(.7); } to{ opacity:1; transform: scale(1); } }
+@keyframes lockFadeUp{ from{ opacity:0; transform: translateY(10px); } to{ opacity:1; transform: translateY(0); } }
+@keyframes lockDotPop{ 0%{ transform: scale(1); } 45%{ transform: scale(1.35); } 100%{ transform: scale(1); } }
+body.lock-active{ overflow:hidden; height:100vh; }
+
+/* =====================================================================
    NAVBAR — abas tipo pastas de arquivo
 ===================================================================== */
 .navbar{
@@ -908,10 +946,24 @@ a.info-value:hover{ text-decoration:underline; }
   .feedback-folder{ flex-basis:230px; }
   .btn{ justify-content:center; }
   .contact-info-card{ max-width:100%; }
+  .lock-avatar{ width:104px; height:104px; }
+  .lock-name{ font-size:1.8rem; }
 }
 </style>
 </head>
-<body>
+<body class="lock-active">
+
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-avatar"><img src="fotos/hero.jpg" alt="Bruna Medeiros"></div>
+  <div class="lock-name font-script">Bruna Medeiros</div>
+  <div class="lock-dots" id="lockDots">
+    <span class="lock-dot"></span>
+    <span class="lock-dot"></span>
+    <span class="lock-dot"></span>
+    <span class="lock-dot"></span>
+  </div>
+  <div class="lock-hint" id="lockHint" data-pt="toque para entrar" data-en="tap to enter">toque para entrar</div>
+</div>
 
 <!-- =========================================================
      NAVBAR
@@ -1579,6 +1631,27 @@ a.info-value:hover{ text-decoration:underline; }
 
   /* ---------------- Idioma do site (PT/EN) ---------------- */
   var currentLang = localStorage.getItem('portfolioLang') || 'pt';
+
+  /* ---------------- Tela de bloqueio (senha em bolinhas) ---------------- */
+  var lockScreen = document.getElementById('lockScreen');
+  if (lockScreen){
+    var lockDots = lockScreen.querySelectorAll('.lock-dot');
+    var lockUnlocked = false;
+    function unlockScreen(){
+      if (lockUnlocked) return;
+      lockUnlocked = true;
+      lockScreen.classList.add('is-unlocking');
+      document.body.classList.remove('lock-active');
+      setTimeout(function(){ lockScreen.style.display = 'none'; }, 650);
+    }
+    lockDots.forEach(function(dot, i){
+      setTimeout(function(){
+        dot.classList.add('is-filled');
+        if (i === lockDots.length - 1){ setTimeout(unlockScreen, 500); }
+      }, 420 + i * 380);
+    });
+    lockScreen.addEventListener('click', unlockScreen);
+  }
 
   /* ---------------- Mini relógio do menu ---------------- */
   var navClockTime = document.getElementById('navClockTime');

@@ -3,13 +3,14 @@
    ========================================================================== */
 
 :root {
-  --coral: #D4572A;
-  --coral-escuro: #B8461F;
-  --creme: #F5F3EF;
+  /* Paleta alinhada com a do brunamedeiros.com (azul-escuro + creme + manteiga) */
+  --coral: #04465D;
+  --coral-escuro: #0B2733;
+  --creme: #FAF9F4;
   --branco: #FFFFFF;
-  --grafite: #1A1816;
-  --texto-suave: #6B645C;
-  --borda: #DDD8D0;
+  --grafite: #04465D;
+  --texto-suave: rgba(4, 70, 93, 0.7);
+  --borda: rgba(4, 70, 93, 0.12);
   --sucesso: #2D7A4F;
   --erro: #C4453C;
 
@@ -17,8 +18,8 @@
   --raio-md: 16px;
   --raio-lg: 24px;
 
-  --sombra: 0 4px 20px rgba(26, 24, 22, 0.08);
-  --sombra-forte: 0 10px 30px rgba(26, 24, 22, 0.12);
+  --sombra: 0 4px 20px rgba(4, 70, 93, 0.08);
+  --sombra-forte: 0 10px 30px rgba(4, 70, 93, 0.14);
 
   --fonte-titulo: 'Fraunces', Georgia, serif;
   --fonte-corpo: 'Outfit', 'DM Sans', -apple-system, sans-serif;
@@ -654,12 +655,12 @@ input:focus {
 }
 
 .lead-selo-contato {
-  background: rgba(212, 87, 42, 0.12);
+  background: rgba(4, 70, 93, 0.12);
   color: var(--coral-escuro);
 }
 
 .lead-selo-popup {
-  background: rgba(26, 24, 22, 0.08);
+  background: rgba(4, 70, 93, 0.08);
   color: var(--grafite);
 }
 
@@ -799,7 +800,7 @@ input:focus {
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(26, 24, 22, 0.4);
+    background: rgba(4, 70, 93, 0.4);
     z-index: 25;
   }
 
@@ -833,3 +834,4 @@ input:focus {
     padding: 32px 24px;
   }
 }
+

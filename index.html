@@ -179,31 +179,26 @@ section{ position:relative; }
 .lock-avatar{
   width:132px; height:132px; border-radius:50%; overflow:hidden;
   border:3px solid rgba(255,255,255,0.85); box-shadow: 0 20px 45px rgba(4,70,93,0.4);
-  animation: lockAvatarIn .7s cubic-bezier(.2,.8,.2,1) both;
+  animation: lockFadeUp .55s cubic-bezier(.2,.8,.2,1) both;
 }
 .lock-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
 .lock-name{
   font-family: var(--font-script); font-size:2.2rem; color: var(--offwhite);
   text-shadow: 0 2px 12px rgba(0,0,0,0.25);
-  animation: lockFadeUp .6s .15s cubic-bezier(.2,.8,.2,1) both;
+  animation: lockFadeUp .55s cubic-bezier(.2,.8,.2,1) both;
 }
 .lock-dots{
   display:flex; align-items:center; gap:9px;
   min-width:230px; padding:14px 20px; border-radius:8px;
   background: rgba(4,70,93,0.45); border:1px solid rgba(255,255,255,0.3);
   box-shadow: inset 0 2px 8px rgba(0,0,0,0.25);
-  animation: lockFadeUp .6s .3s cubic-bezier(.2,.8,.2,1) both;
+  animation: lockFadeUp .55s cubic-bezier(.2,.8,.2,1) both;
 }
 .lock-dot{
   width:9px; height:9px; border-radius:50%;
   background:transparent; transform: scale(0); transition: transform .12s ease;
 }
 .lock-dot.is-filled{ background: var(--offwhite); transform: scale(1); animation: lockDotPop .25s ease; }
-.lock-hint{
-  margin-top:4px; font-size:.76rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
-  color: rgba(250,249,244,0.65); animation: lockFadeUp .6s .4s cubic-bezier(.2,.8,.2,1) both; cursor:pointer;
-}
-@keyframes lockAvatarIn{ from{ opacity:0; transform: scale(.7); } to{ opacity:1; transform: scale(1); } }
 @keyframes lockFadeUp{ from{ opacity:0; transform: translateY(10px); } to{ opacity:1; transform: translateY(0); } }
 @keyframes lockDotPop{ 0%{ transform: scale(1); } 45%{ transform: scale(1.35); } 100%{ transform: scale(1); } }
 body.lock-active{ overflow:hidden; height:100vh; }
@@ -979,7 +974,6 @@ a.info-value:hover{ text-decoration:underline; }
     <span class="lock-dot"></span>
     <span class="lock-dot"></span>
   </div>
-  <div class="lock-hint" id="lockHint" data-pt="toque para entrar" data-en="tap to enter">toque para entrar</div>
 </div>
 
 <!-- =========================================================

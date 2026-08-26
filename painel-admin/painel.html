@@ -177,11 +177,35 @@
 
             <!-- Formulário de nova tarefa (escondido até clicar no +) -->
             <form id="cal-form-tarefa" class="cal-form" hidden>
-              <input type="text" id="cal-titulo" placeholder="O que você precisa entregar?" required>
+              <div class="cal-form-campo">
+                <label for="cal-titulo">O que é</label>
+                <input type="text" id="cal-titulo" placeholder="O que você precisa entregar?" required>
+              </div>
               <div class="cal-form-linha">
-                <input type="date" id="cal-data" required>
-                <input type="time" id="cal-hora-inicio">
-                <input type="time" id="cal-hora-fim">
+                <div class="cal-form-campo">
+                  <label for="cal-tipo">Tipo</label>
+                  <select id="cal-tipo">
+                    <option value="Compromisso">Compromisso</option>
+                    <option value="Gravação">Gravação</option>
+                    <option value="Entrega">Entrega</option>
+                    <option value="Reunião">Reunião</option>
+                    <option value="Outro">Outro</option>
+                  </select>
+                </div>
+                <div class="cal-form-campo">
+                  <label for="cal-data">Dia</label>
+                  <input type="date" id="cal-data" required>
+                </div>
+              </div>
+              <div class="cal-form-linha">
+                <div class="cal-form-campo">
+                  <label for="cal-hora-inicio">Começa</label>
+                  <input type="time" id="cal-hora-inicio">
+                </div>
+                <div class="cal-form-campo">
+                  <label for="cal-hora-fim">Termina</label>
+                  <input type="time" id="cal-hora-fim">
+                </div>
               </div>
               <div class="cal-form-acoes">
                 <button type="button" id="cal-cancelar" class="cal-btn">Cancelar</button>
@@ -827,7 +851,7 @@
       const dataFormatada = mostrarData
         ? new Date(tarefa.data + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
         : '';
-      const detalhe = [dataFormatada, horario].filter(Boolean).join(' · ');
+      const detalhe = [tarefa.tipo, dataFormatada, horario].filter(Boolean).join(' · ');
 
       const item = document.createElement('div');
       item.className = 'cal-tarefa-item' + (tarefa.feito ? ' cal-tarefa-feita' : '');
@@ -888,6 +912,7 @@
 
       const linha = {
         titulo: document.getElementById('cal-titulo').value.trim(),
+        tipo: document.getElementById('cal-tipo').value,
         data: document.getElementById('cal-data').value,
         hora_inicio: document.getElementById('cal-hora-inicio').value || null,
         hora_fim: document.getElementById('cal-hora-fim').value || null,

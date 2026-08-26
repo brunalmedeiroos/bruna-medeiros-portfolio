@@ -329,7 +329,10 @@
   display: none;
 }
 
-.painel-body .cal-form input {
+.painel-body .cal-form input,
+.painel-body .cal-form select {
+  width: 100%;
+  box-sizing: border-box;
   border: 1px solid var(--borda);
   border-radius: var(--raio-sm);
   padding: 10px 12px;
@@ -339,15 +342,26 @@
   color: var(--grafite);
 }
 
+.painel-body .cal-form-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 110px;
+}
+
+.painel-body .cal-form-campo label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
 .painel-body .cal-form-linha {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-}
-
-.painel-body .cal-form-linha input {
-  flex: 1;
-  min-width: 110px;
 }
 
 .painel-body .cal-form-acoes {

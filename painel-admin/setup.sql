@@ -80,6 +80,7 @@ create policy "Painel: leitura autenticada de leads"
 create table if not exists public.painel_tarefas (
   id uuid primary key default gen_random_uuid(),
   titulo text not null,
+  tipo text not null default 'Compromisso',
   data date not null,
   hora_inicio time,
   hora_fim time,

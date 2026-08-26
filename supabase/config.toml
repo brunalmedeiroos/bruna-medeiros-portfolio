@@ -423,3 +423,24 @@ entrypoint = "./functions/track/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/track/*.html" ]
+
+[functions.gmail-oauth-start]
+enabled = true
+import_map = "./functions/gmail-oauth-start/deno.json"
+entrypoint = "./functions/gmail-oauth-start/index.ts"
+
+[functions.gmail-oauth-callback]
+enabled = true
+verify_jwt = false
+import_map = "./functions/gmail-oauth-callback/deno.json"
+entrypoint = "./functions/gmail-oauth-callback/index.ts"
+
+[functions.gmail-inbox]
+enabled = true
+import_map = "./functions/gmail-inbox/deno.json"
+entrypoint = "./functions/gmail-inbox/index.ts"
+
+[functions.gmail-reply]
+enabled = true
+import_map = "./functions/gmail-reply/deno.json"
+entrypoint = "./functions/gmail-reply/index.ts"

@@ -395,3 +395,142 @@
   color: var(--texto-suave);
   margin-bottom: 10px;
 }
+
+/* ==========================================================================
+   Aba E-mail — caixa de entrada do Gmail conectado (marcador "Propostas").
+   ========================================================================== */
+
+.painel-body .card-email-conectar {
+  max-width: 480px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.painel-body .email-conectar-texto {
+  font-size: 14px;
+  color: var(--texto-suave);
+  margin: 12px 0 20px;
+  line-height: 1.5;
+}
+
+.painel-body .email-conectar-erro {
+  font-size: 13px;
+  color: #b3413b;
+  margin-top: 14px;
+}
+
+.painel-body .email-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 360px) 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .painel-body .email-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.painel-body .email-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.painel-body .email-lista-vazia {
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+
+.painel-body .email-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: var(--raio-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.painel-body .email-item:hover {
+  background: var(--creme);
+}
+
+.painel-body .email-item-ativo {
+  background: var(--creme);
+  border-color: var(--coral);
+}
+
+.painel-body .email-item-remetente {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.painel-body .email-item-assunto {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.painel-body .email-item-resumo {
+  font-size: 12px;
+  color: var(--texto-suave);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.painel-body .email-detalhe-vazio {
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+
+.painel-body .email-detalhe-cabecalho {
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--borda);
+}
+
+.painel-body .email-detalhe-meta {
+  font-size: 13px;
+  color: var(--texto-suave);
+  margin-top: 4px;
+}
+
+.painel-body .email-detalhe-corpo {
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.painel-body .email-form {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--borda);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.painel-body .email-form[hidden] {
+  display: none;
+}
+
+.painel-body .email-form textarea {
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: var(--fonte-corpo);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--grafite);
+  min-height: 110px;
+  resize: vertical;
+}

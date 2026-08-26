@@ -421,6 +421,10 @@ input:focus {
   padding: 4px;
 }
 
+.filtros-periodo[hidden] {
+  display: none;
+}
+
 .filtro-btn {
   background: transparent;
   border: none;

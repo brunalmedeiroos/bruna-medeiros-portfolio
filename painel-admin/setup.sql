@@ -115,3 +115,28 @@ create policy "Painel: exclusão autenticada de tarefas"
   for delete
   to authenticated
   using (true);
+
+-- ---------------------------------------------------------------------
+-- Tabelas: email_tokens e email_oauth_states (aba E-mail)
+-- Guardam o token OAuth do Gmail e o "state" (CSRF) do fluxo de conexão.
+-- Propositalmente SEM nenhuma policy pra authenticated/anon: só as Edge
+-- Functions (via service_role, que ignora RLS) acessam essas tabelas. O
+-- navegador nunca lê o token, nem estando logada no painel.
+-- ---------------------------------------------------------------------
+create table if not exists public.email_tokens (
+  id smallint primary key default 1,
+  access_token text,
+  refresh_token text not null,
+  expires_at timestamptz not null,
+  updated_at timestamptz not null default now(),
+  constraint email_tokens_singleton check (id = 1)
+);
+
+alter table public.email_tokens enable row level security;
+
+create table if not exists public.email_oauth_states (
+  state text primary key,
+  created_at timestamptz not null default now()
+);
+
+alter table public.email_oauth_states enable row level security;

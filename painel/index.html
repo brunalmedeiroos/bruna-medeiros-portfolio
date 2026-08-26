@@ -50,6 +50,10 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           <span>Calendário</span>
         </button>
+        <button class="nav-item" data-tab="email" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 7l9 6 9-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>E-mail</span>
+        </button>
       </nav>
 
       <div class="sidebar-footer">
@@ -202,6 +206,39 @@
         </div>
         </section>
 
+        <section id="panel-email" class="tab-panel" hidden>
+          <div class="card card-email-conectar" id="email-conectar">
+            <h3 class="card-titulo">Conectar sua conta do Gmail</h3>
+            <p class="email-conectar-texto">
+              Depois de conectar, esta aba mostra as mensagens marcadas com o
+              rótulo <strong>"Propostas"</strong> no seu Gmail, e você pode
+              responder direto por aqui.
+            </p>
+            <button id="btn-email-conectar" class="cal-btn cal-btn-primario" type="button">Conectar Gmail</button>
+            <p class="email-conectar-erro" id="email-conectar-erro" hidden></p>
+          </div>
+
+          <div class="email-layout" id="email-layout" hidden>
+            <div class="card card-email-lista">
+              <h3 class="card-titulo">Mensagens</h3>
+              <div id="email-lista" class="email-lista"></div>
+            </div>
+
+            <div class="card card-email-detalhe">
+              <div id="email-detalhe">
+                <p class="email-detalhe-vazio">Selecione uma mensagem na lista ao lado.</p>
+              </div>
+
+              <form id="email-form-resposta" class="email-form" hidden>
+                <textarea id="email-resposta-texto" placeholder="Escreva sua resposta..." required></textarea>
+                <div class="cal-form-acoes">
+                  <button type="submit" class="cal-btn cal-btn-primario" id="email-btn-enviar">Enviar resposta</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+
       </div>
     </main>
   </div>
@@ -217,12 +254,20 @@
     let periodoAtual = 'all'; // 'all' | 7 | 30 | 90
     let calMesAtual = new Date(); // mês exibido na grade do calendário
     let calDiaSelecionado = new Date(); // dia com a lista de tarefas aberta
+    let emailsCache = [];
+    let emailAbaCarregada = false;
+    let emailAbertoId = null;
 
     const TITULOS_ABA = {
       overview: 'Dashboard',
       portfolio: 'Portfólio',
       calendario: 'Calendário',
+      email: 'E-mail',
     };
+
+    // Mesmo projeto Supabase de js/auth.js — hardcoded aqui porque auth.js
+    // não expõe a URL/anon key em window.Auth (só o cliente já pronto).
+    const FUNCTIONS_URL = 'https://trfoymytrvdbslwizfqs.supabase.co/functions/v1';
 
     // ---- Ponto de entrada: guarda de autenticação + carga inicial ----
     (async function iniciar() {
@@ -359,6 +404,10 @@
       document.getElementById('cal-btn-add').addEventListener('click', abrirFormularioTarefa);
       document.getElementById('cal-cancelar').addEventListener('click', fecharFormularioTarefa);
       document.getElementById('cal-form-tarefa').addEventListener('submit', salvarTarefa);
+
+      // E-mail
+      document.getElementById('btn-email-conectar').addEventListener('click', conectarGmail);
+      document.getElementById('email-form-resposta').addEventListener('submit', enviarResposta);
     }
 
     function trocarAba(aba) {
@@ -366,8 +415,13 @@
       document.querySelectorAll('.tab-panel').forEach((p) => (p.hidden = true));
       document.getElementById('panel-' + aba).hidden = false;
       document.getElementById('titulo-topo').textContent = TITULOS_ABA[aba];
-      // O filtro de período (Tudo/7d/30d/90d) não faz sentido no calendário.
-      document.getElementById('filtros-periodo').hidden = aba === 'calendario';
+      // O filtro de período (Tudo/7d/30d/90d) não faz sentido no calendário nem no e-mail.
+      document.getElementById('filtros-periodo').hidden = aba === 'calendario' || aba === 'email';
+
+      if (aba === 'email' && !emailAbaCarregada) {
+        emailAbaCarregada = true;
+        carregarEmails();
+      }
     }
 
     function trocarPeriodo(periodo, btn) {
@@ -876,6 +930,170 @@
         console.error('Erro ao excluir tarefa:', err);
         alert('Não foi possível excluir agora. Tente de novo em instantes.');
       }
+    }
+
+    // ==========================================================================
+    // E-mail (aba E-mail — Gmail conectado via OAuth, ver supabase/functions/gmail-*)
+    // ==========================================================================
+
+    async function chamarFuncaoEmail(caminho, opts = {}) {
+      const { data: { session } } = await Auth.sb.auth.getSession();
+      const res = await fetch(`${FUNCTIONS_URL}/${caminho}`, {
+        method: opts.method || 'GET',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: opts.body ? JSON.stringify(opts.body) : undefined,
+      });
+      return res.json();
+    }
+
+    function mostrarEmailDesconectado(mensagemErro) {
+      document.getElementById('email-conectar').hidden = false;
+      document.getElementById('email-layout').hidden = true;
+      const erroEl = document.getElementById('email-conectar-erro');
+      if (mensagemErro) {
+        erroEl.textContent = mensagemErro;
+        erroEl.hidden = false;
+      } else {
+        erroEl.hidden = true;
+      }
+    }
+
+    function mostrarEmailConectado() {
+      document.getElementById('email-conectar').hidden = true;
+      document.getElementById('email-layout').hidden = false;
+    }
+
+    async function conectarGmail() {
+      const btn = document.getElementById('btn-email-conectar');
+      btn.disabled = true;
+      btn.textContent = 'Conectando...';
+      try {
+        const resultado = await chamarFuncaoEmail('gmail-oauth-start');
+        if (resultado.ok) {
+          window.location.href = resultado.url;
+          return;
+        }
+        mostrarEmailDesconectado('Não foi possível iniciar a conexão. Tente de novo.');
+      } catch (err) {
+        console.error('Erro ao conectar Gmail:', err);
+        mostrarEmailDesconectado('Não foi possível iniciar a conexão. Tente de novo.');
+      }
+      btn.disabled = false;
+      btn.textContent = 'Conectar Gmail';
+    }
+
+    async function carregarEmails() {
+      const lista = document.getElementById('email-lista');
+      try {
+        const resultado = await chamarFuncaoEmail('gmail-inbox');
+        if (!resultado.ok) {
+          if (resultado.error === 'not_connected') {
+            mostrarEmailDesconectado();
+          } else {
+            mostrarEmailDesconectado('Não foi possível carregar as mensagens: ' + resultado.error);
+          }
+          return;
+        }
+        emailsCache = resultado.mensagens || [];
+        mostrarEmailConectado();
+        renderizarListaEmails();
+      } catch (err) {
+        console.error('Erro ao carregar e-mails:', err);
+        lista.innerHTML = '<p class="texto-erro">Não foi possível carregar as mensagens agora.</p>';
+        mostrarEmailConectado();
+      }
+    }
+
+    // Extrai só o nome de exibição de um campo "Nome <email@dominio.com>".
+    function nomeRemetente(campoDe) {
+      const m = campoDe.match(/^"?([^"<]+)"?\s*</);
+      return m ? m[1].trim() : campoDe;
+    }
+
+    function renderizarListaEmails() {
+      const lista = document.getElementById('email-lista');
+
+      if (emailsCache.length === 0) {
+        lista.innerHTML = `<p class="email-lista-vazia">Nenhuma mensagem com o rótulo "Propostas" ainda.</p>`;
+        return;
+      }
+
+      lista.innerHTML = emailsCache.map((msg) => `
+        <button type="button" class="email-item${msg.id === emailAbertoId ? ' email-item-ativo' : ''}" data-id="${escapeHtml(msg.id)}">
+          <span class="email-item-remetente">${escapeHtml(nomeRemetente(msg.from))}</span>
+          <span class="email-item-assunto">${escapeHtml(msg.subject || '(sem assunto)')}</span>
+          <span class="email-item-resumo">${escapeHtml(msg.snippet)}</span>
+        </button>
+      `).join('');
+
+      lista.querySelectorAll('.email-item').forEach((btn) => {
+        btn.addEventListener('click', () => abrirEmail(btn.dataset.id));
+      });
+    }
+
+    async function abrirEmail(id) {
+      emailAbertoId = id;
+      renderizarListaEmails();
+
+      const detalhe = document.getElementById('email-detalhe');
+      const form = document.getElementById('email-form-resposta');
+      detalhe.innerHTML = '<p class="email-detalhe-vazio">Carregando...</p>';
+      form.hidden = true;
+
+      try {
+        const resultado = await chamarFuncaoEmail(`gmail-inbox?id=${encodeURIComponent(id)}`);
+        if (!resultado.ok) {
+          detalhe.innerHTML = `<p class="texto-erro">Não foi possível abrir esta mensagem: ${escapeHtml(resultado.error)}</p>`;
+          return;
+        }
+
+        const msg = resultado.mensagem;
+        detalhe.innerHTML = `
+          <div class="email-detalhe-cabecalho">
+            <h3 class="card-titulo">${escapeHtml(msg.subject || '(sem assunto)')}</h3>
+            <p class="email-detalhe-meta">${escapeHtml(nomeRemetente(msg.from))} · ${escapeHtml(msg.date)}</p>
+          </div>
+          <div class="email-detalhe-corpo">${escapeHtml(msg.body)}</div>
+        `;
+        document.getElementById('email-resposta-texto').value = '';
+        form.hidden = false;
+      } catch (err) {
+        console.error('Erro ao abrir e-mail:', err);
+        detalhe.innerHTML = '<p class="texto-erro">Não foi possível abrir esta mensagem agora.</p>';
+      }
+    }
+
+    async function enviarResposta(e) {
+      e.preventDefault();
+      if (!emailAbertoId) return;
+
+      const textarea = document.getElementById('email-resposta-texto');
+      const btn = document.getElementById('email-btn-enviar');
+      const texto = textarea.value.trim();
+      if (!texto) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      try {
+        const resultado = await chamarFuncaoEmail('gmail-reply', {
+          method: 'POST',
+          body: { messageId: emailAbertoId, body: texto },
+        });
+        if (resultado.ok) {
+          textarea.value = '';
+          alert('Resposta enviada!');
+        } else {
+          alert('Não foi possível enviar: ' + resultado.error);
+        }
+      } catch (err) {
+        console.error('Erro ao enviar resposta:', err);
+        alert('Não foi possível enviar a resposta agora. Tente de novo.');
+      }
+      btn.disabled = false;
+      btn.textContent = 'Enviar resposta';
     }
 
     // ==========================================================================

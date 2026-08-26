@@ -615,8 +615,9 @@ body.lock-active{ overflow:hidden; height:100vh; }
 }
 .file-card.is-hidden{ display:none; }
 .file-card:hover{ transform: translateY(-8px) scale(1.02); box-shadow: 0 22px 40px rgba(4,70,93,0.28); }
-.file-thumb{ position:relative; aspect-ratio: 4/5; }
+.file-thumb{ position:relative; aspect-ratio: 4/5; background: var(--gray-light); }
 .file-thumb .placeholder span{ font-size:.68rem; }
+.file-thumb-img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .play-badge{
   position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .25s ease;
 }
@@ -652,7 +653,12 @@ body.lock-active{ overflow:hidden; height:100vh; }
   width:26px; height:26px; border-radius:50%; border:none; background: var(--blue-dark); color:var(--butter);
   font-size:.85rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
 }
-.file-modal-body{ aspect-ratio: 16/10; }
+.file-modal-body{ aspect-ratio: 16/10; position:relative; }
+.modal-video-frame{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
+.modal-video-frame[hidden]{ display:none; }
+.file-modal-body .placeholder[hidden]{ display:none; }
+.file-modal-window.is-video{ width:min(360px,92vw); }
+.file-modal-window.is-video .file-modal-body{ aspect-ratio: 9/16; max-height:80vh; }
 .file-modal-caption{ padding:16px 20px; font-size:.85rem; color: var(--blue-dark-70); font-weight:600; }
 
 /* =====================================================================
@@ -1279,17 +1285,17 @@ a.info-value:hover{ text-decoration:underline; }
         </nav>
 
         <div class="finder-main">
-          <div class="finder-count" id="finderCount">12 arquivos</div>
+          <div class="finder-count" id="finderCount">17 arquivos</div>
 
           <!-- SUBSTITUA CADA PLACEHOLDER PELOS VÍDEOS/FOTOS REAIS DO PORTFÓLIO -->
           <div class="files-grid" id="filesGrid">
 
-            <div class="file-card" data-cat="tech" data-type="video" data-title="review_gadget_tech.mp4">
+            <div class="file-card" data-cat="tech" data-type="video" data-title="tech_short_01.mp4" data-youtube="lMDEHNtGsSs">
               <div class="file-thumb">
-                <div class="placeholder"><span data-pt-html="VÍDEO — review de gadget&lt;br&gt;(tech)" data-en-html="VIDEO — gadget review&lt;br&gt;(tech)">VÍDEO — review de gadget<br>(tech)</span></div>
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/lMDEHNtGsSs/hqdefault.jpg" alt="" loading="lazy">
                 <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
               </div>
-              <div class="file-meta"><span class="fname">review_tech_01</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+              <div class="file-meta"><span class="fname">tech_short_01</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
             </div>
 
             <div class="file-card" data-cat="beleza" data-type="image" data-title="skincare_lifestyle.jpg">
@@ -1297,12 +1303,12 @@ a.info-value:hover{ text-decoration:underline; }
               <div class="file-meta"><span class="fname">beleza_foto_01</span><span class="ftag" data-pt="foto" data-en="photo">foto</span></div>
             </div>
 
-            <div class="file-card" data-cat="entretenimento" data-type="video" data-title="trend_dueto.mp4">
+            <div class="file-card" data-cat="entretenimento" data-type="video" data-title="entret_short_01.mp4" data-youtube="Kjs1IYVCnMc">
               <div class="file-thumb">
-                <div class="placeholder"><span data-pt-html="VÍDEO — trend / humor&lt;br&gt;(entretenimento)" data-en-html="VIDEO — trend / comedy&lt;br&gt;(entertainment)">VÍDEO — trend / humor<br>(entretenimento)</span></div>
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/Kjs1IYVCnMc/hqdefault.jpg" alt="" loading="lazy">
                 <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
               </div>
-              <div class="file-meta"><span class="fname">entret_video_01</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+              <div class="file-meta"><span class="fname">entret_short_01</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
             </div>
 
             <div class="file-card" data-cat="experiencia" data-type="image" data-title="unboxing_experiencia.jpg">
@@ -1315,12 +1321,12 @@ a.info-value:hover{ text-decoration:underline; }
               <div class="file-meta"><span class="fname">tech_foto_02</span><span class="ftag" data-pt="foto" data-en="photo">foto</span></div>
             </div>
 
-            <div class="file-card" data-cat="beleza" data-type="video" data-title="rotina_skincare.mp4">
+            <div class="file-card" data-cat="beleza" data-type="video" data-title="beleza_short_01.mp4" data-youtube="spKbkwGxABk">
               <div class="file-thumb">
-                <div class="placeholder"><span data-pt="VÍDEO — rotina de beleza" data-en="VIDEO — beauty routine">VÍDEO — rotina de beleza</span></div>
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/spKbkwGxABk/hqdefault.jpg" alt="" loading="lazy">
                 <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
               </div>
-              <div class="file-meta"><span class="fname">beleza_video_02</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+              <div class="file-meta"><span class="fname">beleza_short_01</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
             </div>
 
             <div class="file-card" data-cat="entretenimento" data-type="image" data-title="bastidores.jpg">
@@ -1328,20 +1334,20 @@ a.info-value:hover{ text-decoration:underline; }
               <div class="file-meta"><span class="fname">entret_foto_02</span><span class="ftag" data-pt="foto" data-en="photo">foto</span></div>
             </div>
 
-            <div class="file-card" data-cat="experiencia" data-type="video" data-title="experiencia_marca.mp4">
+            <div class="file-card" data-cat="experiencia" data-type="video" data-title="exp_short_01.mp4" data-youtube="qKJ9jTrh52k">
               <div class="file-thumb">
-                <div class="placeholder"><span data-pt="VÍDEO — experiência com produto" data-en="VIDEO — product experience">VÍDEO — experiência com produto</span></div>
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/qKJ9jTrh52k/hqdefault.jpg" alt="" loading="lazy">
                 <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
               </div>
-              <div class="file-meta"><span class="fname">exp_video_02</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+              <div class="file-meta"><span class="fname">exp_short_01</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
             </div>
 
-            <div class="file-card" data-cat="tech" data-type="video" data-title="unboxing_tech.mp4">
+            <div class="file-card" data-cat="tech" data-type="video" data-title="tech_short_02.mp4" data-youtube="p9GsOJ5geoI">
               <div class="file-thumb">
-                <div class="placeholder"><span data-pt="VÍDEO — unboxing tech" data-en="VIDEO — tech unboxing">VÍDEO — unboxing tech</span></div>
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/p9GsOJ5geoI/hqdefault.jpg" alt="" loading="lazy">
                 <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
               </div>
-              <div class="file-meta"><span class="fname">tech_video_03</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+              <div class="file-meta"><span class="fname">tech_short_02</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
             </div>
 
             <div class="file-card" data-cat="beleza" data-type="image" data-title="antes_depois.jpg">
@@ -1349,17 +1355,57 @@ a.info-value:hover{ text-decoration:underline; }
               <div class="file-meta"><span class="fname">beleza_foto_03</span><span class="ftag" data-pt="foto" data-en="photo">foto</span></div>
             </div>
 
-            <div class="file-card" data-cat="entretenimento" data-type="video" data-title="storytime.mp4">
+            <div class="file-card" data-cat="entretenimento" data-type="video" data-title="entret_short_02.mp4" data-youtube="L_T7FaWzNf0">
               <div class="file-thumb">
-                <div class="placeholder"><span data-pt="VÍDEO — storytime / conexão" data-en="VIDEO — storytime / connection">VÍDEO — storytime / conexão</span></div>
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/L_T7FaWzNf0/hqdefault.jpg" alt="" loading="lazy">
                 <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
               </div>
-              <div class="file-meta"><span class="fname">entret_video_03</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+              <div class="file-meta"><span class="fname">entret_short_02</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
             </div>
 
             <div class="file-card" data-cat="experiencia" data-type="image" data-title="lifestyle_marca.jpg">
               <div class="file-thumb"><div class="placeholder"><span data-pt="FOTO — lifestyle com produto" data-en="PHOTO — lifestyle with product">FOTO — lifestyle com produto</span></div></div>
               <div class="file-meta"><span class="fname">exp_foto_03</span><span class="ftag" data-pt="foto" data-en="photo">foto</span></div>
+            </div>
+
+            <div class="file-card" data-cat="tech" data-type="video" data-title="tech_short_03.mp4" data-youtube="DvWUawGPVp4">
+              <div class="file-thumb">
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/DvWUawGPVp4/hqdefault.jpg" alt="" loading="lazy">
+                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+              </div>
+              <div class="file-meta"><span class="fname">tech_short_03</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+            </div>
+
+            <div class="file-card" data-cat="tech" data-type="video" data-title="tech_short_04.mp4" data-youtube="4_Y-4VKAmlc">
+              <div class="file-thumb">
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/4_Y-4VKAmlc/hqdefault.jpg" alt="" loading="lazy">
+                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+              </div>
+              <div class="file-meta"><span class="fname">tech_short_04</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+            </div>
+
+            <div class="file-card" data-cat="tech" data-type="video" data-title="tech_short_05.mp4" data-youtube="EjLPHx5QWgU">
+              <div class="file-thumb">
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/EjLPHx5QWgU/hqdefault.jpg" alt="" loading="lazy">
+                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+              </div>
+              <div class="file-meta"><span class="fname">tech_short_05</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+            </div>
+
+            <div class="file-card" data-cat="beleza" data-type="video" data-title="beleza_short_02.mp4" data-youtube="sHYB8Q1_zQU">
+              <div class="file-thumb">
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/sHYB8Q1_zQU/hqdefault.jpg" alt="" loading="lazy">
+                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+              </div>
+              <div class="file-meta"><span class="fname">beleza_short_02</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+            </div>
+
+            <div class="file-card" data-cat="beleza" data-type="video" data-title="beleza_short_03.mp4" data-youtube="UmQTL9U0_yE">
+              <div class="file-thumb">
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/UmQTL9U0_yE/hqdefault.jpg" alt="" loading="lazy">
+                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+              </div>
+              <div class="file-meta"><span class="fname">beleza_short_03</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
             </div>
 
           </div>
@@ -1379,9 +1425,10 @@ a.info-value:hover{ text-decoration:underline; }
       </div>
       <button class="modal-close" id="modalClose" aria-label="Fechar">✕</button>
     </div>
-    <div class="file-modal-body">
-      <!-- SUBSTITUA PELO VÍDEO/IMAGEM REAL AO CONFIGURAR CADA ITEM DO PORTFÓLIO -->
-      <div class="placeholder"><span id="modalCaption" data-pt="Pré-visualização do arquivo selecionado" data-en="Preview of the selected file">Pré-visualização do arquivo selecionado</span></div>
+    <div class="file-modal-body" id="modalBody">
+      <!-- Vídeos reais tocam num iframe do YouTube; o resto ainda usa o placeholder -->
+      <div class="placeholder" id="modalPlaceholder"><span id="modalCaption" data-pt="Pré-visualização do arquivo selecionado" data-en="Preview of the selected file">Pré-visualização do arquivo selecionado</span></div>
+      <iframe id="modalVideoFrame" class="modal-video-frame" title="Vídeo do portfólio" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen hidden></iframe>
     </div>
     <div class="file-modal-caption" data-pt="Clique fora da janela ou em ✕ para fechar." data-en="Click outside the window or on ✕ to close.">Clique fora da janela ou em ✕ para fechar.</div>
   </div>
@@ -1799,25 +1846,48 @@ a.info-value:hover{ text-decoration:underline; }
 
   /* ---------------- Modal de arquivo (portfólio) ---------------- */
   var modal = document.getElementById('fileModal');
+  var modalWindow = document.querySelector('.file-modal-window');
   var modalFname = document.getElementById('modalFname');
   var modalCaption = document.getElementById('modalCaption');
+  var modalPlaceholder = document.getElementById('modalPlaceholder');
+  var modalVideoFrame = document.getElementById('modalVideoFrame');
 
   cards.forEach(function(card){
     card.addEventListener('click', function(){
       var title = card.getAttribute('data-title') || 'arquivo';
+      var youtubeId = card.getAttribute('data-youtube');
       modalFname.textContent = title;
-      if (currentLang === 'en'){
-        var typeEn = card.getAttribute('data-type') === 'video' ? 'Video' : 'Photo';
-        modalCaption.textContent = typeEn + ' — replace this placeholder with the real file (' + title + ')';
+
+      if (youtubeId) {
+        modalPlaceholder.hidden = true;
+        modalVideoFrame.hidden = false;
+        modalVideoFrame.src = 'https://www.youtube-nocookie.com/embed/' + youtubeId + '?autoplay=1&rel=0';
+        modalWindow.classList.add('is-video');
       } else {
-        var typePt = card.getAttribute('data-type') === 'video' ? 'Vídeo' : 'Foto';
-        modalCaption.textContent = typePt + ' — substitua este placeholder pelo arquivo real (' + title + ')';
+        modalVideoFrame.hidden = true;
+        modalVideoFrame.src = '';
+        modalPlaceholder.hidden = false;
+        modalWindow.classList.remove('is-video');
+        if (currentLang === 'en'){
+          var typeEn = card.getAttribute('data-type') === 'video' ? 'Video' : 'Photo';
+          modalCaption.textContent = typeEn + ' — replace this placeholder with the real file (' + title + ')';
+        } else {
+          var typePt = card.getAttribute('data-type') === 'video' ? 'Vídeo' : 'Foto';
+          modalCaption.textContent = typePt + ' — substitua este placeholder pelo arquivo real (' + title + ')';
+        }
       }
+
       modal.classList.add('is-open');
     });
   });
 
-  function closeModal(){ modal.classList.remove('is-open'); }
+  function closeModal(){
+    modal.classList.remove('is-open');
+    modalVideoFrame.src = '';
+    modalVideoFrame.hidden = true;
+    modalPlaceholder.hidden = false;
+    modalWindow.classList.remove('is-video');
+  }
   document.getElementById('modalClose').addEventListener('click', closeModal);
   modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape'){ closeModal(); hidePopup(); } });

@@ -310,6 +310,7 @@
   color: var(--texto-suave);
 }
 
+.painel-body .cal-tarefa-editar,
 .painel-body .cal-tarefa-excluir {
   color: var(--texto-suave);
   flex-shrink: 0;
@@ -439,7 +440,7 @@
 
 .painel-body .cal-todas-cabecalho {
   display: grid;
-  grid-template-columns: 72px 90px 120px 1fr 76px;
+  grid-template-columns: 72px 90px 120px 1fr 116px;
   gap: 12px;
   padding: 0 14px 10px;
   font-size: 11px;
@@ -447,7 +448,7 @@
   text-transform: uppercase;
   letter-spacing: 0.4px;
   color: var(--texto-suave);
-  min-width: 520px;
+  min-width: 560px;
 }
 
 .painel-body .cal-todas-linhas {
@@ -458,13 +459,13 @@
 
 .painel-body .cal-todas-linha {
   display: grid;
-  grid-template-columns: 72px 90px 120px 1fr 76px;
+  grid-template-columns: 72px 90px 120px 1fr 116px;
   gap: 12px;
   align-items: center;
   padding: 10px 14px;
   border-radius: var(--raio-sm);
   background: rgba(255, 255, 255, 0.5);
-  min-width: 520px;
+  min-width: 560px;
 }
 
 .painel-body .cal-todas-dia {

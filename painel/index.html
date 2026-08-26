@@ -183,6 +183,20 @@
             </form>
           </div>
         </div>
+
+        <div class="card card-cal-todas">
+          <h3 class="card-titulo">Todas as pendências</h3>
+          <div class="cal-todas-colunas">
+            <div>
+              <h4 class="cal-todas-subtitulo">Em aberto</h4>
+              <div id="cal-lista-abertas" class="cal-lista-tarefas"></div>
+            </div>
+            <div>
+              <h4 class="cal-todas-subtitulo">Encerradas</h4>
+              <div id="cal-lista-encerradas" class="cal-lista-tarefas"></div>
+            </div>
+          </div>
+        </div>
         </section>
 
       </div>
@@ -666,6 +680,7 @@
     function renderizarCalendario() {
       renderizarGradeMes();
       renderizarTarefasDoDia();
+      renderizarTodasTarefas();
     }
 
     function renderizarGradeMes() {
@@ -732,27 +747,57 @@
         return;
       }
 
-      doDia.forEach((tarefa) => {
-        const horario = [tarefa.hora_inicio, tarefa.hora_fim].filter(Boolean).map((h) => h.slice(0, 5)).join(' – ');
+      doDia.forEach((tarefa) => lista.appendChild(criarItemTarefa(tarefa, false)));
+    }
 
-        const item = document.createElement('div');
-        item.className = 'cal-tarefa-item' + (tarefa.feito ? ' cal-tarefa-feita' : '');
-        item.innerHTML = `
-          <button class="cal-tarefa-check cal-btn" type="button" aria-label="Marcar como feita"></button>
-          <div class="cal-tarefa-info">
-            ${horario ? `<span class="cal-tarefa-horario">${horario}</span>` : ''}
-            <span class="cal-tarefa-titulo">${escapeHtml(tarefa.titulo)}</span>
-          </div>
-          <button class="cal-tarefa-excluir cal-btn cal-btn-icon" type="button" aria-label="Excluir">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        `;
+    // Cria o elemento de uma tarefa. mostrarData controla se aparece a data
+    // junto (usado na lista "Todas as pendências", que mistura vários dias).
+    function criarItemTarefa(tarefa, mostrarData) {
+      const horario = [tarefa.hora_inicio, tarefa.hora_fim].filter(Boolean).map((h) => h.slice(0, 5)).join(' – ');
+      const dataFormatada = mostrarData
+        ? new Date(tarefa.data + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+        : '';
+      const detalhe = [dataFormatada, horario].filter(Boolean).join(' · ');
 
-        item.querySelector('.cal-tarefa-check').addEventListener('click', () => alternarFeito(tarefa));
-        item.querySelector('.cal-tarefa-excluir').addEventListener('click', () => excluirTarefa(tarefa));
+      const item = document.createElement('div');
+      item.className = 'cal-tarefa-item' + (tarefa.feito ? ' cal-tarefa-feita' : '');
+      item.innerHTML = `
+        <button class="cal-tarefa-check cal-btn" type="button" aria-label="Marcar como feita"></button>
+        <div class="cal-tarefa-info">
+          ${detalhe ? `<span class="cal-tarefa-horario">${detalhe}</span>` : ''}
+          <span class="cal-tarefa-titulo">${escapeHtml(tarefa.titulo)}</span>
+        </div>
+        <button class="cal-tarefa-excluir cal-btn cal-btn-icon" type="button" aria-label="Excluir">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      `;
 
-        lista.appendChild(item);
-      });
+      item.querySelector('.cal-tarefa-check').addEventListener('click', () => alternarFeito(tarefa));
+      item.querySelector('.cal-tarefa-excluir').addEventListener('click', () => excluirTarefa(tarefa));
+
+      return item;
+    }
+
+    // Lista todas as tarefas (de qualquer data), separadas em abertas e encerradas.
+    function renderizarTodasTarefas() {
+      const abertas = tarefasCache.filter((t) => !t.feito).sort((a, b) => a.data.localeCompare(b.data));
+      const encerradas = tarefasCache.filter((t) => t.feito).sort((a, b) => b.data.localeCompare(a.data));
+
+      const listaAbertas = document.getElementById('cal-lista-abertas');
+      listaAbertas.innerHTML = '';
+      if (abertas.length === 0) {
+        listaAbertas.innerHTML = '<p class="texto-vazio">Nenhuma pendência em aberto.</p>';
+      } else {
+        abertas.forEach((tarefa) => listaAbertas.appendChild(criarItemTarefa(tarefa, true)));
+      }
+
+      const listaEncerradas = document.getElementById('cal-lista-encerradas');
+      listaEncerradas.innerHTML = '';
+      if (encerradas.length === 0) {
+        listaEncerradas.innerHTML = '<p class="texto-vazio">Nenhuma tarefa encerrada ainda.</p>';
+      } else {
+        encerradas.forEach((tarefa) => listaEncerradas.appendChild(criarItemTarefa(tarefa, true)));
+      }
     }
 
     function abrirFormularioTarefa() {

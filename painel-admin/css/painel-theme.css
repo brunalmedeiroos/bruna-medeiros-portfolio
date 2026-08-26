@@ -94,10 +94,11 @@
    .widget-glass do site: fundo translúcido + blur + borda clara).
    ========================================================================== */
 
-/* Calendário do mês (compacto, largura fixa) ao lado do cartão do dia. */
+/* Calendário do mês (um pouco maior) ao lado do cartão do dia (um pouco
+   menor — por isso os dois têm um max, em vez do dia esticar 1fr). */
 .painel-body .cal-layout {
   display: grid;
-  grid-template-columns: minmax(320px, 420px) 1fr;
+  grid-template-columns: minmax(380px, 480px) minmax(300px, 420px);
   gap: 20px;
   align-items: start;
 }
@@ -148,7 +149,7 @@
 .painel-body .cal-mes-label {
   font-family: var(--fonte-corpo);
   font-weight: 700;
-  font-size: 15px;
+  font-size: 16px;
   letter-spacing: 0.4px;
   text-transform: uppercase;
 }
@@ -183,11 +184,11 @@
 }
 
 .painel-body .cal-dia {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   margin: 2px auto;
   border-radius: 50%;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   box-shadow: none;
   backdrop-filter: none;
@@ -365,4 +366,32 @@
   .painel-body .cal-dia {
     font-size: 12px;
   }
+}
+
+/* ---- "Todas as pendências" (abertas e encerradas, de qualquer data) ---- */
+
+.painel-body .card-cal-todas {
+  margin-top: 20px;
+}
+
+.painel-body .cal-todas-colunas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 700px) {
+  .painel-body .cal-todas-colunas {
+    grid-template-columns: 1fr;
+  }
+}
+
+.painel-body .cal-todas-subtitulo {
+  font-family: var(--fonte-corpo);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--texto-suave);
+  margin-bottom: 10px;
 }

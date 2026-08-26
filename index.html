@@ -754,6 +754,8 @@ body.lock-active{ overflow:hidden; height:100vh; }
   transform: translateY(-75px) scale(1); opacity:1; filter:none;
 }
 .feedback-folder:hover .folder-shape, .feedback-folder.is-open .folder-shape{ transform: translateY(10px) rotate(1deg); }
+.feedback-logo{ display:inline-block; background: var(--blue-dark); border-radius:8px; padding:8px 14px; margin-bottom:12px; }
+.feedback-logo img{ height:18px; width:auto; display:block; }
 .feedback-note p{ font-size:.82rem; line-height:1.55; color: var(--blue-dark); font-weight:600; margin-bottom:10px; }
 .feedback-note .brand{ font-size:.7rem; font-weight:700; color: var(--blue-dark-70); }
 .feedback-note .brand::before{ content:"— "; }
@@ -1520,10 +1522,11 @@ a.info-value:hover{ text-decoration:underline; }
     </div>
     <div class="feedback-folder">
       <div class="folder-shape"></div>
-      <span class="feedback-peek" data-pt="[Nome da marca]" data-en="[Brand name]">[Nome da marca]</span>
+      <span class="feedback-peek" data-pt="Labotrat" data-en="Labotrat">Labotrat</span>
       <div class="feedback-note">
-        <p data-pt="&quot;[Feedback da marca sobre o trabalho da Bruna aqui]&quot;" data-en="&quot;[Brand's feedback about Bruna's work goes here]&quot;">"[Feedback da marca sobre o trabalho da Bruna aqui]"</p>
-        <span class="brand" data-pt="[Nome da marca]" data-en="[Brand name]">[Nome da marca]</span>
+        <div class="feedback-logo"><img src="logos/Labotrat.png" alt="Labotrat"></div>
+        <p data-pt="&quot;Realizou uma ótima entrega, com um conteúdo bem alinhado à proposta da campanha e executado com qualidade.&quot;" data-en="&quot;Delivered great work, with content well aligned to the campaign's brief and executed with quality.&quot;">"Realizou uma ótima entrega, com um conteúdo bem alinhado à proposta da campanha e executado com qualidade."</p>
+        <span class="brand" data-pt="Labotrat" data-en="Labotrat">Labotrat</span>
       </div>
     </div>
     <div class="feedback-folder">

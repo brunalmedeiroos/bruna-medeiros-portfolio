@@ -1652,6 +1652,58 @@ a.info-value:hover{ text-decoration:underline; }
   /* ---------------- Idioma do site (PT/EN) ---------------- */
   var currentLang = localStorage.getItem('portfolioLang') || 'pt';
 
+  /* ---------------- Rastreamento (visitas, cliques, mensagens) ----------------
+     Manda os avisos pra função do Supabase (supabase/functions/track), que é
+     quem tem permissão de gravar no banco. O site nunca grava direto. */
+  var TRACK_URL = 'https://trfoymytrvdbslwizfqs.supabase.co/functions/v1/track';
+
+  function getSessionId(){
+    var chave = 'portfolioSessionId';
+    var id = sessionStorage.getItem(chave);
+    if (!id) {
+      id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(16).slice(2));
+      sessionStorage.setItem(chave, id);
+    }
+    return id;
+  }
+
+  function enviarTrack(kind, data){
+    return fetch(TRACK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ kind: kind, data: data })
+    }).then(function(res){ return res.ok; }).catch(function(){ return false; });
+  }
+
+  function trackEvento(event_name, metadata){
+    enviarTrack('event', {
+      event_type: 'button_click',
+      event_name: event_name,
+      session_id: getSessionId(),
+      page_path: location.pathname,
+      metadata: metadata || null
+    });
+  }
+
+  // Visita: uma vez por carregamento de página.
+  enviarTrack('event', {
+    event_type: 'page_view',
+    session_id: getSessionId(),
+    page_path: location.pathname
+  });
+
+  // Cliques em WhatsApp/e-mail/Instagram, em qualquer link do site (o site
+  // repete esses links no header, nos widgets e no rodapé, então é mais
+  // confiável escutar todo clique e olhar o href do que listar cada link).
+  document.addEventListener('click', function(e){
+    var a = e.target.closest('a[href]');
+    if (!a) return;
+    var href = a.getAttribute('href') || '';
+    if (href.indexOf('wa.me') !== -1) trackEvento('contact_whatsapp');
+    else if (href.indexOf('mailto:') === 0) trackEvento('contact_email');
+    else if (href.indexOf('instagram.com') !== -1) trackEvento('contact_instagram');
+  });
+
   /* ---------------- Tela de bloqueio (senha em bolinhas) ---------------- */
   var lockScreen = document.getElementById('lockScreen');
   if (lockScreen){
@@ -1806,18 +1858,55 @@ a.info-value:hover{ text-decoration:underline; }
     });
   }
 
-  /* ---------------- Formulários (sem backend — placeholder de envio) ---------------- */
-  function handleFormSubmit(form, onSuccess){
+  /* ---------------- Formulários (salvam de verdade via track()) ---------------- */
+  function handleFormSubmit(form, montarLead, onSuccess){
+    if (!form) return;
     form.addEventListener('submit', function(e){
       e.preventDefault();
-      /* Conecte aqui um serviço real de envio (ex: Formspree, EmailJS, backend próprio) */
-      if (onSuccess) onSuccess();
+      var btn = form.querySelector('button[type="submit"]');
+      var textoOriginal = btn ? btn.textContent : '';
+      if (btn) { btn.disabled = true; btn.textContent = currentLang === 'en' ? 'Sending...' : 'Enviando...'; }
+
+      enviarTrack('lead', montarLead(form)).then(function(ok){
+        if (btn) { btn.disabled = false; btn.textContent = textoOriginal; }
+        if (ok) {
+          trackEvento('contact_formulario');
+          form.reset();
+          if (onSuccess) onSuccess();
+        } else {
+          alert(currentLang === 'en'
+            ? 'Something went wrong sending your message. Please try WhatsApp or email instead.'
+            : 'Algo deu errado ao enviar sua mensagem. Tente pelo WhatsApp ou e-mail, por favor.');
+        }
+      });
     });
   }
-  handleFormSubmit(document.getElementById('formularioProposta'), function(){
+
+  handleFormSubmit(document.getElementById('formularioProposta'), function(form){
+    return {
+      name: document.getElementById('cName').value,
+      email: document.getElementById('cEmail').value,
+      phone: document.getElementById('cWhats').value,
+      brand: document.getElementById('cCompany').value,
+      message: document.getElementById('cBrief').value,
+      source: 'contact'
+    };
+  }, function(){
     document.getElementById('formSuccess').classList.add('is-visible');
   });
-  handleFormSubmit(document.getElementById('popupForm'), function(){
+
+  handleFormSubmit(document.getElementById('popupForm'), function(form){
+    var inputs = form.querySelectorAll('input');
+    var textarea = form.querySelector('textarea');
+    return {
+      name: inputs[0] ? inputs[0].value : '',
+      brand: inputs[1] ? inputs[1].value : '',
+      email: inputs[2] ? inputs[2].value : '',
+      phone: inputs[3] ? inputs[3].value : '',
+      message: textarea ? textarea.value : '',
+      source: 'popup'
+    };
+  }, function(){
     hidePopup();
     alert(currentLang === 'en' ? 'Got it! Bruna will get back to you soon.' : 'Recebido! A Bruna vai te responder em breve.');
   });

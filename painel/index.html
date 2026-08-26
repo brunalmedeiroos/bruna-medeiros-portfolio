@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Painel | meu.painel</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="/js/auth.js"></script>
+</head>
+<body style="visibility:hidden">
+
+  <div class="overlay-mobile" id="overlay-mobile"></div>
+
+  <div class="painel-wrap">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">meu<span class="ponto">.</span>painel</div>
+
+      <ul class="nav-lista">
+        <li>
+          <button class="nav-item ativo" data-tab="aba-menu-principal" data-titulo="Menu Principal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 11l9-8 9 8" />
+              <path d="M5 10v10a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-4h2v4a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V10" />
+            </svg>
+            Menu Principal
+          </button>
+        </li>
+        <li>
+          <button class="nav-item" data-tab="aba-portfolio" data-titulo="Portfólio">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="6" y1="20" x2="6" y2="12" />
+              <line x1="12" y1="20" x2="12" y2="6" />
+              <line x1="18" y1="20" x2="18" y2="14" />
+            </svg>
+            Portfólio
+          </button>
+        </li>
+      </ul>
+
+      <div class="sidebar-rodape">
+        <div class="sidebar-email" id="rodape-email"></div>
+        <button class="btn-sair" id="btn-sair">Sair</button>
+      </div>
+    </aside>
+
+    <main class="conteudo">
+      <div class="topo">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="btn-menu-mobile" id="btn-menu-mobile" aria-label="Abrir menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+          <h1 class="topo-titulo" id="topo-titulo">Menu Principal</h1>
+        </div>
+
+        <div class="filtros-periodo">
+          <button class="filtro-btn ativo" data-periodo="tudo">Tudo</button>
+          <button class="filtro-btn" data-periodo="7">7d</button>
+          <button class="filtro-btn" data-periodo="30">30d</button>
+          <button class="filtro-btn" data-periodo="90">90d</button>
+        </div>
+      </div>
+
+      <div class="faixa faixa-erro oculto" id="faixa-erro-dados"></div>
+
+      <!-- ==================== ABA: MENU PRINCIPAL ==================== -->
+      <section class="painel-aba ativo" id="aba-menu-principal">
+        <p class="saudacao">Olá! Aqui estão os números do seu portfólio.</p>
+
+        <div class="grid-cartoes">
+          <div class="cartao-numero destaque">
+            <div class="rotulo">Visitas</div>
+            <div class="valor" id="num-visitas">0</div>
+          </div>
+          <div class="cartao-numero">
+            <div class="rotulo">Visitantes únicos</div>
+            <div class="valor" id="num-visitantes">0</div>
+          </div>
+          <div class="cartao-numero">
+            <div class="rotulo">Cliques em botões</div>
+            <div class="valor" id="num-cliques">0</div>
+          </div>
+          <div class="cartao-numero">
+            <div class="rotulo">Vídeos vistos</div>
+            <div class="valor" id="num-videos">0</div>
+          </div>
+          <div class="cartao-numero">
+            <div class="rotulo">Mensagens</div>
+            <div class="valor" id="num-mensagens">0</div>
+          </div>
+        </div>
+
+        <div class="cartao-contato">
+          <div class="titulo">Clicaram para entrar em contato</div>
+          <div class="valor" id="num-contato">0</div>
+          <div class="explicacao">Conta quem clicou em WhatsApp, e-mail, Instagram ou no botão de enviar o formulário.</div>
+        </div>
+
+        <div class="cartao">
+          <h3>Visitas nos últimos 14 dias</h3>
+          <div class="grafico-barras" id="grafico-barras"></div>
+        </div>
+      </section>
+
+      <!-- ==================== ABA: PORTFÓLIO ==================== -->
+      <section class="painel-aba" id="aba-portfolio">
+        <div class="cartao">
+          <h3>Vídeos mais vistos</h3>
+          <div class="lista-videos" id="lista-videos"></div>
+        </div>
+
+        <div class="cartao">
+          <h3>Botões mais clicados</h3>
+          <div class="lista-barras-h" id="lista-botoes"></div>
+        </div>
+
+        <div class="cartao">
+          <h3>Cliques para contato</h3>
+          <div class="lista-barras-h" id="lista-contato"></div>
+        </div>
+
+        <div class="cartao">
+          <h3>Mensagens recebidas</h3>
+          <div class="lista-leads" id="lista-leads"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    let eventosCache = [];
+    let leadsCache = [];
+    let periodoAtual = 'tudo';
+
+    async function buscarTudo(tabela) {
+      const TAMANHO_BLOCO = 1000;
+      let todos = [];
+      let inicio = 0;
+
+      while (true) {
+        const { data, error } = await window.sb
+          .from(tabela)
+          .select('*')
+          .order('created_at', { ascending: false })
+          .range(inicio, inicio + TAMANHO_BLOCO - 1);
+
+        if (error) throw error;
+
+        todos = todos.concat(data);
+        if (!data || data.length < TAMANHO_BLOCO) break;
+        inicio += TAMANHO_BLOCO;
+      }
+
+      return todos;
+    }
+
+    async function carregarDados() {
+      const faixaErroDados = document.getElementById('faixa-erro-dados');
+      try {
+        const [eventos, leads] = await Promise.all([
+          buscarTudo('portfolio_events'),
+          buscarTudo('portfolio_leads'),
+        ]);
+        eventosCache = eventos;
+        leadsCache = leads;
+      } catch (erro) {
+        console.error('Erro ao carregar dados do Supabase:', erro);
+        faixaErroDados.textContent = 'Não foi possível carregar os dados agora. Tente novamente mais tarde.';
+        faixaErroDados.classList.remove('oculto');
+      }
+      redesenharTudo();
+    }
+
+    function filtrarPorPeriodo(lista) {
+      if (periodoAtual === 'tudo') return lista;
+      const dias = parseInt(periodoAtual, 10);
+      const limite = Date.now() - dias * 24 * 60 * 60 * 1000;
+      return lista.filter((item) => new Date(item.created_at).getTime() >= limite);
+    }
+
+    function calcularEstatisticas() {
+      const eventos = filtrarPorPeriodo(eventosCache);
+      const leads = filtrarPorPeriodo(leadsCache);
+
+      const pageViews = eventos.filter((e) => e.event_type === 'page_view');
+      const buttonClicks = eventos.filter((e) => e.event_type === 'button_click');
+      const videoViews = eventos.filter((e) => e.event_type === 'video_view');
+
+      const visitantesUnicos = new Set(pageViews.map((e) => e.session_id)).size;
+      const cliquesContato = buttonClicks.filter((e) => e.event_name && e.event_name.startsWith('contact_'));
+
+      return { pageViews, buttonClicks, videoViews, leads, visitantesUnicos, cliquesContato };
+    }
+
+    function escapeHtml(texto) {
+      if (texto === null || texto === undefined) return '';
+      return String(texto)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function nomeLegivel(nome) {
+      return nome.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
+    function formatarData(iso) {
+      const d = new Date(iso);
+      return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
+        ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function agruparVideos(videoViews) {
+      const mapa = new Map();
+      videoViews.forEach((e) => {
+        const id = e.event_name;
+        if (!id) return;
+        if (!mapa.has(id)) {
+          const titulo = (e.metadata && e.metadata.title) || id;
+          mapa.set(id, { id, titulo, contagem: 0 });
+        }
+        mapa.get(id).contagem++;
+      });
+      return Array.from(mapa.values()).sort((a, b) => b.contagem - a.contagem);
+    }
+
+    function agruparPorNome(lista) {
+      const mapa = new Map();
+      lista.forEach((e) => {
+        const nome = e.event_name || 'desconhecido';
+        mapa.set(nome, (mapa.get(nome) || 0) + 1);
+      });
+      return Array.from(mapa.entries())
+        .map(([nome, contagem]) => ({ nome, contagem }))
+        .sort((a, b) => b.contagem - a.contagem);
+    }
+
+    function construirGraficoDias() {
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+
+      const dias = [];
+      for (let i = 13; i >= 0; i--) {
+        const d = new Date(hoje);
+        d.setDate(d.getDate() - i);
+        dias.push(d);
+      }
+
+      const contagens = dias.map((dia) => {
+        const inicioDia = dia.getTime();
+        const fimDia = inicioDia + 24 * 60 * 60 * 1000;
+        return eventosCache.filter((e) => {
+          if (e.event_type !== 'page_view') return false;
+          const t = new Date(e.created_at).getTime();
+          return t >= inicioDia && t < fimDia;
+        }).length;
+      });
+
+      return { dias, contagens };
+    }
+
+    function renderMenuPrincipal(stats) {
+      document.getElementById('num-visitas').textContent = stats.pageViews.length;
+      document.getElementById('num-visitantes').textContent = stats.visitantesUnicos;
+      document.getElementById('num-cliques').textContent = stats.buttonClicks.length;
+      document.getElementById('num-videos').textContent = stats.videoViews.length;
+      document.getElementById('num-mensagens').textContent = stats.leads.length;
+      document.getElementById('num-contato').textContent = stats.cliquesContato.length;
+
+      renderGrafico();
+    }
+
+    function renderGrafico() {
+      const cont = document.getElementById('grafico-barras');
+      const { dias, contagens } = construirGraficoDias();
+
+      if (contagens.every((c) => c === 0)) {
+        cont.innerHTML = '<p class="vazio">Nenhuma visita registrada nos últimos 14 dias.</p>';
+        return;
+      }
+
+      const max = Math.max(...contagens, 1);
+      cont.innerHTML = dias.map((dia, i) => {
+        const contagem = contagens[i];
+        const altura = contagem > 0 ? Math.max((contagem / max) * 100, 4) : 1;
+        const rotulo = dia.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        return `
+          <div class="barra-dia">
+            <span class="barra-tooltip">${rotulo}: ${contagem}</span>
+            <div class="barra" style="height:${altura}%"></div>
+            <span class="rotulo-dia">${rotulo}</span>
+          </div>`;
+      }).join('');
+    }
+
+    function renderPortfolio(stats) {
+      renderVideos(agruparVideos(stats.videoViews));
+      renderBotoes(agruparPorNome(stats.buttonClicks));
+      renderContato(agruparPorNome(stats.cliquesContato));
+      renderLeads(stats.leads);
+    }
+
+    function renderVideos(videos) {
+      const cont = document.getElementById('lista-videos');
+      if (videos.length === 0) {
+        cont.innerHTML = '<p class="vazio">Nenhum vídeo assistido ainda.</p>';
+        return;
+      }
+      const max = videos[0].contagem;
+      cont.innerHTML = videos.map((v) => {
+        const url = `https://www.youtube.com/watch?v=${encodeURIComponent(v.id)}`;
+        const capa = `https://i.ytimg.com/vi/${encodeURIComponent(v.id)}/mqdefault.jpg`;
+        return `
+          <div class="item-video">
+            <a href="${url}" target="_blank" rel="noopener">
+              <img src="${capa}" alt="${escapeHtml(v.titulo)}" loading="lazy">
+            </a>
+            <div class="info">
+              <a class="titulo-video" href="${url}" target="_blank" rel="noopener">${escapeHtml(v.titulo)}</a>
+              <div class="barra-fundo"><div class="barra-preenchida" style="width:${(v.contagem / max) * 100}%"></div></div>
+              <div class="contagem">${v.contagem} visualizações</div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function renderBotoes(botoes) {
+      const cont = document.getElementById('lista-botoes');
+      if (botoes.length === 0) {
+        cont.innerHTML = '<p class="vazio">Nenhum clique registrado ainda.</p>';
+        return;
+      }
+      const max = botoes[0].contagem;
+      cont.innerHTML = botoes.map((b) => `
+        <div class="barra-h-linha">
+          <div class="barra-h-nome">${escapeHtml(nomeLegivel(b.nome))}</div>
+          <div class="barra-h-track"><div class="barra-h-fill" style="width:${(b.contagem / max) * 100}%"></div></div>
+          <div class="barra-h-valor">${b.contagem}</div>
+        </div>`).join('');
+    }
+
+    function renderContato(cliques) {
+      const cont = document.getElementById('lista-contato');
+      if (cliques.length === 0) {
+        cont.innerHTML = '<p class="vazio">Ninguém clicou para entrar em contato ainda.</p>';
+        return;
+      }
+      const max = cliques[0].contagem;
+      cont.innerHTML = cliques.map((b) => `
+        <div class="barra-h-linha">
+          <div class="barra-h-nome">${escapeHtml(nomeLegivel(b.nome.replace(/^contact_/, '')))}</div>
+          <div class="barra-h-track"><div class="barra-h-fill" style="width:${(b.contagem / max) * 100}%"></div></div>
+          <div class="barra-h-valor">${b.contagem}</div>
+        </div>`).join('');
+    }
+
+    function renderLeads(leads) {
+      const cont = document.getElementById('lista-leads');
+      if (leads.length === 0) {
+        cont.innerHTML = '<p class="vazio">Nenhuma mensagem por enquanto.</p>';
+        return;
+      }
+
+      cont.innerHTML = leads.map((lead, i) => {
+        const ehPopup = lead.source === 'popup';
+        const digitos = (lead.phone || '').replace(/\D/g, '');
+        return `
+          <div class="cartao-lead" data-idx="${i}">
+            <div class="lead-topo">
+              <span class="selo ${ehPopup ? 'selo-popup' : 'selo-contact'}">${ehPopup ? 'Pop-up' : 'Contato'}</span>
+              <span class="lead-nome">${escapeHtml(lead.name) || 'Sem nome'}</span>
+              <span class="lead-data">${formatarData(lead.created_at)}</span>
+            </div>
+            <div class="lead-email">${escapeHtml(lead.email)}</div>
+            <div class="lead-detalhes" id="detalhes-${i}">
+              <div class="linha"><b>Telefone:</b> ${escapeHtml(lead.phone) || 'Não informado'}</div>
+              <div class="linha"><b>Marca:</b> ${escapeHtml(lead.brand) || 'Não informado'}</div>
+              <div class="linha"><b>Orçamento:</b> ${escapeHtml(lead.budget) || 'Não informado'}</div>
+              <div class="linha"><b>Mensagem:</b> ${escapeHtml(lead.message) || 'Sem mensagem'}</div>
+              <div class="lead-acoes">
+                <a class="btn-acao" href="mailto:${encodeURIComponent(lead.email || '')}">Responder por e-mail</a>
+                ${digitos ? `<a class="btn-acao whatsapp" href="https://wa.me/${digitos}" target="_blank" rel="noopener">WhatsApp</a>` : ''}
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+
+      cont.querySelectorAll('.cartao-lead').forEach((card) => {
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('.btn-acao')) return;
+          const idx = card.dataset.idx;
+          document.getElementById(`detalhes-${idx}`).classList.toggle('aberto');
+        });
+      });
+    }
+
+    function redesenharTudo() {
+      const stats = calcularEstatisticas();
+      renderMenuPrincipal(stats);
+      renderPortfolio(stats);
+    }
+
+    document.querySelectorAll('.nav-item[data-tab]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.painel-aba').forEach((p) => p.classList.remove('ativo'));
+        document.getElementById(btn.dataset.tab).classList.add('ativo');
+        document.querySelectorAll('.nav-item[data-tab]').forEach((b) => b.classList.remove('ativo'));
+        btn.classList.add('ativo');
+        document.getElementById('topo-titulo').textContent = btn.dataset.titulo;
+        fecharSidebarMobile();
+      });
+    });
+
+    document.querySelectorAll('.filtro-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filtro-btn').forEach((b) => b.classList.remove('ativo'));
+        btn.classList.add('ativo');
+        periodoAtual = btn.dataset.periodo;
+        redesenharTudo();
+      });
+    });
+
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay-mobile');
+
+    function fecharSidebarMobile() {
+      sidebar.classList.remove('aberta');
+      overlay.classList.remove('aberta');
+    }
+
+    document.getElementById('btn-menu-mobile').addEventListener('click', () => {
+      sidebar.classList.add('aberta');
+      overlay.classList.add('aberta');
+    });
+    overlay.addEventListener('click', fecharSidebarMobile);
+
+    document.getElementById('btn-sair').addEventListener('click', () => window.Auth.logout());
+
+    (async function iniciar() {
+      const usuario = await window.Auth.checkAuth();
+      if (!usuario) return;
+
+      document.getElementById('rodape-email').textContent = usuario.email;
+      document.body.style.visibility = 'visible';
+
+      await carregarDados();
+    })();
+  </script>
+</body>
+</html>

@@ -657,8 +657,8 @@ body.lock-active{ overflow:hidden; height:100vh; }
 .modal-video-frame{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
 .modal-video-frame[hidden]{ display:none; }
 .file-modal-body .placeholder[hidden]{ display:none; }
-.file-modal-window.is-video{ width:min(360px,92vw); }
-.file-modal-window.is-video .file-modal-body{ aspect-ratio: 9/16; max-height:80vh; }
+.file-modal-window.is-video{ width:min(400px, 90vw, calc((88vh - 96px) * 9 / 16)); }
+.file-modal-window.is-video .file-modal-body{ aspect-ratio: 9/16; }
 .file-modal-caption{ padding:16px 20px; font-size:.85rem; color: var(--blue-dark-70); font-weight:600; }
 
 /* =====================================================================

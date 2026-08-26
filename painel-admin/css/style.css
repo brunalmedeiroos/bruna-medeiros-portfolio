@@ -251,6 +251,32 @@ input:focus {
   position: sticky;
   top: 0;
   height: 100vh;
+  transition: width 0.2s ease, padding 0.2s ease;
+}
+
+.btn-colapsar-sidebar {
+  position: absolute;
+  top: 24px;
+  right: -13px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  color: var(--texto-suave);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--sombra);
+  transition: transform 0.2s ease, color 0.15s ease;
+}
+
+.btn-colapsar-sidebar:hover {
+  color: var(--grafite);
+}
+
+.btn-colapsar-sidebar svg {
+  transition: transform 0.2s ease;
 }
 
 .sidebar-logo {
@@ -259,6 +285,8 @@ input:focus {
   font-weight: 600;
   margin-bottom: 32px;
   padding: 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .sidebar-nav {
@@ -280,6 +308,8 @@ input:focus {
   font-weight: 500;
   color: var(--texto-suave);
   text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
@@ -309,6 +339,9 @@ input:focus {
   padding: 0 8px;
   margin-bottom: 10px;
   overflow-wrap: anywhere;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .btn-sair {
@@ -320,7 +353,38 @@ input:focus {
   font-size: 14px;
   font-weight: 600;
   color: var(--grafite);
+  white-space: nowrap;
+  overflow: hidden;
   transition: background 0.15s ease;
+}
+
+/* ---- Sidebar minimizada (desktop) ---- */
+
+.sidebar.colapsada {
+  width: 88px;
+  padding-left: 14px;
+  padding-right: 14px;
+}
+
+.sidebar.colapsada .btn-colapsar-sidebar svg {
+  transform: rotate(180deg);
+}
+
+.sidebar.colapsada .sidebar-logo,
+.sidebar.colapsada .nav-item span,
+.sidebar.colapsada .user-email {
+  display: none;
+}
+
+.sidebar.colapsada .nav-item {
+  justify-content: center;
+  padding: 12px;
+}
+
+.sidebar.colapsada .btn-sair {
+  padding: 10px 4px;
+  font-size: 12px;
+  text-align: center;
 }
 
 .btn-sair:hover {
@@ -805,6 +869,27 @@ input:focus {
     transform: translateX(-100%);
     transition: transform 0.2s ease;
     box-shadow: var(--sombra-forte);
+  }
+
+  .sidebar.colapsada {
+    width: 260px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .sidebar.colapsada .sidebar-logo,
+  .sidebar.colapsada .nav-item span,
+  .sidebar.colapsada .user-email {
+    display: block;
+  }
+
+  .sidebar.colapsada .nav-item {
+    justify-content: flex-start;
+    padding: 12px 14px;
+  }
+
+  .btn-colapsar-sidebar {
+    display: none;
   }
 
   .sidebar.aberta {

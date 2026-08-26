@@ -31,6 +31,9 @@
   <div class="app">
     <!-- ================= Sidebar ================= -->
     <aside class="sidebar" id="sidebar">
+      <button id="btn-colapsar-sidebar" class="btn-colapsar-sidebar" aria-label="Minimizar menu" type="button">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
       <div class="sidebar-logo">meu<span class="logo-dot">.</span>painel</div>
 
       <nav class="sidebar-nav">
@@ -229,6 +232,7 @@
       document.getElementById('painel-body').style.visibility = 'visible';
 
       configurarEventos();
+      configurarColapsarSidebar();
       await carregarDados();
     })();
 
@@ -296,6 +300,21 @@
     // ==========================================================================
     // Interações: abas, filtro de período, sair, menu mobile
     // ==========================================================================
+
+    function configurarColapsarSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const btn = document.getElementById('btn-colapsar-sidebar');
+      const CHAVE = 'painelSidebarColapsada';
+
+      if (localStorage.getItem(CHAVE) === '1') {
+        sidebar.classList.add('colapsada');
+      }
+
+      btn.addEventListener('click', () => {
+        const colapsada = sidebar.classList.toggle('colapsada');
+        localStorage.setItem(CHAVE, colapsada ? '1' : '0');
+      });
+    }
 
     function configurarEventos() {
       document.querySelectorAll('.nav-item').forEach((btn) => {

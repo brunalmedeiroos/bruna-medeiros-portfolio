@@ -231,9 +231,6 @@
               <form id="email-form-resposta" class="email-form" hidden>
                 <div class="email-form-topo">
                   <span>Responder</span>
-                  <button type="button" id="email-fechar-resposta" class="cal-btn cal-btn-icon" aria-label="Fechar resposta">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                  </button>
                 </div>
                 <textarea id="email-resposta-texto" placeholder="Escreva sua resposta..." required></textarea>
                 <div class="cal-form-acoes">
@@ -407,9 +404,6 @@
       // E-mail
       document.getElementById('btn-email-conectar').addEventListener('click', conectarGmail);
       document.getElementById('email-form-resposta').addEventListener('submit', enviarResposta);
-      document.getElementById('email-fechar-resposta').addEventListener('click', () => {
-        document.getElementById('email-form-resposta').hidden = true;
-      });
     }
 
     function trocarAba(aba) {
@@ -1024,16 +1018,52 @@
       }
 
       lista.innerHTML = emailsCache.map((msg) => `
-        <button type="button" class="email-item${msg.id === emailAbertoId ? ' email-item-ativo' : ''}" data-id="${escapeHtml(msg.id)}">
-          <span class="email-item-remetente">${escapeHtml(nomeRemetente(msg.from))}</span>
-          <span class="email-item-assunto">${escapeHtml(msg.subject || '(sem assunto)')}</span>
-          <span class="email-item-resumo">${escapeHtml(msg.snippet)}</span>
-        </button>
+        <div class="email-item-linha">
+          <button type="button" class="email-item${msg.id === emailAbertoId ? ' email-item-ativo' : ''}" data-id="${escapeHtml(msg.id)}">
+            <span class="email-item-remetente">${escapeHtml(nomeRemetente(msg.from))}</span>
+            <span class="email-item-assunto">${escapeHtml(msg.subject || '(sem assunto)')}</span>
+            <span class="email-item-resumo">${escapeHtml(msg.snippet)}</span>
+          </button>
+          <button type="button" class="email-item-desmarcar" data-id="${escapeHtml(msg.id)}" aria-label="Desmarcar mensagem" title="Desmarcar (remove o rótulo Propostas)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
       `).join('');
 
       lista.querySelectorAll('.email-item').forEach((btn) => {
         btn.addEventListener('click', () => abrirEmail(btn.dataset.id));
       });
+      lista.querySelectorAll('.email-item-desmarcar').forEach((btn) => {
+        btn.addEventListener('click', () => desmarcarEmail(btn.dataset.id));
+      });
+    }
+
+    function fecharEmailAberto() {
+      emailAbertoId = null;
+      document.getElementById('email-detalhe').innerHTML =
+        '<p class="email-detalhe-vazio">Selecione uma mensagem na lista ao lado.</p>';
+      document.getElementById('email-form-resposta').hidden = true;
+      renderizarListaEmails();
+    }
+
+    async function desmarcarEmail(id) {
+      if (!confirm('Remover esta mensagem da lista de Propostas? Ela continua no seu Gmail, só sai daqui.')) return;
+      try {
+        const resultado = await chamarFuncaoEmail('gmail-unmark', {
+          method: 'POST',
+          body: { messageId: id },
+        });
+        if (!resultado.ok) {
+          alert('Não foi possível desmarcar: ' + resultado.error);
+          return;
+        }
+        emailsCache = emailsCache.filter((m) => m.id !== id);
+        if (emailAbertoId === id) fecharEmailAberto();
+        else renderizarListaEmails();
+      } catch (err) {
+        console.error('Erro ao desmarcar e-mail:', err);
+        alert('Não foi possível desmarcar agora. Tente de novo.');
+      }
     }
 
     async function abrirEmail(id) {
@@ -1055,11 +1085,17 @@
         const msg = resultado.mensagem;
         detalhe.innerHTML = `
           <div class="email-detalhe-cabecalho">
-            <h3 class="card-titulo">${escapeHtml(msg.subject || '(sem assunto)')}</h3>
+            <div class="email-detalhe-topo">
+              <h3 class="card-titulo">${escapeHtml(msg.subject || '(sem assunto)')}</h3>
+              <button type="button" id="email-fechar-detalhe" class="cal-btn cal-btn-icon" aria-label="Fechar mensagem">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+            </div>
             <p class="email-detalhe-meta">${escapeHtml(nomeRemetente(msg.from))} · ${escapeHtml(msg.date)}</p>
           </div>
           <div class="email-detalhe-corpo">${escapeHtml(msg.body)}</div>
         `;
+        document.getElementById('email-fechar-detalhe').addEventListener('click', fecharEmailAberto);
         document.getElementById('email-resposta-texto').value = '';
         form.hidden = false;
       } catch (err) {

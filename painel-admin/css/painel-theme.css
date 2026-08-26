@@ -445,7 +445,15 @@
   color: var(--texto-suave);
 }
 
+.painel-body .email-item-linha {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
 .painel-body .email-item {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -459,6 +467,26 @@
 
 .painel-body .email-item:hover {
   background: var(--creme);
+}
+
+.painel-body .email-item-desmarcar {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  margin-top: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--texto-suave);
+  background: transparent;
+  border: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.painel-body .email-item-desmarcar:hover {
+  background: var(--creme);
+  color: var(--grafite);
 }
 
 .painel-body .email-item-ativo {
@@ -495,6 +523,20 @@
   border-bottom: 1px solid var(--borda);
 }
 
+.painel-body .email-detalhe-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.painel-body .email-detalhe-topo .cal-btn-icon {
+  width: 26px;
+  height: 26px;
+  box-shadow: none;
+  flex-shrink: 0;
+}
+
 .painel-body .email-detalhe-meta {
   font-size: 13px;
   color: var(--texto-suave);
@@ -524,18 +566,9 @@
 }
 
 .painel-body .email-form-topo {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   font-size: 13px;
   font-weight: 700;
   color: var(--texto-suave);
-}
-
-.painel-body .email-form-topo .cal-btn-icon {
-  width: 26px;
-  height: 26px;
-  box-shadow: none;
 }
 
 .painel-body .email-form textarea {

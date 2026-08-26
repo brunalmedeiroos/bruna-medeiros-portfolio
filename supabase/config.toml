@@ -444,3 +444,8 @@ entrypoint = "./functions/gmail-inbox/index.ts"
 enabled = true
 import_map = "./functions/gmail-reply/deno.json"
 entrypoint = "./functions/gmail-reply/index.ts"
+
+[functions.gmail-unmark]
+enabled = true
+import_map = "./functions/gmail-unmark/deno.json"
+entrypoint = "./functions/gmail-unmark/index.ts"

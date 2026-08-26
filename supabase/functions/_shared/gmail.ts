@@ -92,6 +92,15 @@ export async function obterAccessTokenValido(
   return tokens.access_token;
 }
 
+// Resolve o nome do marcador (ex: "Propostas") pro ID interno que a API do
+// Gmail exige em removeLabelIds/addLabelIds.
+export async function resolverIdMarcador(accessToken: string, nome: string): Promise<string | null> {
+  const resposta = await chamarGmail(accessToken, "/labels");
+  const labels: Array<{ id: string; name: string }> = resposta.labels || [];
+  const encontrada = labels.find((l) => l.name === nome);
+  return encontrada ? encontrada.id : null;
+}
+
 export async function chamarGmail(accessToken: string, caminho: string, init: RequestInit = {}) {
   const res = await fetch(`${GMAIL_API}${caminho}`, {
     ...init,

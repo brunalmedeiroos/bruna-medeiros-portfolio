@@ -324,6 +324,10 @@
   gap: 10px;
 }
 
+.painel-body .cal-form[hidden] {
+  display: none;
+}
+
 .painel-body .cal-form input {
   border: 1px solid var(--borda);
   border-radius: var(--raio-sm);

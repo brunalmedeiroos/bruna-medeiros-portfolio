@@ -449,3 +449,19 @@ entrypoint = "./functions/gmail-reply/index.ts"
 enabled = true
 import_map = "./functions/gmail-unmark/deno.json"
 entrypoint = "./functions/gmail-unmark/index.ts"
+
+[functions.instagram-oauth-start]
+enabled = true
+import_map = "./functions/instagram-oauth-start/deno.json"
+entrypoint = "./functions/instagram-oauth-start/index.ts"
+
+[functions.instagram-oauth-callback]
+enabled = true
+verify_jwt = false
+import_map = "./functions/instagram-oauth-callback/deno.json"
+entrypoint = "./functions/instagram-oauth-callback/index.ts"
+
+[functions.instagram-metrics]
+enabled = true
+import_map = "./functions/instagram-metrics/deno.json"
+entrypoint = "./functions/instagram-metrics/index.ts"

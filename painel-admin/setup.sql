@@ -141,3 +141,29 @@ create table if not exists public.email_oauth_states (
 );
 
 alter table public.email_oauth_states enable row level security;
+
+-- ---------------------------------------------------------------------
+-- Tabelas: instagram_tokens e instagram_oauth_states (aba Instagram)
+-- Guardam o token de acesso da Página do Facebook vinculada à conta
+-- Business do Instagram, e o "state" (CSRF) do fluxo de conexão. Assim
+-- como as tabelas de e-mail, sem nenhuma policy pra authenticated/anon:
+-- só as Edge Functions (via service_role) acessam.
+-- ---------------------------------------------------------------------
+create table if not exists public.instagram_tokens (
+  id smallint primary key default 1,
+  access_token text not null,
+  ig_user_id text not null,
+  ig_username text,
+  page_id text not null,
+  updated_at timestamptz not null default now(),
+  constraint instagram_tokens_singleton check (id = 1)
+);
+
+alter table public.instagram_tokens enable row level security;
+
+create table if not exists public.instagram_oauth_states (
+  state text primary key,
+  created_at timestamptz not null default now()
+);
+
+alter table public.instagram_oauth_states enable row level security;

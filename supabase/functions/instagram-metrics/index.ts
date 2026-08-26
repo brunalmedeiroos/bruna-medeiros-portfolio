@@ -1,0 +1,112 @@
+// ==========================================================================
+// supabase/functions/instagram-metrics/index.ts
+// ==========================================================================
+// Chamada pelo painel (autenticada) pra buscar o perfil, os indicadores
+// gerais (alcance, visitas ao perfil, cliques no link) e o desempenho das
+// últimas publicações. Cada bloco é buscado com try/catch isolado: se um
+// pedaço falhar (permissão faltando, métrica descontinuada pela Meta), o
+// resto da resposta continua normal em vez de derrubar a aba inteira.
+
+import "@supabase/functions-js/edge-runtime.d.ts";
+import { withSupabase } from "@supabase/server";
+import { chamarGraph, insightDeConta, insightDeMidia, obterTokenConectado } from "../_shared/instagram.ts";
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+function jsonResponse(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+  });
+}
+
+function dataISO(diasAtras: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() - diasAtras);
+  return d.toISOString().slice(0, 10);
+}
+
+export default {
+  fetch: withSupabase({ auth: "user" }, async (req, ctx) => {
+    if (req.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
+
+    let token: Awaited<ReturnType<typeof obterTokenConectado>>;
+    try {
+      token = await obterTokenConectado(ctx.supabaseAdmin);
+    } catch (e) {
+      return jsonResponse({ ok: false, error: (e as Error).message }, 500);
+    }
+    if (!token) {
+      return jsonResponse({ ok: true, conectado: false });
+    }
+
+    const { access_token: accessToken, ig_user_id: igUserId, ig_username: igUsername } = token;
+    const desde = dataISO(7);
+    const ate = dataISO(0);
+
+    // ---- Perfil (seguidores, nº de publicações) ----
+    let perfil = { username: igUsername, seguidores: null as number | null, publicacoes: null as number | null };
+    try {
+      const dados = await chamarGraph(`/${igUserId}`, {
+        fields: "username,followers_count,media_count",
+        access_token: accessToken,
+      });
+      perfil = { username: dados.username, seguidores: dados.followers_count ?? null, publicacoes: dados.media_count ?? null };
+    } catch (e) {
+      console.error("Erro ao buscar perfil do Instagram:", e);
+    }
+
+    // ---- Indicadores da conta nos últimos 7 dias ----
+    const [alcance, visitasPerfil, cliquesLink] = await Promise.all([
+      insightDeConta(igUserId, accessToken, ["reach"], desde, ate),
+      insightDeConta(igUserId, accessToken, ["profile_views"], desde, ate),
+      insightDeConta(igUserId, accessToken, ["website_clicks", "profile_links_taps"], desde, ate),
+    ]);
+
+    // ---- Últimas publicações + desempenho de cada uma ----
+    let posts: Array<Record<string, unknown>> = [];
+    try {
+      const resposta = await chamarGraph(`/${igUserId}/media`, {
+        fields: "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count",
+        limit: "6",
+        access_token: accessToken,
+      });
+      const midias: Array<Record<string, unknown>> = resposta.data || [];
+
+      posts = await Promise.all(
+        midias.map(async (m) => {
+          const [alcancePost, salvosPost] = await Promise.all([
+            insightDeMidia(m.id as string, accessToken, ["reach"]),
+            insightDeMidia(m.id as string, accessToken, ["saved"]),
+          ]);
+          return {
+            id: m.id,
+            legenda: m.caption || "",
+            tipo: m.media_type,
+            capa: (m.thumbnail_url as string) || (m.media_url as string) || null,
+            link: m.permalink,
+            data: m.timestamp,
+            curtidas: m.like_count ?? null,
+            comentarios: m.comments_count ?? null,
+            alcance: alcancePost,
+            salvos: salvosPost,
+          };
+        }),
+      );
+    } catch (e) {
+      console.error("Erro ao buscar publicações do Instagram:", e);
+    }
+
+    return jsonResponse({
+      ok: true,
+      conectado: true,
+      perfil,
+      insights: { alcance, visitasPerfil, cliquesLink },
+      posts,
+    });
+  }),
+};

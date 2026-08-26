@@ -72,7 +72,7 @@
     (async () => {
       const { data: { session } } = await Auth.sb.auth.getSession();
       if (session) {
-        window.location.href = '../painel-admin/painel.html';
+        window.location.href = '/painel';
       }
     })();
 
@@ -104,7 +104,7 @@
 
       try {
         await Auth.login(email, senha);
-        window.location.href = '../painel-admin/painel.html';
+        window.location.href = '/painel';
       } catch (err) {
         msgErro.textContent = err.message || 'Não foi possível entrar. Tente novamente.';
         msgErro.hidden = false;

@@ -42,6 +42,10 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 20V10M12 20V4M20 20v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span>Portfólio</span>
         </button>
+        <button class="nav-item" data-tab="calendario" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="17" rx="2" stroke="currentColor" stroke-width="2"/><path d="M3 9h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>Calendário</span>
+        </button>
       </nav>
 
       <div class="sidebar-footer">
@@ -129,6 +133,57 @@
           </div>
         </section>
 
+        <!-- ---------- Aba: Calendário ---------- -->
+        <section id="panel-calendario" class="tab-panel" hidden>
+        <div class="cal-layout">
+          <div class="card card-calendario">
+            <div class="cal-topo">
+              <button id="cal-mes-anterior" class="cal-btn cal-btn-icon" type="button" aria-label="Mês anterior">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <span class="cal-mes-label" id="cal-mes-label">Mês</span>
+              <button id="cal-mes-proximo" class="cal-btn cal-btn-icon" type="button" aria-label="Próximo mês">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+
+            <div class="cal-semana">
+              <span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span>
+            </div>
+
+            <div class="cal-grade" id="cal-grade"></div>
+          </div>
+
+          <div class="card card-cal-dia">
+            <div class="cal-dia-topo">
+              <div>
+                <h3 class="card-titulo" id="cal-dia-titulo">Hoje</h3>
+                <p class="cal-dia-resumo" id="cal-dia-resumo">Nenhuma entrega ainda.</p>
+              </div>
+              <button id="cal-btn-add" class="cal-btn cal-btn-add" type="button" aria-label="Adicionar tarefa">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+
+            <div id="cal-lista-tarefas" class="cal-lista-tarefas"></div>
+
+            <!-- Formulário de nova tarefa (escondido até clicar no +) -->
+            <form id="cal-form-tarefa" class="cal-form" hidden>
+              <input type="text" id="cal-titulo" placeholder="O que você precisa entregar?" required>
+              <div class="cal-form-linha">
+                <input type="date" id="cal-data" required>
+                <input type="time" id="cal-hora-inicio">
+                <input type="time" id="cal-hora-fim">
+              </div>
+              <div class="cal-form-acoes">
+                <button type="button" id="cal-cancelar" class="cal-btn">Cancelar</button>
+                <button type="submit" class="cal-btn cal-btn-primario">Salvar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        </section>
+
       </div>
     </main>
   </div>
@@ -140,11 +195,15 @@
 
     let eventosCache = [];
     let leadsCache = [];
+    let tarefasCache = [];
     let periodoAtual = 'all'; // 'all' | 7 | 30 | 90
+    let calMesAtual = new Date(); // mês exibido na grade do calendário
+    let calDiaSelecionado = new Date(); // dia com a lista de tarefas aberta
 
     const TITULOS_ABA = {
       overview: 'Dashboard',
       portfolio: 'Portfólio',
+      calendario: 'Calendário',
     };
 
     // ---- Ponto de entrada: guarda de autenticação + carga inicial ----
@@ -203,6 +262,14 @@
         console.error('Erro ao carregar dados do Supabase:', err);
         mostrarErroCarregamento();
       }
+
+      try {
+        await carregarTarefas();
+      } catch (err) {
+        console.error('Erro ao carregar tarefas do calendário:', err);
+        const card = document.querySelector('.card-cal-dia');
+        if (card) card.innerHTML = '<p class="texto-erro">Não foi possível carregar suas tarefas agora.</p>';
+      }
     }
 
     function mostrarErroCarregamento() {
@@ -245,6 +312,13 @@
       btnMenu.addEventListener('click', abrirMenu);
       overlay.addEventListener('click', fecharMenu);
       document.querySelectorAll('.nav-item').forEach((btn) => btn.addEventListener('click', fecharMenu));
+
+      // Calendário
+      document.getElementById('cal-mes-anterior').addEventListener('click', () => mudarMes(-1));
+      document.getElementById('cal-mes-proximo').addEventListener('click', () => mudarMes(1));
+      document.getElementById('cal-btn-add').addEventListener('click', abrirFormularioTarefa);
+      document.getElementById('cal-cancelar').addEventListener('click', fecharFormularioTarefa);
+      document.getElementById('cal-form-tarefa').addEventListener('submit', salvarTarefa);
     }
 
     function trocarAba(aba) {
@@ -252,6 +326,8 @@
       document.querySelectorAll('.tab-panel').forEach((p) => (p.hidden = true));
       document.getElementById('panel-' + aba).hidden = false;
       document.getElementById('titulo-topo').textContent = TITULOS_ABA[aba];
+      // O filtro de período (Tudo/7d/30d/90d) não faz sentido no calendário.
+      document.getElementById('filtros-periodo').hidden = aba === 'calendario';
     }
 
     function trocarPeriodo(periodo, btn) {
@@ -541,6 +617,194 @@
 
         container.appendChild(card);
       });
+    }
+
+    // ==========================================================================
+    // Aba: Calendário
+    // ==========================================================================
+    // Entregas e pendências da própria dona do painel, guardadas na tabela
+    // painel_tarefas. Diferente de portfolio_events/leads, aqui o painel
+    // também ESCREVE (Auth.sb já está autenticado, então pode ler e gravar
+    // direto — sem precisar de Edge Function).
+
+    async function carregarTarefas() {
+      const { data, error } = await Auth.sb
+        .from('painel_tarefas')
+        .select('*')
+        .order('data', { ascending: true })
+        .order('hora_inicio', { ascending: true });
+
+      if (error) throw error;
+      tarefasCache = data || [];
+      renderizarCalendario();
+    }
+
+    // Formata uma data local como 'YYYY-MM-DD' (evita o desvio de fuso do toISOString).
+    function dataParaISO(d) {
+      const ano = d.getFullYear();
+      const mes = String(d.getMonth() + 1).padStart(2, '0');
+      const dia = String(d.getDate()).padStart(2, '0');
+      return `${ano}-${mes}-${dia}`;
+    }
+
+    function mesmoDia(a, b) {
+      return dataParaISO(a) === dataParaISO(b);
+    }
+
+    function mudarMes(delta) {
+      calMesAtual = new Date(calMesAtual.getFullYear(), calMesAtual.getMonth() + delta, 1);
+      renderizarCalendario();
+    }
+
+    function renderizarCalendario() {
+      renderizarGradeMes();
+      renderizarTarefasDoDia();
+    }
+
+    function renderizarGradeMes() {
+      const NOMES_MES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+      document.getElementById('cal-mes-label').textContent = `${NOMES_MES[calMesAtual.getMonth()]} ${calMesAtual.getFullYear()}`;
+
+      const grade = document.getElementById('cal-grade');
+      grade.innerHTML = '';
+
+      const primeiroDiaMes = new Date(calMesAtual.getFullYear(), calMesAtual.getMonth(), 1);
+      // getDay(): 0=domingo...6=sábado. Semana começa na segunda, então ajusta o offset.
+      const offset = (primeiroDiaMes.getDay() + 6) % 7;
+      const inicioGrade = new Date(primeiroDiaMes);
+      inicioGrade.setDate(inicioGrade.getDate() - offset);
+
+      const hoje = new Date();
+
+      for (let i = 0; i < 42; i++) {
+        const dia = new Date(inicioGrade);
+        dia.setDate(dia.getDate() + i);
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'cal-dia cal-btn';
+        btn.textContent = String(dia.getDate());
+
+        if (dia.getMonth() !== calMesAtual.getMonth()) btn.classList.add('cal-dia-fora');
+        if (mesmoDia(dia, hoje)) btn.classList.add('cal-dia-hoje');
+        if (mesmoDia(dia, calDiaSelecionado)) btn.classList.add('cal-dia-selecionado');
+
+        const temTarefa = tarefasCache.some((t) => t.data === dataParaISO(dia));
+        if (temTarefa) btn.classList.add('cal-dia-com-tarefa');
+
+        btn.addEventListener('click', () => {
+          calDiaSelecionado = dia;
+          renderizarCalendario();
+        });
+
+        grade.appendChild(btn);
+      }
+    }
+
+    function renderizarTarefasDoDia() {
+      const isoSelecionado = dataParaISO(calDiaSelecionado);
+      const doDia = tarefasCache.filter((t) => t.data === isoSelecionado);
+
+      const hoje = new Date();
+      const titulo = mesmoDia(calDiaSelecionado, hoje)
+        ? 'Hoje'
+        : calDiaSelecionado.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', weekday: 'long' });
+      document.getElementById('cal-dia-titulo').textContent = titulo;
+
+      const pendentes = doDia.filter((t) => !t.feito).length;
+      document.getElementById('cal-dia-resumo').textContent =
+        doDia.length === 0
+          ? 'Nenhuma entrega ainda.'
+          : `${doDia.length} ${doDia.length === 1 ? 'tarefa' : 'tarefas'}, ${pendentes} pendente${pendentes === 1 ? '' : 's'}`;
+
+      const lista = document.getElementById('cal-lista-tarefas');
+      lista.innerHTML = '';
+
+      if (doDia.length === 0) {
+        lista.innerHTML = '<p class="texto-vazio">Nenhuma entrega ainda.</p>';
+        return;
+      }
+
+      doDia.forEach((tarefa) => {
+        const horario = [tarefa.hora_inicio, tarefa.hora_fim].filter(Boolean).map((h) => h.slice(0, 5)).join(' – ');
+
+        const item = document.createElement('div');
+        item.className = 'cal-tarefa-item' + (tarefa.feito ? ' cal-tarefa-feita' : '');
+        item.innerHTML = `
+          <button class="cal-tarefa-check cal-btn" type="button" aria-label="Marcar como feita"></button>
+          <div class="cal-tarefa-info">
+            ${horario ? `<span class="cal-tarefa-horario">${horario}</span>` : ''}
+            <span class="cal-tarefa-titulo">${escapeHtml(tarefa.titulo)}</span>
+          </div>
+          <button class="cal-tarefa-excluir cal-btn cal-btn-icon" type="button" aria-label="Excluir">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        `;
+
+        item.querySelector('.cal-tarefa-check').addEventListener('click', () => alternarFeito(tarefa));
+        item.querySelector('.cal-tarefa-excluir').addEventListener('click', () => excluirTarefa(tarefa));
+
+        lista.appendChild(item);
+      });
+    }
+
+    function abrirFormularioTarefa() {
+      const form = document.getElementById('cal-form-tarefa');
+      document.getElementById('cal-data').value = dataParaISO(calDiaSelecionado);
+      form.hidden = false;
+      document.getElementById('cal-titulo').focus();
+    }
+
+    function fecharFormularioTarefa() {
+      const form = document.getElementById('cal-form-tarefa');
+      form.reset();
+      form.hidden = true;
+    }
+
+    async function salvarTarefa(e) {
+      e.preventDefault();
+
+      const linha = {
+        titulo: document.getElementById('cal-titulo').value.trim(),
+        data: document.getElementById('cal-data').value,
+        hora_inicio: document.getElementById('cal-hora-inicio').value || null,
+        hora_fim: document.getElementById('cal-hora-fim').value || null,
+      };
+      if (!linha.titulo || !linha.data) return;
+
+      try {
+        const { error } = await Auth.sb.from('painel_tarefas').insert(linha);
+        if (error) throw error;
+
+        calDiaSelecionado = new Date(linha.data + 'T00:00:00');
+        fecharFormularioTarefa();
+        await carregarTarefas();
+      } catch (err) {
+        console.error('Erro ao salvar tarefa:', err);
+        alert('Não foi possível salvar a tarefa agora. Tente de novo em instantes.');
+      }
+    }
+
+    async function alternarFeito(tarefa) {
+      try {
+        const { error } = await Auth.sb.from('painel_tarefas').update({ feito: !tarefa.feito }).eq('id', tarefa.id);
+        if (error) throw error;
+        await carregarTarefas();
+      } catch (err) {
+        console.error('Erro ao atualizar tarefa:', err);
+      }
+    }
+
+    async function excluirTarefa(tarefa) {
+      if (!confirm(`Excluir "${tarefa.titulo}"?`)) return;
+      try {
+        const { error } = await Auth.sb.from('painel_tarefas').delete().eq('id', tarefa.id);
+        if (error) throw error;
+        await carregarTarefas();
+      } catch (err) {
+        console.error('Erro ao excluir tarefa:', err);
+        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+      }
     }
 
     // ==========================================================================

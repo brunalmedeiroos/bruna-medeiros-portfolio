@@ -70,3 +70,48 @@ create policy "Painel: leitura autenticada de leads"
 -- seu backend, ou uma Edge Function do Supabase) usando a "service_role
 -- key", que ignora o RLS. Isso evita que qualquer pessoa mande dados falsos
 -- direto pelo console do navegador do site público.
+
+-- ---------------------------------------------------------------------
+-- Tabela: painel_tarefas
+-- Entregas e pendências da própria dona do painel (aba Calendário).
+-- Só quem faz login no painel lê e escreve aqui — não tem relação com o
+-- site público, por isso a policy libera leitura E escrita autenticada.
+-- ---------------------------------------------------------------------
+create table if not exists public.painel_tarefas (
+  id uuid primary key default gen_random_uuid(),
+  titulo text not null,
+  data date not null,
+  hora_inicio time,
+  hora_fim time,
+  feito boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists painel_tarefas_data_idx on public.painel_tarefas (data);
+
+alter table public.painel_tarefas enable row level security;
+
+create policy "Painel: leitura autenticada de tarefas"
+  on public.painel_tarefas
+  for select
+  to authenticated
+  using (true);
+
+create policy "Painel: escrita autenticada de tarefas"
+  on public.painel_tarefas
+  for insert
+  to authenticated
+  with check (true);
+
+create policy "Painel: atualização autenticada de tarefas"
+  on public.painel_tarefas
+  for update
+  to authenticated
+  using (true)
+  with check (true);
+
+create policy "Painel: exclusão autenticada de tarefas"
+  on public.painel_tarefas
+  for delete
+  to authenticated
+  using (true);

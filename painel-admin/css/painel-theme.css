@@ -94,11 +94,11 @@
    .widget-glass do site: fundo translúcido + blur + borda clara).
    ========================================================================== */
 
-/* Calendário do mês (um pouco maior) ao lado do cartão do dia (um pouco
-   menor — por isso os dois têm um max, em vez do dia esticar 1fr). */
+/* Calendário do mês com largura própria; o cartão do dia estica até a
+   borda direita do conteúdo (1fr), em vez de parar antes e deixar vão. */
 .painel-body .cal-layout {
   display: grid;
-  grid-template-columns: minmax(380px, 480px) minmax(300px, 420px);
+  grid-template-columns: minmax(380px, 480px) 1fr;
   gap: 20px;
   align-items: start;
 }

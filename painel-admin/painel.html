@@ -229,6 +229,12 @@
               </div>
 
               <form id="email-form-resposta" class="email-form" hidden>
+                <div class="email-form-topo">
+                  <span>Responder</span>
+                  <button type="button" id="email-fechar-resposta" class="cal-btn cal-btn-icon" aria-label="Fechar resposta">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
                 <textarea id="email-resposta-texto" placeholder="Escreva sua resposta..." required></textarea>
                 <div class="cal-form-acoes">
                   <button type="submit" class="cal-btn cal-btn-primario" id="email-btn-enviar">Enviar resposta</button>
@@ -401,6 +407,9 @@
       // E-mail
       document.getElementById('btn-email-conectar').addEventListener('click', conectarGmail);
       document.getElementById('email-form-resposta').addEventListener('submit', enviarResposta);
+      document.getElementById('email-fechar-resposta').addEventListener('click', () => {
+        document.getElementById('email-form-resposta').hidden = true;
+      });
     }
 
     function trocarAba(aba) {

@@ -1,0 +1,85 @@
+/* ==========================================================================
+   css/login-theme.css — Paleta e tipografia extraídas de index.html
+   (o site principal), aplicadas só na tela de login (.login-body).
+   Não mexe em css/style.css para não afetar painel.html.
+   ========================================================================== */
+
+.login-body {
+  /* ---- Cores extraídas do :root de index.html ---- */
+  --coral: #04465D;                       /* --blue-dark: cor de destaque dos botões */
+  --creme: #FAF9F4;                       /* --offwhite: fundo da página */
+  --branco: #FFFFFF;                      /* --white: fundo do card */
+  --grafite: #04465D;                     /* --blue-dark: texto principal */
+  --texto-suave: rgba(4, 70, 93, 0.7);    /* --blue-dark-70 */
+  --borda: rgba(4, 70, 93, 0.18);         /* borda dos inputs do site (.form-field input) */
+
+  /* ---- Raio e sombra extraídos do card genérico do site (.services-window) ---- */
+  --raio-lg: 22px;
+  --raio-sm: 10px;                        /* raio dos inputs (.form-field input) */
+  --sombra-forte: 0 20px 45px rgba(4, 70, 93, 0.16); /* --shadow-soft */
+
+  /* ---- Fontes extraídas do :root de index.html ---- */
+  --fonte-titulo: 'Bootzy TM', 'Segoe UI Black', 'Arial Black', sans-serif; /* --font-display */
+  --fonte-corpo: 'Montserrat', sans-serif;                                  /* --font-body */
+}
+
+/* Card: padding adaptado (o padding do site, 72px 30px, é pensado pra uma
+   seção larga; aqui mantém a mesma proporção horizontal/vertical num
+   card menor e centralizado). */
+.login-body .login-card {
+  padding: 48px 32px;
+  border: 1px solid rgba(4, 70, 93, 0.06); /* borda sutil do .services-window */
+}
+
+/* Logo: fonte de destaque do site (--font-display), centralizada.
+   Tamanho maior que o padrão de 22px do style.css, e letter-spacing
+   igual ao utilitário .font-display do site. */
+.login-body .logo {
+  font-family: var(--fonte-titulo);
+  font-size: 2.4rem;
+  letter-spacing: 1.4px;
+  text-align: center;
+}
+
+.login-body .logo-dot {
+  color: #7DB7CE; /* --blue-light do site */
+}
+
+/* Título: fonte de corpo do site (--font-body), centralizado. */
+.login-body .login-card h1 {
+  font-family: var(--fonte-corpo);
+  text-align: center;
+}
+
+/* Botão: azul-claro por padrão, azul-escuro ao passar o mouse/selecionar. */
+.login-body .btn-primary {
+  background: #7DB7CE; /* --blue-light */
+  border-radius: 14px;
+  border: 2px solid var(--coral);
+  box-shadow: 0 10px 24px rgba(4, 70, 93, 0.22); /* --shadow-hard */
+}
+
+.login-body .btn-primary:hover:not(:disabled) {
+  background: var(--coral); /* --blue-dark */
+  transform: translateY(-4px);
+  box-shadow: 0 16px 30px rgba(4, 70, 93, 0.3);
+}
+
+/* Labels e inputs com o tamanho/peso exatos de .form-field do site. */
+.login-body label {
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.login-body input[type="email"],
+.login-body input[type="password"] {
+  background: rgba(255, 255, 255, 0.7); /* fundo translúcido do .form-field input */
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+/* O site destaca o foco com outline, não mudando a cor da borda. */
+.login-body input:focus {
+  border-color: var(--borda);
+  outline: 2px solid var(--coral);
+}

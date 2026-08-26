@@ -1,0 +1,90 @@
+/* ==========================================================================
+   css/painel-theme.css — Mesma paleta e tipografia de index.html (o site
+   principal) aplicadas ao painel interno (.painel-body). Não mexe em
+   css/style.css, então login.html usa seu próprio css/login-theme.css.
+
+   A maioria das cores/fontes/raios do painel já vem de variáveis CSS
+   (var(--coral), var(--creme), var(--fonte-titulo), etc.), então só
+   sobrescrever essas variáveis aqui já retema quase tudo (cartões, nav
+   ativa, filtros, gráfico de barras, textos). O que resta são os poucos
+   lugares com cor "cravada" (rgba fixo), listados abaixo.
+   ========================================================================== */
+
+.painel-body {
+  /* ---- Cores extraídas do :root de index.html ---- */
+  --coral: #7DB7CE;                       /* --blue-light: destaque (nav ativa, filtros, gráfico) */
+  --creme: #FAF9F4;                       /* --offwhite: fundo da página */
+  --branco: #FFFFFF;                      /* --white: fundo dos cards */
+  --grafite: #04465D;                     /* --blue-dark: texto principal */
+  --texto-suave: rgba(4, 70, 93, 0.7);    /* --blue-dark-70 */
+  --borda: rgba(4, 70, 93, 0.18);         /* mesma borda usada nos inputs do site */
+
+  /* ---- Raio e sombra extraídos do card genérico do site (.services-window) ---- */
+  --raio-lg: 22px;
+  --raio-sm: 10px;
+  --sombra: 0 20px 45px rgba(4, 70, 93, 0.16);        /* --shadow-soft, pros cards do grid */
+  --sombra-forte: 0 10px 24px rgba(4, 70, 93, 0.22);  /* --shadow-hard, pra sidebar/drawer mobile */
+
+  /* ---- Fontes extraídas do :root de index.html ---- */
+  --fonte-titulo: 'Bootzy TM', 'Segoe UI Black', 'Arial Black', sans-serif; /* --font-display */
+  --fonte-corpo: 'Montserrat', sans-serif;                                  /* --font-body */
+}
+
+/* Ponto da logo (sidebar e topo mobile) no azul-claro do site, como no login. */
+.painel-body .logo-dot {
+  color: #7DB7CE; /* --blue-light */
+}
+
+/* Nome "meu.painel" maior na sidebar e na barra mobile. */
+.painel-body .sidebar-logo {
+  font-size: 1.75rem;
+  letter-spacing: 1.4px;
+}
+
+.painel-body .logo-mini {
+  font-size: 1.3rem;
+  letter-spacing: 1.2px;
+}
+
+/* Espaçamento entre letras nos títulos (mesma fonte de destaque do site,
+   que fica apertada sem letter-spacing), como em "Menu Principal" e "Olá...". */
+.painel-body h1,
+.painel-body h2,
+.painel-body h3 {
+  letter-spacing: 1.4px;
+}
+
+/* "Menu Principal"/"Portfólio" (topo) e "Olá..." (saudação) no azul-claro,
+   sem mexer na cor do "meu.painel" da sidebar. */
+.painel-body #titulo-topo,
+.painel-body .saudacao {
+  color: #7DB7CE; /* --blue-light */
+}
+
+/* Título de cada cartão (ex: "Visitas nos últimos 14 dias") um pouco maior. */
+.painel-body .card-titulo {
+  font-size: 19px;
+}
+
+/* Borda sutil do .services-window do site, nos cartões do painel. */
+.painel-body .card,
+.painel-body .card-numero {
+  border: 1px solid rgba(4, 70, 93, 0.06);
+}
+
+/* Selo "Contato" nas mensagens: tingido de azul (era um tom coral). */
+.painel-body .lead-selo-contato {
+  background: rgba(4, 70, 93, 0.14);
+}
+
+/* Selo "Popup": mesmo tom neutro sutil usado nas bordas do site. */
+.painel-body .lead-selo-popup {
+  background: rgba(4, 70, 93, 0.06);
+}
+
+/* Fundo do menu mobile (gaveta), no tom do site em vez do grafite genérico. */
+@media (max-width: 768px) {
+  .painel-body .overlay {
+    background: rgba(4, 70, 93, 0.4);
+  }
+}

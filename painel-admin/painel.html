@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260826e">
+<link rel="stylesheet" href="css/style.css?v=20260826f">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260826e">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260826f">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260826e"></script>
+<script src="js/auth.js?v=20260826f"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -344,27 +344,22 @@
               <span class="pl-hub-card-titulo">Achados</span>
               <span class="pl-hub-card-desc">Ganchos, frases, formatos, músicas e CTAs pra virarem ideia depois.</span>
             </button>
-            <button class="pl-hub-card" data-pagina="cronograma" type="button">
-              <span class="pl-hub-card-titulo">Cronograma de postagem</span>
-              <span class="pl-hub-card-desc">O pilar de cada dia da semana, com visão em calendário do mês.</span>
-            </button>
           </div>
 
           <div id="pl-pagina-banco" class="pl-pagina" hidden>
             <button class="pl-voltar" type="button">← Voltar</button>
-            <h3 class="card-titulo">Banco de ideias</h3>
+            <h3 class="card-titulo pl-pagina-titulo">Banco de ideias</h3>
             <div id="pl-colunas-banco" class="pl-colunas"></div>
           </div>
 
           <div id="pl-pagina-achados" class="pl-pagina" hidden>
             <button class="pl-voltar" type="button">← Voltar</button>
-            <h3 class="card-titulo">Achados</h3>
+            <h3 class="card-titulo pl-pagina-titulo">Achados</h3>
             <div id="pl-colunas-achados" class="pl-colunas"></div>
           </div>
 
-          <div id="pl-pagina-cronograma" class="pl-pagina" hidden>
-            <button class="pl-voltar" type="button">← Voltar</button>
-            <h3 class="card-titulo">Cronograma de postagem</h3>
+          <div id="pl-cronograma" class="pl-cronograma-secao">
+            <h3 class="card-titulo pl-pagina-titulo">Cronograma de postagem</h3>
 
             <div class="card pl-cronograma-tabela-card">
               <div class="pl-cronograma-cabecalho">
@@ -677,12 +672,14 @@
 
     function abrirPaginaPlanejador(pagina) {
       document.getElementById('pl-hub').hidden = true;
+      document.getElementById('pl-cronograma').hidden = true;
       document.querySelectorAll('.pl-pagina').forEach((p) => (p.hidden = true));
       document.getElementById('pl-pagina-' + pagina).hidden = false;
     }
 
     function fecharPaginaPlanejador() {
       document.getElementById('pl-hub').hidden = false;
+      document.getElementById('pl-cronograma').hidden = false;
       document.querySelectorAll('.pl-pagina').forEach((p) => (p.hidden = true));
     }
 

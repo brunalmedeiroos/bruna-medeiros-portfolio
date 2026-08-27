@@ -881,7 +881,7 @@
 
 .painel-body .pl-hub-card-titulo {
   font-family: var(--fonte-titulo);
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--grafite);
 }
@@ -913,8 +913,13 @@
   color: var(--grafite);
 }
 
-.painel-body .pl-pagina > .card-titulo {
+.painel-body .pl-pagina-titulo {
+  font-size: 26px;
   margin-bottom: 16px;
+}
+
+.painel-body .pl-cronograma-secao {
+  margin-top: 24px;
 }
 
 .painel-body .pl-colunas {

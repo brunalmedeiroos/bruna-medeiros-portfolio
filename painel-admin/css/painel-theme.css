@@ -924,12 +924,20 @@
   margin-top: 24px;
 }
 
+.painel-body .pl-colunas-scroll {
+  overflow-x: auto;
+  padding-top: 10px;
+  /* Inverte o eixo pra a barra de rolagem nativa ficar em cima em vez de
+     embaixo (útil quando as colunas ficam altas) — o conteúdo é invertido
+     de volta na regra abaixo, então visualmente não muda nada. */
+  transform: rotateX(180deg);
+}
+
 .painel-body .pl-colunas {
   display: flex;
   gap: 16px;
   align-items: flex-start;
-  overflow-x: auto;
-  padding-bottom: 10px;
+  transform: rotateX(180deg);
 }
 
 .painel-body .pl-coluna {
@@ -953,7 +961,7 @@
 
 .painel-body .pl-coluna-titulo {
   font-family: var(--fonte-titulo);
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--grafite);
 }

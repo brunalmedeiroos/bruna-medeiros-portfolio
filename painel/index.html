@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260826g">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260826h">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260826g">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260826h">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../painel-admin/js/auth.js?v=20260826g"></script>
+<script src="../painel-admin/js/auth.js?v=20260826h"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -350,13 +350,17 @@
           <div id="pl-pagina-banco" class="pl-pagina" hidden>
             <button class="pl-voltar" type="button">← Voltar</button>
             <h3 class="card-titulo pl-pagina-titulo">Banco de ideias</h3>
-            <div id="pl-colunas-banco" class="pl-colunas"></div>
+            <div class="pl-colunas-scroll">
+              <div id="pl-colunas-banco" class="pl-colunas"></div>
+            </div>
           </div>
 
           <div id="pl-pagina-achados" class="pl-pagina" hidden>
             <button class="pl-voltar" type="button">← Voltar</button>
             <h3 class="card-titulo pl-pagina-titulo">Achados</h3>
-            <div id="pl-colunas-achados" class="pl-colunas"></div>
+            <div class="pl-colunas-scroll">
+              <div id="pl-colunas-achados" class="pl-colunas"></div>
+            </div>
           </div>
 
           <div id="pl-cronograma" class="pl-cronograma-secao">

@@ -417,6 +417,7 @@
 .painel-body .cal-filtro-grupo,
 .painel-body .radar-filtro-grupo {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   background: var(--branco);
   border: 1px solid var(--borda);

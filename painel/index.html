@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827a">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827b">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../painel-admin/js/auth.js?v=20260827a"></script>
+<script src="../painel-admin/js/auth.js?v=20260827b"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -405,7 +405,7 @@
           <div class="radar-topo">
             <p class="radar-topo-texto">
               4 agentes buscam notícias de Marketing Digital, Criação de Conteúdo, UGC/Creator Economy e IA &amp; Tecnologia
-              todo dia às 6h, escolhem as mais importantes e já entregam um roteiro pronto pra gravar.
+              todo dia às 7h30, escolhem as 2 mais importantes de cada tema e já entregam um roteiro pronto pra gravar.
             </p>
             <button id="btn-radar-atualizar" class="cal-btn cal-btn-primario" type="button">Atualizar notícias</button>
           </div>
@@ -436,6 +436,10 @@
             <button class="radar-filtro-btn" data-filtro="hoje" type="button">Hoje</button>
             <button class="radar-filtro-btn" data-filtro="novas" type="button">Novas</button>
             <button class="radar-filtro-btn" data-filtro="usadas" type="button">Usadas</button>
+            <button class="radar-filtro-btn" data-filtro="Marketing Digital" type="button">Fofoqueira do MKT</button>
+            <button class="radar-filtro-btn" data-filtro="Criação de Conteúdo" type="button">Estrategista de conteúdo</button>
+            <button class="radar-filtro-btn" data-filtro="UGC e Creator Economy" type="button">Empresária dos creators</button>
+            <button class="radar-filtro-btn" data-filtro="IA e Tecnologia" type="button">Viciada em IA</button>
           </div>
 
           <div id="radar-lista" class="radar-lista"></div>
@@ -559,7 +563,29 @@
         <div class="cal-form-acoes">
           <button type="button" id="radar-modal-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
           <a id="radar-modal-fonte" class="cal-btn" href="#" target="_blank" rel="noopener">Ver fonte</a>
+          <button type="button" id="radar-modal-usar-ideia" class="cal-btn">Usar ideia</button>
           <button type="button" id="radar-modal-usada" class="cal-btn cal-btn-primario">Marcar como usada</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: escolher o pilar do Banco de Ideias ao usar uma notícia do Radar -->
+    <div id="radar-modal-pilar-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pl-modal-pequeno">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo">Adicionar ao Banco de Ideias</span>
+          <button id="radar-modal-pilar-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="radar-pilar-select">Pilar</label>
+          <select id="radar-pilar-select"></select>
+        </div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="radar-pilar-confirmar" class="cal-btn cal-btn-primario">Adicionar ideia</button>
         </div>
       </div>
     </div>
@@ -804,6 +830,12 @@
       document.getElementById('radar-modal-excluir').addEventListener('click', excluirRadarNoticia);
       document.getElementById('radar-modal-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'radar-modal-overlay') fecharModalRadar();
+      });
+      document.getElementById('radar-modal-usar-ideia').addEventListener('click', abrirModalEscolherPilar);
+      document.getElementById('radar-modal-pilar-fechar').addEventListener('click', fecharModalEscolherPilar);
+      document.getElementById('radar-pilar-confirmar').addEventListener('click', confirmarUsarIdeia);
+      document.getElementById('radar-modal-pilar-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'radar-modal-pilar-overlay') fecharModalEscolherPilar();
       });
     }
 
@@ -2424,6 +2456,7 @@
       if (filtroRadar === 'hoje') filtradas = radarCache.filter(radarEDeHoje);
       else if (filtroRadar === 'novas') filtradas = radarCache.filter((i) => !i.usada);
       else if (filtroRadar === 'usadas') filtradas = radarCache.filter((i) => i.usada);
+      else if (filtroRadar !== 'todas') filtradas = radarCache.filter((i) => i.agente === filtroRadar);
 
       const lista = document.getElementById('radar-lista');
       if (filtradas.length === 0) {
@@ -2541,6 +2574,67 @@
       } catch (err) {
         console.error('Erro ao excluir notícia:', err);
         alert('Não foi possível excluir agora. Tente de novo em instantes.');
+      }
+    }
+
+    // Manda uma notícia do Radar direto pro Banco de Ideias, com o roteiro
+    // já preenchido em "roteiro breve" — só falta escolher o pilar.
+    async function abrirModalEscolherPilar() {
+      if (!radarAbertaId) return;
+      if (pilaresCache.length === 0) {
+        try {
+          const { data, error } = await Auth.sb.from('planejador_pilares').select('*').order('ordem');
+          if (error) throw error;
+          pilaresCache = data || [];
+        } catch (err) {
+          console.error('Erro ao carregar pilares:', err);
+        }
+      }
+      if (pilaresCache.length === 0) {
+        alert('Crie um pilar no Banco de Ideias primeiro pra poder usar essa ideia.');
+        return;
+      }
+      document.getElementById('radar-pilar-select').innerHTML = pilaresCache
+        .map((p) => `<option value="${p.id}">${escapeHtml(p.nome)}</option>`)
+        .join('');
+      document.getElementById('radar-modal-pilar-overlay').hidden = false;
+    }
+
+    function fecharModalEscolherPilar() {
+      document.getElementById('radar-modal-pilar-overlay').hidden = true;
+    }
+
+    async function confirmarUsarIdeia() {
+      const pilarId = document.getElementById('radar-pilar-select').value;
+      if (!pilarId || !radarAbertaId) return;
+      const item = radarCache.find((i) => i.id === radarAbertaId);
+      if (!item) return;
+
+      const btn = document.getElementById('radar-pilar-confirmar');
+      btn.disabled = true;
+      btn.textContent = 'Adicionando...';
+      try {
+        const { error: erroIdeia } = await Auth.sb.from('planejador_ideias').insert({
+          pilar_id: pilarId,
+          titulo: item.titulo,
+          status: 'Roteiro pronto',
+          roteiro_breve: item.insight || '',
+          ordem: ideiasCache.length,
+        });
+        if (erroIdeia) throw erroIdeia;
+
+        await Auth.sb.from('radar_noticias').update({ usada: true }).eq('id', radarAbertaId);
+
+        fecharModalEscolherPilar();
+        fecharModalRadar();
+        await carregarRadar();
+        alert('Ideia adicionada ao Banco de Ideias!');
+      } catch (err) {
+        console.error('Erro ao usar ideia do radar:', err);
+        alert('Não foi possível adicionar a ideia agora. Tente de novo em instantes.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Adicionar ideia';
       }
     }
 

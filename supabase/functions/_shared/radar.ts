@@ -50,7 +50,7 @@ export const AGENTES: Record<string, Agente> = {
     ],
     instrucao:
       "Você é uma analista de marketing digital que ajuda uma criadora de conteúdo. " +
-      "Olhe as notícias abaixo e escolha só as 3 a 5 mais relevantes e ACIONÁVEIS pra virar conteúdo sobre marketing. " +
+      "Olhe as notícias abaixo e escolha só as 2 notícias mais relevantes e ACIONÁVEIS pra virar conteúdo sobre marketing. " +
       "Para cada uma, escreva um roteiro breve de Reels (gancho de 1 frase, desenvolvimento em 2-3 frases explicando a notícia de um jeito simples, e um CTA) no campo \"insight\". " +
       REGRA_IDIOMA,
   },
@@ -64,7 +64,7 @@ export const AGENTES: Record<string, Agente> = {
       { url: "https://rockcontent.com/br/blog/feed/", fonte: "Rock Content" },
     ],
     instrucao:
-      "Você é uma estrategista de conteúdo. Olhe as notícias abaixo e escolha só as 3 a 5 mais relevantes sobre " +
+      "Você é uma estrategista de conteúdo. Olhe as notícias abaixo e escolha só as 2 notícias mais relevantes sobre " +
       "mudanças em como as pessoas consomem ou produzem conteúdo (novos formatos, algoritmos, comportamento de audiência). " +
       "Para cada uma, escreva um roteiro breve de Reels (gancho, desenvolvimento, CTA) no campo \"insight\". " +
       REGRA_IDIOMA,
@@ -79,7 +79,7 @@ export const AGENTES: Record<string, Agente> = {
       { url: "https://www.b9.com.br/feed/", fonte: "B9" },
     ],
     instrucao:
-      "Você acompanha o mercado de UGC e Creator Economy. Olhe as notícias abaixo e escolha só as 3 a 5 mais relevantes " +
+      "Você acompanha o mercado de UGC e Creator Economy. Olhe as notícias abaixo e escolha só as 2 notícias mais relevantes " +
       "pra uma criadora de conteúdo/UGC entender o mercado ou virar conteúdo. " +
       "Para cada uma, escreva um roteiro breve de Reels (gancho, desenvolvimento, CTA) no campo \"insight\". " +
       REGRA_IDIOMA,
@@ -97,8 +97,8 @@ export const AGENTES: Record<string, Agente> = {
     ],
     instrucao:
       "Você acompanha IA e tecnologia aplicadas a negócios e criação de conteúdo, com atenção especial a qualquer " +
-      "notícia sobre a Anthropic ou o Claude (dê prioridade máxima a essas). Olhe as notícias abaixo e escolha só as " +
-      "3 a 5 mais relevantes — não precisa ser só pra vídeo, priorize o que é útil como informação e como ideia de " +
+      "notícia sobre a Anthropic ou o Claude (dê prioridade máxima a essas). Olhe as notícias abaixo e escolha só " +
+      "as 2 notícias mais relevantes — não precisa ser só pra vídeo, priorize o que é útil como informação e como ideia de " +
       "conteúdo ou de oferta de produto digital pra quem usa IA pra criar e vender. " +
       "Para cada uma, escreva no campo \"insight\": um resumo prático da novidade e uma ideia de como isso pode virar " +
       "conteúdo ou uma oferta. " +
@@ -178,6 +178,7 @@ export async function selecionarNoticiasComGemini(instrucao: string, itens: Item
     properties: {
       noticias: {
         type: "ARRAY",
+        maxItems: 2,
         items: {
           type: "OBJECT",
           properties: {

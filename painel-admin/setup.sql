@@ -329,8 +329,8 @@ create policy "Painel: exclusão autenticada do radar"
   on public.radar_noticias for delete to authenticated using (true);
 
 -- ---------------------------------------------------------------------
--- Agendamento: chama a Edge Function radar-atualizar todo dia às 6h
--- (horário de Brasília = 09:00 UTC). Precisa das extensões pg_cron e
+-- Agendamento: chama a Edge Function radar-atualizar todo dia às 7h30
+-- (horário de Brasília = 10:30 UTC). Precisa das extensões pg_cron e
 -- pg_net habilitadas no projeto (Database > Extensions no Supabase).
 --
 -- IMPORTANTE: NUNCA cole o segredo de verdade aqui neste arquivo (ele
@@ -348,7 +348,7 @@ create extension if not exists pg_net with schema extensions;
 
 select cron.schedule(
   'radar-noticias-diario',
-  '0 9 * * *', -- 09:00 UTC = 06:00 em Brasília
+  '30 10 * * *', -- 10:30 UTC = 07:30 em Brasília
   $$
   select net.http_post(
     url := 'https://<PROJECT_REF>.supabase.co/functions/v1/radar-atualizar',

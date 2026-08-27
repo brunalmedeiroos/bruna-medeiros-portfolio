@@ -323,6 +323,14 @@ input:focus {
   flex-shrink: 0;
 }
 
+.nav-icon-emoji {
+  flex-shrink: 0;
+  width: 18px;
+  font-size: 17px;
+  line-height: 1;
+  text-align: center;
+}
+
 .nav-item:hover {
   background: var(--creme);
   color: var(--grafite);
@@ -377,7 +385,7 @@ input:focus {
 }
 
 .sidebar.colapsada .sidebar-logo,
-.sidebar.colapsada .nav-item span,
+.sidebar.colapsada .nav-item span:not(.nav-icon-emoji),
 .sidebar.colapsada .user-email {
   display: none;
 }

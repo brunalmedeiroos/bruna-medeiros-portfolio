@@ -1407,16 +1407,12 @@
 .painel-body .radar-topo {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+  justify-content: flex-end;
   margin-bottom: 20px;
 }
 
-.painel-body .radar-topo-texto {
-  font-size: 13px;
-  color: var(--texto-suave);
-  line-height: 1.5;
-  max-width: 640px;
+.painel-body .radar-filtro-agentes {
+  margin-bottom: 10px;
 }
 
 .painel-body .radar-avisos {
@@ -1433,20 +1429,8 @@
 .painel-body .radar-lista {
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  margin-top: 16px;
-}
-
-.painel-body .radar-grupo-titulo {
-  font-size: 18px;
-  margin-bottom: 12px;
-  color: var(--coral);
-}
-
-.painel-body .radar-grupo-itens {
-  display: flex;
-  flex-direction: column;
   gap: 10px;
+  margin-top: 16px;
 }
 
 .painel-body .radar-item {

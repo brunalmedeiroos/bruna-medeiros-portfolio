@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827b">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827c">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827b">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../painel-admin/js/auth.js?v=20260827b"></script>
+<script src="../painel-admin/js/auth.js?v=20260827c"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -403,10 +403,6 @@
         <!-- ---------- Aba: Radar de Notícias ---------- -->
         <section id="panel-radar" class="tab-panel" hidden>
           <div class="radar-topo">
-            <p class="radar-topo-texto">
-              4 agentes buscam notícias de Marketing Digital, Criação de Conteúdo, UGC/Creator Economy e IA &amp; Tecnologia
-              todo dia às 7h30, escolhem as 2 mais importantes de cada tema e já entregam um roteiro pronto pra gravar.
-            </p>
             <button id="btn-radar-atualizar" class="cal-btn cal-btn-primario" type="button">Atualizar notícias</button>
           </div>
 
@@ -431,15 +427,17 @@
             </div>
           </div>
 
-          <div class="radar-filtro-grupo">
-            <button class="radar-filtro-btn ativo" data-filtro="todas" type="button">Todas</button>
-            <button class="radar-filtro-btn" data-filtro="hoje" type="button">Hoje</button>
-            <button class="radar-filtro-btn" data-filtro="novas" type="button">Novas</button>
-            <button class="radar-filtro-btn" data-filtro="usadas" type="button">Usadas</button>
-            <button class="radar-filtro-btn" data-filtro="Marketing Digital" type="button">Fofoqueira do MKT</button>
-            <button class="radar-filtro-btn" data-filtro="Criação de Conteúdo" type="button">Estrategista de conteúdo</button>
-            <button class="radar-filtro-btn" data-filtro="UGC e Creator Economy" type="button">Empresária dos creators</button>
-            <button class="radar-filtro-btn" data-filtro="IA e Tecnologia" type="button">Viciada em IA</button>
+          <div class="radar-filtro-grupo radar-filtro-agentes">
+            <button class="radar-filtro-btn ativo" data-agente="Marketing Digital" type="button">Fofoqueira do MKT</button>
+            <button class="radar-filtro-btn" data-agente="Criação de Conteúdo" type="button">Estrategista de conteúdo</button>
+            <button class="radar-filtro-btn" data-agente="UGC e Creator Economy" type="button">Empresária dos creators</button>
+            <button class="radar-filtro-btn" data-agente="IA e Tecnologia" type="button">Viciada em IA</button>
+          </div>
+
+          <div class="radar-filtro-grupo radar-filtro-periodo">
+            <button class="radar-filtro-btn" data-periodo="hoje" type="button">Hoje</button>
+            <button class="radar-filtro-btn" data-periodo="novas" type="button">Novas</button>
+            <button class="radar-filtro-btn" data-periodo="usadas" type="button">Usadas</button>
           </div>
 
           <div id="radar-lista" class="radar-lista"></div>
@@ -622,7 +620,8 @@
 
     let radarAbaCarregada = false;
     let radarCache = [];
-    let filtroRadar = 'todas'; // 'todas' | 'hoje' | 'novas' | 'usadas'
+    let filtroAgenteRadar = 'Marketing Digital'; // sempre um agente selecionado, nunca "todos" juntos
+    let filtroPeriodoRadar = null; // null | 'hoje' | 'novas' | 'usadas'
     let radarAbertaId = null;
 
     const TITULOS_ABA = {
@@ -818,10 +817,18 @@
 
       // Radar de Notícias
       document.getElementById('btn-radar-atualizar').addEventListener('click', atualizarNoticias);
-      document.querySelectorAll('.radar-filtro-btn').forEach((btn) => {
+      document.querySelectorAll('.radar-filtro-agentes .radar-filtro-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
-          filtroRadar = btn.dataset.filtro;
-          document.querySelectorAll('.radar-filtro-btn').forEach((b) => b.classList.toggle('ativo', b === btn));
+          filtroAgenteRadar = btn.dataset.agente;
+          document.querySelectorAll('.radar-filtro-agentes .radar-filtro-btn').forEach((b) => b.classList.toggle('ativo', b === btn));
+          renderizarRadar();
+        });
+      });
+      document.querySelectorAll('.radar-filtro-periodo .radar-filtro-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const jaAtivo = btn.classList.contains('ativo');
+          filtroPeriodoRadar = jaAtivo ? null : btn.dataset.periodo;
+          document.querySelectorAll('.radar-filtro-periodo .radar-filtro-btn').forEach((b) => b.classList.toggle('ativo', b === btn && !jaAtivo));
           renderizarRadar();
         });
       });
@@ -878,9 +885,17 @@
         planejadorAbaCarregada = true;
         carregarPlanejador();
       }
-      if (aba === 'radar' && !radarAbaCarregada) {
-        radarAbaCarregada = true;
-        carregarRadar();
+      if (aba === 'radar') {
+        filtroAgenteRadar = 'Marketing Digital';
+        filtroPeriodoRadar = null;
+        document.querySelectorAll('.radar-filtro-agentes .radar-filtro-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.agente === 'Marketing Digital'));
+        document.querySelectorAll('.radar-filtro-periodo .radar-filtro-btn').forEach((b) => b.classList.remove('ativo'));
+        if (!radarAbaCarregada) {
+          radarAbaCarregada = true;
+          carregarRadar();
+        } else {
+          renderizarRadar();
+        }
       }
     }
 
@@ -2452,11 +2467,11 @@
       document.getElementById('radar-num-prontas').textContent = formatarNumero(prontas);
       document.getElementById('radar-num-usadas').textContent = formatarNumero(usadas);
 
-      let filtradas = radarCache;
-      if (filtroRadar === 'hoje') filtradas = radarCache.filter(radarEDeHoje);
-      else if (filtroRadar === 'novas') filtradas = radarCache.filter((i) => !i.usada);
-      else if (filtroRadar === 'usadas') filtradas = radarCache.filter((i) => i.usada);
-      else if (filtroRadar !== 'todas') filtradas = radarCache.filter((i) => i.agente === filtroRadar);
+      // Sempre filtra por um único agente por vez — nunca mistura notícias de agentes diferentes.
+      let filtradas = radarCache.filter((i) => i.agente === filtroAgenteRadar);
+      if (filtroPeriodoRadar === 'hoje') filtradas = filtradas.filter(radarEDeHoje);
+      else if (filtroPeriodoRadar === 'novas') filtradas = filtradas.filter((i) => !i.usada);
+      else if (filtroPeriodoRadar === 'usadas') filtradas = filtradas.filter((i) => i.usada);
 
       const lista = document.getElementById('radar-lista');
       if (filtradas.length === 0) {
@@ -2464,32 +2479,18 @@
         return;
       }
 
-      const ORDEM_AGENTES_RADAR = ['Marketing Digital', 'Criação de Conteúdo', 'UGC e Creator Economy', 'IA e Tecnologia'];
-      const agentesPresentes = ORDEM_AGENTES_RADAR.filter((nome) => filtradas.some((i) => i.agente === nome));
-
-      lista.innerHTML = agentesPresentes
-        .map((agente) => {
-          const cards = filtradas
-            .filter((i) => i.agente === agente)
-            .map((item) => {
-              const dataFmt = new Date(item.data_publicacao || item.created_at).toLocaleDateString('pt-BR');
-              return `
-                <div class="radar-item" data-id="${item.id}">
-                  <div class="radar-item-topo">
-                    <span class="radar-item-titulo">${escapeHtml(item.titulo)}</span>
-                    ${radarEDeHoje(item) ? '<span class="radar-tag radar-tag-nova">Hoje</span>' : ''}
-                    ${item.usada ? '<span class="radar-tag radar-tag-usada">Usada</span>' : ''}
-                  </div>
-                  <span class="radar-item-meta">${escapeHtml(item.fonte || '')} · ${dataFmt}</span>
-                  <span class="radar-item-resumo">${escapeHtml((item.resumo || '').slice(0, 160))}</span>
-                </div>
-              `;
-            })
-            .join('');
+      lista.innerHTML = filtradas
+        .map((item) => {
+          const dataFmt = new Date(item.data_publicacao || item.created_at).toLocaleDateString('pt-BR');
           return `
-            <div class="radar-grupo">
-              <h3 class="radar-grupo-titulo">${escapeHtml(agente)}</h3>
-              <div class="radar-grupo-itens">${cards}</div>
+            <div class="radar-item" data-id="${item.id}">
+              <div class="radar-item-topo">
+                <span class="radar-item-titulo">${escapeHtml(item.titulo)}</span>
+                ${radarEDeHoje(item) ? '<span class="radar-tag radar-tag-nova">Hoje</span>' : ''}
+                ${item.usada ? '<span class="radar-tag radar-tag-usada">Usada</span>' : ''}
+              </div>
+              <span class="radar-item-meta">${escapeHtml(item.fonte || '')} · ${dataFmt}</span>
+              <span class="radar-item-resumo">${escapeHtml((item.resumo || '').slice(0, 160))}</span>
             </div>
           `;
         })

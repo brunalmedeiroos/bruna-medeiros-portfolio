@@ -5,23 +5,25 @@
 // instagram-oauth-callback e instagram-metrics. Nada aqui é exposto
 // diretamente ao navegador — só outras Edge Functions importam este arquivo.
 //
-// A Meta muda os nomes de algumas métricas de tempos em tempos (ex:
-// "impressions" foi descontinuada pra contas novas, "website_clicks" virou
-// "profile_links_taps" em versões recentes). Por isso as funções de
-// insights aqui tentam mais de um nome de métrica e ignoram silenciosamente
-// a que não existir, em vez de quebrar a aba inteira — se um dia a Meta
-// mudar de novo, o painel continua de pé só sem aquele número específico.
+// Usa o fluxo "Instagram API with Instagram Login" (o mais novo da Meta):
+// login direto com a conta do Instagram, sem precisar de Página do
+// Facebook. Isso é DIFERENTE do antigo "Instagram Graph API via Facebook
+// Login" — domínios, formato de token e nomes de permissão são outros.
+//
+// A Meta muda os nomes de algumas métricas de tempos em tempos. Por isso
+// as funções de insights aqui tentam mais de um nome de métrica e ignoram
+// silenciosamente a que não existir, em vez de quebrar a aba inteira.
 
-// Versão da Graph API. Cada versão fica válida por ~2 anos a partir do
-// lançamento — se a Meta descontinuar essa, é só trocar aqui.
-export const GRAPH_VERSION = "v21.0";
-export const GRAPH_API = `https://graph.facebook.com/${GRAPH_VERSION}`;
+export const AUTHORIZE_URL = "https://www.instagram.com/oauth/authorize";
+export const TOKEN_URL_CURTO = "https://api.instagram.com/oauth/access_token";
+export const GRAPH_API = "https://graph.instagram.com";
 
 export const INSTAGRAM_SCOPES = [
-  "instagram_basic",
-  "instagram_manage_insights",
-  "pages_show_list",
-  "pages_read_engagement",
+  "instagram_business_basic",
+  "instagram_business_manage_messages",
+  "instagram_business_manage_comments",
+  "instagram_business_content_publish",
+  "instagram_business_manage_insights",
 ].join(",");
 
 function env(nome: string): string {
@@ -30,12 +32,58 @@ function env(nome: string): string {
   return valor;
 }
 
-export function credenciaisMeta() {
+export function credenciaisInstagram() {
   return {
-    appId: env("META_APP_ID"),
-    appSecret: env("META_APP_SECRET"),
+    appId: env("INSTAGRAM_APP_ID"),
+    appSecret: env("INSTAGRAM_APP_SECRET"),
     redirectUri: env("INSTAGRAM_REDIRECT_URI"),
   };
+}
+
+// Troca o "code" do Instagram por um token de curta duração (~1h). Esse
+// endpoint exige POST com corpo x-www-form-urlencoded — diferente da Graph
+// API do Facebook, que aceitava GET com querystring.
+export async function trocarCodePorTokenCurto(params: Record<string, string>) {
+  const res = await fetch(TOKEN_URL_CURTO, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams(params),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(`Falha ao trocar code no Instagram: ${JSON.stringify(data)}`);
+  }
+  return data as { access_token: string; user_id: string; permissions?: string[] };
+}
+
+// Troca o token curto por um de longa duração (~60 dias).
+export async function trocarPorTokenLongo(tokenCurto: string, appSecret: string) {
+  const url = new URL(`${GRAPH_API}/access_token`);
+  url.searchParams.set("grant_type", "ig_exchange_token");
+  url.searchParams.set("client_secret", appSecret);
+  url.searchParams.set("access_token", tokenCurto);
+
+  const res = await fetch(url.toString());
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(`Falha ao gerar token de longa duração: ${JSON.stringify(data)}`);
+  }
+  return data as { access_token: string; token_type: string; expires_in: number };
+}
+
+// Renova um token de longa duração já existente, estendendo a validade por
+// mais ~60 dias. Só funciona em tokens com pelo menos 24h de vida.
+export async function renovarTokenLongo(accessToken: string) {
+  const url = new URL(`${GRAPH_API}/refresh_access_token`);
+  url.searchParams.set("grant_type", "ig_refresh_token");
+  url.searchParams.set("access_token", accessToken);
+
+  const res = await fetch(url.toString());
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(`Falha ao renovar token: ${JSON.stringify(data)}`);
+  }
+  return data as { access_token: string; token_type: string; expires_in: number };
 }
 
 export async function chamarGraph(caminho: string, params: Record<string, string> = {}) {
@@ -45,21 +93,41 @@ export async function chamarGraph(caminho: string, params: Record<string, string
   const res = await fetch(url.toString());
   const data = await res.json();
   if (!res.ok) {
-    throw new Error(`Erro na API da Meta (${res.status}): ${JSON.stringify(data.error || data)}`);
+    throw new Error(`Erro na API do Instagram (${res.status}): ${JSON.stringify(data.error || data)}`);
   }
   return data;
 }
 
+// Lê o token guardado no banco e devolve um access_token válido, renovando
+// via refresh se estiver perto de expirar. Retorna null se ainda não
+// conectou o Instagram.
 // deno-lint-ignore no-explicit-any
-export async function obterTokenConectado(supabaseAdmin: any) {
-  const { data, error } = await supabaseAdmin
+export async function obterAccessTokenValido(supabaseAdmin: any) {
+  const { data: linha, error } = await supabaseAdmin
     .from("instagram_tokens")
-    .select("access_token, ig_user_id, ig_username, page_id")
+    .select("access_token, ig_user_id, ig_username, expires_at")
     .eq("id", 1)
     .maybeSingle();
 
   if (error) throw new Error(`Erro lendo instagram_tokens: ${error.message}`);
-  return data as { access_token: string; ig_user_id: string; ig_username: string | null; page_id: string } | null;
+  if (!linha) return null;
+
+  const expiraEm = new Date(linha.expires_at).getTime();
+  const margemMs = 3 * 24 * 60 * 60 * 1000; // renova com 3 dias de folga
+
+  if (expiraEm - margemMs > Date.now()) {
+    return linha as { access_token: string; ig_user_id: string; ig_username: string | null; expires_at: string };
+  }
+
+  const renovado = await renovarTokenLongo(linha.access_token);
+  const novoExpiraEm = new Date(Date.now() + renovado.expires_in * 1000).toISOString();
+
+  await supabaseAdmin
+    .from("instagram_tokens")
+    .update({ access_token: renovado.access_token, expires_at: novoExpiraEm, updated_at: new Date().toISOString() })
+    .eq("id", 1);
+
+  return { ...linha, access_token: renovado.access_token, expires_at: novoExpiraEm };
 }
 
 // Tenta pegar um valor de insight de conta testando uma lista de nomes de

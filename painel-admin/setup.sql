@@ -154,7 +154,7 @@ create table if not exists public.instagram_tokens (
   access_token text not null,
   ig_user_id text not null,
   ig_username text,
-  page_id text not null,
+  expires_at timestamptz,
   updated_at timestamptz not null default now(),
   constraint instagram_tokens_singleton check (id = 1)
 );

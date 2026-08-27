@@ -9,7 +9,7 @@
 
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "@supabase/server";
-import { chamarGraph, insightDeConta, insightDeMidia, obterTokenConectado } from "../_shared/instagram.ts";
+import { chamarGraph, insightDeConta, insightDeMidia, obterAccessTokenValido } from "../_shared/instagram.ts";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -34,9 +34,9 @@ export default {
   fetch: withSupabase({ auth: "user" }, async (req, ctx) => {
     if (req.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
 
-    let token: Awaited<ReturnType<typeof obterTokenConectado>>;
+    let token: Awaited<ReturnType<typeof obterAccessTokenValido>>;
     try {
-      token = await obterTokenConectado(ctx.supabaseAdmin);
+      token = await obterAccessTokenValido(ctx.supabaseAdmin);
     } catch (e) {
       return jsonResponse({ ok: false, error: (e as Error).message }, 500);
     }

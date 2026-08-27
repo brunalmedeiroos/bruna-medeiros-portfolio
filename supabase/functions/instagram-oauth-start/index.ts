@@ -3,11 +3,11 @@
 // ==========================================================================
 // Chamada pelo painel (autenticada) quando a Bruna clica em "Conectar
 // Instagram". Gera um "state" (proteção contra CSRF), guarda no banco e
-// devolve a URL de autorização da Meta pro navegador redirecionar.
+// devolve a URL de autorização do Instagram pro navegador redirecionar.
 
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "@supabase/server";
-import { credenciaisMeta, GRAPH_VERSION, INSTAGRAM_SCOPES } from "../_shared/instagram.ts";
+import { AUTHORIZE_URL, credenciaisInstagram, INSTAGRAM_SCOPES } from "../_shared/instagram.ts";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -30,8 +30,8 @@ export default {
     const { error } = await ctx.supabaseAdmin.from("instagram_oauth_states").insert({ state });
     if (error) return jsonResponse({ ok: false, error: error.message }, 500);
 
-    const { appId, redirectUri } = credenciaisMeta();
-    const url = new URL(`https://www.facebook.com/${GRAPH_VERSION}/dialog/oauth`);
+    const { appId, redirectUri } = credenciaisInstagram();
+    const url = new URL(AUTHORIZE_URL);
     url.searchParams.set("client_id", appId);
     url.searchParams.set("redirect_uri", redirectUri);
     url.searchParams.set("response_type", "code");

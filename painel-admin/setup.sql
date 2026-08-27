@@ -208,6 +208,9 @@ create table if not exists public.planejador_achados (
   id uuid primary key default gen_random_uuid(),
   coluna text not null check (coluna in ('Gancho', 'Frase', 'Formato', 'Música', 'CTA')),
   conteudo text not null,
+  observacoes text, -- espaço livre pra escrever o que viu, contexto, etc.
+  link text,
+  imagem_path text, -- caminho do arquivo no Storage (bucket "achados"), se houver
   ordem int not null default 0,
   created_at timestamptz not null default now()
 );
@@ -287,3 +290,43 @@ select pilar, dia_semana, ordem from (values
   ('Oferta (ou repetir outro)', 'Sexta', 4)
 ) as padrao(pilar, dia_semana, ordem)
 where not exists (select 1 from public.planejador_cronograma);
+
+-- ---------------------------------------------------------------------
+-- Campos extras dos Achados: observações livres, link e imagem
+-- (rode isto se a tabela planejador_achados já existia sem essas colunas)
+-- ---------------------------------------------------------------------
+alter table public.planejador_achados add column if not exists observacoes text;
+alter table public.planejador_achados add column if not exists link text;
+alter table public.planejador_achados add column if not exists imagem_path text;
+
+-- Bucket de Storage pra guardar as imagens anexadas aos achados. Público
+-- pra leitura (o painel exibe a imagem via <img src>), mas só quem está
+-- logada no painel pode enviar/trocar/excluir arquivos.
+insert into storage.buckets (id, name, public)
+values ('achados', 'achados', true)
+on conflict (id) do nothing;
+
+drop policy if exists "Achados: leitura publica de imagens" on storage.objects;
+create policy "Achados: leitura publica de imagens"
+  on storage.objects for select
+  to public
+  using (bucket_id = 'achados');
+
+drop policy if exists "Achados: escrita autenticada de imagens" on storage.objects;
+create policy "Achados: escrita autenticada de imagens"
+  on storage.objects for insert
+  to authenticated
+  with check (bucket_id = 'achados');
+
+drop policy if exists "Achados: atualização autenticada de imagens" on storage.objects;
+create policy "Achados: atualização autenticada de imagens"
+  on storage.objects for update
+  to authenticated
+  using (bucket_id = 'achados')
+  with check (bucket_id = 'achados');
+
+drop policy if exists "Achados: exclusão autenticada de imagens" on storage.objects;
+create policy "Achados: exclusão autenticada de imagens"
+  on storage.objects for delete
+  to authenticated
+  using (bucket_id = 'achados');

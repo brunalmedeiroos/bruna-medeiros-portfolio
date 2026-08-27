@@ -1180,6 +1180,7 @@
 }
 
 .painel-body .pl-modal input[type="text"],
+.painel-body .pl-modal input[type="url"],
 .painel-body .pl-modal select,
 .painel-body .pl-modal textarea {
   width: 100%;
@@ -1200,6 +1201,48 @@
 
 .painel-body .pl-btn-excluir {
   color: var(--erro);
+}
+
+.painel-body .pl-achado-imagem-botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border: 1px dashed var(--borda);
+  border-radius: var(--raio-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto-suave);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.painel-body .pl-achado-imagem-botao:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+.painel-body .pl-achado-imagem-botao[hidden] {
+  display: none;
+}
+
+.painel-body .pl-achado-imagem-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.painel-body .pl-achado-imagem-preview[hidden] {
+  display: none;
+}
+
+.painel-body .pl-achado-imagem-preview img {
+  max-width: 100%;
+  max-height: 220px;
+  border-radius: var(--raio-sm);
+  border: 1px solid var(--borda);
+  object-fit: contain;
 }
 
 /* ---- Cronograma de postagem ---- */

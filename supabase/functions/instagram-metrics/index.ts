@@ -47,6 +47,7 @@ export default {
     const { access_token: accessToken, ig_username: igUsername } = token;
     const desde = dataISO(7);
     const ate = dataISO(0);
+    const erros: string[] = [];
 
     // "/me" é o jeito documentado de buscar os dados da própria conta nesse
     // fluxo — o ID numérico bruto não funciona como caminho direto.
@@ -60,13 +61,14 @@ export default {
       perfil = { username: dados.username, seguidores: dados.followers_count ?? null, publicacoes: dados.media_count ?? null };
     } catch (e) {
       console.error("Erro ao buscar perfil do Instagram:", e);
+      erros.push(`perfil: ${(e as Error).message}`);
     }
 
     // ---- Indicadores da conta nos últimos 7 dias ----
     const [alcance, visitasPerfil, cliquesLink] = await Promise.all([
-      insightDeConta("me", accessToken, ["reach"], desde, ate),
-      insightDeConta("me", accessToken, ["profile_views"], desde, ate),
-      insightDeConta("me", accessToken, ["website_clicks", "profile_links_taps"], desde, ate),
+      insightDeConta("me", accessToken, ["reach"], desde, ate, erros),
+      insightDeConta("me", accessToken, ["profile_views"], desde, ate, erros),
+      insightDeConta("me", accessToken, ["website_clicks", "profile_links_taps"], desde, ate, erros),
     ]);
 
     // ---- Últimas publicações + desempenho de cada uma ----
@@ -82,8 +84,8 @@ export default {
       posts = await Promise.all(
         midias.map(async (m) => {
           const [alcancePost, salvosPost] = await Promise.all([
-            insightDeMidia(m.id as string, accessToken, ["reach"]),
-            insightDeMidia(m.id as string, accessToken, ["saved"]),
+            insightDeMidia(m.id as string, accessToken, ["reach"], erros),
+            insightDeMidia(m.id as string, accessToken, ["saved"], erros),
           ]);
           return {
             id: m.id,
@@ -101,6 +103,7 @@ export default {
       );
     } catch (e) {
       console.error("Erro ao buscar publicações do Instagram:", e);
+      erros.push(`publicações: ${(e as Error).message}`);
     }
 
     return jsonResponse({
@@ -109,6 +112,7 @@ export default {
       perfil,
       insights: { alcance, visitasPerfil, cliquesLink },
       posts,
+      erros: erros.length ? erros : undefined,
     });
   }),
 };

@@ -139,6 +139,7 @@ export async function insightDeConta(
   nomesPossiveis: string[],
   dataInicio: string,
   dataFim: string,
+  erros?: string[],
 ): Promise<number | null> {
   for (const metrica of nomesPossiveis) {
     try {
@@ -151,8 +152,9 @@ export async function insightDeConta(
       });
       const valores = resposta.data?.[0]?.values || [];
       return valores.reduce((soma: number, v: { value: number }) => soma + (v.value || 0), 0);
-    } catch {
+    } catch (e) {
       // Métrica não existe pra essa versão/tipo de conta — tenta a próxima.
+      erros?.push(`insight conta [${metrica}]: ${(e as Error).message}`);
       continue;
     }
   }
@@ -165,6 +167,7 @@ export async function insightDeMidia(
   mediaId: string,
   accessToken: string,
   nomesPossiveis: string[],
+  erros?: string[],
 ): Promise<number | null> {
   for (const metrica of nomesPossiveis) {
     try {
@@ -174,7 +177,8 @@ export async function insightDeMidia(
       });
       const valor = resposta.data?.[0]?.values?.[0]?.value;
       if (typeof valor === "number") return valor;
-    } catch {
+    } catch (e) {
+      erros?.push(`insight mídia [${metrica}]: ${(e as Error).message}`);
       continue;
     }
   }

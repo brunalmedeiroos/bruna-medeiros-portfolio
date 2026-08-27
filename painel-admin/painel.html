@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260826u">
+<link rel="stylesheet" href="css/style.css?v=20260826v">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260826u">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260826v">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260826u"></script>
+<script src="js/auth.js?v=20260826v"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -306,6 +306,8 @@
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
             </div>
+
+            <p class="instagram-avisos" id="instagram-avisos" hidden></p>
 
             <div class="instagram-metricas-grid">
               <div class="card-numero destaque">
@@ -1613,13 +1615,22 @@
     }
 
     function renderizarInstagram(resultado) {
-      const { perfil, insights, posts } = resultado;
+      const { perfil, insights, posts, erros } = resultado;
 
       document.getElementById('instagram-perfil-nome').textContent = perfil.username ? '@' + perfil.username : '—';
       document.getElementById('instagram-num-seguidores').textContent = formatarMetricaInstagram(perfil.seguidores);
       document.getElementById('instagram-num-alcance').textContent = formatarMetricaInstagram(insights.alcance);
       document.getElementById('instagram-num-visitas-perfil').textContent = formatarMetricaInstagram(insights.visitasPerfil);
       document.getElementById('instagram-num-cliques-link').textContent = formatarMetricaInstagram(insights.cliquesLink);
+
+      const avisoEl = document.getElementById('instagram-avisos');
+      if (erros && erros.length) {
+        console.error('Avisos ao carregar métricas do Instagram:', erros);
+        avisoEl.innerHTML = '<strong>Alguns dados não carregaram:</strong><br>' + erros.map((e) => escapeHtml(e)).join('<br>');
+        avisoEl.hidden = false;
+      } else {
+        avisoEl.hidden = true;
+      }
 
       const lista = document.getElementById('instagram-posts-lista');
       if (!posts || posts.length === 0) {

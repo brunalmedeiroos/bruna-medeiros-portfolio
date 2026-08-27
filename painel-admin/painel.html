@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260826t">
+<link rel="stylesheet" href="css/style.css?v=20260826u">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260826t">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260826u">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260826t"></script>
+<script src="js/auth.js?v=20260826u"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -251,7 +251,7 @@
         </section>
 
         <section id="panel-email" class="tab-panel" hidden>
-          <div class="card card-email-conectar" id="email-conectar">
+          <div class="card card-email-conectar" id="email-conectar" hidden>
             <h3 class="card-titulo">Conectar sua conta do Gmail</h3>
             <p class="email-conectar-texto">
               Depois de conectar, esta aba mostra as mensagens marcadas com o
@@ -262,10 +262,10 @@
             <p class="email-conectar-erro" id="email-conectar-erro" hidden></p>
           </div>
 
-          <div class="email-layout" id="email-layout" hidden>
+          <div class="email-layout" id="email-layout">
             <div class="card card-email-lista">
               <h3 class="card-titulo">Mensagens</h3>
-              <div id="email-lista" class="email-lista"></div>
+              <div id="email-lista" class="email-lista"><p class="texto-suave">Carregando mensagens...</p></div>
             </div>
 
             <div class="card card-email-detalhe">
@@ -288,7 +288,7 @@
 
         <!-- ---------- Aba: Instagram ---------- -->
         <section id="panel-instagram" class="tab-panel" hidden>
-          <div class="card card-instagram-conectar" id="instagram-conectar">
+          <div class="card card-instagram-conectar" id="instagram-conectar" hidden>
             <h3 class="card-titulo">Conectar seu Instagram</h3>
             <p class="instagram-conectar-texto">
               Conecte a conta Business/Criador do seu Instagram (vinculada a
@@ -299,7 +299,7 @@
             <p class="instagram-conectar-erro" id="instagram-conectar-erro" hidden></p>
           </div>
 
-          <div class="instagram-layout" id="instagram-layout" hidden>
+          <div class="instagram-layout" id="instagram-layout">
             <div class="instagram-topo">
               <span class="instagram-perfil-nome" id="instagram-perfil-nome">@usuario</span>
               <button id="btn-instagram-atualizar" class="cal-btn cal-btn-icon" type="button" aria-label="Atualizar métricas">
@@ -328,7 +328,7 @@
 
             <div class="card card-instagram-posts">
               <h3 class="card-titulo">Desempenho por post</h3>
-              <div id="instagram-posts-lista" class="instagram-posts-lista"></div>
+              <div id="instagram-posts-lista" class="instagram-posts-lista"><p class="texto-suave">Carregando posts...</p></div>
             </div>
           </div>
         </section>
@@ -1396,7 +1396,8 @@
           if (resultado.error === 'not_connected') {
             mostrarEmailDesconectado();
           } else {
-            mostrarEmailDesconectado('Não foi possível carregar as mensagens: ' + resultado.error);
+            mostrarEmailConectado();
+            lista.innerHTML = '<p class="texto-erro">Não foi possível carregar as mensagens: ' + escapeHtml(resultado.error) + '</p>';
           }
           return;
         }
@@ -1405,8 +1406,8 @@
         renderizarListaEmails();
       } catch (err) {
         console.error('Erro ao carregar e-mails:', err);
-        lista.innerHTML = '<p class="texto-erro">Não foi possível carregar as mensagens agora.</p>';
         mostrarEmailConectado();
+        lista.innerHTML = '<p class="texto-erro">Não foi possível carregar as mensagens agora.</p>';
       }
     }
 
@@ -1590,10 +1591,12 @@
     }
 
     async function carregarInstagram() {
+      const lista = document.getElementById('instagram-posts-lista');
       try {
         const resultado = await chamarFuncao('instagram-metrics');
         if (!resultado.ok) {
-          mostrarInstagramDesconectado('Não foi possível carregar as métricas: ' + resultado.error);
+          mostrarInstagramConectado();
+          lista.innerHTML = '<p class="texto-erro">Não foi possível carregar as métricas: ' + escapeHtml(resultado.error) + '</p>';
           return;
         }
         if (!resultado.conectado) {
@@ -1604,7 +1607,8 @@
         renderizarInstagram(resultado);
       } catch (err) {
         console.error('Erro ao carregar métricas do Instagram:', err);
-        mostrarInstagramDesconectado('Não foi possível carregar as métricas agora.');
+        mostrarInstagramConectado();
+        lista.innerHTML = '<p class="texto-erro">Não foi possível carregar as métricas agora.</p>';
       }
     }
 

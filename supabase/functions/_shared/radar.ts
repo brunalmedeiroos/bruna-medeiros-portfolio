@@ -30,6 +30,14 @@ export interface Agente {
   instrucao: string;
 }
 
+// Instrução comum a todos os agentes: escreve tudo em português (inclusive
+// traduzindo título e resumo de fontes em inglês), pra nunca precisar abrir
+// a fonte original só pra entender do que se trata.
+const REGRA_IDIOMA =
+  "IMPORTANTE: responda sempre em português do Brasil, mesmo que a notícia original esteja em inglês. " +
+  "Traduza o título (campo \"titulo\") e escreva o resumo já em português — a pessoa não deve precisar abrir a " +
+  "fonte original pra entender do que se trata. Mantenha o campo \"fonte\" e o \"link\" exatamente como vieram na lista.";
+
 export const AGENTES: Record<string, Agente> = {
   marketing: {
     nome: "Marketing Digital",
@@ -38,11 +46,13 @@ export const AGENTES: Record<string, Agente> = {
       { url: "https://www.marketingdive.com/feeds/news/", fonte: "Marketing Dive" },
       { url: "https://www.socialmediatoday.com/rss.xml", fonte: "Social Media Today" },
       { url: "https://www.meioemensagem.com.br/feed", fonte: "Meio & Mensagem" },
+      { url: "https://www.propmark.com.br/feed/", fonte: "Propmark" },
     ],
     instrucao:
       "Você é uma analista de marketing digital que ajuda uma criadora de conteúdo. " +
       "Olhe as notícias abaixo e escolha só as 3 a 5 mais relevantes e ACIONÁVEIS pra virar conteúdo sobre marketing. " +
-      "Para cada uma, escreva um roteiro breve de Reels (gancho de 1 frase, desenvolvimento em 2-3 frases explicando a notícia de um jeito simples, e um CTA) no campo \"insight\".",
+      "Para cada uma, escreva um roteiro breve de Reels (gancho de 1 frase, desenvolvimento em 2-3 frases explicando a notícia de um jeito simples, e um CTA) no campo \"insight\". " +
+      REGRA_IDIOMA,
   },
   conteudo: {
     nome: "Criação de Conteúdo",
@@ -51,11 +61,13 @@ export const AGENTES: Record<string, Agente> = {
       { url: "https://contentmarketinginstitute.com/feed/", fonte: "Content Marketing Institute" },
       { url: "https://www.socialmediaexaminer.com/feed/", fonte: "Social Media Examiner" },
       { url: "https://later.com/blog/feed/", fonte: "Later Blog" },
+      { url: "https://rockcontent.com/br/blog/feed/", fonte: "Rock Content" },
     ],
     instrucao:
       "Você é uma estrategista de conteúdo. Olhe as notícias abaixo e escolha só as 3 a 5 mais relevantes sobre " +
       "mudanças em como as pessoas consomem ou produzem conteúdo (novos formatos, algoritmos, comportamento de audiência). " +
-      "Para cada uma, escreva um roteiro breve de Reels (gancho, desenvolvimento, CTA) no campo \"insight\".",
+      "Para cada uma, escreva um roteiro breve de Reels (gancho, desenvolvimento, CTA) no campo \"insight\". " +
+      REGRA_IDIOMA,
   },
   creator: {
     nome: "UGC e Creator Economy",
@@ -64,11 +76,13 @@ export const AGENTES: Record<string, Agente> = {
     feeds: [
       { url: "https://techcrunch.com/tag/creator-economy/feed/", fonte: "TechCrunch" },
       { url: "https://influencermarketinghub.com/feed/", fonte: "Influencer Marketing Hub" },
+      { url: "https://www.b9.com.br/feed/", fonte: "B9" },
     ],
     instrucao:
       "Você acompanha o mercado de UGC e Creator Economy. Olhe as notícias abaixo e escolha só as 3 a 5 mais relevantes " +
       "pra uma criadora de conteúdo/UGC entender o mercado ou virar conteúdo. " +
-      "Para cada uma, escreva um roteiro breve de Reels (gancho, desenvolvimento, CTA) no campo \"insight\".",
+      "Para cada uma, escreva um roteiro breve de Reels (gancho, desenvolvimento, CTA) no campo \"insight\". " +
+      REGRA_IDIOMA,
   },
   ia: {
     nome: "IA e Tecnologia",
@@ -78,6 +92,8 @@ export const AGENTES: Record<string, Agente> = {
       { url: "https://techcrunch.com/tag/artificial-intelligence/feed/", fonte: "TechCrunch AI" },
       { url: "https://venturebeat.com/category/ai/feed/", fonte: "VentureBeat AI" },
       { url: "https://www.technologyreview.com/topic/artificial-intelligence/feed", fonte: "MIT Technology Review" },
+      { url: "https://canaltech.com.br/rss/", fonte: "Canaltech" },
+      { url: "https://olhardigital.com.br/feed/", fonte: "Olhar Digital" },
     ],
     instrucao:
       "Você acompanha IA e tecnologia aplicadas a negócios e criação de conteúdo, com atenção especial a qualquer " +
@@ -85,7 +101,8 @@ export const AGENTES: Record<string, Agente> = {
       "3 a 5 mais relevantes — não precisa ser só pra vídeo, priorize o que é útil como informação e como ideia de " +
       "conteúdo ou de oferta de produto digital pra quem usa IA pra criar e vender. " +
       "Para cada uma, escreva no campo \"insight\": um resumo prático da novidade e uma ideia de como isso pode virar " +
-      "conteúdo ou uma oferta.",
+      "conteúdo ou uma oferta. " +
+      REGRA_IDIOMA,
   },
 };
 
@@ -164,7 +181,7 @@ export async function selecionarNoticiasComGemini(instrucao: string, itens: Item
         items: {
           type: "OBJECT",
           properties: {
-            titulo: { type: "STRING" },
+            titulo: { type: "STRING", description: "Título da notícia traduzido para português do Brasil, mesmo que a fonte original esteja em inglês." },
             fonte: { type: "STRING" },
             link: { type: "STRING" },
             data_publicacao: { type: "STRING" },

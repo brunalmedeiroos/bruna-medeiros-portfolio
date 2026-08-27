@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260826z">
+<link rel="stylesheet" href="css/style.css?v=20260827a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260826z">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260827a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260826z"></script>
+<script src="js/auth.js?v=20260827a"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -2424,19 +2424,32 @@
         return;
       }
 
-      lista.innerHTML = filtradas
-        .map((item) => {
-          const dataFmt = new Date(item.data_publicacao || item.created_at).toLocaleDateString('pt-BR');
+      const ORDEM_AGENTES_RADAR = ['Marketing Digital', 'Criação de Conteúdo', 'UGC e Creator Economy', 'IA e Tecnologia'];
+      const agentesPresentes = ORDEM_AGENTES_RADAR.filter((nome) => filtradas.some((i) => i.agente === nome));
+
+      lista.innerHTML = agentesPresentes
+        .map((agente) => {
+          const cards = filtradas
+            .filter((i) => i.agente === agente)
+            .map((item) => {
+              const dataFmt = new Date(item.data_publicacao || item.created_at).toLocaleDateString('pt-BR');
+              return `
+                <div class="radar-item" data-id="${item.id}">
+                  <div class="radar-item-topo">
+                    <span class="radar-item-titulo">${escapeHtml(item.titulo)}</span>
+                    ${radarEDeHoje(item) ? '<span class="radar-tag radar-tag-nova">Hoje</span>' : ''}
+                    ${item.usada ? '<span class="radar-tag radar-tag-usada">Usada</span>' : ''}
+                  </div>
+                  <span class="radar-item-meta">${escapeHtml(item.fonte || '')} · ${dataFmt}</span>
+                  <span class="radar-item-resumo">${escapeHtml((item.resumo || '').slice(0, 160))}</span>
+                </div>
+              `;
+            })
+            .join('');
           return `
-            <div class="radar-item" data-id="${item.id}">
-              <div class="radar-item-topo">
-                <span class="radar-item-titulo">${escapeHtml(item.titulo)}</span>
-                <span class="radar-tag radar-tag-agente">${escapeHtml(item.agente)}</span>
-                ${radarEDeHoje(item) ? '<span class="radar-tag radar-tag-nova">Hoje</span>' : ''}
-                ${item.usada ? '<span class="radar-tag radar-tag-usada">Usada</span>' : ''}
-              </div>
-              <span class="radar-item-meta">${escapeHtml(item.fonte || '')} · ${dataFmt}</span>
-              <span class="radar-item-resumo">${escapeHtml((item.resumo || '').slice(0, 160))}</span>
+            <div class="radar-grupo">
+              <h3 class="radar-grupo-titulo">${escapeHtml(agente)}</h3>
+              <div class="radar-grupo-itens">${cards}</div>
             </div>
           `;
         })

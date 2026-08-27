@@ -1432,8 +1432,20 @@
 .painel-body .radar-lista {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 28px;
   margin-top: 16px;
+}
+
+.painel-body .radar-grupo-titulo {
+  font-size: 18px;
+  margin-bottom: 12px;
+  color: var(--coral);
+}
+
+.painel-body .radar-grupo-itens {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .painel-body .radar-item {
@@ -1478,11 +1490,6 @@
   background: rgba(4, 70, 93, 0.08);
   color: var(--grafite);
   white-space: nowrap;
-}
-
-.painel-body .radar-tag-agente {
-  background: rgba(125, 183, 206, 0.25);
-  color: var(--grafite);
 }
 
 .painel-body .radar-tag-nova {

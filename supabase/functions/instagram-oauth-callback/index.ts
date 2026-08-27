@@ -68,7 +68,9 @@ export default {
 
       const tokenLongo = await trocarPorTokenLongo(tokenCurto.access_token, appSecret);
 
-      const perfil = await chamarGraph(`/${tokenCurto.user_id}`, {
+      // "/me" é o jeito documentado de buscar os dados da própria conta
+      // nesse fluxo — o ID numérico bruto não funciona como caminho direto.
+      const perfil = await chamarGraph("/me", {
         fields: "username",
         access_token: tokenLongo.access_token,
       });

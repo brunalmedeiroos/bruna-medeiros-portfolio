@@ -44,14 +44,16 @@ export default {
       return jsonResponse({ ok: true, conectado: false });
     }
 
-    const { access_token: accessToken, ig_user_id: igUserId, ig_username: igUsername } = token;
+    const { access_token: accessToken, ig_username: igUsername } = token;
     const desde = dataISO(7);
     const ate = dataISO(0);
 
+    // "/me" é o jeito documentado de buscar os dados da própria conta nesse
+    // fluxo — o ID numérico bruto não funciona como caminho direto.
     // ---- Perfil (seguidores, nº de publicações) ----
     let perfil = { username: igUsername, seguidores: null as number | null, publicacoes: null as number | null };
     try {
-      const dados = await chamarGraph(`/${igUserId}`, {
+      const dados = await chamarGraph("/me", {
         fields: "username,followers_count,media_count",
         access_token: accessToken,
       });
@@ -62,15 +64,15 @@ export default {
 
     // ---- Indicadores da conta nos últimos 7 dias ----
     const [alcance, visitasPerfil, cliquesLink] = await Promise.all([
-      insightDeConta(igUserId, accessToken, ["reach"], desde, ate),
-      insightDeConta(igUserId, accessToken, ["profile_views"], desde, ate),
-      insightDeConta(igUserId, accessToken, ["website_clicks", "profile_links_taps"], desde, ate),
+      insightDeConta("me", accessToken, ["reach"], desde, ate),
+      insightDeConta("me", accessToken, ["profile_views"], desde, ate),
+      insightDeConta("me", accessToken, ["website_clicks", "profile_links_taps"], desde, ate),
     ]);
 
     // ---- Últimas publicações + desempenho de cada uma ----
     let posts: Array<Record<string, unknown>> = [];
     try {
-      const resposta = await chamarGraph(`/${igUserId}/media`, {
+      const resposta = await chamarGraph("/me/media", {
         fields: "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count",
         limit: "6",
         access_token: accessToken,

@@ -333,11 +333,13 @@ create policy "Painel: exclusão autenticada do radar"
 -- (horário de Brasília = 09:00 UTC). Precisa das extensões pg_cron e
 -- pg_net habilitadas no projeto (Database > Extensions no Supabase).
 --
--- IMPORTANTE: NUNCA cole a service_role key de verdade aqui neste
--- arquivo (ele fica no git). Guarde ela no Vault do Supabase primeiro
--- (SQL Editor, rode só uma vez, com a chave real no lugar do texto):
+-- IMPORTANTE: NUNCA cole o segredo de verdade aqui neste arquivo (ele
+-- fica no git). O mesmo valor precisa estar em dois lugares:
+--   1. Como secret da Edge Function: supabase secrets set RADAR_CRON_SECRET=...
+--   2. No Vault do Supabase, pra o cron conseguir usar (SQL Editor, rode só
+--      uma vez, com o MESMO valor do passo 1 no lugar do texto):
 --
---   select vault.create_secret('COLE_A_SERVICE_ROLE_KEY_AQUI', 'service_role_key');
+--   select vault.create_secret('COLE_O_MESMO_VALOR_DO_RADAR_CRON_SECRET_AQUI', 'radar_cron_secret');
 --
 -- Troque também <PROJECT_REF> pela referência do seu projeto.
 -- ---------------------------------------------------------------------
@@ -351,7 +353,7 @@ select cron.schedule(
   select net.http_post(
     url := 'https://<PROJECT_REF>.supabase.co/functions/v1/radar-atualizar',
     headers := jsonb_build_object(
-      'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'service_role_key'),
+      'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'radar_cron_secret'),
       'Content-Type', 'application/json'
     ),
     body := '{}'::jsonb

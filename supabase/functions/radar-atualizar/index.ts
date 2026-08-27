@@ -3,11 +3,12 @@
 // ==========================================================================
 // Busca notícias nos feeds RSS de cada agente, pede pro Gemini escolher as
 // mais relevantes e escrever o roteiro/insight, e grava o resultado em
-// radar_noticias. Chamada tanto pelo agendamento diário (pg_cron, com a
-// service_role key) quanto pelo botão "Atualizar notícias" do painel (com a
-// sessão da usuária logada) — por isso a verificação de acesso abaixo aceita
-// as duas formas em vez de usar withSupabase({ auth: "user" }), que só
-// reconheceria uma sessão de usuário de verdade.
+// radar_noticias. Chamada tanto pelo agendamento diário (pg_cron, com o
+// segredo RADAR_CRON_SECRET) quanto pelo botão "Atualizar notícias" do
+// painel (com a sessão da usuária logada) — por isso a verificação de
+// acesso abaixo aceita as duas formas em vez de usar
+// withSupabase({ auth: "user" }), que só reconheceria uma sessão de
+// usuário de verdade.
 
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "@supabase/server";
@@ -37,8 +38,8 @@ export default {
     if (req.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
 
     const authHeader = req.headers.get("Authorization") || "";
-    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-    const ehCron = authHeader === `Bearer ${serviceRoleKey}`;
+    const segredoCron = Deno.env.get("RADAR_CRON_SECRET") ?? "";
+    const ehCron = !!segredoCron && authHeader === `Bearer ${segredoCron}`;
     if (!ehCron) {
       const token = authHeader.replace(/^Bearer\s+/i, "");
       const { data } = await ctx.supabaseAdmin.auth.getUser(token);
@@ -76,7 +77,7 @@ export default {
             agente: agente.nome,
             titulo: noticia.titulo,
             resumo: noticia.resumo || null,
-            fonte: noticia.fonte || null,
+            fonte: noticia.fonte ? noticia.fonte.replace(/^\[|\]$/g, "").trim() : null,
             link: noticia.link,
             data_publicacao: paraDataValida(noticia.data_publicacao),
             insight: noticia.insight || null,

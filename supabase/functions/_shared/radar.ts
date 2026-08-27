@@ -147,7 +147,7 @@ export async function buscarFeed(url: string, nomeFonte: string): Promise<ItemRs
 export async function selecionarNoticiasComGemini(instrucao: string, itens: ItemRss[]): Promise<NoticiaSelecionada[]> {
   const apiKey = Deno.env.get("GEMINI_API_KEY");
   if (!apiKey) throw new Error("Variável de ambiente ausente: GEMINI_API_KEY");
-  const modelo = Deno.env.get("GEMINI_MODEL") || "gemini-2.0-flash";
+  const modelo = Deno.env.get("GEMINI_MODEL") || "gemini-3.6-flash";
 
   const listaTexto = itens
     .slice(0, 60) // limite de segurança pra não estourar o prompt em dias com muito feed
@@ -178,24 +178,35 @@ export async function selecionarNoticiasComGemini(instrucao: string, itens: Item
     required: ["noticias"],
   };
 
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: schema,
-        },
-      }),
-    },
-  );
+  // O modelo grátis do Gemini às vezes fica sobrecarregado (503) em horário
+  // de pico — tenta de novo algumas vezes antes de desistir.
+  const TENTATIVAS = 3;
+  let res: Response | null = null;
+  let data: Record<string, unknown> = {};
+  for (let tentativa = 1; tentativa <= TENTATIVAS; tentativa++) {
+    res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: schema,
+          },
+        }),
+      },
+    );
+    data = await res.json();
+    if (res.ok) break;
+    const podeTentarDeNovo = (res.status === 503 || res.status === 429) && tentativa < TENTATIVAS;
+    if (!podeTentarDeNovo) break;
+    await new Promise((resolve) => setTimeout(resolve, tentativa * 3000));
+  }
 
-  const data = await res.json();
-  if (!res.ok) {
-    throw new Error(`Erro na API do Gemini (${res.status}): ${JSON.stringify(data.error || data)}`);
+  if (!res || !res.ok) {
+    throw new Error(`Erro na API do Gemini (${res?.status}): ${JSON.stringify(data.error || data)}`);
   }
 
   const textoResposta = data.candidates?.[0]?.content?.parts?.[0]?.text;

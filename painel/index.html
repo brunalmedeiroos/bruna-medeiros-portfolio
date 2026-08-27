@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260826c">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260826d">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260826c">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260826d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../painel-admin/js/auth.js?v=20260826c"></script>
+<script src="../painel-admin/js/auth.js?v=20260826d"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -58,6 +58,10 @@
         <button class="nav-item" data-tab="instagram" type="button">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
           <span>Instagram</span>
+        </button>
+        <button class="nav-item" data-tab="planejador" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="5" height="16" rx="1" stroke="currentColor" stroke-width="2"/><rect x="10" y="4" width="5" height="10" rx="1" stroke="currentColor" stroke-width="2"/><rect x="17" y="4" width="5" height="13" rx="1" stroke="currentColor" stroke-width="2"/></svg>
+          <span>Planejador</span>
         </button>
       </nav>
 
@@ -330,8 +334,93 @@
           </div>
         </section>
 
+        <!-- ---------- Aba: Planejador de Conteúdo ---------- -->
+        <section id="panel-planejador" class="tab-panel" hidden>
+          <div class="pl-subnav">
+            <button class="pl-subnav-btn ativo" data-quadro="banco" type="button">Banco de ideias</button>
+            <button class="pl-subnav-btn" data-quadro="achados" type="button">Achados</button>
+          </div>
+
+          <div id="pl-quadro-banco" class="pl-quadro">
+            <div id="pl-colunas-banco" class="pl-colunas"></div>
+          </div>
+
+          <div id="pl-quadro-achados" class="pl-quadro" hidden>
+            <div id="pl-colunas-achados" class="pl-colunas"></div>
+          </div>
+        </section>
+
       </div>
     </main>
+
+    <!-- Modal: detalhe de uma ideia do Banco de Ideias -->
+    <div id="pl-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal">
+        <div class="pl-modal-topo">
+          <input type="text" id="pl-modal-titulo" class="pl-modal-titulo-input" placeholder="Título da ideia">
+          <button id="pl-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="pl-modal-formato">Formato</label>
+            <input type="text" id="pl-modal-formato" placeholder="Ex: Reels, Carrossel...">
+          </div>
+          <div class="cal-form-campo">
+            <label for="pl-modal-status">Status</label>
+            <select id="pl-modal-status">
+              <option value="Não iniciado">Não iniciado</option>
+              <option value="Roteiro pronto">Roteiro pronto</option>
+              <option value="Gravado">Gravado</option>
+              <option value="Publicado">Publicado</option>
+            </select>
+          </div>
+          <div class="cal-form-campo">
+            <label for="pl-modal-pilar">Pilar</label>
+            <select id="pl-modal-pilar"></select>
+          </div>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="pl-modal-roteiro-breve">Roteiro breve</label>
+          <textarea id="pl-modal-roteiro-breve" placeholder="Uma ideia rápida, um rascunho..."></textarea>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="pl-modal-roteiro-completo">Roteiro completo</label>
+          <textarea id="pl-modal-roteiro-completo" class="pl-textarea-grande" placeholder="O roteiro completo, pronto pra gravar..."></textarea>
+        </div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="pl-modal-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+          <button type="button" id="pl-modal-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: detalhe de um achado -->
+    <div id="pl-modal-achado-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pl-modal-pequeno">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo" id="pl-modal-achado-coluna">Gancho</span>
+          <button id="pl-modal-achado-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="pl-modal-achado-texto">Achado</label>
+          <textarea id="pl-modal-achado-texto" class="pl-textarea-grande" placeholder="Escreva o que você encontrou..."></textarea>
+        </div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="pl-modal-achado-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+          <button type="button" id="pl-modal-achado-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -351,6 +440,13 @@
     let emailAbaCarregada = false;
     let emailAbertoId = null;
     let instagramAbaCarregada = false;
+    let planejadorAbaCarregada = false;
+    let pilaresCache = [];
+    let ideiasCache = [];
+    let achadosCache = [];
+    let ideiaAbertaId = null;
+    let achadoAbertoId = null;
+    const ACHADOS_COLUNAS = ['Gancho', 'Frase', 'Formato', 'Música', 'CTA'];
 
     const TITULOS_ABA = {
       overview: 'Dashboard',
@@ -358,6 +454,7 @@
       calendario: 'Calendário',
       email: 'E-mail',
       instagram: 'Instagram',
+      planejador: 'Planejador de Conteúdo',
     };
 
     // Mesmo projeto Supabase de js/auth.js — hardcoded aqui porque auth.js
@@ -512,6 +609,29 @@
       document.getElementById('btn-instagram-conectar').addEventListener('click', conectarInstagram);
       document.getElementById('btn-instagram-atualizar').addEventListener('click', carregarInstagram);
       document.getElementById('email-form-resposta').addEventListener('submit', enviarResposta);
+
+      // Planejador de Conteúdo
+      document.querySelectorAll('.pl-subnav-btn').forEach((btn) => {
+        btn.addEventListener('click', () => trocarQuadroPlanejador(btn.dataset.quadro));
+      });
+      document.getElementById('pl-modal-fechar').addEventListener('click', fecharModalIdeia);
+      document.getElementById('pl-modal-salvar').addEventListener('click', salvarModalIdeia);
+      document.getElementById('pl-modal-excluir').addEventListener('click', excluirModalIdeia);
+      document.getElementById('pl-modal-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'pl-modal-overlay') fecharModalIdeia();
+      });
+      document.getElementById('pl-modal-achado-fechar').addEventListener('click', fecharModalAchado);
+      document.getElementById('pl-modal-achado-salvar').addEventListener('click', salvarModalAchado);
+      document.getElementById('pl-modal-achado-excluir').addEventListener('click', excluirModalAchado);
+      document.getElementById('pl-modal-achado-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'pl-modal-achado-overlay') fecharModalAchado();
+      });
+    }
+
+    function trocarQuadroPlanejador(quadro) {
+      document.querySelectorAll('.pl-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.quadro === quadro));
+      document.getElementById('pl-quadro-banco').hidden = quadro !== 'banco';
+      document.getElementById('pl-quadro-achados').hidden = quadro !== 'achados';
     }
 
     function trocarAba(aba) {
@@ -520,7 +640,8 @@
       document.getElementById('panel-' + aba).hidden = false;
       document.getElementById('titulo-topo').textContent = TITULOS_ABA[aba];
       // O filtro de período (Tudo/7d/30d/90d) não faz sentido no calendário, e-mail nem Instagram.
-      document.getElementById('filtros-periodo').hidden = aba === 'calendario' || aba === 'email' || aba === 'instagram';
+      document.getElementById('filtros-periodo').hidden =
+        aba === 'calendario' || aba === 'email' || aba === 'instagram' || aba === 'planejador';
 
       if (aba === 'email' && !emailAbaCarregada) {
         emailAbaCarregada = true;
@@ -529,6 +650,10 @@
       if (aba === 'instagram' && !instagramAbaCarregada) {
         instagramAbaCarregada = true;
         carregarInstagram();
+      }
+      if (aba === 'planejador' && !planejadorAbaCarregada) {
+        planejadorAbaCarregada = true;
+        carregarPlanejador();
       }
     }
 
@@ -1425,6 +1550,349 @@
           <a class="instagram-post-link" href="${escapeHtml(post.link || '#')}" target="_blank" rel="noopener">Ver post</a>
         </div>
       `).join('');
+    }
+
+    // ==========================================================================
+    // Planejador de Conteúdo (Banco de Ideias + Achados, guardados direto no
+    // Supabase — mesmo padrão de painel_tarefas, sem Edge Function).
+    // ==========================================================================
+
+    async function carregarPlanejador() {
+      try {
+        const [pilares, ideias, achados] = await Promise.all([
+          Auth.sb.from('planejador_pilares').select('*').order('ordem', { ascending: true }),
+          Auth.sb.from('planejador_ideias').select('*').order('ordem', { ascending: true }),
+          Auth.sb.from('planejador_achados').select('*').order('ordem', { ascending: true }),
+        ]);
+        if (pilares.error) throw pilares.error;
+        if (ideias.error) throw ideias.error;
+        if (achados.error) throw achados.error;
+
+        pilaresCache = pilares.data || [];
+        ideiasCache = ideias.data || [];
+        achadosCache = achados.data || [];
+
+        renderizarBancoIdeias();
+        renderizarAchados();
+      } catch (err) {
+        console.error('Erro ao carregar planejador:', err);
+        document.getElementById('pl-colunas-banco').innerHTML =
+          '<p class="texto-erro">Não foi possível carregar o planejador agora.</p>';
+      }
+    }
+
+    // ---- Banco de Ideias (pilares livres, criados pela Bruna) ----
+
+    function renderizarBancoIdeias() {
+      const container = document.getElementById('pl-colunas-banco');
+      container.innerHTML = '';
+
+      pilaresCache.forEach((pilar) => {
+        const ideiasDoPilar = ideiasCache.filter((i) => i.pilar_id === pilar.id);
+        container.appendChild(criarColunaIdeias(pilar, ideiasDoPilar));
+      });
+
+      container.appendChild(criarBotaoNovaColuna());
+    }
+
+    function criarColunaIdeias(pilar, ideias) {
+      const coluna = document.createElement('div');
+      coluna.className = 'pl-coluna';
+      coluna.innerHTML = `
+        <div class="pl-coluna-topo">
+          <span class="pl-coluna-titulo">${escapeHtml(pilar.nome)}</span>
+          <button class="pl-coluna-excluir cal-btn cal-btn-icon" type="button" aria-label="Excluir pilar">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="pl-coluna-cards"></div>
+        <button class="pl-coluna-add" type="button">+ Nova ideia</button>
+      `;
+
+      const listaCards = coluna.querySelector('.pl-coluna-cards');
+      ideias.forEach((ideia) => listaCards.appendChild(criarCardIdeia(ideia)));
+
+      coluna.querySelector('.pl-coluna-add').addEventListener('click', () => mostrarFormNovaIdeia(coluna, pilar.id));
+      coluna.querySelector('.pl-coluna-excluir').addEventListener('click', () => excluirPilar(pilar));
+
+      return coluna;
+    }
+
+    function criarCardIdeia(ideia) {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'pl-card';
+      card.innerHTML = `
+        <span class="pl-card-titulo">${escapeHtml(ideia.titulo)}</span>
+        <div class="pl-card-rodape">
+          ${ideia.formato ? `<span class="pl-card-formato">${escapeHtml(ideia.formato)}</span>` : ''}
+          <span class="pl-card-status">${escapeHtml(ideia.status)}</span>
+        </div>
+      `;
+      card.addEventListener('click', () => abrirModalIdeia(ideia));
+      return card;
+    }
+
+    function mostrarFormNovaIdeia(coluna, pilarId) {
+      if (coluna.querySelector('.pl-novo-card-form')) return;
+
+      const form = document.createElement('div');
+      form.className = 'pl-novo-card-form';
+      form.innerHTML = `
+        <textarea placeholder="Escreva o título da ideia..." rows="2"></textarea>
+        <div class="pl-novo-card-acoes">
+          <button type="button" class="cal-btn cal-btn-primario pl-novo-card-salvar">Adicionar</button>
+          <button type="button" class="cal-btn pl-novo-card-cancelar">Cancelar</button>
+        </div>
+      `;
+      coluna.querySelector('.pl-coluna-add').before(form);
+
+      const textarea = form.querySelector('textarea');
+      textarea.focus();
+
+      form.querySelector('.pl-novo-card-cancelar').addEventListener('click', () => form.remove());
+      form.querySelector('.pl-novo-card-salvar').addEventListener('click', async () => {
+        const titulo = textarea.value.trim();
+        if (!titulo) return;
+        await criarIdeia(pilarId, titulo);
+      });
+    }
+
+    async function criarIdeia(pilarId, titulo) {
+      try {
+        const { error } = await Auth.sb.from('planejador_ideias').insert({
+          pilar_id: pilarId,
+          titulo,
+          ordem: ideiasCache.length,
+        });
+        if (error) throw error;
+        await carregarPlanejador();
+      } catch (err) {
+        console.error('Erro ao criar ideia:', err);
+        alert('Não foi possível criar a ideia agora.');
+      }
+    }
+
+    function criarBotaoNovaColuna() {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'pl-coluna pl-coluna-nova';
+      wrapper.innerHTML = '<button type="button" class="pl-coluna-nova-btn">+ Novo pilar</button>';
+      wrapper.querySelector('.pl-coluna-nova-btn').addEventListener('click', () => mostrarFormNovaColuna(wrapper));
+      return wrapper;
+    }
+
+    function mostrarFormNovaColuna(wrapper) {
+      wrapper.innerHTML = `
+        <input type="text" class="pl-coluna-nova-input" placeholder="Nome do pilar">
+        <div class="pl-novo-card-acoes">
+          <button type="button" class="cal-btn cal-btn-primario pl-coluna-nova-salvar">Criar</button>
+          <button type="button" class="cal-btn pl-coluna-nova-cancelar">Cancelar</button>
+        </div>
+      `;
+      const input = wrapper.querySelector('.pl-coluna-nova-input');
+      input.focus();
+
+      wrapper.querySelector('.pl-coluna-nova-cancelar').addEventListener('click', () => renderizarBancoIdeias());
+      wrapper.querySelector('.pl-coluna-nova-salvar').addEventListener('click', async () => {
+        const nome = input.value.trim();
+        if (!nome) return;
+        try {
+          const { error } = await Auth.sb.from('planejador_pilares').insert({ nome, ordem: pilaresCache.length });
+          if (error) throw error;
+          await carregarPlanejador();
+        } catch (err) {
+          console.error('Erro ao criar pilar:', err);
+          alert('Não foi possível criar o pilar agora.');
+        }
+      });
+    }
+
+    async function excluirPilar(pilar) {
+      if (!confirm(`Excluir o pilar "${pilar.nome}"? As ideias dentro dele também serão excluídas.`)) return;
+      try {
+        const { error } = await Auth.sb.from('planejador_pilares').delete().eq('id', pilar.id);
+        if (error) throw error;
+        await carregarPlanejador();
+      } catch (err) {
+        console.error('Erro ao excluir pilar:', err);
+        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+      }
+    }
+
+    function abrirModalIdeia(ideia) {
+      ideiaAbertaId = ideia.id;
+      document.getElementById('pl-modal-titulo').value = ideia.titulo;
+      document.getElementById('pl-modal-formato').value = ideia.formato || '';
+      document.getElementById('pl-modal-status').value = ideia.status || 'Não iniciado';
+      document.getElementById('pl-modal-roteiro-breve').value = ideia.roteiro_breve || '';
+      document.getElementById('pl-modal-roteiro-completo').value = ideia.roteiro_completo || '';
+
+      const selectPilar = document.getElementById('pl-modal-pilar');
+      selectPilar.innerHTML = pilaresCache
+        .map((p) => `<option value="${p.id}" ${p.id === ideia.pilar_id ? 'selected' : ''}>${escapeHtml(p.nome)}</option>`)
+        .join('');
+
+      document.getElementById('pl-modal-overlay').hidden = false;
+    }
+
+    function fecharModalIdeia() {
+      ideiaAbertaId = null;
+      document.getElementById('pl-modal-overlay').hidden = true;
+    }
+
+    async function salvarModalIdeia() {
+      if (!ideiaAbertaId) return;
+
+      const linha = {
+        titulo: document.getElementById('pl-modal-titulo').value.trim(),
+        formato: document.getElementById('pl-modal-formato').value.trim() || null,
+        status: document.getElementById('pl-modal-status').value,
+        pilar_id: document.getElementById('pl-modal-pilar').value,
+        roteiro_breve: document.getElementById('pl-modal-roteiro-breve').value.trim() || null,
+        roteiro_completo: document.getElementById('pl-modal-roteiro-completo').value.trim() || null,
+      };
+      if (!linha.titulo) return;
+
+      try {
+        const { error } = await Auth.sb.from('planejador_ideias').update(linha).eq('id', ideiaAbertaId);
+        if (error) throw error;
+        fecharModalIdeia();
+        await carregarPlanejador();
+      } catch (err) {
+        console.error('Erro ao salvar ideia:', err);
+        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+      }
+    }
+
+    async function excluirModalIdeia() {
+      if (!ideiaAbertaId) return;
+      if (!confirm('Excluir esta ideia?')) return;
+      try {
+        const { error } = await Auth.sb.from('planejador_ideias').delete().eq('id', ideiaAbertaId);
+        if (error) throw error;
+        fecharModalIdeia();
+        await carregarPlanejador();
+      } catch (err) {
+        console.error('Erro ao excluir ideia:', err);
+        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+      }
+    }
+
+    // ---- Achados (pilares fixos: Gancho, Frase, Formato, Música, CTA) ----
+
+    function renderizarAchados() {
+      const container = document.getElementById('pl-colunas-achados');
+      container.innerHTML = '';
+
+      ACHADOS_COLUNAS.forEach((coluna) => {
+        const itensDaColuna = achadosCache.filter((a) => a.coluna === coluna);
+        container.appendChild(criarColunaAchados(coluna, itensDaColuna));
+      });
+    }
+
+    function criarColunaAchados(coluna, itens) {
+      const el = document.createElement('div');
+      el.className = 'pl-coluna';
+      el.innerHTML = `
+        <div class="pl-coluna-topo">
+          <span class="pl-coluna-titulo">${escapeHtml(coluna)}</span>
+        </div>
+        <div class="pl-coluna-cards"></div>
+        <button class="pl-coluna-add" type="button">+ Novo achado</button>
+      `;
+
+      const lista = el.querySelector('.pl-coluna-cards');
+      itens.forEach((item) => lista.appendChild(criarCardAchado(item)));
+
+      el.querySelector('.pl-coluna-add').addEventListener('click', () => mostrarFormNovoAchado(el, coluna));
+
+      return el;
+    }
+
+    function criarCardAchado(achado) {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'pl-card';
+      card.innerHTML = `<span class="pl-card-titulo">${escapeHtml(achado.conteudo)}</span>`;
+      card.addEventListener('click', () => abrirModalAchado(achado));
+      return card;
+    }
+
+    function mostrarFormNovoAchado(coluna, nomeColuna) {
+      if (coluna.querySelector('.pl-novo-card-form')) return;
+
+      const form = document.createElement('div');
+      form.className = 'pl-novo-card-form';
+      form.innerHTML = `
+        <textarea placeholder="Escreva o achado..." rows="2"></textarea>
+        <div class="pl-novo-card-acoes">
+          <button type="button" class="cal-btn cal-btn-primario pl-novo-card-salvar">Adicionar</button>
+          <button type="button" class="cal-btn pl-novo-card-cancelar">Cancelar</button>
+        </div>
+      `;
+      coluna.querySelector('.pl-coluna-add').before(form);
+
+      const textarea = form.querySelector('textarea');
+      textarea.focus();
+
+      form.querySelector('.pl-novo-card-cancelar').addEventListener('click', () => form.remove());
+      form.querySelector('.pl-novo-card-salvar').addEventListener('click', async () => {
+        const conteudo = textarea.value.trim();
+        if (!conteudo) return;
+        try {
+          const { error } = await Auth.sb.from('planejador_achados').insert({
+            coluna: nomeColuna,
+            conteudo,
+            ordem: achadosCache.length,
+          });
+          if (error) throw error;
+          await carregarPlanejador();
+        } catch (err) {
+          console.error('Erro ao criar achado:', err);
+          alert('Não foi possível criar agora. Tente de novo em instantes.');
+        }
+      });
+    }
+
+    function abrirModalAchado(achado) {
+      achadoAbertoId = achado.id;
+      document.getElementById('pl-modal-achado-coluna').textContent = achado.coluna;
+      document.getElementById('pl-modal-achado-texto').value = achado.conteudo;
+      document.getElementById('pl-modal-achado-overlay').hidden = false;
+    }
+
+    function fecharModalAchado() {
+      achadoAbertoId = null;
+      document.getElementById('pl-modal-achado-overlay').hidden = true;
+    }
+
+    async function salvarModalAchado() {
+      if (!achadoAbertoId) return;
+      const conteudo = document.getElementById('pl-modal-achado-texto').value.trim();
+      if (!conteudo) return;
+      try {
+        const { error } = await Auth.sb.from('planejador_achados').update({ conteudo }).eq('id', achadoAbertoId);
+        if (error) throw error;
+        fecharModalAchado();
+        await carregarPlanejador();
+      } catch (err) {
+        console.error('Erro ao salvar achado:', err);
+        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+      }
+    }
+
+    async function excluirModalAchado() {
+      if (!achadoAbertoId) return;
+      if (!confirm('Excluir este achado?')) return;
+      try {
+        const { error } = await Auth.sb.from('planejador_achados').delete().eq('id', achadoAbertoId);
+        if (error) throw error;
+        fecharModalAchado();
+        await carregarPlanejador();
+      } catch (err) {
+        console.error('Erro ao excluir achado:', err);
+        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+      }
     }
 
     // ==========================================================================

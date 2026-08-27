@@ -173,3 +173,81 @@ create table if not exists public.instagram_oauth_states (
 );
 
 alter table public.instagram_oauth_states enable row level security;
+
+-- ---------------------------------------------------------------------
+-- Tabelas: planejador_pilares, planejador_ideias e planejador_achados
+-- (aba Planejador de Conteúdo)
+-- Só quem faz login no painel lê e escreve aqui — mesmo padrão de
+-- painel_tarefas (leitura e escrita autenticada, sem Edge Function).
+-- ---------------------------------------------------------------------
+create table if not exists public.planejador_pilares (
+  id uuid primary key default gen_random_uuid(),
+  nome text not null,
+  ordem int not null default 0,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.planejador_ideias (
+  id uuid primary key default gen_random_uuid(),
+  pilar_id uuid not null references public.planejador_pilares(id) on delete cascade,
+  titulo text not null,
+  formato text,
+  status text not null default 'Não iniciado',
+  roteiro_breve text,
+  roteiro_completo text,
+  ordem int not null default 0,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists planejador_ideias_pilar_idx on public.planejador_ideias (pilar_id);
+
+-- "Achados": pilares fixos (gancho, frase, formato, música, CTA), diferente
+-- do Banco de Ideias onde os pilares são livres/criados pela Bruna.
+create table if not exists public.planejador_achados (
+  id uuid primary key default gen_random_uuid(),
+  coluna text not null check (coluna in ('Gancho', 'Frase', 'Formato', 'Música', 'CTA')),
+  conteudo text not null,
+  ordem int not null default 0,
+  created_at timestamptz not null default now()
+);
+
+alter table public.planejador_pilares enable row level security;
+alter table public.planejador_ideias enable row level security;
+alter table public.planejador_achados enable row level security;
+
+create policy "Painel: leitura autenticada de pilares"
+  on public.planejador_pilares for select to authenticated using (true);
+create policy "Painel: escrita autenticada de pilares"
+  on public.planejador_pilares for insert to authenticated with check (true);
+create policy "Painel: atualização autenticada de pilares"
+  on public.planejador_pilares for update to authenticated using (true) with check (true);
+create policy "Painel: exclusão autenticada de pilares"
+  on public.planejador_pilares for delete to authenticated using (true);
+
+create policy "Painel: leitura autenticada de ideias"
+  on public.planejador_ideias for select to authenticated using (true);
+create policy "Painel: escrita autenticada de ideias"
+  on public.planejador_ideias for insert to authenticated with check (true);
+create policy "Painel: atualização autenticada de ideias"
+  on public.planejador_ideias for update to authenticated using (true) with check (true);
+create policy "Painel: exclusão autenticada de ideias"
+  on public.planejador_ideias for delete to authenticated using (true);
+
+create policy "Painel: leitura autenticada de achados"
+  on public.planejador_achados for select to authenticated using (true);
+create policy "Painel: escrita autenticada de achados"
+  on public.planejador_achados for insert to authenticated with check (true);
+create policy "Painel: atualização autenticada de achados"
+  on public.planejador_achados for update to authenticated using (true) with check (true);
+create policy "Painel: exclusão autenticada de achados"
+  on public.planejador_achados for delete to authenticated using (true);
+
+-- Pilares iniciais do Banco de Ideias (a Bruna pode renomear/excluir/criar novos pelo painel).
+insert into public.planejador_pilares (nome, ordem)
+select nome, ordem from (values
+  ('Criação de conteúdo', 0),
+  ('Edição e Audiovisual', 1),
+  ('UGC', 2),
+  ('Lifestyle de creator', 3)
+) as padrao(nome, ordem)
+where not exists (select 1 from public.planejador_pilares);

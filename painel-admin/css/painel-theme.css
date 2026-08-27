@@ -961,9 +961,9 @@
 
 .painel-body .pl-coluna-titulo {
   font-family: var(--fonte-titulo);
-  font-size: 18px;
+  font-size: 21px;
   font-weight: 700;
-  color: var(--grafite);
+  color: var(--coral);
 }
 
 .painel-body .pl-coluna-excluir {

@@ -294,3 +294,67 @@ where not exists (select 1 from public.planejador_cronograma);
 -- (rode isto se a tabela planejador_achados já existia sem essa coluna)
 -- ---------------------------------------------------------------------
 alter table public.planejador_achados add column if not exists observacoes text;
+
+-- ---------------------------------------------------------------------
+-- Tabela: radar_noticias (aba Radar de Notícias)
+-- Guarda as notícias já selecionadas e roteirizadas pelos 4 agentes
+-- (Marketing Digital, Criação de Conteúdo, UGC/Creator Economy, IA e
+-- Tecnologia). Quem escreve aqui é a Edge Function radar-atualizar
+-- (via service_role); o painel só lê, marca como usada e exclui.
+-- ---------------------------------------------------------------------
+create table if not exists public.radar_noticias (
+  id uuid primary key default gen_random_uuid(),
+  agente text not null check (agente in ('Marketing Digital', 'Criação de Conteúdo', 'UGC e Creator Economy', 'IA e Tecnologia')),
+  titulo text not null,
+  resumo text,
+  fonte text,
+  link text,
+  data_publicacao timestamptz,
+  insight text, -- roteiro de reels (ou ideia de conteúdo/oferta, no caso do agente de IA) escrito pelo Gemini
+  usada boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists radar_noticias_created_at_idx on public.radar_noticias (created_at desc);
+
+alter table public.radar_noticias enable row level security;
+
+create policy "Painel: leitura autenticada do radar"
+  on public.radar_noticias for select to authenticated using (true);
+create policy "Painel: escrita autenticada do radar"
+  on public.radar_noticias for insert to authenticated with check (true);
+create policy "Painel: atualização autenticada do radar"
+  on public.radar_noticias for update to authenticated using (true) with check (true);
+create policy "Painel: exclusão autenticada do radar"
+  on public.radar_noticias for delete to authenticated using (true);
+
+-- ---------------------------------------------------------------------
+-- Agendamento: chama a Edge Function radar-atualizar todo dia às 6h
+-- (horário de Brasília = 09:00 UTC). Precisa das extensões pg_cron e
+-- pg_net habilitadas no projeto (Database > Extensions no Supabase).
+--
+-- IMPORTANTE: NUNCA cole a service_role key de verdade aqui neste
+-- arquivo (ele fica no git). Guarde ela no Vault do Supabase primeiro
+-- (SQL Editor, rode só uma vez, com a chave real no lugar do texto):
+--
+--   select vault.create_secret('COLE_A_SERVICE_ROLE_KEY_AQUI', 'service_role_key');
+--
+-- Troque também <PROJECT_REF> pela referência do seu projeto.
+-- ---------------------------------------------------------------------
+create extension if not exists pg_cron with schema extensions;
+create extension if not exists pg_net with schema extensions;
+
+select cron.schedule(
+  'radar-noticias-diario',
+  '0 9 * * *', -- 09:00 UTC = 06:00 em Brasília
+  $$
+  select net.http_post(
+    url := 'https://<PROJECT_REF>.supabase.co/functions/v1/radar-atualizar',
+    headers := jsonb_build_object(
+      'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'service_role_key'),
+      'Content-Type', 'application/json'
+    ),
+    body := '{}'::jsonb
+  );
+  $$
+);

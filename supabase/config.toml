@@ -465,3 +465,9 @@ entrypoint = "./functions/instagram-oauth-callback/index.ts"
 enabled = true
 import_map = "./functions/instagram-metrics/deno.json"
 entrypoint = "./functions/instagram-metrics/index.ts"
+
+[functions.radar-atualizar]
+enabled = true
+verify_jwt = false
+import_map = "./functions/radar-atualizar/deno.json"
+entrypoint = "./functions/radar-atualizar/index.ts"

@@ -537,6 +537,7 @@ input:focus {
   font-family: var(--fonte-titulo);
   font-size: 32px;
   font-weight: 600;
+  letter-spacing: 1.4px;
 }
 
 /* ---- Cartão de destaque "contato" ---- */
@@ -562,6 +563,7 @@ input:focus {
   font-family: var(--fonte-titulo);
   font-size: 30px;
   font-weight: 600;
+  letter-spacing: 1.4px;
   color: var(--coral);
 }
 

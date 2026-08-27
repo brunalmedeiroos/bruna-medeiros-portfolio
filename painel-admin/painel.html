@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260826m">
+<link rel="stylesheet" href="css/style.css?v=20260826n">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260826m">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260826n">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260826m"></script>
+<script src="js/auth.js?v=20260826n"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -459,22 +459,7 @@
 
         <div class="cal-form-campo">
           <label for="pl-modal-achado-observacoes">O que você viu</label>
-          <textarea id="pl-modal-achado-observacoes" class="pl-textarea-grande" placeholder="Escreva com mais detalhes, contexto, onde viu..."></textarea>
-        </div>
-
-        <div class="cal-form-campo">
-          <label for="pl-modal-achado-link">Link</label>
-          <input type="url" id="pl-modal-achado-link" placeholder="https://...">
-        </div>
-
-        <div class="cal-form-campo">
-          <label>Imagem</label>
-          <div id="pl-modal-achado-imagem-preview" class="pl-achado-imagem-preview" hidden>
-            <img id="pl-modal-achado-imagem-img" src="" alt="Imagem do achado">
-            <button type="button" id="pl-modal-achado-imagem-remover" class="cal-btn pl-btn-excluir">Remover imagem</button>
-          </div>
-          <label id="pl-modal-achado-imagem-escolher" for="pl-modal-achado-imagem-input" class="pl-achado-imagem-botao">+ Adicionar imagem</label>
-          <input type="file" id="pl-modal-achado-imagem-input" accept="image/*" hidden>
+          <textarea id="pl-modal-achado-observacoes" class="pl-textarea-grande" placeholder="Escreva com mais detalhes, contexto, onde viu, link..."></textarea>
         </div>
 
         <div class="cal-form-acoes">
@@ -531,9 +516,6 @@
     let cronMesAtual = new Date(); // mês exibido no calendário do cronograma
     let ideiaAbertaId = null;
     let achadoAbertoId = null;
-    let achadoImagemArquivo = null; // File escolhido no modal, ainda não enviado
-    let achadoImagemRemover = false; // true quando a pessoa clicou em "Remover imagem"
-    let achadoImagemPathOriginal = null; // caminho da imagem no Storage antes de editar
     let dataAgendarAtual = null; // data (ISO) do dia clicado no "+" do calendário do cronograma
     const ACHADOS_COLUNAS = ['Gancho', 'Frase', 'Formato', 'Música', 'CTA'];
     const DIAS_SEMANA = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
@@ -712,19 +694,6 @@
       document.getElementById('pl-modal-achado-excluir').addEventListener('click', excluirModalAchado);
       document.getElementById('pl-modal-achado-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'pl-modal-achado-overlay') fecharModalAchado();
-      });
-      document.getElementById('pl-modal-achado-imagem-input').addEventListener('change', (e) => {
-        const arquivo = e.target.files[0];
-        if (!arquivo) return;
-        achadoImagemArquivo = arquivo;
-        achadoImagemRemover = false;
-        atualizarPreviewImagemAchado(URL.createObjectURL(arquivo));
-      });
-      document.getElementById('pl-modal-achado-imagem-remover').addEventListener('click', () => {
-        achadoImagemArquivo = null;
-        achadoImagemRemover = true;
-        document.getElementById('pl-modal-achado-imagem-input').value = '';
-        atualizarPreviewImagemAchado(null);
       });
       document.getElementById('pl-cronograma-add').addEventListener('click', criarLinhaCronogramaNova);
       document.getElementById('pl-cron-mes-anterior').addEventListener('click', () => mudarMesCronograma(-1));
@@ -2060,45 +2029,16 @@
       });
     }
 
-    function urlPublicaImagemAchado(path) {
-      if (!path) return null;
-      return Auth.sb.storage.from('achados').getPublicUrl(path).data.publicUrl;
-    }
-
-    function atualizarPreviewImagemAchado(url) {
-      const preview = document.getElementById('pl-modal-achado-imagem-preview');
-      const img = document.getElementById('pl-modal-achado-imagem-img');
-      const botaoEscolher = document.getElementById('pl-modal-achado-imagem-escolher');
-      if (url) {
-        img.src = url;
-        preview.hidden = false;
-        botaoEscolher.hidden = true;
-      } else {
-        img.src = '';
-        preview.hidden = true;
-        botaoEscolher.hidden = false;
-      }
-    }
-
     function abrirModalAchado(achado) {
       achadoAbertoId = achado.id;
-      achadoImagemArquivo = null;
-      achadoImagemRemover = false;
-      achadoImagemPathOriginal = achado.imagem_path || null;
       document.getElementById('pl-modal-achado-coluna').textContent = achado.coluna;
       document.getElementById('pl-modal-achado-texto').value = achado.conteudo || '';
       document.getElementById('pl-modal-achado-observacoes').value = achado.observacoes || '';
-      document.getElementById('pl-modal-achado-link').value = achado.link || '';
-      document.getElementById('pl-modal-achado-imagem-input').value = '';
-      atualizarPreviewImagemAchado(urlPublicaImagemAchado(achado.imagem_path));
       document.getElementById('pl-modal-achado-overlay').hidden = false;
     }
 
     function fecharModalAchado() {
       achadoAbertoId = null;
-      achadoImagemArquivo = null;
-      achadoImagemRemover = false;
-      achadoImagemPathOriginal = null;
       document.getElementById('pl-modal-achado-overlay').hidden = true;
     }
 
@@ -2107,45 +2047,17 @@
       const conteudo = document.getElementById('pl-modal-achado-texto').value.trim();
       if (!conteudo) return;
       const observacoes = document.getElementById('pl-modal-achado-observacoes').value.trim();
-      const link = document.getElementById('pl-modal-achado-link').value.trim();
-
-      const botaoSalvar = document.getElementById('pl-modal-achado-salvar');
-      botaoSalvar.disabled = true;
-      botaoSalvar.textContent = 'Salvando...';
-
       try {
-        let imagemPath = achadoImagemPathOriginal;
-
-        if (achadoImagemArquivo) {
-          const extensao = (achadoImagemArquivo.name.split('.').pop() || 'jpg').toLowerCase();
-          const novoPath = `${achadoAbertoId}/${Date.now()}.${extensao}`;
-          const { error: erroUpload } = await Auth.sb.storage
-            .from('achados')
-            .upload(novoPath, achadoImagemArquivo, { upsert: true });
-          if (erroUpload) throw erroUpload;
-          imagemPath = novoPath;
-        } else if (achadoImagemRemover) {
-          imagemPath = null;
-        }
-
         const { error } = await Auth.sb
           .from('planejador_achados')
-          .update({ conteudo, observacoes: observacoes || null, link: link || null, imagem_path: imagemPath })
+          .update({ conteudo, observacoes: observacoes || null })
           .eq('id', achadoAbertoId);
         if (error) throw error;
-
-        if (achadoImagemPathOriginal && achadoImagemPathOriginal !== imagemPath) {
-          Auth.sb.storage.from('achados').remove([achadoImagemPathOriginal]).catch(() => {});
-        }
-
         fecharModalAchado();
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao salvar achado:', err);
         alert('Não foi possível salvar agora. Tente de novo em instantes.');
-      } finally {
-        botaoSalvar.disabled = false;
-        botaoSalvar.textContent = 'Salvar';
       }
     }
 
@@ -2155,9 +2067,6 @@
       try {
         const { error } = await Auth.sb.from('planejador_achados').delete().eq('id', achadoAbertoId);
         if (error) throw error;
-        if (achadoImagemPathOriginal) {
-          Auth.sb.storage.from('achados').remove([achadoImagemPathOriginal]).catch(() => {});
-        }
         fecharModalAchado();
         await carregarPlanejador();
       } catch (err) {

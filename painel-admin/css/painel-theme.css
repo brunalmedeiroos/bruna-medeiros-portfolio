@@ -988,12 +988,12 @@
   border: 1px solid var(--borda);
   border-radius: var(--raio-sm);
   padding: 10px 12px;
-  padding-right: 34px;
+  padding-right: 24px;
   font-family: var(--fonte-corpo);
   display: flex;
   flex-direction: column;
   gap: 8px;
-  cursor: pointer;
+  cursor: grab;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   width: 100%;
 }
@@ -1001,6 +1001,14 @@
 .painel-body .pl-card:hover {
   transform: translateY(-1px);
   box-shadow: var(--sombra);
+}
+
+.painel-body .pl-card:active {
+  cursor: grabbing;
+}
+
+.painel-body .pl-card-arrastando {
+  opacity: 0.35;
 }
 
 .painel-body .pl-card-dot {
@@ -1011,41 +1019,6 @@
   height: 9px;
   border-radius: 50%;
   background: var(--sucesso, #2fa96b);
-}
-
-.painel-body .pl-card-mover {
-  position: absolute;
-  top: 8px;
-  right: 22px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.painel-body .pl-card-dot + .pl-card-mover {
-  top: 22px;
-}
-
-.painel-body .pl-card-mover-btn {
-  width: 18px;
-  height: 14px;
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--texto-suave);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.painel-body .pl-card-mover-btn:hover:not(:disabled) {
-  color: var(--coral);
-}
-
-.painel-body .pl-card-mover-btn:disabled {
-  opacity: 0.25;
-  cursor: default;
 }
 
 .painel-body .pl-card-titulo {

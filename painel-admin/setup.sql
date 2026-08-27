@@ -195,6 +195,7 @@ create table if not exists public.planejador_ideias (
   status text not null default 'Não iniciado',
   roteiro_breve text,
   roteiro_completo text,
+  data_agendada date, -- dia marcado no calendário do Cronograma de Postagem, se houver
   ordem int not null default 0,
   created_at timestamptz not null default now()
 );

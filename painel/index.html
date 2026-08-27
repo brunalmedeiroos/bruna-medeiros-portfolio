@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260826f">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260826g">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260826f">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260826g">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../painel-admin/js/auth.js?v=20260826f"></script>
+<script src="../painel-admin/js/auth.js?v=20260826g"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -339,7 +339,7 @@
           <div id="pl-hub" class="pl-hub">
             <button class="pl-hub-card" data-pagina="banco" type="button">
               <span class="pl-hub-card-titulo">Banco de ideias</span>
-              <span class="pl-hub-card-desc">Suas ideias organizadas por pilar de conteúdo, com espaço pro roteiro.</span>
+              <span class="pl-hub-card-desc">Minhas ideias organizadas por pilar de conteúdo, com espaço pro roteiro.</span>
             </button>
             <button class="pl-hub-card" data-pagina="achados" type="button">
               <span class="pl-hub-card-titulo">Achados</span>
@@ -362,16 +362,6 @@
           <div id="pl-cronograma" class="pl-cronograma-secao">
             <h3 class="card-titulo pl-pagina-titulo">Cronograma de postagem</h3>
 
-            <div class="card pl-cronograma-tabela-card">
-              <div class="pl-cronograma-cabecalho">
-                <span>Pilar</span>
-                <span>Dia da semana</span>
-                <span></span>
-              </div>
-              <div id="pl-cronograma-linhas" class="pl-cronograma-linhas"></div>
-              <button id="pl-cronograma-add" class="pl-coluna-add" type="button">+ Novo pilar do cronograma</button>
-            </div>
-
             <div class="card pl-cronograma-calendario-card">
               <div class="cal-topo">
                 <button id="pl-cron-mes-anterior" class="cal-btn cal-btn-icon" type="button" aria-label="Mês anterior">
@@ -386,6 +376,16 @@
                 <span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span>
               </div>
               <div class="pl-cron-grade" id="pl-cron-grade"></div>
+            </div>
+
+            <div class="card pl-cronograma-tabela-card">
+              <div class="pl-cronograma-cabecalho">
+                <span>Pilar</span>
+                <span>Dia da semana</span>
+                <span></span>
+              </div>
+              <div id="pl-cronograma-linhas" class="pl-cronograma-linhas"></div>
+              <button id="pl-cronograma-add" class="pl-coluna-add" type="button">+ Novo pilar do cronograma</button>
             </div>
           </div>
         </section>
@@ -413,7 +413,6 @@
             <select id="pl-modal-status">
               <option value="Não iniciado">Não iniciado</option>
               <option value="Roteiro pronto">Roteiro pronto</option>
-              <option value="Gravado">Gravado</option>
               <option value="Publicado">Publicado</option>
             </select>
           </div>
@@ -461,6 +460,27 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal: agendar uma ideia do Banco de Ideias num dia do cronograma -->
+    <div id="pl-modal-agendar-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pl-modal-pequeno">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo">Agendar ideia — <span id="pl-modal-agendar-data"></span></span>
+          <button id="pl-modal-agendar-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="pl-modal-agendar-select">Ideia do Banco de Ideias</label>
+          <select id="pl-modal-agendar-select"></select>
+        </div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="pl-modal-agendar-confirmar" class="cal-btn cal-btn-primario">Agendar</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -488,6 +508,7 @@
     let cronMesAtual = new Date(); // mês exibido no calendário do cronograma
     let ideiaAbertaId = null;
     let achadoAbertoId = null;
+    let dataAgendarAtual = null; // data (ISO) do dia clicado no "+" do calendário do cronograma
     const ACHADOS_COLUNAS = ['Gancho', 'Frase', 'Formato', 'Música', 'CTA'];
     const DIAS_SEMANA = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
 
@@ -675,6 +696,11 @@
       document.getElementById('pl-cronograma-add').addEventListener('click', criarLinhaCronogramaNova);
       document.getElementById('pl-cron-mes-anterior').addEventListener('click', () => mudarMesCronograma(-1));
       document.getElementById('pl-cron-mes-proximo').addEventListener('click', () => mudarMesCronograma(1));
+      document.getElementById('pl-modal-agendar-fechar').addEventListener('click', fecharModalAgendar);
+      document.getElementById('pl-modal-agendar-confirmar').addEventListener('click', confirmarAgendamento);
+      document.getElementById('pl-modal-agendar-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'pl-modal-agendar-overlay') fecharModalAgendar();
+      });
     }
 
     function abrirPaginaPlanejador(pagina) {
@@ -2061,9 +2087,11 @@
       for (let i = 0; i < 42; i++) {
         const dia = new Date(inicioGrade);
         dia.setDate(dia.getDate() + i);
+        const diaISO = dataParaISO(dia);
 
         const nomeDiaSemana = DIAS_SEMANA[(dia.getDay() + 6) % 7];
         const pilaresDoDia = mapaDia[nomeDiaSemana] || [];
+        const ideiasDoDia = ideiasCache.filter((idea) => idea.data_agendada === diaISO);
 
         const celula = document.createElement('div');
         celula.className = 'pl-cron-dia';
@@ -2071,11 +2099,85 @@
         if (mesmoDia(dia, hoje)) celula.classList.add('pl-cron-dia-hoje');
 
         celula.innerHTML = `
-          <span class="pl-cron-dia-numero">${dia.getDate()}</span>
+          <div class="pl-cron-dia-topo">
+            <span class="pl-cron-dia-numero">${dia.getDate()}</span>
+            <button type="button" class="pl-cron-dia-add" aria-label="Agendar ideia">+</button>
+          </div>
           ${pilaresDoDia.map((p) => `<span class="pl-cron-dia-pilar">${escapeHtml(p)}</span>`).join('')}
+          ${ideiasDoDia.map((idea) => `
+            <span class="pl-cron-dia-ideia" data-id="${escapeHtml(idea.id)}">
+              <span class="pl-cron-dia-ideia-titulo">${escapeHtml(idea.titulo)}</span>
+              <button type="button" class="pl-cron-dia-ideia-remover" data-id="${escapeHtml(idea.id)}" aria-label="Remover do calendário">×</button>
+            </span>
+          `).join('')}
         `;
 
+        celula.querySelector('.pl-cron-dia-add').addEventListener('click', () => abrirModalAgendar(diaISO));
+        celula.querySelectorAll('.pl-cron-dia-ideia-remover').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            desagendarIdeia(btn.dataset.id);
+          });
+        });
+        celula.querySelectorAll('.pl-cron-dia-ideia').forEach((tag) => {
+          tag.addEventListener('click', () => {
+            const idea = ideiasCache.find((i) => i.id === tag.dataset.id);
+            if (idea) abrirModalIdeia(idea);
+          });
+        });
+
         grade.appendChild(celula);
+      }
+    }
+
+    function abrirModalAgendar(diaISO) {
+      dataAgendarAtual = diaISO;
+      document.getElementById('pl-modal-agendar-data').textContent =
+        new Date(diaISO + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' });
+
+      const disponiveis = ideiasCache.filter((idea) => !idea.data_agendada);
+      const select = document.getElementById('pl-modal-agendar-select');
+      if (disponiveis.length === 0) {
+        select.innerHTML = '<option value="">Nenhuma ideia disponível no Banco de Ideias</option>';
+      } else {
+        select.innerHTML = disponiveis
+          .map((idea) => {
+            const pilar = pilaresCache.find((p) => p.id === idea.pilar_id);
+            return `<option value="${idea.id}">${escapeHtml(idea.titulo)}${pilar ? ` (${escapeHtml(pilar.nome)})` : ''}</option>`;
+          })
+          .join('');
+      }
+
+      document.getElementById('pl-modal-agendar-overlay').hidden = false;
+    }
+
+    function fecharModalAgendar() {
+      dataAgendarAtual = null;
+      document.getElementById('pl-modal-agendar-overlay').hidden = true;
+    }
+
+    async function confirmarAgendamento() {
+      const ideiaId = document.getElementById('pl-modal-agendar-select').value;
+      if (!ideiaId || !dataAgendarAtual) return;
+      try {
+        const { error } = await Auth.sb.from('planejador_ideias').update({ data_agendada: dataAgendarAtual }).eq('id', ideiaId);
+        if (error) throw error;
+        fecharModalAgendar();
+        await carregarPlanejador();
+      } catch (err) {
+        console.error('Erro ao agendar ideia:', err);
+        alert('Não foi possível agendar agora. Tente de novo em instantes.');
+      }
+    }
+
+    async function desagendarIdeia(ideiaId) {
+      try {
+        const { error } = await Auth.sb.from('planejador_ideias').update({ data_agendada: null }).eq('id', ideiaId);
+        if (error) throw error;
+        await carregarPlanejador();
+      } catch (err) {
+        console.error('Erro ao remover ideia do calendário:', err);
+        alert('Não foi possível remover agora. Tente de novo em instantes.');
       }
     }
 

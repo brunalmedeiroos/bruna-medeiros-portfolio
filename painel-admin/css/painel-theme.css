@@ -881,8 +881,9 @@
 
 .painel-body .pl-hub-card-titulo {
   font-family: var(--fonte-titulo);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
+  letter-spacing: 0.3px;
   color: var(--grafite);
 }
 
@@ -914,7 +915,8 @@
 }
 
 .painel-body .pl-pagina-titulo {
-  font-size: 26px;
+  font-size: 28px;
+  letter-spacing: 0.3px;
   margin-bottom: 16px;
 }
 
@@ -1251,10 +1253,37 @@
   border-width: 2px;
 }
 
+.painel-body .pl-cron-dia-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .painel-body .pl-cron-dia-numero {
   font-size: 12px;
   font-weight: 700;
   color: var(--grafite);
+}
+
+.painel-body .pl-cron-dia-add {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px dashed var(--borda);
+  background: transparent;
+  color: var(--texto-suave);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.painel-body .pl-cron-dia-add:hover {
+  color: var(--grafite);
+  border-color: var(--grafite);
 }
 
 .painel-body .pl-cron-dia-pilar {
@@ -1267,6 +1296,38 @@
   background: rgba(4, 70, 93, 0.08);
   color: var(--grafite);
   width: fit-content;
+}
+
+.painel-body .pl-cron-dia-ideia {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 4px 2px 6px;
+  border-radius: 10px;
+  background: var(--coral);
+  color: var(--branco);
+  max-width: 100%;
+  cursor: pointer;
+}
+
+.painel-body .pl-cron-dia-ideia-titulo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.painel-body .pl-cron-dia-ideia-remover {
+  background: transparent;
+  border: none;
+  color: var(--branco);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  flex-shrink: 0;
 }
 
 @media (max-width: 700px) {

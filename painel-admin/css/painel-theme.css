@@ -987,12 +987,11 @@
   background: var(--branco);
   border: 1px solid var(--borda);
   border-radius: var(--raio-sm);
-  padding: 10px 12px;
-  padding-right: 24px;
+  padding: 14px 24px 12px 14px;
   font-family: var(--fonte-corpo);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   cursor: grab;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   width: 100%;
@@ -1024,6 +1023,7 @@
 .painel-body .pl-card-titulo {
   font-size: 13px;
   font-weight: 500;
+  line-height: 1.5;
   color: var(--grafite);
   white-space: pre-wrap;
 }

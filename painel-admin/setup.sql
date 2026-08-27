@@ -59,6 +59,12 @@ create policy "Painel: leitura autenticada de leads"
   to authenticated
   using (true);
 
+create policy "Painel: exclusão autenticada de mensagens"
+  on public.portfolio_leads
+  for delete
+  to authenticated
+  using (true);
+
 -- ---------------------------------------------------------------------
 -- IMPORTANTE sobre a escrita dos dados
 -- ---------------------------------------------------------------------

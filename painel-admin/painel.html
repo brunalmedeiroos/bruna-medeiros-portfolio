@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260826b">
+<link rel="stylesheet" href="css/style.css?v=20260826c">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260826b">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260826c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260826b"></script>
+<script src="js/auth.js?v=20260826c"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -797,8 +797,9 @@
             ${lead.budget ? `<p><strong>Orçamento:</strong> ${escapeHtml(lead.budget)}</p>` : ''}
             ${lead.message ? `<p><strong>Mensagem:</strong> ${escapeHtml(lead.message)}</p>` : ''}
             <div class="lead-acoes">
-              ${lead.email ? `<a class="btn-secundario" href="mailto:${encodeURIComponent(lead.email)}">Responder por e-mail</a>` : ''}
+              ${lead.email ? `<a class="btn-secundario" href="mailto:${escapeHtml(lead.email)}">Responder por e-mail</a>` : ''}
               ${telefoneDigitos ? `<a class="btn-secundario btn-whatsapp" href="https://wa.me/${telefoneDigitos}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : ''}
+              <button type="button" class="btn-secundario btn-excluir-lead">Excluir</button>
             </div>
           </div>
         `;
@@ -810,8 +811,23 @@
           card.classList.toggle('aberto', !detalhes.hidden);
         });
 
+        card.querySelector('.btn-excluir-lead').addEventListener('click', () => excluirLead(lead));
+
         container.appendChild(card);
       });
+    }
+
+    async function excluirLead(lead) {
+      if (!confirm('Excluir esta mensagem?')) return;
+      try {
+        const { error } = await Auth.sb.from('portfolio_leads').delete().eq('id', lead.id);
+        if (error) throw error;
+        leadsCache = leadsCache.filter((l) => l.id !== lead.id);
+        renderizarTudo();
+      } catch (err) {
+        console.error('Erro ao excluir mensagem:', err);
+        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+      }
     }
 
     // ==========================================================================

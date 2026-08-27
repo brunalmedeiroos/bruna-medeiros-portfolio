@@ -106,6 +106,12 @@ button {
   color: var(--sucesso);
 }
 
+.btn-excluir-lead {
+  border-color: var(--erro);
+  color: var(--erro);
+  margin-left: auto;
+}
+
 /* ---- Faixas de mensagem (erro / sucesso) ---- */
 
 .banner {

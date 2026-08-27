@@ -904,6 +904,7 @@
   font-size: 13px;
   color: var(--texto-suave);
   line-height: 1.4;
+  text-align: center;
 }
 
 .painel-body .pl-pagina[hidden] {
@@ -1221,6 +1222,7 @@
 /* ---- Cronograma de postagem ---- */
 
 .painel-body .pl-cronograma-tabela-card {
+  margin-top: 24px;
   margin-bottom: 20px;
 }
 

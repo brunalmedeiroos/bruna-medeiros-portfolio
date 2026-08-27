@@ -328,6 +328,7 @@ input:focus {
   width: 20px;
   height: 20px;
   object-fit: contain;
+  mix-blend-mode: multiply;
 }
 
 .nav-item:hover {

@@ -982,11 +982,13 @@
 }
 
 .painel-body .pl-card {
+  position: relative;
   text-align: left;
   background: var(--branco);
   border: 1px solid var(--borda);
   border-radius: var(--raio-sm);
   padding: 10px 12px;
+  padding-right: 34px;
   font-family: var(--fonte-corpo);
   display: flex;
   flex-direction: column;
@@ -999,6 +1001,51 @@
 .painel-body .pl-card:hover {
   transform: translateY(-1px);
   box-shadow: var(--sombra);
+}
+
+.painel-body .pl-card-dot {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--sucesso, #2fa96b);
+}
+
+.painel-body .pl-card-mover {
+  position: absolute;
+  top: 8px;
+  right: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.painel-body .pl-card-dot + .pl-card-mover {
+  top: 22px;
+}
+
+.painel-body .pl-card-mover-btn {
+  width: 18px;
+  height: 14px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--texto-suave);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.painel-body .pl-card-mover-btn:hover:not(:disabled) {
+  color: var(--coral);
+}
+
+.painel-body .pl-card-mover-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
 }
 
 .painel-body .pl-card-titulo {

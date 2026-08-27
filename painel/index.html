@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260826j">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260826k">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260826j">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260826k">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../painel-admin/js/auth.js?v=20260826j"></script>
+<script src="../painel-admin/js/auth.js?v=20260826k"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -1691,6 +1691,22 @@
       container.appendChild(criarBotaoNovaColuna());
     }
 
+    // Ideias com roteiro (breve ou completo) já escrito têm prioridade visual
+    // sobre as ainda não roteirizadas — ficam sempre no topo da coluna.
+    function temRoteiro(ideia) {
+      return !!(ideia.roteiro_breve && ideia.roteiro_breve.trim()) || !!(ideia.roteiro_completo && ideia.roteiro_completo.trim());
+    }
+
+    function comparaOrdem(a, b) {
+      return (a.ordem - b.ordem) || a.id.localeCompare(b.id);
+    }
+
+    function ordenarIdeias(ideias) {
+      const comRoteiro = ideias.filter(temRoteiro).sort(comparaOrdem);
+      const semRoteiro = ideias.filter((i) => !temRoteiro(i)).sort(comparaOrdem);
+      return [...comRoteiro, ...semRoteiro];
+    }
+
     function criarColunaIdeias(pilar, ideias) {
       const coluna = document.createElement('div');
       coluna.className = 'pl-coluna';
@@ -1706,7 +1722,14 @@
       `;
 
       const listaCards = coluna.querySelector('.pl-coluna-cards');
-      ideias.forEach((ideia) => listaCards.appendChild(criarCardIdeia(ideia)));
+      const ordenadas = ordenarIdeias(ideias);
+      const comRoteiro = ordenadas.filter(temRoteiro);
+      const semRoteiro = ordenadas.filter((i) => !temRoteiro(i));
+      ordenadas.forEach((ideia) => {
+        const grupo = temRoteiro(ideia) ? comRoteiro : semRoteiro;
+        const indice = grupo.findIndex((i) => i.id === ideia.id);
+        listaCards.appendChild(criarCardIdeia(ideia, indice === 0, indice === grupo.length - 1));
+      });
 
       coluna.querySelector('.pl-coluna-add').addEventListener('click', () => mostrarFormNovaIdeia(coluna, pilar.id));
       coluna.querySelector('.pl-coluna-excluir').addEventListener('click', () => excluirPilar(pilar));
@@ -1714,11 +1737,21 @@
       return coluna;
     }
 
-    function criarCardIdeia(ideia) {
-      const card = document.createElement('button');
-      card.type = 'button';
+    function criarCardIdeia(ideia, isPrimeiro, isUltimo) {
+      const card = document.createElement('div');
       card.className = 'pl-card';
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
       card.innerHTML = `
+        ${temRoteiro(ideia) ? '<span class="pl-card-dot" title="Já tem roteiro"></span>' : ''}
+        <div class="pl-card-mover">
+          <button type="button" class="pl-card-mover-btn pl-card-subir" aria-label="Mover para cima"${isPrimeiro ? ' disabled' : ''}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="pl-card-mover-btn pl-card-descer" aria-label="Mover para baixo"${isUltimo ? ' disabled' : ''}>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
         <span class="pl-card-titulo">${escapeHtml(ideia.titulo)}</span>
         <div class="pl-card-rodape">
           ${ideia.formato ? `<span class="pl-card-formato">${escapeHtml(ideia.formato)}</span>` : ''}
@@ -1726,7 +1759,45 @@
         </div>
       `;
       card.addEventListener('click', () => abrirModalIdeia(ideia));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          abrirModalIdeia(ideia);
+        }
+      });
+      card.querySelector('.pl-card-subir').addEventListener('click', (e) => {
+        e.stopPropagation();
+        moverIdeia(ideia, 'up');
+      });
+      card.querySelector('.pl-card-descer').addEventListener('click', (e) => {
+        e.stopPropagation();
+        moverIdeia(ideia, 'down');
+      });
       return card;
+    }
+
+    async function moverIdeia(ideia, direcao) {
+      const doPilar = ideiasCache.filter((i) => i.pilar_id === ideia.pilar_id);
+      const grupo = (temRoteiro(ideia) ? doPilar.filter(temRoteiro) : doPilar.filter((i) => !temRoteiro(i))).sort(comparaOrdem);
+      const indice = grupo.findIndex((i) => i.id === ideia.id);
+      const alvoIndice = direcao === 'up' ? indice - 1 : indice + 1;
+      if (alvoIndice < 0 || alvoIndice >= grupo.length) return;
+      const alvo = grupo[alvoIndice];
+
+      try {
+        const ordemIdeia = ideia.ordem;
+        const ordemAlvo = alvo.ordem;
+        const [r1, r2] = await Promise.all([
+          Auth.sb.from('planejador_ideias').update({ ordem: ordemAlvo }).eq('id', ideia.id),
+          Auth.sb.from('planejador_ideias').update({ ordem: ordemIdeia }).eq('id', alvo.id),
+        ]);
+        if (r1.error) throw r1.error;
+        if (r2.error) throw r2.error;
+        await carregarPlanejador();
+      } catch (err) {
+        console.error('Erro ao reordenar ideia:', err);
+        alert('Não foi possível reordenar a ideia agora.');
+      }
     }
 
     function mostrarFormNovaIdeia(coluna, pilarId) {

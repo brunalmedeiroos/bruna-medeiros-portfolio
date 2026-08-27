@@ -797,7 +797,7 @@
             ${lead.budget ? `<p><strong>Orçamento:</strong> ${escapeHtml(lead.budget)}</p>` : ''}
             ${lead.message ? `<p><strong>Mensagem:</strong> ${escapeHtml(lead.message)}</p>` : ''}
             <div class="lead-acoes">
-              ${lead.email ? `<a class="btn-secundario" href="mailto:${escapeHtml(lead.email)}">Responder por e-mail</a>` : ''}
+              ${lead.email ? `<a class="btn-secundario" href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(lead.email)}&su=${encodeURIComponent('Contato pelo portfólio')}" target="_blank" rel="noopener noreferrer">Responder por e-mail</a>` : ''}
               ${telefoneDigitos ? `<a class="btn-secundario btn-whatsapp" href="https://wa.me/${telefoneDigitos}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : ''}
               <button type="button" class="btn-secundario btn-excluir-lead">Excluir</button>
             </div>

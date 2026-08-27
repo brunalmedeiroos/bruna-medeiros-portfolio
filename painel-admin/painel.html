@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260826d">
+<link rel="stylesheet" href="css/style.css?v=20260826e">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260826d">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260826e">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260826d"></script>
+<script src="js/auth.js?v=20260826e"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -335,17 +335,62 @@
 
         <!-- ---------- Aba: Planejador de Conteúdo ---------- -->
         <section id="panel-planejador" class="tab-panel" hidden>
-          <div class="pl-subnav">
-            <button class="pl-subnav-btn ativo" data-quadro="banco" type="button">Banco de ideias</button>
-            <button class="pl-subnav-btn" data-quadro="achados" type="button">Achados</button>
+          <div id="pl-hub" class="pl-hub">
+            <button class="pl-hub-card" data-pagina="banco" type="button">
+              <span class="pl-hub-card-titulo">Banco de ideias</span>
+              <span class="pl-hub-card-desc">Suas ideias organizadas por pilar de conteúdo, com espaço pro roteiro.</span>
+            </button>
+            <button class="pl-hub-card" data-pagina="achados" type="button">
+              <span class="pl-hub-card-titulo">Achados</span>
+              <span class="pl-hub-card-desc">Ganchos, frases, formatos, músicas e CTAs pra virarem ideia depois.</span>
+            </button>
+            <button class="pl-hub-card" data-pagina="cronograma" type="button">
+              <span class="pl-hub-card-titulo">Cronograma de postagem</span>
+              <span class="pl-hub-card-desc">O pilar de cada dia da semana, com visão em calendário do mês.</span>
+            </button>
           </div>
 
-          <div id="pl-quadro-banco" class="pl-quadro">
+          <div id="pl-pagina-banco" class="pl-pagina" hidden>
+            <button class="pl-voltar" type="button">← Voltar</button>
+            <h3 class="card-titulo">Banco de ideias</h3>
             <div id="pl-colunas-banco" class="pl-colunas"></div>
           </div>
 
-          <div id="pl-quadro-achados" class="pl-quadro" hidden>
+          <div id="pl-pagina-achados" class="pl-pagina" hidden>
+            <button class="pl-voltar" type="button">← Voltar</button>
+            <h3 class="card-titulo">Achados</h3>
             <div id="pl-colunas-achados" class="pl-colunas"></div>
+          </div>
+
+          <div id="pl-pagina-cronograma" class="pl-pagina" hidden>
+            <button class="pl-voltar" type="button">← Voltar</button>
+            <h3 class="card-titulo">Cronograma de postagem</h3>
+
+            <div class="card pl-cronograma-tabela-card">
+              <div class="pl-cronograma-cabecalho">
+                <span>Pilar</span>
+                <span>Dia da semana</span>
+                <span></span>
+              </div>
+              <div id="pl-cronograma-linhas" class="pl-cronograma-linhas"></div>
+              <button id="pl-cronograma-add" class="pl-coluna-add" type="button">+ Novo pilar do cronograma</button>
+            </div>
+
+            <div class="card pl-cronograma-calendario-card">
+              <div class="cal-topo">
+                <button id="pl-cron-mes-anterior" class="cal-btn cal-btn-icon" type="button" aria-label="Mês anterior">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <span class="cal-mes-label" id="pl-cron-mes-label">Mês</span>
+                <button id="pl-cron-mes-proximo" class="cal-btn cal-btn-icon" type="button" aria-label="Próximo mês">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+              <div class="cal-semana">
+                <span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span>
+              </div>
+              <div class="pl-cron-grade" id="pl-cron-grade"></div>
+            </div>
           </div>
         </section>
 
@@ -443,9 +488,12 @@
     let pilaresCache = [];
     let ideiasCache = [];
     let achadosCache = [];
+    let cronogramaCache = [];
+    let cronMesAtual = new Date(); // mês exibido no calendário do cronograma
     let ideiaAbertaId = null;
     let achadoAbertoId = null;
     const ACHADOS_COLUNAS = ['Gancho', 'Frase', 'Formato', 'Música', 'CTA'];
+    const DIAS_SEMANA = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
 
     const TITULOS_ABA = {
       overview: 'Dashboard',
@@ -604,8 +652,11 @@
       document.getElementById('email-form-resposta').addEventListener('submit', enviarResposta);
 
       // Planejador de Conteúdo
-      document.querySelectorAll('.pl-subnav-btn').forEach((btn) => {
-        btn.addEventListener('click', () => trocarQuadroPlanejador(btn.dataset.quadro));
+      document.querySelectorAll('.pl-hub-card').forEach((btn) => {
+        btn.addEventListener('click', () => abrirPaginaPlanejador(btn.dataset.pagina));
+      });
+      document.querySelectorAll('.pl-voltar').forEach((btn) => {
+        btn.addEventListener('click', fecharPaginaPlanejador);
       });
       document.getElementById('pl-modal-fechar').addEventListener('click', fecharModalIdeia);
       document.getElementById('pl-modal-salvar').addEventListener('click', salvarModalIdeia);
@@ -619,12 +670,25 @@
       document.getElementById('pl-modal-achado-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'pl-modal-achado-overlay') fecharModalAchado();
       });
+      document.getElementById('pl-cronograma-add').addEventListener('click', criarLinhaCronogramaNova);
+      document.getElementById('pl-cron-mes-anterior').addEventListener('click', () => mudarMesCronograma(-1));
+      document.getElementById('pl-cron-mes-proximo').addEventListener('click', () => mudarMesCronograma(1));
     }
 
-    function trocarQuadroPlanejador(quadro) {
-      document.querySelectorAll('.pl-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.quadro === quadro));
-      document.getElementById('pl-quadro-banco').hidden = quadro !== 'banco';
-      document.getElementById('pl-quadro-achados').hidden = quadro !== 'achados';
+    function abrirPaginaPlanejador(pagina) {
+      document.getElementById('pl-hub').hidden = true;
+      document.querySelectorAll('.pl-pagina').forEach((p) => (p.hidden = true));
+      document.getElementById('pl-pagina-' + pagina).hidden = false;
+    }
+
+    function fecharPaginaPlanejador() {
+      document.getElementById('pl-hub').hidden = false;
+      document.querySelectorAll('.pl-pagina').forEach((p) => (p.hidden = true));
+    }
+
+    function mudarMesCronograma(delta) {
+      cronMesAtual = new Date(cronMesAtual.getFullYear(), cronMesAtual.getMonth() + delta, 1);
+      renderizarCronogramaCalendario();
     }
 
     function trocarAba(aba) {
@@ -1552,21 +1616,26 @@
 
     async function carregarPlanejador() {
       try {
-        const [pilares, ideias, achados] = await Promise.all([
+        const [pilares, ideias, achados, cronograma] = await Promise.all([
           Auth.sb.from('planejador_pilares').select('*').order('ordem', { ascending: true }),
           Auth.sb.from('planejador_ideias').select('*').order('ordem', { ascending: true }),
           Auth.sb.from('planejador_achados').select('*').order('ordem', { ascending: true }),
+          Auth.sb.from('planejador_cronograma').select('*').order('ordem', { ascending: true }),
         ]);
         if (pilares.error) throw pilares.error;
         if (ideias.error) throw ideias.error;
         if (achados.error) throw achados.error;
+        if (cronograma.error) throw cronograma.error;
 
         pilaresCache = pilares.data || [];
         ideiasCache = ideias.data || [];
         achadosCache = achados.data || [];
+        cronogramaCache = cronograma.data || [];
 
         renderizarBancoIdeias();
         renderizarAchados();
+        renderizarCronogramaTabela();
+        renderizarCronogramaCalendario();
       } catch (err) {
         console.error('Erro ao carregar planejador:', err);
         document.getElementById('pl-colunas-banco').innerHTML =
@@ -1885,6 +1954,124 @@
       } catch (err) {
         console.error('Erro ao excluir achado:', err);
         alert('Não foi possível excluir agora. Tente de novo em instantes.');
+      }
+    }
+
+    // ---- Cronograma de postagem (pilar de cada dia da semana + calendário) ----
+
+    function renderizarCronogramaTabela() {
+      const container = document.getElementById('pl-cronograma-linhas');
+      container.innerHTML = '';
+
+      if (cronogramaCache.length === 0) {
+        container.innerHTML = '<p class="texto-vazio">Nenhum pilar cadastrado ainda.</p>';
+        return;
+      }
+
+      cronogramaCache.forEach((linha) => container.appendChild(criarLinhaCronograma(linha)));
+    }
+
+    function criarLinhaCronograma(linha) {
+      const el = document.createElement('div');
+      el.className = 'pl-cronograma-linha';
+      el.innerHTML = `
+        <input type="text" class="pl-cron-pilar-input" value="${escapeHtml(linha.pilar)}">
+        <select class="pl-cron-dia-select">
+          ${DIAS_SEMANA.map((d) => `<option value="${d}" ${d === linha.dia_semana ? 'selected' : ''}>${d}</option>`).join('')}
+        </select>
+        <button type="button" class="pl-cron-excluir cal-btn cal-btn-icon" aria-label="Excluir">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      `;
+
+      const inputPilar = el.querySelector('.pl-cron-pilar-input');
+      const selectDia = el.querySelector('.pl-cron-dia-select');
+
+      inputPilar.addEventListener('change', () => atualizarCronograma(linha.id, { pilar: inputPilar.value.trim() || linha.pilar }));
+      selectDia.addEventListener('change', () => atualizarCronograma(linha.id, { dia_semana: selectDia.value }));
+      el.querySelector('.pl-cron-excluir').addEventListener('click', () => excluirCronograma(linha.id));
+
+      return el;
+    }
+
+    async function criarLinhaCronogramaNova() {
+      try {
+        const { error } = await Auth.sb.from('planejador_cronograma').insert({
+          pilar: 'Novo pilar',
+          dia_semana: 'Segunda',
+          ordem: cronogramaCache.length,
+        });
+        if (error) throw error;
+        await carregarPlanejador();
+      } catch (err) {
+        console.error('Erro ao criar linha do cronograma:', err);
+        alert('Não foi possível criar agora. Tente de novo em instantes.');
+      }
+    }
+
+    async function atualizarCronograma(id, mudanca) {
+      try {
+        const { error } = await Auth.sb.from('planejador_cronograma').update(mudanca).eq('id', id);
+        if (error) throw error;
+        await carregarPlanejador();
+      } catch (err) {
+        console.error('Erro ao atualizar cronograma:', err);
+        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+      }
+    }
+
+    async function excluirCronograma(id) {
+      if (!confirm('Excluir esta linha do cronograma?')) return;
+      try {
+        const { error } = await Auth.sb.from('planejador_cronograma').delete().eq('id', id);
+        if (error) throw error;
+        await carregarPlanejador();
+      } catch (err) {
+        console.error('Erro ao excluir cronograma:', err);
+        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+      }
+    }
+
+    function renderizarCronogramaCalendario() {
+      const NOMES_MES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+      document.getElementById('pl-cron-mes-label').textContent = `${NOMES_MES[cronMesAtual.getMonth()]} ${cronMesAtual.getFullYear()}`;
+
+      const grade = document.getElementById('pl-cron-grade');
+      grade.innerHTML = '';
+
+      const primeiroDiaMes = new Date(cronMesAtual.getFullYear(), cronMesAtual.getMonth(), 1);
+      // getDay(): 0=domingo...6=sábado. Semana começa na segunda, então ajusta o offset.
+      const offset = (primeiroDiaMes.getDay() + 6) % 7;
+      const inicioGrade = new Date(primeiroDiaMes);
+      inicioGrade.setDate(inicioGrade.getDate() - offset);
+
+      const hoje = new Date();
+
+      // Mapa dia da semana -> lista de pilares (pode ter mais de um no mesmo dia).
+      const mapaDia = {};
+      cronogramaCache.forEach((linha) => {
+        if (!mapaDia[linha.dia_semana]) mapaDia[linha.dia_semana] = [];
+        mapaDia[linha.dia_semana].push(linha.pilar);
+      });
+
+      for (let i = 0; i < 42; i++) {
+        const dia = new Date(inicioGrade);
+        dia.setDate(dia.getDate() + i);
+
+        const nomeDiaSemana = DIAS_SEMANA[(dia.getDay() + 6) % 7];
+        const pilaresDoDia = mapaDia[nomeDiaSemana] || [];
+
+        const celula = document.createElement('div');
+        celula.className = 'pl-cron-dia';
+        if (dia.getMonth() !== cronMesAtual.getMonth()) celula.classList.add('pl-cron-dia-fora');
+        if (mesmoDia(dia, hoje)) celula.classList.add('pl-cron-dia-hoje');
+
+        celula.innerHTML = `
+          <span class="pl-cron-dia-numero">${dia.getDate()}</span>
+          ${pilaresDoDia.map((p) => `<span class="pl-cron-dia-pilar">${escapeHtml(p)}</span>`).join('')}
+        `;
+
+        grade.appendChild(celula);
       }
     }
 

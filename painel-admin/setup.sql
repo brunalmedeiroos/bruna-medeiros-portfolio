@@ -251,3 +251,38 @@ select nome, ordem from (values
   ('Lifestyle de creator', 3)
 ) as padrao(nome, ordem)
 where not exists (select 1 from public.planejador_pilares);
+
+-- ---------------------------------------------------------------------
+-- Tabela: planejador_cronograma (página "Cronograma de postagem")
+-- Diz qual pilar postar em cada dia da semana; a tela de calendário do
+-- painel só projeta essa relação nos dias reais do mês.
+-- ---------------------------------------------------------------------
+create table if not exists public.planejador_cronograma (
+  id uuid primary key default gen_random_uuid(),
+  pilar text not null,
+  dia_semana text not null check (dia_semana in ('Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo')),
+  ordem int not null default 0,
+  created_at timestamptz not null default now()
+);
+
+alter table public.planejador_cronograma enable row level security;
+
+create policy "Painel: leitura autenticada de cronograma"
+  on public.planejador_cronograma for select to authenticated using (true);
+create policy "Painel: escrita autenticada de cronograma"
+  on public.planejador_cronograma for insert to authenticated with check (true);
+create policy "Painel: atualização autenticada de cronograma"
+  on public.planejador_cronograma for update to authenticated using (true) with check (true);
+create policy "Painel: exclusão autenticada de cronograma"
+  on public.planejador_cronograma for delete to authenticated using (true);
+
+-- Cronograma inicial (a Bruna pode editar tudo pelo painel).
+insert into public.planejador_cronograma (pilar, dia_semana, ordem)
+select pilar, dia_semana, ordem from (values
+  ('Autoridade', 'Segunda', 0),
+  ('Conexão', 'Terça', 1),
+  ('Desejo', 'Quarta', 2),
+  ('Autoridade', 'Quinta', 3),
+  ('Oferta (ou repetir outro)', 'Sexta', 4)
+) as padrao(pilar, dia_semana, ordem)
+where not exists (select 1 from public.planejador_cronograma);

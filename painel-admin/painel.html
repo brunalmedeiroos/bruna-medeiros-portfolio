@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260826w">
+<link rel="stylesheet" href="css/style.css?v=20260826x">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260826w">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260826x">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260826w"></script>
+<script src="js/auth.js?v=20260826x"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -2238,10 +2238,10 @@
       document.getElementById('pl-modal-agendar-data').textContent =
         new Date(diaISO + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' });
 
-      const disponiveis = ideiasCache.filter((idea) => !idea.data_agendada);
+      const disponiveis = ideiasCache.filter((idea) => !idea.data_agendada && idea.status === 'Roteiro pronto');
       const select = document.getElementById('pl-modal-agendar-select');
       if (disponiveis.length === 0) {
-        select.innerHTML = '<option value="">Nenhuma ideia disponível no Banco de Ideias</option>';
+        select.innerHTML = '<option value="">Nenhuma ideia com roteiro pronto disponível</option>';
       } else {
         select.innerHTML = disponiveis
           .map((idea) => {

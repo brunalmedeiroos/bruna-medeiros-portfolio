@@ -289,11 +289,32 @@
   padding: 0;
   border-radius: 50%;
   flex-shrink: 0;
+  background: var(--branco);
+  border: 2px solid var(--borda);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.painel-body .cal-tarefa-check:hover {
+  border-color: var(--coral);
+  transform: none;
+}
+
+.painel-body .cal-tarefa-check svg {
+  opacity: 0;
 }
 
 .painel-body .cal-tarefa-feita .cal-tarefa-check {
   background: var(--coral);
   border-color: var(--coral);
+}
+
+.painel-body .cal-tarefa-feita .cal-tarefa-check svg {
+  opacity: 1;
 }
 
 .painel-body .cal-tarefa-info {

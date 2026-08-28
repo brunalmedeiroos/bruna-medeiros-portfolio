@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260827d">
+<link rel="stylesheet" href="css/style.css?v=20260827e">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260827d">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260827e">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260827d"></script>
+<script src="js/auth.js?v=20260827e"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -235,8 +235,7 @@
               <p class="cal-todas-resumo" id="cal-todas-resumo">Nenhum item marcado ainda.</p>
             </div>
             <div class="cal-filtro-grupo">
-              <button class="cal-filtro-btn" data-filtro="proximos" type="button">Próximos</button>
-              <button class="cal-filtro-btn ativo" data-filtro="tudo" type="button">Tudo</button>
+              <button class="cal-filtro-btn ativo" data-filtro="proximos" type="button">Próximos</button>
               <button class="cal-filtro-btn" data-filtro="feitos" type="button">Feitos</button>
             </div>
           </div>
@@ -599,7 +598,7 @@
     let periodoAtual = 'all'; // 'all' | 7 | 30 | 90
     let calMesAtual = new Date(); // mês exibido na grade do calendário
     let calDiaSelecionado = new Date(); // dia com a lista de tarefas aberta
-    let filtroTarefas = 'tudo'; // 'proximos' | 'tudo' | 'feitos' — filtro do card "Tudo o que está marcado"
+    let filtroTarefas = 'proximos'; // 'proximos' | 'feitos' — filtro do card "Tudo o que está marcado"
     let tarefaEditando = null; // id da tarefa em edição, ou null quando o formulário é para criar uma nova
     let emailsCache = [];
     let emailAbaCarregada = false;
@@ -1283,6 +1282,9 @@
     function renderizarTarefasDoDia() {
       const isoSelecionado = dataParaISO(calDiaSelecionado);
       const doDia = tarefasCache.filter((t) => t.data === isoSelecionado);
+      // Assim que uma tarefa é marcada como feita, ela some daqui (só continua
+      // visível no filtro "Feitos" da tabela "Tudo o que está marcado").
+      const pendentesDoDia = doDia.filter((t) => !t.feito);
 
       const hoje = new Date();
       const titulo = mesmoDia(calDiaSelecionado, hoje)
@@ -1290,21 +1292,20 @@
         : calDiaSelecionado.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', weekday: 'long' });
       document.getElementById('cal-dia-titulo').textContent = titulo;
 
-      const pendentes = doDia.filter((t) => !t.feito).length;
       document.getElementById('cal-dia-resumo').textContent =
         doDia.length === 0
           ? 'Nenhuma entrega ainda.'
-          : `${doDia.length} ${doDia.length === 1 ? 'tarefa' : 'tarefas'}, ${pendentes} pendente${pendentes === 1 ? '' : 's'}`;
+          : pendentesDoDia.length === 0
+            ? 'Tudo feito por aqui.'
+            : `${pendentesDoDia.length} pendente${pendentesDoDia.length === 1 ? '' : 's'}`;
 
+      // O resumo acima já conta o que há pra hoje — não repete a mensagem aqui embaixo.
       const lista = document.getElementById('cal-lista-tarefas');
       lista.innerHTML = '';
 
-      if (doDia.length === 0) {
-        lista.innerHTML = '<p class="texto-vazio">Nenhuma entrega ainda.</p>';
-        return;
-      }
+      if (pendentesDoDia.length === 0) return;
 
-      doDia.forEach((tarefa) => lista.appendChild(criarItemTarefa(tarefa, false)));
+      pendentesDoDia.forEach((tarefa) => lista.appendChild(criarItemTarefa(tarefa, false)));
     }
 
     // Cria o elemento de uma tarefa. mostrarData controla se aparece a data
@@ -1319,7 +1320,9 @@
       const item = document.createElement('div');
       item.className = 'cal-tarefa-item' + (tarefa.feito ? ' cal-tarefa-feita' : '');
       item.innerHTML = `
-        <button class="cal-tarefa-check cal-btn" type="button" aria-label="Marcar como feita"></button>
+        <button class="cal-tarefa-check cal-btn" type="button" aria-label="Marcar como feita">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
         <div class="cal-tarefa-info">
           ${detalhe ? `<span class="cal-tarefa-horario">${detalhe}</span>` : ''}
           <span class="cal-tarefa-titulo">${escapeHtml(tarefa.titulo)}</span>
@@ -1339,16 +1342,13 @@
       return item;
     }
 
-    // Lista todas as tarefas (de qualquer data), filtradas por Próximos/Tudo/Feitos.
+    // Lista todas as tarefas (de qualquer data), filtradas por Próximos/Feitos.
     function renderizarTodasTarefas() {
       let filtradas;
-      if (filtroTarefas === 'proximos') {
-        filtradas = tarefasCache.filter((t) => !t.feito)
-          .sort((a, b) => a.data.localeCompare(b.data) || (a.hora_inicio || '').localeCompare(b.hora_inicio || ''));
-      } else if (filtroTarefas === 'feitos') {
+      if (filtroTarefas === 'feitos') {
         filtradas = tarefasCache.filter((t) => t.feito).sort((a, b) => b.data.localeCompare(a.data));
       } else {
-        filtradas = [...tarefasCache]
+        filtradas = tarefasCache.filter((t) => !t.feito)
           .sort((a, b) => a.data.localeCompare(b.data) || (a.hora_inicio || '').localeCompare(b.hora_inicio || ''));
       }
 
@@ -1386,7 +1386,9 @@
         <span class="cal-todas-tipo-badge">${escapeHtml((tarefa.tipo || 'Compromisso').toUpperCase())}</span>
         <span class="cal-todas-titulo">${escapeHtml(tarefa.titulo)}</span>
         <div class="cal-todas-acoes">
-          <button class="cal-tarefa-check cal-btn" type="button" aria-label="Marcar como feita"></button>
+          <button class="cal-tarefa-check cal-btn" type="button" aria-label="Marcar como feita">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
           <button class="cal-tarefa-editar cal-btn cal-btn-icon" type="button" aria-label="Editar">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>

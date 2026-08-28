@@ -300,7 +300,8 @@ create table if not exists public.planejador_cronograma_dias (
   pilar text not null
 );
 
-create unique index if not exists planejador_cronograma_dias_unq on public.planejador_cronograma_dias (data, pilar);
+-- Só 1 pilar por dia (a unicidade é só em "data", não em "data, pilar").
+create unique index if not exists planejador_cronograma_dias_unq on public.planejador_cronograma_dias (data);
 create index if not exists planejador_cronograma_dias_data_idx on public.planejador_cronograma_dias (data);
 
 alter table public.planejador_cronograma_dias enable row level security;

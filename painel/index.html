@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827z">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827aa">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827z">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827aa">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../painel-admin/js/auth.js?v=20260827z"></script>
+<script src="../painel-admin/js/auth.js?v=20260827aa"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -3170,7 +3170,7 @@
               <button type="button" class="pl-cron-dia-pilar-remover" data-dia="${diaISO}" data-pilar="${escapeHtml(p)}" aria-label="Remover pilar deste dia">×</button>
             </span>
           `).join('')}
-          <button type="button" class="pl-cron-dia-add-pilar" data-dia="${diaISO}">+ pilar</button>
+          ${pilaresDoDia.length === 0 ? `<button type="button" class="pl-cron-dia-add-pilar" data-dia="${diaISO}">+ pilar</button>` : ''}
           ${ideiasDoDia.map((idea) => `
             <span class="pl-cron-dia-ideia" data-id="${escapeHtml(idea.id)}">
               <span class="pl-cron-dia-ideia-titulo">${escapeHtml(idea.titulo)}</span>
@@ -3192,7 +3192,8 @@
             excluirPilarDoDia(btn.dataset.dia, btn.dataset.pilar);
           });
         });
-        celula.querySelector('.pl-cron-dia-add-pilar').addEventListener('click', () => abrirModalPilarDia(diaISO));
+        const botaoAddPilar = celula.querySelector('.pl-cron-dia-add-pilar');
+        if (botaoAddPilar) botaoAddPilar.addEventListener('click', () => abrirModalPilarDia(diaISO));
         celula.querySelectorAll('.pl-cron-dia-ideia').forEach((tag) => {
           tag.addEventListener('click', () => {
             const idea = ideiasCache.find((i) => i.id === tag.dataset.id);

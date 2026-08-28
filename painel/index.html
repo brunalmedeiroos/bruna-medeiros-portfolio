@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827v">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827w">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827v">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827w">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../painel-admin/js/auth.js?v=20260827v"></script>
+<script src="../painel-admin/js/auth.js?v=20260827w"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -1222,6 +1222,7 @@
     let ideiasCache = [];
     let achadosCache = [];
     let cronogramaCache = [];
+    let cronogramaExcecoesCache = [];
     let cronMesAtual = new Date(); // mês exibido no calendário do cronograma
     let ideiaAbertaId = null;
     let achadoAbertoId = null;
@@ -2586,21 +2587,24 @@
 
     async function carregarPlanejador() {
       try {
-        const [pilares, ideias, achados, cronograma] = await Promise.all([
+        const [pilares, ideias, achados, cronograma, cronogramaExcecoes] = await Promise.all([
           Auth.sb.from('planejador_pilares').select('*').order('ordem', { ascending: true }),
           Auth.sb.from('planejador_ideias').select('*').order('ordem', { ascending: true }),
           Auth.sb.from('planejador_achados').select('*').order('ordem', { ascending: true }),
           Auth.sb.from('planejador_cronograma').select('*').order('ordem', { ascending: true }),
+          Auth.sb.from('planejador_cronograma_excecoes').select('*'),
         ]);
         if (pilares.error) throw pilares.error;
         if (ideias.error) throw ideias.error;
         if (achados.error) throw achados.error;
         if (cronograma.error) throw cronograma.error;
+        if (cronogramaExcecoes.error) throw cronogramaExcecoes.error;
 
         pilaresCache = pilares.data || [];
         ideiasCache = ideias.data || [];
         achadosCache = achados.data || [];
         cronogramaCache = cronograma.data || [];
+        cronogramaExcecoesCache = cronogramaExcecoes.data || [];
 
         renderizarBancoIdeias();
         renderizarAchados();
@@ -3024,7 +3028,10 @@
         return;
       }
 
-      cronogramaCache.forEach((linha) => container.appendChild(criarLinhaCronograma(linha)));
+      // Ordem sempre automática pelo dia da semana (Segunda -> Domingo), não pela
+      // ordem de criação — mudar o dia de um pilar já reordena a lista sozinha.
+      const ordenado = [...cronogramaCache].sort((a, b) => DIAS_SEMANA.indexOf(a.dia_semana) - DIAS_SEMANA.indexOf(b.dia_semana));
+      ordenado.forEach((linha) => container.appendChild(criarLinhaCronograma(linha)));
     }
 
     function criarLinhaCronograma(linha) {
@@ -3110,13 +3117,17 @@
         mapaDia[linha.dia_semana].push(linha.pilar);
       });
 
+      // Datas específicas em que um pilar foi excluído do calendário (sem mexer
+      // no padrão semanal — ex: não vai gravar/postar sobre aquele pilar nesse dia).
+      const excecoes = new Set(cronogramaExcecoesCache.map((e) => `${e.data}|${e.pilar}`));
+
       for (let i = 0; i < 42; i++) {
         const dia = new Date(inicioGrade);
         dia.setDate(dia.getDate() + i);
         const diaISO = dataParaISO(dia);
 
         const nomeDiaSemana = DIAS_SEMANA[(dia.getDay() + 6) % 7];
-        const pilaresDoDia = mapaDia[nomeDiaSemana] || [];
+        const pilaresDoDia = (mapaDia[nomeDiaSemana] || []).filter((p) => !excecoes.has(`${diaISO}|${p}`));
         const ideiasDoDia = ideiasCache.filter((idea) => idea.data_agendada === diaISO);
 
         const celula = document.createElement('div');
@@ -3129,7 +3140,12 @@
             <span class="pl-cron-dia-numero">${dia.getDate()}</span>
             <button type="button" class="pl-cron-dia-add" aria-label="Agendar ideia">+</button>
           </div>
-          ${pilaresDoDia.map((p) => `<span class="pl-cron-dia-pilar">${escapeHtml(p)}</span>`).join('')}
+          ${pilaresDoDia.map((p) => `
+            <span class="pl-cron-dia-pilar">
+              ${escapeHtml(p)}
+              <button type="button" class="pl-cron-dia-pilar-remover" data-dia="${diaISO}" data-pilar="${escapeHtml(p)}" aria-label="Não postar sobre este pilar neste dia">×</button>
+            </span>
+          `).join('')}
           ${ideiasDoDia.map((idea) => `
             <span class="pl-cron-dia-ideia" data-id="${escapeHtml(idea.id)}">
               <span class="pl-cron-dia-ideia-titulo">${escapeHtml(idea.titulo)}</span>
@@ -3143,6 +3159,12 @@
           btn.addEventListener('click', (e) => {
             e.stopPropagation();
             desagendarIdeia(btn.dataset.id);
+          });
+        });
+        celula.querySelectorAll('.pl-cron-dia-pilar-remover').forEach((btn) => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            excluirPilarDoDia(btn.dataset.dia, btn.dataset.pilar);
           });
         });
         celula.querySelectorAll('.pl-cron-dia-ideia').forEach((tag) => {
@@ -3204,6 +3226,19 @@
       } catch (err) {
         console.error('Erro ao remover ideia do calendário:', err);
         alert('Não foi possível remover agora. Tente de novo em instantes.');
+      }
+    }
+
+    // Tira um pilar do calendário só naquele dia específico, sem mexer no padrão
+    // semanal do cronograma (ex: não vai gravar/postar sobre aquele pilar hoje).
+    async function excluirPilarDoDia(diaISO, pilar) {
+      try {
+        const { error } = await Auth.sb.from('planejador_cronograma_excecoes').insert({ data: diaISO, pilar });
+        if (error) throw error;
+        await carregarPlanejador();
+      } catch (err) {
+        console.error('Erro ao excluir pilar do dia:', err);
+        alert('Não foi possível excluir agora. Tente de novo em instantes.');
       }
     }
 

@@ -1379,6 +1379,9 @@
 }
 
 .painel-body .pl-cron-dia-pilar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   font-size: 9px;
   font-weight: 700;
   text-transform: uppercase;
@@ -1388,6 +1391,23 @@
   background: rgba(4, 70, 93, 0.08);
   color: var(--grafite);
   width: fit-content;
+  max-width: 100%;
+}
+
+.painel-body .pl-cron-dia-pilar-remover {
+  background: transparent;
+  border: none;
+  color: var(--grafite);
+  opacity: 0.6;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 1px;
+  flex-shrink: 0;
+}
+
+.painel-body .pl-cron-dia-pilar-remover:hover {
+  opacity: 1;
 }
 
 .painel-body .pl-cron-dia-ideia {

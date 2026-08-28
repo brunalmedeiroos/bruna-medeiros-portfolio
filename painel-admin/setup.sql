@@ -289,6 +289,30 @@ select pilar, dia_semana, ordem from (values
 ) as padrao(pilar, dia_semana, ordem)
 where not exists (select 1 from public.planejador_cronograma);
 
+-- Tabela: planejador_cronograma_excecoes — dias específicos em que um pilar
+-- do cronograma semanal fica sem exibir no calendário (ex: não vai gravar/
+-- postar sobre aquele pilar nesse dia), sem mexer no padrão recorrente.
+create table if not exists public.planejador_cronograma_excecoes (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  data date not null,
+  pilar text not null
+);
+
+create unique index if not exists planejador_cronograma_excecoes_unq on public.planejador_cronograma_excecoes (data, pilar);
+create index if not exists planejador_cronograma_excecoes_data_idx on public.planejador_cronograma_excecoes (data);
+
+alter table public.planejador_cronograma_excecoes enable row level security;
+
+create policy "Painel: leitura autenticada de exceções do cronograma"
+  on public.planejador_cronograma_excecoes for select to authenticated using (true);
+create policy "Painel: escrita autenticada de exceções do cronograma"
+  on public.planejador_cronograma_excecoes for insert to authenticated with check (true);
+create policy "Painel: atualização autenticada de exceções do cronograma"
+  on public.planejador_cronograma_excecoes for update to authenticated using (true) with check (true);
+create policy "Painel: exclusão autenticada de exceções do cronograma"
+  on public.planejador_cronograma_excecoes for delete to authenticated using (true);
+
 -- ---------------------------------------------------------------------
 -- Campo extra dos Achados: observações livres (o que viu, contexto, link)
 -- (rode isto se a tabela planejador_achados já existia sem essa coluna)

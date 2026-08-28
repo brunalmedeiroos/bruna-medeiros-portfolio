@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260827j">
+<link rel="stylesheet" href="css/style.css?v=20260827k">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260827j">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260827k">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260827j"></script>
+<script src="js/auth.js?v=20260827k"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -458,7 +458,7 @@
 
           <!-- Visão Geral: só leitura, tudo derivado de ugc_trabalhos -->
           <div id="ugc-pagina-visao-geral" class="ugc-pagina">
-            <div class="cards-numeros">
+            <div class="cards-numeros cards-numeros-visao-geral-ugc">
               <div class="card-numero destaque">
                 <span class="card-label">Trabalhos ativos</span>
                 <span class="card-valor" id="ugc-num-ativos">0</span>
@@ -466,6 +466,10 @@
               <div class="card-numero">
                 <span class="card-label">Em produção</span>
                 <span class="card-valor" id="ugc-num-producao">0</span>
+              </div>
+              <div class="card-numero">
+                <span class="card-label">Contratos finalizados</span>
+                <span class="card-valor" id="ugc-num-contratos-finalizados">0</span>
               </div>
               <div class="card-numero">
                 <span class="card-label">A receber</span>
@@ -598,6 +602,16 @@
             </div>
           </div>
           <div id="ugc-pagina-precos" class="ugc-pagina" hidden>
+            <div class="card ugc-proposta-card">
+              <div class="ugc-precos-topo">
+                <div>
+                  <h3 class="card-titulo">Proposta personalizada</h3>
+                  <p class="cal-todas-resumo">Monte uma proposta combinando os serviços da tabela, com desconto por quantidade.</p>
+                </div>
+                <button id="btn-ugc-nova-proposta" class="cal-btn cal-btn-primario" type="button">+ Nova proposta</button>
+              </div>
+            </div>
+
             <div class="ugc-precos-colunas">
               <div class="card">
                 <div class="ugc-precos-topo">
@@ -621,7 +635,7 @@
 
             <div class="card">
               <div class="ugc-precos-topo">
-                <h3 class="card-titulo">Adicionais</h3>
+                <h3 class="card-titulo">Condições/Direitos</h3>
                 <button type="button" class="cal-btn cal-btn-icon ugc-precos-add" data-categoria="Adicionais" aria-label="Adicionar serviço">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 </button>
@@ -1094,6 +1108,42 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal: proposta personalizada (calculadora, não é salva no banco) -->
+    <div id="ugc-modal-proposta-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pl-modal-grande">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo">Proposta personalizada</span>
+          <button id="ugc-modal-proposta-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="ugc-proposta-marca">Marca / cliente (opcional)</label>
+          <input type="text" id="ugc-proposta-marca" placeholder="Ex: Marca X">
+        </div>
+
+        <div id="ugc-proposta-itens" class="ugc-proposta-itens"></div>
+        <button type="button" id="ugc-proposta-add-item" class="cal-btn">+ Adicionar item</button>
+
+        <div class="ugc-proposta-totais">
+          <div class="cal-form-campo">
+            <label for="ugc-proposta-desconto">Desconto (%)</label>
+            <input type="number" min="0" max="100" step="1" id="ugc-proposta-desconto" value="0">
+          </div>
+          <div class="ugc-proposta-resumo">
+            <div><span>Valor bruto</span><strong id="ugc-proposta-bruto">R$ 0,00</strong></div>
+            <div><span>Desconto</span><strong id="ugc-proposta-desconto-valor">R$ 0,00</strong></div>
+            <div class="ugc-proposta-final"><span>Valor final</span><strong id="ugc-proposta-final">R$ 0,00</strong></div>
+          </div>
+        </div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="ugc-proposta-copiar" class="cal-btn">Copiar resumo</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -1145,6 +1195,7 @@
     const UGC_STATUS_EM_PRODUCAO = ['Roteiro', 'Gravação', 'Edição', 'Aprovação'];
     const UGC_STATUS_TRABALHO = ['Negociando', 'Fechado', 'Aguardando briefing', 'Aguardando produto', 'Roteiro', 'Gravação', 'Edição', 'Aprovação', 'Entregue', 'Aguardando pagamento', 'Pago', 'Cancelado'];
     const UGC_ORIGENS = ['Inbound', 'Outbound', 'Indicação', 'Direto com a marca', 'Agência', 'Plataforma', 'Outro'];
+    const UGC_ORIGENS_PROSPECCAO = ['Inbound', 'Outbound'];
     const UGC_CHECKLIST_ITENS = [
       { campo: 'briefing_recebido', label: 'Briefing recebido' },
       { campo: 'produto_recebido', label: 'Produto recebido' },
@@ -1170,6 +1221,7 @@
     const UGC_STATUS_CONTRATO = ['Pendente assinatura', 'Enviado', 'Assinado', 'Encerrado'];
     let ugcPrecoAbertoId = null;
     let ugcPrecoModalCategoria = null;
+    let ugcPropostaItens = [];
 
     const TITULOS_ABA = {
       overview: 'Dashboard',
@@ -1468,6 +1520,14 @@
       document.getElementById('ugc-modal-preco-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'ugc-modal-preco-overlay') fecharModalPreco();
       });
+      document.getElementById('btn-ugc-nova-proposta').addEventListener('click', abrirModalProposta);
+      document.getElementById('ugc-modal-proposta-fechar').addEventListener('click', fecharModalProposta);
+      document.getElementById('ugc-modal-proposta-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'ugc-modal-proposta-overlay') fecharModalProposta();
+      });
+      document.getElementById('ugc-proposta-add-item').addEventListener('click', adicionarItemProposta);
+      document.getElementById('ugc-proposta-desconto').addEventListener('input', recalcularTotaisProposta);
+      document.getElementById('ugc-proposta-copiar').addEventListener('click', copiarResumoProposta);
     }
 
     function abrirPaginaPlanejador(pagina) {
@@ -3319,12 +3379,14 @@
     function renderizarVisaoGeralUGC() {
       const ativos = ugcTrabalhosCache.filter((t) => t.status !== 'Pago' && t.status !== 'Cancelado');
       const emProducao = ugcTrabalhosCache.filter((t) => UGC_STATUS_EM_PRODUCAO.includes(t.status));
+      const contratosFinalizados = ugcContratosCache.filter((c) => c.status === 'Encerrado');
       const aReceber = ugcTrabalhosCache
         .filter((t) => t.status_pagamento === 'Pendente' && t.status !== 'Cancelado')
         .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
 
       document.getElementById('ugc-num-ativos').textContent = formatarNumero(ativos.length);
       document.getElementById('ugc-num-producao').textContent = formatarNumero(emProducao.length);
+      document.getElementById('ugc-num-contratos-finalizados').textContent = formatarNumero(contratosFinalizados.length);
       document.getElementById('ugc-num-receber').textContent = formatarMoeda(aReceber);
 
       const proximas = ugcTrabalhosCache
@@ -3830,7 +3892,7 @@
       document.getElementById('ugc-prosp-contato').value = prospeccao ? prospeccao.contato || '' : '';
 
       const selOrigem = document.getElementById('ugc-prosp-origem');
-      selOrigem.innerHTML = '<option value="">Selecione...</option>' + UGC_ORIGENS.map((o) => `<option value="${o}">${o}</option>`).join('');
+      selOrigem.innerHTML = '<option value="">Selecione...</option>' + UGC_ORIGENS_PROSPECCAO.map((o) => `<option value="${o}">${o}</option>`).join('');
       selOrigem.value = prospeccao && prospeccao.origem ? prospeccao.origem : '';
 
       document.getElementById('ugc-prosp-tipo').value = prospeccao && prospeccao.tipo_trabalho ? prospeccao.tipo_trabalho : '';
@@ -4112,8 +4174,9 @@
       }
     }
 
-    // ---- Preços (catálogo editável: UGC / Publicidade / Adicionais) ----
+    // ---- Preços (catálogo editável: UGC / Publicidade / Condições e Direitos) ----
     const UGC_PRECOS_SUFIXO = { UGC: 'ugc', Publicidade: 'publicidade', Adicionais: 'adicionais' };
+    const UGC_PRECOS_LABEL = { UGC: 'UGC', Publicidade: 'Publicidade', Adicionais: 'Condições/Direitos' };
 
     function renderizarPrecos() {
       Object.entries(UGC_PRECOS_SUFIXO).forEach(([categoria, sufixo]) => {
@@ -4144,7 +4207,7 @@
     function abrirModalPreco(preco, categoria) {
       ugcPrecoAbertoId = preco ? preco.id : null;
       ugcPrecoModalCategoria = categoria;
-      document.getElementById('ugc-preco-modal-titulo').textContent = preco ? 'Editar serviço' : `Novo serviço — ${categoria}`;
+      document.getElementById('ugc-preco-modal-titulo').textContent = preco ? 'Editar serviço' : `Novo serviço — ${UGC_PRECOS_LABEL[categoria] || categoria}`;
       document.getElementById('ugc-preco-servico').value = preco ? preco.servico : '';
       document.getElementById('ugc-preco-valor').value = preco && preco.valor != null ? preco.valor : '';
       document.getElementById('ugc-preco-observacoes').value = preco ? preco.observacoes || '' : '';
@@ -4202,6 +4265,147 @@
       } catch (err) {
         console.error('Erro ao excluir preço:', err);
         alert('Não foi possível excluir agora. Tente de novo em instantes.');
+      }
+    }
+
+    // ---- Proposta personalizada (calculadora sobre o catálogo de preços; não é salva no banco) ----
+    function abrirModalProposta() {
+      document.getElementById('ugc-proposta-marca').value = '';
+      document.getElementById('ugc-proposta-desconto').value = 0;
+      ugcPropostaItens = [{ precoId: '', quantidade: 1 }];
+      renderizarPropostaItens();
+      document.getElementById('ugc-modal-proposta-overlay').hidden = false;
+    }
+
+    function fecharModalProposta() {
+      document.getElementById('ugc-modal-proposta-overlay').hidden = true;
+    }
+
+    function adicionarItemProposta() {
+      ugcPropostaItens.push({ precoId: '', quantidade: 1 });
+      renderizarPropostaItens();
+    }
+
+    function removerItemProposta(idx) {
+      ugcPropostaItens.splice(idx, 1);
+      renderizarPropostaItens();
+    }
+
+    function precoPorId(id) {
+      return ugcPrecosCache.find((p) => p.id === id) || null;
+    }
+
+    function renderizarPropostaItens() {
+      const cont = document.getElementById('ugc-proposta-itens');
+      const opcoes = ['UGC', 'Publicidade', 'Adicionais']
+        .map((categoria) => {
+          const itens = ugcPrecosCache.filter((p) => p.categoria === categoria).sort((a, b) => a.ordem - b.ordem);
+          if (itens.length === 0) return '';
+          const options = itens.map((p) => `<option value="${p.id}">${escapeHtml(p.servico)} — ${formatarMoeda(p.valor)}</option>`).join('');
+          return `<optgroup label="${UGC_PRECOS_LABEL[categoria]}">${options}</optgroup>`;
+        })
+        .join('');
+
+      cont.innerHTML = ugcPropostaItens
+        .map((item, idx) => `
+          <div class="ugc-proposta-item" data-idx="${idx}">
+            <select class="ugc-proposta-item-servico" data-idx="${idx}">
+              <option value="">Selecione o serviço...</option>
+              ${opcoes}
+            </select>
+            <input type="number" min="1" step="1" class="ugc-proposta-item-qtd" data-idx="${idx}" value="${item.quantidade}">
+            <span class="ugc-proposta-item-subtotal" data-idx="${idx}">R$ 0,00</span>
+            <button type="button" class="cal-btn cal-btn-icon ugc-proposta-item-remover" data-idx="${idx}" aria-label="Remover item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        `)
+        .join('');
+
+      cont.querySelectorAll('.ugc-proposta-item-servico').forEach((sel, idx) => {
+        sel.value = ugcPropostaItens[idx].precoId;
+      });
+
+      cont.querySelectorAll('.ugc-proposta-item-servico').forEach((sel) => {
+        sel.addEventListener('change', () => {
+          ugcPropostaItens[Number(sel.dataset.idx)].precoId = sel.value;
+          atualizarSubtotalItemProposta(Number(sel.dataset.idx));
+          recalcularTotaisProposta();
+        });
+      });
+      cont.querySelectorAll('.ugc-proposta-item-qtd').forEach((input) => {
+        input.addEventListener('input', () => {
+          ugcPropostaItens[Number(input.dataset.idx)].quantidade = Number(input.value) || 0;
+          atualizarSubtotalItemProposta(Number(input.dataset.idx));
+          recalcularTotaisProposta();
+        });
+      });
+      cont.querySelectorAll('.ugc-proposta-item-remover').forEach((btn) => {
+        btn.addEventListener('click', () => removerItemProposta(Number(btn.dataset.idx)));
+      });
+
+      ugcPropostaItens.forEach((_, idx) => atualizarSubtotalItemProposta(idx));
+      recalcularTotaisProposta();
+    }
+
+    function atualizarSubtotalItemProposta(idx) {
+      const item = ugcPropostaItens[idx];
+      const preco = precoPorId(item.precoId);
+      const subtotal = preco ? (Number(preco.valor) || 0) * (Number(item.quantidade) || 0) : 0;
+      const span = document.querySelector(`.ugc-proposta-item-subtotal[data-idx="${idx}"]`);
+      if (span) span.textContent = formatarMoeda(subtotal);
+    }
+
+    function calcularBrutoProposta() {
+      return ugcPropostaItens.reduce((soma, item) => {
+        const preco = precoPorId(item.precoId);
+        return soma + (preco ? (Number(preco.valor) || 0) * (Number(item.quantidade) || 0) : 0);
+      }, 0);
+    }
+
+    function recalcularTotaisProposta() {
+      const bruto = calcularBrutoProposta();
+      const descontoPct = Number(document.getElementById('ugc-proposta-desconto').value) || 0;
+      const descontoValor = bruto * (descontoPct / 100);
+      const final = bruto - descontoValor;
+      document.getElementById('ugc-proposta-bruto').textContent = formatarMoeda(bruto);
+      document.getElementById('ugc-proposta-desconto-valor').textContent = formatarMoeda(descontoValor);
+      document.getElementById('ugc-proposta-final').textContent = formatarMoeda(final);
+    }
+
+    async function copiarResumoProposta() {
+      const marca = document.getElementById('ugc-proposta-marca').value.trim();
+      const linhas = ugcPropostaItens
+        .map((item) => {
+          const preco = precoPorId(item.precoId);
+          if (!preco) return null;
+          const subtotal = (Number(preco.valor) || 0) * (Number(item.quantidade) || 0);
+          return `${item.quantidade}x ${preco.servico} — ${formatarMoeda(subtotal)}`;
+        })
+        .filter(Boolean);
+      const bruto = calcularBrutoProposta();
+      const descontoPct = Number(document.getElementById('ugc-proposta-desconto').value) || 0;
+      const descontoValor = bruto * (descontoPct / 100);
+      const final = bruto - descontoValor;
+
+      const texto = [
+        marca ? `Proposta — ${marca}` : 'Proposta',
+        '',
+        ...linhas,
+        '',
+        `Valor bruto: ${formatarMoeda(bruto)}`,
+        descontoPct ? `Desconto (${descontoPct}%): ${formatarMoeda(descontoValor)}` : null,
+        `Valor final: ${formatarMoeda(final)}`,
+      ]
+        .filter((l) => l !== null)
+        .join('\n');
+
+      try {
+        await navigator.clipboard.writeText(texto);
+        alert('Resumo copiado para a área de transferência.');
+      } catch (err) {
+        console.error('Erro ao copiar resumo da proposta:', err);
+        alert('Não foi possível copiar agora. Tente de novo em instantes.');
       }
     }
 

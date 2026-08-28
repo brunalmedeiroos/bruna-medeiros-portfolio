@@ -442,7 +442,7 @@ create table if not exists public.ugc_prospeccao (
   created_at timestamptz not null default now(),
   marca text not null,
   contato text,
-  origem text check (origem in ('Inbound', 'Outbound', 'Indicação', 'Direto com a marca', 'Agência', 'Plataforma', 'Outro')),
+  origem text check (origem in ('Inbound', 'Outbound')),
   tipo_trabalho text check (tipo_trabalho in ('UGC', 'Publicidade')),
   data_contato date,
   status text not null default 'Para abordar' check (status in (
@@ -496,7 +496,8 @@ create policy "Painel: exclusão autenticada de contratos UGC"
   on public.ugc_contratos for delete to authenticated using (true);
 
 -- Tabela: ugc_precos (catálogo editável; a categoria distingue as 3
--- seções mostradas na página Preços: UGC / Publicidade / Adicionais)
+-- seções mostradas na página Preços: UGC / Publicidade / Adicionais —
+-- "Adicionais" é exibido no painel como "Condições/Direitos")
 create table if not exists public.ugc_precos (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
@@ -539,14 +540,9 @@ select categoria, servico, ordem from (values
   ('Publicidade', 'Outros', 5),
   ('Adicionais', 'Uso em anúncios', 0),
   ('Adicionais', 'Exclusividade', 1),
-  ('Adicionais', 'Vídeo adicional', 2),
-  ('Adicionais', 'Foto adicional', 3),
-  ('Adicionais', 'B-roll adicional', 4),
-  ('Adicionais', 'Edição adicional', 5),
-  ('Adicionais', 'Roteiro', 6),
-  ('Adicionais', 'Urgência', 7),
-  ('Adicionais', 'Whitelisting/Spark Ads', 8),
-  ('Adicionais', 'Outros', 9)
+  ('Adicionais', 'Urgência', 2),
+  ('Adicionais', 'Uso do conteúdo por período adicional', 3),
+  ('Adicionais', 'Spark Ads/Whitelisting', 4)
 ) as padrao(categoria, servico, ordem)
 where not exists (select 1 from public.ugc_precos);
 

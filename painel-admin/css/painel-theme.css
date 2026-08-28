@@ -1990,3 +1990,82 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Espaçamento entre os blocos de cada sub-aba de UGC/Publi (cards de número,
+   tabelas, "Próximas entregas" etc. — sem isto ficavam grudados). */
+.painel-body .ugc-pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* O atributo hidden precisa vencer o display:flex acima (mesma especificidade,
+   mas a regra do autor venceria a do agente de usuário sem isto). */
+.painel-body .ugc-pagina[hidden] {
+  display: none;
+}
+
+.painel-body .cards-numeros-visao-geral-ugc {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* ---- Proposta personalizada (calculadora dentro de Preços) ---- */
+
+.painel-body .ugc-proposta-itens {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.painel-body .ugc-proposta-item {
+  display: grid;
+  grid-template-columns: 1fr 80px 110px 32px;
+  gap: 8px;
+  align-items: center;
+}
+
+.painel-body .ugc-proposta-item-subtotal {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--grafite);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.painel-body .ugc-proposta-totais {
+  border-top: 1px solid var(--borda);
+  margin-top: 8px;
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.painel-body .ugc-proposta-resumo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.painel-body .ugc-proposta-resumo > div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+
+.painel-body .ugc-proposta-resumo .ugc-proposta-final {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--grafite);
+  border-top: 1px solid var(--borda);
+  padding-top: 8px;
+  margin-top: 4px;
+}
+
+@media (max-width: 480px) {
+  .painel-body .ugc-proposta-item {
+    grid-template-columns: 1fr;
+  }
+}

@@ -2122,6 +2122,24 @@
   margin: 6px 0 0;
 }
 
+.painel-body .ugc-permuta-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-suave);
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.painel-body .ugc-permuta-check input {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--coral);
+  cursor: pointer;
+}
+
 .painel-body .ugc-proposta-urgencia-check {
   display: flex;
   align-items: center;

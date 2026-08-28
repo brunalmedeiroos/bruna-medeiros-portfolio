@@ -351,6 +351,7 @@ create table if not exists public.ugc_trabalhos (
   )),
   data_entrega date,
   valor numeric(10, 2),
+  permuta boolean not null default false, -- fechado por troca, sem valor em R$ (o campo valor fica null)
   status_pagamento text not null default 'Pendente' check (status_pagamento in ('Pendente', 'Recebido')),
   forma_pagamento text,
   data_prevista_pagamento date,

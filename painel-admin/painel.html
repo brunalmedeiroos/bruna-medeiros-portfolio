@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260827t">
+<link rel="stylesheet" href="css/style.css?v=20260827u">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260827t">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260827u">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260827t"></script>
+<script src="js/auth.js?v=20260827u"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -878,6 +878,10 @@
           <div class="cal-form-campo">
             <label for="ugc-modal-valor">Valor fechado (R$)</label>
             <input type="number" step="0.01" min="0" id="ugc-modal-valor">
+            <label class="ugc-permuta-check">
+              <input type="checkbox" id="ugc-modal-permuta">
+              <span>Fechado por permuta (sem valor em R$)</span>
+            </label>
           </div>
           <div class="cal-form-campo">
             <label for="ugc-modal-entrega">Prazo de entrega</label>
@@ -1510,6 +1514,7 @@
         if (e.target.id === 'ugc-modal-trabalho-overlay') fecharModalTrabalho();
       });
       document.getElementById('ugc-modal-tipo').addEventListener('change', atualizarSugestoesEntregaveis);
+      document.getElementById('ugc-modal-permuta').addEventListener('change', atualizarCampoValorPermuta);
       document.getElementById('ugc-modal-add-entregavel').addEventListener('click', adicionarEntregavelModal);
       document.getElementById('ugc-modal-briefing-anexar').addEventListener('click', () => {
         document.getElementById('ugc-modal-briefing-arquivo-input').click();
@@ -3667,6 +3672,8 @@
       selectStatus.value = trabalho ? trabalho.status : 'Negociando';
 
       document.getElementById('ugc-modal-valor').value = trabalho && trabalho.valor != null ? trabalho.valor : '';
+      document.getElementById('ugc-modal-permuta').checked = trabalho ? !!trabalho.permuta : false;
+      atualizarCampoValorPermuta();
       document.getElementById('ugc-modal-entrega').value = trabalho && trabalho.data_entrega ? trabalho.data_entrega : '';
 
       document.getElementById('ugc-modal-briefing-link').value = trabalho ? trabalho.briefing_link || '' : '';
@@ -3685,6 +3692,14 @@
     function fecharModalTrabalho() {
       ugcTrabalhoAbertoId = null;
       document.getElementById('ugc-modal-trabalho-overlay').hidden = true;
+    }
+
+    // Fechado por permuta não tem valor em R$ — desabilita e limpa o campo.
+    function atualizarCampoValorPermuta() {
+      const permuta = document.getElementById('ugc-modal-permuta').checked;
+      const campoValor = document.getElementById('ugc-modal-valor');
+      campoValor.disabled = permuta;
+      if (permuta) campoValor.value = '';
     }
 
     // Sugere os serviços cadastrados em Preços pra categoria do tipo de trabalho atual
@@ -3757,7 +3772,12 @@
         origem: document.getElementById('ugc-modal-origem').value || null,
         plataforma: document.getElementById('ugc-modal-plataforma').value.trim() || null,
         status: document.getElementById('ugc-modal-status').value,
-        valor: document.getElementById('ugc-modal-valor').value ? Number(document.getElementById('ugc-modal-valor').value) : null,
+        permuta: document.getElementById('ugc-modal-permuta').checked,
+        valor: document.getElementById('ugc-modal-permuta').checked
+          ? null
+          : document.getElementById('ugc-modal-valor').value
+          ? Number(document.getElementById('ugc-modal-valor').value)
+          : null,
         data_entrega: document.getElementById('ugc-modal-entrega').value || null,
         briefing_link: document.getElementById('ugc-modal-briefing-link').value.trim() || null,
         briefing_arquivo_path: ugcModalBriefingArquivoPath,

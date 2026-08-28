@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827x">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827y">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827x">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827y">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../painel-admin/js/auth.js?v=20260827x"></script>
+<script src="../painel-admin/js/auth.js?v=20260827y"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -392,6 +392,7 @@
             </div>
 
             <div class="card pl-cronograma-tabela-card">
+              <p class="pl-cronograma-tabela-hint">Isso é só uma referência — o dia da semana não é obrigatório. O pilar de cada dia é escolhido direto no calendário acima.</p>
               <div class="pl-cronograma-cabecalho">
                 <span>Pilar</span>
                 <span>Dia da semana</span>
@@ -762,6 +763,27 @@
 
         <div class="cal-form-acoes">
           <button type="button" id="pl-modal-agendar-confirmar" class="cal-btn cal-btn-primario">Agendar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: escolher o pilar de um dia específico do calendário do cronograma -->
+    <div id="pl-modal-pilar-dia-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pl-modal-pequeno">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo">Pilar do dia — <span id="pl-modal-pilar-dia-data"></span></span>
+          <button id="pl-modal-pilar-dia-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="pl-modal-pilar-dia-select">Pilar</label>
+          <select id="pl-modal-pilar-dia-select"></select>
+        </div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="pl-modal-pilar-dia-confirmar" class="cal-btn cal-btn-primario">Escolher</button>
         </div>
       </div>
     </div>
@@ -1222,7 +1244,8 @@
     let ideiasCache = [];
     let achadosCache = [];
     let cronogramaCache = [];
-    let cronogramaExcecoesCache = [];
+    let cronogramaDiasCache = [];
+    let dataPilarDiaAtual = null;
     let cronMesAtual = new Date(); // mês exibido no calendário do cronograma
     let ideiaAbertaId = null;
     let achadoAbertoId = null;
@@ -1471,6 +1494,11 @@
       document.getElementById('pl-modal-agendar-confirmar').addEventListener('click', confirmarAgendamento);
       document.getElementById('pl-modal-agendar-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'pl-modal-agendar-overlay') fecharModalAgendar();
+      });
+      document.getElementById('pl-modal-pilar-dia-fechar').addEventListener('click', fecharModalPilarDia);
+      document.getElementById('pl-modal-pilar-dia-confirmar').addEventListener('click', confirmarPilarDia);
+      document.getElementById('pl-modal-pilar-dia-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'pl-modal-pilar-dia-overlay') fecharModalPilarDia();
       });
 
       // Radar de Notícias
@@ -2587,24 +2615,24 @@
 
     async function carregarPlanejador() {
       try {
-        const [pilares, ideias, achados, cronograma, cronogramaExcecoes] = await Promise.all([
+        const [pilares, ideias, achados, cronograma, cronogramaDias] = await Promise.all([
           Auth.sb.from('planejador_pilares').select('*').order('ordem', { ascending: true }),
           Auth.sb.from('planejador_ideias').select('*').order('ordem', { ascending: true }),
           Auth.sb.from('planejador_achados').select('*').order('ordem', { ascending: true }),
           Auth.sb.from('planejador_cronograma').select('*').order('ordem', { ascending: true }),
-          Auth.sb.from('planejador_cronograma_excecoes').select('*'),
+          Auth.sb.from('planejador_cronograma_dias').select('*'),
         ]);
         if (pilares.error) throw pilares.error;
         if (ideias.error) throw ideias.error;
         if (achados.error) throw achados.error;
         if (cronograma.error) throw cronograma.error;
-        if (cronogramaExcecoes.error) throw cronogramaExcecoes.error;
+        if (cronogramaDias.error) throw cronogramaDias.error;
 
         pilaresCache = pilares.data || [];
         ideiasCache = ideias.data || [];
         achadosCache = achados.data || [];
         cronogramaCache = cronograma.data || [];
-        cronogramaExcecoesCache = cronogramaExcecoes.data || [];
+        cronogramaDiasCache = cronogramaDias.data || [];
 
         renderizarBancoIdeias();
         renderizarAchados();
@@ -3110,24 +3138,21 @@
 
       const hoje = new Date();
 
-      // Mapa dia da semana -> lista de pilares (pode ter mais de um no mesmo dia).
+      // Mapa data (ISO) -> lista de pilares escolhidos pra aquele dia específico.
+      // O dia da semana cadastrado embaixo é só referência — não preenche o
+      // calendário sozinho, ela escolhe o pilar de cada dia na hora.
       const mapaDia = {};
-      cronogramaCache.forEach((linha) => {
-        if (!mapaDia[linha.dia_semana]) mapaDia[linha.dia_semana] = [];
-        mapaDia[linha.dia_semana].push(linha.pilar);
+      cronogramaDiasCache.forEach((linha) => {
+        if (!mapaDia[linha.data]) mapaDia[linha.data] = [];
+        mapaDia[linha.data].push(linha.pilar);
       });
-
-      // Datas específicas em que um pilar foi excluído do calendário (sem mexer
-      // no padrão semanal — ex: não vai gravar/postar sobre aquele pilar nesse dia).
-      const excecoes = new Set(cronogramaExcecoesCache.map((e) => `${e.data}|${e.pilar}`));
 
       for (let i = 0; i < 42; i++) {
         const dia = new Date(inicioGrade);
         dia.setDate(dia.getDate() + i);
         const diaISO = dataParaISO(dia);
 
-        const nomeDiaSemana = DIAS_SEMANA[(dia.getDay() + 6) % 7];
-        const pilaresDoDia = (mapaDia[nomeDiaSemana] || []).filter((p) => !excecoes.has(`${diaISO}|${p}`));
+        const pilaresDoDia = mapaDia[diaISO] || [];
         const ideiasDoDia = ideiasCache.filter((idea) => idea.data_agendada === diaISO);
 
         const celula = document.createElement('div');
@@ -3143,9 +3168,10 @@
           ${pilaresDoDia.map((p) => `
             <span class="pl-cron-dia-pilar">
               ${escapeHtml(p)}
-              <button type="button" class="pl-cron-dia-pilar-remover" data-dia="${diaISO}" data-pilar="${escapeHtml(p)}" aria-label="Não postar sobre este pilar neste dia">×</button>
+              <button type="button" class="pl-cron-dia-pilar-remover" data-dia="${diaISO}" data-pilar="${escapeHtml(p)}" aria-label="Remover pilar deste dia">×</button>
             </span>
           `).join('')}
+          <button type="button" class="pl-cron-dia-add-pilar" data-dia="${diaISO}">+ pilar</button>
           ${ideiasDoDia.map((idea) => `
             <span class="pl-cron-dia-ideia" data-id="${escapeHtml(idea.id)}">
               <span class="pl-cron-dia-ideia-titulo">${escapeHtml(idea.titulo)}</span>
@@ -3167,6 +3193,7 @@
             excluirPilarDoDia(btn.dataset.dia, btn.dataset.pilar);
           });
         });
+        celula.querySelector('.pl-cron-dia-add-pilar').addEventListener('click', () => abrirModalPilarDia(diaISO));
         celula.querySelectorAll('.pl-cron-dia-ideia').forEach((tag) => {
           tag.addEventListener('click', () => {
             const idea = ideiasCache.find((i) => i.id === tag.dataset.id);
@@ -3229,11 +3256,52 @@
       }
     }
 
-    // Tira um pilar do calendário só naquele dia específico, sem mexer no padrão
-    // semanal do cronograma (ex: não vai gravar/postar sobre aquele pilar hoje).
+    function abrirModalPilarDia(diaISO) {
+      dataPilarDiaAtual = diaISO;
+      document.getElementById('pl-modal-pilar-dia-data').textContent =
+        new Date(diaISO + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' });
+
+      const jaEscolhidos = cronogramaDiasCache.filter((l) => l.data === diaISO).map((l) => l.pilar);
+      const nomesPilares = [...new Set(cronogramaCache.map((l) => l.pilar))].filter((p) => !jaEscolhidos.includes(p));
+
+      const select = document.getElementById('pl-modal-pilar-dia-select');
+      if (nomesPilares.length === 0) {
+        select.innerHTML = '<option value="">Nenhum pilar disponível — cadastre um lá embaixo</option>';
+      } else {
+        select.innerHTML = nomesPilares.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
+        // Sugere o pilar de referência daquele dia da semana, mas ela pode trocar livremente.
+        const nomeDiaSemana = DIAS_SEMANA[(new Date(diaISO + 'T00:00:00').getDay() + 6) % 7];
+        const sugestao = cronogramaCache.find((l) => l.dia_semana === nomeDiaSemana && !jaEscolhidos.includes(l.pilar));
+        if (sugestao) select.value = sugestao.pilar;
+      }
+
+      document.getElementById('pl-modal-pilar-dia-overlay').hidden = false;
+    }
+
+    function fecharModalPilarDia() {
+      dataPilarDiaAtual = null;
+      document.getElementById('pl-modal-pilar-dia-overlay').hidden = true;
+    }
+
+    async function confirmarPilarDia() {
+      const pilar = document.getElementById('pl-modal-pilar-dia-select').value;
+      if (!pilar || !dataPilarDiaAtual) return;
+      try {
+        const { error } = await Auth.sb.from('planejador_cronograma_dias').insert({ data: dataPilarDiaAtual, pilar });
+        if (error) throw error;
+        fecharModalPilarDia();
+        await carregarPlanejador();
+      } catch (err) {
+        console.error('Erro ao escolher pilar do dia:', err);
+        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+      }
+    }
+
+    // Tira um pilar do calendário naquele dia específico (não mexe no padrão de
+    // referência lá embaixo, só o registro daquele dia).
     async function excluirPilarDoDia(diaISO, pilar) {
       try {
-        const { error } = await Auth.sb.from('planejador_cronograma_excecoes').insert({ data: diaISO, pilar });
+        const { error } = await Auth.sb.from('planejador_cronograma_dias').delete().eq('data', diaISO).eq('pilar', pilar);
         if (error) throw error;
         await carregarPlanejador();
       } catch (err) {

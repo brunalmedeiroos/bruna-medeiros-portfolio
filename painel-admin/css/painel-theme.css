@@ -1407,6 +1407,31 @@
   flex-shrink: 0;
 }
 
+.painel-body .pl-cronograma-tabela-hint {
+  font-size: 12px;
+  color: var(--texto-suave);
+  margin: 0 0 12px;
+}
+
+.painel-body .pl-cron-dia-add-pilar {
+  width: fit-content;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: 1px dashed var(--borda);
+  background: transparent;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.painel-body .pl-cron-dia-add-pilar:hover {
+  color: var(--grafite);
+  border-color: var(--grafite);
+}
+
 .painel-body .pl-cron-dia-pilar-remover:hover {
   opacity: 1;
 }

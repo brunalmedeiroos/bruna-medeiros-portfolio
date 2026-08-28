@@ -1407,12 +1407,6 @@
   flex-shrink: 0;
 }
 
-.painel-body .pl-cronograma-tabela-hint {
-  font-size: 12px;
-  color: var(--texto-suave);
-  margin: 0 0 12px;
-}
-
 .painel-body .pl-cron-dia-add-pilar {
   width: fit-content;
   font-size: 9px;

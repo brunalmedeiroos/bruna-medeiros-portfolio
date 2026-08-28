@@ -1926,9 +1926,67 @@
   color: var(--grafite);
 }
 
+.painel-body .ugc-precos-colunas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.painel-body .ugc-precos-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.painel-body .ugc-precos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.painel-body .ugc-preco-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  background: var(--creme);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 10px 14px;
+  cursor: pointer;
+  font-family: var(--fonte-corpo);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.painel-body .ugc-preco-linha:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--sombra);
+}
+
+.painel-body .ugc-preco-servico {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--grafite);
+}
+
+.painel-body .ugc-preco-valor {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--coral);
+  white-space: nowrap;
+}
+
 @media (max-width: 700px) {
   .painel-body .ugc-subnav {
     overflow-x: auto;
     flex-wrap: nowrap;
+  }
+
+  .painel-body .ugc-precos-colunas {
+    grid-template-columns: 1fr;
   }
 }

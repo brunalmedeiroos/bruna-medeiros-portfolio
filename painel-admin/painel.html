@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260827i">
+<link rel="stylesheet" href="css/style.css?v=20260827j">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260827i">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260827j">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260827i"></script>
+<script src="js/auth.js?v=20260827j"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -598,7 +598,36 @@
             </div>
           </div>
           <div id="ugc-pagina-precos" class="ugc-pagina" hidden>
-            <p class="texto-vazio">Módulo de preços chegando em breve.</p>
+            <div class="ugc-precos-colunas">
+              <div class="card">
+                <div class="ugc-precos-topo">
+                  <h3 class="card-titulo">UGC</h3>
+                  <button type="button" class="cal-btn cal-btn-icon ugc-precos-add" data-categoria="UGC" aria-label="Adicionar serviço">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+                <div id="ugc-precos-lista-ugc" class="ugc-precos-lista"></div>
+              </div>
+              <div class="card">
+                <div class="ugc-precos-topo">
+                  <h3 class="card-titulo">Publicidade</h3>
+                  <button type="button" class="cal-btn cal-btn-icon ugc-precos-add" data-categoria="Publicidade" aria-label="Adicionar serviço">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+                <div id="ugc-precos-lista-publicidade" class="ugc-precos-lista"></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="ugc-precos-topo">
+                <h3 class="card-titulo">Adicionais</h3>
+                <button type="button" class="cal-btn cal-btn-icon ugc-precos-add" data-categoria="Adicionais" aria-label="Adicionar serviço">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+              </div>
+              <div id="ugc-precos-lista-adicionais" class="ugc-precos-lista"></div>
+            </div>
           </div>
         </section>
 
@@ -1035,6 +1064,36 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal: serviço do catálogo de preços -->
+    <div id="ugc-modal-preco-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pl-modal-pequeno">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo" id="ugc-preco-modal-titulo">Novo serviço</span>
+          <button id="ugc-modal-preco-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="ugc-preco-servico">Serviço</label>
+          <input type="text" id="ugc-preco-servico">
+        </div>
+        <div class="cal-form-campo">
+          <label for="ugc-preco-valor">Valor (R$)</label>
+          <input type="number" step="0.01" min="0" id="ugc-preco-valor">
+        </div>
+        <div class="cal-form-campo">
+          <label for="ugc-preco-observacoes">Observações</label>
+          <textarea id="ugc-preco-observacoes"></textarea>
+        </div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="ugc-modal-preco-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+          <button type="button" id="ugc-modal-preco-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -1109,6 +1168,8 @@
     let ugcModalContratoArquivoNome = null;
     let filtroContratos = 'ativos'; // 'ativos' | 'encerrados'
     const UGC_STATUS_CONTRATO = ['Pendente assinatura', 'Enviado', 'Assinado', 'Encerrado'];
+    let ugcPrecoAbertoId = null;
+    let ugcPrecoModalCategoria = null;
 
     const TITULOS_ABA = {
       overview: 'Dashboard',
@@ -1397,6 +1458,15 @@
       document.getElementById('ugc-contrato-arquivo-input').addEventListener('change', (e) => {
         const arquivo = e.target.files[0];
         if (arquivo) anexarContratoArquivo(arquivo);
+      });
+      document.querySelectorAll('.ugc-precos-add').forEach((btn) => {
+        btn.addEventListener('click', () => abrirModalPreco(null, btn.dataset.categoria));
+      });
+      document.getElementById('ugc-modal-preco-fechar').addEventListener('click', fecharModalPreco);
+      document.getElementById('ugc-modal-preco-excluir').addEventListener('click', excluirModalPreco);
+      document.getElementById('ugc-modal-preco-salvar').addEventListener('click', salvarModalPreco);
+      document.getElementById('ugc-modal-preco-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'ugc-modal-preco-overlay') fecharModalPreco();
       });
     }
 
@@ -3236,6 +3306,7 @@
       renderizarRoteiros();
       renderizarProspeccao();
       renderizarContratos();
+      renderizarPrecos();
     }
 
     function trocarSubAbaUGC(pagina) {
@@ -4037,6 +4108,99 @@
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao excluir contrato:', err);
+        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+      }
+    }
+
+    // ---- Preços (catálogo editável: UGC / Publicidade / Adicionais) ----
+    const UGC_PRECOS_SUFIXO = { UGC: 'ugc', Publicidade: 'publicidade', Adicionais: 'adicionais' };
+
+    function renderizarPrecos() {
+      Object.entries(UGC_PRECOS_SUFIXO).forEach(([categoria, sufixo]) => {
+        const itens = ugcPrecosCache.filter((p) => p.categoria === categoria).sort((a, b) => a.ordem - b.ordem);
+        const cont = document.getElementById(`ugc-precos-lista-${sufixo}`);
+        if (itens.length === 0) {
+          cont.innerHTML = '<p class="texto-vazio">Nenhum serviço ainda.</p>';
+          return;
+        }
+        cont.innerHTML = '';
+        itens.forEach((p) => cont.appendChild(criarLinhaPreco(p)));
+      });
+    }
+
+    function criarLinhaPreco(preco) {
+      const linha = document.createElement('button');
+      linha.type = 'button';
+      linha.className = 'ugc-preco-linha';
+      if (preco.observacoes) linha.title = preco.observacoes;
+      linha.innerHTML = `
+        <span class="ugc-preco-servico">${escapeHtml(preco.servico)}</span>
+        <span class="ugc-preco-valor">${preco.valor != null ? formatarMoeda(preco.valor) : '—'}</span>
+      `;
+      linha.addEventListener('click', () => abrirModalPreco(preco, preco.categoria));
+      return linha;
+    }
+
+    function abrirModalPreco(preco, categoria) {
+      ugcPrecoAbertoId = preco ? preco.id : null;
+      ugcPrecoModalCategoria = categoria;
+      document.getElementById('ugc-preco-modal-titulo').textContent = preco ? 'Editar serviço' : `Novo serviço — ${categoria}`;
+      document.getElementById('ugc-preco-servico').value = preco ? preco.servico : '';
+      document.getElementById('ugc-preco-valor').value = preco && preco.valor != null ? preco.valor : '';
+      document.getElementById('ugc-preco-observacoes').value = preco ? preco.observacoes || '' : '';
+      document.getElementById('ugc-modal-preco-excluir').hidden = !preco;
+      document.getElementById('ugc-modal-preco-overlay').hidden = false;
+    }
+
+    function fecharModalPreco() {
+      ugcPrecoAbertoId = null;
+      document.getElementById('ugc-modal-preco-overlay').hidden = true;
+    }
+
+    async function salvarModalPreco() {
+      const servico = document.getElementById('ugc-preco-servico').value.trim();
+      if (!servico) {
+        alert('Preencha o serviço antes de salvar.');
+        return;
+      }
+
+      const linha = {
+        servico,
+        valor: document.getElementById('ugc-preco-valor').value ? Number(document.getElementById('ugc-preco-valor').value) : null,
+        observacoes: document.getElementById('ugc-preco-observacoes').value.trim() || null,
+      };
+
+      const btn = document.getElementById('ugc-modal-preco-salvar');
+      btn.disabled = true;
+      try {
+        let error;
+        if (ugcPrecoAbertoId) {
+          ({ error } = await Auth.sb.from('ugc_precos').update(linha).eq('id', ugcPrecoAbertoId));
+        } else {
+          const ordem = ugcPrecosCache.filter((p) => p.categoria === ugcPrecoModalCategoria).length;
+          ({ error } = await Auth.sb.from('ugc_precos').insert({ ...linha, categoria: ugcPrecoModalCategoria, ordem }));
+        }
+        if (error) throw error;
+        fecharModalPreco();
+        await carregarUGC();
+      } catch (err) {
+        console.error('Erro ao salvar preço:', err);
+        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function excluirModalPreco() {
+      if (!ugcPrecoAbertoId) return;
+      if (!confirm('Excluir este serviço?')) return;
+      try {
+        const { error } = await Auth.sb.from('ugc_precos').delete().eq('id', ugcPrecoAbertoId);
+        if (error) throw error;
+        fecharModalPreco();
+        await carregarUGC();
+      } catch (err) {
+        console.error('Erro ao excluir preço:', err);
         alert('Não foi possível excluir agora. Tente de novo em instantes.');
       }
     }

@@ -1327,6 +1327,7 @@
 
 .painel-body .pl-cron-dia {
   min-height: 76px;
+  min-width: 0; /* sem isto, um título de ideia comprida força a célula (e a linha inteira do grid) a crescer */
   border-radius: var(--raio-sm);
   border: 1px solid var(--borda);
   padding: 6px;
@@ -1421,6 +1422,7 @@
   background: var(--coral);
   color: var(--branco);
   max-width: 100%;
+  min-width: 0;
   cursor: pointer;
 }
 

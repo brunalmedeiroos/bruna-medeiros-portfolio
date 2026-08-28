@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827s">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827t">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827s">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827t">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../painel-admin/js/auth.js?v=20260827s"></script>
+<script src="../painel-admin/js/auth.js?v=20260827t"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -68,7 +68,7 @@
           <span>Radar de Notícias</span>
         </button>
         <button class="nav-item" data-tab="ugc" type="button">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M23 7l-7 5 7 5V7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" stroke-width="2"/></svg>
+          <img class="nav-icon-img" src="../painel-admin/img/nav-icones/ugc.png" alt="">
           <span>UGC / Publi</span>
         </button>
       </nav>

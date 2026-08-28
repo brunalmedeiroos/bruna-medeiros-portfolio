@@ -2034,7 +2034,7 @@
 }
 
 .painel-body .cards-numeros-visao-geral-ugc {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
 }
 
 /* ---- Proposta personalizada (calculadora dentro de Preços) ---- */

@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827k">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827l">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827k">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827l">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../painel-admin/js/auth.js?v=20260827k"></script>
+<script src="../painel-admin/js/auth.js?v=20260827l"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -1131,7 +1131,14 @@
         <div class="ugc-proposta-totais">
           <div class="cal-form-campo">
             <label for="ugc-proposta-desconto">Desconto (%)</label>
+            <div class="ugc-desconto-presets">
+              <button type="button" class="ugc-desconto-preset" data-desconto="0">0%</button>
+              <button type="button" class="ugc-desconto-preset" data-desconto="10">10%</button>
+              <button type="button" class="ugc-desconto-preset" data-desconto="15">15%</button>
+              <button type="button" class="ugc-desconto-preset" data-desconto="20">20%</button>
+            </div>
             <input type="number" min="0" max="100" step="1" id="ugc-proposta-desconto" value="0">
+            <p class="ugc-proposta-desconto-sugestao" id="ugc-proposta-desconto-sugestao"></p>
           </div>
           <div class="ugc-proposta-resumo">
             <div><span>Valor bruto</span><strong id="ugc-proposta-bruto">R$ 0,00</strong></div>
@@ -1534,6 +1541,12 @@
       });
       document.getElementById('ugc-proposta-add-item').addEventListener('click', adicionarItemProposta);
       document.getElementById('ugc-proposta-desconto').addEventListener('input', recalcularTotaisProposta);
+      document.querySelectorAll('.ugc-desconto-preset').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.getElementById('ugc-proposta-desconto').value = btn.dataset.desconto;
+          recalcularTotaisProposta();
+        });
+      });
       document.getElementById('ugc-proposta-copiar').addEventListener('click', copiarResumoProposta);
     }
 
@@ -4378,6 +4391,38 @@
       document.getElementById('ugc-proposta-bruto').textContent = formatarMoeda(bruto);
       document.getElementById('ugc-proposta-desconto-valor').textContent = formatarMoeda(descontoValor);
       document.getElementById('ugc-proposta-final').textContent = formatarMoeda(final);
+      atualizarPresetsDescontoAtivo(descontoPct);
+      atualizarSugestaoDesconto();
+    }
+
+    // Faixas de desconto sugeridas por quantidade total de conteúdos na proposta —
+    // só um ponto de partida, o desconto continua livre pra editar.
+    const UGC_DESCONTO_FAIXAS = [
+      { min: 1, max: 2, pct: 0 },
+      { min: 3, max: 5, pct: 10 },
+      { min: 6, max: 9, pct: 15 },
+      { min: 10, max: Infinity, pct: 20 },
+    ];
+
+    function quantidadeTotalProposta() {
+      return ugcPropostaItens.reduce((soma, item) => soma + (item.precoId ? Number(item.quantidade) || 0 : 0), 0);
+    }
+
+    function atualizarPresetsDescontoAtivo(descontoPct) {
+      document.querySelectorAll('.ugc-desconto-preset').forEach((btn) => {
+        btn.classList.toggle('ativo', Number(btn.dataset.desconto) === descontoPct);
+      });
+    }
+
+    function atualizarSugestaoDesconto() {
+      const qtd = quantidadeTotalProposta();
+      const el = document.getElementById('ugc-proposta-desconto-sugestao');
+      if (qtd === 0) {
+        el.textContent = '';
+        return;
+      }
+      const faixa = UGC_DESCONTO_FAIXAS.find((f) => qtd >= f.min && qtd <= f.max);
+      el.textContent = `Sugestão para ${qtd} ${qtd === 1 ? 'item' : 'itens'}: ${faixa.pct}%`;
     }
 
     async function copiarResumoProposta() {

@@ -2033,6 +2033,41 @@
   white-space: nowrap;
 }
 
+.painel-body .ugc-desconto-presets {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.painel-body .ugc-desconto-preset {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--borda);
+  background: var(--branco);
+  color: var(--grafite);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.painel-body .ugc-desconto-preset:hover {
+  border-color: var(--coral);
+}
+
+.painel-body .ugc-desconto-preset.ativo {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .ugc-proposta-desconto-sugestao {
+  font-size: 12px;
+  color: var(--texto-suave);
+  margin: 6px 0 0;
+}
+
 .painel-body .ugc-proposta-totais {
   border-top: 1px solid var(--borda);
   margin-top: 8px;

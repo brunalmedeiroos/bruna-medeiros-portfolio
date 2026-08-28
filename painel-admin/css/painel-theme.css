@@ -1908,6 +1908,11 @@
   grid-template-columns: 130px 120px 100px 90px 80px 1fr 90px 90px;
 }
 
+.painel-body .cal-todas-cabecalho.ugc-contratos-linha,
+.painel-body .cal-todas-linha.ugc-contratos-linha {
+  grid-template-columns: 160px 180px 110px 90px 1fr;
+}
+
 .painel-body .ugc-transformar-aviso {
   display: flex;
   align-items: center;

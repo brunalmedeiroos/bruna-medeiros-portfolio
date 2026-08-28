@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827h">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827i">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827h">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827i">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../painel-admin/js/auth.js?v=20260827h"></script>
+<script src="../painel-admin/js/auth.js?v=20260827i"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -573,7 +573,30 @@
             </div>
           </div>
           <div id="ugc-pagina-contratos" class="ugc-pagina" hidden>
-            <p class="texto-vazio">Módulo de contratos chegando em breve.</p>
+            <div class="cal-todas-topo">
+              <div>
+                <h3 class="card-titulo">Contratos</h3>
+                <p class="cal-todas-resumo" id="ugc-contratos-resumo">Nenhum contrato ainda.</p>
+              </div>
+              <div class="ugc-trabalhos-topo-acoes">
+                <div class="cal-filtro-grupo">
+                  <button class="cal-filtro-btn ativo" data-filtro-contrato="ativos" type="button">Ativos</button>
+                  <button class="cal-filtro-btn" data-filtro-contrato="encerrados" type="button">Encerrados</button>
+                </div>
+                <button id="btn-ugc-novo-contrato" class="cal-btn cal-btn-primario" type="button">+ Novo contrato</button>
+              </div>
+            </div>
+
+            <div class="cal-todas-tabela">
+              <div class="cal-todas-cabecalho ugc-contratos-linha">
+                <span>Marca</span>
+                <span>Campanha</span>
+                <span>Tipo</span>
+                <span>Data</span>
+                <span>Status</span>
+              </div>
+              <div id="ugc-contratos-lista" class="cal-todas-linhas"></div>
+            </div>
           </div>
           <div id="ugc-pagina-precos" class="ugc-pagina" hidden>
             <p class="texto-vazio">Módulo de preços chegando em breve.</p>
@@ -956,6 +979,63 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal: contrato -->
+    <div id="ugc-modal-contrato-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal">
+        <div class="pl-modal-topo">
+          <input type="text" id="ugc-contrato-marca" class="pl-modal-titulo-input" placeholder="Marca">
+          <button id="ugc-modal-contrato-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="ugc-contrato-campanha">Campanha</label>
+            <input type="text" id="ugc-contrato-campanha">
+          </div>
+          <div class="cal-form-campo">
+            <label for="ugc-contrato-tipo">Tipo de trabalho</label>
+            <select id="ugc-contrato-tipo">
+              <option value="">Não definido</option>
+              <option value="UGC">UGC</option>
+              <option value="Publicidade">Publicidade</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="ugc-contrato-data">Data</label>
+            <input type="date" id="ugc-contrato-data">
+          </div>
+          <div class="cal-form-campo">
+            <label for="ugc-contrato-status">Status</label>
+            <select id="ugc-contrato-status"></select>
+          </div>
+          <div class="cal-form-campo">
+            <label for="ugc-contrato-trabalho">Trabalho vinculado</label>
+            <select id="ugc-contrato-trabalho"></select>
+          </div>
+        </div>
+
+        <div class="ugc-briefing-campo">
+          <input type="file" id="ugc-contrato-arquivo-input" hidden>
+          <button type="button" id="ugc-contrato-anexar" class="cal-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 11.5V17a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 3l7 7-9 9-4 1 1-4 5-13z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            Anexar arquivo
+          </button>
+          <input type="text" id="ugc-contrato-link" placeholder="ou cole o link do contrato">
+        </div>
+        <p class="ugc-briefing-status" id="ugc-contrato-arquivo-status" hidden></p>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="ugc-modal-contrato-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+          <button type="button" id="ugc-modal-contrato-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -1025,6 +1105,11 @@
     let ugcModalCenas = [];
     let ugcProspeccaoAbertaId = null;
     const UGC_STATUS_PROSPECCAO = ['Para abordar', 'Contato enviado', 'Aguardando resposta', 'Respondeu', 'Negociação', 'Proposta enviada', 'Fechado', 'Recusado', 'Sem resposta', 'Follow-up'];
+    let ugcContratoAbertoId = null;
+    let ugcModalContratoArquivoPath = null;
+    let ugcModalContratoArquivoNome = null;
+    let filtroContratos = 'ativos'; // 'ativos' | 'encerrados'
+    const UGC_STATUS_CONTRATO = ['Pendente assinatura', 'Enviado', 'Assinado', 'Encerrado'];
 
     const TITULOS_ABA = {
       overview: 'Dashboard',
@@ -1298,6 +1383,27 @@
         fecharModalProspeccao();
         trocarSubAbaUGC('trabalhos');
         if (trabalho) abrirModalTrabalho(trabalho);
+      });
+      document.querySelectorAll('#ugc-pagina-contratos .cal-filtro-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          filtroContratos = btn.dataset.filtroContrato;
+          document.querySelectorAll('#ugc-pagina-contratos .cal-filtro-btn').forEach((b) => b.classList.toggle('ativo', b === btn));
+          renderizarContratos();
+        });
+      });
+      document.getElementById('btn-ugc-novo-contrato').addEventListener('click', () => abrirModalContrato(null));
+      document.getElementById('ugc-modal-contrato-fechar').addEventListener('click', fecharModalContrato);
+      document.getElementById('ugc-modal-contrato-excluir').addEventListener('click', excluirModalContrato);
+      document.getElementById('ugc-modal-contrato-salvar').addEventListener('click', salvarModalContrato);
+      document.getElementById('ugc-modal-contrato-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'ugc-modal-contrato-overlay') fecharModalContrato();
+      });
+      document.getElementById('ugc-contrato-anexar').addEventListener('click', () => {
+        document.getElementById('ugc-contrato-arquivo-input').click();
+      });
+      document.getElementById('ugc-contrato-arquivo-input').addEventListener('change', (e) => {
+        const arquivo = e.target.files[0];
+        if (arquivo) anexarContratoArquivo(arquivo);
       });
     }
 
@@ -3136,6 +3242,7 @@
       renderizarTrabalhos();
       renderizarRoteiros();
       renderizarProspeccao();
+      renderizarContratos();
     }
 
     function trocarSubAbaUGC(pagina) {
@@ -3768,6 +3875,176 @@
         alert('Não foi possível transformar agora. Tente de novo em instantes.');
       } finally {
         btn.disabled = false;
+      }
+    }
+
+    // ---- Contratos ----
+    function renderizarContratos() {
+      const filtradas = filtroContratos === 'encerrados'
+        ? ugcContratosCache.filter((c) => c.status === 'Encerrado')
+        : ugcContratosCache.filter((c) => c.status !== 'Encerrado');
+      const ordenadas = [...filtradas].sort((a, b) => b.created_at.localeCompare(a.created_at));
+
+      document.getElementById('ugc-contratos-resumo').textContent =
+        ordenadas.length === 0 ? 'Nenhum contrato por aqui.' : `${ordenadas.length} ${ordenadas.length === 1 ? 'contrato' : 'contratos'}.`;
+
+      const lista = document.getElementById('ugc-contratos-lista');
+      lista.innerHTML = '';
+      if (ordenadas.length === 0) {
+        lista.innerHTML = '<p class="texto-vazio">Nada por aqui.</p>';
+        return;
+      }
+      ordenadas.forEach((c) => lista.appendChild(criarLinhaContrato(c)));
+    }
+
+    function criarLinhaContrato(contrato) {
+      const linha = document.createElement('div');
+      linha.className = 'cal-todas-linha ugc-contratos-linha';
+      const dataFmt = contrato.data ? formatarDataCurta(new Date(contrato.data + 'T00:00:00')) : '—';
+      linha.innerHTML = `
+        <span class="ugc-trabalhos-marca">${escapeHtml(contrato.marca)}</span>
+        <span>${escapeHtml(contrato.campanha || '—')}</span>
+        <span>${escapeHtml(contrato.tipo_trabalho || '—')}</span>
+        <span>${dataFmt}</span>
+        <span class="ugc-status-pill${contrato.status === 'Assinado' ? ' ugc-status-pago' : ''}">${escapeHtml(contrato.status)}</span>
+      `;
+      linha.addEventListener('click', () => abrirModalContrato(contrato));
+      return linha;
+    }
+
+    function atualizarContratoArquivoStatusUI() {
+      const statusEl = document.getElementById('ugc-contrato-arquivo-status');
+      if (!ugcModalContratoArquivoPath) {
+        statusEl.hidden = true;
+        statusEl.innerHTML = '';
+        return;
+      }
+      statusEl.hidden = false;
+      statusEl.innerHTML = `Arquivo anexado: ${escapeHtml(ugcModalContratoArquivoNome)} — <a href="#" id="ugc-contrato-arquivo-abrir">Abrir</a> · <a href="#" id="ugc-contrato-arquivo-remover">Remover</a>`;
+      document.getElementById('ugc-contrato-arquivo-abrir').addEventListener('click', (e) => {
+        e.preventDefault();
+        abrirContratoArquivo();
+      });
+      document.getElementById('ugc-contrato-arquivo-remover').addEventListener('click', (e) => {
+        e.preventDefault();
+        ugcModalContratoArquivoPath = null;
+        ugcModalContratoArquivoNome = null;
+        atualizarContratoArquivoStatusUI();
+      });
+    }
+
+    async function anexarContratoArquivo(arquivo) {
+      const btn = document.getElementById('ugc-contrato-anexar');
+      const textoOriginal = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      try {
+        const caminho = `contratos/${Date.now()}-${arquivo.name}`;
+        const { error } = await Auth.sb.storage.from('ugc-arquivos').upload(caminho, arquivo);
+        if (error) throw error;
+        ugcModalContratoArquivoPath = caminho;
+        ugcModalContratoArquivoNome = arquivo.name;
+        atualizarContratoArquivoStatusUI();
+      } catch (err) {
+        console.error('Erro ao anexar contrato:', err);
+        alert('Não foi possível anexar o arquivo agora. Tente de novo em instantes.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = textoOriginal;
+        document.getElementById('ugc-contrato-arquivo-input').value = '';
+      }
+    }
+
+    async function abrirContratoArquivo() {
+      if (!ugcModalContratoArquivoPath) return;
+      try {
+        const { data, error } = await Auth.sb.storage.from('ugc-arquivos').createSignedUrl(ugcModalContratoArquivoPath, 3600);
+        if (error) throw error;
+        window.open(data.signedUrl, '_blank');
+      } catch (err) {
+        console.error('Erro ao abrir contrato:', err);
+        alert('Não foi possível abrir o arquivo agora. Tente de novo em instantes.');
+      }
+    }
+
+    function abrirModalContrato(contrato) {
+      ugcContratoAbertoId = contrato ? contrato.id : null;
+      ugcModalContratoArquivoPath = contrato ? contrato.arquivo_path : null;
+      ugcModalContratoArquivoNome = ugcModalContratoArquivoPath ? ugcModalContratoArquivoPath.split('/').pop() : null;
+
+      document.getElementById('ugc-contrato-marca').value = contrato ? contrato.marca : '';
+      document.getElementById('ugc-contrato-campanha').value = contrato ? contrato.campanha || '' : '';
+      document.getElementById('ugc-contrato-tipo').value = contrato && contrato.tipo_trabalho ? contrato.tipo_trabalho : '';
+      document.getElementById('ugc-contrato-data').value = contrato && contrato.data ? contrato.data : '';
+
+      const selStatus = document.getElementById('ugc-contrato-status');
+      selStatus.innerHTML = UGC_STATUS_CONTRATO.map((s) => `<option value="${s}">${s}</option>`).join('');
+      selStatus.value = contrato ? contrato.status : 'Pendente assinatura';
+
+      const selTrabalho = document.getElementById('ugc-contrato-trabalho');
+      selTrabalho.innerHTML =
+        '<option value="">Nenhum</option>' +
+        ugcTrabalhosCache.map((t) => `<option value="${t.id}">${escapeHtml(t.marca)}${t.campanha ? ' — ' + escapeHtml(t.campanha) : ''}</option>`).join('');
+      selTrabalho.value = contrato && contrato.trabalho_id ? contrato.trabalho_id : '';
+
+      document.getElementById('ugc-contrato-link').value = contrato ? contrato.link || '' : '';
+      atualizarContratoArquivoStatusUI();
+
+      document.getElementById('ugc-modal-contrato-excluir').hidden = !contrato;
+      document.getElementById('ugc-modal-contrato-overlay').hidden = false;
+    }
+
+    function fecharModalContrato() {
+      ugcContratoAbertoId = null;
+      document.getElementById('ugc-modal-contrato-overlay').hidden = true;
+    }
+
+    async function salvarModalContrato() {
+      const marca = document.getElementById('ugc-contrato-marca').value.trim();
+      if (!marca) {
+        alert('Preencha a marca antes de salvar.');
+        return;
+      }
+
+      const linha = {
+        marca,
+        campanha: document.getElementById('ugc-contrato-campanha').value.trim() || null,
+        tipo_trabalho: document.getElementById('ugc-contrato-tipo').value || null,
+        data: document.getElementById('ugc-contrato-data').value || null,
+        status: document.getElementById('ugc-contrato-status').value,
+        trabalho_id: document.getElementById('ugc-contrato-trabalho').value || null,
+        link: document.getElementById('ugc-contrato-link').value.trim() || null,
+        arquivo_path: ugcModalContratoArquivoPath,
+      };
+
+      const btn = document.getElementById('ugc-modal-contrato-salvar');
+      btn.disabled = true;
+      try {
+        const { error } = ugcContratoAbertoId
+          ? await Auth.sb.from('ugc_contratos').update(linha).eq('id', ugcContratoAbertoId)
+          : await Auth.sb.from('ugc_contratos').insert(linha);
+        if (error) throw error;
+        fecharModalContrato();
+        await carregarUGC();
+      } catch (err) {
+        console.error('Erro ao salvar contrato:', err);
+        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function excluirModalContrato() {
+      if (!ugcContratoAbertoId) return;
+      if (!confirm('Excluir este contrato?')) return;
+      try {
+        const { error } = await Auth.sb.from('ugc_contratos').delete().eq('id', ugcContratoAbertoId);
+        if (error) throw error;
+        fecharModalContrato();
+        await carregarUGC();
+      } catch (err) {
+        console.error('Erro ao excluir contrato:', err);
+        alert('Não foi possível excluir agora. Tente de novo em instantes.');
       }
     }
 

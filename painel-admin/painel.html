@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260827e">
+<link rel="stylesheet" href="css/style.css?v=20260827f">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260827e">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260827f">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260827e"></script>
+<script src="js/auth.js?v=20260827f"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -65,6 +65,10 @@
         <button class="nav-item" data-tab="radar" type="button">
           <img class="nav-icon-img" src="img/nav-icones/radar.png" alt="">
           <span>Radar de Notícias</span>
+        </button>
+        <button class="nav-item" data-tab="ugc" type="button">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M23 7l-7 5 7 5V7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" stroke-width="2"/></svg>
+          <span>UGC / Publi</span>
         </button>
       </nav>
 
@@ -441,6 +445,85 @@
           <div id="radar-lista" class="radar-lista"></div>
         </section>
 
+        <!-- ---------- Aba: UGC / Publi ---------- -->
+        <section id="panel-ugc" class="tab-panel" hidden>
+          <div class="ugc-subnav">
+            <button class="ugc-subnav-btn ativo" data-ugc-pagina="visao-geral" type="button">Visão Geral</button>
+            <button class="ugc-subnav-btn" data-ugc-pagina="trabalhos" type="button">Trabalhos</button>
+            <button class="ugc-subnav-btn" data-ugc-pagina="roteiros" type="button">Roteiros</button>
+            <button class="ugc-subnav-btn" data-ugc-pagina="prospeccao" type="button">Prospecção</button>
+            <button class="ugc-subnav-btn" data-ugc-pagina="contratos" type="button">Contratos</button>
+            <button class="ugc-subnav-btn" data-ugc-pagina="precos" type="button">Preços</button>
+          </div>
+
+          <!-- Visão Geral: só leitura, tudo derivado de ugc_trabalhos -->
+          <div id="ugc-pagina-visao-geral" class="ugc-pagina">
+            <div class="cards-numeros">
+              <div class="card-numero destaque">
+                <span class="card-label">Trabalhos ativos</span>
+                <span class="card-valor" id="ugc-num-ativos">0</span>
+              </div>
+              <div class="card-numero">
+                <span class="card-label">Em produção</span>
+                <span class="card-valor" id="ugc-num-producao">0</span>
+              </div>
+              <div class="card-numero">
+                <span class="card-label">A receber</span>
+                <span class="card-valor" id="ugc-num-receber">R$ 0</span>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="card-titulo">Próximas entregas</h3>
+              <div id="ugc-proximas-entregas" class="ugc-proximas-lista"></div>
+            </div>
+          </div>
+
+          <!-- Trabalhos -->
+          <div id="ugc-pagina-trabalhos" class="ugc-pagina" hidden>
+            <div class="cal-todas-topo">
+              <div>
+                <h3 class="card-titulo">Trabalhos</h3>
+                <p class="cal-todas-resumo" id="ugc-trabalhos-resumo">Nenhum trabalho ainda.</p>
+              </div>
+              <div class="ugc-trabalhos-topo-acoes">
+                <div class="cal-filtro-grupo">
+                  <button class="cal-filtro-btn ativo" data-filtro-trabalho="ativos" type="button">Ativos</button>
+                  <button class="cal-filtro-btn" data-filtro-trabalho="finalizados" type="button">Finalizados</button>
+                </div>
+                <button id="btn-ugc-novo-trabalho" class="cal-btn cal-btn-primario" type="button">+ Novo trabalho</button>
+              </div>
+            </div>
+
+            <div class="cal-todas-tabela">
+              <div class="cal-todas-cabecalho ugc-trabalhos-linha">
+                <span>Marca</span>
+                <span>Campanha</span>
+                <span>Tipo</span>
+                <span>Status</span>
+                <span>Entrega</span>
+                <span>Valor</span>
+                <span>Pagamento</span>
+              </div>
+              <div id="ugc-trabalhos-lista" class="cal-todas-linhas"></div>
+            </div>
+          </div>
+
+          <!-- Roteiros, Prospecção, Contratos e Preços chegam nos próximos módulos -->
+          <div id="ugc-pagina-roteiros" class="ugc-pagina" hidden>
+            <p class="texto-vazio">Módulo de roteiros chegando em breve.</p>
+          </div>
+          <div id="ugc-pagina-prospeccao" class="ugc-pagina" hidden>
+            <p class="texto-vazio">Módulo de prospecção chegando em breve.</p>
+          </div>
+          <div id="ugc-pagina-contratos" class="ugc-pagina" hidden>
+            <p class="texto-vazio">Módulo de contratos chegando em breve.</p>
+          </div>
+          <div id="ugc-pagina-precos" class="ugc-pagina" hidden>
+            <p class="texto-vazio">Módulo de preços chegando em breve.</p>
+          </div>
+        </section>
+
       </div>
     </main>
 
@@ -585,6 +668,113 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal: detalhe de um trabalho (UGC / Publi) -->
+    <div id="ugc-modal-trabalho-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pl-modal-grande">
+        <div class="pl-modal-topo">
+          <input type="text" id="ugc-modal-marca" class="pl-modal-titulo-input" placeholder="Marca">
+          <button id="ugc-modal-trabalho-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <h4 class="ugc-modal-secao-titulo">Campanha</h4>
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="ugc-modal-campanha">Campanha</label>
+            <input type="text" id="ugc-modal-campanha">
+          </div>
+          <div class="cal-form-campo">
+            <label for="ugc-modal-produto">Produto</label>
+            <input type="text" id="ugc-modal-produto">
+          </div>
+          <div class="cal-form-campo">
+            <label for="ugc-modal-tipo">Tipo de trabalho</label>
+            <select id="ugc-modal-tipo">
+              <option value="UGC">UGC</option>
+              <option value="Publicidade">Publicidade</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="ugc-modal-contato-email">E-mail do contato</label>
+            <input type="text" id="ugc-modal-contato-email">
+          </div>
+          <div class="cal-form-campo">
+            <label for="ugc-modal-contato-whats">WhatsApp/Instagram</label>
+            <input type="text" id="ugc-modal-contato-whats">
+          </div>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="ugc-modal-origem">Origem</label>
+            <select id="ugc-modal-origem"></select>
+          </div>
+          <div class="cal-form-campo">
+            <label for="ugc-modal-plataforma">Plataforma</label>
+            <input type="text" id="ugc-modal-plataforma" list="ugc-plataformas-sugeridas" placeholder="Ex: Miss, Creator Ads, TikTok...">
+            <datalist id="ugc-plataformas-sugeridas"></datalist>
+          </div>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="ugc-modal-status">Status</label>
+            <select id="ugc-modal-status"></select>
+          </div>
+          <div class="cal-form-campo">
+            <label for="ugc-modal-valor">Valor fechado (R$)</label>
+            <input type="number" step="0.01" min="0" id="ugc-modal-valor">
+          </div>
+          <div class="cal-form-campo">
+            <label for="ugc-modal-entrega">Prazo de entrega</label>
+            <input type="date" id="ugc-modal-entrega">
+          </div>
+        </div>
+
+        <h4 class="ugc-modal-secao-titulo">Briefing</h4>
+        <div class="ugc-briefing-campo">
+          <input type="file" id="ugc-modal-briefing-arquivo-input" hidden>
+          <button type="button" id="ugc-modal-briefing-anexar" class="cal-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 11.5V17a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 3l7 7-9 9-4 1 1-4 5-13z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+            Anexar briefing
+          </button>
+          <input type="text" id="ugc-modal-briefing-link" placeholder="ou cole o link do briefing">
+        </div>
+        <p class="ugc-briefing-status" id="ugc-modal-briefing-status" hidden></p>
+
+        <h4 class="ugc-modal-secao-titulo">Produção</h4>
+        <div class="ugc-checklist" id="ugc-modal-checklist"></div>
+
+        <h4 class="ugc-modal-secao-titulo">Pagamento</h4>
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="ugc-modal-status-pagamento">Status</label>
+            <select id="ugc-modal-status-pagamento">
+              <option value="Pendente">Pendente</option>
+              <option value="Recebido">Recebido</option>
+            </select>
+          </div>
+          <div class="cal-form-campo">
+            <label for="ugc-modal-forma-pagamento">Forma de pagamento</label>
+            <input type="text" id="ugc-modal-forma-pagamento" placeholder="Ex: Pix, boleto...">
+          </div>
+          <div class="cal-form-campo">
+            <label for="ugc-modal-data-pagamento">Data prevista</label>
+            <input type="date" id="ugc-modal-data-pagamento">
+          </div>
+        </div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="ugc-modal-trabalho-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+          <button type="button" id="ugc-modal-trabalho-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -622,6 +812,35 @@
     let filtroPeriodoRadar = null; // null | 'hoje' | 'novas' | 'usadas'
     let radarAbertaId = null;
 
+    let ugcAbaCarregada = false;
+    let ugcTrabalhosCache = [];
+    let ugcRoteirosCache = [];
+    let ugcRoteiroCenasCache = [];
+    let ugcProspeccaoCache = [];
+    let ugcContratosCache = [];
+    let ugcPrecosCache = [];
+    let ugcSubAbaAtual = 'visao-geral';
+    let ugcTrabalhoAbertoId = null;
+    let filtroTrabalhos = 'ativos'; // 'ativos' | 'finalizados'
+    const UGC_STATUS_ATIVOS = ['Negociando', 'Fechado', 'Aguardando briefing', 'Aguardando produto', 'Roteiro', 'Gravação', 'Edição', 'Aprovação', 'Entregue', 'Aguardando pagamento'];
+    const UGC_STATUS_EM_PRODUCAO = ['Roteiro', 'Gravação', 'Edição', 'Aprovação'];
+    const UGC_STATUS_TRABALHO = ['Negociando', 'Fechado', 'Aguardando briefing', 'Aguardando produto', 'Roteiro', 'Gravação', 'Edição', 'Aprovação', 'Entregue', 'Aguardando pagamento', 'Pago', 'Cancelado'];
+    const UGC_ORIGENS = ['Inbound', 'Outbound', 'Indicação', 'Direto com a marca', 'Agência', 'Plataforma', 'Outro'];
+    const UGC_CHECKLIST_ITENS = [
+      { campo: 'briefing_recebido', label: 'Briefing recebido' },
+      { campo: 'produto_recebido', label: 'Produto recebido' },
+      { campo: 'roteiro_criado', label: 'Roteiro criado' },
+      { campo: 'roteiro_aprovado', label: 'Roteiro aprovado' },
+      { campo: 'gravacao_feita', label: 'Gravação feita' },
+      { campo: 'edicao_feita', label: 'Edição feita' },
+      { campo: 'conteudo_enviado_aprovacao', label: 'Conteúdo enviado para aprovação' },
+      { campo: 'alteracoes_feitas', label: 'Alterações feitas' },
+      { campo: 'conteudo_entregue', label: 'Conteúdo entregue' },
+    ];
+    let ugcModalChecklistEstado = {};
+    let ugcModalBriefingArquivoPath = null;
+    let ugcModalBriefingArquivoNome = null;
+
     const TITULOS_ABA = {
       overview: 'Dashboard',
       portfolio: 'Portfólio',
@@ -630,6 +849,7 @@
       instagram: 'Instagram',
       planejador: 'Planejador de Conteúdo',
       radar: 'Radar de Notícias',
+      ugc: 'UGC / Publi',
     };
 
     // Mesmo projeto Supabase de js/auth.js — hardcoded aqui porque auth.js
@@ -836,6 +1056,32 @@
       document.getElementById('radar-modal-pilar-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'radar-modal-pilar-overlay') fecharModalEscolherPilar();
       });
+
+      // UGC / Publi
+      document.querySelectorAll('.ugc-subnav-btn').forEach((btn) => {
+        btn.addEventListener('click', () => trocarSubAbaUGC(btn.dataset.ugcPagina));
+      });
+      document.querySelectorAll('#ugc-pagina-trabalhos .cal-filtro-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          filtroTrabalhos = btn.dataset.filtroTrabalho;
+          document.querySelectorAll('#ugc-pagina-trabalhos .cal-filtro-btn').forEach((b) => b.classList.toggle('ativo', b === btn));
+          renderizarTrabalhos();
+        });
+      });
+      document.getElementById('btn-ugc-novo-trabalho').addEventListener('click', () => abrirModalTrabalho(null));
+      document.getElementById('ugc-modal-trabalho-fechar').addEventListener('click', fecharModalTrabalho);
+      document.getElementById('ugc-modal-trabalho-excluir').addEventListener('click', excluirModalTrabalho);
+      document.getElementById('ugc-modal-trabalho-salvar').addEventListener('click', salvarModalTrabalho);
+      document.getElementById('ugc-modal-trabalho-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'ugc-modal-trabalho-overlay') fecharModalTrabalho();
+      });
+      document.getElementById('ugc-modal-briefing-anexar').addEventListener('click', () => {
+        document.getElementById('ugc-modal-briefing-arquivo-input').click();
+      });
+      document.getElementById('ugc-modal-briefing-arquivo-input').addEventListener('change', (e) => {
+        const arquivo = e.target.files[0];
+        if (arquivo) anexarBriefingArquivo(arquivo);
+      });
     }
 
     function abrirPaginaPlanejador(pagina) {
@@ -861,9 +1107,9 @@
       document.querySelectorAll('.tab-panel').forEach((p) => (p.hidden = true));
       document.getElementById('panel-' + aba).hidden = false;
       document.getElementById('titulo-topo').textContent = TITULOS_ABA[aba];
-      // O filtro de período (Tudo/7d/30d/90d) não faz sentido no calendário, e-mail, Instagram, planejador nem radar.
+      // O filtro de período (Tudo/7d/30d/90d) não faz sentido no calendário, e-mail, Instagram, planejador, radar nem UGC/Publi.
       document.getElementById('filtros-periodo').hidden =
-        aba === 'calendario' || aba === 'email' || aba === 'instagram' || aba === 'planejador' || aba === 'radar';
+        aba === 'calendario' || aba === 'email' || aba === 'instagram' || aba === 'planejador' || aba === 'radar' || aba === 'ugc';
 
       if (aba === 'email' && !emailAbaCarregada) {
         emailAbaCarregada = true;
@@ -887,6 +1133,13 @@
           carregarRadar();
         } else {
           renderizarRadar();
+        }
+      }
+      if (aba === 'ugc') {
+        trocarSubAbaUGC('visao-geral');
+        if (!ugcAbaCarregada) {
+          ugcAbaCarregada = true;
+          carregarUGC();
         }
       }
     }
@@ -2635,11 +2888,327 @@
     }
 
     // ==========================================================================
+    // UGC / Publi (Visão Geral + Trabalhos — Roteiros, Prospecção, Contratos e
+    // Preços chegam em módulos seguintes)
+    // ==========================================================================
+
+    async function carregarUGC() {
+      try {
+        const [trabalhos, roteiros, cenas, prospeccao, contratos, precos] = await Promise.all([
+          buscarTudo('ugc_trabalhos'),
+          buscarTudo('ugc_roteiros'),
+          buscarTudo('ugc_roteiro_cenas'),
+          buscarTudo('ugc_prospeccao'),
+          buscarTudo('ugc_contratos'),
+          buscarTudo('ugc_precos'),
+        ]);
+        ugcTrabalhosCache = trabalhos;
+        ugcRoteirosCache = roteiros;
+        ugcRoteiroCenasCache = cenas;
+        ugcProspeccaoCache = prospeccao;
+        ugcContratosCache = contratos;
+        ugcPrecosCache = precos;
+        renderizarUGC();
+      } catch (err) {
+        console.error('Erro ao carregar UGC/Publi:', err);
+      }
+    }
+
+    function renderizarUGC() {
+      renderizarVisaoGeralUGC();
+      renderizarTrabalhos();
+    }
+
+    function trocarSubAbaUGC(pagina) {
+      ugcSubAbaAtual = pagina;
+      document.querySelectorAll('.ugc-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.ugcPagina === pagina));
+      document.querySelectorAll('.ugc-pagina').forEach((p) => (p.hidden = p.id !== 'ugc-pagina-' + pagina));
+    }
+
+    // ---- Visão Geral: 100% derivada de ugcTrabalhosCache, sem cadastro próprio ----
+    function renderizarVisaoGeralUGC() {
+      const ativos = ugcTrabalhosCache.filter((t) => t.status !== 'Pago' && t.status !== 'Cancelado');
+      const emProducao = ugcTrabalhosCache.filter((t) => UGC_STATUS_EM_PRODUCAO.includes(t.status));
+      const aReceber = ugcTrabalhosCache
+        .filter((t) => t.status_pagamento === 'Pendente' && t.status !== 'Cancelado')
+        .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
+
+      document.getElementById('ugc-num-ativos').textContent = formatarNumero(ativos.length);
+      document.getElementById('ugc-num-producao').textContent = formatarNumero(emProducao.length);
+      document.getElementById('ugc-num-receber').textContent = formatarMoeda(aReceber);
+
+      const proximas = ugcTrabalhosCache
+        .filter((t) => t.data_entrega && !['Entregue', 'Pago', 'Cancelado'].includes(t.status))
+        .sort((a, b) => a.data_entrega.localeCompare(b.data_entrega))
+        .slice(0, 5);
+
+      const lista = document.getElementById('ugc-proximas-entregas');
+      if (proximas.length === 0) {
+        lista.innerHTML = '<p class="texto-vazio">Nenhuma entrega marcada ainda.</p>';
+        return;
+      }
+      lista.innerHTML = proximas
+        .map((t) => `
+          <button type="button" class="ugc-proxima-item" data-id="${t.id}">
+            <span class="ugc-proxima-marca">${escapeHtml(t.marca)}</span>
+            <span class="ugc-proxima-tipo">${escapeHtml(t.tipo_trabalho)}</span>
+            <span class="ugc-proxima-data">${formatarDataCurta(new Date(t.data_entrega + 'T00:00:00'))}</span>
+          </button>
+        `)
+        .join('');
+      lista.querySelectorAll('.ugc-proxima-item').forEach((el) => {
+        el.addEventListener('click', () => {
+          const trabalho = ugcTrabalhosCache.find((t) => t.id === el.dataset.id);
+          if (trabalho) {
+            trocarSubAbaUGC('trabalhos');
+            abrirModalTrabalho(trabalho);
+          }
+        });
+      });
+    }
+
+    // ---- Trabalhos ----
+    function classeStatusTrabalho(status) {
+      if (status === 'Pago') return 'ugc-status-pago';
+      if (status === 'Cancelado') return 'ugc-status-cancelado';
+      if (UGC_STATUS_EM_PRODUCAO.includes(status) || status === 'Entregue' || status === 'Aguardando pagamento') return 'ugc-status-producao';
+      return 'ugc-status-inicial';
+    }
+
+    function renderizarTrabalhos() {
+      const filtradas = filtroTrabalhos === 'finalizados'
+        ? ugcTrabalhosCache.filter((t) => t.status === 'Pago' || t.status === 'Cancelado')
+        : ugcTrabalhosCache.filter((t) => t.status !== 'Pago' && t.status !== 'Cancelado');
+      const ordenadas = [...filtradas].sort((a, b) => (a.data_entrega || '9999-99-99').localeCompare(b.data_entrega || '9999-99-99'));
+
+      document.getElementById('ugc-trabalhos-resumo').textContent =
+        ordenadas.length === 0 ? 'Nenhum trabalho por aqui.' : `${ordenadas.length} ${ordenadas.length === 1 ? 'trabalho' : 'trabalhos'}.`;
+
+      const lista = document.getElementById('ugc-trabalhos-lista');
+      lista.innerHTML = '';
+      if (ordenadas.length === 0) {
+        lista.innerHTML = '<p class="texto-vazio">Nada por aqui.</p>';
+        return;
+      }
+      ordenadas.forEach((t) => lista.appendChild(criarLinhaTrabalho(t)));
+    }
+
+    function criarLinhaTrabalho(trabalho) {
+      const linha = document.createElement('div');
+      linha.className = 'cal-todas-linha ugc-trabalhos-linha';
+      const entregaFmt = trabalho.data_entrega ? formatarDataCurta(new Date(trabalho.data_entrega + 'T00:00:00')) : '—';
+      const valorFmt = trabalho.valor != null ? formatarMoeda(trabalho.valor) : '—';
+      linha.innerHTML = `
+        <span class="ugc-trabalhos-marca">${escapeHtml(trabalho.marca)}</span>
+        <span>${escapeHtml(trabalho.campanha || '—')}</span>
+        <span class="cal-todas-tipo-badge">${escapeHtml(trabalho.tipo_trabalho)}</span>
+        <span class="ugc-status-pill ${classeStatusTrabalho(trabalho.status)}">${escapeHtml(trabalho.status)}</span>
+        <span>${entregaFmt}</span>
+        <span>${valorFmt}</span>
+        <span>${escapeHtml(trabalho.status_pagamento)}</span>
+      `;
+      linha.addEventListener('click', () => abrirModalTrabalho(trabalho));
+      return linha;
+    }
+
+    // ---- Modal de trabalho ----
+    function renderizarChecklistProducao() {
+      const cont = document.getElementById('ugc-modal-checklist');
+      cont.innerHTML = UGC_CHECKLIST_ITENS
+        .map(
+          (item) => `
+            <div class="ugc-checklist-item${ugcModalChecklistEstado[item.campo] ? ' ugc-checklist-feito' : ''}" data-campo="${item.campo}">
+              <span class="ugc-checklist-check">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+              <span class="ugc-checklist-label">${item.label}</span>
+            </div>
+          `
+        )
+        .join('');
+      cont.querySelectorAll('.ugc-checklist-item').forEach((el) => {
+        el.addEventListener('click', () => {
+          const campo = el.dataset.campo;
+          ugcModalChecklistEstado[campo] = !ugcModalChecklistEstado[campo];
+          renderizarChecklistProducao();
+        });
+      });
+    }
+
+    function atualizarBriefingStatusUI() {
+      const statusEl = document.getElementById('ugc-modal-briefing-status');
+      if (!ugcModalBriefingArquivoPath) {
+        statusEl.hidden = true;
+        statusEl.innerHTML = '';
+        return;
+      }
+      statusEl.hidden = false;
+      statusEl.innerHTML = `Arquivo anexado: ${escapeHtml(ugcModalBriefingArquivoNome)} — <a href="#" id="ugc-briefing-abrir">Abrir</a> · <a href="#" id="ugc-briefing-remover">Remover</a>`;
+      document.getElementById('ugc-briefing-abrir').addEventListener('click', (e) => {
+        e.preventDefault();
+        abrirBriefingArquivo();
+      });
+      document.getElementById('ugc-briefing-remover').addEventListener('click', (e) => {
+        e.preventDefault();
+        ugcModalBriefingArquivoPath = null;
+        ugcModalBriefingArquivoNome = null;
+        atualizarBriefingStatusUI();
+      });
+    }
+
+    async function anexarBriefingArquivo(arquivo) {
+      const btn = document.getElementById('ugc-modal-briefing-anexar');
+      const textoOriginal = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      try {
+        const caminho = `briefings/${Date.now()}-${arquivo.name}`;
+        const { error } = await Auth.sb.storage.from('ugc-arquivos').upload(caminho, arquivo);
+        if (error) throw error;
+        ugcModalBriefingArquivoPath = caminho;
+        ugcModalBriefingArquivoNome = arquivo.name;
+        atualizarBriefingStatusUI();
+      } catch (err) {
+        console.error('Erro ao anexar briefing:', err);
+        alert('Não foi possível anexar o arquivo agora. Tente de novo em instantes.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = textoOriginal;
+        document.getElementById('ugc-modal-briefing-arquivo-input').value = '';
+      }
+    }
+
+    async function abrirBriefingArquivo() {
+      if (!ugcModalBriefingArquivoPath) return;
+      try {
+        const { data, error } = await Auth.sb.storage.from('ugc-arquivos').createSignedUrl(ugcModalBriefingArquivoPath, 3600);
+        if (error) throw error;
+        window.open(data.signedUrl, '_blank');
+      } catch (err) {
+        console.error('Erro ao abrir briefing:', err);
+        alert('Não foi possível abrir o arquivo agora. Tente de novo em instantes.');
+      }
+    }
+
+    function abrirModalTrabalho(trabalho) {
+      ugcTrabalhoAbertoId = trabalho ? trabalho.id : null;
+      ugcModalBriefingArquivoPath = trabalho ? trabalho.briefing_arquivo_path : null;
+      ugcModalBriefingArquivoNome = ugcModalBriefingArquivoPath ? ugcModalBriefingArquivoPath.split('/').pop() : null;
+      ugcModalChecklistEstado = {};
+      UGC_CHECKLIST_ITENS.forEach((item) => {
+        ugcModalChecklistEstado[item.campo] = trabalho ? !!trabalho[item.campo] : false;
+      });
+
+      document.getElementById('ugc-modal-marca').value = trabalho ? trabalho.marca : '';
+      document.getElementById('ugc-modal-campanha').value = trabalho ? trabalho.campanha || '' : '';
+      document.getElementById('ugc-modal-produto').value = trabalho ? trabalho.produto || '' : '';
+      document.getElementById('ugc-modal-tipo').value = trabalho ? trabalho.tipo_trabalho : 'UGC';
+      document.getElementById('ugc-modal-contato-email').value = trabalho ? trabalho.contato_email || '' : '';
+      document.getElementById('ugc-modal-contato-whats').value = trabalho ? trabalho.contato_whatsapp || '' : '';
+
+      const selectOrigem = document.getElementById('ugc-modal-origem');
+      selectOrigem.innerHTML = '<option value="">Selecione...</option>' + UGC_ORIGENS.map((o) => `<option value="${o}">${o}</option>`).join('');
+      selectOrigem.value = trabalho && trabalho.origem ? trabalho.origem : '';
+
+      document.getElementById('ugc-modal-plataforma').value = trabalho ? trabalho.plataforma || '' : '';
+      const plataformasExistentes = [...new Set(ugcTrabalhosCache.map((t) => t.plataforma).filter(Boolean))];
+      document.getElementById('ugc-plataformas-sugeridas').innerHTML = plataformasExistentes.map((p) => `<option value="${escapeHtml(p)}"></option>`).join('');
+
+      const selectStatus = document.getElementById('ugc-modal-status');
+      selectStatus.innerHTML = UGC_STATUS_TRABALHO.map((s) => `<option value="${s}">${s}</option>`).join('');
+      selectStatus.value = trabalho ? trabalho.status : 'Negociando';
+
+      document.getElementById('ugc-modal-valor').value = trabalho && trabalho.valor != null ? trabalho.valor : '';
+      document.getElementById('ugc-modal-entrega').value = trabalho && trabalho.data_entrega ? trabalho.data_entrega : '';
+
+      document.getElementById('ugc-modal-briefing-link').value = trabalho ? trabalho.briefing_link || '' : '';
+      atualizarBriefingStatusUI();
+
+      renderizarChecklistProducao();
+
+      document.getElementById('ugc-modal-status-pagamento').value = trabalho ? trabalho.status_pagamento : 'Pendente';
+      document.getElementById('ugc-modal-forma-pagamento').value = trabalho ? trabalho.forma_pagamento || '' : '';
+      document.getElementById('ugc-modal-data-pagamento').value = trabalho && trabalho.data_prevista_pagamento ? trabalho.data_prevista_pagamento : '';
+
+      document.getElementById('ugc-modal-trabalho-excluir').hidden = !trabalho;
+      document.getElementById('ugc-modal-trabalho-overlay').hidden = false;
+    }
+
+    function fecharModalTrabalho() {
+      ugcTrabalhoAbertoId = null;
+      document.getElementById('ugc-modal-trabalho-overlay').hidden = true;
+    }
+
+    async function salvarModalTrabalho() {
+      const marca = document.getElementById('ugc-modal-marca').value.trim();
+      if (!marca) {
+        alert('Preencha a marca antes de salvar.');
+        return;
+      }
+
+      const linha = {
+        marca,
+        campanha: document.getElementById('ugc-modal-campanha').value.trim() || null,
+        produto: document.getElementById('ugc-modal-produto').value.trim() || null,
+        tipo_trabalho: document.getElementById('ugc-modal-tipo').value,
+        contato_email: document.getElementById('ugc-modal-contato-email').value.trim() || null,
+        contato_whatsapp: document.getElementById('ugc-modal-contato-whats').value.trim() || null,
+        origem: document.getElementById('ugc-modal-origem').value || null,
+        plataforma: document.getElementById('ugc-modal-plataforma').value.trim() || null,
+        status: document.getElementById('ugc-modal-status').value,
+        valor: document.getElementById('ugc-modal-valor').value ? Number(document.getElementById('ugc-modal-valor').value) : null,
+        data_entrega: document.getElementById('ugc-modal-entrega').value || null,
+        briefing_link: document.getElementById('ugc-modal-briefing-link').value.trim() || null,
+        briefing_arquivo_path: ugcModalBriefingArquivoPath,
+        status_pagamento: document.getElementById('ugc-modal-status-pagamento').value,
+        forma_pagamento: document.getElementById('ugc-modal-forma-pagamento').value.trim() || null,
+        data_prevista_pagamento: document.getElementById('ugc-modal-data-pagamento').value || null,
+      };
+      UGC_CHECKLIST_ITENS.forEach((item) => {
+        linha[item.campo] = !!ugcModalChecklistEstado[item.campo];
+      });
+
+      const btn = document.getElementById('ugc-modal-trabalho-salvar');
+      btn.disabled = true;
+      try {
+        const { error } = ugcTrabalhoAbertoId
+          ? await Auth.sb.from('ugc_trabalhos').update(linha).eq('id', ugcTrabalhoAbertoId)
+          : await Auth.sb.from('ugc_trabalhos').insert(linha);
+        if (error) throw error;
+        fecharModalTrabalho();
+        await carregarUGC();
+      } catch (err) {
+        console.error('Erro ao salvar trabalho:', err);
+        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function excluirModalTrabalho() {
+      if (!ugcTrabalhoAbertoId) return;
+      if (!confirm('Excluir este trabalho?')) return;
+      try {
+        const { error } = await Auth.sb.from('ugc_trabalhos').delete().eq('id', ugcTrabalhoAbertoId);
+        if (error) throw error;
+        fecharModalTrabalho();
+        await carregarUGC();
+      } catch (err) {
+        console.error('Erro ao excluir trabalho:', err);
+        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+      }
+    }
+
+    // ==========================================================================
     // Utilitários
     // ==========================================================================
 
     function formatarNumero(n) {
       return n.toLocaleString('pt-BR');
+    }
+
+    function formatarMoeda(valor) {
+      return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
     function formatarDataCurta(data) {

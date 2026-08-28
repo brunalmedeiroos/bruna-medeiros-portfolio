@@ -1563,3 +1563,225 @@
     align-items: flex-start;
   }
 }
+
+/* ---- UGC / Publi ---- */
+
+.painel-body .ugc-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 4px;
+  margin-bottom: 20px;
+}
+
+.painel-body .ugc-subnav-btn {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--fonte-corpo);
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.painel-body .ugc-subnav-btn:hover {
+  color: var(--grafite);
+}
+
+.painel-body .ugc-subnav-btn.ativo {
+  background: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .ugc-proximas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.painel-body .ugc-proxima-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: var(--creme);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 10px 14px;
+  cursor: pointer;
+  font-family: var(--fonte-corpo);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.painel-body .ugc-proxima-item:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--sombra);
+}
+
+.painel-body .ugc-proxima-marca {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .ugc-proxima-tipo {
+  font-size: 12px;
+  color: var(--texto-suave);
+  flex: 1;
+}
+
+.painel-body .ugc-proxima-data {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--coral);
+}
+
+.painel-body .ugc-trabalhos-topo-acoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.painel-body .cal-todas-cabecalho.ugc-trabalhos-linha,
+.painel-body .cal-todas-linha.ugc-trabalhos-linha {
+  grid-template-columns: 130px 140px 100px 1fr 90px 100px 110px;
+}
+
+.painel-body .ugc-trabalhos-marca {
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .ugc-status-pill {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  width: fit-content;
+  background: rgba(4, 70, 93, 0.08);
+  color: var(--grafite);
+}
+
+.painel-body .ugc-status-producao {
+  background: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .ugc-status-pago {
+  background: var(--sucesso);
+  color: var(--branco);
+}
+
+.painel-body .ugc-status-cancelado {
+  background: rgba(196, 69, 60, 0.12);
+  color: var(--erro);
+}
+
+/* ---- Modal de trabalho (mais largo que o pl-modal padrão, por ter mais seções) ---- */
+
+.painel-body .pl-modal-grande {
+  max-width: 720px;
+}
+
+.painel-body .ugc-modal-secao-titulo {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--texto-suave);
+  margin: 4px 0 -4px;
+}
+
+.painel-body .ugc-briefing-campo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.painel-body .ugc-briefing-campo input[type="text"] {
+  flex: 1;
+  min-width: 180px;
+}
+
+.painel-body .ugc-briefing-status {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.painel-body .ugc-briefing-status a {
+  color: var(--coral);
+  font-weight: 700;
+}
+
+.painel-body .ugc-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.painel-body .ugc-checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 4px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.painel-body .ugc-checklist-item:hover {
+  background: rgba(4, 70, 93, 0.05);
+}
+
+.painel-body .ugc-checklist-check {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--branco);
+  border: 2px solid var(--borda);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.painel-body .ugc-checklist-check svg {
+  opacity: 0;
+}
+
+.painel-body .ugc-checklist-feito .ugc-checklist-check {
+  background: var(--coral);
+  border-color: var(--coral);
+}
+
+.painel-body .ugc-checklist-feito .ugc-checklist-check svg {
+  opacity: 1;
+}
+
+.painel-body .ugc-checklist-label {
+  font-size: 13px;
+  color: var(--grafite);
+}
+
+.painel-body .ugc-checklist-feito .ugc-checklist-label {
+  text-decoration: line-through;
+  color: var(--texto-suave);
+}
+
+@media (max-width: 700px) {
+  .painel-body .ugc-subnav {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+}

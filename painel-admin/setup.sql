@@ -329,6 +329,249 @@ create policy "Painel: exclusão autenticada do radar"
   on public.radar_noticias for delete to authenticated using (true);
 
 -- ---------------------------------------------------------------------
+-- Aba UGC / Publi: acompanhamento de trabalhos de UGC e publicidade,
+-- da prospecção até entrega e pagamento.
+-- ---------------------------------------------------------------------
+
+-- Tabela: ugc_trabalhos
+create table if not exists public.ugc_trabalhos (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  marca text not null,
+  campanha text,
+  produto text,
+  tipo_trabalho text not null check (tipo_trabalho in ('UGC', 'Publicidade')),
+  contato_email text,
+  contato_whatsapp text,
+  origem text check (origem in ('Inbound', 'Outbound', 'Indicação', 'Direto com a marca', 'Agência', 'Plataforma', 'Outro')),
+  plataforma text, -- texto livre: ela pode cadastrar novas plataformas pelo painel, sem check fixo
+  status text not null default 'Negociando' check (status in (
+    'Negociando', 'Fechado', 'Aguardando briefing', 'Aguardando produto', 'Roteiro', 'Gravação',
+    'Edição', 'Aprovação', 'Entregue', 'Aguardando pagamento', 'Pago', 'Cancelado'
+  )),
+  data_entrega date,
+  valor numeric(10, 2),
+  status_pagamento text not null default 'Pendente' check (status_pagamento in ('Pendente', 'Recebido')),
+  forma_pagamento text,
+  data_prevista_pagamento date,
+  briefing_arquivo_path text,
+  briefing_link text,
+  briefing_recebido boolean not null default false,
+  produto_recebido boolean not null default false,
+  roteiro_criado boolean not null default false,
+  roteiro_aprovado boolean not null default false,
+  gravacao_feita boolean not null default false,
+  edicao_feita boolean not null default false,
+  conteudo_enviado_aprovacao boolean not null default false,
+  alteracoes_feitas boolean not null default false,
+  conteudo_entregue boolean not null default false
+);
+
+create index if not exists ugc_trabalhos_status_idx on public.ugc_trabalhos (status);
+create index if not exists ugc_trabalhos_data_entrega_idx on public.ugc_trabalhos (data_entrega);
+
+alter table public.ugc_trabalhos enable row level security;
+
+create policy "Painel: leitura autenticada de trabalhos UGC"
+  on public.ugc_trabalhos for select to authenticated using (true);
+create policy "Painel: escrita autenticada de trabalhos UGC"
+  on public.ugc_trabalhos for insert to authenticated with check (true);
+create policy "Painel: atualização autenticada de trabalhos UGC"
+  on public.ugc_trabalhos for update to authenticated using (true) with check (true);
+create policy "Painel: exclusão autenticada de trabalhos UGC"
+  on public.ugc_trabalhos for delete to authenticated using (true);
+
+-- Tabela: ugc_roteiros (biblioteca de roteiros; trabalho_id é opcional —
+-- pode existir roteiro solto, ainda não vinculado a um trabalho)
+create table if not exists public.ugc_roteiros (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  trabalho_id uuid references public.ugc_trabalhos(id) on delete set null,
+  marca text,
+  produto text,
+  campanha text,
+  tipo_conteudo text,
+  duracao_prevista text,
+  objetivo text,
+  observacoes text
+);
+
+create index if not exists ugc_roteiros_trabalho_id_idx on public.ugc_roteiros (trabalho_id);
+
+alter table public.ugc_roteiros enable row level security;
+
+create policy "Painel: leitura autenticada de roteiros UGC"
+  on public.ugc_roteiros for select to authenticated using (true);
+create policy "Painel: escrita autenticada de roteiros UGC"
+  on public.ugc_roteiros for insert to authenticated with check (true);
+create policy "Painel: atualização autenticada de roteiros UGC"
+  on public.ugc_roteiros for update to authenticated using (true) with check (true);
+create policy "Painel: exclusão autenticada de roteiros UGC"
+  on public.ugc_roteiros for delete to authenticated using (true);
+
+-- Tabela: ugc_roteiro_cenas (cenas de cada roteiro, na ordem de criação)
+create table if not exists public.ugc_roteiro_cenas (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  roteiro_id uuid not null references public.ugc_roteiros(id) on delete cascade,
+  ordem int not null default 0,
+  fala text,
+  o_que_fazer text,
+  cena_broll text,
+  cena_gravada boolean not null default false,
+  cena_conferida boolean not null default false
+);
+
+create index if not exists ugc_roteiro_cenas_roteiro_id_idx on public.ugc_roteiro_cenas (roteiro_id, ordem);
+
+alter table public.ugc_roteiro_cenas enable row level security;
+
+create policy "Painel: leitura autenticada de cenas UGC"
+  on public.ugc_roteiro_cenas for select to authenticated using (true);
+create policy "Painel: escrita autenticada de cenas UGC"
+  on public.ugc_roteiro_cenas for insert to authenticated with check (true);
+create policy "Painel: atualização autenticada de cenas UGC"
+  on public.ugc_roteiro_cenas for update to authenticated using (true) with check (true);
+create policy "Painel: exclusão autenticada de cenas UGC"
+  on public.ugc_roteiro_cenas for delete to authenticated using (true);
+
+-- Tabela: ugc_prospeccao (trabalho_id é preenchido quando a negociação
+-- é convertida em trabalho, pelo botão "Transformar em trabalho")
+create table if not exists public.ugc_prospeccao (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  marca text not null,
+  contato text,
+  origem text check (origem in ('Inbound', 'Outbound', 'Indicação', 'Direto com a marca', 'Agência', 'Plataforma', 'Outro')),
+  tipo_trabalho text check (tipo_trabalho in ('UGC', 'Publicidade')),
+  data_contato date,
+  status text not null default 'Para abordar' check (status in (
+    'Para abordar', 'Contato enviado', 'Aguardando resposta', 'Respondeu', 'Negociação',
+    'Proposta enviada', 'Fechado', 'Recusado', 'Sem resposta', 'Follow-up'
+  )),
+  valor_proposto numeric(10, 2),
+  proximo_followup date,
+  observacoes text,
+  trabalho_id uuid references public.ugc_trabalhos(id) on delete set null
+);
+
+create index if not exists ugc_prospeccao_status_idx on public.ugc_prospeccao (status);
+
+alter table public.ugc_prospeccao enable row level security;
+
+create policy "Painel: leitura autenticada de prospecção UGC"
+  on public.ugc_prospeccao for select to authenticated using (true);
+create policy "Painel: escrita autenticada de prospecção UGC"
+  on public.ugc_prospeccao for insert to authenticated with check (true);
+create policy "Painel: atualização autenticada de prospecção UGC"
+  on public.ugc_prospeccao for update to authenticated using (true) with check (true);
+create policy "Painel: exclusão autenticada de prospecção UGC"
+  on public.ugc_prospeccao for delete to authenticated using (true);
+
+-- Tabela: ugc_contratos
+create table if not exists public.ugc_contratos (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  trabalho_id uuid references public.ugc_trabalhos(id) on delete set null,
+  marca text not null,
+  campanha text,
+  tipo_trabalho text check (tipo_trabalho in ('UGC', 'Publicidade')),
+  data date,
+  status text not null default 'Pendente assinatura' check (status in ('Pendente assinatura', 'Enviado', 'Assinado', 'Encerrado')),
+  arquivo_path text,
+  link text
+);
+
+create index if not exists ugc_contratos_status_idx on public.ugc_contratos (status);
+
+alter table public.ugc_contratos enable row level security;
+
+create policy "Painel: leitura autenticada de contratos UGC"
+  on public.ugc_contratos for select to authenticated using (true);
+create policy "Painel: escrita autenticada de contratos UGC"
+  on public.ugc_contratos for insert to authenticated with check (true);
+create policy "Painel: atualização autenticada de contratos UGC"
+  on public.ugc_contratos for update to authenticated using (true) with check (true);
+create policy "Painel: exclusão autenticada de contratos UGC"
+  on public.ugc_contratos for delete to authenticated using (true);
+
+-- Tabela: ugc_precos (catálogo editável; a categoria distingue as 3
+-- seções mostradas na página Preços: UGC / Publicidade / Adicionais)
+create table if not exists public.ugc_precos (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  categoria text not null check (categoria in ('UGC', 'Publicidade', 'Adicionais')),
+  servico text not null,
+  valor numeric(10, 2),
+  observacoes text,
+  ordem int not null default 0
+);
+
+create index if not exists ugc_precos_categoria_idx on public.ugc_precos (categoria, ordem);
+
+alter table public.ugc_precos enable row level security;
+
+create policy "Painel: leitura autenticada de preços UGC"
+  on public.ugc_precos for select to authenticated using (true);
+create policy "Painel: escrita autenticada de preços UGC"
+  on public.ugc_precos for insert to authenticated with check (true);
+create policy "Painel: atualização autenticada de preços UGC"
+  on public.ugc_precos for update to authenticated using (true) with check (true);
+create policy "Painel: exclusão autenticada de preços UGC"
+  on public.ugc_precos for delete to authenticated using (true);
+
+-- Catálogo de preços inicial (a Bruna edita tudo pelo painel depois).
+insert into public.ugc_precos (categoria, servico, ordem)
+select categoria, servico, ordem from (values
+  ('UGC', 'Vídeo UGC', 0),
+  ('UGC', 'Foto', 1),
+  ('UGC', 'Pacote de vídeos', 2),
+  ('UGC', 'Pacote de fotos', 3),
+  ('UGC', 'B-rolls', 4),
+  ('UGC', 'Roteiro', 5),
+  ('UGC', 'Edição', 6),
+  ('UGC', 'Outros', 7),
+  ('Publicidade', 'TikTok', 0),
+  ('Publicidade', 'Reels', 1),
+  ('Publicidade', 'Stories', 2),
+  ('Publicidade', 'Pacote de Stories', 3),
+  ('Publicidade', 'Pacote de conteúdo', 4),
+  ('Publicidade', 'Outros', 5),
+  ('Adicionais', 'Uso em anúncios', 0),
+  ('Adicionais', 'Exclusividade', 1),
+  ('Adicionais', 'Vídeo adicional', 2),
+  ('Adicionais', 'Foto adicional', 3),
+  ('Adicionais', 'B-roll adicional', 4),
+  ('Adicionais', 'Edição adicional', 5),
+  ('Adicionais', 'Roteiro', 6),
+  ('Adicionais', 'Urgência', 7),
+  ('Adicionais', 'Whitelisting/Spark Ads', 8),
+  ('Adicionais', 'Outros', 9)
+) as padrao(categoria, servico, ordem)
+where not exists (select 1 from public.ugc_precos);
+
+-- Storage: bucket privado pra anexos de briefing e contrato (arquivo
+-- fica salvo dentro do trabalho/contrato; como pode ter dado sensível
+-- de cliente, o bucket é privado — o painel gera uma signed URL na
+-- hora de abrir o arquivo, não fica um link público fixo).
+insert into storage.buckets (id, name, public)
+values ('ugc-arquivos', 'ugc-arquivos', false)
+on conflict (id) do nothing;
+
+drop policy if exists "Painel: leitura autenticada de arquivos UGC" on storage.objects;
+create policy "Painel: leitura autenticada de arquivos UGC"
+  on storage.objects for select to authenticated using (bucket_id = 'ugc-arquivos');
+drop policy if exists "Painel: escrita autenticada de arquivos UGC" on storage.objects;
+create policy "Painel: escrita autenticada de arquivos UGC"
+  on storage.objects for insert to authenticated with check (bucket_id = 'ugc-arquivos');
+drop policy if exists "Painel: atualização autenticada de arquivos UGC" on storage.objects;
+create policy "Painel: atualização autenticada de arquivos UGC"
+  on storage.objects for update to authenticated using (bucket_id = 'ugc-arquivos') with check (bucket_id = 'ugc-arquivos');
+drop policy if exists "Painel: exclusão autenticada de arquivos UGC" on storage.objects;
+create policy "Painel: exclusão autenticada de arquivos UGC"
+  on storage.objects for delete to authenticated using (bucket_id = 'ugc-arquivos');
+
+-- ---------------------------------------------------------------------
 -- Agendamento: chama a Edge Function radar-atualizar todo dia às 7h30
 -- (horário de Brasília = 10:30 UTC). Precisa das extensões pg_cron e
 -- pg_net habilitadas no projeto (Database > Extensions no Supabase).

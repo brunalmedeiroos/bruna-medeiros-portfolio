@@ -1404,6 +1404,14 @@
 
 /* ---- Radar de Notícias ---- */
 
+/* O ícone do rolo de jornal tem mais espaço em branco ao redor do desenho
+   do que os outros ícones do menu, então em 20px (tamanho padrão) fica
+   visualmente menor — compensa com um tamanho um pouco maior. */
+.painel-body .nav-item[data-tab="radar"] .nav-icon-img {
+  width: 26px;
+  height: 26px;
+}
+
 .painel-body .radar-topo {
   display: flex;
   align-items: center;

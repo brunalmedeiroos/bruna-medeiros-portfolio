@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260827q">
+<link rel="stylesheet" href="css/style.css?v=20260827r">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260827q">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260827r">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260827q"></script>
+<script src="js/auth.js?v=20260827r"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -660,6 +660,10 @@
                 <span class="card-label">Ganho em Publicidade</span>
                 <span class="card-valor" id="ugc-num-ganho-publicidade">R$ 0</span>
               </div>
+              <div class="card-numero">
+                <span class="card-label">Ganho total</span>
+                <span class="card-valor" id="ugc-num-ganho-total">R$ 0</span>
+              </div>
             </div>
           </div>
         </section>
@@ -901,7 +905,14 @@
           </div>
           <div class="cal-form-campo">
             <label for="ugc-modal-forma-pagamento">Forma de pagamento</label>
-            <input type="text" id="ugc-modal-forma-pagamento" placeholder="Ex: Pix, boleto...">
+            <input type="text" id="ugc-modal-forma-pagamento" list="ugc-formas-pagamento" placeholder="Ex: Pix, boleto, permuta...">
+            <datalist id="ugc-formas-pagamento">
+              <option value="Pix"></option>
+              <option value="Boleto"></option>
+              <option value="Transferência"></option>
+              <option value="Cartão"></option>
+              <option value="Permuta"></option>
+            </datalist>
           </div>
           <div class="cal-form-campo">
             <label for="ugc-modal-data-pagamento">Data prevista</label>
@@ -3473,10 +3484,14 @@
           .filter((t) => t.tipo_trabalho === tipo && t.status_pagamento === 'Recebido')
           .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
 
+      const ganhoUgc = ganhoPorTipo('UGC');
+      const ganhoPublicidade = ganhoPorTipo('Publicidade');
+
       document.getElementById('ugc-num-fechados').textContent = formatarNumero(fechados.length);
       document.getElementById('ugc-num-contratos-finalizados').textContent = formatarNumero(contratosFinalizados.length);
-      document.getElementById('ugc-num-ganho-ugc').textContent = formatarMoeda(ganhoPorTipo('UGC'));
-      document.getElementById('ugc-num-ganho-publicidade').textContent = formatarMoeda(ganhoPorTipo('Publicidade'));
+      document.getElementById('ugc-num-ganho-ugc').textContent = formatarMoeda(ganhoUgc);
+      document.getElementById('ugc-num-ganho-publicidade').textContent = formatarMoeda(ganhoPublicidade);
+      document.getElementById('ugc-num-ganho-total').textContent = formatarMoeda(ganhoUgc + ganhoPublicidade);
     }
 
     // ---- Trabalhos ----

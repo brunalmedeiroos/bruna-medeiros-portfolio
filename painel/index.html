@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827m">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827n">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827m">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827n">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../painel-admin/js/auth.js?v=20260827m"></script>
+<script src="../painel-admin/js/auth.js?v=20260827n"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -1529,6 +1529,7 @@
       document.querySelectorAll('.ugc-precos-add').forEach((btn) => {
         btn.addEventListener('click', () => abrirModalPreco(null, btn.dataset.categoria));
       });
+      document.querySelectorAll('.ugc-precos-lista').forEach((cont) => configurarDropZonePrecos(cont));
       document.getElementById('ugc-modal-preco-fechar').addEventListener('click', fecharModalPreco);
       document.getElementById('ugc-modal-preco-excluir').addEventListener('click', excluirModalPreco);
       document.getElementById('ugc-modal-preco-salvar').addEventListener('click', salvarModalPreco);
@@ -4216,17 +4217,81 @@
       });
     }
 
+    let precoLinhaArrastada = null;
+
     function criarLinhaPreco(preco) {
       const linha = document.createElement('button');
       linha.type = 'button';
       linha.className = 'ugc-preco-linha';
+      linha.draggable = true;
+      linha.dataset.id = preco.id;
       if (preco.observacoes) linha.title = preco.observacoes;
       linha.innerHTML = `
-        <span class="ugc-preco-servico">${escapeHtml(preco.servico)}</span>
+        <span class="ugc-preco-info">
+          <span class="ugc-preco-arraste" aria-hidden="true">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="6" r="1.5" fill="currentColor"/><circle cx="9" cy="12" r="1.5" fill="currentColor"/><circle cx="9" cy="18" r="1.5" fill="currentColor"/><circle cx="15" cy="6" r="1.5" fill="currentColor"/><circle cx="15" cy="12" r="1.5" fill="currentColor"/><circle cx="15" cy="18" r="1.5" fill="currentColor"/></svg>
+          </span>
+          <span class="ugc-preco-servico">${escapeHtml(preco.servico)}</span>
+        </span>
         <span class="ugc-preco-valor">${preco.valor != null ? formatarMoeda(preco.valor) : '—'}</span>
       `;
-      linha.addEventListener('click', () => abrirModalPreco(preco, preco.categoria));
+      linha.addEventListener('click', () => {
+        if (linha.classList.contains('ugc-preco-arrastando')) return;
+        abrirModalPreco(preco, preco.categoria);
+      });
+      linha.addEventListener('dragstart', () => {
+        precoLinhaArrastada = linha;
+        setTimeout(() => linha.classList.add('ugc-preco-arrastando'), 0);
+      });
+      linha.addEventListener('dragend', () => {
+        linha.classList.remove('ugc-preco-arrastando');
+        const listaFinal = linha.closest('.ugc-precos-lista');
+        precoLinhaArrastada = null;
+        if (listaFinal) salvarNovaOrdemPrecos(listaFinal);
+      });
       return linha;
+    }
+
+    // Mesma mecânica de arrastar usada no Banco de Ideias do Planejador
+    // (elementoIdeiaNaPosicao/configurarDropZoneIdeias), adaptada pra lista de preços.
+    function elementoPrecoNaPosicao(container, y) {
+      const linhas = [...container.querySelectorAll('.ugc-preco-linha:not(.ugc-preco-arrastando)')];
+      return linhas.reduce(
+        (maisProximo, linha) => {
+          const caixa = linha.getBoundingClientRect();
+          const distancia = y - caixa.top - caixa.height / 2;
+          if (distancia < 0 && distancia > maisProximo.distancia) {
+            return { distancia, elemento: linha };
+          }
+          return maisProximo;
+        },
+        { distancia: Number.NEGATIVE_INFINITY, elemento: null }
+      ).elemento;
+    }
+
+    function configurarDropZonePrecos(container) {
+      container.addEventListener('dragover', (e) => {
+        if (!precoLinhaArrastada) return;
+        e.preventDefault();
+        const depois = elementoPrecoNaPosicao(container, e.clientY);
+        if (depois == null) container.appendChild(precoLinhaArrastada);
+        else container.insertBefore(precoLinhaArrastada, depois);
+      });
+    }
+
+    async function salvarNovaOrdemPrecos(container) {
+      const idsNaOrdem = [...container.querySelectorAll('.ugc-preco-linha')].map((l) => l.dataset.id);
+      if (!idsNaOrdem.length) return;
+      try {
+        const atualizacoes = idsNaOrdem.map((id, indice) => Auth.sb.from('ugc_precos').update({ ordem: indice }).eq('id', id));
+        const resultados = await Promise.all(atualizacoes);
+        const comErro = resultados.find((r) => r.error);
+        if (comErro) throw comErro.error;
+        await carregarUGC();
+      } catch (err) {
+        console.error('Erro ao salvar nova ordem dos preços:', err);
+        alert('Não foi possível salvar a nova ordem agora. Tente de novo em instantes.');
+      }
     }
 
     function abrirModalPreco(preco, categoria) {

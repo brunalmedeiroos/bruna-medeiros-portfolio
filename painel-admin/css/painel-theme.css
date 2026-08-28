@@ -1967,6 +1967,28 @@
   box-shadow: var(--sombra);
 }
 
+.painel-body .ugc-preco-linha:active {
+  cursor: grabbing;
+}
+
+.painel-body .ugc-preco-arrastando {
+  opacity: 0.35;
+}
+
+.painel-body .ugc-preco-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.painel-body .ugc-preco-arraste {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--texto-suave);
+  cursor: grab;
+}
+
 .painel-body .ugc-preco-servico {
   font-size: 14px;
   font-weight: 600;

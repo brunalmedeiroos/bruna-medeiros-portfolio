@@ -504,6 +504,16 @@
   min-width: 560px;
 }
 
+/* Sem isso, uma célula com texto longo (ex: e-mail no lugar de "Contato")
+   vaza pra cima da coluna vizinha em vez de truncar — grid item não encolhe
+   abaixo do próprio conteúdo por padrão. */
+.painel-body .cal-todas-linha > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .painel-body .cal-todas-dia {
   display: flex;
   flex-direction: column;
@@ -1886,6 +1896,29 @@
   font-size: 13px;
   color: var(--grafite);
   cursor: pointer;
+}
+
+.painel-body .cards-numeros-prospeccao {
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 20px;
+}
+
+.painel-body .cal-todas-cabecalho.ugc-prospeccao-linha,
+.painel-body .cal-todas-linha.ugc-prospeccao-linha {
+  grid-template-columns: 130px 120px 100px 90px 80px 1fr 90px 90px;
+}
+
+.painel-body .ugc-transformar-aviso {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(125, 183, 206, 0.15);
+  border: 1px solid var(--coral);
+  border-radius: var(--raio-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--grafite);
 }
 
 @media (max-width: 700px) {

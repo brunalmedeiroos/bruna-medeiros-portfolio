@@ -1779,6 +1779,115 @@
   color: var(--texto-suave);
 }
 
+.painel-body .ugc-roteiros-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.painel-body .ugc-roteiro-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 16px;
+  cursor: pointer;
+  font-family: var(--fonte-corpo);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.painel-body .ugc-roteiro-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra);
+}
+
+.painel-body .ugc-roteiro-card-marca {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .ugc-roteiro-card-info {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.painel-body .ugc-roteiro-card-progresso {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--coral);
+  margin-top: 4px;
+}
+
+.painel-body .ugc-roteiro-progresso-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--coral);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.painel-body .ugc-cenas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.painel-body .ugc-cena-card {
+  background: var(--creme);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.painel-body .ugc-cena-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.painel-body .ugc-cena-numero {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--texto-suave);
+}
+
+.painel-body .ugc-cena-remover {
+  background: transparent;
+  border: none;
+  color: var(--texto-suave);
+  cursor: pointer;
+  padding: 2px;
+  display: inline-flex;
+}
+
+.painel-body .ugc-cena-remover:hover {
+  color: var(--erro);
+}
+
+.painel-body .ugc-cena-checklist {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.painel-body .ugc-cena-check-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--grafite);
+  cursor: pointer;
+}
+
 @media (max-width: 700px) {
   .painel-body .ugc-subnav {
     overflow-x: auto;

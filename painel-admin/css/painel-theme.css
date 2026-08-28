@@ -2041,6 +2041,28 @@
   grid-template-columns: repeat(5, 1fr);
 }
 
+/* ---- Entregáveis (dentro do modal de Trabalho) ---- */
+
+.painel-body .ugc-entregaveis-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.painel-body .ugc-entregavel-item {
+  display: grid;
+  grid-template-columns: 1fr 80px 32px;
+  gap: 8px;
+  align-items: center;
+}
+
+@media (max-width: 480px) {
+  .painel-body .ugc-entregavel-item {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---- Proposta personalizada (calculadora dentro de Preços) ---- */
 
 .painel-body .ugc-proposta-itens {

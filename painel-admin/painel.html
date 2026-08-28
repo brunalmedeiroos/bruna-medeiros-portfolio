@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260827r">
+<link rel="stylesheet" href="css/style.css?v=20260827s">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260827r">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260827s">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260827r"></script>
+<script src="js/auth.js?v=20260827s"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -842,6 +842,11 @@
           </div>
         </div>
 
+        <h4 class="ugc-modal-secao-titulo">Entregáveis</h4>
+        <div id="ugc-modal-entregaveis-lista" class="ugc-entregaveis-lista"></div>
+        <button type="button" id="ugc-modal-add-entregavel" class="cal-btn">+ Adicionar entregável</button>
+        <datalist id="ugc-entregaveis-sugestoes"></datalist>
+
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
             <label for="ugc-modal-contato-email">E-mail do contato</label>
@@ -1254,6 +1259,8 @@
     let ugcModalChecklistEstado = {};
     let ugcModalBriefingArquivoPath = null;
     let ugcModalBriefingArquivoNome = null;
+    let ugcTrabalhoEntregaveisCache = [];
+    let ugcModalEntregaveis = [];
     let ugcRoteiroAbertoId = null;
     let ugcModalCenas = [];
     let ugcProspeccaoAbertaId = null;
@@ -1502,6 +1509,8 @@
       document.getElementById('ugc-modal-trabalho-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'ugc-modal-trabalho-overlay') fecharModalTrabalho();
       });
+      document.getElementById('ugc-modal-tipo').addEventListener('change', atualizarSugestoesEntregaveis);
+      document.getElementById('ugc-modal-add-entregavel').addEventListener('click', adicionarEntregavelModal);
       document.getElementById('ugc-modal-briefing-anexar').addEventListener('click', () => {
         document.getElementById('ugc-modal-briefing-arquivo-input').click();
       });
@@ -3397,8 +3406,9 @@
 
     async function carregarUGC() {
       try {
-        const [trabalhos, roteiros, cenas, prospeccao, contratos, precos] = await Promise.all([
+        const [trabalhos, entregaveis, roteiros, cenas, prospeccao, contratos, precos] = await Promise.all([
           buscarTudo('ugc_trabalhos'),
+          buscarTudo('ugc_trabalho_entregaveis'),
           buscarTudo('ugc_roteiros'),
           buscarTudo('ugc_roteiro_cenas'),
           buscarTudo('ugc_prospeccao'),
@@ -3406,6 +3416,7 @@
           buscarTudo('ugc_precos'),
         ]);
         ugcTrabalhosCache = trabalhos;
+        ugcTrabalhoEntregaveisCache = entregaveis;
         ugcRoteirosCache = roteiros;
         ugcRoteiroCenasCache = cenas;
         ugcProspeccaoCache = prospeccao;
@@ -3630,6 +3641,16 @@
       document.getElementById('ugc-modal-campanha').value = trabalho ? trabalho.campanha || '' : '';
       document.getElementById('ugc-modal-produto').value = trabalho ? trabalho.produto || '' : '';
       document.getElementById('ugc-modal-tipo').value = trabalho ? trabalho.tipo_trabalho : 'UGC';
+
+      ugcModalEntregaveis = trabalho
+        ? ugcTrabalhoEntregaveisCache
+            .filter((e) => e.trabalho_id === trabalho.id)
+            .sort((a, b) => a.ordem - b.ordem)
+            .map((e) => ({ servico: e.servico, quantidade: e.quantidade }))
+        : [];
+      atualizarSugestoesEntregaveis();
+      renderizarEntregaveisModal();
+
       document.getElementById('ugc-modal-contato-email').value = trabalho ? trabalho.contato_email || '' : '';
       document.getElementById('ugc-modal-contato-whats').value = trabalho ? trabalho.contato_whatsapp || '' : '';
 
@@ -3666,6 +3687,59 @@
       document.getElementById('ugc-modal-trabalho-overlay').hidden = true;
     }
 
+    // Sugere os serviços cadastrados em Preços pra categoria do tipo de trabalho atual
+    // (UGC ou Publicidade) — só sugestão, não trava o campo nem puxa o valor.
+    function atualizarSugestoesEntregaveis() {
+      const tipo = document.getElementById('ugc-modal-tipo').value;
+      const servicos = ugcPrecosCache.filter((p) => p.categoria === tipo && !p.eh_percentual).sort((a, b) => a.ordem - b.ordem);
+      document.getElementById('ugc-entregaveis-sugestoes').innerHTML = servicos
+        .map((p) => `<option value="${escapeHtml(p.servico)}"></option>`)
+        .join('');
+    }
+
+    function adicionarEntregavelModal() {
+      ugcModalEntregaveis.push({ servico: '', quantidade: 1 });
+      renderizarEntregaveisModal();
+    }
+
+    function removerEntregavelModal(idx) {
+      ugcModalEntregaveis.splice(idx, 1);
+      renderizarEntregaveisModal();
+    }
+
+    function renderizarEntregaveisModal() {
+      const cont = document.getElementById('ugc-modal-entregaveis-lista');
+      if (ugcModalEntregaveis.length === 0) {
+        cont.innerHTML = '<p class="texto-vazio">Nenhum entregável adicionado ainda.</p>';
+        return;
+      }
+      cont.innerHTML = ugcModalEntregaveis
+        .map((item, idx) => `
+          <div class="ugc-entregavel-item" data-idx="${idx}">
+            <input type="text" class="ugc-entregavel-servico" data-idx="${idx}" list="ugc-entregaveis-sugestoes" placeholder="Ex: Vídeo UGC" value="${escapeHtml(item.servico)}">
+            <input type="number" min="1" step="1" class="ugc-entregavel-qtd" data-idx="${idx}" value="${item.quantidade}">
+            <button type="button" class="cal-btn cal-btn-icon ugc-entregavel-remover" data-idx="${idx}" aria-label="Remover entregável">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        `)
+        .join('');
+
+      cont.querySelectorAll('.ugc-entregavel-servico').forEach((input) => {
+        input.addEventListener('input', () => {
+          ugcModalEntregaveis[Number(input.dataset.idx)].servico = input.value;
+        });
+      });
+      cont.querySelectorAll('.ugc-entregavel-qtd').forEach((input) => {
+        input.addEventListener('input', () => {
+          ugcModalEntregaveis[Number(input.dataset.idx)].quantidade = Number(input.value) || 1;
+        });
+      });
+      cont.querySelectorAll('.ugc-entregavel-remover').forEach((btn) => {
+        btn.addEventListener('click', () => removerEntregavelModal(Number(btn.dataset.idx)));
+      });
+    }
+
     async function salvarModalTrabalho() {
       const marca = document.getElementById('ugc-modal-marca').value.trim();
       if (!marca) {
@@ -3698,10 +3772,30 @@
       const btn = document.getElementById('ugc-modal-trabalho-salvar');
       btn.disabled = true;
       try {
-        const { error } = ugcTrabalhoAbertoId
-          ? await Auth.sb.from('ugc_trabalhos').update(linha).eq('id', ugcTrabalhoAbertoId)
-          : await Auth.sb.from('ugc_trabalhos').insert(linha);
-        if (error) throw error;
+        let trabalhoId = ugcTrabalhoAbertoId;
+        if (trabalhoId) {
+          const { error } = await Auth.sb.from('ugc_trabalhos').update(linha).eq('id', trabalhoId);
+          if (error) throw error;
+        } else {
+          const { data, error } = await Auth.sb.from('ugc_trabalhos').insert(linha).select();
+          if (error) throw error;
+          trabalhoId = data[0].id;
+        }
+
+        // Reescreve os entregáveis do zero, mesmo padrão já usado nas cenas do roteiro.
+        await Auth.sb.from('ugc_trabalho_entregaveis').delete().eq('trabalho_id', trabalhoId);
+        const entregaveisValidos = ugcModalEntregaveis.filter((e) => e.servico.trim());
+        if (entregaveisValidos.length > 0) {
+          const entregaveisParaSalvar = entregaveisValidos.map((e, i) => ({
+            trabalho_id: trabalhoId,
+            servico: e.servico.trim(),
+            quantidade: Number(e.quantidade) || 1,
+            ordem: i,
+          }));
+          const { error: erroEntregaveis } = await Auth.sb.from('ugc_trabalho_entregaveis').insert(entregaveisParaSalvar);
+          if (erroEntregaveis) throw erroEntregaveis;
+        }
+
         fecharModalTrabalho();
         await carregarUGC();
       } catch (err) {

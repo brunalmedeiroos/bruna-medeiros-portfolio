@@ -381,6 +381,31 @@ create policy "Painel: atualização autenticada de trabalhos UGC"
 create policy "Painel: exclusão autenticada de trabalhos UGC"
   on public.ugc_trabalhos for delete to authenticated using (true);
 
+-- Tabela: ugc_trabalho_entregaveis (o que foi combinado de entregar em cada
+-- trabalho — servico é texto livre, só sugerido a partir de ugc_precos pelo
+-- painel, sem vínculo/FK, já que é um registro histórico do que foi entregue)
+create table if not exists public.ugc_trabalho_entregaveis (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  trabalho_id uuid not null references public.ugc_trabalhos(id) on delete cascade,
+  servico text not null,
+  quantidade int not null default 1,
+  ordem int not null default 0
+);
+
+create index if not exists ugc_trabalho_entregaveis_trabalho_idx on public.ugc_trabalho_entregaveis (trabalho_id, ordem);
+
+alter table public.ugc_trabalho_entregaveis enable row level security;
+
+create policy "Painel: leitura autenticada de entregáveis UGC"
+  on public.ugc_trabalho_entregaveis for select to authenticated using (true);
+create policy "Painel: escrita autenticada de entregáveis UGC"
+  on public.ugc_trabalho_entregaveis for insert to authenticated with check (true);
+create policy "Painel: atualização autenticada de entregáveis UGC"
+  on public.ugc_trabalho_entregaveis for update to authenticated using (true) with check (true);
+create policy "Painel: exclusão autenticada de entregáveis UGC"
+  on public.ugc_trabalho_entregaveis for delete to authenticated using (true);
+
 -- Tabela: ugc_roteiros (biblioteca de roteiros; trabalho_id é opcional —
 -- pode existir roteiro solto, ainda não vinculado a um trabalho)
 create table if not exists public.ugc_roteiros (

@@ -9,12 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20260827l">
+<link rel="stylesheet" href="css/style.css?v=20260827m">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260827l">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260827m">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/auth.js?v=20260827l"></script>
+<script src="js/auth.js?v=20260827m"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -1229,6 +1229,7 @@
     let ugcPrecoAbertoId = null;
     let ugcPrecoModalCategoria = null;
     let ugcPropostaItens = [];
+    let ugcPropostaDescontoManual = false; // true assim que ela mexe no desconto na mão, pra parar de sobrescrever com a sugestão
 
     const TITULOS_ABA = {
       overview: 'Dashboard',
@@ -1533,9 +1534,13 @@
         if (e.target.id === 'ugc-modal-proposta-overlay') fecharModalProposta();
       });
       document.getElementById('ugc-proposta-add-item').addEventListener('click', adicionarItemProposta);
-      document.getElementById('ugc-proposta-desconto').addEventListener('input', recalcularTotaisProposta);
+      document.getElementById('ugc-proposta-desconto').addEventListener('input', () => {
+        ugcPropostaDescontoManual = true;
+        recalcularTotaisProposta();
+      });
       document.querySelectorAll('.ugc-desconto-preset').forEach((btn) => {
         btn.addEventListener('click', () => {
+          ugcPropostaDescontoManual = true;
           document.getElementById('ugc-proposta-desconto').value = btn.dataset.desconto;
           recalcularTotaisProposta();
         });
@@ -4285,6 +4290,7 @@
     function abrirModalProposta() {
       document.getElementById('ugc-proposta-marca').value = '';
       document.getElementById('ugc-proposta-desconto').value = 0;
+      ugcPropostaDescontoManual = false;
       ugcPropostaItens = [{ precoId: '', quantidade: 1 }];
       renderizarPropostaItens();
       document.getElementById('ugc-modal-proposta-overlay').hidden = false;
@@ -4309,6 +4315,7 @@
     }
 
     function renderizarPropostaItens() {
+      aplicarSugestaoDescontoAutomatica();
       const cont = document.getElementById('ugc-proposta-itens');
       const opcoes = ['UGC', 'Publicidade', 'Adicionais']
         .map((categoria) => {
@@ -4343,6 +4350,7 @@
         sel.addEventListener('change', () => {
           ugcPropostaItens[Number(sel.dataset.idx)].precoId = sel.value;
           atualizarSubtotalItemProposta(Number(sel.dataset.idx));
+          aplicarSugestaoDescontoAutomatica();
           recalcularTotaisProposta();
         });
       });
@@ -4350,6 +4358,7 @@
         input.addEventListener('input', () => {
           ugcPropostaItens[Number(input.dataset.idx)].quantidade = Number(input.value) || 0;
           atualizarSubtotalItemProposta(Number(input.dataset.idx));
+          aplicarSugestaoDescontoAutomatica();
           recalcularTotaisProposta();
         });
       });
@@ -4399,6 +4408,16 @@
 
     function quantidadeTotalProposta() {
       return ugcPropostaItens.reduce((soma, item) => soma + (item.precoId ? Number(item.quantidade) || 0 : 0), 0);
+    }
+
+    // Preenche o desconto sozinha pela faixa de quantidade, a menos que ela já
+    // tenha escolhido um valor na mão (digitando ou clicando num preset) nesta proposta.
+    function aplicarSugestaoDescontoAutomatica() {
+      if (ugcPropostaDescontoManual) return;
+      const qtd = quantidadeTotalProposta();
+      if (qtd === 0) return;
+      const faixa = UGC_DESCONTO_FAIXAS.find((f) => qtd >= f.min && qtd <= f.max);
+      if (faixa) document.getElementById('ugc-proposta-desconto').value = faixa.pct;
     }
 
     function atualizarPresetsDescontoAtivo(descontoPct) {

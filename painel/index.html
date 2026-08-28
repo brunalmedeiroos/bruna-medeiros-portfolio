@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827p">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827q">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827p">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827q">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../painel-admin/js/auth.js?v=20260827p"></script>
+<script src="../painel-admin/js/auth.js?v=20260827q"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -455,6 +455,7 @@
             <button class="ugc-subnav-btn" data-ugc-pagina="prospeccao" type="button">Prospecção</button>
             <button class="ugc-subnav-btn" data-ugc-pagina="contratos" type="button">Contratos</button>
             <button class="ugc-subnav-btn" data-ugc-pagina="precos" type="button">Preços</button>
+            <button class="ugc-subnav-btn" data-ugc-pagina="resultados" type="button">Resultados</button>
           </div>
 
           <!-- Visão Geral: só leitura, tudo derivado de ugc_trabalhos -->
@@ -469,16 +470,8 @@
                 <span class="card-valor" id="ugc-num-producao">0</span>
               </div>
               <div class="card-numero">
-                <span class="card-label">Contratos finalizados</span>
-                <span class="card-valor" id="ugc-num-contratos-finalizados">0</span>
-              </div>
-              <div class="card-numero">
                 <span class="card-label">A receber</span>
                 <span class="card-valor" id="ugc-num-receber">R$ 0</span>
-              </div>
-              <div class="card-numero">
-                <span class="card-label">Trabalhos fechados</span>
-                <span class="card-valor" id="ugc-num-fechados">0</span>
               </div>
             </div>
 
@@ -646,6 +639,28 @@
                 </button>
               </div>
               <div id="ugc-precos-lista-adicionais" class="ugc-precos-lista"></div>
+            </div>
+          </div>
+
+          <!-- Resultados: também só leitura, derivado de ugc_trabalhos/ugc_contratos -->
+          <div id="ugc-pagina-resultados" class="ugc-pagina" hidden>
+            <div class="cards-numeros cards-numeros-resultados-ugc">
+              <div class="card-numero destaque">
+                <span class="card-label">Trabalhos finalizados</span>
+                <span class="card-valor" id="ugc-num-fechados">0</span>
+              </div>
+              <div class="card-numero">
+                <span class="card-label">Contratos finalizados</span>
+                <span class="card-valor" id="ugc-num-contratos-finalizados">0</span>
+              </div>
+              <div class="card-numero">
+                <span class="card-label">Ganho em UGC</span>
+                <span class="card-valor" id="ugc-num-ganho-ugc">R$ 0</span>
+              </div>
+              <div class="card-numero">
+                <span class="card-label">Ganho em Publicidade</span>
+                <span class="card-valor" id="ugc-num-ganho-publicidade">R$ 0</span>
+              </div>
             </div>
           </div>
         </section>
@@ -3405,6 +3420,7 @@
       renderizarProspeccao();
       renderizarContratos();
       renderizarPrecos();
+      renderizarResultadosUGC();
     }
 
     function trocarSubAbaUGC(pagina) {
@@ -3417,17 +3433,13 @@
     function renderizarVisaoGeralUGC() {
       const ativos = ugcTrabalhosCache.filter((t) => t.status !== 'Pago' && t.status !== 'Cancelado');
       const emProducao = ugcTrabalhosCache.filter((t) => UGC_STATUS_EM_PRODUCAO.includes(t.status));
-      const contratosFinalizados = ugcContratosCache.filter((c) => c.status === 'Encerrado');
-      const fechados = ugcTrabalhosCache.filter((t) => t.status === 'Pago' || t.status === 'Entregue');
       const aReceber = ugcTrabalhosCache
         .filter((t) => t.status_pagamento === 'Pendente' && t.status !== 'Cancelado')
         .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
 
       document.getElementById('ugc-num-ativos').textContent = formatarNumero(ativos.length);
       document.getElementById('ugc-num-producao').textContent = formatarNumero(emProducao.length);
-      document.getElementById('ugc-num-contratos-finalizados').textContent = formatarNumero(contratosFinalizados.length);
       document.getElementById('ugc-num-receber').textContent = formatarMoeda(aReceber);
-      document.getElementById('ugc-num-fechados').textContent = formatarNumero(fechados.length);
 
       const proximas = ugcTrabalhosCache
         .filter((t) => t.data_entrega && !['Entregue', 'Pago', 'Cancelado'].includes(t.status))
@@ -3457,6 +3469,21 @@
           }
         });
       });
+    }
+
+    // ---- Resultados: também só leitura, derivado de ugcTrabalhosCache/ugcContratosCache ----
+    function renderizarResultadosUGC() {
+      const fechados = ugcTrabalhosCache.filter((t) => t.status === 'Pago' || t.status === 'Entregue');
+      const contratosFinalizados = ugcContratosCache.filter((c) => c.status === 'Encerrado');
+      const ganhoPorTipo = (tipo) =>
+        ugcTrabalhosCache
+          .filter((t) => t.tipo_trabalho === tipo && t.status_pagamento === 'Recebido')
+          .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
+
+      document.getElementById('ugc-num-fechados').textContent = formatarNumero(fechados.length);
+      document.getElementById('ugc-num-contratos-finalizados').textContent = formatarNumero(contratosFinalizados.length);
+      document.getElementById('ugc-num-ganho-ugc').textContent = formatarMoeda(ganhoPorTipo('UGC'));
+      document.getElementById('ugc-num-ganho-publicidade').textContent = formatarMoeda(ganhoPorTipo('Publicidade'));
     }
 
     // ---- Trabalhos ----

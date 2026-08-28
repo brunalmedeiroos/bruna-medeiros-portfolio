@@ -10,12 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827n">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260827o">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827n">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260827o">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="../painel-admin/js/auth.js?v=20260827n"></script>
+<script src="../painel-admin/js/auth.js?v=20260827o"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
 <body class="painel-body" id="painel-body" style="visibility:hidden;">
@@ -1095,7 +1095,7 @@
           <input type="text" id="ugc-preco-servico">
         </div>
         <div class="cal-form-campo">
-          <label for="ugc-preco-valor">Valor (R$)</label>
+          <label for="ugc-preco-valor" id="ugc-preco-valor-label">Valor (R$)</label>
           <input type="number" step="0.01" min="0" id="ugc-preco-valor">
         </div>
         <div class="cal-form-campo">
@@ -1140,9 +1140,16 @@
             <input type="number" min="0" max="100" step="1" id="ugc-proposta-desconto" value="0">
             <p class="ugc-proposta-desconto-sugestao" id="ugc-proposta-desconto-sugestao"></p>
           </div>
+
+          <label class="ugc-proposta-urgencia-check" id="ugc-proposta-urgencia-bloco" hidden>
+            <input type="checkbox" id="ugc-proposta-urgencia-ativa">
+            <span id="ugc-proposta-urgencia-label">Aplicar taxa de urgência</span>
+          </label>
+
           <div class="ugc-proposta-resumo">
             <div><span>Valor bruto</span><strong id="ugc-proposta-bruto">R$ 0,00</strong></div>
             <div><span>Desconto</span><strong id="ugc-proposta-desconto-valor">R$ 0,00</strong></div>
+            <div id="ugc-proposta-urgencia-linha" hidden><span id="ugc-proposta-urgencia-linha-label">Urgência</span><strong id="ugc-proposta-urgencia-valor">R$ 0,00</strong></div>
             <div class="ugc-proposta-final"><span>Valor final</span><strong id="ugc-proposta-final">R$ 0,00</strong></div>
           </div>
         </div>
@@ -1553,6 +1560,7 @@
           recalcularTotaisProposta();
         });
       });
+      document.getElementById('ugc-proposta-urgencia-ativa').addEventListener('change', recalcularTotaisProposta);
       document.getElementById('ugc-proposta-copiar').addEventListener('click', copiarResumoProposta);
     }
 
@@ -4233,7 +4241,7 @@
           </span>
           <span class="ugc-preco-servico">${escapeHtml(preco.servico)}</span>
         </span>
-        <span class="ugc-preco-valor">${preco.valor != null ? formatarMoeda(preco.valor) : '—'}</span>
+        <span class="ugc-preco-valor">${preco.valor != null ? (preco.eh_percentual ? formatarPercentual(preco.valor) : formatarMoeda(preco.valor)) : '—'}</span>
       `;
       linha.addEventListener('click', () => {
         if (linha.classList.contains('ugc-preco-arrastando')) return;
@@ -4300,6 +4308,7 @@
       document.getElementById('ugc-preco-modal-titulo').textContent = preco ? 'Editar serviço' : `Novo serviço — ${UGC_PRECOS_LABEL[categoria] || categoria}`;
       document.getElementById('ugc-preco-servico').value = preco ? preco.servico : '';
       document.getElementById('ugc-preco-valor').value = preco && preco.valor != null ? preco.valor : '';
+      document.getElementById('ugc-preco-valor-label').textContent = preco && preco.eh_percentual ? 'Valor (%)' : 'Valor (R$)';
       document.getElementById('ugc-preco-observacoes').value = preco ? preco.observacoes || '' : '';
       document.getElementById('ugc-modal-preco-excluir').hidden = !preco;
       document.getElementById('ugc-modal-preco-overlay').hidden = false;
@@ -4359,10 +4368,25 @@
     }
 
     // ---- Proposta personalizada (calculadora sobre o catálogo de preços; não é salva no banco) ----
+    function precoUrgenciaProposta() {
+      return ugcPrecosCache.find((p) => p.categoria === 'Adicionais' && p.eh_percentual) || null;
+    }
+
     function abrirModalProposta() {
       document.getElementById('ugc-proposta-marca').value = '';
       document.getElementById('ugc-proposta-desconto').value = 0;
       ugcPropostaDescontoManual = false;
+
+      const urgencia = precoUrgenciaProposta();
+      const blocoUrgencia = document.getElementById('ugc-proposta-urgencia-bloco');
+      document.getElementById('ugc-proposta-urgencia-ativa').checked = false;
+      if (urgencia && urgencia.valor != null) {
+        blocoUrgencia.hidden = false;
+        document.getElementById('ugc-proposta-urgencia-label').textContent = `Aplicar taxa de urgência (+${formatarPercentual(urgencia.valor)})`;
+      } else {
+        blocoUrgencia.hidden = true;
+      }
+
       ugcPropostaItens = [{ precoId: '', quantidade: 1 }];
       renderizarPropostaItens();
       document.getElementById('ugc-modal-proposta-overlay').hidden = false;
@@ -4391,7 +4415,7 @@
       const cont = document.getElementById('ugc-proposta-itens');
       const opcoes = ['UGC', 'Publicidade', 'Adicionais']
         .map((categoria) => {
-          const itens = ugcPrecosCache.filter((p) => p.categoria === categoria).sort((a, b) => a.ordem - b.ordem);
+          const itens = ugcPrecosCache.filter((p) => p.categoria === categoria && !p.eh_percentual).sort((a, b) => a.ordem - b.ordem);
           if (itens.length === 0) return '';
           const options = itens.map((p) => `<option value="${p.id}">${escapeHtml(p.servico)} — ${formatarMoeda(p.valor)}</option>`).join('');
           return `<optgroup label="${UGC_PRECOS_LABEL[categoria]}">${options}</optgroup>`;
@@ -4461,9 +4485,25 @@
       const bruto = calcularBrutoProposta();
       const descontoPct = Number(document.getElementById('ugc-proposta-desconto').value) || 0;
       const descontoValor = bruto * (descontoPct / 100);
-      const final = bruto - descontoValor;
+      const subtotal = bruto - descontoValor;
+
+      const urgencia = precoUrgenciaProposta();
+      const urgenciaPct = urgencia && urgencia.valor != null ? Number(urgencia.valor) || 0 : 0;
+      const urgenciaAtiva = urgencia && document.getElementById('ugc-proposta-urgencia-ativa').checked;
+      const urgenciaValor = urgenciaAtiva ? subtotal * (urgenciaPct / 100) : 0;
+
+      const final = subtotal + urgenciaValor;
+
       document.getElementById('ugc-proposta-bruto').textContent = formatarMoeda(bruto);
       document.getElementById('ugc-proposta-desconto-valor').textContent = formatarMoeda(descontoValor);
+      const linhaUrgencia = document.getElementById('ugc-proposta-urgencia-linha');
+      if (urgenciaAtiva) {
+        linhaUrgencia.hidden = false;
+        document.getElementById('ugc-proposta-urgencia-linha-label').textContent = `Urgência (${formatarPercentual(urgenciaPct)})`;
+        document.getElementById('ugc-proposta-urgencia-valor').textContent = formatarMoeda(urgenciaValor);
+      } else {
+        linhaUrgencia.hidden = true;
+      }
       document.getElementById('ugc-proposta-final').textContent = formatarMoeda(final);
       atualizarPresetsDescontoAtivo(descontoPct);
       atualizarSugestaoDesconto();
@@ -4522,7 +4562,13 @@
       const bruto = calcularBrutoProposta();
       const descontoPct = Number(document.getElementById('ugc-proposta-desconto').value) || 0;
       const descontoValor = bruto * (descontoPct / 100);
-      const final = bruto - descontoValor;
+      const subtotal = bruto - descontoValor;
+
+      const urgencia = precoUrgenciaProposta();
+      const urgenciaPct = urgencia && urgencia.valor != null ? Number(urgencia.valor) || 0 : 0;
+      const urgenciaAtiva = urgencia && document.getElementById('ugc-proposta-urgencia-ativa').checked;
+      const urgenciaValor = urgenciaAtiva ? subtotal * (urgenciaPct / 100) : 0;
+      const final = subtotal + urgenciaValor;
 
       const texto = [
         marca ? `Proposta — ${marca}` : 'Proposta',
@@ -4531,6 +4577,7 @@
         '',
         `Valor bruto: ${formatarMoeda(bruto)}`,
         descontoPct ? `Desconto (${descontoPct}%): ${formatarMoeda(descontoValor)}` : null,
+        urgenciaAtiva ? `Urgência (${urgenciaPct}%): ${formatarMoeda(urgenciaValor)}` : null,
         `Valor final: ${formatarMoeda(final)}`,
       ]
         .filter((l) => l !== null)
@@ -4555,6 +4602,10 @@
 
     function formatarMoeda(valor) {
       return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function formatarPercentual(valor) {
+      return `${Number(valor || 0).toLocaleString('pt-BR')}%`;
     }
 
     function formatarDataCurta(data) {

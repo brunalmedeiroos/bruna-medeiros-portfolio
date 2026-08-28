@@ -505,7 +505,10 @@ create table if not exists public.ugc_precos (
   servico text not null,
   valor numeric(10, 2),
   observacoes text,
-  ordem int not null default 0
+  ordem int not null default 0,
+  -- Só a linha "Urgência" usa isto: quando true, "valor" é uma % de acréscimo
+  -- sobre o total da proposta personalizada, em vez de um preço fixo em R$.
+  eh_percentual boolean not null default false
 );
 
 create index if not exists ugc_precos_categoria_idx on public.ugc_precos (categoria, ordem);
@@ -545,6 +548,8 @@ select categoria, servico, ordem from (values
   ('Adicionais', 'Spark Ads/Whitelisting', 4)
 ) as padrao(categoria, servico, ordem)
 where not exists (select 1 from public.ugc_precos);
+
+update public.ugc_precos set eh_percentual = true where categoria = 'Adicionais' and servico = 'Urgência';
 
 -- Storage: bucket privado pra anexos de briefing e contrato (arquivo
 -- fica salvo dentro do trabalho/contrato; como pode ter dado sensível

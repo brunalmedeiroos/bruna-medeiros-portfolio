@@ -1665,7 +1665,7 @@ a.info-value:hover{ text-decoration:underline; }
 </div>
 
 <script>
-(function(){
+(async function(){
   "use strict";
 
   /* ---------------- Idioma do site (PT/EN) ---------------- */
@@ -1675,6 +1675,70 @@ a.info-value:hover{ text-decoration:underline; }
      Manda os avisos pra função do Supabase (supabase/functions/track), que é
      quem tem permissão de gravar no banco. O site nunca grava direto. */
   var TRACK_URL = 'https://trfoymytrvdbslwizfqs.supabase.co/functions/v1/track';
+
+  /* ---------------- Trabalhos publicáveis (painel) ----------------
+     Busca os trabalhos marcados como "mostrar no portfólio" no painel
+     administrativo e soma como cards aos 11 fixos acima — o portfólio
+     público nunca lê valor, contato nem qualquer outro dado sensível,
+     só marca + categoria + ID do vídeo (ver portfolio-publico/index.ts).
+     Se der erro, os cards fixos continuam funcionando normal. */
+  var PORTFOLIO_PUBLICO_URL = 'https://trfoymytrvdbslwizfqs.supabase.co/functions/v1/portfolio-publico';
+
+  function criarCardPortfolio(item){
+    var card = document.createElement('div');
+    card.className = 'file-card';
+    card.setAttribute('data-cat', item.portfolio_categoria || '');
+    card.setAttribute('data-type', 'video');
+    card.setAttribute('data-title', item.marca);
+    card.setAttribute('data-youtube', item.portfolio_youtube_id);
+
+    var thumb = document.createElement('div');
+    thumb.className = 'file-thumb';
+    var img = document.createElement('img');
+    img.className = 'file-thumb-img';
+    img.src = 'https://i.ytimg.com/vi/' + encodeURIComponent(item.portfolio_youtube_id) + '/maxresdefault.jpg';
+    img.alt = '';
+    img.loading = 'lazy';
+    var playBadge = document.createElement('div');
+    playBadge.className = 'play-badge';
+    playBadge.innerHTML = '<div class="circle"><span class="play-triangle"></span></div>';
+    thumb.appendChild(img);
+    thumb.appendChild(playBadge);
+
+    var meta = document.createElement('div');
+    meta.className = 'file-meta';
+    var fname = document.createElement('span');
+    fname.className = 'fname';
+    fname.textContent = item.marca;
+    var ftag = document.createElement('span');
+    ftag.className = 'ftag';
+    ftag.setAttribute('data-pt', 'vídeo');
+    ftag.setAttribute('data-en', 'video');
+    ftag.textContent = currentLang === 'en' ? 'video' : 'vídeo';
+    meta.appendChild(fname);
+    meta.appendChild(ftag);
+
+    card.appendChild(thumb);
+    card.appendChild(meta);
+    return card;
+  }
+
+  function carregarPortfolioPublicavel(){
+    return fetch(PORTFOLIO_PUBLICO_URL)
+      .then(function(res){ return res.json(); })
+      .then(function(resposta){
+        if (!resposta || !resposta.ok || !Array.isArray(resposta.itens)) return;
+        var grid = document.getElementById('filesGrid');
+        if (!grid) return;
+        resposta.itens.forEach(function(item){
+          if (!item.portfolio_youtube_id || !item.marca) return;
+          grid.appendChild(criarCardPortfolio(item));
+        });
+      })
+      .catch(function(err){
+        console.error('Não foi possível carregar os trabalhos do painel no portfólio:', err);
+      });
+  }
 
   function getSessionId(){
     var chave = 'portfolioSessionId';
@@ -1781,10 +1845,15 @@ a.info-value:hover{ text-decoration:underline; }
     }
   }
 
-  /* ---------------- Filtro do portfólio (nichos na lateral) ---------------- */
+  /* ---------------- Filtro do portfólio (nichos na lateral) ----------------
+     Espera os cards vindos do painel chegarem (ou falharem) antes de ligar o
+     filtro/modal, pra eles também ficarem clicáveis e contarem no "Todos". */
+  await carregarPortfolioPublicavel();
+
   var tabs = document.querySelectorAll('.folder-tab');
   var cards = document.querySelectorAll('.file-card');
   var countEl = document.getElementById('finderCount');
+  updateFinderCount(cards.length);
 
   function updateFinderCount(visible){
     if (currentLang === 'en'){

@@ -424,6 +424,12 @@ entrypoint = "./functions/track/index.ts"
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/track/*.html" ]
 
+[functions.portfolio-publico]
+enabled = true
+verify_jwt = false
+import_map = "./functions/portfolio-publico/deno.json"
+entrypoint = "./functions/portfolio-publico/index.ts"
+
 [functions.gmail-oauth-start]
 enabled = true
 import_map = "./functions/gmail-oauth-start/deno.json"

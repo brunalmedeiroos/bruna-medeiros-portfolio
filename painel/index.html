@@ -974,6 +974,28 @@
           </div>
         </div>
 
+        <h4 class="ugc-modal-secao-titulo">Portfólio público</h4>
+        <label class="ugc-permuta-check">
+          <input type="checkbox" id="ugc-modal-publicavel">
+          <span>Mostrar este trabalho no portfólio do site</span>
+        </label>
+        <div class="pl-modal-linha" id="ugc-modal-portfolio-campos" hidden>
+          <div class="cal-form-campo">
+            <label for="ugc-modal-portfolio-youtube">ID do vídeo no YouTube</label>
+            <input type="text" id="ugc-modal-portfolio-youtube" placeholder="Ex: dQw4w9WgXcQ (da URL do vídeo)">
+          </div>
+          <div class="cal-form-campo">
+            <label for="ugc-modal-portfolio-categoria">Categoria no site</label>
+            <select id="ugc-modal-portfolio-categoria">
+              <option value="">Selecione...</option>
+              <option value="tech">Tech</option>
+              <option value="beleza">Beleza</option>
+              <option value="entretenimento">Entretenimento</option>
+              <option value="experiencia">Experiência</option>
+            </select>
+          </div>
+        </div>
+
         <div class="cal-form-acoes">
           <button type="button" id="ugc-modal-trabalho-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
           <button type="button" id="ugc-modal-trabalho-salvar" class="cal-btn cal-btn-primario">Salvar</button>
@@ -1590,6 +1612,7 @@
       document.getElementById('ugc-modal-tipo').addEventListener('change', atualizarSugestoesEntregaveis);
       document.getElementById('ugc-modal-permuta').addEventListener('change', atualizarCampoValorPermuta);
       document.getElementById('ugc-modal-status').addEventListener('change', sincronizarPagamentoComStatus);
+      document.getElementById('ugc-modal-publicavel').addEventListener('change', atualizarCamposPortfolio);
       document.getElementById('ugc-modal-add-entregavel').addEventListener('click', adicionarEntregavelModal);
       document.getElementById('ugc-modal-briefing-anexar').addEventListener('click', () => {
         document.getElementById('ugc-modal-briefing-arquivo-input').click();
@@ -3879,6 +3902,11 @@
       document.getElementById('ugc-modal-data-pagamento').value = trabalho && trabalho.data_prevista_pagamento ? trabalho.data_prevista_pagamento : '';
       document.getElementById('ugc-modal-direitos-uso-ate').value = trabalho && trabalho.direitos_uso_ate ? trabalho.direitos_uso_ate : '';
 
+      document.getElementById('ugc-modal-publicavel').checked = trabalho ? !!trabalho.publicavel : false;
+      document.getElementById('ugc-modal-portfolio-youtube').value = trabalho ? trabalho.portfolio_youtube_id || '' : '';
+      document.getElementById('ugc-modal-portfolio-categoria').value = trabalho ? trabalho.portfolio_categoria || '' : '';
+      atualizarCamposPortfolio();
+
       document.getElementById('ugc-modal-trabalho-excluir').hidden = !trabalho;
       document.getElementById('ugc-modal-trabalho-overlay').hidden = false;
     }
@@ -3895,6 +3923,12 @@
       if (document.getElementById('ugc-modal-status').value === 'Pago') {
         document.getElementById('ugc-modal-status-pagamento').value = 'Recebido';
       }
+    }
+
+    // Só mostra os campos de vídeo/categoria se ela realmente quiser publicar
+    // esse trabalho no site.
+    function atualizarCamposPortfolio() {
+      document.getElementById('ugc-modal-portfolio-campos').hidden = !document.getElementById('ugc-modal-publicavel').checked;
     }
 
     // Fechado por permuta não tem valor em R$ — desabilita e limpa o campo.
@@ -3993,6 +4027,9 @@
         forma_pagamento: document.getElementById('ugc-modal-forma-pagamento').value.trim() || null,
         data_prevista_pagamento: document.getElementById('ugc-modal-data-pagamento').value || null,
         direitos_uso_ate: document.getElementById('ugc-modal-direitos-uso-ate').value || null,
+        publicavel: document.getElementById('ugc-modal-publicavel').checked,
+        portfolio_youtube_id: document.getElementById('ugc-modal-portfolio-youtube').value.trim() || null,
+        portfolio_categoria: document.getElementById('ugc-modal-portfolio-categoria').value || null,
       };
       UGC_CHECKLIST_ITENS.forEach((item) => {
         linha[item.campo] = !!ugcModalChecklistEstado[item.campo];

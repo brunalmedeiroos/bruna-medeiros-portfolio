@@ -413,7 +413,13 @@ create table if not exists public.ugc_trabalhos (
   conteudo_enviado_aprovacao boolean not null default false,
   alteracoes_feitas boolean not null default false,
   conteudo_entregue boolean not null default false,
-  direitos_uso_ate date -- até quando a marca pode usar o conteúdo pago (opcional)
+  direitos_uso_ate date, -- até quando a marca pode usar o conteúdo pago (opcional)
+  -- Portfólio público: só esses 3 campos (+ marca, já acima) saem pro site.
+  -- A função pública portfolio-publico faz select explícito só dessas colunas
+  -- — nunca valor, contato, observações nem qualquer outro campo sensível.
+  publicavel boolean not null default false,
+  portfolio_youtube_id text,
+  portfolio_categoria text check (portfolio_categoria in ('tech', 'beleza', 'entretenimento', 'experiencia'))
 );
 
 create index if not exists ugc_trabalhos_status_idx on public.ugc_trabalhos (status);

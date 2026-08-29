@@ -1243,6 +1243,14 @@
   flex-wrap: wrap;
 }
 
+/* display:flex acima empata em especificidade com a regra [hidden] padrão do
+   navegador e vence por ordem de origem — sem isso, um .pl-modal-linha com o
+   atributo hidden continua aparecendo (achado ao testar o campo condicional
+   de "Portfólio público" no Trabalho). */
+.painel-body .pl-modal-linha[hidden] {
+  display: none;
+}
+
 .painel-body .pl-modal-linha .cal-form-campo {
   min-width: 140px;
   flex: 1;

@@ -550,6 +550,13 @@
               </div>
             </div>
 
+            <!-- Avisa quando uma prospecção ativa está sem retorno/follow-up
+                 há tempo demais, pra não perder negociação por esquecimento. -->
+            <div id="ugc-prospeccao-esfriando" class="ugc-prospeccao-esfriando" hidden>
+              <h4>Esfriando</h4>
+              <div id="ugc-prospeccao-esfriando-lista"></div>
+            </div>
+
             <div class="cal-todas-topo">
               <div>
                 <h3 class="card-titulo">Prospecção</h3>
@@ -4178,7 +4185,45 @@
     }
 
     // ---- Prospecção ----
+    // Uma prospecção ativa "esfria" quando o follow-up marcado já venceu, ou
+    // quando nunca teve follow-up agendado e já passou mais de 7 dias do
+    // primeiro contato — nos dois casos, é fácil ela ficar esquecida.
+    function prospeccaoEstaEsfriando(p, hojeISO) {
+      if (p.status === 'Fechado' || p.status === 'Recusado') return false;
+      if (p.proximo_followup) return p.proximo_followup < hojeISO;
+      const dias = Math.floor((new Date(hojeISO + 'T00:00:00') - new Date(p.created_at)) / 86400000);
+      return dias > 7;
+    }
+
+    function renderizarProspeccaoEsfriando() {
+      const hojeISO = dataParaISO(new Date());
+      const esfriando = ugcProspeccaoCache
+        .filter((p) => prospeccaoEstaEsfriando(p, hojeISO))
+        .sort((a, b) => (a.proximo_followup || a.created_at.slice(0, 10)).localeCompare(b.proximo_followup || b.created_at.slice(0, 10)));
+
+      const bloco = document.getElementById('ugc-prospeccao-esfriando');
+      if (esfriando.length === 0) {
+        bloco.hidden = true;
+        return;
+      }
+      bloco.hidden = false;
+      const lista = document.getElementById('ugc-prospeccao-esfriando-lista');
+      lista.innerHTML = esfriando
+        .map((p) => {
+          const item = document.createElement('div');
+          item.className = 'ugc-prospeccao-esfriando-item';
+          const situacao = p.proximo_followup ? `Follow-up era ${formatarDataCurta(new Date(p.proximo_followup + 'T00:00:00'))}` : 'Sem follow-up marcado';
+          item.innerHTML = `<span>${escapeHtml(p.marca)}</span><span>${situacao}</span>`;
+          return item.outerHTML;
+        })
+        .join('');
+      lista.querySelectorAll('.ugc-prospeccao-esfriando-item').forEach((el, i) => {
+        el.addEventListener('click', () => abrirModalProspeccao(esfriando[i]));
+      });
+    }
+
     function renderizarProspeccao() {
+      renderizarProspeccaoEsfriando();
       const outbound = ugcProspeccaoCache.filter((p) => p.origem === 'Outbound').length;
       const inbound = ugcProspeccaoCache.filter((p) => p.origem === 'Inbound').length;
       const negociacao = ugcProspeccaoCache.filter((p) => p.status === 'Negociação').length;

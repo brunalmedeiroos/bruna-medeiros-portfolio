@@ -1271,6 +1271,44 @@
   color: var(--erro);
 }
 
+/* ---- Aviso de prospecção esfriando ---- */
+
+.painel-body .ugc-prospeccao-esfriando {
+  background: rgba(196, 69, 60, 0.08);
+  border: 1px solid rgba(196, 69, 60, 0.3);
+  border-radius: var(--raio-sm);
+  padding: 14px 18px;
+  margin-bottom: 18px;
+}
+
+.painel-body .ugc-prospeccao-esfriando h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--erro);
+}
+
+.painel-body .ugc-prospeccao-esfriando-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.painel-body .ugc-prospeccao-esfriando-item:hover {
+  text-decoration: underline;
+}
+
+.painel-body .ugc-prospeccao-esfriando-item span:last-child {
+  color: var(--texto-suave);
+  white-space: nowrap;
+}
+
 /* ---- Cronograma de postagem ---- */
 
 .painel-body .pl-cronograma-tabela-card {

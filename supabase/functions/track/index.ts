@@ -29,6 +29,12 @@ function jsonResponse(body: unknown, status = 200) {
 const TIPOS_EVENTO = ["page_view", "button_click", "video_view"];
 const ORIGENS_LEAD = ["contact", "popup"];
 
+// Data de hoje no fuso de Brasília — evita o desvio de toISOString() (UTC)
+// perto da virada do dia, mesmo bug já corrigido em outros pontos do painel.
+function hojeBrasilia(): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
+}
+
 // Corta uma string pra um tamanho máximo, evitando payloads gigantes.
 function limitar(valor: unknown, tamanho: number): string | null {
   if (typeof valor !== "string") return null;
@@ -117,6 +123,28 @@ export default {
 
       const { error } = await ctx.supabaseAdmin.from("portfolio_leads").insert(resultado.linha);
       if (error) return jsonResponse({ ok: false, error: error.message }, 500);
+
+      // Também nasce como um card na Prospecção, pra ela não precisar recriar
+      // manualmente cada lead que chega pelo site. Falha aqui não derruba o
+      // salvamento do lead em si (que já aconteceu acima) — só fica registrada
+      // no log da função.
+      const l = resultado.linha;
+      const contatoPartes = [l.email, l.phone].filter(Boolean);
+      const observacoesPartes = [
+        l.message ? `Mensagem: ${l.message}` : null,
+        l.budget ? `Orçamento informado: ${l.budget}` : null,
+        `Veio do formulário do site (${l.source === "popup" ? "popup" : "contato"}).`,
+      ].filter(Boolean);
+
+      const { error: erroProspeccao } = await ctx.supabaseAdmin.from("ugc_prospeccao").insert({
+        marca: l.brand || l.name,
+        contato: contatoPartes.length ? `${l.name} — ${contatoPartes.join(" / ")}` : l.name,
+        origem: "Inbound",
+        data_contato: hojeBrasilia(),
+        observacoes: observacoesPartes.join("\n\n"),
+      });
+      if (erroProspeccao) console.error("Erro ao criar prospecção a partir do lead do site:", erroProspeccao);
+
       return jsonResponse({ ok: true });
     }
 

@@ -124,7 +124,8 @@
 
 .painel-body .cal-btn:hover {
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.65);
+  background: rgba(4, 70, 93, 0.12);
+  border-color: rgba(4, 70, 93, 0.35);
 }
 
 /* .cal-btn é pensado pra <button> (que já tem padding/cursor por padrão);
@@ -406,6 +407,11 @@
   background: var(--coral);
   color: var(--branco);
   border-color: var(--coral);
+}
+
+.painel-body .cal-btn-primario:hover {
+  background: #6796A9;
+  border-color: #6796A9;
 }
 
 @media (max-width: 480px) {

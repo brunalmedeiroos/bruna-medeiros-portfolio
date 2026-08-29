@@ -475,6 +475,14 @@
               </div>
             </div>
 
+            <!-- Avisa quando o direito de uso pago por uma marca está perto de
+                 vencer (ou já venceu), pra ela saber que precisa renovar ou
+                 pedir pra marca parar de usar o conteúdo. -->
+            <div id="ugc-direitos-uso-alerta" class="ugc-prospeccao-esfriando" hidden>
+              <h4>Direitos de uso vencendo</h4>
+              <div id="ugc-direitos-uso-alerta-lista"></div>
+            </div>
+
             <div class="card">
               <h3 class="card-titulo">Próximas entregas</h3>
               <div id="ugc-proximas-entregas" class="ugc-proximas-lista"></div>
@@ -955,6 +963,14 @@
           <div class="cal-form-campo">
             <label for="ugc-modal-data-pagamento">Data prevista</label>
             <input type="date" id="ugc-modal-data-pagamento">
+          </div>
+        </div>
+
+        <h4 class="ugc-modal-secao-titulo">Direitos de uso</h4>
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="ugc-modal-direitos-uso-ate">A marca pode usar até (opcional)</label>
+            <input type="date" id="ugc-modal-direitos-uso-ate">
           </div>
         </div>
 
@@ -3590,8 +3606,41 @@
       document.querySelectorAll('.ugc-pagina').forEach((p) => (p.hidden = p.id !== 'ugc-pagina-' + pagina));
     }
 
+    // Avisa quando o direito de uso pago por uma marca (campo opcional do
+    // Trabalho) está vencido ou vence nos próximos 14 dias — pra ela não
+    // deixar uma marca usando o conteúdo além do combinado sem perceber.
+    function renderizarDireitosUsoAlerta() {
+      const hojeISO = dataParaISO(new Date());
+      const daqui14ISO = dataParaISO(new Date(Date.now() + 14 * 86400000));
+      const vencendo = ugcTrabalhosCache
+        .filter((t) => t.direitos_uso_ate && t.direitos_uso_ate <= daqui14ISO)
+        .sort((a, b) => a.direitos_uso_ate.localeCompare(b.direitos_uso_ate));
+
+      const bloco = document.getElementById('ugc-direitos-uso-alerta');
+      if (vencendo.length === 0) {
+        bloco.hidden = true;
+        return;
+      }
+      bloco.hidden = false;
+      const lista = document.getElementById('ugc-direitos-uso-alerta-lista');
+      lista.innerHTML = vencendo
+        .map((t) => {
+          const item = document.createElement('div');
+          item.className = 'ugc-prospeccao-esfriando-item';
+          const venceu = t.direitos_uso_ate < hojeISO;
+          const situacao = `${venceu ? 'Venceu em' : 'Vence em'} ${formatarDataCurta(new Date(t.direitos_uso_ate + 'T00:00:00'))}`;
+          item.innerHTML = `<span>${escapeHtml(t.marca)}</span><span>${situacao}</span>`;
+          return item.outerHTML;
+        })
+        .join('');
+      lista.querySelectorAll('.ugc-prospeccao-esfriando-item').forEach((el, i) => {
+        el.addEventListener('click', () => abrirModalTrabalho(vencendo[i]));
+      });
+    }
+
     // ---- Visão Geral: 100% derivada de ugcTrabalhosCache, sem cadastro próprio ----
     function renderizarVisaoGeralUGC() {
+      renderizarDireitosUsoAlerta();
       const ativos = ugcTrabalhosCache.filter((t) => t.status !== 'Pago' && t.status !== 'Cancelado');
       const emProducao = ugcTrabalhosCache.filter((t) => UGC_STATUS_EM_PRODUCAO.includes(t.status));
       const aReceber = ugcTrabalhosCache
@@ -3828,6 +3877,7 @@
       document.getElementById('ugc-modal-status-pagamento').value = trabalho ? trabalho.status_pagamento : 'Pendente';
       document.getElementById('ugc-modal-forma-pagamento').value = trabalho ? trabalho.forma_pagamento || '' : '';
       document.getElementById('ugc-modal-data-pagamento').value = trabalho && trabalho.data_prevista_pagamento ? trabalho.data_prevista_pagamento : '';
+      document.getElementById('ugc-modal-direitos-uso-ate').value = trabalho && trabalho.direitos_uso_ate ? trabalho.direitos_uso_ate : '';
 
       document.getElementById('ugc-modal-trabalho-excluir').hidden = !trabalho;
       document.getElementById('ugc-modal-trabalho-overlay').hidden = false;
@@ -3942,6 +3992,7 @@
         status_pagamento: statusPagamento,
         forma_pagamento: document.getElementById('ugc-modal-forma-pagamento').value.trim() || null,
         data_prevista_pagamento: document.getElementById('ugc-modal-data-pagamento').value || null,
+        direitos_uso_ate: document.getElementById('ugc-modal-direitos-uso-ate').value || null,
       };
       UGC_CHECKLIST_ITENS.forEach((item) => {
         linha[item.campo] = !!ugcModalChecklistEstado[item.campo];

@@ -412,7 +412,8 @@ create table if not exists public.ugc_trabalhos (
   edicao_feita boolean not null default false,
   conteudo_enviado_aprovacao boolean not null default false,
   alteracoes_feitas boolean not null default false,
-  conteudo_entregue boolean not null default false
+  conteudo_entregue boolean not null default false,
+  direitos_uso_ate date -- até quando a marca pode usar o conteúdo pago (opcional)
 );
 
 create index if not exists ugc_trabalhos_status_idx on public.ugc_trabalhos (status);

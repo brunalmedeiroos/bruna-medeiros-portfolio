@@ -2140,20 +2140,27 @@
       return item;
     }
 
-    // Lista todas as tarefas (de qualquer data), filtradas por Próximos/Feitos.
+    // Lista as tarefas do mês corrente, filtradas por Próximos/Feitos. Some
+    // filtra por "YYYY-MM" com o mês de hoje — assim, ao virar o mês, a lista
+    // "reinicia" sozinha (sem precisar de nenhuma limpeza/job): itens de meses
+    // anteriores somem daqui, mas continuam intactos no banco e visíveis no
+    // calendário em si (grade do mês e lista do dia), que não usa esse filtro.
     function renderizarTodasTarefas() {
+      const mesAtualISO = new Date().toISOString().slice(0, 7);
+      const doMesAtual = tarefasCache.filter((t) => t.data.slice(0, 7) === mesAtualISO);
+
       let filtradas;
       if (filtroTarefas === 'feitos') {
-        filtradas = tarefasCache.filter((t) => t.feito).sort((a, b) => b.data.localeCompare(a.data));
+        filtradas = doMesAtual.filter((t) => t.feito).sort((a, b) => b.data.localeCompare(a.data));
       } else {
-        filtradas = tarefasCache.filter((t) => !t.feito)
+        filtradas = doMesAtual.filter((t) => !t.feito)
           .sort((a, b) => a.data.localeCompare(b.data) || (a.hora_inicio || '').localeCompare(b.hora_inicio || ''));
       }
 
       document.getElementById('cal-todas-resumo').textContent =
         filtradas.length === 0
-          ? 'Nenhum item marcado ainda.'
-          : `${filtradas.length} ${filtradas.length === 1 ? 'item' : 'itens'}. Clique no dia para abrir ele no calendário.`;
+          ? 'Nenhum item marcado neste mês.'
+          : `${filtradas.length} ${filtradas.length === 1 ? 'item' : 'itens'} neste mês. Clique no dia para abrir ele no calendário.`;
 
       const lista = document.getElementById('cal-todas-lista');
       lista.innerHTML = '';

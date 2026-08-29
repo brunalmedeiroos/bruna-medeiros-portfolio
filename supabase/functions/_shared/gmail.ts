@@ -5,6 +5,8 @@
 // gmail-oauth-callback, gmail-inbox e gmail-reply. Nada aqui é exposto
 // diretamente ao navegador — só outras Edge Functions importam este arquivo.
 
+import { gravarSegredo, lerSegredo } from "./vault.ts";
+
 export const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 export const GMAIL_API = "https://gmail.googleapis.com/gmail/v1/users/me";
 
@@ -56,6 +58,9 @@ export async function trocarPorToken(params: Record<string, string>) {
 // Lê o token guardado no banco e devolve um access_token válido, renovando
 // via refresh_token se estiver perto de expirar. Retorna null se a conta
 // do Gmail ainda não foi conectada.
+//
+// access_token/refresh_token são guardados como UUID de um segredo no
+// Supabase Vault, não como texto puro — lerSegredo() busca o valor real.
 export async function obterAccessTokenValido(
   // deno-lint-ignore no-explicit-any
   supabaseAdmin: any,
@@ -72,21 +77,23 @@ export async function obterAccessTokenValido(
   const expiraEm = new Date(linha.expires_at).getTime();
   const margemMs = 60_000; // renova 1 minuto antes de expirar
   if (linha.access_token && expiraEm - margemMs > Date.now()) {
-    return linha.access_token as string;
+    return await lerSegredo(supabaseAdmin, linha.access_token);
   }
 
+  const refreshToken = await lerSegredo(supabaseAdmin, linha.refresh_token);
   const { clientId, clientSecret } = credenciaisGoogle();
   const tokens = await trocarPorToken({
     client_id: clientId,
     client_secret: clientSecret,
-    refresh_token: linha.refresh_token,
+    refresh_token: refreshToken as string,
     grant_type: "refresh_token",
   });
 
+  const novoAccessTokenId = await gravarSegredo(supabaseAdmin, linha.access_token, tokens.access_token, "email_access_token");
   const novoExpiraEm = new Date(Date.now() + tokens.expires_in * 1000).toISOString();
   await supabaseAdmin
     .from("email_tokens")
-    .update({ access_token: tokens.access_token, expires_at: novoExpiraEm, updated_at: new Date().toISOString() })
+    .update({ access_token: novoAccessTokenId, expires_at: novoExpiraEm, updated_at: new Date().toISOString() })
     .eq("id", 1);
 
   return tokens.access_token;

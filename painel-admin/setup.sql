@@ -6,6 +6,23 @@
 -- para usuários autenticados (quem faz login no painel).
 
 -- ---------------------------------------------------------------------
+-- Controle de acesso: só a conta da Bruna pode ler/escrever os dados
+-- ---------------------------------------------------------------------
+-- Antes, toda policy deste arquivo usava "to authenticated using (public.is_owner())" —
+-- ou seja, QUALQUER usuário autenticado (não só a dona da conta) tinha
+-- acesso total aos dados de negócio. is_owner() fecha isso: todas as
+-- policies abaixo passam a exigir também que auth.uid() seja o UID da
+-- conta autorizada. Se a conta de login mudar, troque o UUID abaixo
+-- (Authentication > Users no painel do Supabase).
+create or replace function public.is_owner()
+returns boolean
+language sql
+stable
+as $$
+  select auth.uid() = 'a2323d3f-e342-458d-b7f9-7b8ef0f1025f'::uuid;
+$$;
+
+-- ---------------------------------------------------------------------
 -- Tabela: portfolio_events
 -- Registra eventos do site: visualizações de página, cliques em botões
 -- e visualizações de vídeo.
@@ -51,19 +68,19 @@ create policy "Painel: leitura autenticada de eventos"
   on public.portfolio_events
   for select
   to authenticated
-  using (true);
+  using (public.is_owner());
 
 create policy "Painel: leitura autenticada de leads"
   on public.portfolio_leads
   for select
   to authenticated
-  using (true);
+  using (public.is_owner());
 
 create policy "Painel: exclusão autenticada de mensagens"
   on public.portfolio_leads
   for delete
   to authenticated
-  using (true);
+  using (public.is_owner());
 
 -- ---------------------------------------------------------------------
 -- IMPORTANTE sobre a escrita dos dados
@@ -102,26 +119,26 @@ create policy "Painel: leitura autenticada de tarefas"
   on public.painel_tarefas
   for select
   to authenticated
-  using (true);
+  using (public.is_owner());
 
 create policy "Painel: escrita autenticada de tarefas"
   on public.painel_tarefas
   for insert
   to authenticated
-  with check (true);
+  with check (public.is_owner());
 
 create policy "Painel: atualização autenticada de tarefas"
   on public.painel_tarefas
   for update
   to authenticated
-  using (true)
-  with check (true);
+  using (public.is_owner())
+  with check (public.is_owner());
 
 create policy "Painel: exclusão autenticada de tarefas"
   on public.painel_tarefas
   for delete
   to authenticated
-  using (true);
+  using (public.is_owner());
 
 -- ---------------------------------------------------------------------
 -- Tabelas: email_tokens e email_oauth_states (aba E-mail)
@@ -218,31 +235,31 @@ alter table public.planejador_ideias enable row level security;
 alter table public.planejador_achados enable row level security;
 
 create policy "Painel: leitura autenticada de pilares"
-  on public.planejador_pilares for select to authenticated using (true);
+  on public.planejador_pilares for select to authenticated using (public.is_owner());
 create policy "Painel: escrita autenticada de pilares"
-  on public.planejador_pilares for insert to authenticated with check (true);
+  on public.planejador_pilares for insert to authenticated with check (public.is_owner());
 create policy "Painel: atualização autenticada de pilares"
-  on public.planejador_pilares for update to authenticated using (true) with check (true);
+  on public.planejador_pilares for update to authenticated using (public.is_owner()) with check (public.is_owner());
 create policy "Painel: exclusão autenticada de pilares"
-  on public.planejador_pilares for delete to authenticated using (true);
+  on public.planejador_pilares for delete to authenticated using (public.is_owner());
 
 create policy "Painel: leitura autenticada de ideias"
-  on public.planejador_ideias for select to authenticated using (true);
+  on public.planejador_ideias for select to authenticated using (public.is_owner());
 create policy "Painel: escrita autenticada de ideias"
-  on public.planejador_ideias for insert to authenticated with check (true);
+  on public.planejador_ideias for insert to authenticated with check (public.is_owner());
 create policy "Painel: atualização autenticada de ideias"
-  on public.planejador_ideias for update to authenticated using (true) with check (true);
+  on public.planejador_ideias for update to authenticated using (public.is_owner()) with check (public.is_owner());
 create policy "Painel: exclusão autenticada de ideias"
-  on public.planejador_ideias for delete to authenticated using (true);
+  on public.planejador_ideias for delete to authenticated using (public.is_owner());
 
 create policy "Painel: leitura autenticada de achados"
-  on public.planejador_achados for select to authenticated using (true);
+  on public.planejador_achados for select to authenticated using (public.is_owner());
 create policy "Painel: escrita autenticada de achados"
-  on public.planejador_achados for insert to authenticated with check (true);
+  on public.planejador_achados for insert to authenticated with check (public.is_owner());
 create policy "Painel: atualização autenticada de achados"
-  on public.planejador_achados for update to authenticated using (true) with check (true);
+  on public.planejador_achados for update to authenticated using (public.is_owner()) with check (public.is_owner());
 create policy "Painel: exclusão autenticada de achados"
-  on public.planejador_achados for delete to authenticated using (true);
+  on public.planejador_achados for delete to authenticated using (public.is_owner());
 
 -- Pilares iniciais do Banco de Ideias (a Bruna pode renomear/excluir/criar novos pelo painel).
 insert into public.planejador_pilares (nome, ordem)
@@ -270,13 +287,13 @@ create table if not exists public.planejador_cronograma (
 alter table public.planejador_cronograma enable row level security;
 
 create policy "Painel: leitura autenticada de cronograma"
-  on public.planejador_cronograma for select to authenticated using (true);
+  on public.planejador_cronograma for select to authenticated using (public.is_owner());
 create policy "Painel: escrita autenticada de cronograma"
-  on public.planejador_cronograma for insert to authenticated with check (true);
+  on public.planejador_cronograma for insert to authenticated with check (public.is_owner());
 create policy "Painel: atualização autenticada de cronograma"
-  on public.planejador_cronograma for update to authenticated using (true) with check (true);
+  on public.planejador_cronograma for update to authenticated using (public.is_owner()) with check (public.is_owner());
 create policy "Painel: exclusão autenticada de cronograma"
-  on public.planejador_cronograma for delete to authenticated using (true);
+  on public.planejador_cronograma for delete to authenticated using (public.is_owner());
 
 -- Cronograma inicial (a Bruna pode editar tudo pelo painel).
 insert into public.planejador_cronograma (pilar, dia_semana, ordem)
@@ -307,13 +324,13 @@ create index if not exists planejador_cronograma_dias_data_idx on public.planeja
 alter table public.planejador_cronograma_dias enable row level security;
 
 create policy "Painel: leitura autenticada de pilares por dia"
-  on public.planejador_cronograma_dias for select to authenticated using (true);
+  on public.planejador_cronograma_dias for select to authenticated using (public.is_owner());
 create policy "Painel: escrita autenticada de pilares por dia"
-  on public.planejador_cronograma_dias for insert to authenticated with check (true);
+  on public.planejador_cronograma_dias for insert to authenticated with check (public.is_owner());
 create policy "Painel: atualização autenticada de pilares por dia"
-  on public.planejador_cronograma_dias for update to authenticated using (true) with check (true);
+  on public.planejador_cronograma_dias for update to authenticated using (public.is_owner()) with check (public.is_owner());
 create policy "Painel: exclusão autenticada de pilares por dia"
-  on public.planejador_cronograma_dias for delete to authenticated using (true);
+  on public.planejador_cronograma_dias for delete to authenticated using (public.is_owner());
 
 -- ---------------------------------------------------------------------
 -- Campo extra dos Achados: observações livres (o que viu, contexto, link)
@@ -343,16 +360,20 @@ create table if not exists public.radar_noticias (
 
 create index if not exists radar_noticias_created_at_idx on public.radar_noticias (created_at desc);
 
+-- Evita notícia duplicada (mesmo agente + link) quando o cron diário e o
+-- clique manual em "Atualizar notícias" rodam quase ao mesmo tempo.
+create unique index if not exists radar_noticias_agente_link_unq on public.radar_noticias (agente, link);
+
 alter table public.radar_noticias enable row level security;
 
 create policy "Painel: leitura autenticada do radar"
-  on public.radar_noticias for select to authenticated using (true);
+  on public.radar_noticias for select to authenticated using (public.is_owner());
 create policy "Painel: escrita autenticada do radar"
-  on public.radar_noticias for insert to authenticated with check (true);
+  on public.radar_noticias for insert to authenticated with check (public.is_owner());
 create policy "Painel: atualização autenticada do radar"
-  on public.radar_noticias for update to authenticated using (true) with check (true);
+  on public.radar_noticias for update to authenticated using (public.is_owner()) with check (public.is_owner());
 create policy "Painel: exclusão autenticada do radar"
-  on public.radar_noticias for delete to authenticated using (true);
+  on public.radar_noticias for delete to authenticated using (public.is_owner());
 
 -- ---------------------------------------------------------------------
 -- Aba UGC / Publi: acompanhamento de trabalhos de UGC e publicidade,
@@ -400,13 +421,13 @@ create index if not exists ugc_trabalhos_data_entrega_idx on public.ugc_trabalho
 alter table public.ugc_trabalhos enable row level security;
 
 create policy "Painel: leitura autenticada de trabalhos UGC"
-  on public.ugc_trabalhos for select to authenticated using (true);
+  on public.ugc_trabalhos for select to authenticated using (public.is_owner());
 create policy "Painel: escrita autenticada de trabalhos UGC"
-  on public.ugc_trabalhos for insert to authenticated with check (true);
+  on public.ugc_trabalhos for insert to authenticated with check (public.is_owner());
 create policy "Painel: atualização autenticada de trabalhos UGC"
-  on public.ugc_trabalhos for update to authenticated using (true) with check (true);
+  on public.ugc_trabalhos for update to authenticated using (public.is_owner()) with check (public.is_owner());
 create policy "Painel: exclusão autenticada de trabalhos UGC"
-  on public.ugc_trabalhos for delete to authenticated using (true);
+  on public.ugc_trabalhos for delete to authenticated using (public.is_owner());
 
 -- Tabela: ugc_trabalho_entregaveis (o que foi combinado de entregar em cada
 -- trabalho — servico é texto livre, só sugerido a partir de ugc_precos pelo
@@ -425,13 +446,13 @@ create index if not exists ugc_trabalho_entregaveis_trabalho_idx on public.ugc_t
 alter table public.ugc_trabalho_entregaveis enable row level security;
 
 create policy "Painel: leitura autenticada de entregáveis UGC"
-  on public.ugc_trabalho_entregaveis for select to authenticated using (true);
+  on public.ugc_trabalho_entregaveis for select to authenticated using (public.is_owner());
 create policy "Painel: escrita autenticada de entregáveis UGC"
-  on public.ugc_trabalho_entregaveis for insert to authenticated with check (true);
+  on public.ugc_trabalho_entregaveis for insert to authenticated with check (public.is_owner());
 create policy "Painel: atualização autenticada de entregáveis UGC"
-  on public.ugc_trabalho_entregaveis for update to authenticated using (true) with check (true);
+  on public.ugc_trabalho_entregaveis for update to authenticated using (public.is_owner()) with check (public.is_owner());
 create policy "Painel: exclusão autenticada de entregáveis UGC"
-  on public.ugc_trabalho_entregaveis for delete to authenticated using (true);
+  on public.ugc_trabalho_entregaveis for delete to authenticated using (public.is_owner());
 
 -- Tabela: ugc_roteiros (biblioteca de roteiros; trabalho_id é opcional —
 -- pode existir roteiro solto, ainda não vinculado a um trabalho)
@@ -453,13 +474,13 @@ create index if not exists ugc_roteiros_trabalho_id_idx on public.ugc_roteiros (
 alter table public.ugc_roteiros enable row level security;
 
 create policy "Painel: leitura autenticada de roteiros UGC"
-  on public.ugc_roteiros for select to authenticated using (true);
+  on public.ugc_roteiros for select to authenticated using (public.is_owner());
 create policy "Painel: escrita autenticada de roteiros UGC"
-  on public.ugc_roteiros for insert to authenticated with check (true);
+  on public.ugc_roteiros for insert to authenticated with check (public.is_owner());
 create policy "Painel: atualização autenticada de roteiros UGC"
-  on public.ugc_roteiros for update to authenticated using (true) with check (true);
+  on public.ugc_roteiros for update to authenticated using (public.is_owner()) with check (public.is_owner());
 create policy "Painel: exclusão autenticada de roteiros UGC"
-  on public.ugc_roteiros for delete to authenticated using (true);
+  on public.ugc_roteiros for delete to authenticated using (public.is_owner());
 
 -- Tabela: ugc_roteiro_cenas (cenas de cada roteiro, na ordem de criação)
 create table if not exists public.ugc_roteiro_cenas (
@@ -479,13 +500,13 @@ create index if not exists ugc_roteiro_cenas_roteiro_id_idx on public.ugc_roteir
 alter table public.ugc_roteiro_cenas enable row level security;
 
 create policy "Painel: leitura autenticada de cenas UGC"
-  on public.ugc_roteiro_cenas for select to authenticated using (true);
+  on public.ugc_roteiro_cenas for select to authenticated using (public.is_owner());
 create policy "Painel: escrita autenticada de cenas UGC"
-  on public.ugc_roteiro_cenas for insert to authenticated with check (true);
+  on public.ugc_roteiro_cenas for insert to authenticated with check (public.is_owner());
 create policy "Painel: atualização autenticada de cenas UGC"
-  on public.ugc_roteiro_cenas for update to authenticated using (true) with check (true);
+  on public.ugc_roteiro_cenas for update to authenticated using (public.is_owner()) with check (public.is_owner());
 create policy "Painel: exclusão autenticada de cenas UGC"
-  on public.ugc_roteiro_cenas for delete to authenticated using (true);
+  on public.ugc_roteiro_cenas for delete to authenticated using (public.is_owner());
 
 -- Tabela: ugc_prospeccao (trabalho_id é preenchido quando a negociação
 -- é convertida em trabalho, pelo botão "Transformar em trabalho")
@@ -512,13 +533,13 @@ create index if not exists ugc_prospeccao_status_idx on public.ugc_prospeccao (s
 alter table public.ugc_prospeccao enable row level security;
 
 create policy "Painel: leitura autenticada de prospecção UGC"
-  on public.ugc_prospeccao for select to authenticated using (true);
+  on public.ugc_prospeccao for select to authenticated using (public.is_owner());
 create policy "Painel: escrita autenticada de prospecção UGC"
-  on public.ugc_prospeccao for insert to authenticated with check (true);
+  on public.ugc_prospeccao for insert to authenticated with check (public.is_owner());
 create policy "Painel: atualização autenticada de prospecção UGC"
-  on public.ugc_prospeccao for update to authenticated using (true) with check (true);
+  on public.ugc_prospeccao for update to authenticated using (public.is_owner()) with check (public.is_owner());
 create policy "Painel: exclusão autenticada de prospecção UGC"
-  on public.ugc_prospeccao for delete to authenticated using (true);
+  on public.ugc_prospeccao for delete to authenticated using (public.is_owner());
 
 -- Tabela: ugc_contratos
 create table if not exists public.ugc_contratos (
@@ -539,13 +560,13 @@ create index if not exists ugc_contratos_status_idx on public.ugc_contratos (sta
 alter table public.ugc_contratos enable row level security;
 
 create policy "Painel: leitura autenticada de contratos UGC"
-  on public.ugc_contratos for select to authenticated using (true);
+  on public.ugc_contratos for select to authenticated using (public.is_owner());
 create policy "Painel: escrita autenticada de contratos UGC"
-  on public.ugc_contratos for insert to authenticated with check (true);
+  on public.ugc_contratos for insert to authenticated with check (public.is_owner());
 create policy "Painel: atualização autenticada de contratos UGC"
-  on public.ugc_contratos for update to authenticated using (true) with check (true);
+  on public.ugc_contratos for update to authenticated using (public.is_owner()) with check (public.is_owner());
 create policy "Painel: exclusão autenticada de contratos UGC"
-  on public.ugc_contratos for delete to authenticated using (true);
+  on public.ugc_contratos for delete to authenticated using (public.is_owner());
 
 -- Tabela: ugc_precos (catálogo editável; a categoria distingue as 3
 -- seções mostradas na página Preços: UGC / Publicidade / Adicionais —
@@ -568,13 +589,13 @@ create index if not exists ugc_precos_categoria_idx on public.ugc_precos (catego
 alter table public.ugc_precos enable row level security;
 
 create policy "Painel: leitura autenticada de preços UGC"
-  on public.ugc_precos for select to authenticated using (true);
+  on public.ugc_precos for select to authenticated using (public.is_owner());
 create policy "Painel: escrita autenticada de preços UGC"
-  on public.ugc_precos for insert to authenticated with check (true);
+  on public.ugc_precos for insert to authenticated with check (public.is_owner());
 create policy "Painel: atualização autenticada de preços UGC"
-  on public.ugc_precos for update to authenticated using (true) with check (true);
+  on public.ugc_precos for update to authenticated using (public.is_owner()) with check (public.is_owner());
 create policy "Painel: exclusão autenticada de preços UGC"
-  on public.ugc_precos for delete to authenticated using (true);
+  on public.ugc_precos for delete to authenticated using (public.is_owner());
 
 -- Catálogo de preços inicial (a Bruna edita tudo pelo painel depois).
 insert into public.ugc_precos (categoria, servico, ordem)
@@ -613,16 +634,16 @@ on conflict (id) do nothing;
 
 drop policy if exists "Painel: leitura autenticada de arquivos UGC" on storage.objects;
 create policy "Painel: leitura autenticada de arquivos UGC"
-  on storage.objects for select to authenticated using (bucket_id = 'ugc-arquivos');
+  on storage.objects for select to authenticated using (bucket_id = 'ugc-arquivos' and public.is_owner());
 drop policy if exists "Painel: escrita autenticada de arquivos UGC" on storage.objects;
 create policy "Painel: escrita autenticada de arquivos UGC"
-  on storage.objects for insert to authenticated with check (bucket_id = 'ugc-arquivos');
+  on storage.objects for insert to authenticated with check (bucket_id = 'ugc-arquivos' and public.is_owner());
 drop policy if exists "Painel: atualização autenticada de arquivos UGC" on storage.objects;
 create policy "Painel: atualização autenticada de arquivos UGC"
-  on storage.objects for update to authenticated using (bucket_id = 'ugc-arquivos') with check (bucket_id = 'ugc-arquivos');
+  on storage.objects for update to authenticated using (bucket_id = 'ugc-arquivos' and public.is_owner()) with check (bucket_id = 'ugc-arquivos' and public.is_owner());
 drop policy if exists "Painel: exclusão autenticada de arquivos UGC" on storage.objects;
 create policy "Painel: exclusão autenticada de arquivos UGC"
-  on storage.objects for delete to authenticated using (bucket_id = 'ugc-arquivos');
+  on storage.objects for delete to authenticated using (bucket_id = 'ugc-arquivos' and public.is_owner());
 
 -- ---------------------------------------------------------------------
 -- Agendamento: chama a Edge Function radar-atualizar todo dia às 7h30

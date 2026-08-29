@@ -16,6 +16,7 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "@supabase/server";
 import { chamarGraph, credenciaisInstagram, trocarCodePorTokenCurto, trocarPorTokenLongo } from "../_shared/instagram.ts";
+import { gravarSegredo } from "../_shared/vault.ts";
 
 function paginaHtml(titulo: string, mensagem: string) {
   return new Response(
@@ -76,10 +77,11 @@ export default {
       });
 
       const expiraEm = new Date(Date.now() + tokenLongo.expires_in * 1000).toISOString();
+      const accessTokenId = await gravarSegredo(ctx.supabaseAdmin, null, tokenLongo.access_token, "instagram_access_token");
 
       const { error } = await ctx.supabaseAdmin.from("instagram_tokens").upsert({
         id: 1,
-        access_token: tokenLongo.access_token,
+        access_token: accessTokenId,
         ig_user_id: tokenCurto.user_id,
         ig_username: perfil.username || null,
         expires_at: expiraEm,

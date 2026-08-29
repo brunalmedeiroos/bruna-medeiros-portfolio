@@ -14,15 +14,17 @@
 // as funções de insights aqui tentam mais de um nome de métrica e ignoram
 // silenciosamente a que não existir, em vez de quebrar a aba inteira.
 
+import { gravarSegredo, lerSegredo } from "./vault.ts";
+
 export const AUTHORIZE_URL = "https://www.instagram.com/oauth/authorize";
 export const TOKEN_URL_CURTO = "https://api.instagram.com/oauth/access_token";
 export const GRAPH_API = "https://graph.instagram.com";
 
+// Só as permissões que o painel realmente usa (perfil + insights). Pedir
+// permissões a mais que o app do Meta não tem configuradas faz o Meta
+// bloquear a autorização inteira, não só a parte extra.
 export const INSTAGRAM_SCOPES = [
   "instagram_business_basic",
-  "instagram_business_manage_messages",
-  "instagram_business_manage_comments",
-  "instagram_business_content_publish",
   "instagram_business_manage_insights",
 ].join(",");
 
@@ -101,6 +103,9 @@ export async function chamarGraph(caminho: string, params: Record<string, string
 // Lê o token guardado no banco e devolve um access_token válido, renovando
 // via refresh se estiver perto de expirar. Retorna null se ainda não
 // conectou o Instagram.
+//
+// access_token é guardado como UUID de um segredo no Supabase Vault, não
+// como texto puro — lerSegredo() busca o valor real.
 // deno-lint-ignore no-explicit-any
 export async function obterAccessTokenValido(supabaseAdmin: any) {
   const { data: linha, error } = await supabaseAdmin
@@ -112,19 +117,22 @@ export async function obterAccessTokenValido(supabaseAdmin: any) {
   if (error) throw new Error(`Erro lendo instagram_tokens: ${error.message}`);
   if (!linha) return null;
 
+  const accessTokenAtual = (await lerSegredo(supabaseAdmin, linha.access_token)) as string;
+
   const expiraEm = new Date(linha.expires_at).getTime();
   const margemMs = 3 * 24 * 60 * 60 * 1000; // renova com 3 dias de folga
 
   if (expiraEm - margemMs > Date.now()) {
-    return linha as { access_token: string; ig_user_id: string; ig_username: string | null; expires_at: string };
+    return { ...linha, access_token: accessTokenAtual } as { access_token: string; ig_user_id: string; ig_username: string | null; expires_at: string };
   }
 
-  const renovado = await renovarTokenLongo(linha.access_token);
+  const renovado = await renovarTokenLongo(accessTokenAtual);
+  const novoAccessTokenId = await gravarSegredo(supabaseAdmin, linha.access_token, renovado.access_token, "instagram_access_token");
   const novoExpiraEm = new Date(Date.now() + renovado.expires_in * 1000).toISOString();
 
   await supabaseAdmin
     .from("instagram_tokens")
-    .update({ access_token: renovado.access_token, expires_at: novoExpiraEm, updated_at: new Date().toISOString() })
+    .update({ access_token: novoAccessTokenId, expires_at: novoExpiraEm, updated_at: new Date().toISOString() })
     .eq("id", 1);
 
   return { ...linha, access_token: renovado.access_token, expires_at: novoExpiraEm };

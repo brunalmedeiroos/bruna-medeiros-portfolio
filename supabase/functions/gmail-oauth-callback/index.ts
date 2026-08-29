@@ -8,6 +8,7 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "@supabase/server";
 import { credenciaisGoogle, trocarPorToken } from "../_shared/gmail.ts";
+import { gravarSegredo } from "../_shared/vault.ts";
 
 function paginaHtml(titulo: string, mensagem: string) {
   return new Response(
@@ -61,10 +62,12 @@ export default {
       }
 
       const expiraEm = new Date(Date.now() + tokens.expires_in * 1000).toISOString();
+      const accessTokenId = await gravarSegredo(ctx.supabaseAdmin, null, tokens.access_token, "email_access_token");
+      const refreshTokenId = await gravarSegredo(ctx.supabaseAdmin, null, tokens.refresh_token, "email_refresh_token");
       const { error } = await ctx.supabaseAdmin.from("email_tokens").upsert({
         id: 1,
-        access_token: tokens.access_token,
-        refresh_token: tokens.refresh_token,
+        access_token: accessTokenId,
+        refresh_token: refreshTokenId,
         expires_at: expiraEm,
         updated_at: new Date().toISOString(),
       });

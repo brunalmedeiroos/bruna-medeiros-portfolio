@@ -10,6 +10,7 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "@supabase/server";
 import { chamarGraph, insightDeConta, insightDeMidia, obterAccessTokenValido } from "../_shared/instagram.ts";
+import { ehDono } from "../_shared/dono.ts";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -33,6 +34,12 @@ function dataISO(diasAtras: number): string {
 export default {
   fetch: withSupabase({ auth: "user" }, async (req, ctx) => {
     if (req.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
+
+    // withSupabase({ auth: "user" }) só confirma que existe uma sessão válida
+    // — não que é especificamente a dona da conta.
+    if (!(await ehDono(req, ctx.supabaseAdmin))) {
+      return jsonResponse({ ok: false, error: "forbidden" }, 403);
+    }
 
     let token: Awaited<ReturnType<typeof obterAccessTokenValido>>;
     try {

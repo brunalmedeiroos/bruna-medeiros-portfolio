@@ -1218,6 +1218,22 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal de confirmação genérico — usado no lugar do confirm() nativo do
+         navegador em toda ação de excluir (e algumas outras), pra manter a
+         mesma identidade visual do resto do painel. Ver confirmarAcao(). -->
+    <div id="confirmar-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pl-modal-pequeno">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo" id="confirmar-modal-titulo">Confirmar</span>
+        </div>
+        <p id="confirmar-modal-mensagem"></p>
+        <div class="cal-form-acoes">
+          <button type="button" id="confirmar-modal-cancelar" class="cal-btn">Cancelar</button>
+          <button type="button" id="confirmar-modal-ok" class="cal-btn pl-btn-excluir">Excluir</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -1543,6 +1559,7 @@
       });
       document.getElementById('ugc-modal-tipo').addEventListener('change', atualizarSugestoesEntregaveis);
       document.getElementById('ugc-modal-permuta').addEventListener('change', atualizarCampoValorPermuta);
+      document.getElementById('ugc-modal-status').addEventListener('change', sincronizarPagamentoComStatus);
       document.getElementById('ugc-modal-add-entregavel').addEventListener('click', adicionarEntregavelModal);
       document.getElementById('ugc-modal-briefing-anexar').addEventListener('click', () => {
         document.getElementById('ugc-modal-briefing-arquivo-input').click();
@@ -1982,7 +1999,7 @@
     }
 
     async function excluirLead(lead) {
-      if (!confirm('Excluir esta mensagem?')) return;
+      if (!(await confirmarAcao('Excluir esta mensagem?'))) return;
       try {
         const { error } = await Auth.sb.from('portfolio_leads').delete().eq('id', lead.id);
         if (error) throw error;
@@ -2277,7 +2294,7 @@
     }
 
     async function excluirTarefa(tarefa) {
-      if (!confirm(`Excluir "${tarefa.titulo}"?`)) return;
+      if (!(await confirmarAcao(`Excluir "${tarefa.titulo}"?`))) return;
       try {
         const { error } = await Auth.sb.from('painel_tarefas').delete().eq('id', tarefa.id);
         if (error) throw error;
@@ -2408,7 +2425,7 @@
     }
 
     async function desmarcarEmail(id) {
-      if (!confirm('Remover esta mensagem da lista de Propostas? Ela continua no seu Gmail, só sai daqui.')) return;
+      if (!(await confirmarAcao('Remover esta mensagem da lista de Propostas? Ela continua no seu Gmail, só sai daqui.', { textoConfirmar: 'Remover' }))) return;
       try {
         const resultado = await chamarFuncao('gmail-unmark', {
           method: 'POST',
@@ -2852,7 +2869,7 @@
     }
 
     async function excluirPilar(pilar) {
-      if (!confirm(`Excluir o pilar "${pilar.nome}"? As ideias dentro dele também serão excluídas.`)) return;
+      if (!(await confirmarAcao(`Excluir o pilar "${pilar.nome}"? As ideias dentro dele também serão excluídas.`))) return;
       try {
         const { error } = await Auth.sb.from('planejador_pilares').delete().eq('id', pilar.id);
         if (error) throw error;
@@ -2910,7 +2927,7 @@
 
     async function excluirModalIdeia() {
       if (!ideiaAbertaId) return;
-      if (!confirm('Excluir esta ideia?')) return;
+      if (!(await confirmarAcao('Excluir esta ideia?'))) return;
       try {
         const { error } = await Auth.sb.from('planejador_ideias').delete().eq('id', ideiaAbertaId);
         if (error) throw error;
@@ -3032,7 +3049,7 @@
 
     async function excluirModalAchado() {
       if (!achadoAbertoId) return;
-      if (!confirm('Excluir este achado?')) return;
+      if (!(await confirmarAcao('Excluir este achado?'))) return;
       try {
         const { error } = await Auth.sb.from('planejador_achados').delete().eq('id', achadoAbertoId);
         if (error) throw error;
@@ -3111,7 +3128,7 @@
     }
 
     async function excluirCronograma(id) {
-      if (!confirm('Excluir esta linha do cronograma?')) return;
+      if (!(await confirmarAcao('Excluir esta linha do cronograma?'))) return;
       try {
         const { error } = await Auth.sb.from('planejador_cronograma').delete().eq('id', id);
         if (error) throw error;
@@ -3441,7 +3458,7 @@
 
     async function excluirRadarNoticia() {
       if (!radarAbertaId) return;
-      if (!confirm('Excluir esta notícia?')) return;
+      if (!(await confirmarAcao('Excluir esta notícia?'))) return;
       try {
         const { error } = await Auth.sb.from('radar_noticias').delete().eq('id', radarAbertaId);
         if (error) throw error;
@@ -3603,7 +3620,10 @@
 
     // ---- Resultados: também só leitura, derivado de ugcTrabalhosCache/ugcContratosCache ----
     function renderizarResultadosUGC() {
-      const fechados = ugcTrabalhosCache.filter((t) => t.status === 'Pago' || t.status === 'Entregue');
+      // "Finalizado" aqui usa o mesmo critério do Ganho (status_pagamento) — um trabalho
+      // Entregue mas ainda não pago não conta como finalizado, senão a contagem diverge
+      // do valor de Ganho total mostrado logo abaixo.
+      const fechados = ugcTrabalhosCache.filter((t) => t.status === 'Pago');
       const contratosFinalizados = ugcContratosCache.filter((c) => c.status === 'Encerrado');
       const ganhoPorTipo = (tipo) =>
         ugcTrabalhosCache
@@ -3804,6 +3824,15 @@
       document.getElementById('ugc-modal-trabalho-overlay').hidden = true;
     }
 
+    // Status "Pago" sempre implica pagamento recebido. Sem isso, os dois campos ficam
+    // independentes e é fácil marcar o trabalho como Pago sem atualizar o Pagamento,
+    // fazendo Visão Geral/Resultados mostrarem números que não batem entre si.
+    function sincronizarPagamentoComStatus() {
+      if (document.getElementById('ugc-modal-status').value === 'Pago') {
+        document.getElementById('ugc-modal-status-pagamento').value = 'Recebido';
+      }
+    }
+
     // Fechado por permuta não tem valor em R$ — desabilita e limpa o campo.
     function atualizarCampoValorPermuta() {
       const permuta = document.getElementById('ugc-modal-permuta').checked;
@@ -3872,6 +3901,11 @@
         return;
       }
 
+      const status = document.getElementById('ugc-modal-status').value;
+      // Reforça a mesma regra de sincronizarPagamentoComStatus() aqui: status "Pago"
+      // nunca deve ser salvo com pagamento diferente de "Recebido".
+      const statusPagamento = status === 'Pago' ? 'Recebido' : document.getElementById('ugc-modal-status-pagamento').value;
+
       const linha = {
         marca,
         campanha: document.getElementById('ugc-modal-campanha').value.trim() || null,
@@ -3881,7 +3915,7 @@
         contato_whatsapp: document.getElementById('ugc-modal-contato-whats').value.trim() || null,
         origem: document.getElementById('ugc-modal-origem').value || null,
         plataforma: document.getElementById('ugc-modal-plataforma').value.trim() || null,
-        status: document.getElementById('ugc-modal-status').value,
+        status,
         permuta: document.getElementById('ugc-modal-permuta').checked,
         valor: document.getElementById('ugc-modal-permuta').checked
           ? null
@@ -3891,7 +3925,7 @@
         data_entrega: document.getElementById('ugc-modal-entrega').value || null,
         briefing_link: document.getElementById('ugc-modal-briefing-link').value.trim() || null,
         briefing_arquivo_path: ugcModalBriefingArquivoPath,
-        status_pagamento: document.getElementById('ugc-modal-status-pagamento').value,
+        status_pagamento: statusPagamento,
         forma_pagamento: document.getElementById('ugc-modal-forma-pagamento').value.trim() || null,
         data_prevista_pagamento: document.getElementById('ugc-modal-data-pagamento').value || null,
       };
@@ -3912,19 +3946,20 @@
           trabalhoId = data[0].id;
         }
 
-        // Reescreve os entregáveis do zero, mesmo padrão já usado nas cenas do roteiro.
-        await Auth.sb.from('ugc_trabalho_entregaveis').delete().eq('trabalho_id', trabalhoId);
+        // Reescreve os entregáveis do zero — apaga e reinsere numa função só do
+        // banco (transação única), pra não correr o risco de perder os itens se
+        // a rede cair entre o delete e o insert.
         const entregaveisValidos = ugcModalEntregaveis.filter((e) => e.servico.trim());
-        if (entregaveisValidos.length > 0) {
-          const entregaveisParaSalvar = entregaveisValidos.map((e, i) => ({
-            trabalho_id: trabalhoId,
-            servico: e.servico.trim(),
-            quantidade: Number(e.quantidade) || 1,
-            ordem: i,
-          }));
-          const { error: erroEntregaveis } = await Auth.sb.from('ugc_trabalho_entregaveis').insert(entregaveisParaSalvar);
-          if (erroEntregaveis) throw erroEntregaveis;
-        }
+        const entregaveisParaSalvar = entregaveisValidos.map((e, i) => ({
+          servico: e.servico.trim(),
+          quantidade: Number(e.quantidade) || 1,
+          ordem: i,
+        }));
+        const { error: erroEntregaveis } = await Auth.sb.rpc('ugc_substituir_entregaveis', {
+          p_trabalho_id: trabalhoId,
+          p_entregaveis: entregaveisParaSalvar,
+        });
+        if (erroEntregaveis) throw erroEntregaveis;
 
         fecharModalTrabalho();
         await carregarUGC();
@@ -3938,8 +3973,15 @@
 
     async function excluirModalTrabalho() {
       if (!ugcTrabalhoAbertoId) return;
-      if (!confirm('Excluir este trabalho?')) return;
+      if (!(await confirmarAcao('Excluir este trabalho?'))) return;
       try {
+        // Remove o arquivo de briefing anexado (se houver) antes do registro —
+        // sem isso, o arquivo ficava órfão no Storage pra sempre. Falha aqui
+        // só vai pro console: não trava a exclusão que a usuária pediu.
+        if (ugcModalBriefingArquivoPath) {
+          const { error: erroStorage } = await Auth.sb.storage.from('ugc-arquivos').remove([ugcModalBriefingArquivoPath]);
+          if (erroStorage) console.error('Não foi possível remover o arquivo anexado:', erroStorage);
+        }
         const { error } = await Auth.sb.from('ugc_trabalhos').delete().eq('id', ugcTrabalhoAbertoId);
         if (error) throw error;
         fecharModalTrabalho();
@@ -4095,22 +4137,21 @@
           roteiroId = data[0].id;
         }
 
-        // Reescreve as cenas do zero — mais simples que diferenciar quais mudaram,
-        // e o volume por roteiro é pequeno o bastante pra isso não pesar.
-        await Auth.sb.from('ugc_roteiro_cenas').delete().eq('roteiro_id', roteiroId);
-        if (ugcModalCenas.length > 0) {
-          const cenasParaSalvar = ugcModalCenas.map((c, i) => ({
-            roteiro_id: roteiroId,
-            ordem: i,
-            fala: c.fala || null,
-            o_que_fazer: c.o_que_fazer || null,
-            cena_broll: c.cena_broll || null,
-            cena_gravada: !!c.cena_gravada,
-            cena_conferida: !!c.cena_conferida,
-          }));
-          const { error: erroCenas } = await Auth.sb.from('ugc_roteiro_cenas').insert(cenasParaSalvar);
-          if (erroCenas) throw erroCenas;
-        }
+        // Reescreve as cenas do zero — apaga e reinsere numa função só do banco
+        // (transação única), mesmo motivo dos entregáveis do Trabalho.
+        const cenasParaSalvar = ugcModalCenas.map((c, i) => ({
+          ordem: i,
+          fala: c.fala || null,
+          o_que_fazer: c.o_que_fazer || null,
+          cena_broll: c.cena_broll || null,
+          cena_gravada: !!c.cena_gravada,
+          cena_conferida: !!c.cena_conferida,
+        }));
+        const { error: erroCenas } = await Auth.sb.rpc('ugc_substituir_cenas', {
+          p_roteiro_id: roteiroId,
+          p_cenas: cenasParaSalvar,
+        });
+        if (erroCenas) throw erroCenas;
 
         fecharModalRoteiro();
         await carregarUGC();
@@ -4124,7 +4165,7 @@
 
     async function excluirModalRoteiro() {
       if (!ugcRoteiroAbertoId) return;
-      if (!confirm('Excluir este roteiro? As cenas também serão apagadas.')) return;
+      if (!(await confirmarAcao('Excluir este roteiro? As cenas também serão apagadas.'))) return;
       try {
         const { error } = await Auth.sb.from('ugc_roteiros').delete().eq('id', ugcRoteiroAbertoId);
         if (error) throw error;
@@ -4255,7 +4296,7 @@
 
     async function excluirModalProspeccao() {
       if (!ugcProspeccaoAbertaId) return;
-      if (!confirm('Excluir esta prospecção?')) return;
+      if (!(await confirmarAcao('Excluir esta prospecção?'))) return;
       try {
         const { error } = await Auth.sb.from('ugc_prospeccao').delete().eq('id', ugcProspeccaoAbertaId);
         if (error) throw error;
@@ -4271,7 +4312,7 @@
       if (!ugcProspeccaoAbertaId) return;
       const prospeccao = ugcProspeccaoCache.find((p) => p.id === ugcProspeccaoAbertaId);
       if (!prospeccao) return;
-      if (!confirm(`Criar um trabalho pra "${prospeccao.marca}" a partir dessa prospecção?`)) return;
+      if (!(await confirmarAcao(`Criar um trabalho pra "${prospeccao.marca}" a partir dessa prospecção?`, { perigo: false, textoConfirmar: 'Criar' }))) return;
 
       const btn = document.getElementById('ugc-prosp-transformar');
       btn.disabled = true;
@@ -4461,8 +4502,13 @@
 
     async function excluirModalContrato() {
       if (!ugcContratoAbertoId) return;
-      if (!confirm('Excluir este contrato?')) return;
+      if (!(await confirmarAcao('Excluir este contrato?'))) return;
       try {
+        // Mesma lógica do Trabalho: remove o arquivo anexado antes do registro.
+        if (ugcModalContratoArquivoPath) {
+          const { error: erroStorage } = await Auth.sb.storage.from('ugc-arquivos').remove([ugcModalContratoArquivoPath]);
+          if (erroStorage) console.error('Não foi possível remover o arquivo anexado:', erroStorage);
+        }
         const { error } = await Auth.sb.from('ugc_contratos').delete().eq('id', ugcContratoAbertoId);
         if (error) throw error;
         fecharModalContrato();
@@ -4620,7 +4666,7 @@
 
     async function excluirModalPreco() {
       if (!ugcPrecoAbertoId) return;
-      if (!confirm('Excluir este serviço?')) return;
+      if (!(await confirmarAcao('Excluir este serviço?'))) return;
       try {
         const { error } = await Auth.sb.from('ugc_precos').delete().eq('id', ugcPrecoAbertoId);
         if (error) throw error;
@@ -4890,6 +4936,40 @@
       const div = document.createElement('div');
       div.textContent = String(str);
       return div.innerHTML;
+    }
+
+    // Substitui o confirm() nativo do navegador por um modal no estilo do
+    // painel. Uso: if (!(await confirmarAcao('Excluir isto?'))) return;
+    // Passe { perigo: false, textoConfirmar: 'Criar' } pra ações que não são
+    // exclusão (ex: converter Prospecção em Trabalho).
+    function confirmarAcao(mensagem, opcoes = {}) {
+      const { titulo = 'Confirmar', textoConfirmar = 'Excluir', perigo = true } = opcoes;
+      const overlay = document.getElementById('confirmar-modal-overlay');
+      const btnOk = document.getElementById('confirmar-modal-ok');
+      const btnCancelar = document.getElementById('confirmar-modal-cancelar');
+
+      document.getElementById('confirmar-modal-titulo').textContent = titulo;
+      document.getElementById('confirmar-modal-mensagem').textContent = mensagem;
+      btnOk.textContent = textoConfirmar;
+      btnOk.className = 'cal-btn ' + (perigo ? 'pl-btn-excluir' : 'cal-btn-primario');
+      overlay.hidden = false;
+
+      return new Promise((resolve) => {
+        function limpar(resultado) {
+          overlay.hidden = true;
+          btnOk.removeEventListener('click', onOk);
+          btnCancelar.removeEventListener('click', onCancelar);
+          overlay.removeEventListener('click', onOverlay);
+          resolve(resultado);
+        }
+        function onOk() { limpar(true); }
+        function onCancelar() { limpar(false); }
+        function onOverlay(e) { if (e.target === overlay) limpar(false); }
+
+        btnOk.addEventListener('click', onOk);
+        btnCancelar.addEventListener('click', onCancelar);
+        overlay.addEventListener('click', onOverlay);
+      });
     }
   </script>
 </body>

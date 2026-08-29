@@ -64,26 +64,27 @@ export default {
         for (const noticia of selecionadas) {
           if (!noticia.link || !noticia.titulo) continue;
 
-          // Evita duplicar a mesma notícia (mesmo link) pro mesmo agente.
-          const { data: existente } = await ctx.supabaseAdmin
+          // Evita duplicar a mesma notícia (mesmo agente + link) usando a trava
+          // do próprio banco (radar_noticias_agente_link_unq), em vez de um
+          // select-antes-de-inserir separado — isso é seguro mesmo se o cron
+          // diário e um clique manual em "Atualizar notícias" rodarem juntos.
+          const { data, error } = await ctx.supabaseAdmin
             .from("radar_noticias")
-            .select("id")
-            .eq("agente", agente.nome)
-            .eq("link", noticia.link)
-            .maybeSingle();
-          if (existente) continue;
-
-          const { error } = await ctx.supabaseAdmin.from("radar_noticias").insert({
-            agente: agente.nome,
-            titulo: noticia.titulo,
-            resumo: noticia.resumo || null,
-            fonte: noticia.fonte ? noticia.fonte.replace(/^\[|\]$/g, "").trim() : null,
-            link: noticia.link,
-            data_publicacao: paraDataValida(noticia.data_publicacao),
-            insight: noticia.insight || null,
-          });
-          if (!error) inseridas++;
-          else console.error(`Erro ao inserir notícia do agente ${agente.nome}:`, error);
+            .upsert(
+              {
+                agente: agente.nome,
+                titulo: noticia.titulo,
+                resumo: noticia.resumo || null,
+                fonte: noticia.fonte ? noticia.fonte.replace(/^\[|\]$/g, "").trim() : null,
+                link: noticia.link,
+                data_publicacao: paraDataValida(noticia.data_publicacao),
+                insight: noticia.insight || null,
+              },
+              { onConflict: "agente,link", ignoreDuplicates: true },
+            )
+            .select("id");
+          if (error) console.error(`Erro ao inserir notícia do agente ${agente.nome}:`, error);
+          else if (data && data.length > 0) inseridas++;
         }
 
         resultadosPorAgente[chave] = { inseridas };

@@ -12,6 +12,7 @@ import {
   montarEmailCru,
   obterAccessTokenValido,
 } from "../_shared/gmail.ts";
+import { ehDono } from "../_shared/dono.ts";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -30,6 +31,13 @@ export default {
   fetch: withSupabase({ auth: "user" }, async (req, ctx) => {
     if (req.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
     if (req.method !== "POST") return jsonResponse({ ok: false, error: "method not allowed" }, 405);
+
+    // withSupabase({ auth: "user" }) só confirma que existe uma sessão válida
+    // — não que é especificamente a dona da conta. Essa função envia e-mail
+    // em nome dela, então essa checagem extra é importante.
+    if (!(await ehDono(req, ctx.supabaseAdmin))) {
+      return jsonResponse({ ok: false, error: "forbidden" }, 403);
+    }
 
     let body: Record<string, unknown>;
     try {

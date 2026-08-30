@@ -2355,15 +2355,61 @@
 }
 
 .painel-body .dash-secao-titulo {
-  font-size: 19px;
+  font-size: 24px;
   margin: 4px 0 0;
 }
 
-.painel-body .dash-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-  gap: 20px;
-  align-items: start;
+.painel-body .dash-secoes {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* "Hoje" é o bloco principal: acento à esquerda, mais respiro e título
+   maior — a mesma linguagem do card-contato (destaque com borda colorida),
+   só que aqui puxando pro card inteiro em vez de só um número. */
+.painel-body .card-dash-hoje {
+  border-left: 4px solid var(--coral);
+  padding: 30px 30px 26px;
+}
+
+.painel-body .card-dash-hoje .card-titulo {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.painel-body .dash-hoje-lista {
+  gap: 14px;
+}
+
+.painel-body .dash-hoje-lista .cal-tarefa-item {
+  padding: 14px 16px;
+}
+
+.painel-body .dash-hoje-lista .cal-tarefa-titulo {
+  font-size: 15px;
+}
+
+/* "Precisa da sua atenção" fica compacto por baixo: título menor, menos
+   respiro interno — cresce só com o conteúdo, sem competir com "Hoje". */
+.painel-body .card-dash-atencao {
+  padding: 18px 22px;
+}
+
+.painel-body .card-dash-atencao .card-titulo {
+  font-size: 15px;
+  margin-bottom: 14px;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.painel-body .card-dash-atencao .dash-atencao-lista {
+  gap: 10px;
+}
+
+.painel-body .card-dash-atencao .dash-atencao-grupo {
+  padding: 12px 16px;
 }
 
 .painel-body .dash-atencao-lista {

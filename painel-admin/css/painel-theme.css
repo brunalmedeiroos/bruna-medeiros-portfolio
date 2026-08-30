@@ -13,21 +13,63 @@
 .painel-body {
   /* ---- Cores extraídas do :root de index.html ---- */
   --coral: #7DB7CE;                       /* --blue-light: destaque (nav ativa, filtros, gráfico) */
+  --coral-hover: #6796A9;                 /* hover do botão primário — acompanha --coral quando a cor de ênfase muda */
   --creme: #FAF9F4;                       /* --offwhite: fundo da página */
   --branco: #FFFFFF;                      /* --white: fundo dos cards */
   --grafite: #04465D;                     /* --blue-dark: texto principal */
-  --texto-suave: rgba(4, 70, 93, 0.7);    /* --blue-dark-70 */
-  --borda: rgba(4, 70, 93, 0.18);         /* mesma borda usada nos inputs do site */
+  --grafite-rgb: 4, 70, 93;               /* mesma cor acima, em R,G,B — base de toda tinta/sombra sutil abaixo */
+  --texto-suave: rgba(var(--grafite-rgb), 0.7);
+  --borda: rgba(var(--grafite-rgb), 0.18);         /* mesma borda usada nos inputs do site */
 
   /* ---- Raio e sombra extraídos do card genérico do site (.services-window) ---- */
   --raio-lg: 22px;
   --raio-sm: 10px;
-  --sombra: 0 20px 45px rgba(4, 70, 93, 0.16);        /* --shadow-soft, pros cards do grid */
-  --sombra-forte: 0 10px 24px rgba(4, 70, 93, 0.22);  /* --shadow-hard, pra sidebar/drawer mobile */
+  --sombra: 0 20px 45px rgba(var(--grafite-rgb), 0.16);        /* --shadow-soft, pros cards do grid */
+  --sombra-forte: 0 10px 24px rgba(var(--grafite-rgb), 0.22);  /* --shadow-hard, pra sidebar/drawer mobile */
 
   /* ---- Fontes extraídas do :root de index.html ---- */
   --fonte-titulo: 'Bootzy TM', 'Segoe UI Black', 'Arial Black', sans-serif; /* --font-display */
   --fonte-corpo: 'Montserrat', sans-serif;                                  /* --font-body */
+}
+
+/* ==========================================================================
+   Tema escuro — Configurações > Geral > Aparência. Redefine só os tokens
+   acima; como (quase) todo componente do painel já lê cor via var(--...),
+   isso re-tema o app inteiro sem tocar em regra nenhuma de componente.
+   Três estados, igual o padrão de artifact: :root claro é o padrão; a media
+   query cobre "Seguir sistema" (só quando não houver [data-tema="claro"]
+   explícito); e [data-tema="escuro"] cobre a escolha manual, nos dois casos.
+   ========================================================================== */
+@media (prefers-color-scheme: dark) {
+  .painel-body:not([data-tema="claro"]) {
+    --coral-hover: #9AD0E2;
+    --creme: #0E1E26;
+    --branco: #16303A;
+    --grafite: #E8F0F3;
+    --grafite-rgb: 232, 240, 243;
+  }
+}
+
+.painel-body[data-tema="escuro"] {
+  --coral-hover: #9AD0E2;
+  --creme: #0E1E26;
+  --branco: #16303A;
+  --grafite: #E8F0F3;
+  --grafite-rgb: 232, 240, 243;
+}
+
+/* Ícones do menu (PNG com mix-blend-mode: multiply) somem em fundo escuro —
+   não existe versão escura desses arquivos, então inverte a cor via filtro. */
+@media (prefers-color-scheme: dark) {
+  .painel-body:not([data-tema="claro"]) .nav-icon-img {
+    mix-blend-mode: normal;
+    filter: invert(1) brightness(1.6);
+  }
+}
+
+.painel-body[data-tema="escuro"] .nav-icon-img {
+  mix-blend-mode: normal;
+  filter: invert(1) brightness(1.6);
 }
 
 /* Ponto da logo (sidebar e topo mobile) no azul-claro do site, como no login. */
@@ -69,23 +111,23 @@
 /* Borda sutil do .services-window do site, nos cartões do painel. */
 .painel-body .card,
 .painel-body .card-numero {
-  border: 1px solid rgba(4, 70, 93, 0.06);
+  border: 1px solid rgba(var(--grafite-rgb), 0.06);
 }
 
 /* Selo "Contato" nas mensagens: tingido de azul (era um tom coral). */
 .painel-body .lead-selo-contato {
-  background: rgba(4, 70, 93, 0.14);
+  background: rgba(var(--grafite-rgb), 0.14);
 }
 
 /* Selo "Popup": mesmo tom neutro sutil usado nas bordas do site. */
 .painel-body .lead-selo-popup {
-  background: rgba(4, 70, 93, 0.06);
+  background: rgba(var(--grafite-rgb), 0.06);
 }
 
 /* Fundo do menu mobile (gaveta), no tom do site em vez do grafite genérico. */
 @media (max-width: 768px) {
   .painel-body .overlay {
-    background: rgba(4, 70, 93, 0.4);
+    background: rgba(var(--grafite-rgb), 0.4);
   }
 }
 
@@ -124,8 +166,8 @@
 
 .painel-body .cal-btn:hover {
   transform: translateY(-2px);
-  background: rgba(4, 70, 93, 0.12);
-  border-color: rgba(4, 70, 93, 0.35);
+  background: rgba(var(--grafite-rgb), 0.12);
+  border-color: rgba(var(--grafite-rgb), 0.35);
 }
 
 /* .cal-btn é pensado pra <button> (que já tem padding/cursor por padrão);
@@ -214,7 +256,7 @@
 
 .painel-body .cal-dia:hover {
   transform: none;
-  background: rgba(4, 70, 93, 0.08);
+  background: rgba(var(--grafite-rgb), 0.08);
 }
 
 .painel-body .cal-dia-fora {
@@ -410,8 +452,8 @@
 }
 
 .painel-body .cal-btn-primario:hover {
-  background: #6796A9;
-  border-color: #6796A9;
+  background: var(--coral-hover);
+  border-color: var(--coral-hover);
 }
 
 @media (max-width: 480px) {
@@ -559,7 +601,7 @@
   text-transform: uppercase;
   letter-spacing: 0.3px;
   color: var(--grafite);
-  background: rgba(4, 70, 93, 0.08);
+  background: rgba(var(--grafite-rgb), 0.08);
   border-radius: 20px;
   padding: 4px 10px;
 }
@@ -715,7 +757,7 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--texto-suave);
-  background: rgba(4, 70, 93, 0.08);
+  background: rgba(var(--grafite-rgb), 0.08);
   border-radius: 999px;
   padding: 2px 8px;
 }
@@ -895,7 +937,7 @@
 }
 
 .painel-body .instagram-post-capa-vazia {
-  background: rgba(4, 70, 93, 0.08);
+  background: rgba(var(--grafite-rgb), 0.08);
 }
 
 .painel-body .instagram-post-info {
@@ -1141,7 +1183,7 @@
   letter-spacing: 0.3px;
   padding: 3px 8px;
   border-radius: 20px;
-  background: rgba(4, 70, 93, 0.08);
+  background: rgba(var(--grafite-rgb), 0.08);
   color: var(--grafite);
   width: fit-content;
 }
@@ -1211,7 +1253,7 @@
 .painel-body .pl-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(4, 70, 93, 0.35);
+  background: rgba(var(--grafite-rgb), 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1473,7 +1515,7 @@
   letter-spacing: 0.2px;
   padding: 2px 6px;
   border-radius: 10px;
-  background: rgba(4, 70, 93, 0.08);
+  background: rgba(var(--grafite-rgb), 0.08);
   color: var(--grafite);
   width: fit-content;
   max-width: 100%;
@@ -1636,7 +1678,7 @@
   letter-spacing: 0.3px;
   padding: 3px 8px;
   border-radius: 20px;
-  background: rgba(4, 70, 93, 0.08);
+  background: rgba(var(--grafite-rgb), 0.08);
   color: var(--grafite);
   white-space: nowrap;
 }
@@ -1647,7 +1689,7 @@
 }
 
 .painel-body .radar-tag-usada {
-  background: rgba(4, 70, 93, 0.08);
+  background: rgba(var(--grafite-rgb), 0.08);
   color: var(--texto-suave);
 }
 
@@ -1804,7 +1846,7 @@
   border-radius: 20px;
   white-space: nowrap;
   width: fit-content;
-  background: rgba(4, 70, 93, 0.08);
+  background: rgba(var(--grafite-rgb), 0.08);
   color: var(--grafite);
 }
 
@@ -1876,7 +1918,7 @@
 }
 
 .painel-body .ugc-checklist-item:hover {
-  background: rgba(4, 70, 93, 0.05);
+  background: rgba(var(--grafite-rgb), 0.05);
 }
 
 .painel-body .ugc-checklist-check {
@@ -2419,7 +2461,7 @@
 }
 
 .painel-body .dash-atencao-grupo {
-  background: rgba(4, 70, 93, 0.05);
+  background: rgba(var(--grafite-rgb), 0.05);
   border: 1px solid var(--borda);
   border-radius: var(--raio-sm);
   padding: 14px 18px;
@@ -2475,4 +2517,121 @@
   text-overflow: ellipsis;
   max-width: 55%;
   flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Aba Configurações
+   ========================================================================== */
+
+.painel-body .config-campo {
+  margin-bottom: 24px;
+}
+
+.painel-body .config-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--grafite);
+}
+
+.painel-body .config-segmentado {
+  display: inline-flex;
+  gap: 4px;
+  background: var(--creme);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 4px;
+}
+
+.painel-body .config-segmentado-btn {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto-suave);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.painel-body .config-segmentado-btn:hover {
+  color: var(--grafite);
+}
+
+.painel-body .config-segmentado-btn.ativo {
+  background: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .config-cores {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.painel-body .config-cor-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.painel-body .config-cor-swatch:hover {
+  transform: scale(1.08);
+}
+
+.painel-body .config-cor-swatch.ativo {
+  border-color: var(--grafite);
+}
+
+.painel-body .config-cor-custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 6px;
+}
+
+.painel-body .config-cor-preview {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--borda);
+  flex-shrink: 0;
+}
+
+.painel-body .config-cor-custom input {
+  width: 110px;
+  box-sizing: border-box;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: var(--fonte-corpo);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--grafite);
+}
+
+.painel-body .config-divisor {
+  border: none;
+  border-top: 1px solid var(--borda);
+  margin: 24px 0;
+}
+
+.painel-body .config-salvo {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sucesso);
+  margin-top: 8px;
+}
+
+.painel-body .config-erro {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--erro);
+  margin: 8px 0 0;
 }

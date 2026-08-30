@@ -74,8 +74,10 @@
       </nav>
 
       <div class="sidebar-footer">
-        <div class="user-email" id="user-email">carregando...</div>
-        <button id="btn-sair" class="btn-sair" type="button">Sair</button>
+        <button class="nav-item" data-tab="configuracoes" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82A1.65 1.65 0 0 0 3 13.09H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Configurações</span>
+        </button>
       </div>
     </aside>
 
@@ -701,6 +703,106 @@
                 <span class="card-label">Ganho total</span>
                 <span class="card-valor" id="ugc-num-ganho-total">R$ 0</span>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---------- Aba: Configurações ---------- -->
+        <section id="panel-configuracoes" class="tab-panel" hidden>
+          <h2 class="saudacao">Configurações</h2>
+
+          <div class="card">
+            <h3 class="card-titulo">Geral</h3>
+
+            <div class="config-campo">
+              <label class="config-label">Aparência</label>
+              <div class="config-segmentado">
+                <button class="config-segmentado-btn" data-valor="claro" type="button">Claro</button>
+                <button class="config-segmentado-btn" data-valor="escuro" type="button">Escuro</button>
+                <button class="config-segmentado-btn ativo" data-valor="sistema" type="button">Seguir sistema</button>
+              </div>
+            </div>
+
+            <div class="config-campo">
+              <label class="config-label">Cor de ênfase</label>
+              <div class="config-cores">
+                <button class="config-cor-swatch ativo" data-cor="#7DB7CE" style="background:#7DB7CE" type="button" aria-label="Azul"></button>
+                <button class="config-cor-swatch" data-cor="#D4572A" style="background:#D4572A" type="button" aria-label="Coral"></button>
+                <button class="config-cor-swatch" data-cor="#4C9A6B" style="background:#4C9A6B" type="button" aria-label="Verde"></button>
+                <button class="config-cor-swatch" data-cor="#8B6FCE" style="background:#8B6FCE" type="button" aria-label="Roxo"></button>
+                <button class="config-cor-swatch" data-cor="#D66FA0" style="background:#D66FA0" type="button" aria-label="Rosa"></button>
+                <button class="config-cor-swatch" data-cor="#D6A63C" style="background:#D6A63C" type="button" aria-label="Dourado"></button>
+                <button class="config-cor-swatch" data-cor="#5B6B7C" style="background:#5B6B7C" type="button" aria-label="Grafite"></button>
+                <div class="config-cor-custom">
+                  <span class="config-cor-preview" id="config-cor-preview"></span>
+                  <input type="text" id="config-cor-hex" placeholder="#7DB7CE">
+                </div>
+              </div>
+            </div>
+
+            <div class="cal-form-linha">
+              <div class="cal-form-campo">
+                <label for="config-idioma">Idioma</label>
+                <select id="config-idioma">
+                  <option value="pt">Português</option>
+                  <option value="en">Inglês</option>
+                </select>
+              </div>
+              <div class="cal-form-campo">
+                <label for="config-fuso">Fuso horário</label>
+                <select id="config-fuso">
+                  <option value="automatico">Automático (do dispositivo)</option>
+                  <option value="America/Noronha">Fernando de Noronha (UTC−2)</option>
+                  <option value="America/Sao_Paulo">Brasília (UTC−3)</option>
+                  <option value="America/Manaus">Manaus (UTC−4)</option>
+                  <option value="America/Rio_Branco">Rio Branco (UTC−5)</option>
+                  <option value="Atlantic/Azores">Açores (UTC−1)</option>
+                  <option value="Europe/Lisbon">Lisboa (UTC+0/+1)</option>
+                  <option value="UTC">UTC</option>
+                </select>
+              </div>
+              <div class="cal-form-campo">
+                <label for="config-inicio-semana">Início da semana</label>
+                <select id="config-inicio-semana">
+                  <option value="domingo">Domingo</option>
+                  <option value="segunda">Segunda</option>
+                </select>
+              </div>
+            </div>
+
+            <p class="config-salvo" id="config-geral-status" hidden>Salvo.</p>
+
+            <hr class="config-divisor">
+
+            <button class="cal-btn" id="config-btn-sair" type="button">Sair da conta</button>
+          </div>
+
+          <div class="card">
+            <h3 class="card-titulo">Perfil</h3>
+
+            <div class="cal-form-campo">
+              <label for="config-nome">Nome</label>
+              <input type="text" id="config-nome" placeholder="Como você quer ser chamada no painel">
+            </div>
+            <div class="cal-form-acoes">
+              <button class="cal-btn cal-btn-primario" id="config-salvar-nome" type="button">Salvar nome</button>
+            </div>
+
+            <hr class="config-divisor">
+
+            <div class="cal-form-linha">
+              <div class="cal-form-campo">
+                <label for="config-nova-senha">Nova senha</label>
+                <input type="password" id="config-nova-senha" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+              </div>
+              <div class="cal-form-campo">
+                <label for="config-confirmar-senha">Confirmar nova senha</label>
+                <input type="password" id="config-confirmar-senha" placeholder="Repita a nova senha" autocomplete="new-password">
+              </div>
+            </div>
+            <p class="config-erro" id="config-senha-erro" hidden></p>
+            <div class="cal-form-acoes">
+              <button class="cal-btn cal-btn-primario" id="config-salvar-senha" type="button">Alterar senha</button>
             </div>
           </div>
         </section>
@@ -1394,7 +1496,11 @@
       planejador: 'Planejador de Conteúdo',
       radar: 'Radar de Notícias',
       ugc: 'UGC / Publi',
+      configuracoes: 'Configurações',
     };
+
+    let configCache = null;
+    let configSalvoTimeout = null;
 
     // Mesmo projeto Supabase de js/auth.js — hardcoded aqui porque auth.js
     // não expõe a URL/anon key em window.Auth (só o cliente já pronto).
@@ -1408,12 +1514,14 @@
         return;
       }
 
-      document.getElementById('user-email').textContent = session.user.email;
-      document.getElementById('painel-body').style.visibility = 'visible';
-
       configurarEventos();
       configurarColapsarSidebar();
+
+      // Aplica tema/cor ANTES de revelar o body, pra não piscar o tema
+      // claro por uma fração de segundo em quem usa o escuro.
+      await carregarConfiguracoes();
       renderizarCabecalhoDashboard();
+      document.getElementById('painel-body').style.visibility = 'visible';
 
       await carregarDados();
 
@@ -1495,6 +1603,131 @@
     }
 
     // ==========================================================================
+    // Aba: Configurações — aparência, cor de ênfase, idioma, fuso horário,
+    // início da semana e perfil (nome/senha). Linha única (id=1) na tabela
+    // painel_configuracoes; idioma e fuso horário só ficam salvos por
+    // enquanto, sem mudar nenhum texto/cálculo do painel ainda.
+    // ==========================================================================
+
+    async function carregarConfiguracoes() {
+      const padrao = { tema: 'sistema', cor_enfase: '#7DB7CE', idioma: 'pt', fuso_horario: 'automatico', inicio_semana: 'domingo', nome: null };
+      try {
+        const { data, error } = await Auth.sb.from('painel_configuracoes').select('*').eq('id', 1).maybeSingle();
+        if (error) throw error;
+        configCache = data || padrao;
+      } catch (err) {
+        console.error('Erro ao carregar configurações:', err);
+        configCache = padrao;
+      }
+      aplicarTema(configCache.tema);
+      aplicarCorEnfase(configCache.cor_enfase);
+      preencherFormularioConfiguracoes();
+    }
+
+    function aplicarTema(tema) {
+      if (tema === 'claro' || tema === 'escuro') {
+        document.body.dataset.tema = tema;
+      } else {
+        delete document.body.dataset.tema;
+      }
+    }
+
+    function corHexValida(hex) {
+      return /^#[0-9a-fA-F]{6}$/.test(hex);
+    }
+
+    // Escurece um hex misturando com preto — usado pro hover do botão
+    // primário (--coral-hover) acompanhar a cor de ênfase escolhida.
+    function escurecerHex(hex, quantidade) {
+      const n = hex.replace('#', '');
+      const canal = (i) => Math.max(0, Math.round(parseInt(n.substring(i, i + 2), 16) * (1 - quantidade)));
+      return '#' + [canal(0), canal(2), canal(4)].map((c) => c.toString(16).padStart(2, '0')).join('');
+    }
+
+    function aplicarCorEnfase(hex) {
+      if (!corHexValida(hex)) return;
+      document.body.style.setProperty('--coral', hex);
+      document.body.style.setProperty('--coral-hover', escurecerHex(hex, 0.18));
+      document.getElementById('config-cor-preview').style.background = hex;
+      document.getElementById('config-cor-hex').value = hex;
+      document.querySelectorAll('.config-cor-swatch').forEach((btn) => {
+        btn.classList.toggle('ativo', btn.dataset.cor.toLowerCase() === hex.toLowerCase());
+      });
+    }
+
+    function preencherFormularioConfiguracoes() {
+      document.querySelectorAll('.config-segmentado-btn').forEach((btn) => {
+        btn.classList.toggle('ativo', btn.dataset.valor === configCache.tema);
+      });
+      document.getElementById('config-idioma').value = configCache.idioma;
+      document.getElementById('config-fuso').value = configCache.fuso_horario;
+      document.getElementById('config-inicio-semana').value = configCache.inicio_semana;
+      document.getElementById('config-nome').value = configCache.nome || '';
+    }
+
+    function mostrarConfigSalvo() {
+      const status = document.getElementById('config-geral-status');
+      status.hidden = false;
+      clearTimeout(configSalvoTimeout);
+      configSalvoTimeout = setTimeout(() => { status.hidden = true; }, 2000);
+    }
+
+    async function salvarConfiguracao(campo, valor) {
+      try {
+        const { error } = await Auth.sb
+          .from('painel_configuracoes')
+          .update({ [campo]: valor, updated_at: new Date().toISOString() })
+          .eq('id', 1);
+        if (error) throw error;
+        configCache[campo] = valor;
+        mostrarConfigSalvo();
+      } catch (err) {
+        console.error('Erro ao salvar configuração:', err);
+        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+      }
+    }
+
+    async function salvarNomePerfil() {
+      const nome = document.getElementById('config-nome').value.trim();
+      await salvarConfiguracao('nome', nome || null);
+      renderizarCabecalhoDashboard();
+    }
+
+    async function salvarSenhaPerfil() {
+      const novaSenha = document.getElementById('config-nova-senha').value;
+      const confirmarSenha = document.getElementById('config-confirmar-senha').value;
+      const erroEl = document.getElementById('config-senha-erro');
+      erroEl.hidden = true;
+
+      if (novaSenha.length < 6) {
+        erroEl.textContent = 'A senha precisa ter pelo menos 6 caracteres.';
+        erroEl.hidden = false;
+        return;
+      }
+      if (novaSenha !== confirmarSenha) {
+        erroEl.textContent = 'As senhas não coincidem.';
+        erroEl.hidden = false;
+        return;
+      }
+
+      const btn = document.getElementById('config-salvar-senha');
+      btn.disabled = true;
+      try {
+        const { error } = await Auth.sb.auth.updateUser({ password: novaSenha });
+        if (error) throw error;
+        document.getElementById('config-nova-senha').value = '';
+        document.getElementById('config-confirmar-senha').value = '';
+        alert('Senha alterada com sucesso.');
+      } catch (err) {
+        console.error('Erro ao alterar senha:', err);
+        erroEl.textContent = 'Não foi possível alterar a senha agora. Tente de novo.';
+        erroEl.hidden = false;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // ==========================================================================
     // Interações: abas, filtro de período, sair, menu mobile
     // ==========================================================================
 
@@ -1522,10 +1755,40 @@
         btn.addEventListener('click', () => trocarPeriodo(btn.dataset.periodo, btn));
       });
 
-      document.getElementById('btn-sair').addEventListener('click', async () => {
+      // Configurações
+      document.querySelectorAll('.config-segmentado-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.config-segmentado-btn').forEach((b) => b.classList.toggle('ativo', b === btn));
+          aplicarTema(btn.dataset.valor);
+          salvarConfiguracao('tema', btn.dataset.valor);
+        });
+      });
+      document.querySelectorAll('.config-cor-swatch').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          aplicarCorEnfase(btn.dataset.cor);
+          salvarConfiguracao('cor_enfase', btn.dataset.cor);
+        });
+      });
+      document.getElementById('config-cor-hex').addEventListener('change', (e) => {
+        let hex = e.target.value.trim();
+        if (hex && !hex.startsWith('#')) hex = '#' + hex;
+        if (!corHexValida(hex)) {
+          alert('Cor inválida. Use o formato #RRGGBB.');
+          e.target.value = configCache.cor_enfase;
+          return;
+        }
+        aplicarCorEnfase(hex);
+        salvarConfiguracao('cor_enfase', hex);
+      });
+      document.getElementById('config-idioma').addEventListener('change', (e) => salvarConfiguracao('idioma', e.target.value));
+      document.getElementById('config-fuso').addEventListener('change', (e) => salvarConfiguracao('fuso_horario', e.target.value));
+      document.getElementById('config-inicio-semana').addEventListener('change', (e) => salvarConfiguracao('inicio_semana', e.target.value));
+      document.getElementById('config-btn-sair').addEventListener('click', async () => {
         await Auth.sb.auth.signOut();
         window.location.href = '/login';
       });
+      document.getElementById('config-salvar-nome').addEventListener('click', salvarNomePerfil);
+      document.getElementById('config-salvar-senha').addEventListener('click', salvarSenhaPerfil);
 
       // Menu mobile (gaveta)
       const btnMenu = document.getElementById('btn-menu');
@@ -1846,7 +2109,8 @@
     }
 
     function renderizarCabecalhoDashboard() {
-      document.getElementById('dash-saudacao').textContent = `${saudacaoPorHorario()}, Bru!`;
+      const nome = (configCache && configCache.nome) || 'Bru';
+      document.getElementById('dash-saudacao').textContent = `${saudacaoPorHorario()}, ${nome}!`;
       document.getElementById('dash-data').textContent = dataDashboardPorExtenso(new Date());
     }
 

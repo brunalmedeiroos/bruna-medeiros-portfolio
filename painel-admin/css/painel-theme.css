@@ -2329,15 +2329,9 @@
 
 .painel-body .dash-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
   gap: 20px;
   align-items: start;
-}
-
-@media (max-width: 860px) {
-  .painel-body .dash-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .painel-body .dash-atencao-lista {

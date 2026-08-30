@@ -697,9 +697,27 @@
   border-color: var(--coral);
 }
 
+.painel-body .email-item-topo-linha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .painel-body .email-item-remetente {
   font-size: 13px;
   font-weight: 700;
+}
+
+.painel-body .email-item-selo-vista {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--texto-suave);
+  background: rgba(4, 70, 93, 0.08);
+  border-radius: 999px;
+  padding: 2px 8px;
 }
 
 .painel-body .email-item-assunto {

@@ -658,7 +658,8 @@
   background: var(--creme);
 }
 
-.painel-body .email-item-desmarcar {
+.painel-body .email-item-desmarcar,
+.painel-body .email-item-marcar-lida {
   flex-shrink: 0;
   width: 26px;
   height: 26px;
@@ -676,6 +677,19 @@
 .painel-body .email-item-desmarcar:hover {
   background: var(--creme);
   color: var(--grafite);
+}
+
+.painel-body .email-item-marcar-lida:hover {
+  background: rgba(45, 122, 79, 0.12);
+  color: var(--sucesso);
+}
+
+/* E-mail já visto (UNREAD removido no Gmail de verdade): mesmo peso/cor
+   suave usado em itens já concluídos no resto do painel. */
+.painel-body .email-item-lida .email-item-remetente,
+.painel-body .email-item-lida .email-item-assunto {
+  font-weight: 400;
+  color: var(--texto-suave);
 }
 
 .painel-body .email-item-ativo {
@@ -2373,6 +2387,17 @@
   padding: 6px 0;
   cursor: pointer;
   font-size: 14px;
+  overflow: hidden;
+}
+
+/* Nome/marca (1º span) encolhe primeiro; detalhe (2º span, pode ser um
+   assunto de e-mail inteiro) nunca passa de 55% e corta com reticências —
+   sem isso, um assunto longo estourava a borda direita do card. */
+.painel-body .dash-atencao-item span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .painel-body .dash-atencao-item:hover {
@@ -2382,4 +2407,8 @@
 .painel-body .dash-atencao-item span:last-child {
   color: var(--texto-suave);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 55%;
+  flex-shrink: 0;
 }

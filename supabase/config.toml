@@ -456,6 +456,11 @@ enabled = true
 import_map = "./functions/gmail-unmark/deno.json"
 entrypoint = "./functions/gmail-unmark/index.ts"
 
+[functions.gmail-marcar-lida]
+enabled = true
+import_map = "./functions/gmail-marcar-lida/deno.json"
+entrypoint = "./functions/gmail-marcar-lida/index.ts"
+
 [functions.instagram-oauth-start]
 enabled = true
 import_map = "./functions/instagram-oauth-start/deno.json"

@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260827aa">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260830a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260830b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260827aa"></script>
@@ -1411,18 +1411,22 @@
       configurarColapsarSidebar();
       renderizarCabecalhoDashboard();
 
+      await carregarDados();
+
       // UGC/Publi e E-mail normalmente só carregam quando a aba é aberta
       // (carregarUGC/carregarEmails, guardados por ugcAbaCarregada/emailAbaCarregada).
       // Como agora alimentam "Precisa da sua atenção" já na tela inicial, adianta
       // essa busca aqui — sem esperar por ela (o Dashboard não trava nisso) e sem
       // duplicar a query: quando a aba correspondente for aberta depois, os dados
-      // já estão no cache e não são buscados de novo.
+      // já estão no cache e não são buscados de novo. Só depois de carregarDados()
+      // porque chamarFuncao() (usado por carregarEmails) lê o token da sessão na
+      // hora — disparar tudo junto logo após o login, antes de qualquer resposta
+      // do Supabase ter voltado, arriscava pegar o token no meio de uma renovação
+      // e a função de e-mail devolver "forbidden".
       ugcAbaCarregada = true;
       emailAbaCarregada = true;
       carregarUGC();
       carregarEmails();
-
-      await carregarDados();
     })();
 
     // ==========================================================================
@@ -1945,8 +1949,9 @@
         }))));
       }
 
-      if (emailsCache.length > 0) {
-        grupos.push(criarGrupoAtencao('Propostas aguardando resposta', false, emailsCache.map((m) => ({
+      const propostasNaoVistas = emailsCache.filter((m) => m.unread);
+      if (propostasNaoVistas.length > 0) {
+        grupos.push(criarGrupoAtencao('Propostas aguardando resposta', false, propostasNaoVistas.map((m) => ({
           texto: nomeRemetente(m.from),
           detalhe: m.subject || '(sem assunto)',
           onClick: () => trocarAba('email'),
@@ -2630,11 +2635,15 @@
 
       lista.innerHTML = emailsCache.map((msg) => `
         <div class="email-item-linha">
-          <button type="button" class="email-item${msg.id === emailAbertoId ? ' email-item-ativo' : ''}" data-id="${escapeHtml(msg.id)}">
+          <button type="button" class="email-item${msg.id === emailAbertoId ? ' email-item-ativo' : ''}${msg.unread ? '' : ' email-item-lida'}" data-id="${escapeHtml(msg.id)}">
             <span class="email-item-remetente">${escapeHtml(nomeRemetente(msg.from))}</span>
             <span class="email-item-assunto">${escapeHtml(msg.subject || '(sem assunto)')}</span>
             <span class="email-item-resumo">${escapeHtml(msg.snippet)}</span>
           </button>
+          ${msg.unread ? `
+          <button type="button" class="email-item-marcar-lida" data-id="${escapeHtml(msg.id)}" aria-label="Marcar como visto" title="Marcar como visto">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>` : ''}
           <button type="button" class="email-item-desmarcar" data-id="${escapeHtml(msg.id)}" aria-label="Desmarcar mensagem" title="Desmarcar (remove o rótulo Propostas)">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
@@ -2644,9 +2653,35 @@
       lista.querySelectorAll('.email-item').forEach((btn) => {
         btn.addEventListener('click', () => abrirEmail(btn.dataset.id));
       });
+      lista.querySelectorAll('.email-item-marcar-lida').forEach((btn) => {
+        btn.addEventListener('click', () => marcarEmailVisto(btn.dataset.id));
+      });
       lista.querySelectorAll('.email-item-desmarcar').forEach((btn) => {
         btn.addEventListener('click', () => desmarcarEmail(btn.dataset.id));
       });
+    }
+
+    // Marca como lida usando o próprio estado "lido/não lido" do Gmail (remove
+    // o marcador de sistema UNREAD) — não é um controle novo, é o mesmo "já vi
+    // esse e-mail" que existe no Gmail de verdade, então reflete lá também.
+    async function marcarEmailVisto(id) {
+      try {
+        const resultado = await chamarFuncao('gmail-marcar-lida', {
+          method: 'POST',
+          body: { messageId: id },
+        });
+        if (!resultado.ok) {
+          alert('Não foi possível marcar como visto: ' + resultado.error);
+          return;
+        }
+        const msg = emailsCache.find((m) => m.id === id);
+        if (msg) msg.unread = false;
+        renderizarListaEmails();
+        renderizarAtencaoDashboard();
+      } catch (err) {
+        console.error('Erro ao marcar e-mail como visto:', err);
+        alert('Não foi possível marcar como visto agora. Tente de novo.');
+      }
     }
 
     function fecharEmailAberto() {

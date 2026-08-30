@@ -186,6 +186,7 @@ export function resumirMensagem(msg: any) {
     subject: pegarHeader(headers, "Subject"),
     date: pegarHeader(headers, "Date"),
     snippet: msg.snippet || "",
+    unread: (msg.labelIds || []).includes("UNREAD"),
   };
 }
 

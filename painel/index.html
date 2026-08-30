@@ -96,6 +96,30 @@
 
         <!-- ---------- Aba: Dashboard ---------- -->
         <section id="panel-overview" class="tab-panel">
+          <div class="dash-cabecalho">
+            <h2 class="saudacao" id="dash-saudacao">Bom dia, Bru!</h2>
+            <p class="dash-data" id="dash-data">Hoje</p>
+          </div>
+
+          <h3 class="dash-secao-titulo">O que eu preciso saber agora?</h3>
+
+          <div class="dash-grid">
+            <div class="card card-dash-hoje">
+              <h3 class="card-titulo">Hoje</h3>
+              <div id="dash-hoje-lista" class="dash-hoje-lista cal-lista-tarefas"></div>
+            </div>
+
+            <div class="card card-dash-atencao">
+              <h3 class="card-titulo">Precisa da sua atenção</h3>
+              <div id="dash-atencao-lista" class="dash-atencao-lista">
+                <p class="texto-vazio">Carregando...</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---------- Aba: Portfólio ---------- -->
+        <section id="panel-portfolio" class="tab-panel" hidden>
           <h2 class="saudacao">Olá! Aqui estão os números do seu portfólio.</h2>
 
           <div class="cards-numeros">
@@ -133,10 +157,7 @@
             <h3 class="card-titulo">Visitas nos últimos 14 dias</h3>
             <div class="grafico-barras" id="grafico-visitas"></div>
           </div>
-        </section>
 
-        <!-- ---------- Aba: Portfólio ---------- -->
-        <section id="panel-portfolio" class="tab-panel" hidden>
           <div class="card">
             <h3 class="card-titulo">Vídeos mais vistos</h3>
             <div id="lista-videos" class="lista-videos"></div>
@@ -1392,6 +1413,19 @@
 
       configurarEventos();
       configurarColapsarSidebar();
+      renderizarCabecalhoDashboard();
+
+      // UGC/Publi e E-mail normalmente só carregam quando a aba é aberta
+      // (carregarUGC/carregarEmails, guardados por ugcAbaCarregada/emailAbaCarregada).
+      // Como agora alimentam "Precisa da sua atenção" já na tela inicial, adianta
+      // essa busca aqui — sem esperar por ela (o Dashboard não trava nisso) e sem
+      // duplicar a query: quando a aba correspondente for aberta depois, os dados
+      // já estão no cache e não são buscados de novo.
+      ugcAbaCarregada = true;
+      emailAbaCarregada = true;
+      carregarUGC();
+      carregarEmails();
+
       await carregarDados();
     })();
 
@@ -1722,9 +1756,10 @@
       document.querySelectorAll('.tab-panel').forEach((p) => (p.hidden = true));
       document.getElementById('panel-' + aba).hidden = false;
       document.getElementById('titulo-topo').textContent = TITULOS_ABA[aba];
-      // O filtro de período (Tudo/7d/30d/90d) não faz sentido no calendário, e-mail, Instagram, planejador, radar nem UGC/Publi.
-      document.getElementById('filtros-periodo').hidden =
-        aba === 'calendario' || aba === 'email' || aba === 'instagram' || aba === 'planejador' || aba === 'radar' || aba === 'ugc';
+      // O filtro de período (Tudo/7d/30d/90d) só se aplica aos números do Portfólio.
+      document.getElementById('filtros-periodo').hidden = aba !== 'portfolio';
+
+      if (aba === 'overview') renderizarCabecalhoDashboard();
 
       if (aba === 'email' && !emailAbaCarregada) {
         emailAbaCarregada = true;
@@ -1788,7 +1823,157 @@
     }
 
     // ==========================================================================
-    // Aba: Dashboard
+    // Aba: Dashboard ("O que eu preciso saber agora?") — só leitura, junta o que
+    // já existe em Calendário (painel_tarefas) e UGC/Publi (ugcTrabalhosCache,
+    // ugcProspeccaoCache, ugcContratosCache) e E-mail (emailsCache), sem cadastro
+    // nem tabela própria e sem recalcular nenhuma regra que já exista em outra aba.
+    // ==========================================================================
+
+    function saudacaoPorHorario() {
+      const hora = new Date().getHours();
+      if (hora < 12) return 'Bom dia';
+      if (hora < 18) return 'Boa tarde';
+      return 'Boa noite';
+    }
+
+    function dataDashboardPorExtenso(d) {
+      const texto = d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+      return texto.charAt(0).toUpperCase() + texto.slice(1);
+    }
+
+    function renderizarCabecalhoDashboard() {
+      document.getElementById('dash-saudacao').textContent = `${saudacaoPorHorario()}, Bru!`;
+      document.getElementById('dash-data').textContent = dataDashboardPorExtenso(new Date());
+    }
+
+    // Tarefas de hoje, reaproveitando a mesma tarefasCache e o mesmo item
+    // (criarItemTarefa) do Calendário — inclusive feitas, pra bater o check aqui
+    // e no Calendário serem sempre a mesma coisa (mesmo dado, mesmo botão).
+    function renderizarHojeDashboard() {
+      const hojeISO = dataParaISO(new Date());
+      const doDia = tarefasCache.filter((t) => t.data === hojeISO);
+
+      const lista = document.getElementById('dash-hoje-lista');
+      lista.innerHTML = '';
+
+      if (doDia.length === 0) {
+        lista.innerHTML = '<p class="texto-vazio">Nada marcado para hoje.</p>';
+        return;
+      }
+
+      doDia.forEach((tarefa) => lista.appendChild(criarItemTarefa(tarefa, false)));
+    }
+
+    // Monta um bloco de alerta do "Precisa da sua atenção" — mesmo padrão visual
+    // dos alertas que já existem no UGC/Publi (prospecção esfriando, direitos de
+    // uso), só que genérico pra qualquer categoria.
+    function criarGrupoAtencao(titulo, urgente, itens) {
+      const grupo = document.createElement('div');
+      grupo.className = 'dash-atencao-grupo' + (urgente ? ' dash-atencao-grupo-urgente' : '');
+
+      const h4 = document.createElement('h4');
+      h4.textContent = `${titulo} (${itens.length})`;
+      grupo.appendChild(h4);
+
+      itens.forEach((it) => {
+        const item = document.createElement('div');
+        item.className = 'dash-atencao-item';
+        item.innerHTML = `<span>${escapeHtml(it.texto)}</span><span>${escapeHtml(it.detalhe)}</span>`;
+        item.addEventListener('click', it.onClick);
+        grupo.appendChild(item);
+      });
+
+      return grupo;
+    }
+
+    // Junta, só pra exibição, o que já está calculado em cada área do sistema:
+    // entregas (UGC), pagamento (UGC), direitos de uso (UGC), follow-up de
+    // prospecção (UGC), contrato (UGC) e propostas por e-mail (Gmail). Nenhuma
+    // dessas listas é recalculada — todas vêm de função já usada em outra aba.
+    function renderizarAtencaoDashboard() {
+      const hojeISO = dataParaISO(new Date());
+      const daqui3ISO = dataParaISO(new Date(Date.now() + 3 * 86400000));
+
+      const entregas = obterEntregasPendentes();
+      const atrasadas = entregas.filter((t) => t.data_entrega < hojeISO);
+      const proximas = entregas.filter((t) => t.data_entrega >= hojeISO && t.data_entrega <= daqui3ISO);
+      const pagamentos = obterPagamentosPendentes();
+      const direitosUso = obterDireitosUsoVencendo();
+      const followups = obterProspeccaoEsfriando();
+      const contratos = obterContratosPendentes();
+
+      const grupos = [];
+
+      if (atrasadas.length > 0) {
+        grupos.push(criarGrupoAtencao('Entregas atrasadas', true, atrasadas.map((t) => ({
+          texto: `${t.marca} — ${t.tipo_trabalho}`,
+          detalhe: `Era ${formatarDataCurta(new Date(t.data_entrega + 'T00:00:00'))}`,
+          onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
+        }))));
+      }
+
+      if (pagamentos.length > 0) {
+        grupos.push(criarGrupoAtencao('Pagamentos pendentes', true, pagamentos.map((t) => ({
+          texto: `${t.marca} — ${t.tipo_trabalho}`,
+          detalhe: t.permuta ? 'Permuta' : formatarMoeda(t.valor),
+          onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
+        }))));
+      }
+
+      if (direitosUso.length > 0) {
+        grupos.push(criarGrupoAtencao('Direitos de uso vencendo', false, direitosUso.map((t) => ({
+          texto: t.marca,
+          detalhe: `${t.direitos_uso_ate < hojeISO ? 'Venceu em' : 'Vence em'} ${formatarDataCurta(new Date(t.direitos_uso_ate + 'T00:00:00'))}`,
+          onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
+        }))));
+      }
+
+      if (followups.length > 0) {
+        grupos.push(criarGrupoAtencao('Follow-ups de prospecção', false, followups.map((p) => ({
+          texto: p.marca,
+          detalhe: p.proximo_followup ? `Era ${formatarDataCurta(new Date(p.proximo_followup + 'T00:00:00'))}` : 'Sem follow-up marcado',
+          onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('prospeccao'); abrirModalProspeccao(p); },
+        }))));
+      }
+
+      if (contratos.length > 0) {
+        grupos.push(criarGrupoAtencao('Contratos aguardando assinatura', false, contratos.map((c) => ({
+          texto: c.marca,
+          detalhe: c.status,
+          onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('contratos'); abrirModalContrato(c); },
+        }))));
+      }
+
+      if (proximas.length > 0) {
+        grupos.push(criarGrupoAtencao('Entregas nos próximos dias', false, proximas.map((t) => ({
+          texto: `${t.marca} — ${t.tipo_trabalho}`,
+          detalhe: formatarDataCurta(new Date(t.data_entrega + 'T00:00:00')),
+          onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
+        }))));
+      }
+
+      if (emailsCache.length > 0) {
+        grupos.push(criarGrupoAtencao('Propostas aguardando resposta', false, emailsCache.map((m) => ({
+          texto: nomeRemetente(m.from),
+          detalhe: m.subject || '(sem assunto)',
+          onClick: () => trocarAba('email'),
+        }))));
+      }
+
+      const container = document.getElementById('dash-atencao-lista');
+      container.innerHTML = '';
+
+      if (grupos.length === 0) {
+        container.innerHTML = '<p class="texto-vazio">Tudo em dia por aqui.</p>';
+        return;
+      }
+
+      grupos.forEach((g) => container.appendChild(g));
+    }
+
+    // ==========================================================================
+    // Aba: Portfólio (resumo + detalhamento — os números do topo já foram a
+    // "Aba: Dashboard" antes de virar exclusiva do Portfólio)
     // ==========================================================================
 
     function renderizarOverview(eventos, leads) {
@@ -2105,6 +2290,7 @@
       renderizarGradeMes();
       renderizarTarefasDoDia();
       renderizarTodasTarefas();
+      renderizarHojeDashboard();
     }
 
     function renderizarGradeMes() {
@@ -2427,6 +2613,7 @@
         emailsCache = resultado.mensagens || [];
         mostrarEmailConectado();
         renderizarListaEmails();
+        renderizarAtencaoDashboard();
       } catch (err) {
         console.error('Erro ao carregar e-mails:', err);
         mostrarEmailConectado();
@@ -2491,6 +2678,7 @@
         emailsCache = emailsCache.filter((m) => m.id !== id);
         if (emailAbertoId === id) fecharEmailAberto();
         else renderizarListaEmails();
+        renderizarAtencaoDashboard();
       } catch (err) {
         console.error('Erro ao desmarcar e-mail:', err);
         alert('Não foi possível desmarcar agora. Tente de novo.');
@@ -3621,6 +3809,7 @@
       renderizarContratos();
       renderizarPrecos();
       renderizarResultadosUGC();
+      renderizarAtencaoDashboard();
     }
 
     function trocarSubAbaUGC(pagina) {
@@ -3632,12 +3821,16 @@
     // Avisa quando o direito de uso pago por uma marca (campo opcional do
     // Trabalho) está vencido ou vence nos próximos 14 dias — pra ela não
     // deixar uma marca usando o conteúdo além do combinado sem perceber.
-    function renderizarDireitosUsoAlerta() {
-      const hojeISO = dataParaISO(new Date());
+    function obterDireitosUsoVencendo() {
       const daqui14ISO = dataParaISO(new Date(Date.now() + 14 * 86400000));
-      const vencendo = ugcTrabalhosCache
+      return ugcTrabalhosCache
         .filter((t) => t.direitos_uso_ate && t.direitos_uso_ate <= daqui14ISO)
         .sort((a, b) => a.direitos_uso_ate.localeCompare(b.direitos_uso_ate));
+    }
+
+    function renderizarDireitosUsoAlerta() {
+      const hojeISO = dataParaISO(new Date());
+      const vencendo = obterDireitosUsoVencendo();
 
       const bloco = document.getElementById('ugc-direitos-uso-alerta');
       if (vencendo.length === 0) {
@@ -3661,6 +3854,25 @@
       });
     }
 
+    // Entregas de trabalhos ativos com data marcada, da mais antiga pra mais nova
+    // (inclui as já atrasadas, sem piso de data — quem ordena por data_entrega
+    // crescente já traz elas primeiro). Base tanto da Visão Geral do UGC quanto
+    // do bloco "Precisa da sua atenção" do Dashboard.
+    function obterEntregasPendentes() {
+      return ugcTrabalhosCache
+        .filter((t) => t.data_entrega && !['Entregue', 'Pago', 'Cancelado'].includes(t.status))
+        .sort((a, b) => a.data_entrega.localeCompare(b.data_entrega));
+    }
+
+    // Trabalhos já entregues (ou aguardando pagamento) cujo valor ainda não caiu —
+    // mais restrito que o total "a receber" da Visão Geral (que soma qualquer
+    // trabalho ativo), porque aqui o ponto é sinalizar só o que já pode ser cobrado.
+    function obterPagamentosPendentes() {
+      return ugcTrabalhosCache.filter(
+        (t) => t.status_pagamento === 'Pendente' && ['Entregue', 'Aguardando pagamento'].includes(t.status)
+      );
+    }
+
     // ---- Visão Geral: 100% derivada de ugcTrabalhosCache, sem cadastro próprio ----
     function renderizarVisaoGeralUGC() {
       renderizarDireitosUsoAlerta();
@@ -3674,10 +3886,7 @@
       document.getElementById('ugc-num-producao').textContent = formatarNumero(emProducao.length);
       document.getElementById('ugc-num-receber').textContent = formatarMoeda(aReceber);
 
-      const proximas = ugcTrabalhosCache
-        .filter((t) => t.data_entrega && !['Entregue', 'Pago', 'Cancelado'].includes(t.status))
-        .sort((a, b) => a.data_entrega.localeCompare(b.data_entrega))
-        .slice(0, 5);
+      const proximas = obterEntregasPendentes().slice(0, 5);
 
       const lista = document.getElementById('ugc-proximas-entregas');
       if (proximas.length === 0) {
@@ -4290,11 +4499,15 @@
       return dias > 7;
     }
 
-    function renderizarProspeccaoEsfriando() {
+    function obterProspeccaoEsfriando() {
       const hojeISO = dataParaISO(new Date());
-      const esfriando = ugcProspeccaoCache
+      return ugcProspeccaoCache
         .filter((p) => prospeccaoEstaEsfriando(p, hojeISO))
         .sort((a, b) => (a.proximo_followup || a.created_at.slice(0, 10)).localeCompare(b.proximo_followup || b.created_at.slice(0, 10)));
+    }
+
+    function renderizarProspeccaoEsfriando() {
+      const esfriando = obterProspeccaoEsfriando();
 
       const bloco = document.getElementById('ugc-prospeccao-esfriando');
       if (esfriando.length === 0) {
@@ -4485,6 +4698,13 @@
     }
 
     // ---- Contratos ----
+    // Contratos que ainda dependem de alguém assinar (exclui os já assinados
+    // e os encerrados — mesma exclusão de "Encerrado" usada no filtro padrão
+    // da lista de contratos, só que também tira "Assinado" por já não precisar de ação).
+    function obterContratosPendentes() {
+      return ugcContratosCache.filter((c) => c.status !== 'Assinado' && c.status !== 'Encerrado');
+    }
+
     function renderizarContratos() {
       const filtradas = filtroContratos === 'encerrados'
         ? ugcContratosCache.filter((c) => c.status === 'Encerrado')

@@ -2299,3 +2299,93 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   Aba Dashboard — "O que eu preciso saber agora?"
+   ========================================================================== */
+
+.painel-body .dash-cabecalho {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.painel-body .dash-cabecalho .saudacao {
+  margin: 0;
+  font-size: 38px;
+}
+
+.painel-body .dash-data {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
+.painel-body .dash-secao-titulo {
+  font-size: 19px;
+  margin: 4px 0 0;
+}
+
+.painel-body .dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .painel-body .dash-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.painel-body .dash-atencao-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.painel-body .dash-atencao-grupo {
+  background: rgba(4, 70, 93, 0.05);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 14px 18px;
+}
+
+.painel-body .dash-atencao-grupo-urgente {
+  background: rgba(196, 69, 60, 0.08);
+  border-color: rgba(196, 69, 60, 0.3);
+}
+
+.painel-body .dash-atencao-grupo h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--coral);
+}
+
+.painel-body .dash-atencao-grupo-urgente h4 {
+  color: var(--erro);
+}
+
+.painel-body .dash-atencao-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.painel-body .dash-atencao-item:hover {
+  text-decoration: underline;
+}
+
+.painel-body .dash-atencao-item span:last-child {
+  color: var(--texto-suave);
+  white-space: nowrap;
+}

@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260827aa">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260830e">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260830f">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260827aa"></script>
@@ -73,7 +73,7 @@
       </nav>
 
       <div class="sidebar-footer">
-        <button class="nav-item" data-tab="configuracoes" type="button">
+        <button class="nav-item" id="btn-abrir-configuracoes" type="button">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82A1.65 1.65 0 0 0 3 13.09H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           <span>Configurações</span>
         </button>
@@ -706,108 +706,117 @@
           </div>
         </section>
 
-        <!-- ---------- Aba: Configurações ---------- -->
-        <section id="panel-configuracoes" class="tab-panel" hidden>
-          <h2 class="saudacao">Configurações</h2>
-
-          <div class="card">
-            <h3 class="card-titulo">Geral</h3>
-
-            <div class="config-campo">
-              <label class="config-label">Aparência</label>
-              <div class="config-segmentado">
-                <button class="config-segmentado-btn" data-valor="claro" type="button">Claro</button>
-                <button class="config-segmentado-btn" data-valor="escuro" type="button">Escuro</button>
-                <button class="config-segmentado-btn ativo" data-valor="sistema" type="button">Seguir sistema</button>
-              </div>
-            </div>
-
-            <div class="config-campo">
-              <label class="config-label">Cor de ênfase</label>
-              <div class="config-cores">
-                <button class="config-cor-swatch ativo" data-cor="#7DB7CE" style="background:#7DB7CE" type="button" aria-label="Azul"></button>
-                <button class="config-cor-swatch" data-cor="#D4572A" style="background:#D4572A" type="button" aria-label="Coral"></button>
-                <button class="config-cor-swatch" data-cor="#4C9A6B" style="background:#4C9A6B" type="button" aria-label="Verde"></button>
-                <button class="config-cor-swatch" data-cor="#8B6FCE" style="background:#8B6FCE" type="button" aria-label="Roxo"></button>
-                <button class="config-cor-swatch" data-cor="#D66FA0" style="background:#D66FA0" type="button" aria-label="Rosa"></button>
-                <button class="config-cor-swatch" data-cor="#D6A63C" style="background:#D6A63C" type="button" aria-label="Dourado"></button>
-                <button class="config-cor-swatch" data-cor="#5B6B7C" style="background:#5B6B7C" type="button" aria-label="Grafite"></button>
-                <div class="config-cor-custom">
-                  <span class="config-cor-preview" id="config-cor-preview"></span>
-                  <input type="text" id="config-cor-hex" placeholder="#7DB7CE">
-                </div>
-              </div>
-            </div>
-
-            <div class="cal-form-linha">
-              <div class="cal-form-campo">
-                <label for="config-idioma">Idioma</label>
-                <select id="config-idioma">
-                  <option value="pt">Português</option>
-                  <option value="en">Inglês</option>
-                </select>
-              </div>
-              <div class="cal-form-campo">
-                <label for="config-fuso">Fuso horário</label>
-                <select id="config-fuso">
-                  <option value="automatico">Automático (do dispositivo)</option>
-                  <option value="America/Noronha">Fernando de Noronha (UTC−2)</option>
-                  <option value="America/Sao_Paulo">Brasília (UTC−3)</option>
-                  <option value="America/Manaus">Manaus (UTC−4)</option>
-                  <option value="America/Rio_Branco">Rio Branco (UTC−5)</option>
-                  <option value="Atlantic/Azores">Açores (UTC−1)</option>
-                  <option value="Europe/Lisbon">Lisboa (UTC+0/+1)</option>
-                  <option value="UTC">UTC</option>
-                </select>
-              </div>
-              <div class="cal-form-campo">
-                <label for="config-inicio-semana">Início da semana</label>
-                <select id="config-inicio-semana">
-                  <option value="domingo">Domingo</option>
-                  <option value="segunda">Segunda</option>
-                </select>
-              </div>
-            </div>
-
-            <p class="config-salvo" id="config-geral-status" hidden>Salvo.</p>
-
-            <hr class="config-divisor">
-
-            <button class="cal-btn" id="config-btn-sair" type="button">Sair da conta</button>
-          </div>
-
-          <div class="card">
-            <h3 class="card-titulo">Perfil</h3>
-
-            <div class="cal-form-campo">
-              <label for="config-nome">Nome</label>
-              <input type="text" id="config-nome" placeholder="Como você quer ser chamada no painel">
-            </div>
-            <div class="cal-form-acoes">
-              <button class="cal-btn cal-btn-primario" id="config-salvar-nome" type="button">Salvar nome</button>
-            </div>
-
-            <hr class="config-divisor">
-
-            <div class="cal-form-linha">
-              <div class="cal-form-campo">
-                <label for="config-nova-senha">Nova senha</label>
-                <input type="password" id="config-nova-senha" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
-              </div>
-              <div class="cal-form-campo">
-                <label for="config-confirmar-senha">Confirmar nova senha</label>
-                <input type="password" id="config-confirmar-senha" placeholder="Repita a nova senha" autocomplete="new-password">
-              </div>
-            </div>
-            <p class="config-erro" id="config-senha-erro" hidden></p>
-            <div class="cal-form-acoes">
-              <button class="cal-btn cal-btn-primario" id="config-salvar-senha" type="button">Alterar senha</button>
-            </div>
-          </div>
-        </section>
-
       </div>
     </main>
+
+    <!-- Modal: Configurações (aparência, cor de ênfase, idioma, fuso, início da
+         semana e perfil) — não é uma aba: abre por cima da tela atual. -->
+    <div id="config-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pl-modal-grande">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo">Configurações</span>
+          <button id="config-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="config-subnav">
+          <button class="config-subnav-btn ativo" data-config-pagina="geral" type="button">Geral</button>
+          <button class="config-subnav-btn" data-config-pagina="perfil" type="button">Perfil</button>
+        </div>
+
+        <div id="config-pagina-geral" class="config-pagina">
+          <div class="config-campo">
+            <label class="config-label">Aparência</label>
+            <div class="config-segmentado">
+              <button class="config-segmentado-btn" data-valor="claro" type="button">Claro</button>
+              <button class="config-segmentado-btn" data-valor="escuro" type="button">Escuro</button>
+              <button class="config-segmentado-btn ativo" data-valor="sistema" type="button">Seguir sistema</button>
+            </div>
+          </div>
+
+          <div class="config-campo">
+            <label class="config-label">Cor de ênfase</label>
+            <div class="config-cores">
+              <button class="config-cor-swatch ativo" data-cor="#7DB7CE" style="background:#7DB7CE" type="button" aria-label="Azul"></button>
+              <button class="config-cor-swatch" data-cor="#D4572A" style="background:#D4572A" type="button" aria-label="Coral"></button>
+              <button class="config-cor-swatch" data-cor="#4C9A6B" style="background:#4C9A6B" type="button" aria-label="Verde"></button>
+              <button class="config-cor-swatch" data-cor="#8B6FCE" style="background:#8B6FCE" type="button" aria-label="Roxo"></button>
+              <button class="config-cor-swatch" data-cor="#D66FA0" style="background:#D66FA0" type="button" aria-label="Rosa"></button>
+              <button class="config-cor-swatch" data-cor="#D6A63C" style="background:#D6A63C" type="button" aria-label="Dourado"></button>
+              <button class="config-cor-swatch" data-cor="#5B6B7C" style="background:#5B6B7C" type="button" aria-label="Grafite"></button>
+              <div class="config-cor-custom">
+                <span class="config-cor-preview" id="config-cor-preview"></span>
+                <input type="text" id="config-cor-hex" placeholder="#7DB7CE">
+              </div>
+            </div>
+          </div>
+
+          <div class="cal-form-linha">
+            <div class="cal-form-campo">
+              <label for="config-idioma">Idioma</label>
+              <select id="config-idioma">
+                <option value="pt">Português</option>
+                <option value="en">Inglês</option>
+              </select>
+            </div>
+            <div class="cal-form-campo">
+              <label for="config-fuso">Fuso horário</label>
+              <select id="config-fuso">
+                <option value="automatico">Automático (do dispositivo)</option>
+                <option value="America/Noronha">Fernando de Noronha (UTC−2)</option>
+                <option value="America/Sao_Paulo">Brasília (UTC−3)</option>
+                <option value="America/Manaus">Manaus (UTC−4)</option>
+                <option value="America/Rio_Branco">Rio Branco (UTC−5)</option>
+                <option value="Atlantic/Azores">Açores (UTC−1)</option>
+                <option value="Europe/Lisbon">Lisboa (UTC+0/+1)</option>
+                <option value="UTC">UTC</option>
+              </select>
+            </div>
+            <div class="cal-form-campo">
+              <label for="config-inicio-semana">Início da semana</label>
+              <select id="config-inicio-semana">
+                <option value="domingo">Domingo</option>
+                <option value="segunda">Segunda</option>
+              </select>
+            </div>
+          </div>
+
+          <p class="config-salvo" id="config-geral-status" hidden>Salvo.</p>
+
+          <hr class="config-divisor">
+
+          <button class="cal-btn" id="config-btn-sair" type="button">Sair da conta</button>
+        </div>
+
+        <div id="config-pagina-perfil" class="config-pagina" hidden>
+          <div class="cal-form-campo">
+            <label for="config-nome">Nome</label>
+            <input type="text" id="config-nome" placeholder="Como você quer ser chamada no painel">
+          </div>
+          <div class="cal-form-acoes">
+            <button class="cal-btn cal-btn-primario" id="config-salvar-nome" type="button">Salvar nome</button>
+          </div>
+
+          <hr class="config-divisor">
+
+          <div class="cal-form-linha">
+            <div class="cal-form-campo">
+              <label for="config-nova-senha">Nova senha</label>
+              <input type="password" id="config-nova-senha" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+            </div>
+            <div class="cal-form-campo">
+              <label for="config-confirmar-senha">Confirmar nova senha</label>
+              <input type="password" id="config-confirmar-senha" placeholder="Repita a nova senha" autocomplete="new-password">
+            </div>
+          </div>
+          <p class="config-erro" id="config-senha-erro" hidden></p>
+          <div class="cal-form-acoes">
+            <button class="cal-btn cal-btn-primario" id="config-salvar-senha" type="button">Alterar senha</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Modal: detalhe de uma ideia do Banco de Ideias -->
     <div id="pl-modal-overlay" class="pl-modal-overlay" hidden>
@@ -1495,7 +1504,6 @@
       planejador: 'Planejador de Conteúdo',
       radar: 'Radar de Notícias',
       ugc: 'UGC / Publi',
-      configuracoes: 'Configurações',
     };
 
     let configCache = null;
@@ -1651,6 +1659,20 @@
       });
     }
 
+    function abrirModalConfiguracoes() {
+      document.getElementById('config-modal-overlay').hidden = false;
+      trocarSubPaginaConfig('geral');
+    }
+
+    function fecharModalConfiguracoes() {
+      document.getElementById('config-modal-overlay').hidden = true;
+    }
+
+    function trocarSubPaginaConfig(pagina) {
+      document.querySelectorAll('.config-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.configPagina === pagina));
+      document.querySelectorAll('.config-pagina').forEach((p) => (p.hidden = p.id !== 'config-pagina-' + pagina));
+    }
+
     function preencherFormularioConfiguracoes() {
       document.querySelectorAll('.config-segmentado-btn').forEach((btn) => {
         btn.classList.toggle('ativo', btn.dataset.valor === configCache.tema);
@@ -1743,7 +1765,7 @@
     }
 
     function configurarEventos() {
-      document.querySelectorAll('.nav-item').forEach((btn) => {
+      document.querySelectorAll('.nav-item[data-tab]').forEach((btn) => {
         btn.addEventListener('click', () => trocarAba(btn.dataset.tab));
       });
 
@@ -1751,7 +1773,15 @@
         btn.addEventListener('click', () => trocarPeriodo(btn.dataset.periodo, btn));
       });
 
-      // Configurações
+      // Configurações (modal, não é aba)
+      document.getElementById('btn-abrir-configuracoes').addEventListener('click', abrirModalConfiguracoes);
+      document.getElementById('config-modal-fechar').addEventListener('click', fecharModalConfiguracoes);
+      document.getElementById('config-modal-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'config-modal-overlay') fecharModalConfiguracoes();
+      });
+      document.querySelectorAll('.config-subnav-btn').forEach((btn) => {
+        btn.addEventListener('click', () => trocarSubPaginaConfig(btn.dataset.configPagina));
+      });
       document.querySelectorAll('.config-segmentado-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
           document.querySelectorAll('.config-segmentado-btn').forEach((b) => b.classList.toggle('ativo', b === btn));

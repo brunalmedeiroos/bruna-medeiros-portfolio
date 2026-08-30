@@ -2635,3 +2635,45 @@
   color: var(--erro);
   margin: 8px 0 0;
 }
+
+.painel-body .config-subnav {
+  display: flex;
+  gap: 6px;
+  background: var(--creme);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 4px;
+  margin-bottom: 20px;
+}
+
+.painel-body .config-subnav-btn {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--fonte-corpo);
+  color: var(--texto-suave);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.painel-body .config-subnav-btn:hover {
+  color: var(--grafite);
+}
+
+.painel-body .config-subnav-btn.ativo {
+  background: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .config-pagina {
+  display: flex;
+  flex-direction: column;
+}
+
+/* O atributo hidden precisa vencer o display:flex acima (mesma especificidade,
+   mas a regra do autor venceria a do agente de usuário sem isto). */
+.painel-body .config-pagina[hidden] {
+  display: none;
+}

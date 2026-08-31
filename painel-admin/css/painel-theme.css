@@ -58,23 +58,33 @@
   --grafite-rgb: 232, 240, 243;
 }
 
-/* Ícones do menu (PNG com mix-blend-mode: multiply) somem em fundo escuro —
-   não existe versão escura desses arquivos, então inverte a cor via filtro. */
+/* Ícones do menu são PNGs coloridos com fundo branco, pensados pra "sumir"
+   contra fundo claro via mix-blend-mode: multiply — em fundo escuro esse
+   truque escurece as próprias cores do ícone (fica sujo/ilegível). Em vez de
+   inverter (o que destrói as cores originais do desenho), no escuro a gente
+   desliga o blend e dá um chip branco por trás — o ícone continua colorido
+   e legível, só ganha uma "etiqueta" clara ao redor. */
 @media (prefers-color-scheme: dark) {
   .painel-body:not([data-tema="claro"]) .nav-icon-img {
     mix-blend-mode: normal;
-    filter: invert(1) brightness(1.6);
+    background: #fff;
+    border-radius: 5px;
+    padding: 2px;
+    box-sizing: border-box;
   }
 }
 
 .painel-body[data-tema="escuro"] .nav-icon-img {
   mix-blend-mode: normal;
-  filter: invert(1) brightness(1.6);
+  background: #fff;
+  border-radius: 5px;
+  padding: 2px;
+  box-sizing: border-box;
 }
 
-/* Ponto da logo (sidebar e topo mobile) no azul-claro do site, como no login. */
+/* Ponto da logo (sidebar e topo mobile) acompanha a cor de ênfase escolhida. */
 .painel-body .logo-dot {
-  color: #7DB7CE; /* --blue-light */
+  color: var(--coral);
 }
 
 /* Nome "meu.painel" maior na sidebar e na barra mobile. */
@@ -96,11 +106,11 @@
   letter-spacing: 1.4px;
 }
 
-/* "Menu Principal"/"Portfólio" (topo) e "Olá..." (saudação) no azul-claro,
-   sem mexer na cor do "meu.painel" da sidebar. */
+/* "Menu Principal"/"Portfólio" (topo) e "Olá..." (saudação) acompanham a
+   cor de ênfase escolhida, sem mexer na cor do "meu.painel" da sidebar. */
 .painel-body #titulo-topo,
 .painel-body .saudacao {
-  color: #7DB7CE; /* --blue-light */
+  color: var(--coral);
 }
 
 /* Título de cada cartão (ex: "Visitas nos últimos 14 dias") um pouco maior. */

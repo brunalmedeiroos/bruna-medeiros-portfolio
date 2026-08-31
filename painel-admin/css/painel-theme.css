@@ -68,8 +68,8 @@
   .painel-body:not([data-tema="claro"]) .nav-icon-img {
     mix-blend-mode: normal;
     background: #fff;
-    border-radius: 5px;
-    padding: 2px;
+    border-radius: 4px;
+    padding: 1px;
     box-sizing: border-box;
   }
 }
@@ -77,8 +77,8 @@
 .painel-body[data-tema="escuro"] .nav-icon-img {
   mix-blend-mode: normal;
   background: #fff;
-  border-radius: 5px;
-  padding: 2px;
+  border-radius: 4px;
+  padding: 1px;
   box-sizing: border-box;
 }
 

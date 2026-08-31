@@ -1814,6 +1814,12 @@
       document.getElementById('config-fuso').addEventListener('change', (e) => salvarConfiguracao('fuso_horario', e.target.value));
       document.getElementById('config-inicio-semana').addEventListener('change', (e) => salvarConfiguracao('inicio_semana', e.target.value));
       document.getElementById('config-btn-sair').addEventListener('click', async () => {
+        const confirmou = await confirmarAcao('Tem certeza que deseja sair?', {
+          titulo: 'Sair da conta',
+          textoConfirmar: 'Sair',
+          perigo: false,
+        });
+        if (!confirmou) return;
         await Auth.sb.auth.signOut();
         window.location.href = '/login';
       });

@@ -1809,7 +1809,14 @@
       document.getElementById('config-idioma').addEventListener('change', (e) => salvarConfiguracao('idioma', e.target.value));
       document.getElementById('config-fuso').addEventListener('change', (e) => salvarConfiguracao('fuso_horario', e.target.value));
       document.getElementById('config-inicio-semana').addEventListener('change', (e) => salvarConfiguracao('inicio_semana', e.target.value));
-      document.getElementById('config-btn-sair').addEventListener('click', () => Auth.logout());
+      document.getElementById('config-btn-sair').addEventListener('click', async () => {
+        const confirmou = await confirmarAcao('Tem certeza que deseja sair?', {
+          titulo: 'Sair da conta',
+          textoConfirmar: 'Sair',
+          perigo: false,
+        });
+        if (confirmou) Auth.logout();
+      });
       document.getElementById('config-salvar-nome').addEventListener('click', salvarNomePerfil);
       document.getElementById('config-salvar-senha').addEventListener('click', salvarSenhaPerfil);
 

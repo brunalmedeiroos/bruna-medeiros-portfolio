@@ -229,6 +229,7 @@
                     <option value="Gravação" data-i18n="cal_tipo_gravacao">Gravação</option>
                     <option value="Entrega" data-i18n="cal_tipo_entrega">Entrega</option>
                     <option value="Reunião" data-i18n="cal_tipo_reuniao">Reunião</option>
+                    <option value="Estudo" data-i18n="cal_tipo_estudo">Estudo</option>
                     <option value="Pessoal" data-i18n="cal_tipo_pessoal">Pessoal</option>
                     <option value="Outro" data-i18n="cal_tipo_outro">Outro</option>
                   </select>
@@ -246,6 +247,16 @@
                 <div class="cal-form-campo">
                   <label for="cal-hora-fim" data-i18n="cal_termina">Termina</label>
                   <input type="time" id="cal-hora-fim">
+                </div>
+              </div>
+              <div class="cal-form-linha" id="cal-form-repetir-linha">
+                <div class="cal-form-campo">
+                  <label for="cal-repetir" data-i18n="cal_repetir">Repetir</label>
+                  <select id="cal-repetir">
+                    <option value="" data-i18n="cal_repetir_nao">Não repete</option>
+                    <option value="diaria" data-i18n="cal_repetir_diaria">Diariamente</option>
+                    <option value="semanal" data-i18n="cal_repetir_semanal">Semanalmente</option>
+                  </select>
                 </div>
               </div>
               <div class="cal-form-acoes">
@@ -1806,6 +1817,13 @@
         cal_tipo_reuniao: 'Reunião',
         cal_tipo_pessoal: 'Pessoal',
         cal_tipo_outro: 'Outro',
+        cal_tipo_estudo: 'Estudo',
+        cal_repetir: 'Repetir',
+        cal_repetir_nao: 'Não repete',
+        cal_repetir_diaria: 'Diariamente',
+        cal_repetir_semanal: 'Semanalmente',
+        cal_excluir_serie_pergunta: 'Esta tarefa faz parte de uma série recorrente. Excluir a série inteira (esta e as futuras)?',
+        cal_excluir_serie_botao: 'Excluir série',
         cal_dia: 'Dia',
         cal_comeca: 'Começa',
         cal_termina: 'Termina',
@@ -2356,6 +2374,13 @@
         cal_tipo_reuniao: 'Meeting',
         cal_tipo_pessoal: 'Personal',
         cal_tipo_outro: 'Other',
+        cal_tipo_estudo: 'Study',
+        cal_repetir: 'Repeat',
+        cal_repetir_nao: "Doesn't repeat",
+        cal_repetir_diaria: 'Daily',
+        cal_repetir_semanal: 'Weekly',
+        cal_excluir_serie_pergunta: 'This task is part of a recurring series. Delete the whole series (this and future ones)?',
+        cal_excluir_serie_botao: 'Delete series',
         cal_dia: 'Day',
         cal_comeca: 'Starts',
         cal_termina: 'Ends',
@@ -3837,6 +3862,96 @@
       if (error) throw error;
       tarefasCache = data || [];
       renderizarCalendario();
+
+      await toparOcorrenciasDasSeries();
+    }
+
+    // ---- Recorrência: cada ocorrência é uma linha de verdade em
+    // painel_tarefas (mesmo serie_id), não um evento calculado na hora —
+    // assim "marcar como feita"/editar/excluir/checklist funcionam por
+    // ocorrência sem nenhum código especial. A janela de ocorrências
+    // futuras é mantida sempre à frente por toparOcorrenciasDasSeries(),
+    // chamada a cada carregarTarefas() — sem precisar de cron.
+    const RECORRENCIA_JANELA_DIAS = 60; // diária: gera 60 dias à frente
+    const RECORRENCIA_JANELA_SEMANAS = 12; // semanal: gera 12 semanas à frente
+    const RECORRENCIA_TOPUP_LIMITE_DIAS = 14; // reabastece quando falta menos que isso
+
+    function somarDias(dataISO, dias) {
+      const d = new Date(dataISO + 'T00:00:00');
+      d.setDate(d.getDate() + dias);
+      return dataParaISO(d);
+    }
+
+    // Lista as datas futuras (a partir de, mas sem incluir, dataBase) que
+    // uma série deveria ter ocorrências geradas.
+    function datasOcorrenciasFuturas(recorrencia, dataBase) {
+      const datas = [];
+      if (recorrencia === 'diaria') {
+        for (let i = 1; i <= RECORRENCIA_JANELA_DIAS; i++) datas.push(somarDias(dataBase, i));
+      } else if (recorrencia === 'semanal') {
+        for (let i = 1; i <= RECORRENCIA_JANELA_SEMANAS; i++) datas.push(somarDias(dataBase, i * 7));
+      }
+      return datas;
+    }
+
+    // Cria as linhas de painel_tarefas para uma lista de datas, todas
+    // compartilhando os mesmos título/tipo/horário/serie_id da tarefa-base.
+    async function inserirOcorrencias(tarefaBase, serieId, datas) {
+      if (datas.length === 0) return;
+      const linhas = datas.map((data) => ({
+        titulo: tarefaBase.titulo,
+        tipo: tarefaBase.tipo,
+        data,
+        hora_inicio: tarefaBase.hora_inicio || null,
+        hora_fim: tarefaBase.hora_fim || null,
+        recorrencia: tarefaBase.recorrencia,
+        serie_id: serieId,
+      }));
+      const { error } = await Auth.sb.from('painel_tarefas').insert(linhas);
+      if (error) throw error;
+    }
+
+    // Confere cada série ativa (com ocorrências hoje ou no futuro) e
+    // reabastece a janela quando a ocorrência mais distante está perto de
+    // acabar. Roda em silêncio a cada carregamento — se falhar, tenta de
+    // novo no próximo carregarTarefas() sem travar o resto do Calendário.
+    async function toparOcorrenciasDasSeries() {
+      try {
+        const hojeISO = dataParaISO(new Date());
+        const porSerie = new Map();
+        tarefasCache.forEach((t) => {
+          if (!t.serie_id) return;
+          const atual = porSerie.get(t.serie_id);
+          if (!atual || t.data > atual.data) porSerie.set(t.serie_id, t);
+        });
+
+        const limiteISO = somarDias(hojeISO, RECORRENCIA_TOPUP_LIMITE_DIAS);
+        let precisouRecarregar = false;
+
+        for (const [serieId, ultima] of porSerie) {
+          if (ultima.data < hojeISO) continue; // série encerrada (sem ocorrência futura) — não reabastece sozinha
+          if (ultima.data >= limiteISO) continue;
+
+          const novasDatas = datasOcorrenciasFuturas(ultima.recorrencia, ultima.data);
+          if (novasDatas.length === 0) continue;
+
+          await inserirOcorrencias(ultima, serieId, novasDatas);
+          precisouRecarregar = true;
+        }
+
+        if (precisouRecarregar) {
+          const { data, error } = await Auth.sb
+            .from('painel_tarefas')
+            .select('*')
+            .order('data', { ascending: true })
+            .order('hora_inicio', { ascending: true });
+          if (error) throw error;
+          tarefasCache = data || [];
+          renderizarCalendario();
+        }
+      } catch (err) {
+        console.error('Erro ao reabastecer ocorrências recorrentes:', err);
+      }
     }
 
     // Formata uma data local como 'YYYY-MM-DD' (evita o desvio de fuso do toISOString).
@@ -3941,6 +4056,7 @@
       'Gravação': 'cal_tipo_gravacao',
       'Entrega': 'cal_tipo_entrega',
       'Reunião': 'cal_tipo_reuniao',
+      'Estudo': 'cal_tipo_estudo',
       'Pessoal': 'cal_tipo_pessoal',
       'Outro': 'cal_tipo_outro',
     };
@@ -4057,7 +4173,9 @@
     }
 
     // Abre o formulário. Sem argumento cria uma tarefa nova; passando uma
-    // tarefa existente, abre pré-preenchido para edição.
+    // tarefa existente, abre pré-preenchido para edição. "Repetir" só faz
+    // sentido ao criar (decidir a recorrência de uma ocorrência já existente
+    // não muda a série inteira), então some do form ao editar.
     function abrirFormularioTarefa(tarefa) {
       const form = document.getElementById('cal-form-tarefa');
       tarefaEditando = tarefa ? tarefa.id : null;
@@ -4067,6 +4185,8 @@
       document.getElementById('cal-data').value = tarefa ? tarefa.data : dataParaISO(calDiaSelecionado);
       document.getElementById('cal-hora-inicio').value = tarefa ? (tarefa.hora_inicio || '') : '';
       document.getElementById('cal-hora-fim').value = tarefa ? (tarefa.hora_fim || '') : '';
+      document.getElementById('cal-repetir').value = '';
+      document.getElementById('cal-form-repetir-linha').hidden = !!tarefa;
       document.getElementById('cal-btn-salvar-tarefa').textContent = tr(tarefa ? 'salvar_alteracoes' : 'salvar');
 
       form.hidden = false;
@@ -4092,11 +4212,24 @@
       };
       if (!linha.titulo || !linha.data) return;
 
+      const recorrencia = tarefaEditando ? '' : document.getElementById('cal-repetir').value;
+
       try {
-        const { error } = tarefaEditando
-          ? await Auth.sb.from('painel_tarefas').update(linha).eq('id', tarefaEditando)
-          : await Auth.sb.from('painel_tarefas').insert(linha);
-        if (error) throw error;
+        if (tarefaEditando) {
+          const { error } = await Auth.sb.from('painel_tarefas').update(linha).eq('id', tarefaEditando);
+          if (error) throw error;
+        } else if (recorrencia) {
+          const serieId = crypto.randomUUID();
+          const tarefaBase = { ...linha, recorrencia, serie_id: serieId };
+          const { error } = await Auth.sb.from('painel_tarefas').insert(tarefaBase);
+          if (error) throw error;
+
+          const futuras = datasOcorrenciasFuturas(recorrencia, linha.data);
+          await inserirOcorrencias(tarefaBase, serieId, futuras);
+        } else {
+          const { error } = await Auth.sb.from('painel_tarefas').insert(linha);
+          if (error) throw error;
+        }
 
         calDiaSelecionado = new Date(linha.data + 'T00:00:00');
         fecharFormularioTarefa();
@@ -4118,7 +4251,32 @@
     }
 
     async function excluirTarefa(tarefa) {
-      if (!(await confirmarAcao(`${tr('excluir')} "${tarefa.titulo}"?`))) return;
+      // Tarefa recorrente: pergunta em duas etapas (reaproveitando o mesmo
+      // modal de confirmação de sempre, sem criar um componente novo de
+      // 3 opções) — primeiro se é pra excluir a série inteira; se ela
+      // recusar, pergunta se é só esta ocorrência.
+      if (tarefa.serie_id) {
+        const excluirSerie = await confirmarAcao(tr('cal_excluir_serie_pergunta'), { textoConfirmar: tr('cal_excluir_serie_botao') });
+        if (excluirSerie) {
+          try {
+            const { error } = await Auth.sb
+              .from('painel_tarefas')
+              .delete()
+              .eq('serie_id', tarefa.serie_id)
+              .gte('data', tarefa.data);
+            if (error) throw error;
+            await carregarTarefas();
+          } catch (err) {
+            console.error('Erro ao excluir série de tarefas:', err);
+            alert(tr('erro_excluir_generico'));
+          }
+          return;
+        }
+        if (!(await confirmarAcao(`${tr('excluir')} "${tarefa.titulo}"?`))) return;
+      } else if (!(await confirmarAcao(`${tr('excluir')} "${tarefa.titulo}"?`))) {
+        return;
+      }
+
       try {
         const { error } = await Auth.sb.from('painel_tarefas').delete().eq('id', tarefa.id);
         if (error) throw error;

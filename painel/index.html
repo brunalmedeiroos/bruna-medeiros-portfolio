@@ -370,58 +370,58 @@
         <section id="panel-planejador" class="tab-panel" hidden>
           <div id="pl-hub" class="pl-hub">
             <button class="pl-hub-card" data-pagina="banco" type="button">
-              <span class="pl-hub-card-titulo">Banco de ideias</span>
-              <span class="pl-hub-card-desc">Minhas ideias organizadas por pilar de conteúdo, com espaço pro roteiro.</span>
+              <span class="pl-hub-card-titulo" data-i18n="pl_banco_ideias">Banco de ideias</span>
+              <span class="pl-hub-card-desc" data-i18n="pl_banco_desc">Minhas ideias organizadas por pilar de conteúdo, com espaço pro roteiro.</span>
             </button>
             <button class="pl-hub-card" data-pagina="achados" type="button">
-              <span class="pl-hub-card-titulo">Achados</span>
-              <span class="pl-hub-card-desc">Ganchos, frases, formatos, músicas e CTAs pra virarem ideia depois.</span>
+              <span class="pl-hub-card-titulo" data-i18n="pl_achados">Achados</span>
+              <span class="pl-hub-card-desc" data-i18n="pl_achados_desc">Ganchos, frases, formatos, músicas e CTAs pra virarem ideia depois.</span>
             </button>
           </div>
 
           <div id="pl-pagina-banco" class="pl-pagina" hidden>
-            <button class="pl-voltar" type="button">← Voltar</button>
-            <h3 class="card-titulo pl-pagina-titulo">Banco de ideias</h3>
+            <button class="pl-voltar" type="button" data-i18n="voltar">← Voltar</button>
+            <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_banco_ideias">Banco de ideias</h3>
             <div class="pl-colunas-scroll">
               <div id="pl-colunas-banco" class="pl-colunas"></div>
             </div>
           </div>
 
           <div id="pl-pagina-achados" class="pl-pagina" hidden>
-            <button class="pl-voltar" type="button">← Voltar</button>
-            <h3 class="card-titulo pl-pagina-titulo">Achados</h3>
+            <button class="pl-voltar" type="button" data-i18n="voltar">← Voltar</button>
+            <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_achados">Achados</h3>
             <div class="pl-colunas-scroll">
               <div id="pl-colunas-achados" class="pl-colunas"></div>
             </div>
           </div>
 
           <div id="pl-cronograma" class="pl-cronograma-secao">
-            <h3 class="card-titulo pl-pagina-titulo">Cronograma de postagem</h3>
+            <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_cronograma">Cronograma de postagem</h3>
 
             <div class="card pl-cronograma-calendario-card">
               <div class="cal-topo">
-                <button id="pl-cron-mes-anterior" class="cal-btn cal-btn-icon" type="button" aria-label="Mês anterior">
+                <button id="pl-cron-mes-anterior" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_anterior" aria-label="Mês anterior">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
                 <span class="cal-mes-label" id="pl-cron-mes-label">Mês</span>
-                <button id="pl-cron-mes-proximo" class="cal-btn cal-btn-icon" type="button" aria-label="Próximo mês">
+                <button id="pl-cron-mes-proximo" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_proximo" aria-label="Próximo mês">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
               </div>
               <div class="cal-semana">
-                <span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span>
+                <span data-i18n="cal_seg">Seg</span><span data-i18n="cal_ter">Ter</span><span data-i18n="cal_qua">Qua</span><span data-i18n="cal_qui">Qui</span><span data-i18n="cal_sex">Sex</span><span data-i18n="cal_sab">Sáb</span><span data-i18n="cal_dom">Dom</span>
               </div>
               <div class="pl-cron-grade" id="pl-cron-grade"></div>
             </div>
 
             <div class="card pl-cronograma-tabela-card">
               <div class="pl-cronograma-cabecalho">
-                <span>Pilar</span>
-                <span>Dia da semana</span>
+                <span data-i18n="pl_pilar">Pilar</span>
+                <span data-i18n="pl_dia_semana">Dia da semana</span>
                 <span></span>
               </div>
               <div id="pl-cronograma-linhas" class="pl-cronograma-linhas"></div>
-              <button id="pl-cronograma-add" class="pl-coluna-add" type="button">+ Novo pilar do cronograma</button>
+              <button id="pl-cronograma-add" class="pl-coluna-add" type="button" data-i18n="pl_novo_pilar">+ Novo pilar do cronograma</button>
             </div>
           </div>
         </section>
@@ -429,41 +429,41 @@
         <!-- ---------- Aba: Radar de Notícias ---------- -->
         <section id="panel-radar" class="tab-panel" hidden>
           <div class="radar-topo">
-            <button id="btn-radar-atualizar" class="cal-btn cal-btn-primario" type="button">Atualizar notícias</button>
+            <button id="btn-radar-atualizar" class="cal-btn cal-btn-primario" type="button" data-i18n="radar_atualizar">Atualizar notícias</button>
           </div>
 
           <p class="radar-avisos" id="radar-avisos" hidden></p>
 
           <div class="cards-numeros">
             <div class="card-numero destaque">
-              <span class="card-label">Capturadas hoje</span>
+              <span class="card-label" data-i18n="radar_capturadas_hoje">Capturadas hoje</span>
               <span class="card-valor" id="radar-num-hoje">0</span>
             </div>
             <div class="card-numero">
-              <span class="card-label">Fontes distintas</span>
+              <span class="card-label" data-i18n="radar_fontes_distintas">Fontes distintas</span>
               <span class="card-valor" id="radar-num-fontes">0</span>
             </div>
             <div class="card-numero">
-              <span class="card-label">Prontas pra roteiro</span>
+              <span class="card-label" data-i18n="radar_prontas_roteiro">Prontas pra roteiro</span>
               <span class="card-valor" id="radar-num-prontas">0</span>
             </div>
             <div class="card-numero">
-              <span class="card-label">Já usadas</span>
+              <span class="card-label" data-i18n="radar_ja_usadas">Já usadas</span>
               <span class="card-valor" id="radar-num-usadas">0</span>
             </div>
           </div>
 
           <div class="radar-filtro-grupo radar-filtro-agentes">
-            <button class="radar-filtro-btn ativo" data-agente="Marketing Digital" type="button">Fofoqueira do MKT</button>
-            <button class="radar-filtro-btn" data-agente="Criação de Conteúdo" type="button">Estrategista de conteúdo</button>
-            <button class="radar-filtro-btn" data-agente="UGC e Creator Economy" type="button">Empresária dos creators</button>
-            <button class="radar-filtro-btn" data-agente="IA e Tecnologia" type="button">Viciada em IA</button>
+            <button class="radar-filtro-btn ativo" data-agente="Marketing Digital" data-i18n="radar_agente_mkt" type="button">Fofoqueira do MKT</button>
+            <button class="radar-filtro-btn" data-agente="Criação de Conteúdo" data-i18n="radar_agente_conteudo" type="button">Estrategista de conteúdo</button>
+            <button class="radar-filtro-btn" data-agente="UGC e Creator Economy" data-i18n="radar_agente_ugc" type="button">Empresária dos creators</button>
+            <button class="radar-filtro-btn" data-agente="IA e Tecnologia" data-i18n="radar_agente_ia" type="button">Viciada em IA</button>
           </div>
 
           <div class="radar-filtro-grupo radar-filtro-periodo">
-            <button class="radar-filtro-btn" data-periodo="hoje" type="button">Hoje</button>
-            <button class="radar-filtro-btn" data-periodo="novas" type="button">Novas</button>
-            <button class="radar-filtro-btn" data-periodo="usadas" type="button">Usadas</button>
+            <button class="radar-filtro-btn" data-periodo="hoje" data-i18n="dash_hoje" type="button">Hoje</button>
+            <button class="radar-filtro-btn" data-periodo="novas" data-i18n="radar_novas" type="button">Novas</button>
+            <button class="radar-filtro-btn" data-periodo="usadas" data-i18n="radar_usadas" type="button">Usadas</button>
           </div>
 
           <div id="radar-lista" class="radar-lista"></div>
@@ -716,7 +716,7 @@
       <div class="pl-modal pl-modal-grande">
         <div class="pl-modal-topo">
           <span class="pl-modal-titulo-fixo" data-i18n="config_titulo">Configurações</span>
-          <button id="config-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+          <button id="config-modal-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
@@ -823,44 +823,44 @@
     <div id="pl-modal-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal">
         <div class="pl-modal-topo">
-          <input type="text" id="pl-modal-titulo" class="pl-modal-titulo-input" placeholder="Título da ideia">
-          <button id="pl-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+          <input type="text" id="pl-modal-titulo" class="pl-modal-titulo-input" data-i18n-placeholder="pl_titulo_ideia_placeholder" placeholder="Título da ideia">
+          <button id="pl-modal-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
 
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <label for="pl-modal-formato">Formato</label>
-            <input type="text" id="pl-modal-formato" placeholder="Ex: Reels, Carrossel...">
+            <label for="pl-modal-formato" data-i18n="pl_formato">Formato</label>
+            <input type="text" id="pl-modal-formato" data-i18n-placeholder="pl_formato_placeholder" placeholder="Ex: Reels, Carrossel...">
           </div>
           <div class="cal-form-campo">
-            <label for="pl-modal-status">Status</label>
+            <label for="pl-modal-status" data-i18n="status">Status</label>
             <select id="pl-modal-status">
-              <option value="Não iniciado">Não iniciado</option>
-              <option value="Roteiro pronto">Roteiro pronto</option>
-              <option value="Publicado">Publicado</option>
+              <option value="Não iniciado" data-i18n="pl_status_nao_iniciado">Não iniciado</option>
+              <option value="Roteiro pronto" data-i18n="pl_status_roteiro_pronto">Roteiro pronto</option>
+              <option value="Publicado" data-i18n="pl_status_publicado">Publicado</option>
             </select>
           </div>
           <div class="cal-form-campo">
-            <label for="pl-modal-pilar">Pilar</label>
+            <label for="pl-modal-pilar" data-i18n="pl_pilar">Pilar</label>
             <select id="pl-modal-pilar"></select>
           </div>
         </div>
 
         <div class="cal-form-campo">
-          <label for="pl-modal-roteiro-breve">Roteiro breve</label>
-          <textarea id="pl-modal-roteiro-breve" placeholder="Uma ideia rápida, um rascunho..."></textarea>
+          <label for="pl-modal-roteiro-breve" data-i18n="pl_roteiro_breve">Roteiro breve</label>
+          <textarea id="pl-modal-roteiro-breve" data-i18n-placeholder="pl_roteiro_breve_placeholder" placeholder="Uma ideia rápida, um rascunho..."></textarea>
         </div>
 
         <div class="cal-form-campo">
-          <label for="pl-modal-roteiro-completo">Roteiro completo</label>
-          <textarea id="pl-modal-roteiro-completo" class="pl-textarea-grande" placeholder="O roteiro completo, pronto pra gravar..."></textarea>
+          <label for="pl-modal-roteiro-completo" data-i18n="pl_roteiro_completo">Roteiro completo</label>
+          <textarea id="pl-modal-roteiro-completo" class="pl-textarea-grande" data-i18n-placeholder="pl_roteiro_completo_placeholder" placeholder="O roteiro completo, pronto pra gravar..."></textarea>
         </div>
 
         <div class="cal-form-acoes">
-          <button type="button" id="pl-modal-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
-          <button type="button" id="pl-modal-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+          <button type="button" id="pl-modal-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
+          <button type="button" id="pl-modal-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
         </div>
       </div>
     </div>
@@ -870,24 +870,24 @@
       <div class="pl-modal pl-modal-pequeno">
         <div class="pl-modal-topo">
           <span class="pl-modal-titulo-fixo" id="pl-modal-achado-coluna">Gancho</span>
-          <button id="pl-modal-achado-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+          <button id="pl-modal-achado-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
 
         <div class="cal-form-campo">
-          <label for="pl-modal-achado-texto">Achado</label>
-          <textarea id="pl-modal-achado-texto" class="pl-textarea-grande" placeholder="Escreva o que você encontrou..."></textarea>
+          <label for="pl-modal-achado-texto" data-i18n="pl_achado_label">Achado</label>
+          <textarea id="pl-modal-achado-texto" class="pl-textarea-grande" data-i18n-placeholder="pl_achado_placeholder" placeholder="Escreva o que você encontrou..."></textarea>
         </div>
 
         <div class="cal-form-campo">
-          <label for="pl-modal-achado-observacoes">O que você viu</label>
-          <textarea id="pl-modal-achado-observacoes" class="pl-textarea-grande" placeholder="Escreva com mais detalhes, contexto, onde viu, link..."></textarea>
+          <label for="pl-modal-achado-observacoes" data-i18n="pl_oque_viu">O que você viu</label>
+          <textarea id="pl-modal-achado-observacoes" class="pl-textarea-grande" data-i18n-placeholder="pl_oque_viu_placeholder" placeholder="Escreva com mais detalhes, contexto, onde viu, link..."></textarea>
         </div>
 
         <div class="cal-form-acoes">
-          <button type="button" id="pl-modal-achado-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
-          <button type="button" id="pl-modal-achado-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+          <button type="button" id="pl-modal-achado-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
+          <button type="button" id="pl-modal-achado-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
         </div>
       </div>
     </div>
@@ -896,19 +896,19 @@
     <div id="pl-modal-agendar-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal pl-modal-pequeno">
         <div class="pl-modal-topo">
-          <span class="pl-modal-titulo-fixo">Agendar ideia — <span id="pl-modal-agendar-data"></span></span>
-          <button id="pl-modal-agendar-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+          <span class="pl-modal-titulo-fixo"><span data-i18n="pl_agendar_ideia">Agendar ideia</span> — <span id="pl-modal-agendar-data"></span></span>
+          <button id="pl-modal-agendar-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
 
         <div class="cal-form-campo">
-          <label for="pl-modal-agendar-select">Ideia do Banco de Ideias</label>
+          <label for="pl-modal-agendar-select" data-i18n="pl_ideia_do_banco">Ideia do Banco de Ideias</label>
           <select id="pl-modal-agendar-select"></select>
         </div>
 
         <div class="cal-form-acoes">
-          <button type="button" id="pl-modal-agendar-confirmar" class="cal-btn cal-btn-primario">Agendar</button>
+          <button type="button" id="pl-modal-agendar-confirmar" class="cal-btn cal-btn-primario" data-i18n="pl_agendar">Agendar</button>
         </div>
       </div>
     </div>
@@ -917,19 +917,19 @@
     <div id="pl-modal-pilar-dia-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal pl-modal-pequeno">
         <div class="pl-modal-topo">
-          <span class="pl-modal-titulo-fixo">Pilar do dia — <span id="pl-modal-pilar-dia-data"></span></span>
-          <button id="pl-modal-pilar-dia-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+          <span class="pl-modal-titulo-fixo"><span data-i18n="pl_pilar_do_dia">Pilar do dia</span> — <span id="pl-modal-pilar-dia-data"></span></span>
+          <button id="pl-modal-pilar-dia-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
 
         <div class="cal-form-campo">
-          <label for="pl-modal-pilar-dia-select">Pilar</label>
+          <label for="pl-modal-pilar-dia-select" data-i18n="pl_pilar">Pilar</label>
           <select id="pl-modal-pilar-dia-select"></select>
         </div>
 
         <div class="cal-form-acoes">
-          <button type="button" id="pl-modal-pilar-dia-confirmar" class="cal-btn cal-btn-primario">Escolher</button>
+          <button type="button" id="pl-modal-pilar-dia-confirmar" class="cal-btn cal-btn-primario" data-i18n="escolher">Escolher</button>
         </div>
       </div>
     </div>
@@ -939,7 +939,7 @@
       <div class="pl-modal">
         <div class="pl-modal-topo">
           <span class="pl-modal-titulo-fixo" id="radar-modal-agente">Marketing Digital</span>
-          <button id="radar-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+          <button id="radar-modal-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
@@ -948,15 +948,15 @@
         <p class="radar-modal-meta" id="radar-modal-meta"></p>
 
         <div class="cal-form-campo">
-          <label>Roteiro / insight</label>
+          <label data-i18n="radar_roteiro_insight">Roteiro / insight</label>
           <p class="radar-modal-insight" id="radar-modal-insight"></p>
         </div>
 
         <div class="cal-form-acoes">
-          <button type="button" id="radar-modal-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
-          <a id="radar-modal-fonte" class="cal-btn" href="#" target="_blank" rel="noopener">Ver fonte</a>
-          <button type="button" id="radar-modal-usar-ideia" class="cal-btn">Usar ideia</button>
-          <button type="button" id="radar-modal-usada" class="cal-btn cal-btn-primario">Marcar como usada</button>
+          <button type="button" id="radar-modal-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
+          <a id="radar-modal-fonte" class="cal-btn" href="#" target="_blank" rel="noopener" data-i18n="radar_ver_fonte">Ver fonte</a>
+          <button type="button" id="radar-modal-usar-ideia" class="cal-btn" data-i18n="radar_usar_ideia">Usar ideia</button>
+          <button type="button" id="radar-modal-usada" class="cal-btn cal-btn-primario" data-i18n="radar_marcar_usada">Marcar como usada</button>
         </div>
       </div>
     </div>
@@ -965,19 +965,19 @@
     <div id="radar-modal-pilar-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal pl-modal-pequeno">
         <div class="pl-modal-topo">
-          <span class="pl-modal-titulo-fixo">Adicionar ao Banco de Ideias</span>
-          <button id="radar-modal-pilar-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+          <span class="pl-modal-titulo-fixo" data-i18n="radar_adicionar_banco">Adicionar ao Banco de Ideias</span>
+          <button id="radar-modal-pilar-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
 
         <div class="cal-form-campo">
-          <label for="radar-pilar-select">Pilar</label>
+          <label for="radar-pilar-select" data-i18n="pl_pilar">Pilar</label>
           <select id="radar-pilar-select"></select>
         </div>
 
         <div class="cal-form-acoes">
-          <button type="button" id="radar-pilar-confirmar" class="cal-btn cal-btn-primario">Adicionar ideia</button>
+          <button type="button" id="radar-pilar-confirmar" class="cal-btn cal-btn-primario" data-i18n="radar_adicionar_ideia">Adicionar ideia</button>
         </div>
       </div>
     </div>
@@ -987,7 +987,7 @@
       <div class="pl-modal pl-modal-grande">
         <div class="pl-modal-topo">
           <input type="text" id="ugc-modal-marca" class="pl-modal-titulo-input" placeholder="Marca">
-          <button id="ugc-modal-trabalho-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+          <button id="ugc-modal-trabalho-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
@@ -1129,8 +1129,8 @@
         </div>
 
         <div class="cal-form-acoes">
-          <button type="button" id="ugc-modal-trabalho-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
-          <button type="button" id="ugc-modal-trabalho-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+          <button type="button" id="ugc-modal-trabalho-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
+          <button type="button" id="ugc-modal-trabalho-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
         </div>
       </div>
     </div>
@@ -1140,7 +1140,7 @@
       <div class="pl-modal pl-modal-grande">
         <div class="pl-modal-topo">
           <input type="text" id="ugc-roteiro-marca" class="pl-modal-titulo-input" placeholder="Marca">
-          <button id="ugc-modal-roteiro-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+          <button id="ugc-modal-roteiro-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
@@ -1185,8 +1185,8 @@
         <button type="button" id="btn-ugc-add-cena" class="cal-btn">+ Adicionar cena</button>
 
         <div class="cal-form-acoes">
-          <button type="button" id="ugc-modal-roteiro-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
-          <button type="button" id="ugc-modal-roteiro-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+          <button type="button" id="ugc-modal-roteiro-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
+          <button type="button" id="ugc-modal-roteiro-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
         </div>
       </div>
     </div>
@@ -1196,7 +1196,7 @@
       <div class="pl-modal">
         <div class="pl-modal-topo">
           <input type="text" id="ugc-prosp-marca" class="pl-modal-titulo-input" placeholder="Marca">
-          <button id="ugc-modal-prospeccao-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+          <button id="ugc-modal-prospeccao-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
@@ -1253,9 +1253,9 @@
         </div>
 
         <div class="cal-form-acoes">
-          <button type="button" id="ugc-modal-prospeccao-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+          <button type="button" id="ugc-modal-prospeccao-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
           <button type="button" id="ugc-prosp-transformar" class="cal-btn" hidden>Transformar em trabalho</button>
-          <button type="button" id="ugc-modal-prospeccao-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+          <button type="button" id="ugc-modal-prospeccao-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
         </div>
       </div>
     </div>
@@ -1265,7 +1265,7 @@
       <div class="pl-modal">
         <div class="pl-modal-topo">
           <input type="text" id="ugc-contrato-marca" class="pl-modal-titulo-input" placeholder="Marca">
-          <button id="ugc-modal-contrato-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+          <button id="ugc-modal-contrato-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
@@ -1311,8 +1311,8 @@
         <p class="ugc-briefing-status" id="ugc-contrato-arquivo-status" hidden></p>
 
         <div class="cal-form-acoes">
-          <button type="button" id="ugc-modal-contrato-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
-          <button type="button" id="ugc-modal-contrato-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+          <button type="button" id="ugc-modal-contrato-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
+          <button type="button" id="ugc-modal-contrato-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
         </div>
       </div>
     </div>
@@ -1322,7 +1322,7 @@
       <div class="pl-modal pl-modal-pequeno">
         <div class="pl-modal-topo">
           <span class="pl-modal-titulo-fixo" id="ugc-preco-modal-titulo">Novo serviço</span>
-          <button id="ugc-modal-preco-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+          <button id="ugc-modal-preco-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
@@ -1341,8 +1341,8 @@
         </div>
 
         <div class="cal-form-acoes">
-          <button type="button" id="ugc-modal-preco-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
-          <button type="button" id="ugc-modal-preco-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+          <button type="button" id="ugc-modal-preco-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
+          <button type="button" id="ugc-modal-preco-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
         </div>
       </div>
     </div>
@@ -1352,7 +1352,7 @@
       <div class="pl-modal pl-modal-grande">
         <div class="pl-modal-topo">
           <span class="pl-modal-titulo-fixo">Proposta personalizada</span>
-          <button id="ugc-modal-proposta-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+          <button id="ugc-modal-proposta-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
@@ -1408,7 +1408,7 @@
         <p id="confirmar-modal-mensagem"></p>
         <div class="cal-form-acoes">
           <button type="button" id="confirmar-modal-cancelar" class="cal-btn" data-i18n="confirm_cancelar">Cancelar</button>
-          <button type="button" id="confirmar-modal-ok" class="cal-btn pl-btn-excluir">Excluir</button>
+          <button type="button" id="confirmar-modal-ok" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
         </div>
       </div>
     </div>
@@ -1443,7 +1443,57 @@
     let achadoAbertoId = null;
     let dataAgendarAtual = null; // data (ISO) do dia clicado no "+" do calendário do cronograma
     const ACHADOS_COLUNAS = ['Gancho', 'Frase', 'Formato', 'Música', 'CTA'];
+    // Nome da coluna é gravado em achados.coluna em português (é o "código");
+    // aqui só traduz o rótulo mostrado, sem tocar no valor salvo.
+    const ACHADOS_COLUNA_CHAVE = {
+      'Gancho': 'achados_col_gancho',
+      'Frase': 'achados_col_frase',
+      'Formato': 'achados_col_formato',
+      'Música': 'achados_col_musica',
+      'CTA': 'achados_col_cta',
+    };
+    function traduzirColunaAchado(coluna) {
+      const chave = ACHADOS_COLUNA_CHAVE[coluna];
+      return chave ? tr(chave) : coluna;
+    }
+
+    // Idem pro status de uma ideia do Banco de Ideias — valor gravado
+    // continua em português, só o rótulo exibido muda.
+    const STATUS_IDEIA_CHAVE = {
+      'Não iniciado': 'pl_status_nao_iniciado',
+      'Roteiro pronto': 'pl_status_roteiro_pronto',
+      'Publicado': 'pl_status_publicado',
+    };
+    function traduzirStatusIdeia(status) {
+      const chave = STATUS_IDEIA_CHAVE[status];
+      return chave ? tr(chave) : status;
+    }
     const DIAS_SEMANA = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+    const DIA_SEMANA_CHAVE = {
+      'Segunda': 'dia_semana_segunda',
+      'Terça': 'dia_semana_terca',
+      'Quarta': 'dia_semana_quarta',
+      'Quinta': 'dia_semana_quinta',
+      'Sexta': 'dia_semana_sexta',
+      'Sábado': 'dia_semana_sabado',
+      'Domingo': 'dia_semana_domingo',
+    };
+    function traduzirDiaSemana(dia) {
+      const chave = DIA_SEMANA_CHAVE[dia];
+      return chave ? tr(chave) : dia;
+    }
+    // Idem pro agente do Radar de Notícias — valor gravado (e usado pra filtrar)
+    // continua em português, só o rótulo exibido muda.
+    const RADAR_AGENTE_CHAVE = {
+      'Marketing Digital': 'radar_agente_mkt',
+      'Criação de Conteúdo': 'radar_agente_conteudo',
+      'UGC e Creator Economy': 'radar_agente_ugc',
+      'IA e Tecnologia': 'radar_agente_ia',
+    };
+    function traduzirAgenteRadar(agente) {
+      const chave = RADAR_AGENTE_CHAVE[agente];
+      return chave ? tr(chave) : agente;
+    }
 
     let radarAbaCarregada = false;
     let radarCache = [];
@@ -1624,6 +1674,7 @@
         editar: 'Editar',
         excluir: 'Excluir',
         marcar_feita: 'Marcar como feita',
+        fechar: 'Fechar',
         conectando: 'Conectando...',
         enviando: 'Enviando...',
         remover: 'Remover',
@@ -1734,6 +1785,114 @@
         instagram_alcance_curto: 'Alcance',
         instagram_salvos: 'Salvos',
         instagram_ver_post: 'Ver post',
+
+        // Planejador de Conteúdo
+        voltar: '← Voltar',
+        pl_banco_ideias: 'Banco de ideias',
+        pl_banco_desc: 'Minhas ideias organizadas por pilar de conteúdo, com espaço pro roteiro.',
+        pl_achados: 'Achados',
+        pl_achados_desc: 'Ganchos, frases, formatos, músicas e CTAs pra virarem ideia depois.',
+        pl_cronograma: 'Cronograma de postagem',
+        pl_pilar: 'Pilar',
+        pl_dia_semana: 'Dia da semana',
+        pl_novo_pilar: '+ Novo pilar do cronograma',
+
+        // Radar de Notícias
+        radar_atualizar: 'Atualizar notícias',
+        radar_capturadas_hoje: 'Capturadas hoje',
+        radar_fontes_distintas: 'Fontes distintas',
+        radar_prontas_roteiro: 'Prontas pra roteiro',
+        radar_ja_usadas: 'Já usadas',
+        radar_agente_mkt: 'Fofoqueira do MKT',
+        radar_agente_conteudo: 'Estrategista de conteúdo',
+        radar_agente_ugc: 'Empresária dos creators',
+        radar_agente_ia: 'Viciada em IA',
+        radar_novas: 'Novas',
+        radar_usadas: 'Usadas',
+        radar_roteiro_insight: 'Roteiro / insight',
+        radar_ver_fonte: 'Ver fonte',
+        radar_usar_ideia: 'Usar ideia',
+        radar_marcar_usada: 'Marcar como usada',
+        radar_adicionar_banco: 'Adicionar ao Banco de Ideias',
+        radar_adicionar_ideia: 'Adicionar ideia',
+
+        // Planejador — modais
+        pl_titulo_ideia_placeholder: 'Título da ideia',
+        pl_formato: 'Formato',
+        pl_formato_placeholder: 'Ex: Reels, Carrossel...',
+        status: 'Status',
+        pl_status_nao_iniciado: 'Não iniciado',
+        pl_status_roteiro_pronto: 'Roteiro pronto',
+        pl_status_publicado: 'Publicado',
+        pl_roteiro_breve: 'Roteiro breve',
+        pl_roteiro_breve_placeholder: 'Uma ideia rápida, um rascunho...',
+        pl_roteiro_completo: 'Roteiro completo',
+        pl_roteiro_completo_placeholder: 'O roteiro completo, pronto pra gravar...',
+        pl_achado_label: 'Achado',
+        pl_achado_placeholder: 'Escreva o que você encontrou...',
+        pl_oque_viu: 'O que você viu',
+        pl_oque_viu_placeholder: 'Escreva com mais detalhes, contexto, onde viu, link...',
+        pl_agendar_ideia: 'Agendar ideia',
+        pl_ideia_do_banco: 'Ideia do Banco de Ideias',
+        pl_agendar: 'Agendar',
+        pl_pilar_do_dia: 'Pilar do dia',
+        escolher: 'Escolher',
+        achados_col_gancho: 'Gancho',
+        achados_col_frase: 'Frase',
+        achados_col_formato: 'Formato',
+        achados_col_musica: 'Música',
+        achados_col_cta: 'CTA',
+        pl_excluir_pilar: 'Excluir pilar',
+        pl_novo_pilar_curto: '+ Novo pilar',
+        pl_nome_pilar_placeholder: 'Nome do pilar',
+        pl_erro_criar_pilar: 'Não foi possível criar o pilar agora.',
+        pl_erro_criar_ideia: 'Não foi possível criar a ideia agora.',
+        pl_excluir_pilar_confirmar_prefixo: 'Excluir o pilar ',
+        pl_excluir_pilar_confirmar_sufixo: '? As ideias dentro dele também serão excluídas.',
+        pl_excluir_ideia_confirmar: 'Excluir esta ideia?',
+        pl_novo_achado: '+ Novo achado',
+        pl_achado_novo_placeholder: 'Escreva o achado...',
+        adicionar: 'Adicionar',
+        erro_criar_generico: 'Não foi possível criar agora. Tente de novo em instantes.',
+        pl_cron_nenhum_pilar: 'Nenhum pilar cadastrado ainda.',
+        pl_cron_excluir_aria: 'Excluir',
+        pl_cron_excluir_confirmar: 'Excluir esta linha do cronograma?',
+        pl_cron_agendar_ideia_aria: 'Agendar ideia',
+        pl_cron_remover_pilar_dia_aria: 'Remover pilar deste dia',
+        pl_cron_remover_ideia_calendario_aria: 'Remover do calendário',
+        pl_cron_add_pilar_curto: '+ pilar',
+        pl_cron_nenhuma_ideia_roteiro_pronto: 'Nenhuma ideia com roteiro pronto disponível',
+        pl_erro_agendar: 'Não foi possível agendar agora. Tente de novo em instantes.',
+        pl_erro_remover_calendario: 'Não foi possível remover agora. Tente de novo em instantes.',
+        pl_cron_nenhum_pilar_disponivel: 'Nenhum pilar disponível — cadastre um lá embaixo',
+        dia_semana_segunda: 'Segunda',
+        dia_semana_terca: 'Terça',
+        dia_semana_quarta: 'Quarta',
+        dia_semana_quinta: 'Quinta',
+        dia_semana_sexta: 'Sexta',
+        dia_semana_sabado: 'Sábado',
+        dia_semana_domingo: 'Domingo',
+        pl_excluir_achado_confirmar: 'Excluir este achado?',
+        radar_erro_carregar: 'Não foi possível carregar as notícias agora.',
+        radar_nenhuma_noticia: 'Nenhuma notícia por aqui ainda.',
+        radar_tag_hoje: 'Hoje',
+        radar_tag_usada: 'Usada',
+        radar_buscando: 'Buscando...',
+        radar_alguns_agentes_erro: 'Alguns agentes não conseguiram buscar agora:',
+        radar_erro_atualizar_prefixo: 'Não foi possível atualizar as notícias agora: ',
+        radar_sem_roteiro: 'Sem roteiro gerado pra essa notícia.',
+        radar_marcar_nao_usada: 'Marcar como não usada',
+        radar_excluir_confirmar: 'Excluir esta notícia?',
+        radar_crie_pilar_primeiro: 'Crie um pilar no Banco de Ideias primeiro pra poder usar essa ideia.',
+        radar_adicionando: 'Adicionando...',
+        radar_ideia_adicionada: 'Ideia adicionada ao Banco de Ideias!',
+        radar_erro_adicionar_ideia: 'Não foi possível adicionar a ideia agora. Tente de novo em instantes.',
+        pl_erro_carregar: 'Não foi possível carregar o planejador agora.',
+        pl_nova_ideia: '+ Nova ideia',
+        pl_ja_tem_roteiro: 'Já tem roteiro',
+        pl_erro_ordem: 'Não foi possível salvar a nova ordem agora.',
+        pl_titulo_ideia_placeholder_reticencias: 'Título da ideia...',
+        criar: 'Criar',
       },
       en: {
         titulo_dashboard: 'Dashboard',
@@ -1838,6 +1997,7 @@
         editar: 'Edit',
         excluir: 'Delete',
         marcar_feita: 'Mark as done',
+        fechar: 'Close',
         conectando: 'Connecting...',
         enviando: 'Sending...',
         remover: 'Remove',
@@ -1948,6 +2108,114 @@
         instagram_alcance_curto: 'Reach',
         instagram_salvos: 'Saves',
         instagram_ver_post: 'View post',
+
+        // Content Planner
+        voltar: '← Back',
+        pl_banco_ideias: 'Idea bank',
+        pl_banco_desc: 'My ideas organized by content pillar, with room for the script.',
+        pl_achados: 'Finds',
+        pl_achados_desc: 'Hooks, phrases, formats, music, and CTAs to turn into an idea later.',
+        pl_cronograma: 'Posting schedule',
+        pl_pilar: 'Pillar',
+        pl_dia_semana: 'Day of the week',
+        pl_novo_pilar: '+ New schedule pillar',
+
+        // News Radar
+        radar_atualizar: 'Refresh news',
+        radar_capturadas_hoje: 'Captured today',
+        radar_fontes_distintas: 'Distinct sources',
+        radar_prontas_roteiro: 'Ready for script',
+        radar_ja_usadas: 'Already used',
+        radar_agente_mkt: 'MKT Gossip',
+        radar_agente_conteudo: 'Content Strategist',
+        radar_agente_ugc: 'Creator Economy Boss',
+        radar_agente_ia: 'AI Addict',
+        radar_novas: 'New',
+        radar_usadas: 'Used',
+        radar_roteiro_insight: 'Script / insight',
+        radar_ver_fonte: 'View source',
+        radar_usar_ideia: 'Use idea',
+        radar_marcar_usada: 'Mark as used',
+        radar_adicionar_banco: 'Add to Idea Bank',
+        radar_adicionar_ideia: 'Add idea',
+
+        // Content Planner — modals
+        pl_titulo_ideia_placeholder: 'Idea title',
+        pl_formato: 'Format',
+        pl_formato_placeholder: 'E.g: Reels, Carousel...',
+        status: 'Status',
+        pl_status_nao_iniciado: 'Not started',
+        pl_status_roteiro_pronto: 'Script ready',
+        pl_status_publicado: 'Published',
+        pl_roteiro_breve: 'Brief script',
+        pl_roteiro_breve_placeholder: 'A quick idea, a draft...',
+        pl_roteiro_completo: 'Full script',
+        pl_roteiro_completo_placeholder: 'The full script, ready to record...',
+        pl_achado_label: 'Find',
+        pl_achado_placeholder: 'Write what you found...',
+        pl_oque_viu: 'What you saw',
+        pl_oque_viu_placeholder: 'Write more details, context, where you saw it, link...',
+        pl_agendar_ideia: 'Schedule idea',
+        pl_ideia_do_banco: 'Idea from the Idea Bank',
+        pl_agendar: 'Schedule',
+        pl_pilar_do_dia: "Day's pillar",
+        escolher: 'Choose',
+        achados_col_gancho: 'Hook',
+        achados_col_frase: 'Phrase',
+        achados_col_formato: 'Format',
+        achados_col_musica: 'Music',
+        achados_col_cta: 'CTA',
+        pl_excluir_pilar: 'Delete pillar',
+        pl_novo_pilar_curto: '+ New pillar',
+        pl_nome_pilar_placeholder: 'Pillar name',
+        pl_erro_criar_pilar: 'Could not create the pillar right now.',
+        pl_erro_criar_ideia: 'Could not create the idea right now.',
+        pl_excluir_pilar_confirmar_prefixo: 'Delete the pillar ',
+        pl_excluir_pilar_confirmar_sufixo: '? The ideas inside it will also be deleted.',
+        pl_excluir_ideia_confirmar: 'Delete this idea?',
+        pl_novo_achado: '+ New find',
+        pl_achado_novo_placeholder: 'Write the find...',
+        adicionar: 'Add',
+        erro_criar_generico: 'Could not create it right now. Try again in a moment.',
+        pl_cron_nenhum_pilar: 'No pillars registered yet.',
+        pl_cron_excluir_aria: 'Delete',
+        pl_cron_excluir_confirmar: 'Delete this schedule row?',
+        pl_cron_agendar_ideia_aria: 'Schedule idea',
+        pl_cron_remover_pilar_dia_aria: "Remove this day's pillar",
+        pl_cron_remover_ideia_calendario_aria: 'Remove from calendar',
+        pl_cron_add_pilar_curto: '+ pillar',
+        pl_cron_nenhuma_ideia_roteiro_pronto: 'No idea with a ready script available',
+        pl_erro_agendar: 'Could not schedule it right now. Try again in a moment.',
+        pl_erro_remover_calendario: 'Could not remove it right now. Try again in a moment.',
+        pl_cron_nenhum_pilar_disponivel: 'No pillars available — add one below',
+        dia_semana_segunda: 'Monday',
+        dia_semana_terca: 'Tuesday',
+        dia_semana_quarta: 'Wednesday',
+        dia_semana_quinta: 'Thursday',
+        dia_semana_sexta: 'Friday',
+        dia_semana_sabado: 'Saturday',
+        dia_semana_domingo: 'Sunday',
+        pl_excluir_achado_confirmar: 'Delete this find?',
+        radar_erro_carregar: 'Could not load the news right now.',
+        radar_nenhuma_noticia: 'No news here yet.',
+        radar_tag_hoje: 'Today',
+        radar_tag_usada: 'Used',
+        radar_buscando: 'Fetching...',
+        radar_alguns_agentes_erro: 'Some agents could not fetch right now:',
+        radar_erro_atualizar_prefixo: 'Could not refresh the news right now: ',
+        radar_sem_roteiro: 'No script generated for this news yet.',
+        radar_marcar_nao_usada: 'Mark as not used',
+        radar_excluir_confirmar: 'Delete this news item?',
+        radar_crie_pilar_primeiro: 'Create a pillar in the Idea Bank first to use this idea.',
+        radar_adicionando: 'Adding...',
+        radar_ideia_adicionada: 'Idea added to the Idea Bank!',
+        radar_erro_adicionar_ideia: 'Could not add the idea right now. Try again in a moment.',
+        pl_erro_carregar: 'Could not load the planner right now.',
+        pl_nova_ideia: '+ New idea',
+        pl_ja_tem_roteiro: 'Already has a script',
+        pl_erro_ordem: 'Could not save the new order right now.',
+        pl_titulo_ideia_placeholder_reticencias: 'Idea title...',
+        criar: 'Create',
       },
     };
 
@@ -3727,7 +3995,7 @@
       } catch (err) {
         console.error('Erro ao carregar planejador:', err);
         document.getElementById('pl-colunas-banco').innerHTML =
-          '<p class="texto-erro">Não foi possível carregar o planejador agora.</p>';
+          `<p class="texto-erro">${escapeHtml(tr('pl_erro_carregar'))}</p>`;
       }
     }
 
@@ -3764,12 +4032,12 @@
       coluna.innerHTML = `
         <div class="pl-coluna-topo">
           <span class="pl-coluna-titulo">${escapeHtml(pilar.nome)}</span>
-          <button class="pl-coluna-excluir cal-btn cal-btn-icon" type="button" aria-label="Excluir pilar">
+          <button class="pl-coluna-excluir cal-btn cal-btn-icon" type="button" aria-label="${escapeHtml(tr('pl_excluir_pilar'))}">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </div>
         <div class="pl-coluna-cards"></div>
-        <button class="pl-coluna-add" type="button">+ Nova ideia</button>
+        <button class="pl-coluna-add" type="button">${escapeHtml(tr('pl_nova_ideia'))}</button>
       `;
 
       const listaCards = coluna.querySelector('.pl-coluna-cards');
@@ -3789,11 +4057,11 @@
       card.draggable = true;
       card.dataset.id = ideia.id;
       card.innerHTML = `
-        ${temRoteiro(ideia) ? '<span class="pl-card-dot" title="Já tem roteiro"></span>' : ''}
+        ${temRoteiro(ideia) ? `<span class="pl-card-dot" title="${escapeHtml(tr('pl_ja_tem_roteiro'))}"></span>` : ''}
         <span class="pl-card-titulo">${escapeHtml(ideia.titulo)}</span>
         <div class="pl-card-rodape">
           ${ideia.formato ? `<span class="pl-card-formato">${escapeHtml(ideia.formato)}</span>` : ''}
-          <span class="pl-card-status">${escapeHtml(ideia.status)}</span>
+          <span class="pl-card-status">${escapeHtml(traduzirStatusIdeia(ideia.status))}</span>
         </div>
       `;
       card.addEventListener('click', () => {
@@ -3859,7 +4127,7 @@
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao salvar nova ordem das ideias:', err);
-        alert('Não foi possível salvar a nova ordem agora.');
+        alert(tr('pl_erro_ordem'));
         await carregarPlanejador();
       }
     }
@@ -3870,10 +4138,10 @@
       const form = document.createElement('div');
       form.className = 'pl-novo-card-form';
       form.innerHTML = `
-        <textarea placeholder="Escreva o título da ideia..." rows="2"></textarea>
+        <textarea placeholder="${escapeHtml(tr('pl_titulo_ideia_placeholder_reticencias'))}" rows="2"></textarea>
         <div class="pl-novo-card-acoes">
-          <button type="button" class="cal-btn cal-btn-primario pl-novo-card-salvar">Adicionar</button>
-          <button type="button" class="cal-btn pl-novo-card-cancelar">Cancelar</button>
+          <button type="button" class="cal-btn cal-btn-primario pl-novo-card-salvar">${escapeHtml(tr('adicionar'))}</button>
+          <button type="button" class="cal-btn pl-novo-card-cancelar">${escapeHtml(tr('confirm_cancelar'))}</button>
         </div>
       `;
       coluna.querySelector('.pl-coluna-add').before(form);
@@ -3900,24 +4168,24 @@
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao criar ideia:', err);
-        alert('Não foi possível criar a ideia agora.');
+        alert(tr('pl_erro_criar_ideia'));
       }
     }
 
     function criarBotaoNovaColuna() {
       const wrapper = document.createElement('div');
       wrapper.className = 'pl-coluna pl-coluna-nova';
-      wrapper.innerHTML = '<button type="button" class="pl-coluna-nova-btn">+ Novo pilar</button>';
+      wrapper.innerHTML = `<button type="button" class="pl-coluna-nova-btn">${escapeHtml(tr('pl_novo_pilar_curto'))}</button>`;
       wrapper.querySelector('.pl-coluna-nova-btn').addEventListener('click', () => mostrarFormNovaColuna(wrapper));
       return wrapper;
     }
 
     function mostrarFormNovaColuna(wrapper) {
       wrapper.innerHTML = `
-        <input type="text" class="pl-coluna-nova-input" placeholder="Nome do pilar">
+        <input type="text" class="pl-coluna-nova-input" placeholder="${escapeHtml(tr('pl_nome_pilar_placeholder'))}">
         <div class="pl-novo-card-acoes">
-          <button type="button" class="cal-btn cal-btn-primario pl-coluna-nova-salvar">Criar</button>
-          <button type="button" class="cal-btn pl-coluna-nova-cancelar">Cancelar</button>
+          <button type="button" class="cal-btn cal-btn-primario pl-coluna-nova-salvar">${escapeHtml(tr('criar'))}</button>
+          <button type="button" class="cal-btn pl-coluna-nova-cancelar">${escapeHtml(tr('confirm_cancelar'))}</button>
         </div>
       `;
       const input = wrapper.querySelector('.pl-coluna-nova-input');
@@ -3933,13 +4201,13 @@
           await carregarPlanejador();
         } catch (err) {
           console.error('Erro ao criar pilar:', err);
-          alert('Não foi possível criar o pilar agora.');
+          alert(tr('pl_erro_criar_pilar'));
         }
       });
     }
 
     async function excluirPilar(pilar) {
-      if (!(await confirmarAcao(`Excluir o pilar "${pilar.nome}"? As ideias dentro dele também serão excluídas.`))) return;
+      if (!(await confirmarAcao(`${tr('pl_excluir_pilar_confirmar_prefixo')}"${pilar.nome}"${tr('pl_excluir_pilar_confirmar_sufixo')}`))) return;
       try {
         const { error } = await Auth.sb.from('planejador_pilares').delete().eq('id', pilar.id);
         if (error) throw error;
@@ -3997,7 +4265,7 @@
 
     async function excluirModalIdeia() {
       if (!ideiaAbertaId) return;
-      if (!(await confirmarAcao('Excluir esta ideia?'))) return;
+      if (!(await confirmarAcao(tr('pl_excluir_ideia_confirmar')))) return;
       try {
         const { error } = await Auth.sb.from('planejador_ideias').delete().eq('id', ideiaAbertaId);
         if (error) throw error;
@@ -4026,10 +4294,10 @@
       el.className = 'pl-coluna';
       el.innerHTML = `
         <div class="pl-coluna-topo">
-          <span class="pl-coluna-titulo">${escapeHtml(coluna)}</span>
+          <span class="pl-coluna-titulo">${escapeHtml(traduzirColunaAchado(coluna))}</span>
         </div>
         <div class="pl-coluna-cards"></div>
-        <button class="pl-coluna-add" type="button">+ Novo achado</button>
+        <button class="pl-coluna-add" type="button">${escapeHtml(tr('pl_novo_achado'))}</button>
       `;
 
       const lista = el.querySelector('.pl-coluna-cards');
@@ -4055,10 +4323,10 @@
       const form = document.createElement('div');
       form.className = 'pl-novo-card-form';
       form.innerHTML = `
-        <textarea placeholder="Escreva o achado..." rows="2"></textarea>
+        <textarea placeholder="${escapeHtml(tr('pl_achado_novo_placeholder'))}" rows="2"></textarea>
         <div class="pl-novo-card-acoes">
-          <button type="button" class="cal-btn cal-btn-primario pl-novo-card-salvar">Adicionar</button>
-          <button type="button" class="cal-btn pl-novo-card-cancelar">Cancelar</button>
+          <button type="button" class="cal-btn cal-btn-primario pl-novo-card-salvar">${escapeHtml(tr('adicionar'))}</button>
+          <button type="button" class="cal-btn pl-novo-card-cancelar">${escapeHtml(tr('confirm_cancelar'))}</button>
         </div>
       `;
       coluna.querySelector('.pl-coluna-add').before(form);
@@ -4080,14 +4348,14 @@
           await carregarPlanejador();
         } catch (err) {
           console.error('Erro ao criar achado:', err);
-          alert('Não foi possível criar agora. Tente de novo em instantes.');
+          alert(tr('erro_criar_generico'));
         }
       });
     }
 
     function abrirModalAchado(achado) {
       achadoAbertoId = achado.id;
-      document.getElementById('pl-modal-achado-coluna').textContent = achado.coluna;
+      document.getElementById('pl-modal-achado-coluna').textContent = traduzirColunaAchado(achado.coluna);
       document.getElementById('pl-modal-achado-texto').value = achado.conteudo || '';
       document.getElementById('pl-modal-achado-observacoes').value = achado.observacoes || '';
       document.getElementById('pl-modal-achado-overlay').hidden = false;
@@ -4119,7 +4387,7 @@
 
     async function excluirModalAchado() {
       if (!achadoAbertoId) return;
-      if (!(await confirmarAcao('Excluir este achado?'))) return;
+      if (!(await confirmarAcao(tr('pl_excluir_achado_confirmar')))) return;
       try {
         const { error } = await Auth.sb.from('planejador_achados').delete().eq('id', achadoAbertoId);
         if (error) throw error;
@@ -4138,7 +4406,7 @@
       container.innerHTML = '';
 
       if (cronogramaCache.length === 0) {
-        container.innerHTML = '<p class="texto-vazio">Nenhum pilar cadastrado ainda.</p>';
+        container.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('pl_cron_nenhum_pilar'))}</p>`;
         return;
       }
 
@@ -4154,9 +4422,9 @@
       el.innerHTML = `
         <input type="text" class="pl-cron-pilar-input" value="${escapeHtml(linha.pilar)}">
         <select class="pl-cron-dia-select">
-          ${DIAS_SEMANA.map((d) => `<option value="${d}" ${d === linha.dia_semana ? 'selected' : ''}>${d}</option>`).join('')}
+          ${DIAS_SEMANA.map((d) => `<option value="${d}" ${d === linha.dia_semana ? 'selected' : ''}>${escapeHtml(traduzirDiaSemana(d))}</option>`).join('')}
         </select>
-        <button type="button" class="pl-cron-excluir cal-btn cal-btn-icon" aria-label="Excluir">
+        <button type="button" class="pl-cron-excluir cal-btn cal-btn-icon" aria-label="${escapeHtml(tr('pl_cron_excluir_aria'))}">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       `;
@@ -4182,7 +4450,7 @@
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao criar linha do cronograma:', err);
-        alert('Não foi possível criar agora. Tente de novo em instantes.');
+        alert(tr('erro_criar_generico'));
       }
     }
 
@@ -4198,7 +4466,7 @@
     }
 
     async function excluirCronograma(id) {
-      if (!(await confirmarAcao('Excluir esta linha do cronograma?'))) return;
+      if (!(await confirmarAcao(tr('pl_cron_excluir_confirmar')))) return;
       try {
         const { error } = await Auth.sb.from('planejador_cronograma').delete().eq('id', id);
         if (error) throw error;
@@ -4210,8 +4478,8 @@
     }
 
     function renderizarCronogramaCalendario() {
-      const NOMES_MES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-      document.getElementById('pl-cron-mes-label').textContent = `${NOMES_MES[cronMesAtual.getMonth()]} ${cronMesAtual.getFullYear()}`;
+      document.getElementById('pl-cron-mes-label').textContent =
+        cronMesAtual.toLocaleDateString(localeAtual(), { month: 'long', year: 'numeric' });
 
       const grade = document.getElementById('pl-cron-grade');
       grade.innerHTML = '';
@@ -4249,19 +4517,19 @@
         celula.innerHTML = `
           <div class="pl-cron-dia-topo">
             <span class="pl-cron-dia-numero">${dia.getDate()}</span>
-            <button type="button" class="pl-cron-dia-add" aria-label="Agendar ideia">+</button>
+            <button type="button" class="pl-cron-dia-add" aria-label="${escapeHtml(tr('pl_cron_agendar_ideia_aria'))}">+</button>
           </div>
           ${pilaresDoDia.map((p) => `
             <span class="pl-cron-dia-pilar">
               ${escapeHtml(p)}
-              <button type="button" class="pl-cron-dia-pilar-remover" data-dia="${diaISO}" data-pilar="${escapeHtml(p)}" aria-label="Remover pilar deste dia">×</button>
+              <button type="button" class="pl-cron-dia-pilar-remover" data-dia="${diaISO}" data-pilar="${escapeHtml(p)}" aria-label="${escapeHtml(tr('pl_cron_remover_pilar_dia_aria'))}">×</button>
             </span>
           `).join('')}
-          ${pilaresDoDia.length === 0 ? `<button type="button" class="pl-cron-dia-add-pilar" data-dia="${diaISO}">+ pilar</button>` : ''}
+          ${pilaresDoDia.length === 0 ? `<button type="button" class="pl-cron-dia-add-pilar" data-dia="${diaISO}">${escapeHtml(tr('pl_cron_add_pilar_curto'))}</button>` : ''}
           ${ideiasDoDia.map((idea) => `
             <span class="pl-cron-dia-ideia" data-id="${escapeHtml(idea.id)}">
               <span class="pl-cron-dia-ideia-titulo">${escapeHtml(idea.titulo)}</span>
-              <button type="button" class="pl-cron-dia-ideia-remover" data-id="${escapeHtml(idea.id)}" aria-label="Remover do calendário">×</button>
+              <button type="button" class="pl-cron-dia-ideia-remover" data-id="${escapeHtml(idea.id)}" aria-label="${escapeHtml(tr('pl_cron_remover_ideia_calendario_aria'))}">×</button>
             </span>
           `).join('')}
         `;
@@ -4295,12 +4563,12 @@
     function abrirModalAgendar(diaISO) {
       dataAgendarAtual = diaISO;
       document.getElementById('pl-modal-agendar-data').textContent =
-        new Date(diaISO + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' });
+        new Date(diaISO + 'T00:00:00').toLocaleDateString(localeAtual(), { day: '2-digit', month: 'long' });
 
       const disponiveis = ideiasCache.filter((idea) => !idea.data_agendada && idea.status === 'Roteiro pronto');
       const select = document.getElementById('pl-modal-agendar-select');
       if (disponiveis.length === 0) {
-        select.innerHTML = '<option value="">Nenhuma ideia com roteiro pronto disponível</option>';
+        select.innerHTML = `<option value="">${escapeHtml(tr('pl_cron_nenhuma_ideia_roteiro_pronto'))}</option>`;
       } else {
         select.innerHTML = disponiveis
           .map((idea) => {
@@ -4328,7 +4596,7 @@
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao agendar ideia:', err);
-        alert('Não foi possível agendar agora. Tente de novo em instantes.');
+        alert(tr('pl_erro_agendar'));
       }
     }
 
@@ -4339,21 +4607,21 @@
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao remover ideia do calendário:', err);
-        alert('Não foi possível remover agora. Tente de novo em instantes.');
+        alert(tr('pl_erro_remover_calendario'));
       }
     }
 
     function abrirModalPilarDia(diaISO) {
       dataPilarDiaAtual = diaISO;
       document.getElementById('pl-modal-pilar-dia-data').textContent =
-        new Date(diaISO + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' });
+        new Date(diaISO + 'T00:00:00').toLocaleDateString(localeAtual(), { day: '2-digit', month: 'long' });
 
       const jaEscolhidos = cronogramaDiasCache.filter((l) => l.data === diaISO).map((l) => l.pilar);
       const nomesPilares = [...new Set(cronogramaCache.map((l) => l.pilar))].filter((p) => !jaEscolhidos.includes(p));
 
       const select = document.getElementById('pl-modal-pilar-dia-select');
       if (nomesPilares.length === 0) {
-        select.innerHTML = '<option value="">Nenhum pilar disponível — cadastre um lá embaixo</option>';
+        select.innerHTML = `<option value="">${escapeHtml(tr('pl_cron_nenhum_pilar_disponivel'))}</option>`;
       } else {
         select.innerHTML = nomesPilares.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
         // Sugere o pilar de referência daquele dia da semana, mas ela pode trocar livremente.
@@ -4409,7 +4677,7 @@
         renderizarRadar();
       } catch (err) {
         console.error('Erro ao carregar radar de notícias:', err);
-        document.getElementById('radar-lista').innerHTML = '<p class="texto-erro">Não foi possível carregar as notícias agora.</p>';
+        document.getElementById('radar-lista').innerHTML = `<p class="texto-erro">${escapeHtml(tr('radar_erro_carregar'))}</p>`;
       }
     }
 
@@ -4437,19 +4705,19 @@
 
       const lista = document.getElementById('radar-lista');
       if (filtradas.length === 0) {
-        lista.innerHTML = '<p class="radar-vazio">Nenhuma notícia por aqui ainda.</p>';
+        lista.innerHTML = `<p class="radar-vazio">${escapeHtml(tr('radar_nenhuma_noticia'))}</p>`;
         return;
       }
 
       lista.innerHTML = filtradas
         .map((item) => {
-          const dataFmt = new Date(item.data_publicacao || item.created_at).toLocaleDateString('pt-BR');
+          const dataFmt = new Date(item.data_publicacao || item.created_at).toLocaleDateString(localeAtual());
           return `
             <div class="radar-item" data-id="${item.id}">
               <div class="radar-item-topo">
                 <span class="radar-item-titulo">${escapeHtml(item.titulo)}</span>
-                ${radarEDeHoje(item) ? '<span class="radar-tag radar-tag-nova">Hoje</span>' : ''}
-                ${item.usada ? '<span class="radar-tag radar-tag-usada">Usada</span>' : ''}
+                ${radarEDeHoje(item) ? `<span class="radar-tag radar-tag-nova">${escapeHtml(tr('radar_tag_hoje'))}</span>` : ''}
+                ${item.usada ? `<span class="radar-tag radar-tag-usada">${escapeHtml(tr('radar_tag_usada'))}</span>` : ''}
               </div>
               <span class="radar-item-meta">${escapeHtml(item.fonte || '')} · ${dataFmt}</span>
               <span class="radar-item-resumo">${escapeHtml((item.resumo || '').slice(0, 160))}</span>
@@ -4468,7 +4736,7 @@
       const avisoEl = document.getElementById('radar-avisos');
       avisoEl.hidden = true;
       btn.disabled = true;
-      btn.textContent = 'Buscando...';
+      btn.textContent = tr('radar_buscando');
       try {
         const resultado = await chamarFuncao('radar-atualizar', { method: 'POST' });
         if (!resultado.ok) throw new Error(resultado.error || 'erro desconhecido');
@@ -4477,18 +4745,18 @@
           .filter(([, r]) => r.erro)
           .map(([chave, r]) => `${chave}: ${r.erro}`);
         if (erros.length) {
-          avisoEl.innerHTML = '<strong>Alguns agentes não conseguiram buscar agora:</strong><br>' + erros.map((e) => escapeHtml(e)).join('<br>');
+          avisoEl.innerHTML = `<strong>${escapeHtml(tr('radar_alguns_agentes_erro'))}</strong><br>` + erros.map((e) => escapeHtml(e)).join('<br>');
           avisoEl.hidden = false;
         }
 
         await carregarRadar();
       } catch (err) {
         console.error('Erro ao atualizar notícias:', err);
-        avisoEl.textContent = 'Não foi possível atualizar as notícias agora: ' + err.message;
+        avisoEl.textContent = tr('radar_erro_atualizar_prefixo') + err.message;
         avisoEl.hidden = false;
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Atualizar notícias';
+        btn.textContent = tr('radar_atualizar');
       }
     }
 
@@ -4496,13 +4764,13 @@
       const item = radarCache.find((i) => i.id === id);
       if (!item) return;
       radarAbertaId = id;
-      document.getElementById('radar-modal-agente').textContent = item.agente;
+      document.getElementById('radar-modal-agente').textContent = traduzirAgenteRadar(item.agente);
       document.getElementById('radar-modal-titulo').textContent = item.titulo;
-      const dataFmt = new Date(item.data_publicacao || item.created_at).toLocaleDateString('pt-BR');
+      const dataFmt = new Date(item.data_publicacao || item.created_at).toLocaleDateString(localeAtual());
       document.getElementById('radar-modal-meta').textContent = `${item.fonte || ''} · ${dataFmt}`;
-      document.getElementById('radar-modal-insight').textContent = item.insight || 'Sem roteiro gerado pra essa notícia.';
+      document.getElementById('radar-modal-insight').textContent = item.insight || tr('radar_sem_roteiro');
       document.getElementById('radar-modal-fonte').href = item.link || '#';
-      document.getElementById('radar-modal-usada').textContent = item.usada ? 'Marcar como não usada' : 'Marcar como usada';
+      document.getElementById('radar-modal-usada').textContent = item.usada ? tr('radar_marcar_nao_usada') : tr('radar_marcar_usada');
       document.getElementById('radar-modal-overlay').hidden = false;
     }
 
@@ -4528,7 +4796,7 @@
 
     async function excluirRadarNoticia() {
       if (!radarAbertaId) return;
-      if (!(await confirmarAcao('Excluir esta notícia?'))) return;
+      if (!(await confirmarAcao(tr('radar_excluir_confirmar')))) return;
       try {
         const { error } = await Auth.sb.from('radar_noticias').delete().eq('id', radarAbertaId);
         if (error) throw error;
@@ -4554,7 +4822,7 @@
         }
       }
       if (pilaresCache.length === 0) {
-        alert('Crie um pilar no Banco de Ideias primeiro pra poder usar essa ideia.');
+        alert(tr('radar_crie_pilar_primeiro'));
         return;
       }
       document.getElementById('radar-pilar-select').innerHTML = pilaresCache
@@ -4575,7 +4843,7 @@
 
       const btn = document.getElementById('radar-pilar-confirmar');
       btn.disabled = true;
-      btn.textContent = 'Adicionando...';
+      btn.textContent = tr('radar_adicionando');
       try {
         const { error: erroIdeia } = await Auth.sb.from('planejador_ideias').insert({
           pilar_id: pilarId,
@@ -4591,13 +4859,13 @@
         fecharModalEscolherPilar();
         fecharModalRadar();
         await carregarRadar();
-        alert('Ideia adicionada ao Banco de Ideias!');
+        alert(tr('radar_ideia_adicionada'));
       } catch (err) {
         console.error('Erro ao usar ideia do radar:', err);
-        alert('Não foi possível adicionar a ideia agora. Tente de novo em instantes.');
+        alert(tr('radar_erro_adicionar_ideia'));
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Adicionar ideia';
+        btn.textContent = tr('radar_adicionar_ideia');
       }
     }
 

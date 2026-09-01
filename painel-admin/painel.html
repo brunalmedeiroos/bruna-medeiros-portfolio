@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260827aa">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260901a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260901b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260827aa"></script>
@@ -4035,7 +4035,8 @@
         if (mesmoDia(dia, hoje)) btn.classList.add('cal-dia-hoje');
         if (mesmoDia(dia, calDiaSelecionado)) btn.classList.add('cal-dia-selecionado');
 
-        const temTarefa = tarefasCache.some((t) => t.data === dataParaISO(dia));
+        const isoDia = dataParaISO(dia);
+        const temTarefa = tarefasCache.some((t) => t.data === isoDia) || entregasUgcPendentesDoDia(isoDia).length > 0;
         if (temTarefa) btn.classList.add('cal-dia-com-tarefa');
 
         btn.addEventListener('click', () => {
@@ -4047,12 +4048,45 @@
       }
     }
 
+    // ---- Entregas de UGC/Publi no Calendário: só leitura, nunca viram uma
+    // linha em painel_tarefas — filtra ugcTrabalhosCache (já carregado
+    // eagerly no boot, ver IIFE perto de carregarDados()) por data_entrega,
+    // escondendo trabalhos já finalizados (mesmo critério de "some quando
+    // termina" que uma tarefa marcada como feita já tem).
+    const UGC_STATUS_FINALIZADOS_CALENDARIO = ['Entregue', 'Aguardando pagamento', 'Pago', 'Cancelado'];
+
+    function entregasUgcPendentesDoDia(isoData) {
+      return ugcTrabalhosCache.filter((t) => t.data_entrega === isoData && !UGC_STATUS_FINALIZADOS_CALENDARIO.includes(t.status));
+    }
+
+    function criarItemEntregaUgc(trabalho) {
+      const item = document.createElement('div');
+      item.className = 'cal-tarefa-item cal-tarefa-item-ugc';
+      item.innerHTML = `
+        <span class="cal-tarefa-ugc-badge cal-todas-tipo-badge">UGC</span>
+        <div class="cal-tarefa-info">
+          <span class="cal-tarefa-horario">${escapeHtml(traduzirStatusTrabalho(trabalho.status))}</span>
+          <span class="cal-tarefa-titulo">${escapeHtml(trabalho.marca)}${trabalho.campanha ? ' · ' + escapeHtml(trabalho.campanha) : ''}</span>
+        </div>
+      `;
+      item.addEventListener('click', () => abrirEntregaUgcNoCalendario(trabalho));
+      return item;
+    }
+
+    function abrirEntregaUgcNoCalendario(trabalho) {
+      trocarAba('ugc');
+      trocarSubAbaUGC('trabalhos');
+      abrirModalTrabalho(trabalho);
+    }
+
     function renderizarTarefasDoDia() {
       const isoSelecionado = dataParaISO(calDiaSelecionado);
       const doDia = tarefasCache.filter((t) => t.data === isoSelecionado);
       // Assim que uma tarefa é marcada como feita, ela some daqui (só continua
       // visível no filtro "Feitos" da tabela "Tudo o que está marcado").
       const pendentesDoDia = doDia.filter((t) => !t.feito);
+      const entregasDoDia = entregasUgcPendentesDoDia(isoSelecionado);
+      const totalPendentes = pendentesDoDia.length + entregasDoDia.length;
 
       const hoje = new Date();
       const titulo = mesmoDia(calDiaSelecionado, hoje)
@@ -4061,19 +4095,20 @@
       document.getElementById('cal-dia-titulo').textContent = titulo;
 
       document.getElementById('cal-dia-resumo').textContent =
-        doDia.length === 0
+        doDia.length === 0 && entregasDoDia.length === 0
           ? tr('cal_nenhuma_entrega')
-          : pendentesDoDia.length === 0
+          : totalPendentes === 0
             ? tr('cal_tudo_feito')
-            : `${pendentesDoDia.length} ${tr(pendentesDoDia.length === 1 ? 'cal_pendente_singular' : 'cal_pendente_plural')}`;
+            : `${totalPendentes} ${tr(totalPendentes === 1 ? 'cal_pendente_singular' : 'cal_pendente_plural')}`;
 
       // O resumo acima já conta o que há pra hoje — não repete a mensagem aqui embaixo.
       const lista = document.getElementById('cal-lista-tarefas');
       lista.innerHTML = '';
 
-      if (pendentesDoDia.length === 0) return;
+      if (totalPendentes === 0) return;
 
       pendentesDoDia.forEach((tarefa) => lista.appendChild(criarItemTarefa(tarefa, false)));
+      entregasDoDia.forEach((trabalho) => lista.appendChild(criarItemEntregaUgc(trabalho)));
     }
 
     // Cria o elemento de uma tarefa. mostrarData controla se aparece a data
@@ -5711,6 +5746,11 @@
       renderizarPrecos();
       renderizarResultadosUGC();
       renderizarAtencaoDashboard();
+      // Entregas de UGC aparecem no Calendário (só leitura) — como o
+      // Calendário costuma renderizar antes desta função terminar de
+      // carregar (ambos disparam no boot), atualiza de novo aqui pra
+      // pegar as entregas assim que ugcTrabalhosCache chega.
+      renderizarCalendario();
     }
 
     function trocarSubAbaUGC(pagina) {

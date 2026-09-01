@@ -420,6 +420,21 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* ---- Entregas de UGC/Publi mostradas (só leitura) no Calendário ---- */
+
+.painel-body .cal-tarefa-item-ugc {
+  cursor: pointer;
+}
+
+.painel-body .cal-tarefa-item-ugc:hover {
+  background: rgba(var(--grafite-rgb), 0.04);
+}
+
+.painel-body .cal-tarefa-ugc-badge {
+  flex-shrink: 0;
+  margin: 0;
+}
+
 .painel-body .cal-tarefa-editar,
 .painel-body .cal-tarefa-excluir {
   color: var(--texto-suave);

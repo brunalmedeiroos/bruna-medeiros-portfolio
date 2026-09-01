@@ -2822,7 +2822,7 @@
     // ---- Ponto de entrada: guarda de autenticação + carga inicial ----
     (async function iniciar() {
       const auth = await Auth.checkAuth();
-      if (!auth) return; // Auth.checkAuth já redirecionou para login.html
+      if (!auth) return; // Auth.checkAuth já redirecionou pra tela de login
 
       configurarEventos();
       configurarColapsarSidebar();

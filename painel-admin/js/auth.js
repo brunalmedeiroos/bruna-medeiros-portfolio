@@ -38,15 +38,18 @@ window.Auth = {
   },
 
   // Guarda de autenticação: roda no topo de páginas protegidas.
-  // Se NÃO houver sessão, redireciona para login.html e retorna null.
+  // Se NÃO houver sessão, redireciona para a tela de login e retorna null.
   // Se houver, retorna o usuário logado.
-  // Caminho relativo (não começa com /) para funcionar em file://,
-  // GitHub Pages ou Vercel, independente da pasta em que o site publicar.
+  // Caminho relativo (não começa com /) para funcionar em file://, GitHub
+  // Pages ou Vercel, independente da pasta em que o site publicar. '../login/'
+  // porque este script é compartilhado por duas páginas protegidas em
+  // pastas diferentes ao mesmo nível (painel-admin/painel.html e
+  // painel/index.html) — as duas ficam a um nível de login/index.html.
   async checkAuth() {
     const { data: { session } } = await sb.auth.getSession();
 
     if (!session) {
-      window.location.href = 'login.html';
+      window.location.href = '../login/';
       return null;
     }
 
@@ -56,7 +59,7 @@ window.Auth = {
   // Encerra a sessão e volta para a tela de login.
   async logout() {
     await sb.auth.signOut();
-    window.location.href = 'login.html';
+    window.location.href = '../login/';
   },
 
   // Envia o e-mail de recuperação de senha do Supabase Auth.

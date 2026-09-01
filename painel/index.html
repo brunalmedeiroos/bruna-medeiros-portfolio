@@ -41,42 +41,42 @@
       <nav class="sidebar-nav">
         <button class="nav-item active" data-tab="overview" type="button">
           <img class="nav-icon-img" src="../painel-admin/img/nav-icones/dashboard.png" alt="">
-          <span>Dashboard</span>
+          <span data-i18n="nav_dashboard">Dashboard</span>
         </button>
         <button class="nav-item" data-tab="portfolio" type="button">
           <img class="nav-icon-img" src="../painel-admin/img/nav-icones/portfolio.png" alt="">
-          <span>Portfólio</span>
+          <span data-i18n="nav_portfolio">Portfólio</span>
         </button>
         <button class="nav-item" data-tab="calendario" type="button">
           <img class="nav-icon-img" src="../painel-admin/img/nav-icones/calendario.png" alt="">
-          <span>Calendário</span>
+          <span data-i18n="nav_calendario">Calendário</span>
         </button>
         <button class="nav-item" data-tab="email" type="button">
           <img class="nav-icon-img" src="../painel-admin/img/nav-icones/email.png" alt="">
-          <span>E-mail</span>
+          <span data-i18n="nav_email">E-mail</span>
         </button>
         <button class="nav-item" data-tab="instagram" type="button">
           <img class="nav-icon-img" src="../painel-admin/img/nav-icones/instagram.png" alt="">
-          <span>Instagram</span>
+          <span data-i18n="nav_instagram">Instagram</span>
         </button>
         <button class="nav-item" data-tab="planejador" type="button">
           <img class="nav-icon-img" src="../painel-admin/img/nav-icones/planejador.png" alt="">
-          <span>Planejador</span>
+          <span data-i18n="nav_planejador">Planejador</span>
         </button>
         <button class="nav-item" data-tab="radar" type="button">
           <img class="nav-icon-img" src="../painel-admin/img/nav-icones/radar.png" alt="">
-          <span>Radar de Notícias</span>
+          <span data-i18n="nav_radar">Radar de Notícias</span>
         </button>
         <button class="nav-item" data-tab="ugc" type="button">
           <img class="nav-icon-img" src="../painel-admin/img/nav-icones/ugc.png" alt="">
-          <span>UGC / Publi</span>
+          <span data-i18n="nav_ugc">UGC / Publi</span>
         </button>
       </nav>
 
       <div class="sidebar-footer">
         <button class="nav-item" id="btn-abrir-configuracoes" type="button">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82A1.65 1.65 0 0 0 3 13.09H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Configurações</span>
+          <span data-i18n="nav_configuracoes">Configurações</span>
         </button>
       </div>
     </aside>
@@ -84,10 +84,10 @@
     <!-- ================= Conteúdo ================= -->
     <main class="main">
       <header class="topbar">
-        <h1 id="titulo-topo">Dashboard</h1>
+        <h1 id="titulo-topo" data-i18n="titulo_dashboard">Dashboard</h1>
 
         <div class="filtros-periodo" id="filtros-periodo" hidden>
-          <button class="filtro-btn active" data-periodo="all" type="button">Tudo</button>
+          <button class="filtro-btn active" data-periodo="all" data-i18n="filtro_tudo" type="button">Tudo</button>
           <button class="filtro-btn" data-periodo="7" type="button">7d</button>
           <button class="filtro-btn" data-periodo="30" type="button">30d</button>
           <button class="filtro-btn" data-periodo="90" type="button">90d</button>
@@ -103,18 +103,18 @@
             <p class="dash-data" id="dash-data">Hoje</p>
           </div>
 
-          <h3 class="dash-secao-titulo">O que eu preciso saber agora?</h3>
+          <h3 class="dash-secao-titulo" data-i18n="dash_pergunta">O que eu preciso saber agora?</h3>
 
           <div class="dash-secoes">
             <div class="card card-dash-hoje">
-              <h3 class="card-titulo">Hoje</h3>
+              <h3 class="card-titulo" data-i18n="dash_hoje">Hoje</h3>
               <div id="dash-hoje-lista" class="dash-hoje-lista cal-lista-tarefas"></div>
             </div>
 
             <div class="card card-dash-atencao">
-              <h3 class="card-titulo">Precisa da sua atenção</h3>
+              <h3 class="card-titulo" data-i18n="dash_atencao">Precisa da sua atenção</h3>
               <div id="dash-atencao-lista" class="dash-atencao-lista">
-                <p class="texto-vazio">Carregando...</p>
+                <p class="texto-vazio" data-i18n="carregando">Carregando...</p>
               </div>
             </div>
           </div>
@@ -715,37 +715,37 @@
     <div id="config-modal-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal pl-modal-grande">
         <div class="pl-modal-topo">
-          <span class="pl-modal-titulo-fixo">Configurações</span>
+          <span class="pl-modal-titulo-fixo" data-i18n="config_titulo">Configurações</span>
           <button id="config-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
 
         <div class="config-subnav">
-          <button class="config-subnav-btn ativo" data-config-pagina="geral" type="button">Geral</button>
-          <button class="config-subnav-btn" data-config-pagina="perfil" type="button">Perfil</button>
+          <button class="config-subnav-btn ativo" data-config-pagina="geral" data-i18n="config_geral" type="button">Geral</button>
+          <button class="config-subnav-btn" data-config-pagina="perfil" data-i18n="config_perfil" type="button">Perfil</button>
         </div>
 
         <div id="config-pagina-geral" class="config-pagina">
           <div class="config-campo">
-            <label class="config-label">Aparência</label>
+            <label class="config-label" data-i18n="config_aparencia">Aparência</label>
             <div class="config-segmentado">
-              <button class="config-segmentado-btn" data-valor="claro" type="button">Claro</button>
-              <button class="config-segmentado-btn" data-valor="escuro" type="button">Escuro</button>
-              <button class="config-segmentado-btn ativo" data-valor="sistema" type="button">Seguir sistema</button>
+              <button class="config-segmentado-btn" data-valor="claro" data-i18n="config_claro" type="button">Claro</button>
+              <button class="config-segmentado-btn" data-valor="escuro" data-i18n="config_escuro" type="button">Escuro</button>
+              <button class="config-segmentado-btn ativo" data-valor="sistema" data-i18n="config_seguir_sistema" type="button">Seguir sistema</button>
             </div>
           </div>
 
           <div class="config-campo">
-            <label class="config-label">Cor de ênfase</label>
+            <label class="config-label" data-i18n="config_cor_enfase">Cor de ênfase</label>
             <div class="config-cores">
-              <button class="config-cor-swatch ativo" data-cor="#7DB7CE" style="background:#7DB7CE" type="button" aria-label="Azul"></button>
-              <button class="config-cor-swatch" data-cor="#EF4444" style="background:#EF4444" type="button" aria-label="Vermelho"></button>
-              <button class="config-cor-swatch" data-cor="#F97316" style="background:#F97316" type="button" aria-label="Laranja"></button>
-              <button class="config-cor-swatch" data-cor="#22C55E" style="background:#22C55E" type="button" aria-label="Verde"></button>
-              <button class="config-cor-swatch" data-cor="#A855F7" style="background:#A855F7" type="button" aria-label="Roxo"></button>
-              <button class="config-cor-swatch" data-cor="#EC4899" style="background:#EC4899" type="button" aria-label="Rosa"></button>
-              <button class="config-cor-swatch" data-cor="#64748B" style="background:#64748B" type="button" aria-label="Cinza"></button>
+              <button class="config-cor-swatch ativo" data-cor="#7DB7CE" style="background:#7DB7CE" type="button" data-i18n-aria="config_cor_azul" aria-label="Azul"></button>
+              <button class="config-cor-swatch" data-cor="#EF4444" style="background:#EF4444" type="button" data-i18n-aria="config_cor_vermelho" aria-label="Vermelho"></button>
+              <button class="config-cor-swatch" data-cor="#F97316" style="background:#F97316" type="button" data-i18n-aria="config_cor_laranja" aria-label="Laranja"></button>
+              <button class="config-cor-swatch" data-cor="#22C55E" style="background:#22C55E" type="button" data-i18n-aria="config_cor_verde" aria-label="Verde"></button>
+              <button class="config-cor-swatch" data-cor="#A855F7" style="background:#A855F7" type="button" data-i18n-aria="config_cor_roxo" aria-label="Roxo"></button>
+              <button class="config-cor-swatch" data-cor="#EC4899" style="background:#EC4899" type="button" data-i18n-aria="config_cor_rosa" aria-label="Rosa"></button>
+              <button class="config-cor-swatch" data-cor="#64748B" style="background:#64748B" type="button" data-i18n-aria="config_cor_cinza" aria-label="Cinza"></button>
               <div class="config-cor-custom">
                 <span class="config-cor-preview" id="config-cor-preview"></span>
                 <input type="text" id="config-cor-hex" placeholder="#7DB7CE">
@@ -755,65 +755,65 @@
 
           <div class="cal-form-linha">
             <div class="cal-form-campo">
-              <label for="config-idioma">Idioma</label>
+              <label for="config-idioma" data-i18n="config_idioma">Idioma</label>
               <select id="config-idioma">
-                <option value="pt">Português</option>
-                <option value="en">Inglês</option>
+                <option value="pt" data-i18n="config_idioma_pt">Português</option>
+                <option value="en" data-i18n="config_idioma_en">Inglês</option>
               </select>
             </div>
             <div class="cal-form-campo">
-              <label for="config-fuso">Fuso horário</label>
+              <label for="config-fuso" data-i18n="config_fuso">Fuso horário</label>
               <select id="config-fuso">
-                <option value="automatico">Automático (do dispositivo)</option>
-                <option value="America/Noronha">Fernando de Noronha (UTC−2)</option>
-                <option value="America/Sao_Paulo">Brasília (UTC−3)</option>
-                <option value="America/Manaus">Manaus (UTC−4)</option>
-                <option value="America/Rio_Branco">Rio Branco (UTC−5)</option>
-                <option value="Atlantic/Azores">Açores (UTC−1)</option>
-                <option value="Europe/Lisbon">Lisboa (UTC+0/+1)</option>
+                <option value="automatico" data-i18n="config_fuso_automatico">Automático (do dispositivo)</option>
+                <option value="America/Noronha" data-i18n="config_fuso_noronha">Fernando de Noronha (UTC−2)</option>
+                <option value="America/Sao_Paulo" data-i18n="config_fuso_brasilia">Brasília (UTC−3)</option>
+                <option value="America/Manaus" data-i18n="config_fuso_manaus">Manaus (UTC−4)</option>
+                <option value="America/Rio_Branco" data-i18n="config_fuso_riobranco">Rio Branco (UTC−5)</option>
+                <option value="Atlantic/Azores" data-i18n="config_fuso_acores">Açores (UTC−1)</option>
+                <option value="Europe/Lisbon" data-i18n="config_fuso_lisboa">Lisboa (UTC+0/+1)</option>
                 <option value="UTC">UTC</option>
               </select>
             </div>
             <div class="cal-form-campo">
-              <label for="config-inicio-semana">Início da semana</label>
+              <label for="config-inicio-semana" data-i18n="config_inicio_semana">Início da semana</label>
               <select id="config-inicio-semana">
-                <option value="domingo">Domingo</option>
-                <option value="segunda">Segunda</option>
+                <option value="domingo" data-i18n="config_domingo">Domingo</option>
+                <option value="segunda" data-i18n="config_segunda">Segunda</option>
               </select>
             </div>
           </div>
 
-          <p class="config-salvo" id="config-geral-status" hidden>Salvo.</p>
+          <p class="config-salvo" id="config-geral-status" data-i18n="config_salvo" hidden>Salvo.</p>
 
           <hr class="config-divisor">
 
-          <button class="cal-btn" id="config-btn-sair" type="button">Sair da conta</button>
+          <button class="cal-btn" id="config-btn-sair" data-i18n="config_sair" type="button">Sair da conta</button>
         </div>
 
         <div id="config-pagina-perfil" class="config-pagina" hidden>
           <div class="cal-form-campo">
-            <label for="config-nome">Nome</label>
-            <input type="text" id="config-nome" placeholder="Como você quer ser chamada no painel">
+            <label for="config-nome" data-i18n="config_nome">Nome</label>
+            <input type="text" id="config-nome" data-i18n-placeholder="config_nome_placeholder" placeholder="Como você quer ser chamada no painel">
           </div>
           <div class="cal-form-acoes">
-            <button class="cal-btn cal-btn-primario" id="config-salvar-nome" type="button">Salvar nome</button>
+            <button class="cal-btn cal-btn-primario" id="config-salvar-nome" data-i18n="config_salvar_nome" type="button">Salvar nome</button>
           </div>
 
           <hr class="config-divisor">
 
           <div class="cal-form-linha">
             <div class="cal-form-campo">
-              <label for="config-nova-senha">Nova senha</label>
-              <input type="password" id="config-nova-senha" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+              <label for="config-nova-senha" data-i18n="config_nova_senha">Nova senha</label>
+              <input type="password" id="config-nova-senha" data-i18n-placeholder="config_nova_senha_placeholder" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
             </div>
             <div class="cal-form-campo">
-              <label for="config-confirmar-senha">Confirmar nova senha</label>
-              <input type="password" id="config-confirmar-senha" placeholder="Repita a nova senha" autocomplete="new-password">
+              <label for="config-confirmar-senha" data-i18n="config_confirmar_senha">Confirmar nova senha</label>
+              <input type="password" id="config-confirmar-senha" data-i18n-placeholder="config_confirmar_senha_placeholder" placeholder="Repita a nova senha" autocomplete="new-password">
             </div>
           </div>
           <p class="config-erro" id="config-senha-erro" hidden></p>
           <div class="cal-form-acoes">
-            <button class="cal-btn cal-btn-primario" id="config-salvar-senha" type="button">Alterar senha</button>
+            <button class="cal-btn cal-btn-primario" id="config-salvar-senha" data-i18n="config_alterar_senha" type="button">Alterar senha</button>
           </div>
         </div>
       </div>
@@ -1407,7 +1407,7 @@
         </div>
         <p id="confirmar-modal-mensagem"></p>
         <div class="cal-form-acoes">
-          <button type="button" id="confirmar-modal-cancelar" class="cal-btn">Cancelar</button>
+          <button type="button" id="confirmar-modal-cancelar" class="cal-btn" data-i18n="confirm_cancelar">Cancelar</button>
           <button type="button" id="confirmar-modal-ok" class="cal-btn pl-btn-excluir">Excluir</button>
         </div>
       </div>
@@ -1497,18 +1497,248 @@
     let ugcPropostaDescontoManual = false; // true assim que ela mexe no desconto na mão, pra parar de sobrescrever com a sugestão
 
     const TITULOS_ABA = {
-      overview: 'Dashboard',
-      portfolio: 'Portfólio',
-      calendario: 'Calendário',
-      email: 'E-mail',
-      instagram: 'Instagram',
-      planejador: 'Planejador de Conteúdo',
-      radar: 'Radar de Notícias',
-      ugc: 'UGC / Publi',
+      overview: 'titulo_dashboard',
+      portfolio: 'titulo_portfolio',
+      calendario: 'titulo_calendario',
+      email: 'titulo_email',
+      instagram: 'titulo_instagram',
+      planejador: 'titulo_planejador',
+      radar: 'titulo_radar',
+      ugc: 'titulo_ugc',
     };
 
     let configCache = null;
     let configSalvoTimeout = null;
+
+    // ==========================================================================
+    // Tradução (Configurações > Geral > Idioma). Troca de idioma recarrega a
+    // página — bem mais simples/confiável do que re-renderizar tudo ao vivo.
+    // tr(chave) é usado em texto gerado por JS; texto estático do HTML leva
+    // data-i18n="chave" e é preenchido por aplicarTraducoesEstaticas().
+    // IMPORTANTE: valores gravados no Supabase (status, origem etc.) NUNCA
+    // passam por aqui — só o rótulo exibido muda, o dado salvo continua em
+    // português (ver STATUS_TRABALHO_LABEL e afins nas fases seguintes).
+    // ==========================================================================
+
+    const TRADUCOES = {
+      pt: {
+        titulo_dashboard: 'Dashboard',
+        titulo_portfolio: 'Portfólio',
+        titulo_calendario: 'Calendário',
+        titulo_email: 'E-mail',
+        titulo_instagram: 'Instagram',
+        titulo_planejador: 'Planejador de Conteúdo',
+        titulo_radar: 'Radar de Notícias',
+        titulo_ugc: 'UGC / Publi',
+        nav_dashboard: 'Dashboard',
+        nav_portfolio: 'Portfólio',
+        nav_calendario: 'Calendário',
+        nav_email: 'E-mail',
+        nav_instagram: 'Instagram',
+        nav_planejador: 'Planejador',
+        nav_radar: 'Radar de Notícias',
+        nav_ugc: 'UGC / Publi',
+        nav_configuracoes: 'Configurações',
+
+        dash_pergunta: 'O que eu preciso saber agora?',
+        dash_hoje: 'Hoje',
+        dash_atencao: 'Precisa da sua atenção',
+        dash_hoje_vazio: 'Nada marcado para hoje.',
+        dash_atencao_vazio: 'Tudo em dia por aqui.',
+        saudacao_bom_dia: 'Bom dia',
+        saudacao_boa_tarde: 'Boa tarde',
+        saudacao_boa_noite: 'Boa noite',
+        atencao_entregas_atrasadas: 'Entregas atrasadas',
+        atencao_pagamentos_pendentes: 'Pagamentos pendentes',
+        atencao_direitos_uso: 'Direitos de uso vencendo',
+        atencao_followups: 'Follow-ups de prospecção',
+        atencao_contratos: 'Contratos aguardando assinatura',
+        atencao_entregas_proximas: 'Entregas nos próximos dias',
+        atencao_propostas: 'Propostas aguardando resposta',
+        atencao_era: 'Era',
+        atencao_vence_em: 'Vence em',
+        atencao_venceu_em: 'Venceu em',
+        atencao_followup_era: 'Follow-up era',
+        atencao_sem_followup: 'Sem follow-up marcado',
+        permuta: 'Permuta',
+        filtro_tudo: 'Tudo',
+        carregando: 'Carregando...',
+        sem_assunto: '(sem assunto)',
+
+        confirm_cancelar: 'Cancelar',
+        confirm_sair_titulo: 'Sair da conta',
+        confirm_sair_mensagem: 'Tem certeza que deseja sair?',
+        confirm_sair_botao: 'Sair',
+
+        config_titulo: 'Configurações',
+        config_geral: 'Geral',
+        config_perfil: 'Perfil',
+        config_aparencia: 'Aparência',
+        config_claro: 'Claro',
+        config_escuro: 'Escuro',
+        config_seguir_sistema: 'Seguir sistema',
+        config_cor_enfase: 'Cor de ênfase',
+        config_cor_azul: 'Azul',
+        config_cor_vermelho: 'Vermelho',
+        config_cor_laranja: 'Laranja',
+        config_cor_verde: 'Verde',
+        config_cor_roxo: 'Roxo',
+        config_cor_rosa: 'Rosa',
+        config_cor_cinza: 'Cinza',
+        config_idioma: 'Idioma',
+        config_idioma_pt: 'Português',
+        config_idioma_en: 'Inglês',
+        config_fuso: 'Fuso horário',
+        config_fuso_automatico: 'Automático (do dispositivo)',
+        config_fuso_noronha: 'Fernando de Noronha (UTC−2)',
+        config_fuso_brasilia: 'Brasília (UTC−3)',
+        config_fuso_manaus: 'Manaus (UTC−4)',
+        config_fuso_riobranco: 'Rio Branco (UTC−5)',
+        config_fuso_acores: 'Açores (UTC−1)',
+        config_fuso_lisboa: 'Lisboa (UTC+0/+1)',
+        config_inicio_semana: 'Início da semana',
+        config_domingo: 'Domingo',
+        config_segunda: 'Segunda',
+        config_salvo: 'Salvo.',
+        config_sair: 'Sair da conta',
+        config_nome: 'Nome',
+        config_nome_placeholder: 'Como você quer ser chamada no painel',
+        config_salvar_nome: 'Salvar nome',
+        config_nova_senha: 'Nova senha',
+        config_nova_senha_placeholder: 'Mínimo 6 caracteres',
+        config_confirmar_senha: 'Confirmar nova senha',
+        config_confirmar_senha_placeholder: 'Repita a nova senha',
+        config_alterar_senha: 'Alterar senha',
+        config_senha_curta: 'A senha precisa ter pelo menos 6 caracteres.',
+        config_senha_nao_coincide: 'As senhas não coincidem.',
+        config_senha_sucesso: 'Senha alterada com sucesso.',
+        config_senha_erro: 'Não foi possível alterar a senha agora. Tente de novo.',
+        config_cor_invalida: 'Cor inválida. Use o formato #RRGGBB.',
+        erro_salvar_generico: 'Não foi possível salvar agora. Tente de novo em instantes.',
+      },
+      en: {
+        titulo_dashboard: 'Dashboard',
+        titulo_portfolio: 'Portfolio',
+        titulo_calendario: 'Calendar',
+        titulo_email: 'Email',
+        titulo_instagram: 'Instagram',
+        titulo_planejador: 'Content Planner',
+        titulo_radar: 'News Radar',
+        titulo_ugc: 'UGC / Ads',
+        nav_dashboard: 'Dashboard',
+        nav_portfolio: 'Portfolio',
+        nav_calendario: 'Calendar',
+        nav_email: 'Email',
+        nav_instagram: 'Instagram',
+        nav_planejador: 'Planner',
+        nav_radar: 'News Radar',
+        nav_ugc: 'UGC / Ads',
+        nav_configuracoes: 'Settings',
+
+        dash_pergunta: 'What do I need to know right now?',
+        dash_hoje: 'Today',
+        dash_atencao: 'Needs your attention',
+        dash_hoje_vazio: 'Nothing scheduled for today.',
+        dash_atencao_vazio: 'All caught up here.',
+        saudacao_bom_dia: 'Good morning',
+        saudacao_boa_tarde: 'Good afternoon',
+        saudacao_boa_noite: 'Good evening',
+        atencao_entregas_atrasadas: 'Overdue deliveries',
+        atencao_pagamentos_pendentes: 'Pending payments',
+        atencao_direitos_uso: 'Usage rights expiring',
+        atencao_followups: 'Prospecting follow-ups',
+        atencao_contratos: 'Contracts awaiting signature',
+        atencao_entregas_proximas: 'Upcoming deliveries',
+        atencao_propostas: 'Proposals awaiting reply',
+        atencao_era: 'Was due',
+        atencao_vence_em: 'Expires on',
+        atencao_venceu_em: 'Expired on',
+        atencao_followup_era: 'Follow-up was due',
+        atencao_sem_followup: 'No follow-up scheduled',
+        permuta: 'Trade',
+        filtro_tudo: 'All',
+        carregando: 'Loading...',
+        sem_assunto: '(no subject)',
+
+        confirm_cancelar: 'Cancel',
+        confirm_sair_titulo: 'Log out',
+        confirm_sair_mensagem: 'Are you sure you want to log out?',
+        confirm_sair_botao: 'Log out',
+
+        config_titulo: 'Settings',
+        config_geral: 'General',
+        config_perfil: 'Profile',
+        config_aparencia: 'Appearance',
+        config_claro: 'Light',
+        config_escuro: 'Dark',
+        config_seguir_sistema: 'Follow system',
+        config_cor_enfase: 'Accent color',
+        config_cor_azul: 'Blue',
+        config_cor_vermelho: 'Red',
+        config_cor_laranja: 'Orange',
+        config_cor_verde: 'Green',
+        config_cor_roxo: 'Purple',
+        config_cor_rosa: 'Pink',
+        config_cor_cinza: 'Gray',
+        config_idioma: 'Language',
+        config_idioma_pt: 'Portuguese',
+        config_idioma_en: 'English',
+        config_fuso: 'Time zone',
+        config_fuso_automatico: 'Automatic (device)',
+        config_fuso_noronha: 'Fernando de Noronha (UTC−2)',
+        config_fuso_brasilia: 'Brasília (UTC−3)',
+        config_fuso_manaus: 'Manaus (UTC−4)',
+        config_fuso_riobranco: 'Rio Branco (UTC−5)',
+        config_fuso_acores: 'Azores (UTC−1)',
+        config_fuso_lisboa: 'Lisbon (UTC+0/+1)',
+        config_inicio_semana: 'Week starts on',
+        config_domingo: 'Sunday',
+        config_segunda: 'Monday',
+        config_salvo: 'Saved.',
+        config_sair: 'Log out',
+        config_nome: 'Name',
+        config_nome_placeholder: 'What should we call you in the panel',
+        config_salvar_nome: 'Save name',
+        config_nova_senha: 'New password',
+        config_nova_senha_placeholder: 'At least 6 characters',
+        config_confirmar_senha: 'Confirm new password',
+        config_confirmar_senha_placeholder: 'Repeat the new password',
+        config_alterar_senha: 'Change password',
+        config_senha_curta: 'Password must be at least 6 characters.',
+        config_senha_nao_coincide: "Passwords don't match.",
+        config_senha_sucesso: 'Password changed successfully.',
+        config_senha_erro: "Couldn't change the password right now. Try again.",
+        config_cor_invalida: 'Invalid color. Use the #RRGGBB format.',
+        erro_salvar_generico: "Couldn't save right now. Try again shortly.",
+      },
+    };
+
+    function tr(chave) {
+      const idioma = (configCache && configCache.idioma === 'en') ? 'en' : 'pt';
+      return TRADUCOES[idioma][chave] ?? TRADUCOES.pt[chave] ?? chave;
+    }
+
+    // Preenche todo elemento marcado com data-i18n (texto), data-i18n-placeholder
+    // ou data-i18n-aria (atributos) — roda uma vez, já com o idioma carregado.
+    function aplicarTraducoesEstaticas() {
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        el.textContent = tr(el.dataset.i18n);
+      });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+        el.placeholder = tr(el.dataset.i18nPlaceholder);
+      });
+      document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
+        el.setAttribute('aria-label', tr(el.dataset.i18nAria));
+      });
+      document.documentElement.lang = (configCache && configCache.idioma === 'en') ? 'en' : 'pt-BR';
+    }
+
+    // Locale usado em toLocaleDateString/toLocaleString de DATAS (nomes de mês
+    // e dia da semana acompanham o idioma). Dinheiro NUNCA usa isso — o que
+    // ela ganha é sempre em Reais, independente do idioma da tela.
+    function localeAtual() {
+      return (configCache && configCache.idioma === 'en') ? 'en-US' : 'pt-BR';
+    }
 
     // Mesmo projeto Supabase de js/auth.js — hardcoded aqui porque auth.js
     // não expõe a URL/anon key em window.Auth (só o cliente já pronto).
@@ -1525,9 +1755,10 @@
       configurarEventos();
       configurarColapsarSidebar();
 
-      // Aplica tema/cor ANTES de revelar o body, pra não piscar o tema
-      // claro por uma fração de segundo em quem usa o escuro.
+      // Aplica tema/cor/idioma ANTES de revelar o body, pra não piscar o tema
+      // claro (ou o texto em português) por uma fração de segundo.
       await carregarConfiguracoes();
+      aplicarTraducoesEstaticas();
       renderizarCabecalhoDashboard();
       document.getElementById('painel-body').style.visibility = 'visible';
 
@@ -1705,7 +1936,7 @@
         mostrarConfigSalvo();
       } catch (err) {
         console.error('Erro ao salvar configuração:', err);
-        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+        alert(tr('erro_salvar_generico'));
       }
     }
 
@@ -1722,12 +1953,12 @@
       erroEl.hidden = true;
 
       if (novaSenha.length < 6) {
-        erroEl.textContent = 'A senha precisa ter pelo menos 6 caracteres.';
+        erroEl.textContent = tr('config_senha_curta');
         erroEl.hidden = false;
         return;
       }
       if (novaSenha !== confirmarSenha) {
-        erroEl.textContent = 'As senhas não coincidem.';
+        erroEl.textContent = tr('config_senha_nao_coincide');
         erroEl.hidden = false;
         return;
       }
@@ -1739,10 +1970,10 @@
         if (error) throw error;
         document.getElementById('config-nova-senha').value = '';
         document.getElementById('config-confirmar-senha').value = '';
-        alert('Senha alterada com sucesso.');
+        alert(tr('config_senha_sucesso'));
       } catch (err) {
         console.error('Erro ao alterar senha:', err);
-        erroEl.textContent = 'Não foi possível alterar a senha agora. Tente de novo.';
+        erroEl.textContent = tr('config_senha_erro');
         erroEl.hidden = false;
       } finally {
         btn.disabled = false;
@@ -1803,20 +2034,26 @@
         let hex = e.target.value.trim();
         if (hex && !hex.startsWith('#')) hex = '#' + hex;
         if (!corHexValida(hex)) {
-          alert('Cor inválida. Use o formato #RRGGBB.');
+          alert(tr('config_cor_invalida'));
           e.target.value = configCache.cor_enfase;
           return;
         }
         aplicarCorEnfase(hex);
         salvarConfiguracao('cor_enfase', hex);
       });
-      document.getElementById('config-idioma').addEventListener('change', (e) => salvarConfiguracao('idioma', e.target.value));
+      // Idioma recarrega a página depois de salvar — é o jeito mais simples/
+      // confiável de re-renderizar TODO o painel no idioma novo, em vez de
+      // tentar re-traduzir ao vivo cada aba (inclusive as com cache lazy).
+      document.getElementById('config-idioma').addEventListener('change', async (e) => {
+        await salvarConfiguracao('idioma', e.target.value);
+        window.location.reload();
+      });
       document.getElementById('config-fuso').addEventListener('change', (e) => salvarConfiguracao('fuso_horario', e.target.value));
       document.getElementById('config-inicio-semana').addEventListener('change', (e) => salvarConfiguracao('inicio_semana', e.target.value));
       document.getElementById('config-btn-sair').addEventListener('click', async () => {
-        const confirmou = await confirmarAcao('Tem certeza que deseja sair?', {
-          titulo: 'Sair da conta',
-          textoConfirmar: 'Sair',
+        const confirmou = await confirmarAcao(tr('confirm_sair_mensagem'), {
+          titulo: tr('confirm_sair_titulo'),
+          textoConfirmar: tr('confirm_sair_botao'),
           perigo: false,
         });
         if (!confirmou) return;
@@ -2058,7 +2295,7 @@
       document.querySelectorAll('.nav-item').forEach((b) => b.classList.toggle('active', b.dataset.tab === aba));
       document.querySelectorAll('.tab-panel').forEach((p) => (p.hidden = true));
       document.getElementById('panel-' + aba).hidden = false;
-      document.getElementById('titulo-topo').textContent = TITULOS_ABA[aba];
+      document.getElementById('titulo-topo').textContent = tr(TITULOS_ABA[aba]);
       // O filtro de período (Tudo/7d/30d/90d) só se aplica aos números do Portfólio.
       document.getElementById('filtros-periodo').hidden = aba !== 'portfolio';
 
@@ -2134,13 +2371,13 @@
 
     function saudacaoPorHorario() {
       const hora = new Date().getHours();
-      if (hora < 12) return 'Bom dia';
-      if (hora < 18) return 'Boa tarde';
-      return 'Boa noite';
+      if (hora < 12) return tr('saudacao_bom_dia');
+      if (hora < 18) return tr('saudacao_boa_tarde');
+      return tr('saudacao_boa_noite');
     }
 
     function dataDashboardPorExtenso(d) {
-      const texto = d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+      const texto = d.toLocaleDateString(localeAtual(), { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
       return texto.charAt(0).toUpperCase() + texto.slice(1);
     }
 
@@ -2161,7 +2398,7 @@
       lista.innerHTML = '';
 
       if (doDia.length === 0) {
-        lista.innerHTML = '<p class="texto-vazio">Nada marcado para hoje.</p>';
+        lista.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('dash_hoje_vazio'))}</p>`;
         return;
       }
 
@@ -2209,47 +2446,47 @@
       const grupos = [];
 
       if (atrasadas.length > 0) {
-        grupos.push(criarGrupoAtencao('Entregas atrasadas', true, atrasadas.map((t) => ({
+        grupos.push(criarGrupoAtencao(tr('atencao_entregas_atrasadas'), true, atrasadas.map((t) => ({
           texto: `${t.marca} — ${t.tipo_trabalho}`,
-          detalhe: `Era ${formatarDataCurta(new Date(t.data_entrega + 'T00:00:00'))}`,
+          detalhe: `${tr('atencao_era')} ${formatarDataCurta(new Date(t.data_entrega + 'T00:00:00'))}`,
           onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
         }))));
       }
 
       if (pagamentos.length > 0) {
-        grupos.push(criarGrupoAtencao('Pagamentos pendentes', true, pagamentos.map((t) => ({
+        grupos.push(criarGrupoAtencao(tr('atencao_pagamentos_pendentes'), true, pagamentos.map((t) => ({
           texto: `${t.marca} — ${t.tipo_trabalho}`,
-          detalhe: t.permuta ? 'Permuta' : formatarMoeda(t.valor),
+          detalhe: t.permuta ? tr('permuta') : formatarMoeda(t.valor),
           onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
         }))));
       }
 
       if (direitosUso.length > 0) {
-        grupos.push(criarGrupoAtencao('Direitos de uso vencendo', false, direitosUso.map((t) => ({
+        grupos.push(criarGrupoAtencao(tr('atencao_direitos_uso'), false, direitosUso.map((t) => ({
           texto: t.marca,
-          detalhe: `${t.direitos_uso_ate < hojeISO ? 'Venceu em' : 'Vence em'} ${formatarDataCurta(new Date(t.direitos_uso_ate + 'T00:00:00'))}`,
+          detalhe: `${tr(t.direitos_uso_ate < hojeISO ? 'atencao_venceu_em' : 'atencao_vence_em')} ${formatarDataCurta(new Date(t.direitos_uso_ate + 'T00:00:00'))}`,
           onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
         }))));
       }
 
       if (followups.length > 0) {
-        grupos.push(criarGrupoAtencao('Follow-ups de prospecção', false, followups.map((p) => ({
+        grupos.push(criarGrupoAtencao(tr('atencao_followups'), false, followups.map((p) => ({
           texto: p.marca,
-          detalhe: p.proximo_followup ? `Era ${formatarDataCurta(new Date(p.proximo_followup + 'T00:00:00'))}` : 'Sem follow-up marcado',
+          detalhe: p.proximo_followup ? `${tr('atencao_followup_era')} ${formatarDataCurta(new Date(p.proximo_followup + 'T00:00:00'))}` : tr('atencao_sem_followup'),
           onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('prospeccao'); abrirModalProspeccao(p); },
         }))));
       }
 
       if (contratos.length > 0) {
-        grupos.push(criarGrupoAtencao('Contratos aguardando assinatura', false, contratos.map((c) => ({
+        grupos.push(criarGrupoAtencao(tr('atencao_contratos'), false, contratos.map((c) => ({
           texto: c.marca,
-          detalhe: c.status,
+          detalhe: c.status, // TODO fase UGC/Publi: traduzir rótulo sem mexer no valor gravado
           onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('contratos'); abrirModalContrato(c); },
         }))));
       }
 
       if (proximas.length > 0) {
-        grupos.push(criarGrupoAtencao('Entregas nos próximos dias', false, proximas.map((t) => ({
+        grupos.push(criarGrupoAtencao(tr('atencao_entregas_proximas'), false, proximas.map((t) => ({
           texto: `${t.marca} — ${t.tipo_trabalho}`,
           detalhe: formatarDataCurta(new Date(t.data_entrega + 'T00:00:00')),
           onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
@@ -2258,9 +2495,9 @@
 
       const propostasNaoVistas = emailsCache.filter((m) => m.unread);
       if (propostasNaoVistas.length > 0) {
-        grupos.push(criarGrupoAtencao('Propostas aguardando resposta', false, propostasNaoVistas.map((m) => ({
+        grupos.push(criarGrupoAtencao(tr('atencao_propostas'), false, propostasNaoVistas.map((m) => ({
           texto: nomeRemetente(m.from),
-          detalhe: m.subject || '(sem assunto)',
+          detalhe: m.subject || tr('sem_assunto'),
           onClick: () => trocarAba('email'),
         }))));
       }
@@ -2269,7 +2506,7 @@
       container.innerHTML = '';
 
       if (grupos.length === 0) {
-        container.innerHTML = '<p class="texto-vazio">Tudo em dia por aqui.</p>';
+        container.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('dash_atencao_vazio'))}</p>`;
         return;
       }
 
@@ -3500,7 +3737,7 @@
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao salvar ideia:', err);
-        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+        alert(tr('erro_salvar_generico'));
       }
     }
 
@@ -3622,7 +3859,7 @@
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao salvar achado:', err);
-        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+        alert(tr('erro_salvar_generico'));
       }
     }
 
@@ -3702,7 +3939,7 @@
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao atualizar cronograma:', err);
-        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+        alert(tr('erro_salvar_generico'));
       }
     }
 
@@ -3889,7 +4126,7 @@
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao escolher pilar do dia:', err);
-        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+        alert(tr('erro_salvar_generico'));
       }
     }
 
@@ -4031,7 +4268,7 @@
         await carregarRadar();
       } catch (err) {
         console.error('Erro ao marcar notícia como usada:', err);
-        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+        alert(tr('erro_salvar_generico'));
       }
     }
 
@@ -4614,7 +4851,7 @@
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao salvar trabalho:', err);
-        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+        alert(tr('erro_salvar_generico'));
       } finally {
         btn.disabled = false;
       }
@@ -4806,7 +5043,7 @@
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao salvar roteiro:', err);
-        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+        alert(tr('erro_salvar_generico'));
       } finally {
         btn.disabled = false;
       }
@@ -4979,7 +5216,7 @@
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao salvar prospecção:', err);
-        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+        alert(tr('erro_salvar_generico'));
       } finally {
         btn.disabled = false;
       }
@@ -5192,7 +5429,7 @@
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao salvar contrato:', err);
-        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+        alert(tr('erro_salvar_generico'));
       } finally {
         btn.disabled = false;
       }
@@ -5356,7 +5593,7 @@
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao salvar preço:', err);
-        alert('Não foi possível salvar agora. Tente de novo em instantes.');
+        alert(tr('erro_salvar_generico'));
       } finally {
         btn.disabled = false;
       }

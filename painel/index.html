@@ -122,61 +122,61 @@
 
         <!-- ---------- Aba: Portfólio ---------- -->
         <section id="panel-portfolio" class="tab-panel" hidden>
-          <h2 class="saudacao">Olá! Aqui estão os números do seu portfólio.</h2>
+          <h2 class="saudacao" data-i18n="portfolio_ola">Olá! Aqui estão os números do seu portfólio.</h2>
 
           <div class="cards-numeros">
             <div class="card-numero destaque">
-              <span class="card-label">Visitas</span>
+              <span class="card-label" data-i18n="portfolio_visitas">Visitas</span>
               <span class="card-valor" id="num-visitas">0</span>
             </div>
             <div class="card-numero">
-              <span class="card-label">Visitantes únicos</span>
+              <span class="card-label" data-i18n="portfolio_visitantes">Visitantes únicos</span>
               <span class="card-valor" id="num-visitantes">0</span>
             </div>
             <div class="card-numero">
-              <span class="card-label">Cliques em botões</span>
+              <span class="card-label" data-i18n="portfolio_cliques_botoes">Cliques em botões</span>
               <span class="card-valor" id="num-cliques">0</span>
             </div>
             <div class="card-numero">
-              <span class="card-label">Vídeos vistos</span>
+              <span class="card-label" data-i18n="portfolio_videos">Vídeos vistos</span>
               <span class="card-valor" id="num-videos">0</span>
             </div>
             <div class="card-numero">
-              <span class="card-label">Mensagens</span>
+              <span class="card-label" data-i18n="portfolio_mensagens">Mensagens</span>
               <span class="card-valor" id="num-mensagens">0</span>
             </div>
           </div>
 
           <div class="card card-contato">
             <div class="card-contato-topo">
-              <span class="card-contato-titulo">Clicaram para entrar em contato</span>
+              <span class="card-contato-titulo" data-i18n="portfolio_contato_titulo">Clicaram para entrar em contato</span>
               <span class="card-contato-valor" id="num-contato">0</span>
             </div>
-            <p class="card-contato-legenda">Conta quem clicou em WhatsApp, e-mail, Instagram ou no botão de enviar o formulário.</p>
+            <p class="card-contato-legenda" data-i18n="portfolio_contato_legenda">Conta quem clicou em WhatsApp, e-mail, Instagram ou no botão de enviar o formulário.</p>
           </div>
 
           <div class="card">
-            <h3 class="card-titulo">Visitas nos últimos 14 dias</h3>
+            <h3 class="card-titulo" data-i18n="portfolio_grafico_titulo">Visitas nos últimos 14 dias</h3>
             <div class="grafico-barras" id="grafico-visitas"></div>
           </div>
 
           <div class="card">
-            <h3 class="card-titulo">Vídeos mais vistos</h3>
+            <h3 class="card-titulo" data-i18n="portfolio_videos_titulo">Vídeos mais vistos</h3>
             <div id="lista-videos" class="lista-videos"></div>
           </div>
 
           <div class="card">
-            <h3 class="card-titulo">Botões mais clicados</h3>
+            <h3 class="card-titulo" data-i18n="portfolio_botoes_titulo">Botões mais clicados</h3>
             <div id="lista-botoes" class="lista-barras"></div>
           </div>
 
           <div class="card">
-            <h3 class="card-titulo">Cliques para contato</h3>
+            <h3 class="card-titulo" data-i18n="portfolio_contato_lista_titulo">Cliques para contato</h3>
             <div id="lista-contato" class="lista-barras"></div>
           </div>
 
           <div class="card">
-            <h3 class="card-titulo">Mensagens recebidas</h3>
+            <h3 class="card-titulo" data-i18n="portfolio_mensagens_titulo">Mensagens recebidas</h3>
             <div id="lista-mensagens" class="lista-mensagens"></div>
           </div>
         </section>
@@ -186,17 +186,17 @@
         <div class="cal-layout">
           <div class="card card-calendario">
             <div class="cal-topo">
-              <button id="cal-mes-anterior" class="cal-btn cal-btn-icon" type="button" aria-label="Mês anterior">
+              <button id="cal-mes-anterior" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_anterior" aria-label="Mês anterior">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
               <span class="cal-mes-label" id="cal-mes-label">Mês</span>
-              <button id="cal-mes-proximo" class="cal-btn cal-btn-icon" type="button" aria-label="Próximo mês">
+              <button id="cal-mes-proximo" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_proximo" aria-label="Próximo mês">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
             </div>
 
             <div class="cal-semana">
-              <span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span><span>Dom</span>
+              <span data-i18n="cal_seg">Seg</span><span data-i18n="cal_ter">Ter</span><span data-i18n="cal_qua">Qua</span><span data-i18n="cal_qui">Qui</span><span data-i18n="cal_sex">Sex</span><span data-i18n="cal_sab">Sáb</span><span data-i18n="cal_dom">Dom</span>
             </div>
 
             <div class="cal-grade" id="cal-grade"></div>
@@ -205,10 +205,10 @@
           <div class="card card-cal-dia">
             <div class="cal-dia-topo">
               <div>
-                <h3 class="card-titulo" id="cal-dia-titulo">Hoje</h3>
-                <p class="cal-dia-resumo" id="cal-dia-resumo">Nenhuma entrega ainda.</p>
+                <h3 class="card-titulo" id="cal-dia-titulo" data-i18n="dash_hoje">Hoje</h3>
+                <p class="cal-dia-resumo" id="cal-dia-resumo" data-i18n="cal_nenhuma_entrega">Nenhuma entrega ainda.</p>
               </div>
-              <button id="cal-btn-add" class="cal-btn cal-btn-add" type="button" aria-label="Adicionar tarefa">
+              <button id="cal-btn-add" class="cal-btn cal-btn-add" type="button" data-i18n-aria="cal_adicionar_tarefa" aria-label="Adicionar tarefa">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
               </button>
             </div>
@@ -218,39 +218,39 @@
             <!-- Formulário de nova tarefa (escondido até clicar no +) -->
             <form id="cal-form-tarefa" class="cal-form" hidden>
               <div class="cal-form-campo">
-                <label for="cal-titulo">O que é</label>
-                <input type="text" id="cal-titulo" placeholder="O que você precisa entregar?" required>
+                <label for="cal-titulo" data-i18n="cal_o_que_e">O que é</label>
+                <input type="text" id="cal-titulo" data-i18n-placeholder="cal_o_que_precisa_entregar" placeholder="O que você precisa entregar?" required>
               </div>
               <div class="cal-form-linha">
                 <div class="cal-form-campo">
-                  <label for="cal-tipo">Tipo</label>
+                  <label for="cal-tipo" data-i18n="cal_tipo">Tipo</label>
                   <select id="cal-tipo">
-                    <option value="Compromisso">Compromisso</option>
-                    <option value="Gravação">Gravação</option>
-                    <option value="Entrega">Entrega</option>
-                    <option value="Reunião">Reunião</option>
-                    <option value="Pessoal">Pessoal</option>
-                    <option value="Outro">Outro</option>
+                    <option value="Compromisso" data-i18n="cal_tipo_compromisso">Compromisso</option>
+                    <option value="Gravação" data-i18n="cal_tipo_gravacao">Gravação</option>
+                    <option value="Entrega" data-i18n="cal_tipo_entrega">Entrega</option>
+                    <option value="Reunião" data-i18n="cal_tipo_reuniao">Reunião</option>
+                    <option value="Pessoal" data-i18n="cal_tipo_pessoal">Pessoal</option>
+                    <option value="Outro" data-i18n="cal_tipo_outro">Outro</option>
                   </select>
                 </div>
                 <div class="cal-form-campo">
-                  <label for="cal-data">Dia</label>
+                  <label for="cal-data" data-i18n="cal_dia">Dia</label>
                   <input type="date" id="cal-data" required>
                 </div>
               </div>
               <div class="cal-form-linha">
                 <div class="cal-form-campo">
-                  <label for="cal-hora-inicio">Começa</label>
+                  <label for="cal-hora-inicio" data-i18n="cal_comeca">Começa</label>
                   <input type="time" id="cal-hora-inicio">
                 </div>
                 <div class="cal-form-campo">
-                  <label for="cal-hora-fim">Termina</label>
+                  <label for="cal-hora-fim" data-i18n="cal_termina">Termina</label>
                   <input type="time" id="cal-hora-fim">
                 </div>
               </div>
               <div class="cal-form-acoes">
-                <button type="button" id="cal-cancelar" class="cal-btn">Cancelar</button>
-                <button type="submit" class="cal-btn cal-btn-primario" id="cal-btn-salvar-tarefa">Salvar</button>
+                <button type="button" id="cal-cancelar" class="cal-btn" data-i18n="confirm_cancelar">Cancelar</button>
+                <button type="submit" class="cal-btn cal-btn-primario" id="cal-btn-salvar-tarefa" data-i18n="salvar">Salvar</button>
               </div>
             </form>
           </div>
@@ -259,21 +259,21 @@
         <div class="card card-cal-todas">
           <div class="cal-todas-topo">
             <div>
-              <h3 class="card-titulo">Tudo o que está marcado</h3>
-              <p class="cal-todas-resumo" id="cal-todas-resumo">Nenhum item marcado ainda.</p>
+              <h3 class="card-titulo" data-i18n="cal_tudo_marcado">Tudo o que está marcado</h3>
+              <p class="cal-todas-resumo" id="cal-todas-resumo" data-i18n="cal_nenhum_item_marcado">Nenhum item marcado ainda.</p>
             </div>
             <div class="cal-filtro-grupo">
-              <button class="cal-filtro-btn ativo" data-filtro="proximos" type="button">Próximos</button>
-              <button class="cal-filtro-btn" data-filtro="feitos" type="button">Feitos</button>
+              <button class="cal-filtro-btn ativo" data-filtro="proximos" data-i18n="cal_proximos" type="button">Próximos</button>
+              <button class="cal-filtro-btn" data-filtro="feitos" data-i18n="cal_feitos" type="button">Feitos</button>
             </div>
           </div>
 
           <div class="cal-todas-tabela">
             <div class="cal-todas-cabecalho">
-              <span>Dia</span>
-              <span>Hora</span>
-              <span>Tipo</span>
-              <span>O que é</span>
+              <span data-i18n="cal_dia">Dia</span>
+              <span data-i18n="cal_hora">Hora</span>
+              <span data-i18n="cal_tipo">Tipo</span>
+              <span data-i18n="cal_o_que_e">O que é</span>
               <span></span>
             </div>
             <div id="cal-todas-lista" class="cal-todas-linhas"></div>
@@ -283,34 +283,34 @@
 
         <section id="panel-email" class="tab-panel" hidden>
           <div class="card card-email-conectar" id="email-conectar" hidden>
-            <h3 class="card-titulo">Conectar sua conta do Gmail</h3>
-            <p class="email-conectar-texto">
+            <h3 class="card-titulo" data-i18n="email_conectar_titulo">Conectar sua conta do Gmail</h3>
+            <p class="email-conectar-texto" data-i18n-html="email_conectar_texto_html">
               Depois de conectar, esta aba mostra as mensagens marcadas com o
               rótulo <strong>"Propostas"</strong> no seu Gmail, e você pode
               responder direto por aqui.
             </p>
-            <button id="btn-email-conectar" class="cal-btn cal-btn-primario" type="button">Conectar Gmail</button>
+            <button id="btn-email-conectar" class="cal-btn cal-btn-primario" type="button" data-i18n="email_conectar_btn">Conectar Gmail</button>
             <p class="email-conectar-erro" id="email-conectar-erro" hidden></p>
           </div>
 
           <div class="email-layout" id="email-layout">
             <div class="card card-email-lista">
-              <h3 class="card-titulo">Mensagens</h3>
-              <div id="email-lista" class="email-lista"><p class="texto-suave">Carregando mensagens...</p></div>
+              <h3 class="card-titulo" data-i18n="email_mensagens">Mensagens</h3>
+              <div id="email-lista" class="email-lista"><p class="texto-suave" data-i18n="email_carregando_mensagens">Carregando mensagens...</p></div>
             </div>
 
             <div class="card card-email-detalhe">
               <div id="email-detalhe">
-                <p class="email-detalhe-vazio">Selecione uma mensagem na lista ao lado.</p>
+                <p class="email-detalhe-vazio" data-i18n="email_selecione_mensagem">Selecione uma mensagem na lista ao lado.</p>
               </div>
 
               <form id="email-form-resposta" class="email-form" hidden>
                 <div class="email-form-topo">
-                  <span>Responder</span>
+                  <span data-i18n="email_responder">Responder</span>
                 </div>
-                <textarea id="email-resposta-texto" placeholder="Escreva sua resposta..." required></textarea>
+                <textarea id="email-resposta-texto" data-i18n-placeholder="email_placeholder_resposta" placeholder="Escreva sua resposta..." required></textarea>
                 <div class="cal-form-acoes">
-                  <button type="submit" class="cal-btn cal-btn-primario" id="email-btn-enviar">Enviar resposta</button>
+                  <button type="submit" class="cal-btn cal-btn-primario" id="email-btn-enviar" data-i18n="email_enviar_resposta">Enviar resposta</button>
                 </div>
               </form>
             </div>
@@ -320,20 +320,20 @@
         <!-- ---------- Aba: Instagram ---------- -->
         <section id="panel-instagram" class="tab-panel" hidden>
           <div class="card card-instagram-conectar" id="instagram-conectar" hidden>
-            <h3 class="card-titulo">Conectar seu Instagram</h3>
-            <p class="instagram-conectar-texto">
+            <h3 class="card-titulo" data-i18n="instagram_conectar_titulo">Conectar seu Instagram</h3>
+            <p class="instagram-conectar-texto" data-i18n="instagram_conectar_texto">
               Conecte a conta Business/Criador do seu Instagram (vinculada a
               uma Página do Facebook) pra ver seguidores, alcance, cliques no
               link da bio e o desempenho dos seus posts direto aqui.
             </p>
-            <button id="btn-instagram-conectar" class="cal-btn cal-btn-primario" type="button">Conectar Instagram</button>
+            <button id="btn-instagram-conectar" class="cal-btn cal-btn-primario" type="button" data-i18n="instagram_conectar_btn">Conectar Instagram</button>
             <p class="instagram-conectar-erro" id="instagram-conectar-erro" hidden></p>
           </div>
 
           <div class="instagram-layout" id="instagram-layout">
             <div class="instagram-topo">
               <span class="instagram-perfil-nome" id="instagram-perfil-nome">@usuario</span>
-              <button id="btn-instagram-atualizar" class="cal-btn cal-btn-icon" type="button" aria-label="Atualizar métricas">
+              <button id="btn-instagram-atualizar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="instagram_atualizar_metricas_aria" aria-label="Atualizar métricas">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
             </div>
@@ -342,26 +342,26 @@
 
             <div class="instagram-metricas-grid">
               <div class="card-numero destaque">
-                <span class="card-label">Seguidores</span>
+                <span class="card-label" data-i18n="instagram_seguidores">Seguidores</span>
                 <span class="card-valor" id="instagram-num-seguidores">–</span>
               </div>
               <div class="card-numero">
-                <span class="card-label">Alcance (7 dias)</span>
+                <span class="card-label" data-i18n="instagram_alcance">Alcance (7 dias)</span>
                 <span class="card-valor" id="instagram-num-alcance">–</span>
               </div>
               <div class="card-numero">
-                <span class="card-label">Visitas ao perfil (7 dias)</span>
+                <span class="card-label" data-i18n="instagram_visitas_perfil">Visitas ao perfil (7 dias)</span>
                 <span class="card-valor" id="instagram-num-visitas-perfil">–</span>
               </div>
               <div class="card-numero">
-                <span class="card-label">Cliques no link (7 dias)</span>
+                <span class="card-label" data-i18n="instagram_cliques_link">Cliques no link (7 dias)</span>
                 <span class="card-valor" id="instagram-num-cliques-link">–</span>
               </div>
             </div>
 
             <div class="card card-instagram-posts">
-              <h3 class="card-titulo">Desempenho por post</h3>
-              <div id="instagram-posts-lista" class="instagram-posts-lista"><p class="texto-suave">Carregando posts...</p></div>
+              <h3 class="card-titulo" data-i18n="instagram_desempenho_post">Desempenho por post</h3>
+              <div id="instagram-posts-lista" class="instagram-posts-lista"><p class="texto-suave" data-i18n="instagram_carregando_posts">Carregando posts...</p></div>
             </div>
           </div>
         </section>
@@ -1615,6 +1615,125 @@
         config_senha_erro: 'Não foi possível alterar a senha agora. Tente de novo.',
         config_cor_invalida: 'Cor inválida. Use o formato #RRGGBB.',
         erro_salvar_generico: 'Não foi possível salvar agora. Tente de novo em instantes.',
+        erro_excluir_generico: 'Não foi possível excluir agora. Tente de novo em instantes.',
+        confirm_titulo_padrao: 'Confirmar',
+        confirm_excluir_padrao: 'Excluir',
+        nada_por_aqui: 'Nada por aqui.',
+        salvar: 'Salvar',
+        salvar_alteracoes: 'Salvar alterações',
+        editar: 'Editar',
+        excluir: 'Excluir',
+        marcar_feita: 'Marcar como feita',
+        conectando: 'Conectando...',
+        enviando: 'Enviando...',
+        remover: 'Remover',
+        item_singular: 'item',
+        item_plural: 'itens',
+        erro_iniciar_conexao: 'Não foi possível iniciar a conexão. Tente de novo.',
+        sem_legenda: '(sem legenda)',
+
+        // Portfólio
+        portfolio_ola: 'Olá! Aqui estão os números do seu portfólio.',
+        portfolio_visitas: 'Visitas',
+        portfolio_visitantes: 'Visitantes únicos',
+        portfolio_cliques_botoes: 'Cliques em botões',
+        portfolio_videos: 'Vídeos vistos',
+        portfolio_mensagens: 'Mensagens',
+        portfolio_contato_titulo: 'Clicaram para entrar em contato',
+        portfolio_contato_legenda: 'Conta quem clicou em WhatsApp, e-mail, Instagram ou no botão de enviar o formulário.',
+        portfolio_grafico_titulo: 'Visitas nos últimos 14 dias',
+        portfolio_videos_titulo: 'Vídeos mais vistos',
+        portfolio_botoes_titulo: 'Botões mais clicados',
+        portfolio_contato_lista_titulo: 'Cliques para contato',
+        portfolio_mensagens_titulo: 'Mensagens recebidas',
+
+        // Calendário
+        cal_mes_anterior: 'Mês anterior',
+        cal_mes_proximo: 'Próximo mês',
+        cal_seg: 'Seg',
+        cal_ter: 'Ter',
+        cal_qua: 'Qua',
+        cal_qui: 'Qui',
+        cal_sex: 'Sex',
+        cal_sab: 'Sáb',
+        cal_dom: 'Dom',
+        cal_adicionar_tarefa: 'Adicionar tarefa',
+        cal_nenhuma_entrega: 'Nenhuma entrega ainda.',
+        cal_o_que_e: 'O que é',
+        cal_o_que_precisa_entregar: 'O que você precisa entregar?',
+        cal_tipo: 'Tipo',
+        cal_tipo_compromisso: 'Compromisso',
+        cal_tipo_gravacao: 'Gravação',
+        cal_tipo_entrega: 'Entrega',
+        cal_tipo_reuniao: 'Reunião',
+        cal_tipo_pessoal: 'Pessoal',
+        cal_tipo_outro: 'Outro',
+        cal_dia: 'Dia',
+        cal_comeca: 'Começa',
+        cal_termina: 'Termina',
+        cal_tudo_marcado: 'Tudo o que está marcado',
+        cal_nenhum_item_marcado: 'Nenhum item marcado ainda.',
+        cal_nenhum_item_mes: 'Nenhum item marcado neste mês.',
+        cal_proximos: 'Próximos',
+        cal_feitos: 'Feitos',
+        cal_hora: 'Hora',
+        abrir_no_calendario: 'Abrir no calendário',
+        cal_dia_todo: 'dia todo',
+        cal_pendente_singular: 'pendente',
+        cal_pendente_plural: 'pendentes',
+        cal_tudo_feito: 'Tudo feito por aqui.',
+        cal_neste_mes_clique: 'neste mês. Clique no dia para abrir ele no calendário.',
+        cal_erro_salvar_tarefa: 'Não foi possível salvar a tarefa agora. Tente de novo em instantes.',
+
+        // E-mail
+        email_conectar_titulo: 'Conectar sua conta do Gmail',
+        email_conectar_texto_html: 'Depois de conectar, esta aba mostra as mensagens marcadas com o rótulo <strong>"Propostas"</strong> no seu Gmail, e você pode responder direto por aqui.',
+        email_conectar_btn: 'Conectar Gmail',
+        email_mensagens: 'Mensagens',
+        email_carregando_mensagens: 'Carregando mensagens...',
+        email_selecione_mensagem: 'Selecione uma mensagem na lista ao lado.',
+        email_responder: 'Responder',
+        email_placeholder_resposta: 'Escreva sua resposta...',
+        email_enviar_resposta: 'Enviar resposta',
+        email_erro_carregar_prefixo: 'Não foi possível carregar as mensagens: ',
+        email_erro_carregar_generico: 'Não foi possível carregar as mensagens agora.',
+        email_nenhuma_mensagem: 'Nenhuma mensagem com o rótulo "Propostas" ainda.',
+        email_vista_selo: 'Vista',
+        email_marcar_visto_aria: 'Marcar como visto',
+        email_desmarcar_aria: 'Desmarcar mensagem',
+        email_desmarcar_title: 'Desmarcar (remove o rótulo Propostas)',
+        email_erro_marcar_visto_prefixo: 'Não foi possível marcar como visto: ',
+        email_erro_marcar_visto_generico: 'Não foi possível marcar como visto agora. Tente de novo.',
+        email_confirmar_desmarcar: 'Remover esta mensagem da lista de Propostas? Ela continua no seu Gmail, só sai daqui.',
+        email_erro_desmarcar_prefixo: 'Não foi possível desmarcar: ',
+        email_erro_desmarcar_generico: 'Não foi possível desmarcar agora. Tente de novo.',
+        email_fechar_mensagem_aria: 'Fechar mensagem',
+        email_erro_abrir_prefixo: 'Não foi possível abrir esta mensagem: ',
+        email_erro_abrir_generico: 'Não foi possível abrir esta mensagem agora.',
+        email_resposta_enviada: 'Resposta enviada!',
+        email_erro_enviar_prefixo: 'Não foi possível enviar: ',
+        email_erro_enviar_generico: 'Não foi possível enviar a resposta agora. Tente de novo.',
+
+        // Instagram
+        instagram_conectar_titulo: 'Conectar seu Instagram',
+        instagram_conectar_texto: 'Conecte a conta Business/Criador do seu Instagram (vinculada a uma Página do Facebook) pra ver seguidores, alcance, cliques no link da bio e o desempenho dos seus posts direto aqui.',
+        instagram_conectar_btn: 'Conectar Instagram',
+        instagram_atualizar_metricas_aria: 'Atualizar métricas',
+        instagram_seguidores: 'Seguidores',
+        instagram_alcance: 'Alcance (7 dias)',
+        instagram_visitas_perfil: 'Visitas ao perfil (7 dias)',
+        instagram_cliques_link: 'Cliques no link (7 dias)',
+        instagram_desempenho_post: 'Desempenho por post',
+        instagram_carregando_posts: 'Carregando posts...',
+        instagram_erro_carregar_prefixo: 'Não foi possível carregar as métricas: ',
+        instagram_erro_carregar_generico: 'Não foi possível carregar as métricas agora.',
+        instagram_alguns_dados: 'Alguns dados não carregaram:',
+        instagram_nenhuma_publicacao: 'Nenhuma publicação encontrada ainda.',
+        instagram_curtidas: 'Curtidas',
+        instagram_comentarios: 'Comentários',
+        instagram_alcance_curto: 'Alcance',
+        instagram_salvos: 'Salvos',
+        instagram_ver_post: 'Ver post',
       },
       en: {
         titulo_dashboard: 'Dashboard',
@@ -1710,6 +1829,125 @@
         config_senha_erro: "Couldn't change the password right now. Try again.",
         config_cor_invalida: 'Invalid color. Use the #RRGGBB format.',
         erro_salvar_generico: "Couldn't save right now. Try again shortly.",
+        erro_excluir_generico: "Couldn't delete right now. Try again shortly.",
+        confirm_titulo_padrao: 'Confirm',
+        confirm_excluir_padrao: 'Delete',
+        nada_por_aqui: 'Nothing here.',
+        salvar: 'Save',
+        salvar_alteracoes: 'Save changes',
+        editar: 'Edit',
+        excluir: 'Delete',
+        marcar_feita: 'Mark as done',
+        conectando: 'Connecting...',
+        enviando: 'Sending...',
+        remover: 'Remove',
+        item_singular: 'item',
+        item_plural: 'items',
+        erro_iniciar_conexao: "Couldn't start the connection. Try again.",
+        sem_legenda: '(no caption)',
+
+        // Portfolio
+        portfolio_ola: "Hi! Here are your portfolio's numbers.",
+        portfolio_visitas: 'Visits',
+        portfolio_visitantes: 'Unique visitors',
+        portfolio_cliques_botoes: 'Button clicks',
+        portfolio_videos: 'Video views',
+        portfolio_mensagens: 'Messages',
+        portfolio_contato_titulo: 'Clicked to get in touch',
+        portfolio_contato_legenda: 'Counts anyone who clicked WhatsApp, email, Instagram, or the form submit button.',
+        portfolio_grafico_titulo: 'Visits in the last 14 days',
+        portfolio_videos_titulo: 'Most watched videos',
+        portfolio_botoes_titulo: 'Most clicked buttons',
+        portfolio_contato_lista_titulo: 'Contact clicks',
+        portfolio_mensagens_titulo: 'Messages received',
+
+        // Calendar
+        cal_mes_anterior: 'Previous month',
+        cal_mes_proximo: 'Next month',
+        cal_seg: 'Mon',
+        cal_ter: 'Tue',
+        cal_qua: 'Wed',
+        cal_qui: 'Thu',
+        cal_sex: 'Fri',
+        cal_sab: 'Sat',
+        cal_dom: 'Sun',
+        cal_adicionar_tarefa: 'Add task',
+        cal_nenhuma_entrega: 'No deliveries yet.',
+        cal_o_que_e: 'What is it',
+        cal_o_que_precisa_entregar: 'What do you need to deliver?',
+        cal_tipo: 'Type',
+        cal_tipo_compromisso: 'Appointment',
+        cal_tipo_gravacao: 'Recording',
+        cal_tipo_entrega: 'Delivery',
+        cal_tipo_reuniao: 'Meeting',
+        cal_tipo_pessoal: 'Personal',
+        cal_tipo_outro: 'Other',
+        cal_dia: 'Day',
+        cal_comeca: 'Starts',
+        cal_termina: 'Ends',
+        cal_tudo_marcado: 'Everything scheduled',
+        cal_nenhum_item_marcado: 'Nothing scheduled yet.',
+        cal_nenhum_item_mes: 'Nothing scheduled this month.',
+        cal_proximos: 'Upcoming',
+        cal_feitos: 'Done',
+        cal_hora: 'Time',
+        abrir_no_calendario: 'Open in calendar',
+        cal_dia_todo: 'all day',
+        cal_pendente_singular: 'pending',
+        cal_pendente_plural: 'pending',
+        cal_tudo_feito: 'All done here.',
+        cal_neste_mes_clique: 'this month. Click the day to open it in the calendar.',
+        cal_erro_salvar_tarefa: "Couldn't save the task right now. Try again shortly.",
+
+        // Email
+        email_conectar_titulo: 'Connect your Gmail account',
+        email_conectar_texto_html: 'Once connected, this tab shows messages labeled <strong>"Proposals"</strong> in your Gmail, and you can reply straight from here.',
+        email_conectar_btn: 'Connect Gmail',
+        email_mensagens: 'Messages',
+        email_carregando_mensagens: 'Loading messages...',
+        email_selecione_mensagem: 'Select a message from the list.',
+        email_responder: 'Reply',
+        email_placeholder_resposta: 'Write your reply...',
+        email_enviar_resposta: 'Send reply',
+        email_erro_carregar_prefixo: "Couldn't load messages: ",
+        email_erro_carregar_generico: "Couldn't load messages right now.",
+        email_nenhuma_mensagem: 'No messages with the "Proposals" label yet.',
+        email_vista_selo: 'Seen',
+        email_marcar_visto_aria: 'Mark as seen',
+        email_desmarcar_aria: 'Unmark message',
+        email_desmarcar_title: 'Unmark (removes the Proposals label)',
+        email_erro_marcar_visto_prefixo: "Couldn't mark as seen: ",
+        email_erro_marcar_visto_generico: "Couldn't mark as seen right now. Try again.",
+        email_confirmar_desmarcar: 'Remove this message from the Proposals list? It stays in your Gmail, it just leaves here.',
+        email_erro_desmarcar_prefixo: "Couldn't unmark: ",
+        email_erro_desmarcar_generico: "Couldn't unmark right now. Try again.",
+        email_fechar_mensagem_aria: 'Close message',
+        email_erro_abrir_prefixo: "Couldn't open this message: ",
+        email_erro_abrir_generico: "Couldn't open this message right now.",
+        email_resposta_enviada: 'Reply sent!',
+        email_erro_enviar_prefixo: "Couldn't send: ",
+        email_erro_enviar_generico: "Couldn't send the reply right now. Try again.",
+
+        // Instagram
+        instagram_conectar_titulo: 'Connect your Instagram',
+        instagram_conectar_texto: 'Connect your Instagram Business/Creator account (linked to a Facebook Page) to see followers, reach, bio link clicks, and how your posts are performing, right here.',
+        instagram_conectar_btn: 'Connect Instagram',
+        instagram_atualizar_metricas_aria: 'Refresh metrics',
+        instagram_seguidores: 'Followers',
+        instagram_alcance: 'Reach (7 days)',
+        instagram_visitas_perfil: 'Profile visits (7 days)',
+        instagram_cliques_link: 'Link clicks (7 days)',
+        instagram_desempenho_post: 'Post performance',
+        instagram_carregando_posts: 'Loading posts...',
+        instagram_erro_carregar_prefixo: "Couldn't load metrics: ",
+        instagram_erro_carregar_generico: "Couldn't load metrics right now.",
+        instagram_alguns_dados: "Some data didn't load:",
+        instagram_nenhuma_publicacao: 'No posts found yet.',
+        instagram_curtidas: 'Likes',
+        instagram_comentarios: 'Comments',
+        instagram_alcance_curto: 'Reach',
+        instagram_salvos: 'Saves',
+        instagram_ver_post: 'View post',
       },
     };
 
@@ -1730,6 +1968,12 @@
       document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
         el.setAttribute('aria-label', tr(el.dataset.i18nAria));
       });
+      // Só pros raros textos com marcação dentro (ex: um <strong> no meio da
+      // frase) — o texto no dicionário já vem com a tag, é conteúdo nosso
+      // (não dado de usuário), então innerHTML aqui é seguro.
+      document.querySelectorAll('[data-i18n-html]').forEach((el) => {
+        el.innerHTML = tr(el.dataset.i18nHtml);
+      });
       document.documentElement.lang = (configCache && configCache.idioma === 'en') ? 'en' : 'pt-BR';
     }
 
@@ -1746,11 +1990,8 @@
 
     // ---- Ponto de entrada: guarda de autenticação + carga inicial ----
     (async function iniciar() {
-      const { data: { session } } = await Auth.sb.auth.getSession();
-      if (!session) {
-        window.location.href = '/login';
-        return;
-      }
+      const auth = await Auth.checkAuth();
+      if (!auth) return; // Auth.checkAuth já redirecionou para login.html
 
       configurarEventos();
       configurarColapsarSidebar();
@@ -2056,9 +2297,7 @@
           textoConfirmar: tr('confirm_sair_botao'),
           perigo: false,
         });
-        if (!confirmou) return;
-        await Auth.sb.auth.signOut();
-        window.location.href = '/login';
+        if (confirmou) Auth.logout();
       });
       document.getElementById('config-salvar-nome').addEventListener('click', salvarNomePerfil);
       document.getElementById('config-salvar-senha').addEventListener('click', salvarSenhaPerfil);
@@ -2787,7 +3026,7 @@
         renderizarTudo();
       } catch (err) {
         console.error('Erro ao excluir mensagem:', err);
-        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+        alert(tr('erro_excluir_generico'));
       }
     }
 
@@ -2836,8 +3075,8 @@
     }
 
     function renderizarGradeMes() {
-      const NOMES_MES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-      document.getElementById('cal-mes-label').textContent = `${NOMES_MES[calMesAtual.getMonth()]} ${calMesAtual.getFullYear()}`;
+      const nomeMes = calMesAtual.toLocaleDateString(localeAtual(), { month: 'long' });
+      document.getElementById('cal-mes-label').textContent = `${nomeMes.charAt(0).toUpperCase()}${nomeMes.slice(1)} ${calMesAtual.getFullYear()}`;
 
       const grade = document.getElementById('cal-grade');
       grade.innerHTML = '';
@@ -2884,16 +3123,16 @@
 
       const hoje = new Date();
       const titulo = mesmoDia(calDiaSelecionado, hoje)
-        ? 'Hoje'
-        : calDiaSelecionado.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', weekday: 'long' });
+        ? tr('dash_hoje')
+        : calDiaSelecionado.toLocaleDateString(localeAtual(), { day: '2-digit', month: 'long', weekday: 'long' });
       document.getElementById('cal-dia-titulo').textContent = titulo;
 
       document.getElementById('cal-dia-resumo').textContent =
         doDia.length === 0
-          ? 'Nenhuma entrega ainda.'
+          ? tr('cal_nenhuma_entrega')
           : pendentesDoDia.length === 0
-            ? 'Tudo feito por aqui.'
-            : `${pendentesDoDia.length} pendente${pendentesDoDia.length === 1 ? '' : 's'}`;
+            ? tr('cal_tudo_feito')
+            : `${pendentesDoDia.length} ${tr(pendentesDoDia.length === 1 ? 'cal_pendente_singular' : 'cal_pendente_plural')}`;
 
       // O resumo acima já conta o que há pra hoje — não repete a mensagem aqui embaixo.
       const lista = document.getElementById('cal-lista-tarefas');
@@ -2906,27 +3145,42 @@
 
     // Cria o elemento de uma tarefa. mostrarData controla se aparece a data
     // junto (usado na lista "Todas as pendências", que mistura vários dias).
+    // O tipo é gravado no banco em português (é o "código"); aqui só traduz
+    // o rótulo mostrado, sem tocar no valor salvo.
+    const TIPO_TAREFA_CHAVE = {
+      'Compromisso': 'cal_tipo_compromisso',
+      'Gravação': 'cal_tipo_gravacao',
+      'Entrega': 'cal_tipo_entrega',
+      'Reunião': 'cal_tipo_reuniao',
+      'Pessoal': 'cal_tipo_pessoal',
+      'Outro': 'cal_tipo_outro',
+    };
+    function traduzirTipoTarefa(tipo) {
+      const chave = TIPO_TAREFA_CHAVE[tipo];
+      return chave ? tr(chave) : tipo;
+    }
+
     function criarItemTarefa(tarefa, mostrarData) {
       const horario = [tarefa.hora_inicio, tarefa.hora_fim].filter(Boolean).map((h) => h.slice(0, 5)).join(' – ');
       const dataFormatada = mostrarData
-        ? new Date(tarefa.data + 'T00:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+        ? new Date(tarefa.data + 'T00:00:00').toLocaleDateString(localeAtual(), { day: '2-digit', month: '2-digit' })
         : '';
-      const detalhe = [tarefa.tipo, dataFormatada, horario].filter(Boolean).join(' · ');
+      const detalhe = [traduzirTipoTarefa(tarefa.tipo), dataFormatada, horario].filter(Boolean).join(' · ');
 
       const item = document.createElement('div');
       item.className = 'cal-tarefa-item' + (tarefa.feito ? ' cal-tarefa-feita' : '');
       item.innerHTML = `
-        <button class="cal-tarefa-check cal-btn" type="button" aria-label="Marcar como feita">
+        <button class="cal-tarefa-check cal-btn" type="button" aria-label="${escapeHtml(tr('marcar_feita'))}">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
         <div class="cal-tarefa-info">
           ${detalhe ? `<span class="cal-tarefa-horario">${detalhe}</span>` : ''}
           <span class="cal-tarefa-titulo">${escapeHtml(tarefa.titulo)}</span>
         </div>
-        <button class="cal-tarefa-editar cal-btn cal-btn-icon" type="button" aria-label="Editar">
+        <button class="cal-tarefa-editar cal-btn cal-btn-icon" type="button" aria-label="${escapeHtml(tr('editar'))}">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <button class="cal-tarefa-excluir cal-btn cal-btn-icon" type="button" aria-label="Excluir">
+        <button class="cal-tarefa-excluir cal-btn cal-btn-icon" type="button" aria-label="${escapeHtml(tr('excluir'))}">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       `;
@@ -2957,14 +3211,14 @@
 
       document.getElementById('cal-todas-resumo').textContent =
         filtradas.length === 0
-          ? 'Nenhum item marcado neste mês.'
-          : `${filtradas.length} ${filtradas.length === 1 ? 'item' : 'itens'} neste mês. Clique no dia para abrir ele no calendário.`;
+          ? tr('cal_nenhum_item_mes')
+          : `${filtradas.length} ${tr(filtradas.length === 1 ? 'item_singular' : 'item_plural')} ${tr('cal_neste_mes_clique')}`;
 
       const lista = document.getElementById('cal-todas-lista');
       lista.innerHTML = '';
 
       if (filtradas.length === 0) {
-        lista.innerHTML = '<p class="texto-vazio">Nada por aqui.</p>';
+        lista.innerHTML = `<p class="texto-vazio">${tr('nada_por_aqui')}</p>`;
         return;
       }
 
@@ -2974,28 +3228,28 @@
     // Cria uma linha da tabela "Tudo o que está marcado".
     function criarLinhaTarefa(tarefa) {
       const dataObj = new Date(tarefa.data + 'T00:00:00');
-      const diaMes = dataObj.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-      const diaSemana = dataObj.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+      const diaMes = dataObj.toLocaleDateString(localeAtual(), { day: '2-digit', month: '2-digit' });
+      const diaSemana = dataObj.toLocaleDateString(localeAtual(), { weekday: 'short' }).replace('.', '');
       const horario = [tarefa.hora_inicio, tarefa.hora_fim].filter(Boolean).map((h) => h.slice(0, 5)).join(' – ');
 
       const linha = document.createElement('div');
       linha.className = 'cal-todas-linha' + (tarefa.feito ? ' cal-tarefa-feita' : '');
       linha.innerHTML = `
-        <button class="cal-todas-dia" type="button" aria-label="Abrir no calendário">
+        <button class="cal-todas-dia" type="button" aria-label="${escapeHtml(tr('abrir_no_calendario'))}">
           <span class="cal-todas-dia-num">${diaMes}</span>
           <span class="cal-todas-dia-sem">${diaSemana}</span>
         </button>
-        <span class="cal-todas-hora">${horario || 'dia todo'}</span>
-        <span class="cal-todas-tipo-badge">${escapeHtml((tarefa.tipo || 'Compromisso').toUpperCase())}</span>
+        <span class="cal-todas-hora">${horario || tr('cal_dia_todo')}</span>
+        <span class="cal-todas-tipo-badge">${escapeHtml(traduzirTipoTarefa(tarefa.tipo || 'Compromisso').toUpperCase())}</span>
         <span class="cal-todas-titulo">${escapeHtml(tarefa.titulo)}</span>
         <div class="cal-todas-acoes">
-          <button class="cal-tarefa-check cal-btn" type="button" aria-label="Marcar como feita">
+          <button class="cal-tarefa-check cal-btn" type="button" aria-label="${escapeHtml(tr('marcar_feita'))}">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
-          <button class="cal-tarefa-editar cal-btn cal-btn-icon" type="button" aria-label="Editar">
+          <button class="cal-tarefa-editar cal-btn cal-btn-icon" type="button" aria-label="${escapeHtml(tr('editar'))}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
-          <button class="cal-tarefa-excluir cal-btn cal-btn-icon" type="button" aria-label="Excluir">
+          <button class="cal-tarefa-excluir cal-btn cal-btn-icon" type="button" aria-label="${escapeHtml(tr('excluir'))}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </div>
@@ -3024,7 +3278,7 @@
       document.getElementById('cal-data').value = tarefa ? tarefa.data : dataParaISO(calDiaSelecionado);
       document.getElementById('cal-hora-inicio').value = tarefa ? (tarefa.hora_inicio || '') : '';
       document.getElementById('cal-hora-fim').value = tarefa ? (tarefa.hora_fim || '') : '';
-      document.getElementById('cal-btn-salvar-tarefa').textContent = tarefa ? 'Salvar alterações' : 'Salvar';
+      document.getElementById('cal-btn-salvar-tarefa').textContent = tr(tarefa ? 'salvar_alteracoes' : 'salvar');
 
       form.hidden = false;
       document.getElementById('cal-titulo').focus();
@@ -3060,7 +3314,7 @@
         await carregarTarefas();
       } catch (err) {
         console.error('Erro ao salvar tarefa:', err);
-        alert('Não foi possível salvar a tarefa agora. Tente de novo em instantes.');
+        alert(tr('cal_erro_salvar_tarefa'));
       }
     }
 
@@ -3075,14 +3329,14 @@
     }
 
     async function excluirTarefa(tarefa) {
-      if (!(await confirmarAcao(`Excluir "${tarefa.titulo}"?`))) return;
+      if (!(await confirmarAcao(`${tr('excluir')} "${tarefa.titulo}"?`))) return;
       try {
         const { error } = await Auth.sb.from('painel_tarefas').delete().eq('id', tarefa.id);
         if (error) throw error;
         await carregarTarefas();
       } catch (err) {
         console.error('Erro ao excluir tarefa:', err);
-        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+        alert(tr('erro_excluir_generico'));
       }
     }
 
@@ -3123,20 +3377,20 @@
     async function conectarGmail() {
       const btn = document.getElementById('btn-email-conectar');
       btn.disabled = true;
-      btn.textContent = 'Conectando...';
+      btn.textContent = tr('conectando');
       try {
         const resultado = await chamarFuncao('gmail-oauth-start');
         if (resultado.ok) {
           window.location.href = resultado.url;
           return;
         }
-        mostrarEmailDesconectado('Não foi possível iniciar a conexão. Tente de novo.');
+        mostrarEmailDesconectado(tr('erro_iniciar_conexao'));
       } catch (err) {
         console.error('Erro ao conectar Gmail:', err);
-        mostrarEmailDesconectado('Não foi possível iniciar a conexão. Tente de novo.');
+        mostrarEmailDesconectado(tr('erro_iniciar_conexao'));
       }
       btn.disabled = false;
-      btn.textContent = 'Conectar Gmail';
+      btn.textContent = tr('email_conectar_btn');
     }
 
     async function carregarEmails() {
@@ -3148,7 +3402,7 @@
             mostrarEmailDesconectado();
           } else {
             mostrarEmailConectado();
-            lista.innerHTML = '<p class="texto-erro">Não foi possível carregar as mensagens: ' + escapeHtml(resultado.error) + '</p>';
+            lista.innerHTML = '<p class="texto-erro">' + escapeHtml(tr('email_erro_carregar_prefixo')) + escapeHtml(resultado.error) + '</p>';
           }
           return;
         }
@@ -3159,7 +3413,7 @@
       } catch (err) {
         console.error('Erro ao carregar e-mails:', err);
         mostrarEmailConectado();
-        lista.innerHTML = '<p class="texto-erro">Não foi possível carregar as mensagens agora.</p>';
+        lista.innerHTML = `<p class="texto-erro">${escapeHtml(tr('email_erro_carregar_generico'))}</p>`;
       }
     }
 
@@ -3173,7 +3427,7 @@
       const lista = document.getElementById('email-lista');
 
       if (emailsCache.length === 0) {
-        lista.innerHTML = `<p class="email-lista-vazia">Nenhuma mensagem com o rótulo "Propostas" ainda.</p>`;
+        lista.innerHTML = `<p class="email-lista-vazia">${escapeHtml(tr('email_nenhuma_mensagem'))}</p>`;
         return;
       }
 
@@ -3182,16 +3436,16 @@
           <button type="button" class="email-item${msg.id === emailAbertoId ? ' email-item-ativo' : ''}${msg.unread ? '' : ' email-item-lida'}" data-id="${escapeHtml(msg.id)}">
             <span class="email-item-topo-linha">
               <span class="email-item-remetente">${escapeHtml(nomeRemetente(msg.from))}</span>
-              ${msg.unread ? '' : '<span class="email-item-selo-vista">Vista</span>'}
+              ${msg.unread ? '' : `<span class="email-item-selo-vista">${escapeHtml(tr('email_vista_selo'))}</span>`}
             </span>
-            <span class="email-item-assunto">${escapeHtml(msg.subject || '(sem assunto)')}</span>
+            <span class="email-item-assunto">${escapeHtml(msg.subject || tr('sem_assunto'))}</span>
             <span class="email-item-resumo">${escapeHtml(msg.snippet)}</span>
           </button>
           ${msg.unread ? `
-          <button type="button" class="email-item-marcar-lida" data-id="${escapeHtml(msg.id)}" aria-label="Marcar como visto" title="Marcar como visto">
+          <button type="button" class="email-item-marcar-lida" data-id="${escapeHtml(msg.id)}" aria-label="${escapeHtml(tr('email_marcar_visto_aria'))}" title="${escapeHtml(tr('email_marcar_visto_aria'))}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>` : ''}
-          <button type="button" class="email-item-desmarcar" data-id="${escapeHtml(msg.id)}" aria-label="Desmarcar mensagem" title="Desmarcar (remove o rótulo Propostas)">
+          <button type="button" class="email-item-desmarcar" data-id="${escapeHtml(msg.id)}" aria-label="${escapeHtml(tr('email_desmarcar_aria'))}" title="${escapeHtml(tr('email_desmarcar_title'))}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
@@ -3218,7 +3472,7 @@
           body: { messageId: id },
         });
         if (!resultado.ok) {
-          alert('Não foi possível marcar como visto: ' + resultado.error);
+          alert(tr('email_erro_marcar_visto_prefixo') + resultado.error);
           return;
         }
         const msg = emailsCache.find((m) => m.id === id);
@@ -3227,27 +3481,27 @@
         renderizarAtencaoDashboard();
       } catch (err) {
         console.error('Erro ao marcar e-mail como visto:', err);
-        alert('Não foi possível marcar como visto agora. Tente de novo.');
+        alert(tr('email_erro_marcar_visto_generico'));
       }
     }
 
     function fecharEmailAberto() {
       emailAbertoId = null;
       document.getElementById('email-detalhe').innerHTML =
-        '<p class="email-detalhe-vazio">Selecione uma mensagem na lista ao lado.</p>';
+        `<p class="email-detalhe-vazio">${escapeHtml(tr('email_selecione_mensagem'))}</p>`;
       document.getElementById('email-form-resposta').hidden = true;
       renderizarListaEmails();
     }
 
     async function desmarcarEmail(id) {
-      if (!(await confirmarAcao('Remover esta mensagem da lista de Propostas? Ela continua no seu Gmail, só sai daqui.', { textoConfirmar: 'Remover' }))) return;
+      if (!(await confirmarAcao(tr('email_confirmar_desmarcar'), { textoConfirmar: tr('remover') }))) return;
       try {
         const resultado = await chamarFuncao('gmail-unmark', {
           method: 'POST',
           body: { messageId: id },
         });
         if (!resultado.ok) {
-          alert('Não foi possível desmarcar: ' + resultado.error);
+          alert(tr('email_erro_desmarcar_prefixo') + resultado.error);
           return;
         }
         emailsCache = emailsCache.filter((m) => m.id !== id);
@@ -3256,7 +3510,7 @@
         renderizarAtencaoDashboard();
       } catch (err) {
         console.error('Erro ao desmarcar e-mail:', err);
-        alert('Não foi possível desmarcar agora. Tente de novo.');
+        alert(tr('email_erro_desmarcar_generico'));
       }
     }
 
@@ -3266,13 +3520,13 @@
 
       const detalhe = document.getElementById('email-detalhe');
       const form = document.getElementById('email-form-resposta');
-      detalhe.innerHTML = '<p class="email-detalhe-vazio">Carregando...</p>';
+      detalhe.innerHTML = `<p class="email-detalhe-vazio">${escapeHtml(tr('carregando'))}</p>`;
       form.hidden = true;
 
       try {
         const resultado = await chamarFuncao(`gmail-inbox?id=${encodeURIComponent(id)}`);
         if (!resultado.ok) {
-          detalhe.innerHTML = `<p class="texto-erro">Não foi possível abrir esta mensagem: ${escapeHtml(resultado.error)}</p>`;
+          detalhe.innerHTML = `<p class="texto-erro">${escapeHtml(tr('email_erro_abrir_prefixo'))}${escapeHtml(resultado.error)}</p>`;
           return;
         }
 
@@ -3280,8 +3534,8 @@
         detalhe.innerHTML = `
           <div class="email-detalhe-cabecalho">
             <div class="email-detalhe-topo">
-              <h3 class="card-titulo">${escapeHtml(msg.subject || '(sem assunto)')}</h3>
-              <button type="button" id="email-fechar-detalhe" class="cal-btn cal-btn-icon" aria-label="Fechar mensagem">
+              <h3 class="card-titulo">${escapeHtml(msg.subject || tr('sem_assunto'))}</h3>
+              <button type="button" id="email-fechar-detalhe" class="cal-btn cal-btn-icon" aria-label="${escapeHtml(tr('email_fechar_mensagem_aria'))}">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
               </button>
             </div>
@@ -3294,7 +3548,7 @@
         form.hidden = false;
       } catch (err) {
         console.error('Erro ao abrir e-mail:', err);
-        detalhe.innerHTML = '<p class="texto-erro">Não foi possível abrir esta mensagem agora.</p>';
+        detalhe.innerHTML = `<p class="texto-erro">${escapeHtml(tr('email_erro_abrir_generico'))}</p>`;
       }
     }
 
@@ -3308,7 +3562,7 @@
       if (!texto) return;
 
       btn.disabled = true;
-      btn.textContent = 'Enviando...';
+      btn.textContent = tr('enviando');
       try {
         const resultado = await chamarFuncao('gmail-reply', {
           method: 'POST',
@@ -3316,16 +3570,16 @@
         });
         if (resultado.ok) {
           textarea.value = '';
-          alert('Resposta enviada!');
+          alert(tr('email_resposta_enviada'));
         } else {
-          alert('Não foi possível enviar: ' + resultado.error);
+          alert(tr('email_erro_enviar_prefixo') + resultado.error);
         }
       } catch (err) {
         console.error('Erro ao enviar resposta:', err);
-        alert('Não foi possível enviar a resposta agora. Tente de novo.');
+        alert(tr('email_erro_enviar_generico'));
       }
       btn.disabled = false;
-      btn.textContent = 'Enviar resposta';
+      btn.textContent = tr('email_enviar_resposta');
     }
 
     // ==========================================================================
@@ -3353,20 +3607,20 @@
     async function conectarInstagram() {
       const btn = document.getElementById('btn-instagram-conectar');
       btn.disabled = true;
-      btn.textContent = 'Conectando...';
+      btn.textContent = tr('conectando');
       try {
         const resultado = await chamarFuncao('instagram-oauth-start');
         if (resultado.ok) {
           window.location.href = resultado.url;
           return;
         }
-        mostrarInstagramDesconectado('Não foi possível iniciar a conexão. Tente de novo.');
+        mostrarInstagramDesconectado(tr('erro_iniciar_conexao'));
       } catch (err) {
         console.error('Erro ao conectar Instagram:', err);
-        mostrarInstagramDesconectado('Não foi possível iniciar a conexão. Tente de novo.');
+        mostrarInstagramDesconectado(tr('erro_iniciar_conexao'));
       }
       btn.disabled = false;
-      btn.textContent = 'Conectar Instagram';
+      btn.textContent = tr('instagram_conectar_btn');
     }
 
     // Mostra "–" pra valores que a API não conseguiu trazer (métrica
@@ -3382,7 +3636,7 @@
         const resultado = await chamarFuncao('instagram-metrics');
         if (!resultado.ok) {
           mostrarInstagramConectado();
-          lista.innerHTML = '<p class="texto-erro">Não foi possível carregar as métricas: ' + escapeHtml(resultado.error) + '</p>';
+          lista.innerHTML = '<p class="texto-erro">' + escapeHtml(tr('instagram_erro_carregar_prefixo')) + escapeHtml(resultado.error) + '</p>';
           return;
         }
         if (!resultado.conectado) {
@@ -3394,7 +3648,7 @@
       } catch (err) {
         console.error('Erro ao carregar métricas do Instagram:', err);
         mostrarInstagramConectado();
-        lista.innerHTML = '<p class="texto-erro">Não foi possível carregar as métricas agora.</p>';
+        lista.innerHTML = `<p class="texto-erro">${escapeHtml(tr('instagram_erro_carregar_generico'))}</p>`;
       }
     }
 
@@ -3410,7 +3664,7 @@
       const avisoEl = document.getElementById('instagram-avisos');
       if (erros && erros.length) {
         console.error('Avisos ao carregar métricas do Instagram:', erros);
-        avisoEl.innerHTML = '<strong>Alguns dados não carregaram:</strong><br>' + erros.map((e) => escapeHtml(e)).join('<br>');
+        avisoEl.innerHTML = `<strong>${escapeHtml(tr('instagram_alguns_dados'))}</strong><br>` + erros.map((e) => escapeHtml(e)).join('<br>');
         avisoEl.hidden = false;
       } else {
         avisoEl.hidden = true;
@@ -3418,7 +3672,7 @@
 
       const lista = document.getElementById('instagram-posts-lista');
       if (!posts || posts.length === 0) {
-        lista.innerHTML = '<p class="texto-vazio">Nenhuma publicação encontrada ainda.</p>';
+        lista.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('instagram_nenhuma_publicacao'))}</p>`;
         return;
       }
 
@@ -3426,16 +3680,16 @@
         <div class="instagram-post-item">
           ${post.capa ? `<img class="instagram-post-capa" src="${escapeHtml(post.capa)}" alt="">` : '<div class="instagram-post-capa instagram-post-capa-vazia"></div>'}
           <div class="instagram-post-info">
-            <p class="instagram-post-legenda">${escapeHtml((post.legenda || '(sem legenda)').slice(0, 90))}</p>
-            <span class="instagram-post-data">${post.data ? new Date(post.data).toLocaleDateString('pt-BR') : ''}</span>
+            <p class="instagram-post-legenda">${escapeHtml((post.legenda || tr('sem_legenda')).slice(0, 90))}</p>
+            <span class="instagram-post-data">${post.data ? new Date(post.data).toLocaleDateString(localeAtual()) : ''}</span>
             <div class="instagram-post-metricas">
-              <span>Curtidas: ${formatarMetricaInstagram(post.curtidas)}</span>
-              <span>Comentários: ${formatarMetricaInstagram(post.comentarios)}</span>
-              <span>Alcance: ${formatarMetricaInstagram(post.alcance)}</span>
-              <span>Salvos: ${formatarMetricaInstagram(post.salvos)}</span>
+              <span>${escapeHtml(tr('instagram_curtidas'))}: ${formatarMetricaInstagram(post.curtidas)}</span>
+              <span>${escapeHtml(tr('instagram_comentarios'))}: ${formatarMetricaInstagram(post.comentarios)}</span>
+              <span>${escapeHtml(tr('instagram_alcance_curto'))}: ${formatarMetricaInstagram(post.alcance)}</span>
+              <span>${escapeHtml(tr('instagram_salvos'))}: ${formatarMetricaInstagram(post.salvos)}</span>
             </div>
           </div>
-          <a class="instagram-post-link" href="${escapeHtml(post.link || '#')}" target="_blank" rel="noopener">Ver post</a>
+          <a class="instagram-post-link" href="${escapeHtml(post.link || '#')}" target="_blank" rel="noopener">${escapeHtml(tr('instagram_ver_post'))}</a>
         </div>
       `).join('');
     }
@@ -3692,7 +3946,7 @@
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao excluir pilar:', err);
-        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+        alert(tr('erro_excluir_generico'));
       }
     }
 
@@ -3751,7 +4005,7 @@
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao excluir ideia:', err);
-        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+        alert(tr('erro_excluir_generico'));
       }
     }
 
@@ -3873,7 +4127,7 @@
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao excluir achado:', err);
-        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+        alert(tr('erro_excluir_generico'));
       }
     }
 
@@ -3951,7 +4205,7 @@
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao excluir cronograma:', err);
-        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+        alert(tr('erro_excluir_generico'));
       }
     }
 
@@ -4139,7 +4393,7 @@
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao excluir pilar do dia:', err);
-        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+        alert(tr('erro_excluir_generico'));
       }
     }
 
@@ -4282,7 +4536,7 @@
         await carregarRadar();
       } catch (err) {
         console.error('Erro ao excluir notícia:', err);
-        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+        alert(tr('erro_excluir_generico'));
       }
     }
 
@@ -4530,7 +4784,7 @@
       const lista = document.getElementById('ugc-trabalhos-lista');
       lista.innerHTML = '';
       if (ordenadas.length === 0) {
-        lista.innerHTML = '<p class="texto-vazio">Nada por aqui.</p>';
+        lista.innerHTML = `<p class="texto-vazio">${tr('nada_por_aqui')}</p>`;
         return;
       }
       ordenadas.forEach((t) => lista.appendChild(criarLinhaTrabalho(t)));
@@ -4874,7 +5128,7 @@
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao excluir trabalho:', err);
-        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+        alert(tr('erro_excluir_generico'));
       }
     }
 
@@ -5059,7 +5313,7 @@
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao excluir roteiro:', err);
-        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+        alert(tr('erro_excluir_generico'));
       }
     }
 
@@ -5128,7 +5382,7 @@
       const lista = document.getElementById('ugc-prospeccao-lista');
       lista.innerHTML = '';
       if (ordenadas.length === 0) {
-        lista.innerHTML = '<p class="texto-vazio">Nada por aqui.</p>';
+        lista.innerHTML = `<p class="texto-vazio">${tr('nada_por_aqui')}</p>`;
         return;
       }
       ordenadas.forEach((p) => lista.appendChild(criarLinhaProspeccao(p)));
@@ -5232,7 +5486,7 @@
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao excluir prospecção:', err);
-        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+        alert(tr('erro_excluir_generico'));
       }
     }
 
@@ -5292,7 +5546,7 @@
       const lista = document.getElementById('ugc-contratos-lista');
       lista.innerHTML = '';
       if (ordenadas.length === 0) {
-        lista.innerHTML = '<p class="texto-vazio">Nada por aqui.</p>';
+        lista.innerHTML = `<p class="texto-vazio">${tr('nada_por_aqui')}</p>`;
         return;
       }
       ordenadas.forEach((c) => lista.appendChild(criarLinhaContrato(c)));
@@ -5450,7 +5704,7 @@
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao excluir contrato:', err);
-        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+        alert(tr('erro_excluir_generico'));
       }
     }
 
@@ -5609,7 +5863,7 @@
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao excluir preço:', err);
-        alert('Não foi possível excluir agora. Tente de novo em instantes.');
+        alert(tr('erro_excluir_generico'));
       }
     }
 
@@ -5878,7 +6132,7 @@
     // Passe { perigo: false, textoConfirmar: 'Criar' } pra ações que não são
     // exclusão (ex: converter Prospecção em Trabalho).
     function confirmarAcao(mensagem, opcoes = {}) {
-      const { titulo = 'Confirmar', textoConfirmar = 'Excluir', perigo = true } = opcoes;
+      const { titulo = tr('confirm_titulo_padrao'), textoConfirmar = tr('confirm_excluir_padrao'), perigo = true } = opcoes;
       const overlay = document.getElementById('confirmar-modal-overlay');
       const btnOk = document.getElementById('confirmar-modal-ok');
       const btnCancelar = document.getElementById('confirmar-modal-cancelar');

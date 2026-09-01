@@ -1753,6 +1753,24 @@
 
         // Portfólio
         portfolio_ola: 'Olá! Aqui estão os números do seu portfólio.',
+        portfolio_excluir_lead_confirmar: 'Excluir esta mensagem?',
+        portfolio_nenhuma_mensagem: 'Nenhuma mensagem por enquanto.',
+        portfolio_origem_popup: 'Popup',
+        portfolio_origem_contato: 'Contato',
+        portfolio_sem_nome: 'Sem nome',
+        portfolio_telefone: 'Telefone',
+        portfolio_orcamento: 'Orçamento',
+        portfolio_mensagem: 'Mensagem',
+        portfolio_responder_email: 'Responder por e-mail',
+        portfolio_assunto_contato: 'Contato pelo portfólio',
+        portfolio_nenhum_video: 'Nenhum vídeo visto ainda.',
+        cal_erro_carregar_tarefas: 'Não foi possível carregar suas tarefas agora.',
+        erro_carregar_dados_geral: 'Não foi possível carregar os dados agora. Verifique sua conexão e tente novamente em instantes.',
+        portfolio_nenhuma_visita: 'Nenhuma visita registrada ainda.',
+        portfolio_nenhum_clique: 'Nenhum clique registrado ainda.',
+        portfolio_nenhum_clique_contato: 'Nenhum clique para contato ainda.',
+        portfolio_visita_singular: 'visita',
+        portfolio_visita_plural: 'visitas',
         portfolio_visitas: 'Visitas',
         portfolio_visitantes: 'Visitantes únicos',
         portfolio_cliques_botoes: 'Cliques em botões',
@@ -2285,6 +2303,24 @@
 
         // Portfolio
         portfolio_ola: "Hi! Here are your portfolio's numbers.",
+        portfolio_excluir_lead_confirmar: 'Delete this message?',
+        portfolio_nenhuma_mensagem: 'No messages yet.',
+        portfolio_origem_popup: 'Popup',
+        portfolio_origem_contato: 'Contact',
+        portfolio_sem_nome: 'No name',
+        portfolio_telefone: 'Phone',
+        portfolio_orcamento: 'Budget',
+        portfolio_mensagem: 'Message',
+        portfolio_responder_email: 'Reply by email',
+        portfolio_assunto_contato: 'Portfolio contact',
+        portfolio_nenhum_video: 'No videos watched yet.',
+        cal_erro_carregar_tarefas: 'Could not load your tasks right now.',
+        erro_carregar_dados_geral: 'Could not load the data right now. Check your connection and try again in a moment.',
+        portfolio_nenhuma_visita: 'No visits recorded yet.',
+        portfolio_nenhum_clique: 'No clicks recorded yet.',
+        portfolio_nenhum_clique_contato: 'No contact clicks yet.',
+        portfolio_visita_singular: 'visit',
+        portfolio_visita_plural: 'visits',
         portfolio_visitas: 'Visits',
         portfolio_visitantes: 'Unique visitors',
         portfolio_cliques_botoes: 'Button clicks',
@@ -2825,15 +2861,13 @@
       } catch (err) {
         console.error('Erro ao carregar tarefas do calendário:', err);
         const card = document.querySelector('.card-cal-dia');
-        if (card) card.innerHTML = '<p class="texto-erro">Não foi possível carregar suas tarefas agora.</p>';
+        if (card) card.innerHTML = `<p class="texto-erro">${tr('cal_erro_carregar_tarefas')}</p>`;
       }
     }
 
     function mostrarErroCarregamento() {
       const conteudo = document.querySelector('.conteudo');
-      conteudo.innerHTML =
-        '<div class="card"><p class="texto-erro">Não foi possível carregar os dados agora. ' +
-        'Verifique sua conexão e tente novamente em instantes.</p></div>';
+      conteudo.innerHTML = `<div class="card"><p class="texto-erro">${tr('erro_carregar_dados_geral')}</p></div>`;
     }
 
     // ==========================================================================
@@ -3534,7 +3568,7 @@
       container.innerHTML = '';
 
       if (pageViews.length === 0) {
-        container.innerHTML = '<p class="texto-vazio">Nenhuma visita registrada ainda.</p>';
+        container.innerHTML = `<p class="texto-vazio">${tr('portfolio_nenhuma_visita')}</p>`;
         return;
       }
 
@@ -3569,7 +3603,7 @@
         const barra = document.createElement('div');
         barra.className = 'barra';
         barra.style.height = altura + '%';
-        barra.title = formatarDataCurta(dia) + ': ' + contagem + (contagem === 1 ? ' visita' : ' visitas');
+        barra.title = formatarDataCurta(dia) + ': ' + contagem + ' ' + tr(contagem === 1 ? 'portfolio_visita_singular' : 'portfolio_visita_plural');
 
         const label = document.createElement('span');
         label.className = 'barra-label';
@@ -3616,7 +3650,7 @@
       container.innerHTML = '';
 
       if (videoViews.length === 0) {
-        container.innerHTML = '<p class="texto-vazio">Nenhum vídeo visto ainda.</p>';
+        container.innerHTML = `<p class="texto-vazio">${tr('portfolio_nenhum_video')}</p>`;
         return;
       }
 
@@ -3653,7 +3687,7 @@
       container.innerHTML = '';
 
       if (buttonClicks.length === 0) {
-        container.innerHTML = '<p class="texto-vazio">Nenhum clique registrado ainda.</p>';
+        container.innerHTML = `<p class="texto-vazio">${tr('portfolio_nenhum_clique')}</p>`;
         return;
       }
 
@@ -3683,7 +3717,7 @@
       container.innerHTML = '';
 
       if (contatoClicks.length === 0) {
-        container.innerHTML = '<p class="texto-vazio">Nenhum clique para contato ainda.</p>';
+        container.innerHTML = `<p class="texto-vazio">${tr('portfolio_nenhum_clique_contato')}</p>`;
         return;
       }
 
@@ -3715,7 +3749,7 @@
       container.innerHTML = '';
 
       if (leads.length === 0) {
-        container.innerHTML = '<p class="texto-vazio">Nenhuma mensagem por enquanto.</p>';
+        container.innerHTML = `<p class="texto-vazio">${tr('portfolio_nenhuma_mensagem')}</p>`;
         return;
       }
 
@@ -3726,8 +3760,8 @@
         card.className = 'lead-card';
 
         const origemPopup = lead.source === 'popup';
-        const origemTexto = origemPopup ? 'Popup' : 'Contato';
-        const dataFormatada = new Date(lead.created_at).toLocaleString('pt-BR', {
+        const origemTexto = origemPopup ? tr('portfolio_origem_popup') : tr('portfolio_origem_contato');
+        const dataFormatada = new Date(lead.created_at).toLocaleString(localeAtual(), {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric',
@@ -3739,21 +3773,21 @@
 
         card.innerHTML = `
           <button class="lead-card-topo" type="button">
-            <span class="lead-selo ${origemPopup ? 'lead-selo-popup' : 'lead-selo-contato'}">${origemTexto}</span>
-            <span class="lead-nome">${escapeHtml(lead.name || 'Sem nome')}</span>
+            <span class="lead-selo ${origemPopup ? 'lead-selo-popup' : 'lead-selo-contato'}">${escapeHtml(origemTexto)}</span>
+            <span class="lead-nome">${escapeHtml(lead.name || tr('portfolio_sem_nome'))}</span>
             <span class="lead-data">${dataFormatada}</span>
             <span class="lead-email">${escapeHtml(lead.email || '')}</span>
             <svg class="lead-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
           <div class="lead-detalhes" hidden>
-            ${lead.phone ? `<p><strong>Telefone:</strong> ${escapeHtml(lead.phone)}</p>` : ''}
-            ${lead.brand ? `<p><strong>Marca:</strong> ${escapeHtml(lead.brand)}</p>` : ''}
-            ${lead.budget ? `<p><strong>Orçamento:</strong> ${escapeHtml(lead.budget)}</p>` : ''}
-            ${lead.message ? `<p><strong>Mensagem:</strong> ${escapeHtml(lead.message)}</p>` : ''}
+            ${lead.phone ? `<p><strong>${escapeHtml(tr('portfolio_telefone'))}:</strong> ${escapeHtml(lead.phone)}</p>` : ''}
+            ${lead.brand ? `<p><strong>${escapeHtml(tr('ugc_col_marca'))}:</strong> ${escapeHtml(lead.brand)}</p>` : ''}
+            ${lead.budget ? `<p><strong>${escapeHtml(tr('portfolio_orcamento'))}:</strong> ${escapeHtml(lead.budget)}</p>` : ''}
+            ${lead.message ? `<p><strong>${escapeHtml(tr('portfolio_mensagem'))}:</strong> ${escapeHtml(lead.message)}</p>` : ''}
             <div class="lead-acoes">
-              ${lead.email ? `<a class="btn-secundario" href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(lead.email)}&su=${encodeURIComponent('Contato pelo portfólio')}" target="_blank" rel="noopener noreferrer">Responder por e-mail</a>` : ''}
+              ${lead.email ? `<a class="btn-secundario" href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(lead.email)}&su=${encodeURIComponent(tr('portfolio_assunto_contato'))}" target="_blank" rel="noopener noreferrer">${escapeHtml(tr('portfolio_responder_email'))}</a>` : ''}
               ${telefoneDigitos ? `<a class="btn-secundario btn-whatsapp" href="https://wa.me/${telefoneDigitos}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : ''}
-              <button type="button" class="btn-secundario btn-excluir-lead">Excluir</button>
+              <button type="button" class="btn-secundario btn-excluir-lead">${escapeHtml(tr('excluir'))}</button>
             </div>
           </div>
         `;
@@ -3772,7 +3806,7 @@
     }
 
     async function excluirLead(lead) {
-      if (!(await confirmarAcao('Excluir esta mensagem?'))) return;
+      if (!(await confirmarAcao(tr('portfolio_excluir_lead_confirmar')))) return;
       try {
         const { error } = await Auth.sb.from('portfolio_leads').delete().eq('id', lead.id);
         if (error) throw error;

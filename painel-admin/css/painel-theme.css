@@ -586,6 +586,10 @@
   min-width: 560px;
 }
 
+.painel-body .cal-todas-cabecalho > [data-i18n="cal_dia"] {
+  text-align: center;
+}
+
 .painel-body .cal-todas-linhas {
   display: flex;
   flex-direction: column;
@@ -618,6 +622,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  justify-self: center;
   gap: 1px;
   padding: 6px 4px;
   border: 1px solid var(--coral);

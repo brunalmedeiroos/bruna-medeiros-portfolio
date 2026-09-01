@@ -472,28 +472,28 @@
         <!-- ---------- Aba: UGC / Publi ---------- -->
         <section id="panel-ugc" class="tab-panel" hidden>
           <div class="ugc-subnav">
-            <button class="ugc-subnav-btn ativo" data-ugc-pagina="visao-geral" type="button">Visão Geral</button>
-            <button class="ugc-subnav-btn" data-ugc-pagina="trabalhos" type="button">Trabalhos</button>
-            <button class="ugc-subnav-btn" data-ugc-pagina="roteiros" type="button">Roteiros</button>
-            <button class="ugc-subnav-btn" data-ugc-pagina="prospeccao" type="button">Prospecção</button>
-            <button class="ugc-subnav-btn" data-ugc-pagina="contratos" type="button">Contratos</button>
-            <button class="ugc-subnav-btn" data-ugc-pagina="precos" type="button">Preços</button>
-            <button class="ugc-subnav-btn" data-ugc-pagina="resultados" type="button">Resultados</button>
+            <button class="ugc-subnav-btn ativo" data-ugc-pagina="visao-geral" type="button" data-i18n="ugc_visao_geral">Visão Geral</button>
+            <button class="ugc-subnav-btn" data-ugc-pagina="trabalhos" type="button" data-i18n="ugc_trabalhos">Trabalhos</button>
+            <button class="ugc-subnav-btn" data-ugc-pagina="roteiros" type="button" data-i18n="ugc_roteiros">Roteiros</button>
+            <button class="ugc-subnav-btn" data-ugc-pagina="prospeccao" type="button" data-i18n="ugc_prospeccao">Prospecção</button>
+            <button class="ugc-subnav-btn" data-ugc-pagina="contratos" type="button" data-i18n="ugc_contratos">Contratos</button>
+            <button class="ugc-subnav-btn" data-ugc-pagina="precos" type="button" data-i18n="ugc_precos">Preços</button>
+            <button class="ugc-subnav-btn" data-ugc-pagina="resultados" type="button" data-i18n="ugc_resultados">Resultados</button>
           </div>
 
           <!-- Visão Geral: só leitura, tudo derivado de ugc_trabalhos -->
           <div id="ugc-pagina-visao-geral" class="ugc-pagina">
             <div class="cards-numeros cards-numeros-visao-geral-ugc">
               <div class="card-numero destaque">
-                <span class="card-label">Trabalhos ativos</span>
+                <span class="card-label" data-i18n="ugc_trabalhos_ativos">Trabalhos ativos</span>
                 <span class="card-valor" id="ugc-num-ativos">0</span>
               </div>
               <div class="card-numero">
-                <span class="card-label">Em produção</span>
+                <span class="card-label" data-i18n="ugc_em_producao">Em produção</span>
                 <span class="card-valor" id="ugc-num-producao">0</span>
               </div>
               <div class="card-numero">
-                <span class="card-label">A receber</span>
+                <span class="card-label" data-i18n="ugc_a_receber">A receber</span>
                 <span class="card-valor" id="ugc-num-receber">R$ 0</span>
               </div>
             </div>
@@ -502,12 +502,12 @@
                  vencer (ou já venceu), pra ela saber que precisa renovar ou
                  pedir pra marca parar de usar o conteúdo. -->
             <div id="ugc-direitos-uso-alerta" class="ugc-prospeccao-esfriando" hidden>
-              <h4>Direitos de uso vencendo</h4>
+              <h4 data-i18n="ugc_direitos_uso_vencendo">Direitos de uso vencendo</h4>
               <div id="ugc-direitos-uso-alerta-lista"></div>
             </div>
 
             <div class="card">
-              <h3 class="card-titulo">Próximas entregas</h3>
+              <h3 class="card-titulo" data-i18n="ugc_proximas_entregas">Próximas entregas</h3>
               <div id="ugc-proximas-entregas" class="ugc-proximas-lista"></div>
             </div>
           </div>
@@ -516,27 +516,27 @@
           <div id="ugc-pagina-trabalhos" class="ugc-pagina" hidden>
             <div class="cal-todas-topo">
               <div>
-                <h3 class="card-titulo">Trabalhos</h3>
-                <p class="cal-todas-resumo" id="ugc-trabalhos-resumo">Nenhum trabalho ainda.</p>
+                <h3 class="card-titulo" data-i18n="ugc_trabalhos">Trabalhos</h3>
+                <p class="cal-todas-resumo" id="ugc-trabalhos-resumo" data-i18n="ugc_nenhum_trabalho">Nenhum trabalho ainda.</p>
               </div>
               <div class="ugc-trabalhos-topo-acoes">
                 <div class="cal-filtro-grupo">
-                  <button class="cal-filtro-btn ativo" data-filtro-trabalho="ativos" type="button">Ativos</button>
-                  <button class="cal-filtro-btn" data-filtro-trabalho="finalizados" type="button">Finalizados</button>
+                  <button class="cal-filtro-btn ativo" data-filtro-trabalho="ativos" type="button" data-i18n="ugc_filtro_ativos">Ativos</button>
+                  <button class="cal-filtro-btn" data-filtro-trabalho="finalizados" type="button" data-i18n="ugc_filtro_finalizados">Finalizados</button>
                 </div>
-                <button id="btn-ugc-novo-trabalho" class="cal-btn cal-btn-primario" type="button">+ Novo trabalho</button>
+                <button id="btn-ugc-novo-trabalho" class="cal-btn cal-btn-primario" type="button" data-i18n="ugc_novo_trabalho">+ Novo trabalho</button>
               </div>
             </div>
 
             <div class="cal-todas-tabela">
               <div class="cal-todas-cabecalho ugc-trabalhos-linha">
-                <span>Marca</span>
-                <span>Campanha</span>
-                <span>Tipo</span>
-                <span>Status</span>
-                <span>Entrega</span>
-                <span>Valor</span>
-                <span>Pagamento</span>
+                <span data-i18n="ugc_col_marca">Marca</span>
+                <span data-i18n="ugc_col_campanha">Campanha</span>
+                <span data-i18n="ugc_col_tipo">Tipo</span>
+                <span data-i18n="status">Status</span>
+                <span data-i18n="ugc_col_entrega">Entrega</span>
+                <span data-i18n="ugc_col_valor">Valor</span>
+                <span data-i18n="ugc_col_pagamento">Pagamento</span>
               </div>
               <div id="ugc-trabalhos-lista" class="cal-todas-linhas"></div>
             </div>
@@ -546,10 +546,10 @@
           <div id="ugc-pagina-roteiros" class="ugc-pagina" hidden>
             <div class="cal-todas-topo">
               <div>
-                <h3 class="card-titulo">Roteiros</h3>
-                <p class="cal-todas-resumo" id="ugc-roteiros-resumo">Nenhum roteiro ainda.</p>
+                <h3 class="card-titulo" data-i18n="ugc_roteiros">Roteiros</h3>
+                <p class="cal-todas-resumo" id="ugc-roteiros-resumo" data-i18n="ugc_nenhum_roteiro">Nenhum roteiro ainda.</p>
               </div>
-              <button id="btn-ugc-novo-roteiro" class="cal-btn cal-btn-primario" type="button">+ Novo roteiro</button>
+              <button id="btn-ugc-novo-roteiro" class="cal-btn cal-btn-primario" type="button" data-i18n="ugc_novo_roteiro">+ Novo roteiro</button>
             </div>
 
             <div id="ugc-roteiros-grade" class="ugc-roteiros-grade"></div>
@@ -557,27 +557,27 @@
           <div id="ugc-pagina-prospeccao" class="ugc-pagina" hidden>
             <div class="cards-numeros cards-numeros-prospeccao">
               <div class="card-numero destaque">
-                <span class="card-label">Outbound</span>
+                <span class="card-label" data-i18n="ugc_outbound">Outbound</span>
                 <span class="card-valor" id="ugc-prosp-outbound">0</span>
               </div>
               <div class="card-numero">
-                <span class="card-label">Inbound</span>
+                <span class="card-label" data-i18n="ugc_inbound">Inbound</span>
                 <span class="card-valor" id="ugc-prosp-inbound">0</span>
               </div>
               <div class="card-numero">
-                <span class="card-label">Em negociação</span>
+                <span class="card-label" data-i18n="ugc_em_negociacao">Em negociação</span>
                 <span class="card-valor" id="ugc-prosp-negociacao">0</span>
               </div>
               <div class="card-numero">
-                <span class="card-label">Propostas enviadas</span>
+                <span class="card-label" data-i18n="ugc_propostas_enviadas">Propostas enviadas</span>
                 <span class="card-valor" id="ugc-prosp-propostas">0</span>
               </div>
               <div class="card-numero">
-                <span class="card-label">Fechadas</span>
+                <span class="card-label" data-i18n="ugc_fechadas">Fechadas</span>
                 <span class="card-valor" id="ugc-prosp-fechadas">0</span>
               </div>
               <div class="card-numero">
-                <span class="card-label">Sem resposta</span>
+                <span class="card-label" data-i18n="ugc_sem_resposta">Sem resposta</span>
                 <span class="card-valor" id="ugc-prosp-semresposta">0</span>
               </div>
             </div>
@@ -585,28 +585,28 @@
             <!-- Avisa quando uma prospecção ativa está sem retorno/follow-up
                  há tempo demais, pra não perder negociação por esquecimento. -->
             <div id="ugc-prospeccao-esfriando" class="ugc-prospeccao-esfriando" hidden>
-              <h4>Esfriando</h4>
+              <h4 data-i18n="ugc_esfriando">Esfriando</h4>
               <div id="ugc-prospeccao-esfriando-lista"></div>
             </div>
 
             <div class="cal-todas-topo">
               <div>
-                <h3 class="card-titulo">Prospecção</h3>
-                <p class="cal-todas-resumo" id="ugc-prospeccao-resumo">Nenhuma prospecção ainda.</p>
+                <h3 class="card-titulo" data-i18n="ugc_prospeccao">Prospecção</h3>
+                <p class="cal-todas-resumo" id="ugc-prospeccao-resumo" data-i18n="ugc_nenhuma_prospeccao">Nenhuma prospecção ainda.</p>
               </div>
-              <button id="btn-ugc-nova-prospeccao" class="cal-btn cal-btn-primario" type="button">+ Nova prospecção</button>
+              <button id="btn-ugc-nova-prospeccao" class="cal-btn cal-btn-primario" type="button" data-i18n="ugc_nova_prospeccao">+ Nova prospecção</button>
             </div>
 
             <div class="cal-todas-tabela">
               <div class="cal-todas-cabecalho ugc-prospeccao-linha">
-                <span>Marca</span>
-                <span>Contato</span>
-                <span>Origem</span>
-                <span>Tipo</span>
-                <span>Data</span>
-                <span>Status</span>
-                <span>Valor</span>
-                <span>Follow-up</span>
+                <span data-i18n="ugc_col_marca">Marca</span>
+                <span data-i18n="ugc_col_contato">Contato</span>
+                <span data-i18n="ugc_col_origem">Origem</span>
+                <span data-i18n="ugc_col_tipo">Tipo</span>
+                <span data-i18n="ugc_col_data">Data</span>
+                <span data-i18n="status">Status</span>
+                <span data-i18n="ugc_col_valor">Valor</span>
+                <span data-i18n="ugc_col_followup">Follow-up</span>
               </div>
               <div id="ugc-prospeccao-lista" class="cal-todas-linhas"></div>
             </div>
@@ -614,25 +614,25 @@
           <div id="ugc-pagina-contratos" class="ugc-pagina" hidden>
             <div class="cal-todas-topo">
               <div>
-                <h3 class="card-titulo">Contratos</h3>
-                <p class="cal-todas-resumo" id="ugc-contratos-resumo">Nenhum contrato ainda.</p>
+                <h3 class="card-titulo" data-i18n="ugc_contratos">Contratos</h3>
+                <p class="cal-todas-resumo" id="ugc-contratos-resumo" data-i18n="ugc_nenhum_contrato">Nenhum contrato ainda.</p>
               </div>
               <div class="ugc-trabalhos-topo-acoes">
                 <div class="cal-filtro-grupo">
-                  <button class="cal-filtro-btn ativo" data-filtro-contrato="ativos" type="button">Ativos</button>
-                  <button class="cal-filtro-btn" data-filtro-contrato="encerrados" type="button">Encerrados</button>
+                  <button class="cal-filtro-btn ativo" data-filtro-contrato="ativos" type="button" data-i18n="ugc_filtro_ativos">Ativos</button>
+                  <button class="cal-filtro-btn" data-filtro-contrato="encerrados" type="button" data-i18n="ugc_encerrados">Encerrados</button>
                 </div>
-                <button id="btn-ugc-novo-contrato" class="cal-btn cal-btn-primario" type="button">+ Novo contrato</button>
+                <button id="btn-ugc-novo-contrato" class="cal-btn cal-btn-primario" type="button" data-i18n="ugc_novo_contrato">+ Novo contrato</button>
               </div>
             </div>
 
             <div class="cal-todas-tabela">
               <div class="cal-todas-cabecalho ugc-contratos-linha">
-                <span>Marca</span>
-                <span>Campanha</span>
-                <span>Tipo</span>
-                <span>Data</span>
-                <span>Status</span>
+                <span data-i18n="ugc_col_marca">Marca</span>
+                <span data-i18n="ugc_col_campanha">Campanha</span>
+                <span data-i18n="ugc_col_tipo">Tipo</span>
+                <span data-i18n="ugc_col_data">Data</span>
+                <span data-i18n="status">Status</span>
               </div>
               <div id="ugc-contratos-lista" class="cal-todas-linhas"></div>
             </div>
@@ -641,10 +641,10 @@
             <div class="card ugc-proposta-card">
               <div class="ugc-precos-topo">
                 <div>
-                  <h3 class="card-titulo">Proposta personalizada</h3>
-                  <p class="cal-todas-resumo">Monte uma proposta combinando os serviços da tabela, com desconto por quantidade.</p>
+                  <h3 class="card-titulo" data-i18n="ugc_proposta_personalizada">Proposta personalizada</h3>
+                  <p class="cal-todas-resumo" data-i18n="ugc_proposta_desc">Monte uma proposta combinando os serviços da tabela, com desconto por quantidade.</p>
                 </div>
-                <button id="btn-ugc-nova-proposta" class="cal-btn cal-btn-primario" type="button">+ Nova proposta</button>
+                <button id="btn-ugc-nova-proposta" class="cal-btn cal-btn-primario" type="button" data-i18n="ugc_nova_proposta">+ Nova proposta</button>
               </div>
             </div>
 
@@ -652,7 +652,7 @@
               <div class="card">
                 <div class="ugc-precos-topo">
                   <h3 class="card-titulo">UGC</h3>
-                  <button type="button" class="cal-btn cal-btn-icon ugc-precos-add" data-categoria="UGC" aria-label="Adicionar serviço">
+                  <button type="button" class="cal-btn cal-btn-icon ugc-precos-add" data-categoria="UGC" data-i18n-aria="ugc_adicionar_servico_aria" aria-label="Adicionar serviço">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                   </button>
                 </div>
@@ -660,8 +660,8 @@
               </div>
               <div class="card">
                 <div class="ugc-precos-topo">
-                  <h3 class="card-titulo">Publicidade</h3>
-                  <button type="button" class="cal-btn cal-btn-icon ugc-precos-add" data-categoria="Publicidade" aria-label="Adicionar serviço">
+                  <h3 class="card-titulo" data-i18n="ugc_publicidade">Publicidade</h3>
+                  <button type="button" class="cal-btn cal-btn-icon ugc-precos-add" data-categoria="Publicidade" data-i18n-aria="ugc_adicionar_servico_aria" aria-label="Adicionar serviço">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                   </button>
                 </div>
@@ -671,8 +671,8 @@
 
             <div class="card">
               <div class="ugc-precos-topo">
-                <h3 class="card-titulo">Condições/Direitos</h3>
-                <button type="button" class="cal-btn cal-btn-icon ugc-precos-add" data-categoria="Adicionais" aria-label="Adicionar serviço">
+                <h3 class="card-titulo" data-i18n="ugc_condicoes_direitos">Condições/Direitos</h3>
+                <button type="button" class="cal-btn cal-btn-icon ugc-precos-add" data-categoria="Adicionais" data-i18n-aria="ugc_adicionar_servico_aria" aria-label="Adicionar serviço">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 </button>
               </div>
@@ -684,23 +684,23 @@
           <div id="ugc-pagina-resultados" class="ugc-pagina" hidden>
             <div class="cards-numeros cards-numeros-resultados-ugc">
               <div class="card-numero destaque">
-                <span class="card-label">Trabalhos finalizados</span>
+                <span class="card-label" data-i18n="ugc_trabalhos_finalizados">Trabalhos finalizados</span>
                 <span class="card-valor" id="ugc-num-fechados">0</span>
               </div>
               <div class="card-numero">
-                <span class="card-label">Contratos finalizados</span>
+                <span class="card-label" data-i18n="ugc_contratos_finalizados">Contratos finalizados</span>
                 <span class="card-valor" id="ugc-num-contratos-finalizados">0</span>
               </div>
               <div class="card-numero">
-                <span class="card-label">Ganho em UGC</span>
+                <span class="card-label" data-i18n="ugc_ganho_ugc">Ganho em UGC</span>
                 <span class="card-valor" id="ugc-num-ganho-ugc">R$ 0</span>
               </div>
               <div class="card-numero">
-                <span class="card-label">Ganho em Publicidade</span>
+                <span class="card-label" data-i18n="ugc_ganho_publicidade">Ganho em Publicidade</span>
                 <span class="card-valor" id="ugc-num-ganho-publicidade">R$ 0</span>
               </div>
               <div class="card-numero">
-                <span class="card-label">Ganho total</span>
+                <span class="card-label" data-i18n="ugc_ganho_total">Ganho total</span>
                 <span class="card-valor" id="ugc-num-ganho-total">R$ 0</span>
               </div>
             </div>
@@ -986,54 +986,54 @@
     <div id="ugc-modal-trabalho-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal pl-modal-grande">
         <div class="pl-modal-topo">
-          <input type="text" id="ugc-modal-marca" class="pl-modal-titulo-input" placeholder="Marca">
+          <input type="text" id="ugc-modal-marca" class="pl-modal-titulo-input" data-i18n-placeholder="ugc_col_marca" placeholder="Marca">
           <button id="ugc-modal-trabalho-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
 
-        <h4 class="ugc-modal-secao-titulo">Campanha</h4>
+        <h4 class="ugc-modal-secao-titulo" data-i18n="ugc_col_campanha">Campanha</h4>
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <label for="ugc-modal-campanha">Campanha</label>
+            <label for="ugc-modal-campanha" data-i18n="ugc_col_campanha">Campanha</label>
             <input type="text" id="ugc-modal-campanha">
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-modal-produto">Produto</label>
+            <label for="ugc-modal-produto" data-i18n="ugc_produto">Produto</label>
             <input type="text" id="ugc-modal-produto">
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-modal-tipo">Tipo de trabalho</label>
+            <label for="ugc-modal-tipo" data-i18n="ugc_tipo_trabalho">Tipo de trabalho</label>
             <select id="ugc-modal-tipo">
               <option value="UGC">UGC</option>
-              <option value="Publicidade">Publicidade</option>
+              <option value="Publicidade" data-i18n="ugc_publicidade">Publicidade</option>
             </select>
           </div>
         </div>
 
-        <h4 class="ugc-modal-secao-titulo">Entregáveis</h4>
+        <h4 class="ugc-modal-secao-titulo" data-i18n="ugc_entregaveis">Entregáveis</h4>
         <div id="ugc-modal-entregaveis-lista" class="ugc-entregaveis-lista"></div>
-        <button type="button" id="ugc-modal-add-entregavel" class="cal-btn">+ Adicionar entregável</button>
+        <button type="button" id="ugc-modal-add-entregavel" class="cal-btn" data-i18n="ugc_add_entregavel">+ Adicionar entregável</button>
         <datalist id="ugc-entregaveis-sugestoes"></datalist>
 
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <label for="ugc-modal-contato-email">E-mail do contato</label>
+            <label for="ugc-modal-contato-email" data-i18n="ugc_email_contato">E-mail do contato</label>
             <input type="text" id="ugc-modal-contato-email">
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-modal-contato-whats">WhatsApp/Instagram</label>
+            <label for="ugc-modal-contato-whats" data-i18n="ugc_whatsapp_instagram">WhatsApp/Instagram</label>
             <input type="text" id="ugc-modal-contato-whats">
           </div>
         </div>
 
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <label for="ugc-modal-origem">Origem</label>
+            <label for="ugc-modal-origem" data-i18n="ugc_col_origem">Origem</label>
             <select id="ugc-modal-origem"></select>
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-modal-plataforma">Plataforma</label>
+            <label for="ugc-modal-plataforma" data-i18n="ugc_plataforma">Plataforma</label>
             <input type="text" id="ugc-modal-plataforma" list="ugc-plataformas-sugeridas" placeholder="Ex: Miss, Creator Ads, TikTok...">
             <datalist id="ugc-plataformas-sugeridas"></datalist>
           </div>
@@ -1041,48 +1041,48 @@
 
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <label for="ugc-modal-status">Status</label>
+            <label for="ugc-modal-status" data-i18n="status">Status</label>
             <select id="ugc-modal-status"></select>
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-modal-valor">Valor fechado (R$)</label>
+            <label for="ugc-modal-valor" data-i18n="ugc_valor_fechado">Valor fechado (R$)</label>
             <input type="number" step="0.01" min="0" id="ugc-modal-valor">
             <label class="ugc-permuta-check">
               <input type="checkbox" id="ugc-modal-permuta">
-              <span>Fechado por permuta (sem valor em R$)</span>
+              <span data-i18n="ugc_fechado_permuta">Fechado por permuta (sem valor em R$)</span>
             </label>
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-modal-entrega">Prazo de entrega</label>
+            <label for="ugc-modal-entrega" data-i18n="ugc_prazo_entrega">Prazo de entrega</label>
             <input type="date" id="ugc-modal-entrega">
           </div>
         </div>
 
-        <h4 class="ugc-modal-secao-titulo">Briefing</h4>
+        <h4 class="ugc-modal-secao-titulo" data-i18n="ugc_briefing">Briefing</h4>
         <div class="ugc-briefing-campo">
           <input type="file" id="ugc-modal-briefing-arquivo-input" hidden>
           <button type="button" id="ugc-modal-briefing-anexar" class="cal-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 11.5V17a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 3l7 7-9 9-4 1 1-4 5-13z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-            Anexar briefing
+            <span data-i18n="ugc_anexar_briefing">Anexar briefing</span>
           </button>
-          <input type="text" id="ugc-modal-briefing-link" placeholder="ou cole o link do briefing">
+          <input type="text" id="ugc-modal-briefing-link" data-i18n-placeholder="ugc_ou_cole_link_briefing" placeholder="ou cole o link do briefing">
         </div>
         <p class="ugc-briefing-status" id="ugc-modal-briefing-status" hidden></p>
 
-        <h4 class="ugc-modal-secao-titulo">Produção</h4>
+        <h4 class="ugc-modal-secao-titulo" data-i18n="ugc_producao">Produção</h4>
         <div class="ugc-checklist" id="ugc-modal-checklist"></div>
 
-        <h4 class="ugc-modal-secao-titulo">Pagamento</h4>
+        <h4 class="ugc-modal-secao-titulo" data-i18n="ugc_pagamento">Pagamento</h4>
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <label for="ugc-modal-status-pagamento">Status</label>
+            <label for="ugc-modal-status-pagamento" data-i18n="status">Status</label>
             <select id="ugc-modal-status-pagamento">
-              <option value="Pendente">Pendente</option>
-              <option value="Recebido">Recebido</option>
+              <option value="Pendente" data-i18n="ugc_pendente">Pendente</option>
+              <option value="Recebido" data-i18n="ugc_recebido">Recebido</option>
             </select>
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-modal-forma-pagamento">Forma de pagamento</label>
+            <label for="ugc-modal-forma-pagamento" data-i18n="ugc_forma_pagamento">Forma de pagamento</label>
             <input type="text" id="ugc-modal-forma-pagamento" list="ugc-formas-pagamento" placeholder="Ex: Pix, boleto, permuta...">
             <datalist id="ugc-formas-pagamento">
               <option value="Pix"></option>
@@ -1093,37 +1093,37 @@
             </datalist>
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-modal-data-pagamento">Data prevista</label>
+            <label for="ugc-modal-data-pagamento" data-i18n="ugc_data_prevista">Data prevista</label>
             <input type="date" id="ugc-modal-data-pagamento">
           </div>
         </div>
 
-        <h4 class="ugc-modal-secao-titulo">Direitos de uso</h4>
+        <h4 class="ugc-modal-secao-titulo" data-i18n="ugc_direitos_uso">Direitos de uso</h4>
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <label for="ugc-modal-direitos-uso-ate">A marca pode usar até (opcional)</label>
+            <label for="ugc-modal-direitos-uso-ate" data-i18n="ugc_marca_pode_usar_ate">A marca pode usar até (opcional)</label>
             <input type="date" id="ugc-modal-direitos-uso-ate">
           </div>
         </div>
 
-        <h4 class="ugc-modal-secao-titulo">Portfólio público</h4>
+        <h4 class="ugc-modal-secao-titulo" data-i18n="ugc_portfolio_publico">Portfólio público</h4>
         <label class="ugc-permuta-check">
           <input type="checkbox" id="ugc-modal-publicavel">
-          <span>Mostrar este trabalho no portfólio do site</span>
+          <span data-i18n="ugc_mostrar_portfolio">Mostrar este trabalho no portfólio do site</span>
         </label>
         <div class="pl-modal-linha" id="ugc-modal-portfolio-campos" hidden>
           <div class="cal-form-campo">
-            <label for="ugc-modal-portfolio-youtube">ID do vídeo no YouTube</label>
+            <label for="ugc-modal-portfolio-youtube" data-i18n="ugc_id_video_youtube">ID do vídeo no YouTube</label>
             <input type="text" id="ugc-modal-portfolio-youtube" placeholder="Ex: dQw4w9WgXcQ (da URL do vídeo)">
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-modal-portfolio-categoria">Categoria no site</label>
+            <label for="ugc-modal-portfolio-categoria" data-i18n="ugc_categoria_site">Categoria no site</label>
             <select id="ugc-modal-portfolio-categoria">
-              <option value="">Selecione...</option>
+              <option value="" data-i18n="selecione">Selecione...</option>
               <option value="tech">Tech</option>
-              <option value="beleza">Beleza</option>
-              <option value="entretenimento">Entretenimento</option>
-              <option value="experiencia">Experiência</option>
+              <option value="beleza" data-i18n="ugc_cat_beleza">Beleza</option>
+              <option value="entretenimento" data-i18n="ugc_cat_entretenimento">Entretenimento</option>
+              <option value="experiencia" data-i18n="ugc_cat_experiencia">Experiência</option>
             </select>
           </div>
         </div>
@@ -1139,7 +1139,7 @@
     <div id="ugc-modal-roteiro-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal pl-modal-grande">
         <div class="pl-modal-topo">
-          <input type="text" id="ugc-roteiro-marca" class="pl-modal-titulo-input" placeholder="Marca">
+          <input type="text" id="ugc-roteiro-marca" class="pl-modal-titulo-input" data-i18n-placeholder="ugc_col_marca" placeholder="Marca">
           <button id="ugc-modal-roteiro-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
@@ -1147,42 +1147,42 @@
 
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <label for="ugc-roteiro-produto">Produto</label>
+            <label for="ugc-roteiro-produto" data-i18n="ugc_produto">Produto</label>
             <input type="text" id="ugc-roteiro-produto">
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-roteiro-campanha">Campanha</label>
+            <label for="ugc-roteiro-campanha" data-i18n="ugc_col_campanha">Campanha</label>
             <input type="text" id="ugc-roteiro-campanha">
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-roteiro-trabalho">Trabalho vinculado</label>
+            <label for="ugc-roteiro-trabalho" data-i18n="ugc_trabalho_vinculado">Trabalho vinculado</label>
             <select id="ugc-roteiro-trabalho"></select>
           </div>
         </div>
 
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <label for="ugc-roteiro-tipo-conteudo">Tipo de conteúdo</label>
+            <label for="ugc-roteiro-tipo-conteudo" data-i18n="ugc_tipo_conteudo">Tipo de conteúdo</label>
             <input type="text" id="ugc-roteiro-tipo-conteudo" placeholder="Ex: Reels, Unboxing...">
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-roteiro-duracao">Duração prevista</label>
+            <label for="ugc-roteiro-duracao" data-i18n="ugc_duracao_prevista">Duração prevista</label>
             <input type="text" id="ugc-roteiro-duracao" placeholder="Ex: 30s">
           </div>
         </div>
 
         <div class="cal-form-campo">
-          <label for="ugc-roteiro-objetivo">Objetivo</label>
+          <label for="ugc-roteiro-objetivo" data-i18n="ugc_objetivo">Objetivo</label>
           <textarea id="ugc-roteiro-objetivo"></textarea>
         </div>
         <div class="cal-form-campo">
-          <label for="ugc-roteiro-observacoes">Observações</label>
+          <label for="ugc-roteiro-observacoes" data-i18n="ugc_observacoes">Observações</label>
           <textarea id="ugc-roteiro-observacoes"></textarea>
         </div>
 
-        <h4 class="ugc-modal-secao-titulo">Cenas <span id="ugc-roteiro-progresso" class="ugc-roteiro-progresso-badge"></span></h4>
+        <h4 class="ugc-modal-secao-titulo"><span data-i18n="ugc_cenas">Cenas</span> <span id="ugc-roteiro-progresso" class="ugc-roteiro-progresso-badge"></span></h4>
         <div id="ugc-roteiro-cenas-lista" class="ugc-cenas-lista"></div>
-        <button type="button" id="btn-ugc-add-cena" class="cal-btn">+ Adicionar cena</button>
+        <button type="button" id="btn-ugc-add-cena" class="cal-btn" data-i18n="ugc_add_cena">+ Adicionar cena</button>
 
         <div class="cal-form-acoes">
           <button type="button" id="ugc-modal-roteiro-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
@@ -1195,7 +1195,7 @@
     <div id="ugc-modal-prospeccao-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal">
         <div class="pl-modal-topo">
-          <input type="text" id="ugc-prosp-marca" class="pl-modal-titulo-input" placeholder="Marca">
+          <input type="text" id="ugc-prosp-marca" class="pl-modal-titulo-input" data-i18n-placeholder="ugc_col_marca" placeholder="Marca">
           <button id="ugc-modal-prospeccao-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
@@ -1203,58 +1203,58 @@
 
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <label for="ugc-prosp-contato">Contato</label>
+            <label for="ugc-prosp-contato" data-i18n="ugc_col_contato">Contato</label>
             <input type="text" id="ugc-prosp-contato">
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-prosp-origem">Origem</label>
+            <label for="ugc-prosp-origem" data-i18n="ugc_col_origem">Origem</label>
             <select id="ugc-prosp-origem"></select>
           </div>
         </div>
 
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <label for="ugc-prosp-tipo">Tipo de trabalho</label>
+            <label for="ugc-prosp-tipo" data-i18n="ugc_tipo_trabalho">Tipo de trabalho</label>
             <select id="ugc-prosp-tipo">
-              <option value="">Não definido</option>
+              <option value="" data-i18n="ugc_nao_definido">Não definido</option>
               <option value="UGC">UGC</option>
-              <option value="Publicidade">Publicidade</option>
+              <option value="Publicidade" data-i18n="ugc_publicidade">Publicidade</option>
             </select>
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-prosp-data-contato">Data do contato</label>
+            <label for="ugc-prosp-data-contato" data-i18n="ugc_data_contato">Data do contato</label>
             <input type="date" id="ugc-prosp-data-contato">
           </div>
         </div>
 
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <label for="ugc-prosp-status">Status</label>
+            <label for="ugc-prosp-status" data-i18n="status">Status</label>
             <select id="ugc-prosp-status"></select>
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-prosp-valor">Valor proposto (R$)</label>
+            <label for="ugc-prosp-valor" data-i18n="ugc_valor_proposto">Valor proposto (R$)</label>
             <input type="number" step="0.01" min="0" id="ugc-prosp-valor">
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-prosp-followup">Próximo follow-up</label>
+            <label for="ugc-prosp-followup" data-i18n="ugc_proximo_followup">Próximo follow-up</label>
             <input type="date" id="ugc-prosp-followup">
           </div>
         </div>
 
         <div class="cal-form-campo">
-          <label for="ugc-prosp-observacoes">Observações</label>
+          <label for="ugc-prosp-observacoes" data-i18n="ugc_observacoes">Observações</label>
           <textarea id="ugc-prosp-observacoes"></textarea>
         </div>
 
         <div id="ugc-prosp-transformar-aviso" class="ugc-transformar-aviso" hidden>
-          <span>Essa prospecção já foi transformada em trabalho.</span>
-          <button type="button" id="ugc-prosp-ver-trabalho" class="cal-btn">Ver trabalho</button>
+          <span data-i18n="ugc_prospeccao_ja_transformada">Essa prospecção já foi transformada em trabalho.</span>
+          <button type="button" id="ugc-prosp-ver-trabalho" class="cal-btn" data-i18n="ugc_ver_trabalho">Ver trabalho</button>
         </div>
 
         <div class="cal-form-acoes">
           <button type="button" id="ugc-modal-prospeccao-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
-          <button type="button" id="ugc-prosp-transformar" class="cal-btn" hidden>Transformar em trabalho</button>
+          <button type="button" id="ugc-prosp-transformar" class="cal-btn" hidden data-i18n="ugc_transformar_trabalho">Transformar em trabalho</button>
           <button type="button" id="ugc-modal-prospeccao-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
         </div>
       </div>
@@ -1264,7 +1264,7 @@
     <div id="ugc-modal-contrato-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal">
         <div class="pl-modal-topo">
-          <input type="text" id="ugc-contrato-marca" class="pl-modal-titulo-input" placeholder="Marca">
+          <input type="text" id="ugc-contrato-marca" class="pl-modal-titulo-input" data-i18n-placeholder="ugc_col_marca" placeholder="Marca">
           <button id="ugc-modal-contrato-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
@@ -1272,30 +1272,30 @@
 
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <label for="ugc-contrato-campanha">Campanha</label>
+            <label for="ugc-contrato-campanha" data-i18n="ugc_col_campanha">Campanha</label>
             <input type="text" id="ugc-contrato-campanha">
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-contrato-tipo">Tipo de trabalho</label>
+            <label for="ugc-contrato-tipo" data-i18n="ugc_tipo_trabalho">Tipo de trabalho</label>
             <select id="ugc-contrato-tipo">
-              <option value="">Não definido</option>
+              <option value="" data-i18n="ugc_nao_definido">Não definido</option>
               <option value="UGC">UGC</option>
-              <option value="Publicidade">Publicidade</option>
+              <option value="Publicidade" data-i18n="ugc_publicidade">Publicidade</option>
             </select>
           </div>
         </div>
 
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <label for="ugc-contrato-data">Data</label>
+            <label for="ugc-contrato-data" data-i18n="ugc_col_data">Data</label>
             <input type="date" id="ugc-contrato-data">
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-contrato-status">Status</label>
+            <label for="ugc-contrato-status" data-i18n="status">Status</label>
             <select id="ugc-contrato-status"></select>
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-contrato-trabalho">Trabalho vinculado</label>
+            <label for="ugc-contrato-trabalho" data-i18n="ugc_trabalho_vinculado">Trabalho vinculado</label>
             <select id="ugc-contrato-trabalho"></select>
           </div>
         </div>
@@ -1304,9 +1304,9 @@
           <input type="file" id="ugc-contrato-arquivo-input" hidden>
           <button type="button" id="ugc-contrato-anexar" class="cal-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 11.5V17a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4h6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M14 3l7 7-9 9-4 1 1-4 5-13z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-            Anexar arquivo
+            <span data-i18n="ugc_anexar_arquivo">Anexar arquivo</span>
           </button>
-          <input type="text" id="ugc-contrato-link" placeholder="ou cole o link do contrato">
+          <input type="text" id="ugc-contrato-link" data-i18n-placeholder="ugc_ou_cole_link_contrato" placeholder="ou cole o link do contrato">
         </div>
         <p class="ugc-briefing-status" id="ugc-contrato-arquivo-status" hidden></p>
 
@@ -1321,22 +1321,22 @@
     <div id="ugc-modal-preco-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal pl-modal-pequeno">
         <div class="pl-modal-topo">
-          <span class="pl-modal-titulo-fixo" id="ugc-preco-modal-titulo">Novo serviço</span>
+          <span class="pl-modal-titulo-fixo" id="ugc-preco-modal-titulo" data-i18n="ugc_novo_servico">Novo serviço</span>
           <button id="ugc-modal-preco-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
 
         <div class="cal-form-campo">
-          <label for="ugc-preco-servico">Serviço</label>
+          <label for="ugc-preco-servico" data-i18n="ugc_servico">Serviço</label>
           <input type="text" id="ugc-preco-servico">
         </div>
         <div class="cal-form-campo">
-          <label for="ugc-preco-valor" id="ugc-preco-valor-label">Valor (R$)</label>
+          <label for="ugc-preco-valor" id="ugc-preco-valor-label" data-i18n="ugc_valor_reais">Valor (R$)</label>
           <input type="number" step="0.01" min="0" id="ugc-preco-valor">
         </div>
         <div class="cal-form-campo">
-          <label for="ugc-preco-observacoes">Observações</label>
+          <label for="ugc-preco-observacoes" data-i18n="ugc_observacoes">Observações</label>
           <textarea id="ugc-preco-observacoes"></textarea>
         </div>
 
@@ -1351,23 +1351,23 @@
     <div id="ugc-modal-proposta-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal pl-modal-grande">
         <div class="pl-modal-topo">
-          <span class="pl-modal-titulo-fixo">Proposta personalizada</span>
+          <span class="pl-modal-titulo-fixo" data-i18n="ugc_proposta_personalizada">Proposta personalizada</span>
           <button id="ugc-modal-proposta-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
 
         <div class="cal-form-campo">
-          <label for="ugc-proposta-marca">Marca / cliente (opcional)</label>
+          <label for="ugc-proposta-marca" data-i18n="ugc_marca_cliente_opcional">Marca / cliente (opcional)</label>
           <input type="text" id="ugc-proposta-marca" placeholder="Ex: Marca X">
         </div>
 
         <div id="ugc-proposta-itens" class="ugc-proposta-itens"></div>
-        <button type="button" id="ugc-proposta-add-item" class="cal-btn">+ Adicionar item</button>
+        <button type="button" id="ugc-proposta-add-item" class="cal-btn" data-i18n="ugc_add_item">+ Adicionar item</button>
 
         <div class="ugc-proposta-totais">
           <div class="cal-form-campo">
-            <label for="ugc-proposta-desconto">Desconto (%)</label>
+            <label for="ugc-proposta-desconto" data-i18n="ugc_desconto">Desconto (%)</label>
             <div class="ugc-desconto-presets">
               <button type="button" class="ugc-desconto-preset" data-desconto="0">0%</button>
               <button type="button" class="ugc-desconto-preset" data-desconto="10">10%</button>
@@ -1380,19 +1380,19 @@
 
           <label class="ugc-proposta-urgencia-check" id="ugc-proposta-urgencia-bloco" hidden>
             <input type="checkbox" id="ugc-proposta-urgencia-ativa">
-            <span id="ugc-proposta-urgencia-label">Aplicar taxa de urgência</span>
+            <span id="ugc-proposta-urgencia-label" data-i18n="ugc_aplicar_taxa_urgencia">Aplicar taxa de urgência</span>
           </label>
 
           <div class="ugc-proposta-resumo">
-            <div><span>Valor bruto</span><strong id="ugc-proposta-bruto">R$ 0,00</strong></div>
-            <div><span>Desconto</span><strong id="ugc-proposta-desconto-valor">R$ 0,00</strong></div>
-            <div id="ugc-proposta-urgencia-linha" hidden><span id="ugc-proposta-urgencia-linha-label">Urgência</span><strong id="ugc-proposta-urgencia-valor">R$ 0,00</strong></div>
-            <div class="ugc-proposta-final"><span>Valor final</span><strong id="ugc-proposta-final">R$ 0,00</strong></div>
+            <div><span data-i18n="ugc_valor_bruto">Valor bruto</span><strong id="ugc-proposta-bruto">R$ 0,00</strong></div>
+            <div><span data-i18n="ugc_desconto_valor_label">Desconto</span><strong id="ugc-proposta-desconto-valor">R$ 0,00</strong></div>
+            <div id="ugc-proposta-urgencia-linha" hidden><span id="ugc-proposta-urgencia-linha-label" data-i18n="ugc_urgencia">Urgência</span><strong id="ugc-proposta-urgencia-valor">R$ 0,00</strong></div>
+            <div class="ugc-proposta-final"><span data-i18n="ugc_valor_final">Valor final</span><strong id="ugc-proposta-final">R$ 0,00</strong></div>
           </div>
         </div>
 
         <div class="cal-form-acoes">
-          <button type="button" id="ugc-proposta-copiar" class="cal-btn">Copiar resumo</button>
+          <button type="button" id="ugc-proposta-copiar" class="cal-btn" data-i18n="ugc_copiar_resumo">Copiar resumo</button>
         </div>
       </div>
     </div>
@@ -1514,18 +1514,61 @@
     const UGC_STATUS_ATIVOS = ['Negociando', 'Fechado', 'Aguardando briefing', 'Aguardando produto', 'Roteiro', 'Gravação', 'Edição', 'Aprovação', 'Entregue', 'Aguardando pagamento'];
     const UGC_STATUS_EM_PRODUCAO = ['Roteiro', 'Gravação', 'Edição', 'Aprovação'];
     const UGC_STATUS_TRABALHO = ['Negociando', 'Fechado', 'Aguardando briefing', 'Aguardando produto', 'Roteiro', 'Gravação', 'Edição', 'Aprovação', 'Entregue', 'Aguardando pagamento', 'Pago', 'Cancelado'];
+    // Valor gravado em trabalho.status continua em português (é o "código");
+    // só o rótulo exibido muda com o idioma.
+    const UGC_STATUS_TRABALHO_CHAVE = {
+      'Negociando': 'ugc_status_negociando',
+      'Fechado': 'ugc_status_fechado',
+      'Aguardando briefing': 'ugc_status_aguardando_briefing',
+      'Aguardando produto': 'ugc_status_aguardando_produto',
+      'Roteiro': 'ugc_status_roteiro',
+      'Gravação': 'ugc_status_gravacao',
+      'Edição': 'ugc_status_edicao',
+      'Aprovação': 'ugc_status_aprovacao',
+      'Entregue': 'ugc_status_entregue',
+      'Aguardando pagamento': 'ugc_status_aguardando_pagamento',
+      'Pago': 'ugc_status_pago',
+      'Cancelado': 'ugc_status_cancelado',
+    };
+    function traduzirStatusTrabalho(status) {
+      const chave = UGC_STATUS_TRABALHO_CHAVE[status];
+      return chave ? tr(chave) : status;
+    }
     const UGC_ORIGENS = ['Inbound', 'Outbound', 'Indicação', 'Direto com a marca', 'Agência', 'Plataforma', 'Outro'];
     const UGC_ORIGENS_PROSPECCAO = ['Inbound', 'Outbound'];
+    const UGC_ORIGENS_CHAVE = {
+      'Inbound': 'ugc_origem_inbound',
+      'Outbound': 'ugc_origem_outbound',
+      'Indicação': 'ugc_origem_indicacao',
+      'Direto com a marca': 'ugc_origem_direto_marca',
+      'Agência': 'ugc_origem_agencia',
+      'Plataforma': 'ugc_origem_plataforma',
+      'Outro': 'ugc_origem_outro',
+    };
+    function traduzirOrigem(origem) {
+      const chave = UGC_ORIGENS_CHAVE[origem];
+      return chave ? tr(chave) : origem;
+    }
+    const UGC_TIPO_TRABALHO_CHAVE = { 'Publicidade': 'ugc_publicidade' }; // "UGC" não muda em nenhum idioma
+    function traduzirTipoTrabalho(tipo) {
+      const chave = UGC_TIPO_TRABALHO_CHAVE[tipo];
+      return chave ? tr(chave) : tipo;
+    }
+    const UGC_STATUS_PAGAMENTO_CHAVE = { 'Pendente': 'ugc_pendente', 'Recebido': 'ugc_recebido' };
+    function traduzirStatusPagamento(status) {
+      const chave = UGC_STATUS_PAGAMENTO_CHAVE[status];
+      return chave ? tr(chave) : status;
+    }
     const UGC_CHECKLIST_ITENS = [
-      { campo: 'briefing_recebido', label: 'Briefing recebido' },
-      { campo: 'produto_recebido', label: 'Produto recebido' },
-      { campo: 'roteiro_criado', label: 'Roteiro criado' },
-      { campo: 'roteiro_aprovado', label: 'Roteiro aprovado' },
-      { campo: 'gravacao_feita', label: 'Gravação feita' },
-      { campo: 'edicao_feita', label: 'Edição feita' },
-      { campo: 'conteudo_enviado_aprovacao', label: 'Conteúdo enviado para aprovação' },
-      { campo: 'alteracoes_feitas', label: 'Alterações feitas' },
-      { campo: 'conteudo_entregue', label: 'Conteúdo entregue' },
+      { campo: 'briefing_recebido', chave: 'ugc_check_briefing_recebido' },
+      { campo: 'produto_recebido', chave: 'ugc_check_produto_recebido' },
+      { campo: 'roteiro_criado', chave: 'ugc_check_roteiro_criado' },
+      { campo: 'roteiro_aprovado', chave: 'ugc_check_roteiro_aprovado' },
+      { campo: 'gravacao_feita', chave: 'ugc_check_gravacao_feita' },
+      { campo: 'edicao_feita', chave: 'ugc_check_edicao_feita' },
+      { campo: 'conteudo_enviado_aprovacao', chave: 'ugc_check_conteudo_enviado_aprovacao' },
+      { campo: 'alteracoes_feitas', chave: 'ugc_check_alteracoes_feitas' },
+      { campo: 'conteudo_entregue', chave: 'ugc_check_conteudo_entregue' },
     ];
     let ugcModalChecklistEstado = {};
     let ugcModalBriefingArquivoPath = null;
@@ -1536,11 +1579,37 @@
     let ugcModalCenas = [];
     let ugcProspeccaoAbertaId = null;
     const UGC_STATUS_PROSPECCAO = ['Para abordar', 'Contato enviado', 'Aguardando resposta', 'Respondeu', 'Negociação', 'Proposta enviada', 'Fechado', 'Recusado', 'Sem resposta', 'Follow-up'];
+    const UGC_STATUS_PROSPECCAO_CHAVE = {
+      'Para abordar': 'ugc_prosp_status_para_abordar',
+      'Contato enviado': 'ugc_prosp_status_contato_enviado',
+      'Aguardando resposta': 'ugc_prosp_status_aguardando_resposta',
+      'Respondeu': 'ugc_prosp_status_respondeu',
+      'Negociação': 'ugc_prosp_status_negociacao',
+      'Proposta enviada': 'ugc_prosp_status_proposta_enviada',
+      'Fechado': 'ugc_prosp_status_fechado',
+      'Recusado': 'ugc_prosp_status_recusado',
+      'Sem resposta': 'ugc_prosp_status_sem_resposta',
+      'Follow-up': 'ugc_prosp_status_followup',
+    };
+    function traduzirStatusProspeccao(status) {
+      const chave = UGC_STATUS_PROSPECCAO_CHAVE[status];
+      return chave ? tr(chave) : status;
+    }
     let ugcContratoAbertoId = null;
     let ugcModalContratoArquivoPath = null;
     let ugcModalContratoArquivoNome = null;
     let filtroContratos = 'ativos'; // 'ativos' | 'encerrados'
     const UGC_STATUS_CONTRATO = ['Pendente assinatura', 'Enviado', 'Assinado', 'Encerrado'];
+    const UGC_STATUS_CONTRATO_CHAVE = {
+      'Pendente assinatura': 'ugc_contrato_status_pendente_assinatura',
+      'Enviado': 'ugc_contrato_status_enviado',
+      'Assinado': 'ugc_contrato_status_assinado',
+      'Encerrado': 'ugc_contrato_status_encerrado',
+    };
+    function traduzirStatusContrato(status) {
+      const chave = UGC_STATUS_CONTRATO_CHAVE[status];
+      return chave ? tr(chave) : status;
+    }
     let ugcPrecoAbertoId = null;
     let ugcPrecoModalCategoria = null;
     let ugcPropostaItens = [];
@@ -1893,6 +1962,215 @@
         pl_erro_ordem: 'Não foi possível salvar a nova ordem agora.',
         pl_titulo_ideia_placeholder_reticencias: 'Título da ideia...',
         criar: 'Criar',
+
+        // UGC / Publi
+        ugc_visao_geral: 'Visão Geral',
+        ugc_trabalhos: 'Trabalhos',
+        ugc_roteiros: 'Roteiros',
+        ugc_prospeccao: 'Prospecção',
+        ugc_contratos: 'Contratos',
+        ugc_precos: 'Preços',
+        ugc_resultados: 'Resultados',
+        ugc_trabalhos_ativos: 'Trabalhos ativos',
+        ugc_em_producao: 'Em produção',
+        ugc_a_receber: 'A receber',
+        ugc_direitos_uso_vencendo: 'Direitos de uso vencendo',
+        ugc_proximas_entregas: 'Próximas entregas',
+        ugc_nenhum_trabalho: 'Nenhum trabalho ainda.',
+        ugc_filtro_ativos: 'Ativos',
+        ugc_filtro_finalizados: 'Finalizados',
+        ugc_novo_trabalho: '+ Novo trabalho',
+        ugc_col_marca: 'Marca',
+        ugc_col_campanha: 'Campanha',
+        ugc_col_tipo: 'Tipo',
+        ugc_col_entrega: 'Entrega',
+        ugc_col_valor: 'Valor',
+        ugc_col_pagamento: 'Pagamento',
+        ugc_nenhum_roteiro: 'Nenhum roteiro ainda.',
+        ugc_novo_roteiro: '+ Novo roteiro',
+        ugc_outbound: 'Outbound',
+        ugc_inbound: 'Inbound',
+        ugc_em_negociacao: 'Em negociação',
+        ugc_propostas_enviadas: 'Propostas enviadas',
+        ugc_fechadas: 'Fechadas',
+        ugc_sem_resposta: 'Sem resposta',
+        ugc_esfriando: 'Esfriando',
+        ugc_nenhuma_prospeccao: 'Nenhuma prospecção ainda.',
+        ugc_nova_prospeccao: '+ Nova prospecção',
+        ugc_col_contato: 'Contato',
+        ugc_col_origem: 'Origem',
+        ugc_col_data: 'Data',
+        ugc_col_followup: 'Follow-up',
+        ugc_nenhum_contrato: 'Nenhum contrato ainda.',
+        ugc_encerrados: 'Encerrados',
+        ugc_novo_contrato: '+ Novo contrato',
+        ugc_proposta_personalizada: 'Proposta personalizada',
+        ugc_proposta_desc: 'Monte uma proposta combinando os serviços da tabela, com desconto por quantidade.',
+        ugc_nova_proposta: '+ Nova proposta',
+        ugc_adicionar_servico_aria: 'Adicionar serviço',
+        ugc_publicidade: 'Publicidade',
+        ugc_condicoes_direitos: 'Condições/Direitos',
+        ugc_trabalhos_finalizados: 'Trabalhos finalizados',
+        ugc_contratos_finalizados: 'Contratos finalizados',
+        ugc_ganho_ugc: 'Ganho em UGC',
+        ugc_ganho_publicidade: 'Ganho em Publicidade',
+        ugc_ganho_total: 'Ganho total',
+        ugc_produto: 'Produto',
+        ugc_tipo_trabalho: 'Tipo de trabalho',
+        ugc_entregaveis: 'Entregáveis',
+        ugc_add_entregavel: '+ Adicionar entregável',
+        ugc_email_contato: 'E-mail do contato',
+        ugc_whatsapp_instagram: 'WhatsApp/Instagram',
+        ugc_plataforma: 'Plataforma',
+        ugc_valor_fechado: 'Valor fechado (R$)',
+        ugc_fechado_permuta: 'Fechado por permuta (sem valor em R$)',
+        ugc_prazo_entrega: 'Prazo de entrega',
+        ugc_briefing: 'Briefing',
+        ugc_anexar_briefing: 'Anexar briefing',
+        ugc_ou_cole_link_briefing: 'ou cole o link do briefing',
+        ugc_producao: 'Produção',
+        ugc_pagamento: 'Pagamento',
+        ugc_pendente: 'Pendente',
+        ugc_recebido: 'Recebido',
+        ugc_forma_pagamento: 'Forma de pagamento',
+        ugc_data_prevista: 'Data prevista',
+        ugc_direitos_uso: 'Direitos de uso',
+        ugc_marca_pode_usar_ate: 'A marca pode usar até (opcional)',
+        ugc_portfolio_publico: 'Portfólio público',
+        ugc_mostrar_portfolio: 'Mostrar este trabalho no portfólio do site',
+        ugc_id_video_youtube: 'ID do vídeo no YouTube',
+        ugc_categoria_site: 'Categoria no site',
+        selecione: 'Selecione...',
+        ugc_cat_beleza: 'Beleza',
+        ugc_cat_entretenimento: 'Entretenimento',
+        ugc_cat_experiencia: 'Experiência',
+        ugc_trabalho_vinculado: 'Trabalho vinculado',
+        ugc_tipo_conteudo: 'Tipo de conteúdo',
+        ugc_duracao_prevista: 'Duração prevista',
+        ugc_objetivo: 'Objetivo',
+        ugc_observacoes: 'Observações',
+        ugc_cenas: 'Cenas',
+        ugc_add_cena: '+ Adicionar cena',
+        ugc_nao_definido: 'Não definido',
+        ugc_data_contato: 'Data do contato',
+        ugc_valor_proposto: 'Valor proposto (R$)',
+        ugc_proximo_followup: 'Próximo follow-up',
+        ugc_prospeccao_ja_transformada: 'Essa prospecção já foi transformada em trabalho.',
+        ugc_ver_trabalho: 'Ver trabalho',
+        ugc_transformar_trabalho: 'Transformar em trabalho',
+        ugc_anexar_arquivo: 'Anexar arquivo',
+        ugc_ou_cole_link_contrato: 'ou cole o link do contrato',
+        ugc_novo_servico: 'Novo serviço',
+        ugc_servico: 'Serviço',
+        ugc_valor_reais: 'Valor (R$)',
+        ugc_marca_cliente_opcional: 'Marca / cliente (opcional)',
+        ugc_add_item: '+ Adicionar item',
+        ugc_desconto: 'Desconto (%)',
+        ugc_aplicar_taxa_urgencia: 'Aplicar taxa de urgência',
+        ugc_valor_bruto: 'Valor bruto',
+        ugc_desconto_valor_label: 'Desconto',
+        ugc_urgencia: 'Urgência',
+        ugc_valor_final: 'Valor final',
+        ugc_copiar_resumo: 'Copiar resumo',
+        ugc_status_negociando: 'Negociando',
+        ugc_status_fechado: 'Fechado',
+        ugc_status_aguardando_briefing: 'Aguardando briefing',
+        ugc_status_aguardando_produto: 'Aguardando produto',
+        ugc_status_roteiro: 'Roteiro',
+        ugc_status_gravacao: 'Gravação',
+        ugc_status_edicao: 'Edição',
+        ugc_status_aprovacao: 'Aprovação',
+        ugc_status_entregue: 'Entregue',
+        ugc_status_aguardando_pagamento: 'Aguardando pagamento',
+        ugc_status_pago: 'Pago',
+        ugc_status_cancelado: 'Cancelado',
+        ugc_origem_inbound: 'Inbound',
+        ugc_origem_outbound: 'Outbound',
+        ugc_origem_indicacao: 'Indicação',
+        ugc_origem_direto_marca: 'Direto com a marca',
+        ugc_origem_agencia: 'Agência',
+        ugc_origem_plataforma: 'Plataforma',
+        ugc_origem_outro: 'Outro',
+        ugc_prosp_status_para_abordar: 'Para abordar',
+        ugc_prosp_status_contato_enviado: 'Contato enviado',
+        ugc_prosp_status_aguardando_resposta: 'Aguardando resposta',
+        ugc_prosp_status_respondeu: 'Respondeu',
+        ugc_prosp_status_negociacao: 'Negociação',
+        ugc_prosp_status_proposta_enviada: 'Proposta enviada',
+        ugc_prosp_status_fechado: 'Fechado',
+        ugc_prosp_status_recusado: 'Recusado',
+        ugc_prosp_status_sem_resposta: 'Sem resposta',
+        ugc_prosp_status_followup: 'Follow-up',
+        ugc_contrato_status_pendente_assinatura: 'Pendente assinatura',
+        ugc_contrato_status_enviado: 'Enviado',
+        ugc_contrato_status_assinado: 'Assinado',
+        ugc_contrato_status_encerrado: 'Encerrado',
+        ugc_check_briefing_recebido: 'Briefing recebido',
+        ugc_check_produto_recebido: 'Produto recebido',
+        ugc_check_roteiro_criado: 'Roteiro criado',
+        ugc_check_roteiro_aprovado: 'Roteiro aprovado',
+        ugc_check_gravacao_feita: 'Gravação feita',
+        ugc_check_edicao_feita: 'Edição feita',
+        ugc_check_conteudo_enviado_aprovacao: 'Conteúdo enviado para aprovação',
+        ugc_check_alteracoes_feitas: 'Alterações feitas',
+        ugc_check_conteudo_entregue: 'Conteúdo entregue',
+        ugc_trabalho_singular: 'trabalho',
+        ugc_trabalho_plural: 'trabalhos',
+        ugc_roteiro_singular: 'roteiro',
+        ugc_roteiro_plural: 'roteiros',
+        ugc_registro_singular: 'registro',
+        ugc_registro_plural: 'registros',
+        ugc_contrato_singular: 'contrato',
+        ugc_contrato_plural: 'contratos',
+        ugc_venceu_em: 'Venceu em',
+        ugc_vence_em: 'Vence em',
+        ugc_nenhuma_entrega: 'Nenhuma entrega marcada ainda.',
+        ugc_nenhum_trabalho_aqui: 'Nenhum trabalho por aqui.',
+        ugc_arquivo_anexado_prefixo: 'Arquivo anexado: ',
+        ugc_abrir: 'Abrir',
+        ugc_remover: 'Remover',
+        ugc_enviando: 'Enviando...',
+        ugc_erro_anexar_arquivo: 'Não foi possível anexar o arquivo agora. Tente de novo em instantes.',
+        ugc_erro_abrir_arquivo: 'Não foi possível abrir o arquivo agora. Tente de novo em instantes.',
+        ugc_nenhum_entregavel: 'Nenhum entregável adicionado ainda.',
+        ugc_remover_entregavel_aria: 'Remover entregável',
+        ugc_preencha_marca: 'Preencha a marca antes de salvar.',
+        ugc_excluir_trabalho_confirmar: 'Excluir este trabalho?',
+        ugc_sem_marca: 'Sem marca',
+        ugc_sem_detalhes_ainda: 'Sem detalhes ainda',
+        ugc_cenas_gravadas: 'cenas gravadas',
+        ugc_sem_cenas_ainda: 'Sem cenas ainda',
+        ugc_cena_prefixo: 'CENA',
+        ugc_remover_cena_aria: 'Remover cena',
+        ugc_fala: 'Fala',
+        ugc_fala_placeholder: 'O que devo falar...',
+        ugc_o_que_fazer: 'O que fazer',
+        ugc_o_que_fazer_placeholder: 'A ação da cena...',
+        ugc_cena_broll: 'Cena/B-roll',
+        ugc_cena_broll_placeholder: 'O que precisa aparecer visualmente...',
+        ugc_cena_gravada_label: 'Cena gravada',
+        ugc_cena_conferida_label: 'Cena conferida',
+        nenhum: 'Nenhum',
+        ugc_excluir_roteiro_confirmar: 'Excluir este roteiro? As cenas também serão apagadas.',
+        ugc_followup_era_prefixo: 'Follow-up era ',
+        ugc_sem_followup_marcado: 'Sem follow-up marcado',
+        ugc_excluir_prospeccao_confirmar: 'Excluir esta prospecção?',
+        ugc_criar_trabalho_confirmar_prefixo: 'Criar um trabalho pra ',
+        ugc_criar_trabalho_confirmar_sufixo: ' a partir dessa prospecção?',
+        ugc_erro_transformar: 'Não foi possível transformar agora. Tente de novo em instantes.',
+        ugc_nenhum_contrato_aqui: 'Nenhum contrato por aqui.',
+        ugc_excluir_contrato_confirmar: 'Excluir este contrato?',
+        ugc_nenhum_servico: 'Nenhum serviço ainda.',
+        ugc_editar_servico: 'Editar serviço',
+        ugc_valor_percentual: 'Valor (%)',
+        ugc_preencha_servico: 'Preencha o serviço antes de salvar.',
+        ugc_excluir_servico_confirmar: 'Excluir este serviço?',
+        ugc_selecione_servico: 'Selecione o serviço...',
+        ugc_remover_item_aria: 'Remover item',
+        ugc_sugestao_desconto_prefixo: 'Sugestão para ',
+        ugc_proposta_titulo: 'Proposta',
+        ugc_resumo_copiado: 'Resumo copiado para a área de transferência.',
+        ugc_erro_copiar: 'Não foi possível copiar agora. Tente de novo em instantes.',
       },
       en: {
         titulo_dashboard: 'Dashboard',
@@ -2216,6 +2494,215 @@
         pl_erro_ordem: 'Could not save the new order right now.',
         pl_titulo_ideia_placeholder_reticencias: 'Idea title...',
         criar: 'Create',
+
+        // UGC / Ads
+        ugc_visao_geral: 'Overview',
+        ugc_trabalhos: 'Jobs',
+        ugc_roteiros: 'Scripts',
+        ugc_prospeccao: 'Prospecting',
+        ugc_contratos: 'Contracts',
+        ugc_precos: 'Pricing',
+        ugc_resultados: 'Results',
+        ugc_trabalhos_ativos: 'Active jobs',
+        ugc_em_producao: 'In production',
+        ugc_a_receber: 'Receivable',
+        ugc_direitos_uso_vencendo: 'Usage rights expiring',
+        ugc_proximas_entregas: 'Upcoming deliveries',
+        ugc_nenhum_trabalho: 'No jobs yet.',
+        ugc_filtro_ativos: 'Active',
+        ugc_filtro_finalizados: 'Finished',
+        ugc_novo_trabalho: '+ New job',
+        ugc_col_marca: 'Brand',
+        ugc_col_campanha: 'Campaign',
+        ugc_col_tipo: 'Type',
+        ugc_col_entrega: 'Delivery',
+        ugc_col_valor: 'Value',
+        ugc_col_pagamento: 'Payment',
+        ugc_nenhum_roteiro: 'No scripts yet.',
+        ugc_novo_roteiro: '+ New script',
+        ugc_outbound: 'Outbound',
+        ugc_inbound: 'Inbound',
+        ugc_em_negociacao: 'Negotiating',
+        ugc_propostas_enviadas: 'Proposals sent',
+        ugc_fechadas: 'Closed',
+        ugc_sem_resposta: 'No response',
+        ugc_esfriando: 'Going cold',
+        ugc_nenhuma_prospeccao: 'No prospects yet.',
+        ugc_nova_prospeccao: '+ New prospect',
+        ugc_col_contato: 'Contact',
+        ugc_col_origem: 'Source',
+        ugc_col_data: 'Date',
+        ugc_col_followup: 'Follow-up',
+        ugc_nenhum_contrato: 'No contracts yet.',
+        ugc_encerrados: 'Ended',
+        ugc_novo_contrato: '+ New contract',
+        ugc_proposta_personalizada: 'Custom proposal',
+        ugc_proposta_desc: 'Build a proposal combining services from the table, with a quantity discount.',
+        ugc_nova_proposta: '+ New proposal',
+        ugc_adicionar_servico_aria: 'Add service',
+        ugc_publicidade: 'Advertising',
+        ugc_condicoes_direitos: 'Terms/Rights',
+        ugc_trabalhos_finalizados: 'Finished jobs',
+        ugc_contratos_finalizados: 'Finished contracts',
+        ugc_ganho_ugc: 'UGC earnings',
+        ugc_ganho_publicidade: 'Advertising earnings',
+        ugc_ganho_total: 'Total earnings',
+        ugc_produto: 'Product',
+        ugc_tipo_trabalho: 'Job type',
+        ugc_entregaveis: 'Deliverables',
+        ugc_add_entregavel: '+ Add deliverable',
+        ugc_email_contato: 'Contact email',
+        ugc_whatsapp_instagram: 'WhatsApp/Instagram',
+        ugc_plataforma: 'Platform',
+        ugc_valor_fechado: 'Closed value (R$)',
+        ugc_fechado_permuta: 'Closed as a trade (no cash value)',
+        ugc_prazo_entrega: 'Delivery deadline',
+        ugc_briefing: 'Briefing',
+        ugc_anexar_briefing: 'Attach briefing',
+        ugc_ou_cole_link_briefing: 'or paste the briefing link',
+        ugc_producao: 'Production',
+        ugc_pagamento: 'Payment',
+        ugc_pendente: 'Pending',
+        ugc_recebido: 'Received',
+        ugc_forma_pagamento: 'Payment method',
+        ugc_data_prevista: 'Expected date',
+        ugc_direitos_uso: 'Usage rights',
+        ugc_marca_pode_usar_ate: 'Brand can use until (optional)',
+        ugc_portfolio_publico: 'Public portfolio',
+        ugc_mostrar_portfolio: 'Show this job in the site portfolio',
+        ugc_id_video_youtube: 'YouTube video ID',
+        ugc_categoria_site: 'Site category',
+        selecione: 'Select...',
+        ugc_cat_beleza: 'Beauty',
+        ugc_cat_entretenimento: 'Entertainment',
+        ugc_cat_experiencia: 'Experience',
+        ugc_trabalho_vinculado: 'Linked job',
+        ugc_tipo_conteudo: 'Content type',
+        ugc_duracao_prevista: 'Expected duration',
+        ugc_objetivo: 'Objective',
+        ugc_observacoes: 'Notes',
+        ugc_cenas: 'Scenes',
+        ugc_add_cena: '+ Add scene',
+        ugc_nao_definido: 'Not set',
+        ugc_data_contato: 'Contact date',
+        ugc_valor_proposto: 'Proposed value (R$)',
+        ugc_proximo_followup: 'Next follow-up',
+        ugc_prospeccao_ja_transformada: 'This prospect has already been turned into a job.',
+        ugc_ver_trabalho: 'View job',
+        ugc_transformar_trabalho: 'Turn into job',
+        ugc_anexar_arquivo: 'Attach file',
+        ugc_ou_cole_link_contrato: 'or paste the contract link',
+        ugc_novo_servico: 'New service',
+        ugc_servico: 'Service',
+        ugc_valor_reais: 'Value (R$)',
+        ugc_marca_cliente_opcional: 'Brand / client (optional)',
+        ugc_add_item: '+ Add item',
+        ugc_desconto: 'Discount (%)',
+        ugc_aplicar_taxa_urgencia: 'Apply rush fee',
+        ugc_valor_bruto: 'Gross value',
+        ugc_desconto_valor_label: 'Discount',
+        ugc_urgencia: 'Rush fee',
+        ugc_valor_final: 'Final value',
+        ugc_copiar_resumo: 'Copy summary',
+        ugc_status_negociando: 'Negotiating',
+        ugc_status_fechado: 'Closed',
+        ugc_status_aguardando_briefing: 'Awaiting briefing',
+        ugc_status_aguardando_produto: 'Awaiting product',
+        ugc_status_roteiro: 'Script',
+        ugc_status_gravacao: 'Filming',
+        ugc_status_edicao: 'Editing',
+        ugc_status_aprovacao: 'Approval',
+        ugc_status_entregue: 'Delivered',
+        ugc_status_aguardando_pagamento: 'Awaiting payment',
+        ugc_status_pago: 'Paid',
+        ugc_status_cancelado: 'Cancelled',
+        ugc_origem_inbound: 'Inbound',
+        ugc_origem_outbound: 'Outbound',
+        ugc_origem_indicacao: 'Referral',
+        ugc_origem_direto_marca: 'Direct with brand',
+        ugc_origem_agencia: 'Agency',
+        ugc_origem_plataforma: 'Platform',
+        ugc_origem_outro: 'Other',
+        ugc_prosp_status_para_abordar: 'To reach out',
+        ugc_prosp_status_contato_enviado: 'Contact sent',
+        ugc_prosp_status_aguardando_resposta: 'Awaiting reply',
+        ugc_prosp_status_respondeu: 'Replied',
+        ugc_prosp_status_negociacao: 'Negotiating',
+        ugc_prosp_status_proposta_enviada: 'Proposal sent',
+        ugc_prosp_status_fechado: 'Closed',
+        ugc_prosp_status_recusado: 'Declined',
+        ugc_prosp_status_sem_resposta: 'No response',
+        ugc_prosp_status_followup: 'Follow-up',
+        ugc_contrato_status_pendente_assinatura: 'Pending signature',
+        ugc_contrato_status_enviado: 'Sent',
+        ugc_contrato_status_assinado: 'Signed',
+        ugc_contrato_status_encerrado: 'Ended',
+        ugc_check_briefing_recebido: 'Briefing received',
+        ugc_check_produto_recebido: 'Product received',
+        ugc_check_roteiro_criado: 'Script written',
+        ugc_check_roteiro_aprovado: 'Script approved',
+        ugc_check_gravacao_feita: 'Filming done',
+        ugc_check_edicao_feita: 'Editing done',
+        ugc_check_conteudo_enviado_aprovacao: 'Content sent for approval',
+        ugc_check_alteracoes_feitas: 'Changes made',
+        ugc_check_conteudo_entregue: 'Content delivered',
+        ugc_trabalho_singular: 'job',
+        ugc_trabalho_plural: 'jobs',
+        ugc_roteiro_singular: 'script',
+        ugc_roteiro_plural: 'scripts',
+        ugc_registro_singular: 'record',
+        ugc_registro_plural: 'records',
+        ugc_contrato_singular: 'contract',
+        ugc_contrato_plural: 'contracts',
+        ugc_venceu_em: 'Expired on',
+        ugc_vence_em: 'Expires on',
+        ugc_nenhuma_entrega: 'No deliveries scheduled yet.',
+        ugc_nenhum_trabalho_aqui: 'No jobs here.',
+        ugc_arquivo_anexado_prefixo: 'File attached: ',
+        ugc_abrir: 'Open',
+        ugc_remover: 'Remove',
+        ugc_enviando: 'Uploading...',
+        ugc_erro_anexar_arquivo: 'Could not attach the file right now. Try again in a moment.',
+        ugc_erro_abrir_arquivo: 'Could not open the file right now. Try again in a moment.',
+        ugc_nenhum_entregavel: 'No deliverables added yet.',
+        ugc_remover_entregavel_aria: 'Remove deliverable',
+        ugc_preencha_marca: 'Fill in the brand before saving.',
+        ugc_excluir_trabalho_confirmar: 'Delete this job?',
+        ugc_sem_marca: 'No brand',
+        ugc_sem_detalhes_ainda: 'No details yet',
+        ugc_cenas_gravadas: 'scenes filmed',
+        ugc_sem_cenas_ainda: 'No scenes yet',
+        ugc_cena_prefixo: 'SCENE',
+        ugc_remover_cena_aria: 'Remove scene',
+        ugc_fala: 'Lines',
+        ugc_fala_placeholder: 'What I should say...',
+        ugc_o_que_fazer: 'What to do',
+        ugc_o_que_fazer_placeholder: "The scene's action...",
+        ugc_cena_broll: 'Scene/B-roll',
+        ugc_cena_broll_placeholder: 'What needs to appear visually...',
+        ugc_cena_gravada_label: 'Scene filmed',
+        ugc_cena_conferida_label: 'Scene checked',
+        nenhum: 'None',
+        ugc_excluir_roteiro_confirmar: 'Delete this script? The scenes will also be deleted.',
+        ugc_followup_era_prefixo: 'Follow-up was ',
+        ugc_sem_followup_marcado: 'No follow-up scheduled',
+        ugc_excluir_prospeccao_confirmar: 'Delete this prospect?',
+        ugc_criar_trabalho_confirmar_prefixo: 'Create a job for ',
+        ugc_criar_trabalho_confirmar_sufixo: ' from this prospect?',
+        ugc_erro_transformar: 'Could not convert it right now. Try again in a moment.',
+        ugc_nenhum_contrato_aqui: 'No contracts here.',
+        ugc_excluir_contrato_confirmar: 'Delete this contract?',
+        ugc_nenhum_servico: 'No services yet.',
+        ugc_editar_servico: 'Edit service',
+        ugc_valor_percentual: 'Value (%)',
+        ugc_preencha_servico: 'Fill in the service before saving.',
+        ugc_excluir_servico_confirmar: 'Delete this service?',
+        ugc_selecione_servico: 'Select the service...',
+        ugc_remover_item_aria: 'Remove item',
+        ugc_sugestao_desconto_prefixo: 'Suggestion for ',
+        ugc_proposta_titulo: 'Proposal',
+        ugc_resumo_copiado: 'Summary copied to clipboard.',
+        ugc_erro_copiar: 'Could not copy it right now. Try again in a moment.',
       },
     };
 
@@ -2954,7 +3441,7 @@
 
       if (atrasadas.length > 0) {
         grupos.push(criarGrupoAtencao(tr('atencao_entregas_atrasadas'), true, atrasadas.map((t) => ({
-          texto: `${t.marca} — ${t.tipo_trabalho}`,
+          texto: `${t.marca} — ${traduzirTipoTrabalho(t.tipo_trabalho)}`,
           detalhe: `${tr('atencao_era')} ${formatarDataCurta(new Date(t.data_entrega + 'T00:00:00'))}`,
           onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
         }))));
@@ -2962,7 +3449,7 @@
 
       if (pagamentos.length > 0) {
         grupos.push(criarGrupoAtencao(tr('atencao_pagamentos_pendentes'), true, pagamentos.map((t) => ({
-          texto: `${t.marca} — ${t.tipo_trabalho}`,
+          texto: `${t.marca} — ${traduzirTipoTrabalho(t.tipo_trabalho)}`,
           detalhe: t.permuta ? tr('permuta') : formatarMoeda(t.valor),
           onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
         }))));
@@ -2987,14 +3474,14 @@
       if (contratos.length > 0) {
         grupos.push(criarGrupoAtencao(tr('atencao_contratos'), false, contratos.map((c) => ({
           texto: c.marca,
-          detalhe: c.status, // TODO fase UGC/Publi: traduzir rótulo sem mexer no valor gravado
+          detalhe: traduzirStatusContrato(c.status),
           onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('contratos'); abrirModalContrato(c); },
         }))));
       }
 
       if (proximas.length > 0) {
         grupos.push(criarGrupoAtencao(tr('atencao_entregas_proximas'), false, proximas.map((t) => ({
-          texto: `${t.marca} — ${t.tipo_trabalho}`,
+          texto: `${t.marca} — ${traduzirTipoTrabalho(t.tipo_trabalho)}`,
           detalhe: formatarDataCurta(new Date(t.data_entrega + 'T00:00:00')),
           onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
         }))));
@@ -4941,7 +5428,7 @@
           const item = document.createElement('div');
           item.className = 'ugc-prospeccao-esfriando-item';
           const venceu = t.direitos_uso_ate < hojeISO;
-          const situacao = `${venceu ? 'Venceu em' : 'Vence em'} ${formatarDataCurta(new Date(t.direitos_uso_ate + 'T00:00:00'))}`;
+          const situacao = `${tr(venceu ? 'ugc_venceu_em' : 'ugc_vence_em')} ${formatarDataCurta(new Date(t.direitos_uso_ate + 'T00:00:00'))}`;
           item.innerHTML = `<span>${escapeHtml(t.marca)}</span><span>${situacao}</span>`;
           return item.outerHTML;
         })
@@ -4987,14 +5474,14 @@
 
       const lista = document.getElementById('ugc-proximas-entregas');
       if (proximas.length === 0) {
-        lista.innerHTML = '<p class="texto-vazio">Nenhuma entrega marcada ainda.</p>';
+        lista.innerHTML = `<p class="texto-vazio">${tr('ugc_nenhuma_entrega')}</p>`;
         return;
       }
       lista.innerHTML = proximas
         .map((t) => `
           <button type="button" class="ugc-proxima-item" data-id="${t.id}">
             <span class="ugc-proxima-marca">${escapeHtml(t.marca)}</span>
-            <span class="ugc-proxima-tipo">${escapeHtml(t.tipo_trabalho)}</span>
+            <span class="ugc-proxima-tipo">${escapeHtml(traduzirTipoTrabalho(t.tipo_trabalho))}</span>
             <span class="ugc-proxima-data">${formatarDataCurta(new Date(t.data_entrega + 'T00:00:00'))}</span>
           </button>
         `)
@@ -5047,7 +5534,9 @@
       const ordenadas = [...filtradas].sort((a, b) => (a.data_entrega || '9999-99-99').localeCompare(b.data_entrega || '9999-99-99'));
 
       document.getElementById('ugc-trabalhos-resumo').textContent =
-        ordenadas.length === 0 ? 'Nenhum trabalho por aqui.' : `${ordenadas.length} ${ordenadas.length === 1 ? 'trabalho' : 'trabalhos'}.`;
+        ordenadas.length === 0
+          ? tr('ugc_nenhum_trabalho_aqui')
+          : `${ordenadas.length} ${tr(ordenadas.length === 1 ? 'ugc_trabalho_singular' : 'ugc_trabalho_plural')}.`;
 
       const lista = document.getElementById('ugc-trabalhos-lista');
       lista.innerHTML = '';
@@ -5062,15 +5551,15 @@
       const linha = document.createElement('div');
       linha.className = 'cal-todas-linha ugc-trabalhos-linha';
       const entregaFmt = trabalho.data_entrega ? formatarDataCurta(new Date(trabalho.data_entrega + 'T00:00:00')) : '—';
-      const valorFmt = trabalho.permuta ? 'Permuta' : trabalho.valor != null ? formatarMoeda(trabalho.valor) : '—';
+      const valorFmt = trabalho.permuta ? tr('permuta') : trabalho.valor != null ? formatarMoeda(trabalho.valor) : '—';
       linha.innerHTML = `
         <span class="ugc-trabalhos-marca">${escapeHtml(trabalho.marca)}</span>
         <span>${escapeHtml(trabalho.campanha || '—')}</span>
-        <span class="cal-todas-tipo-badge">${escapeHtml(trabalho.tipo_trabalho)}</span>
-        <span class="ugc-status-pill ${classeStatusTrabalho(trabalho.status)}">${escapeHtml(trabalho.status)}</span>
+        <span class="cal-todas-tipo-badge">${escapeHtml(traduzirTipoTrabalho(trabalho.tipo_trabalho))}</span>
+        <span class="ugc-status-pill ${classeStatusTrabalho(trabalho.status)}">${escapeHtml(traduzirStatusTrabalho(trabalho.status))}</span>
         <span>${entregaFmt}</span>
         <span>${valorFmt}</span>
-        <span>${escapeHtml(trabalho.status_pagamento)}</span>
+        <span>${escapeHtml(traduzirStatusPagamento(trabalho.status_pagamento))}</span>
       `;
       linha.addEventListener('click', () => abrirModalTrabalho(trabalho));
       return linha;
@@ -5086,7 +5575,7 @@
               <span class="ugc-checklist-check">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </span>
-              <span class="ugc-checklist-label">${item.label}</span>
+              <span class="ugc-checklist-label">${escapeHtml(tr(item.chave))}</span>
             </div>
           `
         )
@@ -5108,7 +5597,7 @@
         return;
       }
       statusEl.hidden = false;
-      statusEl.innerHTML = `Arquivo anexado: ${escapeHtml(ugcModalBriefingArquivoNome)} — <a href="#" id="ugc-briefing-abrir">Abrir</a> · <a href="#" id="ugc-briefing-remover">Remover</a>`;
+      statusEl.innerHTML = `${tr('ugc_arquivo_anexado_prefixo')}${escapeHtml(ugcModalBriefingArquivoNome)} — <a href="#" id="ugc-briefing-abrir">${tr('ugc_abrir')}</a> · <a href="#" id="ugc-briefing-remover">${tr('ugc_remover')}</a>`;
       document.getElementById('ugc-briefing-abrir').addEventListener('click', (e) => {
         e.preventDefault();
         abrirBriefingArquivo();
@@ -5125,7 +5614,7 @@
       const btn = document.getElementById('ugc-modal-briefing-anexar');
       const textoOriginal = btn.textContent;
       btn.disabled = true;
-      btn.textContent = 'Enviando...';
+      btn.textContent = tr('ugc_enviando');
       try {
         const caminho = `briefings/${Date.now()}-${arquivo.name}`;
         const { error } = await Auth.sb.storage.from('ugc-arquivos').upload(caminho, arquivo);
@@ -5135,7 +5624,7 @@
         atualizarBriefingStatusUI();
       } catch (err) {
         console.error('Erro ao anexar briefing:', err);
-        alert('Não foi possível anexar o arquivo agora. Tente de novo em instantes.');
+        alert(tr('ugc_erro_anexar_arquivo'));
       } finally {
         btn.disabled = false;
         btn.textContent = textoOriginal;
@@ -5151,7 +5640,7 @@
         window.open(data.signedUrl, '_blank');
       } catch (err) {
         console.error('Erro ao abrir briefing:', err);
-        alert('Não foi possível abrir o arquivo agora. Tente de novo em instantes.');
+        alert(tr('ugc_erro_abrir_arquivo'));
       }
     }
 
@@ -5182,7 +5671,7 @@
       document.getElementById('ugc-modal-contato-whats').value = trabalho ? trabalho.contato_whatsapp || '' : '';
 
       const selectOrigem = document.getElementById('ugc-modal-origem');
-      selectOrigem.innerHTML = '<option value="">Selecione...</option>' + UGC_ORIGENS.map((o) => `<option value="${o}">${o}</option>`).join('');
+      selectOrigem.innerHTML = `<option value="">${tr('selecione')}</option>` + UGC_ORIGENS.map((o) => `<option value="${o}">${escapeHtml(traduzirOrigem(o))}</option>`).join('');
       selectOrigem.value = trabalho && trabalho.origem ? trabalho.origem : '';
 
       document.getElementById('ugc-modal-plataforma').value = trabalho ? trabalho.plataforma || '' : '';
@@ -5190,7 +5679,7 @@
       document.getElementById('ugc-plataformas-sugeridas').innerHTML = plataformasExistentes.map((p) => `<option value="${escapeHtml(p)}"></option>`).join('');
 
       const selectStatus = document.getElementById('ugc-modal-status');
-      selectStatus.innerHTML = UGC_STATUS_TRABALHO.map((s) => `<option value="${s}">${s}</option>`).join('');
+      selectStatus.innerHTML = UGC_STATUS_TRABALHO.map((s) => `<option value="${s}">${escapeHtml(traduzirStatusTrabalho(s))}</option>`).join('');
       selectStatus.value = trabalho ? trabalho.status : 'Negociando';
 
       document.getElementById('ugc-modal-valor').value = trabalho && trabalho.valor != null ? trabalho.valor : '';
@@ -5268,7 +5757,7 @@
     function renderizarEntregaveisModal() {
       const cont = document.getElementById('ugc-modal-entregaveis-lista');
       if (ugcModalEntregaveis.length === 0) {
-        cont.innerHTML = '<p class="texto-vazio">Nenhum entregável adicionado ainda.</p>';
+        cont.innerHTML = `<p class="texto-vazio">${tr('ugc_nenhum_entregavel')}</p>`;
         return;
       }
       cont.innerHTML = ugcModalEntregaveis
@@ -5276,7 +5765,7 @@
           <div class="ugc-entregavel-item" data-idx="${idx}">
             <input type="text" class="ugc-entregavel-servico" data-idx="${idx}" list="ugc-entregaveis-sugestoes" placeholder="Ex: Vídeo UGC" value="${escapeHtml(item.servico)}">
             <input type="number" min="1" step="1" class="ugc-entregavel-qtd" data-idx="${idx}" value="${item.quantidade}">
-            <button type="button" class="cal-btn cal-btn-icon ugc-entregavel-remover" data-idx="${idx}" aria-label="Remover entregável">
+            <button type="button" class="cal-btn cal-btn-icon ugc-entregavel-remover" data-idx="${idx}" aria-label="${escapeHtml(tr('ugc_remover_entregavel_aria'))}">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             </button>
           </div>
@@ -5301,7 +5790,7 @@
     async function salvarModalTrabalho() {
       const marca = document.getElementById('ugc-modal-marca').value.trim();
       if (!marca) {
-        alert('Preencha a marca antes de salvar.');
+        alert(tr('ugc_preencha_marca'));
         return;
       }
 
@@ -5381,7 +5870,7 @@
 
     async function excluirModalTrabalho() {
       if (!ugcTrabalhoAbertoId) return;
-      if (!(await confirmarAcao('Excluir este trabalho?'))) return;
+      if (!(await confirmarAcao(tr('ugc_excluir_trabalho_confirmar')))) return;
       try {
         // Remove o arquivo de briefing anexado (se houver) antes do registro —
         // sem isso, o arquivo ficava órfão no Storage pra sempre. Falha aqui
@@ -5404,10 +5893,12 @@
     function renderizarRoteiros() {
       const lista = document.getElementById('ugc-roteiros-grade');
       document.getElementById('ugc-roteiros-resumo').textContent =
-        ugcRoteirosCache.length === 0 ? 'Nenhum roteiro ainda.' : `${ugcRoteirosCache.length} ${ugcRoteirosCache.length === 1 ? 'roteiro' : 'roteiros'}.`;
+        ugcRoteirosCache.length === 0
+          ? tr('ugc_nenhum_roteiro')
+          : `${ugcRoteirosCache.length} ${tr(ugcRoteirosCache.length === 1 ? 'ugc_roteiro_singular' : 'ugc_roteiro_plural')}.`;
 
       if (ugcRoteirosCache.length === 0) {
-        lista.innerHTML = '<p class="texto-vazio">Nenhum roteiro ainda.</p>';
+        lista.innerHTML = `<p class="texto-vazio">${tr('ugc_nenhum_roteiro')}</p>`;
         return;
       }
       lista.innerHTML = '';
@@ -5423,9 +5914,9 @@
       card.type = 'button';
       card.className = 'ugc-roteiro-card';
       card.innerHTML = `
-        <span class="ugc-roteiro-card-marca">${escapeHtml(roteiro.marca || 'Sem marca')}</span>
-        <span class="ugc-roteiro-card-info">${escapeHtml([roteiro.produto, roteiro.campanha].filter(Boolean).join(' · ') || 'Sem detalhes ainda')}</span>
-        <span class="ugc-roteiro-card-progresso">${cenas.length > 0 ? `${gravadas}/${cenas.length} cenas gravadas` : 'Sem cenas ainda'}</span>
+        <span class="ugc-roteiro-card-marca">${escapeHtml(roteiro.marca || tr('ugc_sem_marca'))}</span>
+        <span class="ugc-roteiro-card-info">${escapeHtml([roteiro.produto, roteiro.campanha].filter(Boolean).join(' · ') || tr('ugc_sem_detalhes_ainda'))}</span>
+        <span class="ugc-roteiro-card-progresso">${cenas.length > 0 ? `${gravadas}/${cenas.length} ${tr('ugc_cenas_gravadas')}` : tr('ugc_sem_cenas_ainda')}</span>
       `;
       card.addEventListener('click', () => abrirModalRoteiro(roteiro));
       return card;
@@ -5435,33 +5926,33 @@
       const cont = document.getElementById('ugc-roteiro-cenas-lista');
       const gravadas = ugcModalCenas.filter((c) => c.cena_gravada).length;
       document.getElementById('ugc-roteiro-progresso').textContent =
-        ugcModalCenas.length > 0 ? `${gravadas}/${ugcModalCenas.length} cenas gravadas` : '';
+        ugcModalCenas.length > 0 ? `${gravadas}/${ugcModalCenas.length} ${tr('ugc_cenas_gravadas')}` : '';
 
       cont.innerHTML = ugcModalCenas
         .map(
           (cena, i) => `
             <div class="ugc-cena-card" data-index="${i}">
               <div class="ugc-cena-topo">
-                <span class="ugc-cena-numero">CENA ${String(i + 1).padStart(2, '0')}</span>
-                <button type="button" class="ugc-cena-remover" data-index="${i}" aria-label="Remover cena">
+                <span class="ugc-cena-numero">${escapeHtml(tr('ugc_cena_prefixo'))} ${String(i + 1).padStart(2, '0')}</span>
+                <button type="button" class="ugc-cena-remover" data-index="${i}" aria-label="${escapeHtml(tr('ugc_remover_cena_aria'))}">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                 </button>
               </div>
               <div class="cal-form-campo">
-                <label>Fala</label>
-                <textarea data-index="${i}" data-campo="fala" placeholder="O que devo falar...">${escapeHtml(cena.fala || '')}</textarea>
+                <label>${escapeHtml(tr('ugc_fala'))}</label>
+                <textarea data-index="${i}" data-campo="fala" placeholder="${escapeHtml(tr('ugc_fala_placeholder'))}">${escapeHtml(cena.fala || '')}</textarea>
               </div>
               <div class="cal-form-campo">
-                <label>O que fazer</label>
-                <textarea data-index="${i}" data-campo="o_que_fazer" placeholder="A ação da cena...">${escapeHtml(cena.o_que_fazer || '')}</textarea>
+                <label>${escapeHtml(tr('ugc_o_que_fazer'))}</label>
+                <textarea data-index="${i}" data-campo="o_que_fazer" placeholder="${escapeHtml(tr('ugc_o_que_fazer_placeholder'))}">${escapeHtml(cena.o_que_fazer || '')}</textarea>
               </div>
               <div class="cal-form-campo">
-                <label>Cena/B-roll</label>
-                <textarea data-index="${i}" data-campo="cena_broll" placeholder="O que precisa aparecer visualmente...">${escapeHtml(cena.cena_broll || '')}</textarea>
+                <label>${escapeHtml(tr('ugc_cena_broll'))}</label>
+                <textarea data-index="${i}" data-campo="cena_broll" placeholder="${escapeHtml(tr('ugc_cena_broll_placeholder'))}">${escapeHtml(cena.cena_broll || '')}</textarea>
               </div>
               <div class="ugc-cena-checklist">
-                <label class="ugc-cena-check-label"><input type="checkbox" data-index="${i}" data-campo="cena_gravada" ${cena.cena_gravada ? 'checked' : ''}> Cena gravada</label>
-                <label class="ugc-cena-check-label"><input type="checkbox" data-index="${i}" data-campo="cena_conferida" ${cena.cena_conferida ? 'checked' : ''}> Cena conferida</label>
+                <label class="ugc-cena-check-label"><input type="checkbox" data-index="${i}" data-campo="cena_gravada" ${cena.cena_gravada ? 'checked' : ''}> ${escapeHtml(tr('ugc_cena_gravada_label'))}</label>
+                <label class="ugc-cena-check-label"><input type="checkbox" data-index="${i}" data-campo="cena_conferida" ${cena.cena_conferida ? 'checked' : ''}> ${escapeHtml(tr('ugc_cena_conferida_label'))}</label>
               </div>
             </div>
           `
@@ -5499,7 +5990,7 @@
 
       const selectTrabalho = document.getElementById('ugc-roteiro-trabalho');
       selectTrabalho.innerHTML =
-        '<option value="">Nenhum</option>' +
+        `<option value="">${tr('nenhum')}</option>` +
         ugcTrabalhosCache.map((t) => `<option value="${t.id}">${escapeHtml(t.marca)}${t.campanha ? ' — ' + escapeHtml(t.campanha) : ''}</option>`).join('');
       selectTrabalho.value = roteiro && roteiro.trabalho_id ? roteiro.trabalho_id : '';
 
@@ -5573,7 +6064,7 @@
 
     async function excluirModalRoteiro() {
       if (!ugcRoteiroAbertoId) return;
-      if (!(await confirmarAcao('Excluir este roteiro? As cenas também serão apagadas.'))) return;
+      if (!(await confirmarAcao(tr('ugc_excluir_roteiro_confirmar')))) return;
       try {
         const { error } = await Auth.sb.from('ugc_roteiros').delete().eq('id', ugcRoteiroAbertoId);
         if (error) throw error;
@@ -5617,7 +6108,7 @@
         .map((p) => {
           const item = document.createElement('div');
           item.className = 'ugc-prospeccao-esfriando-item';
-          const situacao = p.proximo_followup ? `Follow-up era ${formatarDataCurta(new Date(p.proximo_followup + 'T00:00:00'))}` : 'Sem follow-up marcado';
+          const situacao = p.proximo_followup ? `${tr('ugc_followup_era_prefixo')}${formatarDataCurta(new Date(p.proximo_followup + 'T00:00:00'))}` : tr('ugc_sem_followup_marcado');
           item.innerHTML = `<span>${escapeHtml(p.marca)}</span><span>${situacao}</span>`;
           return item.outerHTML;
         })
@@ -5645,7 +6136,9 @@
 
       const ordenadas = [...ugcProspeccaoCache].sort((a, b) => b.created_at.localeCompare(a.created_at));
       document.getElementById('ugc-prospeccao-resumo').textContent =
-        ordenadas.length === 0 ? 'Nenhuma prospecção ainda.' : `${ordenadas.length} ${ordenadas.length === 1 ? 'registro' : 'registros'}.`;
+        ordenadas.length === 0
+          ? tr('ugc_nenhuma_prospeccao')
+          : `${ordenadas.length} ${tr(ordenadas.length === 1 ? 'ugc_registro_singular' : 'ugc_registro_plural')}.`;
 
       const lista = document.getElementById('ugc-prospeccao-lista');
       lista.innerHTML = '';
@@ -5665,10 +6158,10 @@
       linha.innerHTML = `
         <span class="ugc-trabalhos-marca">${escapeHtml(prospeccao.marca)}</span>
         <span>${escapeHtml(prospeccao.contato || '—')}</span>
-        <span>${escapeHtml(prospeccao.origem || '—')}</span>
-        <span>${escapeHtml(prospeccao.tipo_trabalho || '—')}</span>
+        <span>${escapeHtml(prospeccao.origem ? traduzirOrigem(prospeccao.origem) : '—')}</span>
+        <span>${escapeHtml(prospeccao.tipo_trabalho ? traduzirTipoTrabalho(prospeccao.tipo_trabalho) : '—')}</span>
         <span>${dataFmt}</span>
-        <span class="ugc-status-pill">${escapeHtml(prospeccao.status)}</span>
+        <span class="ugc-status-pill">${escapeHtml(traduzirStatusProspeccao(prospeccao.status))}</span>
         <span>${valorFmt}</span>
         <span>${followupFmt}</span>
       `;
@@ -5682,14 +6175,14 @@
       document.getElementById('ugc-prosp-contato').value = prospeccao ? prospeccao.contato || '' : '';
 
       const selOrigem = document.getElementById('ugc-prosp-origem');
-      selOrigem.innerHTML = '<option value="">Selecione...</option>' + UGC_ORIGENS_PROSPECCAO.map((o) => `<option value="${o}">${o}</option>`).join('');
+      selOrigem.innerHTML = `<option value="">${tr('selecione')}</option>` + UGC_ORIGENS_PROSPECCAO.map((o) => `<option value="${o}">${escapeHtml(traduzirOrigem(o))}</option>`).join('');
       selOrigem.value = prospeccao && prospeccao.origem ? prospeccao.origem : '';
 
       document.getElementById('ugc-prosp-tipo').value = prospeccao && prospeccao.tipo_trabalho ? prospeccao.tipo_trabalho : '';
       document.getElementById('ugc-prosp-data-contato').value = prospeccao && prospeccao.data_contato ? prospeccao.data_contato : '';
 
       const selStatus = document.getElementById('ugc-prosp-status');
-      selStatus.innerHTML = UGC_STATUS_PROSPECCAO.map((s) => `<option value="${s}">${s}</option>`).join('');
+      selStatus.innerHTML = UGC_STATUS_PROSPECCAO.map((s) => `<option value="${s}">${escapeHtml(traduzirStatusProspeccao(s))}</option>`).join('');
       selStatus.value = prospeccao ? prospeccao.status : 'Para abordar';
 
       document.getElementById('ugc-prosp-valor').value = prospeccao && prospeccao.valor_proposto != null ? prospeccao.valor_proposto : '';
@@ -5711,7 +6204,7 @@
     async function salvarModalProspeccao() {
       const marca = document.getElementById('ugc-prosp-marca').value.trim();
       if (!marca) {
-        alert('Preencha a marca antes de salvar.');
+        alert(tr('ugc_preencha_marca'));
         return;
       }
 
@@ -5746,7 +6239,7 @@
 
     async function excluirModalProspeccao() {
       if (!ugcProspeccaoAbertaId) return;
-      if (!(await confirmarAcao('Excluir esta prospecção?'))) return;
+      if (!(await confirmarAcao(tr('ugc_excluir_prospeccao_confirmar')))) return;
       try {
         const { error } = await Auth.sb.from('ugc_prospeccao').delete().eq('id', ugcProspeccaoAbertaId);
         if (error) throw error;
@@ -5762,7 +6255,7 @@
       if (!ugcProspeccaoAbertaId) return;
       const prospeccao = ugcProspeccaoCache.find((p) => p.id === ugcProspeccaoAbertaId);
       if (!prospeccao) return;
-      if (!(await confirmarAcao(`Criar um trabalho pra "${prospeccao.marca}" a partir dessa prospecção?`, { perigo: false, textoConfirmar: 'Criar' }))) return;
+      if (!(await confirmarAcao(`${tr('ugc_criar_trabalho_confirmar_prefixo')}"${prospeccao.marca}"${tr('ugc_criar_trabalho_confirmar_sufixo')}`, { perigo: false, textoConfirmar: tr('criar') }))) return;
 
       const btn = document.getElementById('ugc-prosp-transformar');
       btn.disabled = true;
@@ -5788,7 +6281,7 @@
         abrirModalTrabalho(novoTrabalho);
       } catch (err) {
         console.error('Erro ao transformar prospecção em trabalho:', err);
-        alert('Não foi possível transformar agora. Tente de novo em instantes.');
+        alert(tr('ugc_erro_transformar'));
       } finally {
         btn.disabled = false;
       }
@@ -5809,7 +6302,9 @@
       const ordenadas = [...filtradas].sort((a, b) => b.created_at.localeCompare(a.created_at));
 
       document.getElementById('ugc-contratos-resumo').textContent =
-        ordenadas.length === 0 ? 'Nenhum contrato por aqui.' : `${ordenadas.length} ${ordenadas.length === 1 ? 'contrato' : 'contratos'}.`;
+        ordenadas.length === 0
+          ? tr('ugc_nenhum_contrato_aqui')
+          : `${ordenadas.length} ${tr(ordenadas.length === 1 ? 'ugc_contrato_singular' : 'ugc_contrato_plural')}.`;
 
       const lista = document.getElementById('ugc-contratos-lista');
       lista.innerHTML = '';
@@ -5827,9 +6322,9 @@
       linha.innerHTML = `
         <span class="ugc-trabalhos-marca">${escapeHtml(contrato.marca)}</span>
         <span>${escapeHtml(contrato.campanha || '—')}</span>
-        <span>${escapeHtml(contrato.tipo_trabalho || '—')}</span>
+        <span>${escapeHtml(contrato.tipo_trabalho ? traduzirTipoTrabalho(contrato.tipo_trabalho) : '—')}</span>
         <span>${dataFmt}</span>
-        <span class="ugc-status-pill${contrato.status === 'Assinado' ? ' ugc-status-pago' : ''}">${escapeHtml(contrato.status)}</span>
+        <span class="ugc-status-pill${contrato.status === 'Assinado' ? ' ugc-status-pago' : ''}">${escapeHtml(traduzirStatusContrato(contrato.status))}</span>
       `;
       linha.addEventListener('click', () => abrirModalContrato(contrato));
       return linha;
@@ -5843,7 +6338,7 @@
         return;
       }
       statusEl.hidden = false;
-      statusEl.innerHTML = `Arquivo anexado: ${escapeHtml(ugcModalContratoArquivoNome)} — <a href="#" id="ugc-contrato-arquivo-abrir">Abrir</a> · <a href="#" id="ugc-contrato-arquivo-remover">Remover</a>`;
+      statusEl.innerHTML = `${tr('ugc_arquivo_anexado_prefixo')}${escapeHtml(ugcModalContratoArquivoNome)} — <a href="#" id="ugc-contrato-arquivo-abrir">${tr('ugc_abrir')}</a> · <a href="#" id="ugc-contrato-arquivo-remover">${tr('ugc_remover')}</a>`;
       document.getElementById('ugc-contrato-arquivo-abrir').addEventListener('click', (e) => {
         e.preventDefault();
         abrirContratoArquivo();
@@ -5860,7 +6355,7 @@
       const btn = document.getElementById('ugc-contrato-anexar');
       const textoOriginal = btn.textContent;
       btn.disabled = true;
-      btn.textContent = 'Enviando...';
+      btn.textContent = tr('ugc_enviando');
       try {
         const caminho = `contratos/${Date.now()}-${arquivo.name}`;
         const { error } = await Auth.sb.storage.from('ugc-arquivos').upload(caminho, arquivo);
@@ -5870,7 +6365,7 @@
         atualizarContratoArquivoStatusUI();
       } catch (err) {
         console.error('Erro ao anexar contrato:', err);
-        alert('Não foi possível anexar o arquivo agora. Tente de novo em instantes.');
+        alert(tr('ugc_erro_anexar_arquivo'));
       } finally {
         btn.disabled = false;
         btn.textContent = textoOriginal;
@@ -5886,7 +6381,7 @@
         window.open(data.signedUrl, '_blank');
       } catch (err) {
         console.error('Erro ao abrir contrato:', err);
-        alert('Não foi possível abrir o arquivo agora. Tente de novo em instantes.');
+        alert(tr('ugc_erro_abrir_arquivo'));
       }
     }
 
@@ -5901,12 +6396,12 @@
       document.getElementById('ugc-contrato-data').value = contrato && contrato.data ? contrato.data : '';
 
       const selStatus = document.getElementById('ugc-contrato-status');
-      selStatus.innerHTML = UGC_STATUS_CONTRATO.map((s) => `<option value="${s}">${s}</option>`).join('');
+      selStatus.innerHTML = UGC_STATUS_CONTRATO.map((s) => `<option value="${s}">${escapeHtml(traduzirStatusContrato(s))}</option>`).join('');
       selStatus.value = contrato ? contrato.status : 'Pendente assinatura';
 
       const selTrabalho = document.getElementById('ugc-contrato-trabalho');
       selTrabalho.innerHTML =
-        '<option value="">Nenhum</option>' +
+        `<option value="">${tr('nenhum')}</option>` +
         ugcTrabalhosCache.map((t) => `<option value="${t.id}">${escapeHtml(t.marca)}${t.campanha ? ' — ' + escapeHtml(t.campanha) : ''}</option>`).join('');
       selTrabalho.value = contrato && contrato.trabalho_id ? contrato.trabalho_id : '';
 
@@ -5925,7 +6420,7 @@
     async function salvarModalContrato() {
       const marca = document.getElementById('ugc-contrato-marca').value.trim();
       if (!marca) {
-        alert('Preencha a marca antes de salvar.');
+        alert(tr('ugc_preencha_marca'));
         return;
       }
 
@@ -5959,7 +6454,7 @@
 
     async function excluirModalContrato() {
       if (!ugcContratoAbertoId) return;
-      if (!(await confirmarAcao('Excluir este contrato?'))) return;
+      if (!(await confirmarAcao(tr('ugc_excluir_contrato_confirmar')))) return;
       try {
         // Mesma lógica do Trabalho: remove o arquivo anexado antes do registro.
         if (ugcModalContratoArquivoPath) {
@@ -5978,14 +6473,18 @@
 
     // ---- Preços (catálogo editável: UGC / Publicidade / Condições e Direitos) ----
     const UGC_PRECOS_SUFIXO = { UGC: 'ugc', Publicidade: 'publicidade', Adicionais: 'adicionais' };
-    const UGC_PRECOS_LABEL = { UGC: 'UGC', Publicidade: 'Publicidade', Adicionais: 'Condições/Direitos' };
+    const UGC_PRECOS_CATEGORIA_CHAVE = { Publicidade: 'ugc_publicidade', Adicionais: 'ugc_condicoes_direitos' }; // "UGC" não muda em nenhum idioma
+    function traduzirCategoriaPreco(categoria) {
+      const chave = UGC_PRECOS_CATEGORIA_CHAVE[categoria];
+      return chave ? tr(chave) : categoria;
+    }
 
     function renderizarPrecos() {
       Object.entries(UGC_PRECOS_SUFIXO).forEach(([categoria, sufixo]) => {
         const itens = ugcPrecosCache.filter((p) => p.categoria === categoria).sort((a, b) => a.ordem - b.ordem);
         const cont = document.getElementById(`ugc-precos-lista-${sufixo}`);
         if (itens.length === 0) {
-          cont.innerHTML = '<p class="texto-vazio">Nenhum serviço ainda.</p>';
+          cont.innerHTML = `<p class="texto-vazio">${tr('ugc_nenhum_servico')}</p>`;
           return;
         }
         cont.innerHTML = '';
@@ -6066,17 +6565,17 @@
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao salvar nova ordem dos preços:', err);
-        alert('Não foi possível salvar a nova ordem agora. Tente de novo em instantes.');
+        alert(tr('pl_erro_ordem'));
       }
     }
 
     function abrirModalPreco(preco, categoria) {
       ugcPrecoAbertoId = preco ? preco.id : null;
       ugcPrecoModalCategoria = categoria;
-      document.getElementById('ugc-preco-modal-titulo').textContent = preco ? 'Editar serviço' : `Novo serviço — ${UGC_PRECOS_LABEL[categoria] || categoria}`;
+      document.getElementById('ugc-preco-modal-titulo').textContent = preco ? tr('ugc_editar_servico') : `${tr('ugc_novo_servico')} — ${traduzirCategoriaPreco(categoria)}`;
       document.getElementById('ugc-preco-servico').value = preco ? preco.servico : '';
       document.getElementById('ugc-preco-valor').value = preco && preco.valor != null ? preco.valor : '';
-      document.getElementById('ugc-preco-valor-label').textContent = preco && preco.eh_percentual ? 'Valor (%)' : 'Valor (R$)';
+      document.getElementById('ugc-preco-valor-label').textContent = preco && preco.eh_percentual ? tr('ugc_valor_percentual') : tr('ugc_valor_reais');
       document.getElementById('ugc-preco-observacoes').value = preco ? preco.observacoes || '' : '';
       document.getElementById('ugc-modal-preco-excluir').hidden = !preco;
       document.getElementById('ugc-modal-preco-overlay').hidden = false;
@@ -6090,7 +6589,7 @@
     async function salvarModalPreco() {
       const servico = document.getElementById('ugc-preco-servico').value.trim();
       if (!servico) {
-        alert('Preencha o serviço antes de salvar.');
+        alert(tr('ugc_preencha_servico'));
         return;
       }
 
@@ -6123,7 +6622,7 @@
 
     async function excluirModalPreco() {
       if (!ugcPrecoAbertoId) return;
-      if (!(await confirmarAcao('Excluir este serviço?'))) return;
+      if (!(await confirmarAcao(tr('ugc_excluir_servico_confirmar')))) return;
       try {
         const { error } = await Auth.sb.from('ugc_precos').delete().eq('id', ugcPrecoAbertoId);
         if (error) throw error;
@@ -6150,7 +6649,7 @@
       document.getElementById('ugc-proposta-urgencia-ativa').checked = false;
       if (urgencia && urgencia.valor != null) {
         blocoUrgencia.hidden = false;
-        document.getElementById('ugc-proposta-urgencia-label').textContent = `Aplicar taxa de urgência (+${formatarPercentual(urgencia.valor)})`;
+        document.getElementById('ugc-proposta-urgencia-label').textContent = `${tr('ugc_aplicar_taxa_urgencia')} (+${formatarPercentual(urgencia.valor)})`;
       } else {
         blocoUrgencia.hidden = true;
       }
@@ -6186,7 +6685,7 @@
           const itens = ugcPrecosCache.filter((p) => p.categoria === categoria && !p.eh_percentual).sort((a, b) => a.ordem - b.ordem);
           if (itens.length === 0) return '';
           const options = itens.map((p) => `<option value="${p.id}">${escapeHtml(p.servico)} — ${formatarMoeda(p.valor)}</option>`).join('');
-          return `<optgroup label="${UGC_PRECOS_LABEL[categoria]}">${options}</optgroup>`;
+          return `<optgroup label="${escapeHtml(traduzirCategoriaPreco(categoria))}">${options}</optgroup>`;
         })
         .join('');
 
@@ -6194,12 +6693,12 @@
         .map((item, idx) => `
           <div class="ugc-proposta-item" data-idx="${idx}">
             <select class="ugc-proposta-item-servico" data-idx="${idx}">
-              <option value="">Selecione o serviço...</option>
+              <option value="">${escapeHtml(tr('ugc_selecione_servico'))}</option>
               ${opcoes}
             </select>
             <input type="number" min="1" step="1" class="ugc-proposta-item-qtd" data-idx="${idx}" value="${item.quantidade}">
             <span class="ugc-proposta-item-subtotal" data-idx="${idx}">R$ 0,00</span>
-            <button type="button" class="cal-btn cal-btn-icon ugc-proposta-item-remover" data-idx="${idx}" aria-label="Remover item">
+            <button type="button" class="cal-btn cal-btn-icon ugc-proposta-item-remover" data-idx="${idx}" aria-label="${escapeHtml(tr('ugc_remover_item_aria'))}">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
             </button>
           </div>
@@ -6267,7 +6766,7 @@
       const linhaUrgencia = document.getElementById('ugc-proposta-urgencia-linha');
       if (urgenciaAtiva) {
         linhaUrgencia.hidden = false;
-        document.getElementById('ugc-proposta-urgencia-linha-label').textContent = `Urgência (${formatarPercentual(urgenciaPct)})`;
+        document.getElementById('ugc-proposta-urgencia-linha-label').textContent = `${tr('ugc_urgencia')} (${formatarPercentual(urgenciaPct)})`;
         document.getElementById('ugc-proposta-urgencia-valor').textContent = formatarMoeda(urgenciaValor);
       } else {
         linhaUrgencia.hidden = true;
@@ -6314,7 +6813,7 @@
         return;
       }
       const faixa = UGC_DESCONTO_FAIXAS.find((f) => qtd >= f.min && qtd <= f.max);
-      el.textContent = `Sugestão para ${qtd} ${qtd === 1 ? 'item' : 'itens'}: ${faixa.pct}%`;
+      el.textContent = `${tr('ugc_sugestao_desconto_prefixo')}${qtd} ${tr(qtd === 1 ? 'item_singular' : 'item_plural')}: ${faixa.pct}%`;
     }
 
     async function copiarResumoProposta() {
@@ -6339,24 +6838,24 @@
       const final = subtotal + urgenciaValor;
 
       const texto = [
-        marca ? `Proposta — ${marca}` : 'Proposta',
+        marca ? `${tr('ugc_proposta_titulo')} — ${marca}` : tr('ugc_proposta_titulo'),
         '',
         ...linhas,
         '',
-        `Valor bruto: ${formatarMoeda(bruto)}`,
-        descontoPct ? `Desconto (${descontoPct}%): ${formatarMoeda(descontoValor)}` : null,
-        urgenciaAtiva ? `Urgência (${urgenciaPct}%): ${formatarMoeda(urgenciaValor)}` : null,
-        `Valor final: ${formatarMoeda(final)}`,
+        `${tr('ugc_valor_bruto')}: ${formatarMoeda(bruto)}`,
+        descontoPct ? `${tr('ugc_desconto_valor_label')} (${descontoPct}%): ${formatarMoeda(descontoValor)}` : null,
+        urgenciaAtiva ? `${tr('ugc_urgencia')} (${urgenciaPct}%): ${formatarMoeda(urgenciaValor)}` : null,
+        `${tr('ugc_valor_final')}: ${formatarMoeda(final)}`,
       ]
         .filter((l) => l !== null)
         .join('\n');
 
       try {
         await navigator.clipboard.writeText(texto);
-        alert('Resumo copiado para a área de transferência.');
+        alert(tr('ugc_resumo_copiado'));
       } catch (err) {
         console.error('Erro ao copiar resumo da proposta:', err);
-        alert('Não foi possível copiar agora. Tente de novo em instantes.');
+        alert(tr('ugc_erro_copiar'));
       }
     }
 
@@ -6377,7 +6876,7 @@
     }
 
     function formatarDataCurta(data) {
-      return data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      return data.toLocaleDateString(localeAtual(), { day: '2-digit', month: '2-digit' });
     }
 
     // Troca "_" por espaço e deixa a primeira letra de cada palavra maiúscula.

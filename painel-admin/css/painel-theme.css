@@ -644,6 +644,12 @@
   color: var(--texto-suave);
 }
 
+.painel-body .cal-todas-dia-serie {
+  border-color: var(--borda);
+  color: var(--texto-suave);
+  cursor: default;
+}
+
 .painel-body .cal-todas-tipo-badge {
   display: inline-block;
   width: fit-content;

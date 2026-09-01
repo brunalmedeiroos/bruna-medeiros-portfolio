@@ -394,6 +394,32 @@
   color: var(--texto-suave);
 }
 
+.painel-body .cal-tarefa-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.painel-body .cal-tarefa-checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.painel-body .cal-tarefa-checklist-item input[type="checkbox"] {
+  margin: 0;
+}
+
+.painel-body .cal-todas-checklist-progresso {
+  font-size: 12px;
+  color: var(--texto-suave);
+  font-variant-numeric: tabular-nums;
+}
+
 .painel-body .cal-tarefa-editar,
 .painel-body .cal-tarefa-excluir {
   color: var(--texto-suave);
@@ -2238,6 +2264,15 @@
   .painel-body .ugc-entregavel-item {
     grid-template-columns: 1fr;
   }
+}
+
+/* ---- Checklist de subitens de uma tarefa do Calendário ---- */
+
+.painel-body .cal-checklist-item {
+  display: grid;
+  grid-template-columns: 24px 1fr 32px;
+  gap: 8px;
+  align-items: center;
 }
 
 /* ---- Proposta personalizada (calculadora dentro de Preços) ---- */

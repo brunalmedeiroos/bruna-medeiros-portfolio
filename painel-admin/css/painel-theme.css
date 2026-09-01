@@ -650,6 +650,13 @@
   cursor: default;
 }
 
+.painel-body .cal-todas-dia-serie-texto {
+  font-size: 10px;
+  text-transform: lowercase;
+  text-align: center;
+  line-height: 1.2;
+}
+
 .painel-body .cal-todas-tipo-badge {
   display: inline-block;
   width: fit-content;

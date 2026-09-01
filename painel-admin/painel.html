@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260827aa">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260901c">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260901d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -1834,14 +1834,7 @@
         cal_adicionar_item: '+ Adicionar item',
         cal_item_placeholder: 'Ex: revisar entregas da semana',
         cal_remover_item_aria: 'Remover item',
-        cal_todo_domingo: 'todo domingo',
-        cal_toda_segunda: 'toda segunda-feira',
-        cal_toda_terca: 'toda terça-feira',
-        cal_toda_quarta: 'toda quarta-feira',
-        cal_toda_quinta: 'toda quinta-feira',
-        cal_toda_sexta: 'toda sexta-feira',
-        cal_todo_sabado: 'todo sábado',
-        cal_todos_os_dias: 'todos os dias',
+        cal_diaria_abrev: 'Diária',
         cal_dia: 'Dia',
         cal_comeca: 'Começa',
         cal_termina: 'Termina',
@@ -2403,14 +2396,7 @@
         cal_adicionar_item: '+ Add item',
         cal_item_placeholder: 'E.g: review the week\'s deliveries',
         cal_remover_item_aria: 'Remove item',
-        cal_todo_domingo: 'every Sunday',
-        cal_toda_segunda: 'every Monday',
-        cal_toda_terca: 'every Tuesday',
-        cal_toda_quarta: 'every Wednesday',
-        cal_toda_quinta: 'every Thursday',
-        cal_toda_sexta: 'every Friday',
-        cal_todo_sabado: 'every Saturday',
-        cal_todos_os_dias: 'every day',
+        cal_diaria_abrev: 'Daily',
         cal_dia: 'Day',
         cal_comeca: 'Starts',
         cal_termina: 'Ends',
@@ -4145,22 +4131,6 @@
       return chave ? tr(chave) : tipo;
     }
 
-    // Texto da regra de recorrência (ex: "toda terça-feira", "todos os
-    // dias") — semanal sempre cai no mesmo dia da semana da data-base,
-    // então basta olhar o dia da semana de qualquer ocorrência da série.
-    const DIA_SEMANA_REGRA_CHAVE = [
-      'cal_todo_domingo', 'cal_toda_segunda', 'cal_toda_terca',
-      'cal_toda_quarta', 'cal_toda_quinta', 'cal_toda_sexta', 'cal_todo_sabado',
-    ];
-    function regraRecorrenciaTexto(tarefa) {
-      if (tarefa.recorrencia === 'diaria') return tr('cal_todos_os_dias');
-      if (tarefa.recorrencia === 'semanal') {
-        const diaSemana = new Date(tarefa.data + 'T00:00:00').getDay();
-        return tr(DIA_SEMANA_REGRA_CHAVE[diaSemana]);
-      }
-      return '';
-    }
-
     function criarItemTarefa(tarefa, mostrarData) {
       const horario = [tarefa.hora_inicio, tarefa.hora_fim].filter(Boolean).map((h) => h.slice(0, 5)).join(' – ');
       const dataFormatada = mostrarData
@@ -4224,22 +4194,31 @@
           .sort((a, b) => a.data.localeCompare(b.data) || (a.hora_inicio || '').localeCompare(b.hora_inicio || ''));
       }
 
-      // Várias ocorrências da mesma série recorrente viram uma única linha
-      // — a lista já está ordenada acima (mais próxima primeiro em
-      // Próximos, mais recente primeiro em Feitos), então a primeira
-      // ocorrência de cada serie_id encontrada aqui já é a mais relevante
-      // pra representar a linha. Tarefas avulsas (sem serie_id) continuam
-      // uma por data, como sempre.
+      // Tarefas avulsas (sem serie_id) continuam uma linha por data, como
+      // sempre. Tarefas recorrentes agrupam por TÍTULO (não só por
+      // serie_id) — assim, duas séries diferentes com o mesmo nome (ex:
+      // "Hora de estudar" às terças e "Hora de estudar" às quintas, duas
+      // séries semanais distintas por baixo dos panos) aparecem como uma
+      // linha só, representando o hábito, não a série técnica. A lista já
+      // está ordenada acima (mais próxima primeiro em Próximos, mais
+      // recente primeiro em Feitos), então a primeira ocorrência de cada
+      // grupo encontrada aqui já é a mais relevante pra representar a
+      // linha (é nela que "marcar feita"/"editar" atuam).
       const linhasParaExibir = [];
-      const seriesJaAdicionadas = new Set();
+      const gruposPorTitulo = new Map();
       filtradas.forEach((tarefa) => {
         if (!tarefa.serie_id) {
           linhasParaExibir.push(tarefa);
           return;
         }
-        if (seriesJaAdicionadas.has(tarefa.serie_id)) return;
-        seriesJaAdicionadas.add(tarefa.serie_id);
-        linhasParaExibir.push(tarefa);
+        let grupo = gruposPorTitulo.get(tarefa.titulo);
+        if (!grupo) {
+          grupo = { representante: tarefa, series: new Set(), ocorrencias: [] };
+          gruposPorTitulo.set(tarefa.titulo, grupo);
+          linhasParaExibir.push(grupo);
+        }
+        grupo.series.add(tarefa.serie_id);
+        grupo.ocorrencias.push(tarefa);
       });
 
       document.getElementById('cal-todas-resumo').textContent =
@@ -4255,17 +4234,14 @@
         return;
       }
 
-      linhasParaExibir.forEach((tarefa) => lista.appendChild(criarLinhaTarefa(tarefa)));
+      linhasParaExibir.forEach((item) => {
+        lista.appendChild(item.representante ? criarLinhaGrupoRecorrente(item) : criarLinhaTarefa(item));
+      });
     }
 
-    // Cria uma linha da tabela "Tudo o que está marcado". Uma tarefa com
-    // serie_id vira uma linha "agrupada": em vez do dia clicável, mostra um
-    // ícone de repetição e a regra ("toda terça-feira") junto do título;
-    // excluir apaga a série inteira direto (sem perguntar "esta ou a
-    // série" — a linha já representa a série como um todo, não uma data
-    // específica).
+    // Cria uma linha avulsa (sem recorrência) da tabela "Tudo o que está
+    // marcado" — sempre uma tarefa por data.
     function criarLinhaTarefa(tarefa) {
-      const ehSerie = !!tarefa.serie_id;
       const dataObj = new Date(tarefa.data + 'T00:00:00');
       const diaMes = dataObj.toLocaleDateString(localeAtual(), { day: '2-digit', month: '2-digit' });
       const diaSemana = dataObj.toLocaleDateString(localeAtual(), { weekday: 'short' }).replace('.', '');
@@ -4276,23 +4252,16 @@
         ? ` <span class="cal-todas-checklist-progresso">${itensChecklist.filter((i) => i.feito).length}/${itensChecklist.length}</span>`
         : '';
 
-      const colunaData = ehSerie
-        ? `<span class="cal-todas-dia cal-todas-dia-serie" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>`
-        : `<button class="cal-todas-dia" type="button" aria-label="${escapeHtml(tr('abrir_no_calendario'))}">
-            <span class="cal-todas-dia-num">${diaMes}</span>
-            <span class="cal-todas-dia-sem">${diaSemana}</span>
-          </button>`;
-      const tituloExibido = ehSerie ? `${tarefa.titulo} — ${regraRecorrenciaTexto(tarefa)}` : tarefa.titulo;
-
       const linha = document.createElement('div');
       linha.className = 'cal-todas-linha' + (tarefa.feito ? ' cal-tarefa-feita' : '');
       linha.innerHTML = `
-        ${colunaData}
+        <button class="cal-todas-dia" type="button" aria-label="${escapeHtml(tr('abrir_no_calendario'))}">
+          <span class="cal-todas-dia-num">${diaMes}</span>
+          <span class="cal-todas-dia-sem">${diaSemana}</span>
+        </button>
         <span class="cal-todas-hora">${horario || tr('cal_dia_todo')}</span>
         <span class="cal-todas-tipo-badge">${escapeHtml(traduzirTipoTarefa(tarefa.tipo || 'Compromisso').toUpperCase())}</span>
-        <span class="cal-todas-titulo">${escapeHtml(tituloExibido)}${progressoChecklist}</span>
+        <span class="cal-todas-titulo">${escapeHtml(tarefa.titulo)}${progressoChecklist}</span>
         <div class="cal-todas-acoes">
           <button class="cal-tarefa-check cal-btn" type="button" aria-label="${escapeHtml(tr('marcar_feita'))}">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -4300,25 +4269,90 @@
           <button class="cal-tarefa-editar cal-btn cal-btn-icon" type="button" aria-label="${escapeHtml(tr('editar'))}">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
-          <button class="cal-tarefa-excluir cal-btn cal-btn-icon" type="button" aria-label="${escapeHtml(tr(ehSerie ? 'cal_excluir_serie_botao' : 'excluir'))}">
+          <button class="cal-tarefa-excluir cal-btn cal-btn-icon" type="button" aria-label="${escapeHtml(tr('excluir'))}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </div>
       `;
 
-      if (!ehSerie) {
-        linha.querySelector('.cal-todas-dia').addEventListener('click', () => {
-          calMesAtual = new Date(dataObj.getFullYear(), dataObj.getMonth(), 1);
-          calDiaSelecionado = dataObj;
-          renderizarCalendario();
-        });
-      }
+      linha.querySelector('.cal-todas-dia').addEventListener('click', () => {
+        calMesAtual = new Date(dataObj.getFullYear(), dataObj.getMonth(), 1);
+        calDiaSelecionado = dataObj;
+        renderizarCalendario();
+      });
       linha.querySelector('.cal-tarefa-check').addEventListener('click', () => alternarFeito(tarefa));
       linha.querySelector('.cal-tarefa-editar').addEventListener('click', () => abrirFormularioTarefa(tarefa));
-      linha.querySelector('.cal-tarefa-excluir').addEventListener('click', () => {
-        if (ehSerie) excluirSerieAgrupada(tarefa);
-        else excluirTarefa(tarefa);
-      });
+      linha.querySelector('.cal-tarefa-excluir').addEventListener('click', () => excluirTarefa(tarefa));
+
+      return linha;
+    }
+
+    // Texto curto pro lugar onde ficaria a data, resumindo os dias da
+    // semana envolvidos no grupo (ex: "ter", "ter, qui") — ou um rótulo
+    // fixo se alguma das séries do grupo for diária. Ordena pelo início da
+    // semana em segunda (mesma convenção usada na grade do mês).
+    function diasAbreviadosDoGrupo(grupo) {
+      if (grupo.ocorrencias.some((t) => t.recorrencia === 'diaria')) return tr('cal_diaria_abrev');
+
+      const vistos = new Set();
+      return grupo.ocorrencias
+        .slice()
+        .sort((a, b) => {
+          const diaA = (new Date(a.data + 'T00:00:00').getDay() + 6) % 7;
+          const diaB = (new Date(b.data + 'T00:00:00').getDay() + 6) % 7;
+          return diaA - diaB;
+        })
+        .filter((t) => {
+          const dia = new Date(t.data + 'T00:00:00').getDay();
+          if (vistos.has(dia)) return false;
+          vistos.add(dia);
+          return true;
+        })
+        .map((t) => new Date(t.data + 'T00:00:00').toLocaleDateString(localeAtual(), { weekday: 'short' }).replace('.', ''))
+        .join(', ');
+    }
+
+    // Cria a linha agrupada de uma série (ou de várias séries com o mesmo
+    // título) na tabela "Tudo o que está marcado" — no lugar do dia
+    // clicável, mostra um ícone de repetição com os dias da semana
+    // abreviados; excluir apaga todas as séries do grupo de uma vez (sem
+    // perguntar "esta ou a série" — a linha já representa o hábito como um
+    // todo, não uma data específica).
+    function criarLinhaGrupoRecorrente(grupo) {
+      const tarefa = grupo.representante;
+      const horario = [tarefa.hora_inicio, tarefa.hora_fim].filter(Boolean).map((h) => h.slice(0, 5)).join(' – ');
+
+      const itensChecklist = tarefasChecklistCache.filter((c) => c.tarefa_id === tarefa.id);
+      const progressoChecklist = itensChecklist.length > 0
+        ? ` <span class="cal-todas-checklist-progresso">${itensChecklist.filter((i) => i.feito).length}/${itensChecklist.length}</span>`
+        : '';
+
+      const linha = document.createElement('div');
+      linha.className = 'cal-todas-linha' + (tarefa.feito ? ' cal-tarefa-feita' : '');
+      linha.innerHTML = `
+        <span class="cal-todas-dia cal-todas-dia-serie" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="cal-todas-dia-serie-texto">${escapeHtml(diasAbreviadosDoGrupo(grupo))}</span>
+        </span>
+        <span class="cal-todas-hora">${horario || tr('cal_dia_todo')}</span>
+        <span class="cal-todas-tipo-badge">${escapeHtml(traduzirTipoTarefa(tarefa.tipo || 'Compromisso').toUpperCase())}</span>
+        <span class="cal-todas-titulo">${escapeHtml(tarefa.titulo)}${progressoChecklist}</span>
+        <div class="cal-todas-acoes">
+          <button class="cal-tarefa-check cal-btn" type="button" aria-label="${escapeHtml(tr('marcar_feita'))}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="cal-tarefa-editar cal-btn cal-btn-icon" type="button" aria-label="${escapeHtml(tr('editar'))}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="cal-tarefa-excluir cal-btn cal-btn-icon" type="button" aria-label="${escapeHtml(tr('cal_excluir_serie_botao'))}">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      `;
+
+      linha.querySelector('.cal-tarefa-check').addEventListener('click', () => alternarFeito(tarefa));
+      linha.querySelector('.cal-tarefa-editar').addEventListener('click', () => abrirFormularioTarefa(tarefa));
+      linha.querySelector('.cal-tarefa-excluir').addEventListener('click', () => excluirGrupoSeries(grupo));
 
       return linha;
     }
@@ -4478,17 +4512,22 @@
       }
     }
 
-    // Apaga uma série inteira a partir de uma ocorrência (essa e as
-    // futuras — o histórico passado nunca é apagado). Sem confirmação
-    // própria: quem chama já pergunta antes.
+    // Apaga as ocorrências de uma série a partir de uma data (essa e as
+    // futuras — o histórico passado nunca é apagado). Sem confirmação nem
+    // recarga própria: quem chama cuida disso.
+    async function excluirOcorrenciasDaSerie(serieId, dataDesde) {
+      const { error } = await Auth.sb
+        .from('painel_tarefas')
+        .delete()
+        .eq('serie_id', serieId)
+        .gte('data', dataDesde);
+      if (error) throw error;
+    }
+
+    // Apaga uma série inteira a partir de uma ocorrência específica.
     async function excluirSerieDeTarefas(tarefa) {
       try {
-        const { error } = await Auth.sb
-          .from('painel_tarefas')
-          .delete()
-          .eq('serie_id', tarefa.serie_id)
-          .gte('data', tarefa.data);
-        if (error) throw error;
+        await excluirOcorrenciasDaSerie(tarefa.serie_id, tarefa.data);
         await carregarTarefas();
       } catch (err) {
         console.error('Erro ao excluir série de tarefas:', err);
@@ -4497,12 +4536,22 @@
     }
 
     // Excluir numa linha agrupada da tabela "Tudo o que está marcado" — a
-    // linha já representa a série como um todo (mostra a regra, não uma
-    // data), então excluir ali vai direto pra série inteira, sem perguntar
-    // "esta ou a série" como excluirTarefa() faz.
-    async function excluirSerieAgrupada(tarefa) {
+    // linha já representa o hábito como um todo (pode ser mais de uma
+    // série com o mesmo título, ex: terça e quinta), então excluir ali
+    // apaga TODAS as séries do grupo de uma vez, sem perguntar "esta ou a
+    // série" como excluirTarefa() faz.
+    async function excluirGrupoSeries(grupo) {
       if (!(await confirmarAcao(tr('cal_excluir_serie_pergunta'), { textoConfirmar: tr('cal_excluir_serie_botao') }))) return;
-      await excluirSerieDeTarefas(tarefa);
+      try {
+        for (const serieId of grupo.series) {
+          const ocorrenciaDaSerie = grupo.ocorrencias.find((t) => t.serie_id === serieId);
+          await excluirOcorrenciasDaSerie(serieId, ocorrenciaDaSerie.data);
+        }
+        await carregarTarefas();
+      } catch (err) {
+        console.error('Erro ao excluir séries agrupadas:', err);
+        alert(tr('erro_excluir_generico'));
+      }
     }
 
     async function excluirTarefa(tarefa) {

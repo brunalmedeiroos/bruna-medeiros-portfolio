@@ -623,6 +623,8 @@
   align-items: center;
   justify-content: center;
   justify-self: center;
+  width: 60px;
+  box-sizing: border-box;
   gap: 1px;
   padding: 6px 4px;
   border: 1px solid var(--coral);
@@ -653,6 +655,9 @@
   border-color: var(--borda);
   color: var(--texto-suave);
   cursor: default;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
 }
 
 .painel-body .cal-todas-dia-serie-texto {
@@ -660,6 +665,7 @@
   text-transform: lowercase;
   text-align: center;
   line-height: 1.2;
+  white-space: normal;
 }
 
 .painel-body .cal-todas-tipo-badge {

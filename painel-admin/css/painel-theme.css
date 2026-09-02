@@ -1180,6 +1180,23 @@
   font-weight: 700;
   letter-spacing: 1.4px;
   color: var(--coral);
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 2px 6px;
+  margin: -2px -6px;
+  border-radius: var(--raio-sm);
+  min-width: 0;
+  flex: 1;
+}
+
+.painel-body .pl-coluna-titulo:hover {
+  border-color: var(--borda);
+}
+
+.painel-body .pl-coluna-titulo:focus {
+  outline: none;
+  border-color: var(--coral);
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .painel-body .pl-coluna-excluir {

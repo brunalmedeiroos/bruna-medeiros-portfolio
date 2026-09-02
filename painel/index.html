@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260902d">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260902e">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -856,6 +856,11 @@
             <select id="pl-modal-pilar"></select>
           </div>
         </div>
+
+        <label class="pl-checkbox-linha">
+          <input type="checkbox" id="pl-modal-gravado">
+          <span data-i18n="pl_ja_gravado">Já foi gravado (some do Banco de Ideias, continua no Cronograma)</span>
+        </label>
 
         <div class="cal-form-campo">
           <label for="pl-modal-roteiro-breve" data-i18n="pl_roteiro_breve">Roteiro breve</label>
@@ -1995,6 +2000,8 @@
         pl_erro_carregar: 'Não foi possível carregar o planejador agora.',
         pl_nova_ideia: '+ Nova ideia',
         pl_ja_tem_roteiro: 'Já tem roteiro',
+        pl_marcar_gravado: 'Marcar como gravado',
+        pl_ja_gravado: 'Já foi gravado (some do Banco de Ideias, continua no Cronograma)',
         pl_erro_ordem: 'Não foi possível salvar a nova ordem agora.',
         pl_titulo_ideia_placeholder_reticencias: 'Título da ideia...',
         criar: 'Criar',
@@ -2555,6 +2562,8 @@
         pl_erro_carregar: 'Could not load the planner right now.',
         pl_nova_ideia: '+ New idea',
         pl_ja_tem_roteiro: 'Already has a script',
+        pl_marcar_gravado: 'Mark as filmed',
+        pl_ja_gravado: 'Already filmed (disappears from the Idea Bank, stays on the Schedule)',
         pl_erro_ordem: 'Could not save the new order right now.',
         pl_titulo_ideia_placeholder_reticencias: 'Idea title...',
         criar: 'Create',
@@ -4956,7 +4965,7 @@
       container.innerHTML = '';
 
       pilaresCache.forEach((pilar) => {
-        const ideiasDoPilar = ideiasCache.filter((i) => i.pilar_id === pilar.id);
+        const ideiasDoPilar = ideiasCache.filter((i) => i.pilar_id === pilar.id && !i.gravado);
         container.appendChild(criarColunaIdeias(pilar, ideiasDoPilar));
       });
 
@@ -5021,12 +5030,20 @@
         <div class="pl-card-rodape">
           ${ideia.formato ? `<span class="pl-card-formato">${escapeHtml(ideia.formato)}</span>` : ''}
           <span class="pl-card-status">${escapeHtml(traduzirStatusIdeia(ideia.status))}</span>
+          ${ideia.data_agendada ? `<button type="button" class="pl-card-marcar-gravado">${escapeHtml(tr('pl_marcar_gravado'))}</button>` : ''}
         </div>
       `;
       card.addEventListener('click', () => {
         if (card.classList.contains('pl-card-arrastando')) return;
         abrirModalIdeia(ideia);
       });
+      const botaoGravado = card.querySelector('.pl-card-marcar-gravado');
+      if (botaoGravado) {
+        botaoGravado.addEventListener('click', (e) => {
+          e.stopPropagation();
+          marcarIdeiaComoGravada(ideia);
+        });
+      }
       card.addEventListener('dragstart', () => {
         cardIdeiaArrastado = card;
         setTimeout(() => card.classList.add('pl-card-arrastando'), 0);
@@ -5194,6 +5211,17 @@
       }
     }
 
+    async function marcarIdeiaComoGravada(ideia) {
+      try {
+        const { error } = await Auth.sb.from('planejador_ideias').update({ gravado: true }).eq('id', ideia.id);
+        if (error) throw error;
+        await carregarPlanejador();
+      } catch (err) {
+        console.error('Erro ao marcar ideia como gravada:', err);
+        alert(tr('erro_salvar_generico'));
+      }
+    }
+
     function abrirModalIdeia(ideia) {
       ideiaAbertaId = ideia.id;
       document.getElementById('pl-modal-titulo').value = ideia.titulo;
@@ -5201,6 +5229,7 @@
       document.getElementById('pl-modal-status').value = ideia.status || 'Não iniciado';
       document.getElementById('pl-modal-roteiro-breve').value = ideia.roteiro_breve || '';
       document.getElementById('pl-modal-roteiro-completo').value = ideia.roteiro_completo || '';
+      document.getElementById('pl-modal-gravado').checked = !!ideia.gravado;
 
       const selectPilar = document.getElementById('pl-modal-pilar');
       selectPilar.innerHTML = pilaresCache
@@ -5223,6 +5252,7 @@
         formato: document.getElementById('pl-modal-formato').value.trim() || null,
         status: document.getElementById('pl-modal-status').value,
         pilar_id: document.getElementById('pl-modal-pilar').value,
+        gravado: document.getElementById('pl-modal-gravado').checked,
         roteiro_breve: document.getElementById('pl-modal-roteiro-breve').value.trim() || null,
         roteiro_completo: document.getElementById('pl-modal-roteiro-completo').value.trim() || null,
       };

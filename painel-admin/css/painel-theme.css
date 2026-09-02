@@ -1283,6 +1283,43 @@
   width: fit-content;
 }
 
+.painel-body .pl-card-marcar-gravado {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: transparent;
+  border: 1px dashed var(--borda);
+  color: var(--texto-suave);
+  font-family: var(--fonte-corpo);
+  cursor: pointer;
+  width: fit-content;
+}
+
+.painel-body .pl-card-marcar-gravado:hover {
+  color: var(--grafite);
+  border-color: var(--grafite);
+}
+
+.painel-body .pl-checkbox-linha {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.painel-body .pl-checkbox-linha input {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--coral);
+  cursor: pointer;
+}
+
 .painel-body .pl-coluna-add {
   background: transparent;
   border: 1px dashed var(--borda);

@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260901i">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260902a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -467,13 +467,6 @@
               <span class="card-label" data-i18n="radar_ja_usadas">Já usadas</span>
               <span class="card-valor" id="radar-num-usadas">0</span>
             </div>
-          </div>
-
-          <div class="radar-filtro-grupo radar-filtro-agentes">
-            <button class="radar-filtro-btn ativo" data-agente="Marketing Digital" data-i18n="radar_agente_mkt" type="button">Fofoqueira do MKT</button>
-            <button class="radar-filtro-btn" data-agente="Criação de Conteúdo" data-i18n="radar_agente_conteudo" type="button">Estrategista de conteúdo</button>
-            <button class="radar-filtro-btn" data-agente="UGC e Creator Economy" data-i18n="radar_agente_ugc" type="button">Empresária dos creators</button>
-            <button class="radar-filtro-btn" data-agente="IA e Tecnologia" data-i18n="radar_agente_ia" type="button">Viciada em IA</button>
           </div>
 
           <div class="radar-filtro-grupo radar-filtro-periodo">
@@ -954,7 +947,7 @@
     <div id="radar-modal-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal">
         <div class="pl-modal-topo">
-          <span class="pl-modal-titulo-fixo" id="radar-modal-agente">Marketing Digital</span>
+          <span class="pl-modal-titulo-fixo" id="radar-modal-categoria"></span>
           <button id="radar-modal-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
@@ -964,8 +957,18 @@
         <p class="radar-modal-meta" id="radar-modal-meta"></p>
 
         <div class="cal-form-campo">
-          <label data-i18n="radar_roteiro_insight">Roteiro / insight</label>
-          <p class="radar-modal-insight" id="radar-modal-insight"></p>
+          <label data-i18n="radar_o_que_acontece">O que está acontecendo</label>
+          <p class="radar-modal-bloco" id="radar-modal-resumo"></p>
+        </div>
+
+        <div class="cal-form-campo" id="radar-modal-relevancia-campo">
+          <label data-i18n="radar_por_que_relevante">Por que é relevante pra você</label>
+          <p class="radar-modal-bloco" id="radar-modal-relevancia"></p>
+        </div>
+
+        <div class="cal-form-campo">
+          <label data-i18n="radar_como_adaptar">Como transformar em conteúdo</label>
+          <p class="radar-modal-bloco" id="radar-modal-adaptacao"></p>
         </div>
 
         <div class="cal-form-acoes">
@@ -1500,22 +1503,8 @@
       const chave = DIA_SEMANA_CHAVE[dia];
       return chave ? tr(chave) : dia;
     }
-    // Idem pro agente do Radar de Notícias — valor gravado (e usado pra filtrar)
-    // continua em português, só o rótulo exibido muda.
-    const RADAR_AGENTE_CHAVE = {
-      'Marketing Digital': 'radar_agente_mkt',
-      'Criação de Conteúdo': 'radar_agente_conteudo',
-      'UGC e Creator Economy': 'radar_agente_ugc',
-      'IA e Tecnologia': 'radar_agente_ia',
-    };
-    function traduzirAgenteRadar(agente) {
-      const chave = RADAR_AGENTE_CHAVE[agente];
-      return chave ? tr(chave) : agente;
-    }
-
     let radarAbaCarregada = false;
     let radarCache = [];
-    let filtroAgenteRadar = 'Marketing Digital'; // sempre um agente selecionado, nunca "todos" juntos
     let filtroPeriodoRadar = null; // null | 'hoje' | 'novas' | 'usadas'
     let radarAbertaId = null;
 
@@ -1920,13 +1909,11 @@
         radar_fontes_distintas: 'Fontes distintas',
         radar_prontas_roteiro: 'Prontas pra roteiro',
         radar_ja_usadas: 'Já usadas',
-        radar_agente_mkt: 'Fofoqueira do MKT',
-        radar_agente_conteudo: 'Estrategista de conteúdo',
-        radar_agente_ugc: 'Empresária dos creators',
-        radar_agente_ia: 'Viciada em IA',
         radar_novas: 'Novas',
         radar_usadas: 'Usadas',
-        radar_roteiro_insight: 'Roteiro / insight',
+        radar_o_que_acontece: 'O que está acontecendo',
+        radar_por_que_relevante: 'Por que é relevante pra você',
+        radar_como_adaptar: 'Como transformar em conteúdo',
         radar_ver_fonte: 'Ver fonte',
         radar_usar_ideia: 'Usar ideia',
         radar_marcar_usada: 'Marcar como usada',
@@ -1995,9 +1982,8 @@
         radar_tag_hoje: 'Hoje',
         radar_tag_usada: 'Usada',
         radar_buscando: 'Buscando...',
-        radar_alguns_agentes_erro: 'Alguns agentes não conseguiram buscar agora:',
         radar_erro_atualizar_prefixo: 'Não foi possível atualizar as notícias agora: ',
-        radar_sem_roteiro: 'Sem roteiro gerado pra essa notícia.',
+        radar_sem_conteudo: 'Nada gerado pra essa notícia ainda.',
         radar_marcar_nao_usada: 'Marcar como não usada',
         radar_excluir_confirmar: 'Excluir esta notícia?',
         radar_crie_pilar_primeiro: 'Crie um pilar no Banco de Ideias primeiro pra poder usar essa ideia.',
@@ -2482,13 +2468,11 @@
         radar_fontes_distintas: 'Distinct sources',
         radar_prontas_roteiro: 'Ready for script',
         radar_ja_usadas: 'Already used',
-        radar_agente_mkt: 'MKT Gossip',
-        radar_agente_conteudo: 'Content Strategist',
-        radar_agente_ugc: 'Creator Economy Boss',
-        radar_agente_ia: 'AI Addict',
         radar_novas: 'New',
         radar_usadas: 'Used',
-        radar_roteiro_insight: 'Script / insight',
+        radar_o_que_acontece: "What's happening",
+        radar_por_que_relevante: 'Why it matters to you',
+        radar_como_adaptar: 'How to turn it into content',
         radar_ver_fonte: 'View source',
         radar_usar_ideia: 'Use idea',
         radar_marcar_usada: 'Mark as used',
@@ -2557,9 +2541,8 @@
         radar_tag_hoje: 'Today',
         radar_tag_usada: 'Used',
         radar_buscando: 'Fetching...',
-        radar_alguns_agentes_erro: 'Some agents could not fetch right now:',
         radar_erro_atualizar_prefixo: 'Could not refresh the news right now: ',
-        radar_sem_roteiro: 'No script generated for this news yet.',
+        radar_sem_conteudo: 'Nothing generated for this news yet.',
         radar_marcar_nao_usada: 'Mark as not used',
         radar_excluir_confirmar: 'Delete this news item?',
         radar_crie_pilar_primeiro: 'Create a pillar in the Idea Bank first to use this idea.',
@@ -3208,13 +3191,6 @@
 
       // Radar de Notícias
       document.getElementById('btn-radar-atualizar').addEventListener('click', atualizarNoticias);
-      document.querySelectorAll('.radar-filtro-agentes .radar-filtro-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          filtroAgenteRadar = btn.dataset.agente;
-          document.querySelectorAll('.radar-filtro-agentes .radar-filtro-btn').forEach((b) => b.classList.toggle('ativo', b === btn));
-          renderizarRadar();
-        });
-      });
       document.querySelectorAll('.radar-filtro-periodo .radar-filtro-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
           const jaAtivo = btn.classList.contains('ativo');
@@ -3385,9 +3361,7 @@
         carregarPlanejador();
       }
       if (aba === 'radar') {
-        filtroAgenteRadar = 'Marketing Digital';
         filtroPeriodoRadar = null;
-        document.querySelectorAll('.radar-filtro-agentes .radar-filtro-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.agente === 'Marketing Digital'));
         document.querySelectorAll('.radar-filtro-periodo .radar-filtro-btn').forEach((b) => b.classList.remove('ativo'));
         if (!radarAbaCarregada) {
           radarAbaCarregada = true;
@@ -5662,7 +5636,7 @@
     function renderizarRadar() {
       const hojeCount = radarCache.filter(radarEDeHoje).length;
       const fontesDistintas = new Set(radarCache.map((i) => i.fonte).filter(Boolean)).size;
-      const prontas = radarCache.filter((i) => i.insight && i.insight.trim()).length;
+      const prontas = radarCache.filter((i) => i.adaptacao && i.adaptacao.trim()).length;
       const usadas = radarCache.filter((i) => i.usada).length;
 
       document.getElementById('radar-num-hoje').textContent = formatarNumero(hojeCount);
@@ -5670,8 +5644,7 @@
       document.getElementById('radar-num-prontas').textContent = formatarNumero(prontas);
       document.getElementById('radar-num-usadas').textContent = formatarNumero(usadas);
 
-      // Sempre filtra por um único agente por vez — nunca mistura notícias de agentes diferentes.
-      let filtradas = radarCache.filter((i) => i.agente === filtroAgenteRadar);
+      let filtradas = radarCache;
       if (filtroPeriodoRadar === 'hoje') filtradas = filtradas.filter(radarEDeHoje);
       else if (filtroPeriodoRadar === 'novas') filtradas = filtradas.filter((i) => !i.usada);
       else if (filtroPeriodoRadar === 'usadas') filtradas = filtradas.filter((i) => i.usada);
@@ -5689,6 +5662,7 @@
             <div class="radar-item" data-id="${item.id}">
               <div class="radar-item-topo">
                 <span class="radar-item-titulo">${escapeHtml(item.titulo)}</span>
+                ${item.categoria ? `<span class="radar-tag radar-tag-categoria">${escapeHtml(item.categoria)}</span>` : ''}
                 ${radarEDeHoje(item) ? `<span class="radar-tag radar-tag-nova">${escapeHtml(tr('radar_tag_hoje'))}</span>` : ''}
                 ${item.usada ? `<span class="radar-tag radar-tag-usada">${escapeHtml(tr('radar_tag_usada'))}</span>` : ''}
               </div>
@@ -5714,11 +5688,8 @@
         const resultado = await chamarFuncao('radar-atualizar', { method: 'POST' });
         if (!resultado.ok) throw new Error(resultado.error || 'erro desconhecido');
 
-        const erros = Object.entries(resultado.resultados || {})
-          .filter(([, r]) => r.erro)
-          .map(([chave, r]) => `${chave}: ${r.erro}`);
-        if (erros.length) {
-          avisoEl.innerHTML = `<strong>${escapeHtml(tr('radar_alguns_agentes_erro'))}</strong><br>` + erros.map((e) => escapeHtml(e)).join('<br>');
+        if (resultado.erro) {
+          avisoEl.textContent = resultado.erro;
           avisoEl.hidden = false;
         }
 
@@ -5737,11 +5708,14 @@
       const item = radarCache.find((i) => i.id === id);
       if (!item) return;
       radarAbertaId = id;
-      document.getElementById('radar-modal-agente').textContent = traduzirAgenteRadar(item.agente);
+      document.getElementById('radar-modal-categoria').textContent = item.categoria || '';
       document.getElementById('radar-modal-titulo').textContent = item.titulo;
       const dataFmt = new Date(item.data_publicacao || item.created_at).toLocaleDateString(localeAtual());
       document.getElementById('radar-modal-meta').textContent = `${item.fonte || ''} · ${dataFmt}`;
-      document.getElementById('radar-modal-insight').textContent = item.insight || tr('radar_sem_roteiro');
+      document.getElementById('radar-modal-resumo').textContent = item.resumo || tr('radar_sem_conteudo');
+      document.getElementById('radar-modal-relevancia-campo').hidden = !item.relevancia;
+      document.getElementById('radar-modal-relevancia').textContent = item.relevancia || '';
+      document.getElementById('radar-modal-adaptacao').textContent = item.adaptacao || tr('radar_sem_conteudo');
       document.getElementById('radar-modal-fonte').href = item.link || '#';
       document.getElementById('radar-modal-usada').textContent = item.usada ? tr('radar_marcar_nao_usada') : tr('radar_marcar_usada');
       document.getElementById('radar-modal-overlay').hidden = false;
@@ -5822,7 +5796,7 @@
           pilar_id: pilarId,
           titulo: item.titulo,
           status: 'Roteiro pronto',
-          roteiro_breve: item.insight || '',
+          roteiro_breve: item.adaptacao || '',
           ordem: ideiasCache.length,
         });
         if (erroIdeia) throw erroIdeia;

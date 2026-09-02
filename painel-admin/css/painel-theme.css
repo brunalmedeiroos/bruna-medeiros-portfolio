@@ -1692,10 +1692,6 @@
   margin-bottom: 20px;
 }
 
-.painel-body .radar-filtro-agentes {
-  margin-bottom: 10px;
-}
-
 .painel-body .radar-avisos {
   font-size: 12px;
   line-height: 1.6;
@@ -1768,6 +1764,11 @@
   color: var(--texto-suave);
 }
 
+.painel-body .radar-tag-categoria {
+  background: rgba(var(--grafite-rgb), 0.06);
+  color: var(--texto-suave);
+}
+
 .painel-body .radar-item-meta {
   font-size: 12px;
   color: var(--texto-suave);
@@ -1799,7 +1800,7 @@
   margin-bottom: 16px;
 }
 
-.painel-body .radar-modal-insight {
+.painel-body .radar-modal-bloco {
   white-space: pre-wrap;
   font-size: 14px;
   line-height: 1.6;

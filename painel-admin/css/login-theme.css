@@ -101,7 +101,7 @@
 
 .login-body .btn-mostrar-senha {
   position: absolute;
-  top: calc(50% - 9px);
+  top: calc(50% - 14px);
   right: 8px;
   transform: translateY(-50%);
   display: flex;

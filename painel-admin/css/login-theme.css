@@ -18,10 +18,10 @@
   --raio-sm: 10px;                        /* raio dos inputs (.form-field input) */
   --sombra-forte: 0 20px 45px rgba(4, 70, 93, 0.16); /* --shadow-soft */
 
-  /* ---- Fontes: mesma família (Montserrat) pro título e pro corpo — mais
-     legível que a fonte de destaque do site (Bootzy TM), consistente com
-     painel-theme.css. Fora do painel (index.html) continua Bootzy. ---- */
-  --fonte-titulo: 'Montserrat', sans-serif;
+  /* ---- Fontes: Quicksand no título (moderna e delicada) e Montserrat no
+     corpo — mesmo par de painel-theme.css. Fora do painel (index.html)
+     continua Bootzy. ---- */
+  --fonte-titulo: 'Quicksand', sans-serif;
   --fonte-corpo: 'Montserrat', sans-serif;
 }
 
@@ -34,10 +34,13 @@
 }
 
 /* Logo: fonte de destaque do painel (--fonte-titulo), centralizada.
-   Tamanho maior que o padrão de 22px do style.css. */
+   Tamanho maior que o padrão de 22px do style.css, mas reduzido em
+   relação ao original: a Quicksand é mais larga que a Bootzy TM no
+   mesmo tamanho de fonte, e "Creator Center" ficava perto demais da
+   borda do card de login (348px de conteúdo, com padding). */
 .login-body .logo {
   font-family: var(--fonte-titulo);
-  font-size: 2.4rem;
+  font-size: 2rem;
   text-align: center;
 }
 

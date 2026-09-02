@@ -27,9 +27,13 @@
   --sombra: 0 20px 45px rgba(var(--grafite-rgb), 0.16);        /* --shadow-soft, pros cards do grid */
   --sombra-forte: 0 10px 24px rgba(var(--grafite-rgb), 0.22);  /* --shadow-hard, pra sidebar/drawer mobile */
 
-  /* ---- Fontes extraídas do :root de index.html ---- */
-  --fonte-titulo: 'Bootzy TM', 'Segoe UI Black', 'Arial Black', sans-serif; /* --font-display */
-  --fonte-corpo: 'Montserrat', sans-serif;                                  /* --font-body */
+  /* ---- Fontes: título e corpo usam a mesma família (Montserrat) — mais
+     legível que a fonte de destaque do site (Bootzy TM) e garante que o
+     painel inteiro fica visualmente consistente, com hierarquia só por
+     peso/tamanho. Fora do painel (index.html, o site público) continua
+     Bootzy — essa troca é só aqui. ---- */
+  --fonte-titulo: 'Montserrat', sans-serif;
+  --fonte-corpo: 'Montserrat', sans-serif;
 }
 
 /* ==========================================================================
@@ -96,14 +100,6 @@
 .painel-body .logo-mini {
   font-size: 1.3rem;
   letter-spacing: 1.2px;
-}
-
-/* Espaçamento entre letras nos títulos (mesma fonte de destaque do site,
-   que fica apertada sem letter-spacing), como em "Menu Principal" e "Olá...". */
-.painel-body h1,
-.painel-body h2,
-.painel-body h3 {
-  letter-spacing: 1.4px;
 }
 
 /* "Menu Principal"/"Portfólio" (topo) e "Olá..." (saudação) acompanham a

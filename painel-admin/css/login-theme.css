@@ -18,9 +18,11 @@
   --raio-sm: 10px;                        /* raio dos inputs (.form-field input) */
   --sombra-forte: 0 20px 45px rgba(4, 70, 93, 0.16); /* --shadow-soft */
 
-  /* ---- Fontes extraídas do :root de index.html ---- */
-  --fonte-titulo: 'Bootzy TM', 'Segoe UI Black', 'Arial Black', sans-serif; /* --font-display */
-  --fonte-corpo: 'Montserrat', sans-serif;                                  /* --font-body */
+  /* ---- Fontes: mesma família (Montserrat) pro título e pro corpo — mais
+     legível que a fonte de destaque do site (Bootzy TM), consistente com
+     painel-theme.css. Fora do painel (index.html) continua Bootzy. ---- */
+  --fonte-titulo: 'Montserrat', sans-serif;
+  --fonte-corpo: 'Montserrat', sans-serif;
 }
 
 /* Card: padding adaptado (o padding do site, 72px 30px, é pensado pra uma
@@ -31,13 +33,11 @@
   border: 1px solid rgba(4, 70, 93, 0.06); /* borda sutil do .services-window */
 }
 
-/* Logo: fonte de destaque do site (--font-display), centralizada.
-   Tamanho maior que o padrão de 22px do style.css, e letter-spacing
-   igual ao utilitário .font-display do site. */
+/* Logo: fonte de destaque do painel (--fonte-titulo), centralizada.
+   Tamanho maior que o padrão de 22px do style.css. */
 .login-body .logo {
   font-family: var(--fonte-titulo);
   font-size: 2.4rem;
-  letter-spacing: 1.4px;
   text-align: center;
 }
 
@@ -82,4 +82,49 @@
 .login-body input:focus {
   border-color: var(--borda);
   outline: 2px solid var(--coral);
+}
+
+/* Campo de senha com o ícone de olho (mostrar/ocultar) sobreposto —
+   o input ganha respiro à direita pra não ficar embaixo do botão. */
+.login-body .campo-senha {
+  position: relative;
+}
+
+.login-body .campo-senha input[type="password"],
+.login-body .campo-senha input[type="text"] {
+  width: 100%;
+  padding-right: 44px;
+}
+
+.login-body .btn-mostrar-senha {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.login-body .btn-mostrar-senha:hover {
+  color: var(--coral);
+}
+
+.login-body .btn-mostrar-senha .icone-olho-fechado {
+  display: none;
+}
+
+.login-body .btn-mostrar-senha.mostrando .icone-olho-aberto {
+  display: none;
+}
+
+.login-body .btn-mostrar-senha.mostrando .icone-olho-fechado {
+  display: block;
 }

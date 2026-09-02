@@ -1187,6 +1187,9 @@
   border-radius: var(--raio-sm);
   min-width: 0;
   flex: 1;
+  white-space: normal;
+  overflow-wrap: break-word;
+  cursor: text;
 }
 
 .painel-body .pl-coluna-titulo:hover {

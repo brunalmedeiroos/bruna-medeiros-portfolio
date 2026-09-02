@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260902c">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260902d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -4980,7 +4980,7 @@
       coluna.dataset.pilarId = pilar.id;
       coluna.innerHTML = `
         <div class="pl-coluna-topo">
-          <input type="text" class="pl-coluna-titulo" value="${escapeHtml(pilar.nome)}" aria-label="${escapeHtml(tr('pl_pilar'))}">
+          <div class="pl-coluna-titulo" contenteditable="true" spellcheck="false" role="textbox" aria-label="${escapeHtml(tr('pl_pilar'))}">${escapeHtml(pilar.nome)}</div>
           <button class="pl-coluna-excluir cal-btn cal-btn-icon" type="button" aria-label="${escapeHtml(tr('pl_excluir_pilar'))}">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
@@ -4995,7 +4995,13 @@
       configurarDropZoneIdeias(listaCards);
 
       const inputTitulo = coluna.querySelector('.pl-coluna-titulo');
-      inputTitulo.addEventListener('change', () => renomearPilar(pilar, inputTitulo.value));
+      inputTitulo.addEventListener('blur', () => renomearPilar(pilar, inputTitulo.textContent));
+      inputTitulo.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          inputTitulo.blur();
+        }
+      });
 
       coluna.querySelector('.pl-coluna-add').addEventListener('click', () => mostrarFormNovaIdeia(coluna, pilar.id));
       coluna.querySelector('.pl-coluna-excluir').addEventListener('click', () => excluirPilar(pilar));

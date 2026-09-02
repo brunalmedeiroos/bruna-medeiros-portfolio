@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260902a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260902b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -992,6 +992,7 @@
         <div class="cal-form-campo">
           <label for="radar-pilar-select" data-i18n="pl_pilar">Pilar</label>
           <select id="radar-pilar-select"></select>
+          <p class="radar-pilar-sugestao" id="radar-pilar-sugestao" hidden></p>
         </div>
 
         <div class="cal-form-acoes">
@@ -1913,6 +1914,7 @@
         radar_o_que_acontece: 'O que está acontecendo',
         radar_por_que_relevante: 'Por que é relevante pra você',
         radar_como_adaptar: 'Como transformar em conteúdo',
+        radar_pilar_sugerido_prefixo: 'Sugestão:',
         radar_ver_fonte: 'Ver fonte',
         radar_usar_ideia: 'Usar ideia',
         radar_marcar_usada: 'Marcar como usada',
@@ -2472,6 +2474,7 @@
         radar_o_que_acontece: "What's happening",
         radar_por_que_relevante: 'Why it matters to you',
         radar_como_adaptar: 'How to turn it into content',
+        radar_pilar_sugerido_prefixo: 'Suggestion:',
         radar_ver_fonte: 'View source',
         radar_usar_ideia: 'Use idea',
         radar_marcar_usada: 'Mark as used',
@@ -5771,9 +5774,26 @@
         alert(tr('radar_crie_pilar_primeiro'));
         return;
       }
-      document.getElementById('radar-pilar-select').innerHTML = pilaresCache
+      const select = document.getElementById('radar-pilar-select');
+      select.innerHTML = pilaresCache
         .map((p) => `<option value="${p.id}">${escapeHtml(p.nome)}</option>`)
         .join('');
+
+      // Sugestão do Gemini (calculada na captura, olhando os pilares que
+      // existiam na hora) — só aplica se o pilar sugerido ainda existir.
+      const item = radarCache.find((i) => i.id === radarAbertaId);
+      const sugestaoEl = document.getElementById('radar-pilar-sugestao');
+      const pilarSugerido = item && item.pilar_sugerido
+        ? pilaresCache.find((p) => p.nome.trim().toLowerCase() === item.pilar_sugerido.trim().toLowerCase())
+        : null;
+      if (pilarSugerido) {
+        select.value = pilarSugerido.id;
+        sugestaoEl.textContent = `${tr('radar_pilar_sugerido_prefixo')} ${pilarSugerido.nome}`;
+        sugestaoEl.hidden = false;
+      } else {
+        sugestaoEl.hidden = true;
+      }
+
       document.getElementById('radar-modal-pilar-overlay').hidden = false;
     }
 

@@ -1810,6 +1810,12 @@
   padding: 12px 14px;
 }
 
+.painel-body .radar-pilar-sugestao {
+  font-size: 12px;
+  color: var(--texto-suave);
+  margin-top: 6px;
+}
+
 @media (max-width: 700px) {
   .painel-body .radar-topo {
     flex-direction: column;

@@ -47,14 +47,18 @@ export default {
     }
 
     try {
-      const feeds = await Promise.all(FEEDS.map((f) => buscarFeed(f.url, f.fonte)));
+      const [feeds, pilaresResult] = await Promise.all([
+        Promise.all(FEEDS.map((f) => buscarFeed(f.url, f.fonte))),
+        ctx.supabaseAdmin.from("planejador_pilares").select("nome"),
+      ]);
       const itens = feeds.flat();
+      const nomesPilares = (pilaresResult.data || []).map((p: { nome: string }) => p.nome);
 
       if (itens.length === 0) {
         return jsonResponse({ ok: true, inseridas: 0, erro: "Nenhuma notícia encontrada nos feeds agora." });
       }
 
-      const selecionadas = await selecionarNoticiasComGemini(itens);
+      const selecionadas = await selecionarNoticiasComGemini(itens, nomesPilares);
 
       let inseridas = 0;
       for (const noticia of selecionadas) {
@@ -73,6 +77,7 @@ export default {
               resumo: noticia.resumo || null,
               relevancia: noticia.relevancia || null,
               adaptacao: noticia.adaptacao || null,
+              pilar_sugerido: noticia.pilar_sugerido || null,
               fonte: noticia.fonte ? noticia.fonte.replace(/^\[|\]$/g, "").trim() : null,
               link: noticia.link,
               data_publicacao: paraDataValida(noticia.data_publicacao),

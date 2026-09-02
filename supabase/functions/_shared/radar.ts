@@ -23,6 +23,7 @@ export interface NoticiaSelecionada {
   resumo: string;
   relevancia: string;
   adaptacao: string;
+  pilar_sugerido: string;
 }
 
 // Todos os feeds do radar, num pool só — antes eram 4 grupos (um por
@@ -59,32 +60,45 @@ const MAX_ITENS = 6;
 // A instrução fala sobre QUEM é a Bruna (não sobre o tema) — é isso que
 // faz o radar filtrar por relevância real pro perfil dela, e não só por
 // assunto. Condensado do manual de operação dela (Skill bruna-creator).
-const INSTRUCAO_UNICA =
-  "Você é a assistente de estratégia de conteúdo de Bruna, uma creator de 20 anos, de Fortaleza (CE). " +
-  "Ela não é \"UGC Creator\" — é creator completa: criação de conteúdo, estratégia, posicionamento, construção de " +
-  "autoridade digital. Nichos atuais do portfólio: Tecnologia, Beleza, Entretenimento, Experiências. Também fala " +
-  "sobre bastidores de criação, marketing/estratégia de conteúdo e IA aplicada à criação e venda de conteúdo. " +
-  "Publica no TikTok, Instagram e YouTube Shorts. Tom: natural, estratégico, jovem, direto, humano — sem linguagem " +
-  "corporativa, sem clichê, sem postura de guru. Conteúdo dela nunca é genérico: sempre tem ângulo específico, " +
-  "opinião real ou observação prática.\n\n" +
-  "Olhe a lista de notícias abaixo (marketing, redes sociais, plataformas, criação de conteúdo, creator economy, " +
-  "IA) e escolha só as mais relevantes e ACIONÁVEIS pra ela — coisas que ela pode genuinamente transformar em " +
-  "conteúdo, usar pra se posicionar como especialista, ou que mudam algo relevante pro trabalho dela com marcas ou " +
-  "pro crescimento como creator. Dê atenção especial a novidades sobre Anthropic/Claude (ela usa no dia a dia). " +
-  "Ignore notícia genérica, puramente corporativa, ou sem nenhum ângulo claro de conteúdo pra esse perfil.\n\n" +
-  `Escolha até ${MAX_ITENS} notícias, as MELHORES — prefira poucas e muito relevantes a muitas e genéricas.\n\n` +
-  "Pra cada notícia escolhida, preencha: " +
-  "\"titulo\" (traduzido pro português do Brasil, mesmo que a fonte original esteja em inglês), " +
-  "\"categoria\" (uma palavra ou expressão curta pro tema, ex: \"Marketing\", \"IA\", \"Creator Economy\", " +
-  "\"Redes Sociais\", \"Criação de Conteúdo\"), " +
-  "\"resumo\" — O QUE ESTÁ ACONTECENDO (2-3 frases explicando a notícia de um jeito simples e direto, sem " +
-  "precisar abrir a fonte original), " +
-  "\"relevancia\" — POR QUE É RELEVANTE PRA ELA (1-2 frases específicas pro perfil dela — não uma explicação " +
-  "genérica, algo concreto sobre o trabalho ou posicionamento dela), " +
-  "\"adaptacao\" — COMO TRANSFORMAR EM CONTEÚDO (uma ideia prática e específica: pode ser um gancho de vídeo, um " +
-  "ângulo de conteúdo, uma forma de se posicionar sobre o assunto, ou uma oportunidade de oferta/produto digital). " +
-  "IMPORTANTE: responda sempre em português do Brasil, mesmo que a notícia original esteja em inglês. Mantenha o " +
-  "campo \"fonte\" e o \"link\" exatamente como vieram na lista.";
+// Recebe os nomes dos pilares atuais do Banco de Ideias (Planejador) pra
+// já sugerir, por achado, qual pilar existente faz mais sentido — assim
+// "Usar ideia" já chega com uma sugestão pronta.
+function construirInstrucao(nomesPilares: string[]): string {
+  const instrucaoPilar = nomesPilares.length > 0
+    ? `Se algum destes pilares de conteúdo (do Banco de Ideias dela) fizer sentido pra um achado, preencha ` +
+      `"pilar_sugerido" com o nome EXATO de um deles — copie a grafia igualzinha, sem traduzir nem ajustar. ` +
+      `Se nenhum encaixar bem, deixe "pilar_sugerido" em branco. Pilares existentes: ${nomesPilares.join(", ")}.\n\n`
+    : "Deixe o campo \"pilar_sugerido\" sempre em branco (ela ainda não tem nenhum pilar cadastrado).\n\n";
+
+  return (
+    "Você é a assistente de estratégia de conteúdo de Bruna, uma creator de 20 anos, de Fortaleza (CE). " +
+    "Ela não é \"UGC Creator\" — é creator completa: criação de conteúdo, estratégia, posicionamento, construção de " +
+    "autoridade digital. Nichos atuais do portfólio: Tecnologia, Beleza, Entretenimento, Experiências. Também fala " +
+    "sobre bastidores de criação, marketing/estratégia de conteúdo e IA aplicada à criação e venda de conteúdo. " +
+    "Publica no TikTok, Instagram e YouTube Shorts. Tom: natural, estratégico, jovem, direto, humano — sem linguagem " +
+    "corporativa, sem clichê, sem postura de guru. Conteúdo dela nunca é genérico: sempre tem ângulo específico, " +
+    "opinião real ou observação prática.\n\n" +
+    "Olhe a lista de notícias abaixo (marketing, redes sociais, plataformas, criação de conteúdo, creator economy, " +
+    "IA) e escolha só as mais relevantes e ACIONÁVEIS pra ela — coisas que ela pode genuinamente transformar em " +
+    "conteúdo, usar pra se posicionar como especialista, ou que mudam algo relevante pro trabalho dela com marcas ou " +
+    "pro crescimento como creator. Dê atenção especial a novidades sobre Anthropic/Claude (ela usa no dia a dia). " +
+    "Ignore notícia genérica, puramente corporativa, ou sem nenhum ângulo claro de conteúdo pra esse perfil.\n\n" +
+    `Escolha até ${MAX_ITENS} notícias, as MELHORES — prefira poucas e muito relevantes a muitas e genéricas.\n\n` +
+    "Pra cada notícia escolhida, preencha: " +
+    "\"titulo\" (traduzido pro português do Brasil, mesmo que a fonte original esteja em inglês), " +
+    "\"categoria\" (uma palavra ou expressão curta pro tema, ex: \"Marketing\", \"IA\", \"Creator Economy\", " +
+    "\"Redes Sociais\", \"Criação de Conteúdo\"), " +
+    "\"resumo\" — O QUE ESTÁ ACONTECENDO (2-3 frases explicando a notícia de um jeito simples e direto, sem " +
+    "precisar abrir a fonte original), " +
+    "\"relevancia\" — POR QUE É RELEVANTE PRA ELA (1-2 frases específicas pro perfil dela — não uma explicação " +
+    "genérica, algo concreto sobre o trabalho ou posicionamento dela), " +
+    "\"adaptacao\" — COMO TRANSFORMAR EM CONTEÚDO (uma ideia prática e específica: pode ser um gancho de vídeo, um " +
+    "ângulo de conteúdo, uma forma de se posicionar sobre o assunto, ou uma oportunidade de oferta/produto digital). " +
+    instrucaoPilar +
+    "IMPORTANTE: responda sempre em português do Brasil, mesmo que a notícia original esteja em inglês. Mantenha o " +
+    "campo \"fonte\" e o \"link\" exatamente como vieram na lista."
+  );
+}
 
 function extrairTag(bloco: string, tag: string): string | null {
   const regexCdata = new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]></${tag}>`, "i");
@@ -142,7 +156,7 @@ export async function buscarFeed(url: string, nomeFonte: string): Promise<ItemRs
 // pro perfil da Bruna e escrever o resumo/relevância/adaptação de cada
 // uma. Usa saída em JSON estruturado (responseSchema) pra não depender de
 // parsear texto livre.
-export async function selecionarNoticiasComGemini(itens: ItemRss[]): Promise<NoticiaSelecionada[]> {
+export async function selecionarNoticiasComGemini(itens: ItemRss[], nomesPilares: string[]): Promise<NoticiaSelecionada[]> {
   const apiKey = Deno.env.get("GEMINI_API_KEY");
   if (!apiKey) throw new Error("Variável de ambiente ausente: GEMINI_API_KEY");
   const modelo = Deno.env.get("GEMINI_MODEL") || "gemini-3.6-flash";
@@ -152,7 +166,7 @@ export async function selecionarNoticiasComGemini(itens: ItemRss[]): Promise<Not
     .map((item, i) => `${i + 1}. [${item.fonte}] ${item.titulo}\n${item.resumo}\nLink: ${item.link}\nData: ${item.dataPublicacao || "desconhecida"}`)
     .join("\n\n");
 
-  const prompt = `${INSTRUCAO_UNICA}\n\nNotícias disponíveis:\n\n${listaTexto}\n\nResponda só com as notícias escolhidas, preenchendo todos os campos pedidos. Use o link e a fonte exatamente como aparecem na lista.`;
+  const prompt = `${construirInstrucao(nomesPilares)}\n\nNotícias disponíveis:\n\n${listaTexto}\n\nResponda só com as notícias escolhidas, preenchendo todos os campos pedidos. Use o link e a fonte exatamente como aparecem na lista.`;
 
   const schema = {
     type: "OBJECT",
@@ -171,6 +185,7 @@ export async function selecionarNoticiasComGemini(itens: ItemRss[]): Promise<Not
             resumo: { type: "STRING", description: "O que está acontecendo." },
             relevancia: { type: "STRING", description: "Por que é relevante especificamente pro perfil da Bruna." },
             adaptacao: { type: "STRING", description: "Ideia prática de como transformar isso em conteúdo." },
+            pilar_sugerido: { type: "STRING", description: "Nome exato de um pilar existente do Banco de Ideias que combina com este achado, ou string vazia se nenhum combinar." },
           },
           required: ["titulo", "categoria", "fonte", "link", "resumo", "relevancia", "adaptacao"],
         },

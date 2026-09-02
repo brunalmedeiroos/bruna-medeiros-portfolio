@@ -96,19 +96,19 @@
 .login-body .campo-senha input[type="password"],
 .login-body .campo-senha input[type="text"] {
   width: 100%;
-  padding-right: 44px;
+  padding-right: 46px;
 }
 
 .login-body .btn-mostrar-senha {
   position: absolute;
   top: 50%;
-  right: 10px;
+  right: 8px;
   transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: none;
   background: transparent;

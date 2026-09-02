@@ -4,7 +4,7 @@
 // Funções compartilhadas pela Edge Function radar-atualizar. Busca notícias
 // de feeds RSS gratuitos (sem custo, sem chave de API) e usa o Gemini
 // (também gratuito, dentro da cota grátis do Google AI Studio) pra escolher
-// as mais relevantes e escrever o roteiro/insight de cada uma.
+// as mais relevantes pro perfil da Bruna e explicar cada uma.
 
 export interface ItemRss {
   titulo: string;
@@ -16,95 +16,75 @@ export interface ItemRss {
 
 export interface NoticiaSelecionada {
   titulo: string;
+  categoria: string;
   fonte: string;
   link: string;
   data_publicacao: string | null;
   resumo: string;
-  insight: string;
+  relevancia: string;
+  adaptacao: string;
 }
 
-export interface Agente {
-  nome: string;
-  pergunta: string;
-  feeds: Array<{ url: string; fonte: string }>;
-  instrucao: string;
-}
+// Todos os feeds do radar, num pool só — antes eram 4 grupos (um por
+// "agente"), cada um só alimentando a busca daquele tema. Agora a
+// curadoria não depende mais de qual feed a notícia veio: é o Gemini que
+// decide relevância olhando pro perfil da Bruna, não pro tema do feed.
+export const FEEDS: Array<{ url: string; fonte: string }> = [
+  // Marketing
+  { url: "https://www.marketingdive.com/feeds/news/", fonte: "Marketing Dive" },
+  { url: "https://www.socialmediatoday.com/rss.xml", fonte: "Social Media Today" },
+  { url: "https://www.meioemensagem.com.br/feed", fonte: "Meio & Mensagem" },
+  { url: "https://www.propmark.com.br/feed/", fonte: "Propmark" },
+  // Criação de conteúdo
+  { url: "https://contentmarketinginstitute.com/feed/", fonte: "Content Marketing Institute" },
+  { url: "https://www.socialmediaexaminer.com/feed/", fonte: "Social Media Examiner" },
+  { url: "https://later.com/blog/feed/", fonte: "Later Blog" },
+  { url: "https://rockcontent.com/br/blog/feed/", fonte: "Rock Content" },
+  // UGC e creator economy
+  { url: "https://techcrunch.com/tag/creator-economy/feed/", fonte: "TechCrunch" },
+  { url: "https://influencermarketinghub.com/feed/", fonte: "Influencer Marketing Hub" },
+  { url: "https://www.b9.com.br/feed/", fonte: "B9" },
+  // IA e tecnologia
+  { url: "https://techcrunch.com/tag/artificial-intelligence/feed/", fonte: "TechCrunch AI" },
+  { url: "https://venturebeat.com/category/ai/feed/", fonte: "VentureBeat AI" },
+  { url: "https://www.technologyreview.com/topic/artificial-intelligence/feed", fonte: "MIT Technology Review" },
+  { url: "https://canaltech.com.br/rss/", fonte: "Canaltech" },
+  { url: "https://olhardigital.com.br/feed/", fonte: "Olhar Digital" },
+];
 
-// Instrução comum a todos os agentes: escreve tudo em português (inclusive
-// traduzindo título e resumo de fontes em inglês), pra nunca precisar abrir
-// a fonte original só pra entender do que se trata.
-const REGRA_IDIOMA =
-  "IMPORTANTE: responda sempre em português do Brasil, mesmo que a notícia original esteja em inglês. " +
-  "Traduza o título (campo \"titulo\") e escreva o resumo já em português — a pessoa não deve precisar abrir a " +
-  "fonte original pra entender do que se trata. Mantenha o campo \"fonte\" e o \"link\" exatamente como vieram na lista.";
+// Máximo de achados por rodada — poucos e muito relevantes, não muitos e
+// genéricos (pedido explícito da Bruna).
+const MAX_ITENS = 6;
 
-export const AGENTES: Record<string, Agente> = {
-  marketing: {
-    nome: "Marketing Digital",
-    pergunta: "O que está acontecendo no marketing que eu posso transformar em conteúdo?",
-    feeds: [
-      { url: "https://www.marketingdive.com/feeds/news/", fonte: "Marketing Dive" },
-      { url: "https://www.socialmediatoday.com/rss.xml", fonte: "Social Media Today" },
-      { url: "https://www.meioemensagem.com.br/feed", fonte: "Meio & Mensagem" },
-      { url: "https://www.propmark.com.br/feed/", fonte: "Propmark" },
-    ],
-    instrucao:
-      "Você é uma analista de marketing digital que ajuda uma criadora de conteúdo. " +
-      "Olhe as notícias abaixo e escolha só as 2 notícias mais relevantes e ACIONÁVEIS pra virar conteúdo sobre marketing. " +
-      "Para cada uma, escreva um roteiro breve de Reels (gancho de 1 frase, desenvolvimento em 2-3 frases explicando a notícia de um jeito simples, e um CTA) no campo \"insight\". " +
-      REGRA_IDIOMA,
-  },
-  conteudo: {
-    nome: "Criação de Conteúdo",
-    pergunta: "O que está mudando na maneira como as pessoas consomem e produzem conteúdo?",
-    feeds: [
-      { url: "https://contentmarketinginstitute.com/feed/", fonte: "Content Marketing Institute" },
-      { url: "https://www.socialmediaexaminer.com/feed/", fonte: "Social Media Examiner" },
-      { url: "https://later.com/blog/feed/", fonte: "Later Blog" },
-      { url: "https://rockcontent.com/br/blog/feed/", fonte: "Rock Content" },
-    ],
-    instrucao:
-      "Você é uma estrategista de conteúdo. Olhe as notícias abaixo e escolha só as 2 notícias mais relevantes sobre " +
-      "mudanças em como as pessoas consomem ou produzem conteúdo (novos formatos, algoritmos, comportamento de audiência). " +
-      "Para cada uma, escreva um roteiro breve de Reels (gancho, desenvolvimento, CTA) no campo \"insight\". " +
-      REGRA_IDIOMA,
-  },
-  creator: {
-    nome: "UGC e Creator Economy",
-    pergunta:
-      "O que está acontecendo no mercado de creators que eu deveria saber e que pode virar conteúdo ou me ajudar profissionalmente?",
-    feeds: [
-      { url: "https://techcrunch.com/tag/creator-economy/feed/", fonte: "TechCrunch" },
-      { url: "https://influencermarketinghub.com/feed/", fonte: "Influencer Marketing Hub" },
-      { url: "https://www.b9.com.br/feed/", fonte: "B9" },
-    ],
-    instrucao:
-      "Você acompanha o mercado de UGC e Creator Economy. Olhe as notícias abaixo e escolha só as 2 notícias mais relevantes " +
-      "pra uma criadora de conteúdo/UGC entender o mercado ou virar conteúdo. " +
-      "Para cada uma, escreva um roteiro breve de Reels (gancho, desenvolvimento, CTA) no campo \"insight\". " +
-      REGRA_IDIOMA,
-  },
-  ia: {
-    nome: "IA e Tecnologia",
-    pergunta:
-      "Novidades, oportunidades, lançamentos, ferramentas e IA aplicada a negócios e criação de conteúdo — com destaque pra Anthropic/Claude.",
-    feeds: [
-      { url: "https://techcrunch.com/tag/artificial-intelligence/feed/", fonte: "TechCrunch AI" },
-      { url: "https://venturebeat.com/category/ai/feed/", fonte: "VentureBeat AI" },
-      { url: "https://www.technologyreview.com/topic/artificial-intelligence/feed", fonte: "MIT Technology Review" },
-      { url: "https://canaltech.com.br/rss/", fonte: "Canaltech" },
-      { url: "https://olhardigital.com.br/feed/", fonte: "Olhar Digital" },
-    ],
-    instrucao:
-      "Você acompanha IA e tecnologia aplicadas a negócios e criação de conteúdo, com atenção especial a qualquer " +
-      "notícia sobre a Anthropic ou o Claude (dê prioridade máxima a essas). Olhe as notícias abaixo e escolha só " +
-      "as 2 notícias mais relevantes — não precisa ser só pra vídeo, priorize o que é útil como informação e como ideia de " +
-      "conteúdo ou de oferta de produto digital pra quem usa IA pra criar e vender. " +
-      "Para cada uma, escreva no campo \"insight\": um resumo prático da novidade e uma ideia de como isso pode virar " +
-      "conteúdo ou uma oferta. " +
-      REGRA_IDIOMA,
-  },
-};
+// A instrução fala sobre QUEM é a Bruna (não sobre o tema) — é isso que
+// faz o radar filtrar por relevância real pro perfil dela, e não só por
+// assunto. Condensado do manual de operação dela (Skill bruna-creator).
+const INSTRUCAO_UNICA =
+  "Você é a assistente de estratégia de conteúdo de Bruna, uma creator de 20 anos, de Fortaleza (CE). " +
+  "Ela não é \"UGC Creator\" — é creator completa: criação de conteúdo, estratégia, posicionamento, construção de " +
+  "autoridade digital. Nichos atuais do portfólio: Tecnologia, Beleza, Entretenimento, Experiências. Também fala " +
+  "sobre bastidores de criação, marketing/estratégia de conteúdo e IA aplicada à criação e venda de conteúdo. " +
+  "Publica no TikTok, Instagram e YouTube Shorts. Tom: natural, estratégico, jovem, direto, humano — sem linguagem " +
+  "corporativa, sem clichê, sem postura de guru. Conteúdo dela nunca é genérico: sempre tem ângulo específico, " +
+  "opinião real ou observação prática.\n\n" +
+  "Olhe a lista de notícias abaixo (marketing, redes sociais, plataformas, criação de conteúdo, creator economy, " +
+  "IA) e escolha só as mais relevantes e ACIONÁVEIS pra ela — coisas que ela pode genuinamente transformar em " +
+  "conteúdo, usar pra se posicionar como especialista, ou que mudam algo relevante pro trabalho dela com marcas ou " +
+  "pro crescimento como creator. Dê atenção especial a novidades sobre Anthropic/Claude (ela usa no dia a dia). " +
+  "Ignore notícia genérica, puramente corporativa, ou sem nenhum ângulo claro de conteúdo pra esse perfil.\n\n" +
+  `Escolha até ${MAX_ITENS} notícias, as MELHORES — prefira poucas e muito relevantes a muitas e genéricas.\n\n` +
+  "Pra cada notícia escolhida, preencha: " +
+  "\"titulo\" (traduzido pro português do Brasil, mesmo que a fonte original esteja em inglês), " +
+  "\"categoria\" (uma palavra ou expressão curta pro tema, ex: \"Marketing\", \"IA\", \"Creator Economy\", " +
+  "\"Redes Sociais\", \"Criação de Conteúdo\"), " +
+  "\"resumo\" — O QUE ESTÁ ACONTECENDO (2-3 frases explicando a notícia de um jeito simples e direto, sem " +
+  "precisar abrir a fonte original), " +
+  "\"relevancia\" — POR QUE É RELEVANTE PRA ELA (1-2 frases específicas pro perfil dela — não uma explicação " +
+  "genérica, algo concreto sobre o trabalho ou posicionamento dela), " +
+  "\"adaptacao\" — COMO TRANSFORMAR EM CONTEÚDO (uma ideia prática e específica: pode ser um gancho de vídeo, um " +
+  "ângulo de conteúdo, uma forma de se posicionar sobre o assunto, ou uma oportunidade de oferta/produto digital). " +
+  "IMPORTANTE: responda sempre em português do Brasil, mesmo que a notícia original esteja em inglês. Mantenha o " +
+  "campo \"fonte\" e o \"link\" exatamente como vieram na lista.";
 
 function extrairTag(bloco: string, tag: string): string | null {
   const regexCdata = new RegExp(`<${tag}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]></${tag}>`, "i");
@@ -158,38 +138,41 @@ export async function buscarFeed(url: string, nomeFonte: string): Promise<ItemRs
   }
 }
 
-// Manda a lista de notícias cruas pro Gemini escolher as mais relevantes e
-// escrever o roteiro/insight de cada uma. Usa saída em JSON estruturado
-// (responseSchema) pra não depender de parsear texto livre.
-export async function selecionarNoticiasComGemini(instrucao: string, itens: ItemRss[]): Promise<NoticiaSelecionada[]> {
+// Manda a lista de notícias cruas pro Gemini escolher as mais relevantes
+// pro perfil da Bruna e escrever o resumo/relevância/adaptação de cada
+// uma. Usa saída em JSON estruturado (responseSchema) pra não depender de
+// parsear texto livre.
+export async function selecionarNoticiasComGemini(itens: ItemRss[]): Promise<NoticiaSelecionada[]> {
   const apiKey = Deno.env.get("GEMINI_API_KEY");
   if (!apiKey) throw new Error("Variável de ambiente ausente: GEMINI_API_KEY");
   const modelo = Deno.env.get("GEMINI_MODEL") || "gemini-3.6-flash";
 
   const listaTexto = itens
-    .slice(0, 60) // limite de segurança pra não estourar o prompt em dias com muito feed
+    .slice(0, 150) // limite de segurança pra não estourar o prompt — pool único agora, então maior que antes (60 por agente)
     .map((item, i) => `${i + 1}. [${item.fonte}] ${item.titulo}\n${item.resumo}\nLink: ${item.link}\nData: ${item.dataPublicacao || "desconhecida"}`)
     .join("\n\n");
 
-  const prompt = `${instrucao}\n\nNotícias disponíveis:\n\n${listaTexto}\n\nResponda só com as notícias escolhidas, preenchendo todos os campos pedidos. Use o link e a fonte exatamente como aparecem na lista.`;
+  const prompt = `${INSTRUCAO_UNICA}\n\nNotícias disponíveis:\n\n${listaTexto}\n\nResponda só com as notícias escolhidas, preenchendo todos os campos pedidos. Use o link e a fonte exatamente como aparecem na lista.`;
 
   const schema = {
     type: "OBJECT",
     properties: {
       noticias: {
         type: "ARRAY",
-        maxItems: 2,
+        maxItems: MAX_ITENS,
         items: {
           type: "OBJECT",
           properties: {
             titulo: { type: "STRING", description: "Título da notícia traduzido para português do Brasil, mesmo que a fonte original esteja em inglês." },
+            categoria: { type: "STRING", description: "Uma palavra ou expressão curta pro tema da notícia." },
             fonte: { type: "STRING" },
             link: { type: "STRING" },
             data_publicacao: { type: "STRING" },
-            resumo: { type: "STRING" },
-            insight: { type: "STRING" },
+            resumo: { type: "STRING", description: "O que está acontecendo." },
+            relevancia: { type: "STRING", description: "Por que é relevante especificamente pro perfil da Bruna." },
+            adaptacao: { type: "STRING", description: "Ideia prática de como transformar isso em conteúdo." },
           },
-          required: ["titulo", "fonte", "link", "resumo", "insight"],
+          required: ["titulo", "categoria", "fonte", "link", "resumo", "relevancia", "adaptacao"],
         },
       },
     },

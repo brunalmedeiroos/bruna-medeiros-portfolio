@@ -6201,7 +6201,7 @@
     // do bloco "Precisa da sua atenção" do Dashboard.
     function obterEntregasPendentes() {
       return ugcTrabalhosCache
-        .filter((t) => t.data_entrega && !['Entregue', 'Pago', 'Cancelado'].includes(t.status))
+        .filter((t) => t.data_entrega && !['Entregue', 'Aguardando pagamento', 'Pago', 'Cancelado'].includes(t.status))
         .sort((a, b) => a.data_entrega.localeCompare(b.data_entrega));
     }
 

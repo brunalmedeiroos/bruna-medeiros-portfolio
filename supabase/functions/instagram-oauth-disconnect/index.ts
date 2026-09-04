@@ -10,6 +10,7 @@
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "@supabase/server";
 import { ehDono } from "../_shared/dono.ts";
+import { apagarSegredo } from "../_shared/vault.ts";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -32,8 +33,27 @@ export default {
       return jsonResponse({ ok: false, error: "forbidden" }, 403);
     }
 
+    const { data: linha, error: erroLeitura } = await ctx.supabaseAdmin
+      .from("instagram_tokens")
+      .select("access_token")
+      .eq("id", 1)
+      .maybeSingle();
+    if (erroLeitura) return jsonResponse({ ok: false, error: erroLeitura.message }, 500);
+
     const { error } = await ctx.supabaseAdmin.from("instagram_tokens").delete().eq("id", 1);
     if (error) return jsonResponse({ ok: false, error: error.message }, 500);
+
+    // Apaga o segredo do Vault também — não só a referência — senão o nome
+    // fica preso e a próxima conexão falha com "duplicate key". Best-effort:
+    // se isso falhar, a desconexão em si (o que importa pra usuária agora)
+    // já foi concluída com sucesso.
+    if (linha?.access_token) {
+      try {
+        await apagarSegredo(ctx.supabaseAdmin, linha.access_token);
+      } catch (e) {
+        console.error("Erro ao apagar segredo do Vault do Instagram:", e);
+      }
+    }
 
     return jsonResponse({ ok: true });
   }),

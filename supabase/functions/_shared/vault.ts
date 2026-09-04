@@ -41,3 +41,14 @@ export async function gravarSegredo(
   if (error) throw new Error(`Erro gravando segredo no Vault: ${error.message}`);
   return data as string;
 }
+
+// Apaga um segredo do Vault (ex: ao desconectar uma integração) — sem isso,
+// o nome fica "preso" e a próxima tentativa de criar um segredo novo com o
+// mesmo nome esbarra na constraint de unicidade do Vault. Não faz nada se
+// secretId for null ou não for um UUID (token antigo em texto puro).
+// deno-lint-ignore no-explicit-any
+export async function apagarSegredo(supabaseAdmin: any, secretId: string | null): Promise<void> {
+  if (!secretId || !UUID_RE.test(secretId)) return;
+  const { error } = await supabaseAdmin.rpc("vault_delete_secret", { secret_id: secretId });
+  if (error) throw new Error(`Erro apagando segredo do Vault: ${error.message}`);
+}

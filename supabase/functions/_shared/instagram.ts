@@ -20,12 +20,19 @@ export const AUTHORIZE_URL = "https://www.instagram.com/oauth/authorize";
 export const TOKEN_URL_CURTO = "https://api.instagram.com/oauth/access_token";
 export const GRAPH_API = "https://graph.instagram.com";
 
-// Só as permissões que o painel realmente usa (perfil + insights). Pedir
+// Só as permissões que o painel realmente usa (perfil + insights +
+// comentários, pra automação "comentário → resposta privada"). Pedir
 // permissões a mais que o app do Meta não tem configuradas faz o Meta
 // bloquear a autorização inteira, não só a parte extra.
+//
+// instagram_business_manage_comments cobre tanto ler comentários quanto
+// mandar resposta privada (POST /{ig-id}/messages com recipient.comment_id)
+// — não precisa de instagram_business_manage_messages pra isso, só pra
+// DM aberta de verdade (fora do escopo desta automação).
 export const INSTAGRAM_SCOPES = [
   "instagram_business_basic",
   "instagram_business_manage_insights",
+  "instagram_business_manage_comments",
 ].join(",");
 
 function env(nome: string): string {

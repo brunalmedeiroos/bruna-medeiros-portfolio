@@ -351,37 +351,82 @@
           </div>
 
           <div class="instagram-layout" id="instagram-layout">
-            <div class="instagram-topo">
-              <span class="instagram-perfil-nome" id="instagram-perfil-nome">@usuario</span>
-              <button id="btn-instagram-atualizar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="instagram_atualizar_metricas_aria" aria-label="Atualizar métricas">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
+            <div class="instagram-subnav">
+              <button class="instagram-subnav-btn ativo" data-instagram-pagina="visao-geral" type="button" data-i18n="instagram_visao_geral">Visão Geral</button>
+              <button class="instagram-subnav-btn" data-instagram-pagina="automacoes" type="button" data-i18n="instagram_automacoes">Automações</button>
+              <button class="instagram-subnav-btn" data-instagram-pagina="leads" type="button" data-i18n="instagram_leads">Leads</button>
             </div>
 
-            <p class="instagram-avisos" id="instagram-avisos" hidden></p>
+            <div id="instagram-pagina-visao-geral" class="instagram-pagina">
+              <div class="instagram-topo">
+                <span class="instagram-perfil-nome" id="instagram-perfil-nome">@usuario</span>
+                <button id="btn-instagram-atualizar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="instagram_atualizar_metricas_aria" aria-label="Atualizar métricas">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
 
-            <div class="instagram-metricas-grid">
-              <div class="card-numero destaque">
-                <span class="card-label" data-i18n="instagram_seguidores">Seguidores</span>
-                <span class="card-valor" id="instagram-num-seguidores">–</span>
+              <p class="instagram-avisos" id="instagram-avisos" hidden></p>
+
+              <div class="instagram-metricas-grid">
+                <div class="card-numero destaque">
+                  <span class="card-label" data-i18n="instagram_seguidores">Seguidores</span>
+                  <span class="card-valor" id="instagram-num-seguidores">–</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="instagram_alcance">Alcance (7 dias)</span>
+                  <span class="card-valor" id="instagram-num-alcance">–</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="instagram_visitas_perfil">Visitas ao perfil (7 dias)</span>
+                  <span class="card-valor" id="instagram-num-visitas-perfil">–</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="instagram_cliques_link">Cliques no link (7 dias)</span>
+                  <span class="card-valor" id="instagram-num-cliques-link">–</span>
+                </div>
               </div>
-              <div class="card-numero">
-                <span class="card-label" data-i18n="instagram_alcance">Alcance (7 dias)</span>
-                <span class="card-valor" id="instagram-num-alcance">–</span>
-              </div>
-              <div class="card-numero">
-                <span class="card-label" data-i18n="instagram_visitas_perfil">Visitas ao perfil (7 dias)</span>
-                <span class="card-valor" id="instagram-num-visitas-perfil">–</span>
-              </div>
-              <div class="card-numero">
-                <span class="card-label" data-i18n="instagram_cliques_link">Cliques no link (7 dias)</span>
-                <span class="card-valor" id="instagram-num-cliques-link">–</span>
+
+              <div class="card card-instagram-posts">
+                <h3 class="card-titulo" data-i18n="instagram_desempenho_post">Desempenho por post</h3>
+                <div id="instagram-posts-lista" class="instagram-posts-lista"><p class="texto-suave" data-i18n="instagram_carregando_posts">Carregando posts...</p></div>
               </div>
             </div>
 
-            <div class="card card-instagram-posts">
-              <h3 class="card-titulo" data-i18n="instagram_desempenho_post">Desempenho por post</h3>
-              <div id="instagram-posts-lista" class="instagram-posts-lista"><p class="texto-suave" data-i18n="instagram_carregando_posts">Carregando posts...</p></div>
+            <div id="instagram-pagina-automacoes" class="instagram-pagina" hidden>
+              <div class="cal-todas-topo">
+                <div>
+                  <h3 class="card-titulo" data-i18n="instagram_automacoes">Automações</h3>
+                  <p class="cal-todas-resumo" id="instagram-automacoes-resumo" data-i18n="instagram_automacoes_nenhuma">Nenhuma automação ainda.</p>
+                </div>
+                <button id="btn-instagram-nova-automacao" class="cal-btn cal-btn-primario" type="button" data-i18n="instagram_nova_automacao">+ Nova automação</button>
+              </div>
+              <div id="instagram-automacoes-lista" class="instagram-automacoes-lista"></div>
+            </div>
+
+            <div id="instagram-pagina-leads" class="instagram-pagina" hidden>
+              <div class="cal-todas-topo">
+                <div>
+                  <h3 class="card-titulo" data-i18n="instagram_leads">Leads</h3>
+                  <p class="cal-todas-resumo" id="instagram-leads-resumo" data-i18n="instagram_nenhum_lead">Nenhum lead ainda.</p>
+                </div>
+                <div class="ugc-trabalhos-topo-acoes">
+                  <input type="text" id="instagram-leads-busca" class="instagram-leads-busca" data-i18n-placeholder="instagram_buscar_conta_palavra" placeholder="Buscar por @ ou palavra">
+                  <button id="btn-instagram-processar-agora" class="cal-btn" type="button" data-i18n="instagram_processar_agora">Processar agora</button>
+                  <button id="btn-instagram-exportar-csv" class="cal-btn" type="button" data-i18n="instagram_exportar_csv">↓ Exportar CSV</button>
+                </div>
+              </div>
+
+              <div class="cal-todas-tabela">
+                <div class="cal-todas-cabecalho instagram-leads-linha">
+                  <span data-i18n="instagram_col_conta">Conta</span>
+                  <span data-i18n="instagram_col_origem">Origem</span>
+                  <span data-i18n="instagram_col_palavra">Palavra</span>
+                  <span data-i18n="instagram_col_recebeu">Recebeu?</span>
+                  <span data-i18n="instagram_col_interacoes">Interações</span>
+                  <span data-i18n="instagram_col_ultima_vez">Última vez</span>
+                </div>
+                <div id="instagram-leads-lista" class="cal-todas-linhas"></div>
+              </div>
             </div>
           </div>
         </section>
@@ -1266,6 +1311,46 @@
       </div>
     </div>
 
+    <!-- Modal: automação do Instagram (comentário → resposta privada) -->
+    <div id="instagram-modal-automacao-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal">
+        <div class="pl-modal-topo">
+          <input type="text" id="instagram-modal-automacao-nome" class="pl-modal-titulo-input" data-i18n-placeholder="instagram_nome_automacao" placeholder="Nome da automação">
+          <button id="instagram-modal-automacao-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="instagram-modal-automacao-gatilho" data-i18n="instagram_palavra_gatilho">Palavra-gatilho (no comentário)</label>
+            <input type="text" id="instagram-modal-automacao-gatilho" placeholder="Ex: imersão">
+          </div>
+          <div class="cal-form-campo">
+            <label for="instagram-modal-automacao-post" data-i18n="instagram_aplicar_em">Aplicar em</label>
+            <select id="instagram-modal-automacao-post"></select>
+          </div>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="instagram-modal-automacao-mensagem" data-i18n="instagram_mensagem_resposta">Mensagem da resposta privada</label>
+            <textarea id="instagram-modal-automacao-mensagem" class="pl-textarea-grande" rows="3"></textarea>
+          </div>
+        </div>
+
+        <label class="ugc-permuta-check">
+          <input type="checkbox" id="instagram-modal-automacao-ativo" checked>
+          <span data-i18n="instagram_automacao_ativa">Automação ativa</span>
+        </label>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="instagram-modal-automacao-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
+          <button type="button" id="instagram-modal-automacao-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: roteiro (biblioteca de roteiros UGC) -->
     <div id="ugc-modal-roteiro-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal pl-modal-grande">
@@ -1564,6 +1649,13 @@
     let emailAbaCarregada = false;
     let emailAbertoId = null;
     let instagramAbaCarregada = false;
+    let instagramSubAbaAtual = 'visao-geral';
+    let instagramPostsCache = [];
+    let instagramAutomacoesCarregadas = false;
+    let instagramAutomacoesCache = [];
+    let instagramLeadsCache = [];
+    let instagramAutomacaoAbertaId = null;
+    let filtroLeadsTexto = '';
     let planejadorAbaCarregada = false;
     let pilaresCache = [];
     let ideiasCache = [];
@@ -2379,6 +2471,44 @@
         clientes_status_em_producao: 'Em produção',
         clientes_status_entregue: 'Entregue',
         clientes_status_cancelado: 'Cancelado',
+        instagram_visao_geral: 'Visão Geral',
+        instagram_automacoes: 'Automações',
+        instagram_leads: 'Leads',
+        instagram_automacoes_nenhuma: 'Nenhuma automação ainda.',
+        instagram_nova_automacao: '+ Nova automação',
+        instagram_automacao_singular: 'automação',
+        instagram_automacao_plural: 'automações',
+        instagram_nome_automacao: 'Nome da automação',
+        instagram_palavra_gatilho: 'Palavra-gatilho (no comentário)',
+        instagram_aplicar_em: 'Aplicar em',
+        instagram_mensagem_resposta: 'Mensagem da resposta privada',
+        instagram_automacao_ativa: 'Automação ativa',
+        instagram_ativa: 'Ativa',
+        instagram_pausada: 'Pausada',
+        instagram_gatilho_prefixo: 'Gatilho:',
+        instagram_qualquer_post: 'Qualquer post',
+        instagram_post_sem_legenda: 'Post sem legenda',
+        instagram_post_nao_encontrado: 'Post não encontrado',
+        instagram_preencha_automacao: 'Preencha nome, palavra-gatilho e mensagem antes de salvar.',
+        instagram_excluir_automacao_confirmar: 'Excluir esta automação?',
+        instagram_nenhum_lead: 'Nenhum lead ainda.',
+        instagram_nenhum_lead_aqui: 'Nenhum lead por aqui.',
+        instagram_lead_singular: 'lead',
+        instagram_lead_plural: 'leads',
+        instagram_buscar_conta_palavra: 'Buscar por @ ou palavra',
+        instagram_processar_agora: 'Processar agora',
+        instagram_processando: 'Processando...',
+        instagram_exportar_csv: '↓ Exportar CSV',
+        instagram_col_conta: 'Conta',
+        instagram_col_origem: 'Origem',
+        instagram_col_palavra: 'Palavra',
+        instagram_col_recebeu: 'Recebeu?',
+        instagram_col_interacoes: 'Interações',
+        instagram_col_ultima_vez: 'Última vez',
+        instagram_origem_direct: 'Direct',
+        instagram_origem_comentario: 'Comentário',
+        instagram_recebeu_sim: 'Sim',
+        instagram_recebeu_nao: 'Não',
       },
       en: {
         titulo_dashboard: 'Dashboard',
@@ -2972,6 +3102,44 @@
         clientes_status_em_producao: 'In progress',
         clientes_status_entregue: 'Delivered',
         clientes_status_cancelado: 'Cancelled',
+        instagram_visao_geral: 'Overview',
+        instagram_automacoes: 'Automations',
+        instagram_leads: 'Leads',
+        instagram_automacoes_nenhuma: 'No automations yet.',
+        instagram_nova_automacao: '+ New automation',
+        instagram_automacao_singular: 'automation',
+        instagram_automacao_plural: 'automations',
+        instagram_nome_automacao: 'Automation name',
+        instagram_palavra_gatilho: 'Trigger word (in the comment)',
+        instagram_aplicar_em: 'Apply to',
+        instagram_mensagem_resposta: 'Private reply message',
+        instagram_automacao_ativa: 'Automation active',
+        instagram_ativa: 'Active',
+        instagram_pausada: 'Paused',
+        instagram_gatilho_prefixo: 'Trigger:',
+        instagram_qualquer_post: 'Any post',
+        instagram_post_sem_legenda: 'Post with no caption',
+        instagram_post_nao_encontrado: 'Post not found',
+        instagram_preencha_automacao: 'Fill in the name, trigger word and message before saving.',
+        instagram_excluir_automacao_confirmar: 'Delete this automation?',
+        instagram_nenhum_lead: 'No leads yet.',
+        instagram_nenhum_lead_aqui: 'No leads here.',
+        instagram_lead_singular: 'lead',
+        instagram_lead_plural: 'leads',
+        instagram_buscar_conta_palavra: 'Search by @ or word',
+        instagram_processar_agora: 'Process now',
+        instagram_processando: 'Processing...',
+        instagram_exportar_csv: '↓ Export CSV',
+        instagram_col_conta: 'Account',
+        instagram_col_origem: 'Source',
+        instagram_col_palavra: 'Word',
+        instagram_col_recebeu: 'Received?',
+        instagram_col_interacoes: 'Interactions',
+        instagram_col_ultima_vez: 'Last time',
+        instagram_origem_direct: 'Direct',
+        instagram_origem_comentario: 'Comment',
+        instagram_recebeu_sim: 'Yes',
+        instagram_recebeu_nao: 'No',
       },
     };
 
@@ -3460,6 +3628,24 @@
         if (e.target.id === 'clientes-modal-overlay') fecharModalCliente();
       });
       document.getElementById('clientes-modal-add-link').addEventListener('click', adicionarLinkModal);
+
+      // Instagram: Automações e Leads
+      document.querySelectorAll('#instagram-layout .instagram-subnav-btn').forEach((btn) => {
+        btn.addEventListener('click', () => trocarSubAbaInstagram(btn.dataset.instagramPagina));
+      });
+      document.getElementById('btn-instagram-nova-automacao').addEventListener('click', () => abrirModalAutomacao(null));
+      document.getElementById('instagram-modal-automacao-fechar').addEventListener('click', fecharModalAutomacao);
+      document.getElementById('instagram-modal-automacao-excluir').addEventListener('click', excluirModalAutomacao);
+      document.getElementById('instagram-modal-automacao-salvar').addEventListener('click', salvarModalAutomacao);
+      document.getElementById('instagram-modal-automacao-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'instagram-modal-automacao-overlay') fecharModalAutomacao();
+      });
+      document.getElementById('instagram-leads-busca').addEventListener('input', (e) => {
+        filtroLeadsTexto = e.target.value;
+        renderizarInstagramLeads();
+      });
+      document.getElementById('btn-instagram-exportar-csv').addEventListener('click', exportarLeadsCSV);
+      document.getElementById('btn-instagram-processar-agora').addEventListener('click', processarAutomacoesAgora);
       document.getElementById('ugc-modal-briefing-anexar').addEventListener('click', () => {
         document.getElementById('ugc-modal-briefing-arquivo-input').click();
       });
@@ -3577,9 +3763,12 @@
         emailAbaCarregada = true;
         carregarEmails();
       }
-      if (aba === 'instagram' && !instagramAbaCarregada) {
-        instagramAbaCarregada = true;
-        carregarInstagram();
+      if (aba === 'instagram') {
+        trocarSubAbaInstagram('visao-geral');
+        if (!instagramAbaCarregada) {
+          instagramAbaCarregada = true;
+          carregarInstagram();
+        }
       }
       if (aba === 'planejador' && !planejadorAbaCarregada) {
         planejadorAbaCarregada = true;
@@ -5098,6 +5287,7 @@
 
     function renderizarInstagram(resultado) {
       const { perfil, insights, posts, erros } = resultado;
+      instagramPostsCache = posts || [];
 
       document.getElementById('instagram-perfil-nome').textContent = perfil.username ? '@' + perfil.username : '—';
       document.getElementById('instagram-num-seguidores').textContent = formatarMetricaInstagram(perfil.seguidores);
@@ -5136,6 +5326,248 @@
           <a class="instagram-post-link" href="${escapeHtml(post.link || '#')}" target="_blank" rel="noopener">${escapeHtml(tr('instagram_ver_post'))}</a>
         </div>
       `).join('');
+    }
+
+    // ---- Sub-abas (Visão Geral / Automações / Leads) ----
+    function trocarSubAbaInstagram(pagina) {
+      instagramSubAbaAtual = pagina;
+      document.querySelectorAll('#instagram-layout .instagram-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.instagramPagina === pagina));
+      document.querySelectorAll('#instagram-layout .instagram-pagina').forEach((p) => (p.hidden = p.id !== 'instagram-pagina-' + pagina));
+      if ((pagina === 'automacoes' || pagina === 'leads') && !instagramAutomacoesCarregadas) {
+        instagramAutomacoesCarregadas = true;
+        carregarInstagramAutomacoes();
+      }
+    }
+
+    async function carregarInstagramAutomacoes() {
+      try {
+        const [automacoes, leads] = await Promise.all([
+          buscarTudo('instagram_automacoes'),
+          buscarTudo('instagram_leads'),
+        ]);
+        instagramAutomacoesCache = automacoes;
+        instagramLeadsCache = leads;
+        renderizarInstagramAutomacoes();
+        renderizarInstagramLeads();
+      } catch (err) {
+        console.error('Erro ao carregar automações do Instagram:', err);
+      }
+    }
+
+    // ---- Automações ----
+    function renderizarInstagramAutomacoes() {
+      document.getElementById('instagram-automacoes-resumo').textContent =
+        instagramAutomacoesCache.length === 0
+          ? tr('instagram_automacoes_nenhuma')
+          : `${instagramAutomacoesCache.length} ${tr(instagramAutomacoesCache.length === 1 ? 'instagram_automacao_singular' : 'instagram_automacao_plural')}.`;
+
+      const lista = document.getElementById('instagram-automacoes-lista');
+      lista.innerHTML = '';
+      if (instagramAutomacoesCache.length === 0) {
+        lista.innerHTML = `<p class="texto-vazio">${tr('nada_por_aqui')}</p>`;
+        return;
+      }
+      instagramAutomacoesCache.forEach((a) => lista.appendChild(criarCardAutomacao(a)));
+    }
+
+    function criarCardAutomacao(automacao) {
+      const card = document.createElement('div');
+      card.className = 'instagram-automacao-card';
+      const post = automacao.media_id ? instagramPostsCache.find((p) => p.id === automacao.media_id) : null;
+      const aplicaEm = automacao.media_id
+        ? (post ? (post.legenda || tr('instagram_post_sem_legenda')).slice(0, 40) : automacao.media_legenda || tr('instagram_post_nao_encontrado'))
+        : tr('instagram_qualquer_post');
+
+      card.innerHTML = `
+        <div class="instagram-automacao-info">
+          <div class="instagram-automacao-cabecalho">
+            <span class="instagram-automacao-nome">${escapeHtml(automacao.nome)}</span>
+            <button type="button" class="instagram-automacao-status-pill${automacao.ativo ? '' : ' pausada'}">${escapeHtml(automacao.ativo ? tr('instagram_ativa') : tr('instagram_pausada'))}</button>
+          </div>
+          <p class="instagram-automacao-detalhe">${escapeHtml(tr('instagram_gatilho_prefixo'))} "${escapeHtml(automacao.palavra_gatilho)}" · ${escapeHtml(tr('instagram_aplicar_em'))}: ${escapeHtml(aplicaEm)}</p>
+          <p class="instagram-automacao-mensagem">${escapeHtml(automacao.mensagem)}</p>
+        </div>
+        <div class="instagram-automacao-acoes">
+          <button type="button" class="cal-btn instagram-automacao-editar">${escapeHtml(tr('editar'))}</button>
+        </div>
+      `;
+      card.querySelector('.instagram-automacao-status-pill').addEventListener('click', (e) => {
+        e.stopPropagation();
+        alternarAtivoAutomacao(automacao);
+      });
+      card.querySelector('.instagram-automacao-editar').addEventListener('click', () => abrirModalAutomacao(automacao));
+      return card;
+    }
+
+    async function alternarAtivoAutomacao(automacao) {
+      try {
+        const { error } = await Auth.sb.from('instagram_automacoes').update({ ativo: !automacao.ativo }).eq('id', automacao.id);
+        if (error) throw error;
+        await carregarInstagramAutomacoes();
+      } catch (err) {
+        console.error('Erro ao alternar automação:', err);
+        alert(tr('erro_salvar_generico'));
+      }
+    }
+
+    function preencherSelectPostsAutomacao(mediaIdSelecionado) {
+      const select = document.getElementById('instagram-modal-automacao-post');
+      const opcoes = [`<option value="">${escapeHtml(tr('instagram_qualquer_post'))}</option>`].concat(
+        instagramPostsCache.map(
+          (p) => `<option value="${escapeHtml(p.id)}">${escapeHtml((p.legenda || tr('instagram_post_sem_legenda')).slice(0, 60))}</option>`,
+        ),
+      );
+      select.innerHTML = opcoes.join('');
+      select.value = mediaIdSelecionado || '';
+    }
+
+    function abrirModalAutomacao(automacao) {
+      instagramAutomacaoAbertaId = automacao ? automacao.id : null;
+      document.getElementById('instagram-modal-automacao-nome').value = automacao ? automacao.nome : '';
+      document.getElementById('instagram-modal-automacao-gatilho').value = automacao ? automacao.palavra_gatilho : '';
+      preencherSelectPostsAutomacao(automacao ? automacao.media_id : null);
+      document.getElementById('instagram-modal-automacao-mensagem').value = automacao ? automacao.mensagem : '';
+      document.getElementById('instagram-modal-automacao-ativo').checked = automacao ? automacao.ativo : true;
+      document.getElementById('instagram-modal-automacao-excluir').hidden = !automacao;
+      document.getElementById('instagram-modal-automacao-overlay').hidden = false;
+    }
+
+    function fecharModalAutomacao() {
+      instagramAutomacaoAbertaId = null;
+      document.getElementById('instagram-modal-automacao-overlay').hidden = true;
+    }
+
+    async function salvarModalAutomacao() {
+      const nome = document.getElementById('instagram-modal-automacao-nome').value.trim();
+      const gatilho = document.getElementById('instagram-modal-automacao-gatilho').value.trim();
+      const mensagem = document.getElementById('instagram-modal-automacao-mensagem').value.trim();
+      if (!nome || !gatilho || !mensagem) {
+        alert(tr('instagram_preencha_automacao'));
+        return;
+      }
+
+      const mediaId = document.getElementById('instagram-modal-automacao-post').value || null;
+      const post = mediaId ? instagramPostsCache.find((p) => p.id === mediaId) : null;
+
+      const linha = {
+        nome,
+        palavra_gatilho: gatilho,
+        media_id: mediaId,
+        media_legenda: post ? (post.legenda || '').slice(0, 120) : null,
+        mensagem,
+        ativo: document.getElementById('instagram-modal-automacao-ativo').checked,
+      };
+
+      const btn = document.getElementById('instagram-modal-automacao-salvar');
+      btn.disabled = true;
+      try {
+        if (instagramAutomacaoAbertaId) {
+          const { error } = await Auth.sb.from('instagram_automacoes').update(linha).eq('id', instagramAutomacaoAbertaId);
+          if (error) throw error;
+        } else {
+          const { error } = await Auth.sb.from('instagram_automacoes').insert(linha);
+          if (error) throw error;
+        }
+        fecharModalAutomacao();
+        await carregarInstagramAutomacoes();
+      } catch (err) {
+        console.error('Erro ao salvar automação:', err);
+        alert(tr('erro_salvar_generico'));
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function excluirModalAutomacao() {
+      if (!instagramAutomacaoAbertaId) return;
+      if (!(await confirmarAcao(tr('instagram_excluir_automacao_confirmar')))) return;
+      try {
+        const { error } = await Auth.sb.from('instagram_automacoes').delete().eq('id', instagramAutomacaoAbertaId);
+        if (error) throw error;
+        fecharModalAutomacao();
+        await carregarInstagramAutomacoes();
+      } catch (err) {
+        console.error('Erro ao excluir automação:', err);
+        alert(tr('erro_excluir_generico'));
+      }
+    }
+
+    // ---- Leads ----
+    function renderizarInstagramLeads() {
+      const termo = filtroLeadsTexto.trim().toLowerCase().replace(/^@/, '');
+      const filtrados = termo
+        ? instagramLeadsCache.filter((l) => l.conta.toLowerCase().includes(termo) || (l.palavra || '').toLowerCase().includes(termo))
+        : instagramLeadsCache;
+      const ordenados = [...filtrados].sort((a, b) => (b.ultima_vez || '').localeCompare(a.ultima_vez || ''));
+
+      document.getElementById('instagram-leads-resumo').textContent =
+        ordenados.length === 0
+          ? tr('instagram_nenhum_lead_aqui')
+          : `${ordenados.length} ${tr(ordenados.length === 1 ? 'instagram_lead_singular' : 'instagram_lead_plural')}.`;
+
+      const lista = document.getElementById('instagram-leads-lista');
+      lista.innerHTML = '';
+      if (ordenados.length === 0) {
+        lista.innerHTML = `<p class="texto-vazio">${tr('nada_por_aqui')}</p>`;
+        return;
+      }
+      ordenados.forEach((l) => lista.appendChild(criarLinhaLead(l)));
+    }
+
+    function criarLinhaLead(lead) {
+      const linha = document.createElement('div');
+      linha.className = 'cal-todas-linha instagram-leads-linha';
+      const ultimaVezFmt = lead.ultima_vez ? formatarDataCurta(new Date(lead.ultima_vez)) : '—';
+      linha.innerHTML = `
+        <span class="instagram-lead-conta">@${escapeHtml(lead.conta)}</span>
+        <span>${escapeHtml(lead.origem === 'Direct' ? tr('instagram_origem_direct') : tr('instagram_origem_comentario'))}</span>
+        <span>${escapeHtml(lead.palavra || '—')}</span>
+        <span class="instagram-lead-recebeu${lead.recebeu ? '' : ' nao'}">${escapeHtml(lead.recebeu ? tr('instagram_recebeu_sim') : tr('instagram_recebeu_nao'))}</span>
+        <span>${formatarNumero(lead.interacoes)}</span>
+        <span>${ultimaVezFmt}</span>
+      `;
+      return linha;
+    }
+
+    function exportarLeadsCSV() {
+      if (instagramLeadsCache.length === 0) return;
+      const cabecalho = ['conta', 'origem', 'palavra', 'recebeu', 'interacoes', 'ultima_vez'];
+      const linhas = instagramLeadsCache.map((l) => [
+        l.conta,
+        l.origem,
+        l.palavra || '',
+        l.recebeu ? 'sim' : 'nao',
+        l.interacoes,
+        l.ultima_vez || '',
+      ]);
+      const csv = [cabecalho, ...linhas]
+        .map((linha) => linha.map((valor) => `"${String(valor).replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'leads-instagram.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function processarAutomacoesAgora() {
+      const btn = document.getElementById('btn-instagram-processar-agora');
+      const textoOriginal = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = tr('instagram_processando');
+      try {
+        const resultado = await chamarFuncao('instagram-automacao-processar', { method: 'POST' });
+        if (!resultado.ok) throw new Error(resultado.error || 'erro desconhecido');
+        await carregarInstagramAutomacoes();
+      } catch (err) {
+        console.error('Erro ao processar automações do Instagram:', err);
+        alert(tr('erro_salvar_generico'));
+      } finally {
+        btn.disabled = false;
+        btn.textContent = textoOriginal;
+      }
     }
 
     // ==========================================================================

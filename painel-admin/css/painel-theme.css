@@ -1058,6 +1058,116 @@
   text-decoration: underline;
 }
 
+/* ---- Automações (comentário → resposta privada) ---- */
+
+.painel-body .instagram-automacoes-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.painel-body .instagram-automacao-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: var(--raio-sm);
+  background: rgba(255, 255, 255, 0.5);
+  flex-wrap: wrap;
+}
+
+.painel-body .instagram-automacao-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.painel-body .instagram-automacao-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.painel-body .instagram-automacao-nome {
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .instagram-automacao-status-pill {
+  font-family: var(--fonte-corpo);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  background: var(--sucesso);
+  color: var(--branco);
+}
+
+.painel-body .instagram-automacao-status-pill.pausada {
+  background: rgba(var(--grafite-rgb), 0.08);
+  color: var(--texto-suave);
+}
+
+.painel-body .instagram-automacao-detalhe,
+.painel-body .instagram-automacao-mensagem {
+  font-size: 13px;
+  color: var(--texto-suave);
+  margin: 2px 0 0;
+}
+
+.painel-body .instagram-automacao-acoes {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ---- Leads ---- */
+
+.painel-body .instagram-leads-busca {
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: var(--fonte-corpo);
+  background: var(--branco);
+  color: var(--grafite);
+  min-width: 220px;
+}
+
+.painel-body .cal-todas-cabecalho.instagram-leads-linha,
+.painel-body .cal-todas-linha.instagram-leads-linha {
+  grid-template-columns: 1fr 110px 130px 90px 100px 140px;
+}
+
+.painel-body .instagram-lead-conta {
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .instagram-lead-recebeu {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  width: fit-content;
+  background: var(--sucesso);
+  color: var(--branco);
+}
+
+.painel-body .instagram-lead-recebeu.nao {
+  background: rgba(196, 69, 60, 0.12);
+  color: var(--erro);
+}
+
 /* ==========================================================================
    Aba Planejador de Conteúdo — hub com 3 páginas (Banco de Ideias, Achados
    e Cronograma de Postagem), guardadas em planejador_pilares/
@@ -1882,7 +1992,8 @@
 
 /* ---- UGC / Publi ---- */
 
-.painel-body .ugc-subnav {
+.painel-body .ugc-subnav,
+.painel-body .instagram-subnav {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -1893,7 +2004,8 @@
   margin-bottom: 20px;
 }
 
-.painel-body .ugc-subnav-btn {
+.painel-body .ugc-subnav-btn,
+.painel-body .instagram-subnav-btn {
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -1905,11 +2017,13 @@
   cursor: pointer;
 }
 
-.painel-body .ugc-subnav-btn:hover {
+.painel-body .ugc-subnav-btn:hover,
+.painel-body .instagram-subnav-btn:hover {
   color: var(--grafite);
 }
 
-.painel-body .ugc-subnav-btn.ativo {
+.painel-body .ugc-subnav-btn.ativo,
+.painel-body .instagram-subnav-btn.ativo {
   background: var(--coral);
   color: var(--branco);
 }
@@ -2327,7 +2441,8 @@
 
 /* Espaçamento entre os blocos de cada sub-aba de UGC/Publi (cards de número,
    tabelas, "Próximas entregas" etc. — sem isto ficavam grudados). */
-.painel-body .ugc-pagina {
+.painel-body .ugc-pagina,
+.painel-body .instagram-pagina {
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -2335,7 +2450,8 @@
 
 /* O atributo hidden precisa vencer o display:flex acima (mesma especificidade,
    mas a regra do autor venceria a do agente de usuário sem isto). */
-.painel-body .ugc-pagina[hidden] {
+.painel-body .ugc-pagina[hidden],
+.painel-body .instagram-pagina[hidden] {
   display: none;
 }
 

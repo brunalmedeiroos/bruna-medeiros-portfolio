@@ -710,6 +710,74 @@ begin
 end;
 $$;
 
+-- ---------------------------------------------------------------------
+-- Automação do Instagram: "comentário → resposta privada" (ver painel-
+-- admin/instagram-automacoes-tabela.sql pros comentários explicando cada
+-- tabela e o agendamento no fim deste arquivo)
+-- ---------------------------------------------------------------------
+create table if not exists public.instagram_automacoes (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  nome text not null,
+  palavra_gatilho text not null,
+  media_id text,
+  media_legenda text,
+  mensagem text not null,
+  ativo boolean not null default true
+);
+
+create index if not exists instagram_automacoes_ativo_idx on public.instagram_automacoes (ativo);
+
+alter table public.instagram_automacoes enable row level security;
+
+create policy "Painel: leitura autenticada de automações do Instagram"
+  on public.instagram_automacoes for select to authenticated using (public.is_owner());
+create policy "Painel: escrita autenticada de automações do Instagram"
+  on public.instagram_automacoes for insert to authenticated with check (public.is_owner());
+create policy "Painel: atualização autenticada de automações do Instagram"
+  on public.instagram_automacoes for update to authenticated using (public.is_owner()) with check (public.is_owner());
+create policy "Painel: exclusão autenticada de automações do Instagram"
+  on public.instagram_automacoes for delete to authenticated using (public.is_owner());
+
+create table if not exists public.instagram_leads (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  conta text not null,
+  origem text not null default 'Comentário' check (origem in ('Comentário', 'Direct')),
+  palavra text,
+  automacao_id uuid references public.instagram_automacoes(id) on delete set null,
+  recebeu boolean not null default false,
+  interacoes int not null default 1,
+  ultima_vez timestamptz not null default now()
+);
+
+create unique index if not exists instagram_leads_conta_idx on public.instagram_leads (conta);
+
+alter table public.instagram_leads enable row level security;
+
+create policy "Painel: leitura autenticada de leads do Instagram"
+  on public.instagram_leads for select to authenticated using (public.is_owner());
+create policy "Painel: escrita autenticada de leads do Instagram"
+  on public.instagram_leads for insert to authenticated with check (public.is_owner());
+create policy "Painel: atualização autenticada de leads do Instagram"
+  on public.instagram_leads for update to authenticated using (public.is_owner()) with check (public.is_owner());
+create policy "Painel: exclusão autenticada de leads do Instagram"
+  on public.instagram_leads for delete to authenticated using (public.is_owner());
+
+create table if not exists public.instagram_comentarios_processados (
+  comentario_id text primary key,
+  processado_em timestamptz not null default now()
+);
+
+alter table public.instagram_comentarios_processados enable row level security;
+
+create policy "Painel: leitura autenticada de comentários processados"
+  on public.instagram_comentarios_processados for select to authenticated using (public.is_owner());
+create policy "Painel: escrita autenticada de comentários processados"
+  on public.instagram_comentarios_processados for insert to authenticated with check (public.is_owner());
+create policy "Painel: exclusão autenticada de comentários processados"
+  on public.instagram_comentarios_processados for delete to authenticated using (public.is_owner());
+
 -- Storage: bucket privado pra anexos de briefing e contrato (arquivo
 -- fica salvo dentro do trabalho/contrato; como pode ter dado sensível
 -- de cliente, o bucket é privado — o painel gera uma signed URL na
@@ -757,6 +825,30 @@ select cron.schedule(
     url := 'https://<PROJECT_REF>.supabase.co/functions/v1/radar-atualizar',
     headers := jsonb_build_object(
       'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'radar_cron_secret'),
+      'Content-Type', 'application/json'
+    ),
+    body := '{}'::jsonb
+  );
+  $$
+);
+
+-- ---------------------------------------------------------------------
+-- Agendamento: chama instagram-automacao-processar a cada 10 minutos
+-- (motor da automação "comentário → resposta privada" — ver
+-- painel-admin/instagram-automacoes-tabela.sql). Mesmo esquema do cron
+-- do Radar acima: segredo em duas partes (secret da função + Vault),
+-- troque <PROJECT_REF> pela referência do seu projeto.
+--   1. supabase secrets set INSTAGRAM_AUTOMACAO_CRON_SECRET=...
+--   2. select vault.create_secret('COLE_O_MESMO_VALOR_AQUI', 'instagram_automacao_cron_secret');
+-- ---------------------------------------------------------------------
+select cron.schedule(
+  'instagram-automacao-processar-periodico',
+  '*/10 * * * *', -- a cada 10 minutos
+  $$
+  select net.http_post(
+    url := 'https://<PROJECT_REF>.supabase.co/functions/v1/instagram-automacao-processar',
+    headers := jsonb_build_object(
+      'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'instagram_automacao_cron_secret'),
       'Content-Type', 'application/json'
     ),
     body := '{}'::jsonb

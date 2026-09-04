@@ -71,6 +71,10 @@
           <img class="nav-icon-img" src="../painel-admin/img/nav-icones/radar.png" alt="">
           <span data-i18n="nav_radar">Radar de Notícias</span>
         </button>
+        <button class="nav-item" data-tab="clientes" type="button">
+          <img class="nav-icon-img" src="../painel-admin/img/nav-icones/clientes.png" alt="">
+          <span data-i18n="nav_clientes">Clientes</span>
+        </button>
       </nav>
 
       <div class="sidebar-footer">
@@ -716,6 +720,35 @@
           </div>
         </section>
 
+        <!-- ---------- Aba: Clientes ---------- -->
+        <section id="panel-clientes" class="tab-panel" hidden>
+          <div class="cal-todas-topo">
+            <div>
+              <h3 class="card-titulo" data-i18n="clientes_titulo">Clientes</h3>
+              <p class="cal-todas-resumo" id="clientes-resumo" data-i18n="clientes_nenhum">Nenhum cliente ainda.</p>
+            </div>
+            <div class="ugc-trabalhos-topo-acoes">
+              <div class="cal-filtro-grupo">
+                <button class="cal-filtro-btn ativo" data-filtro-cliente="ativos" type="button" data-i18n="clientes_filtro_ativos">Ativos</button>
+                <button class="cal-filtro-btn" data-filtro-cliente="finalizados" type="button" data-i18n="clientes_filtro_finalizados">Finalizados</button>
+              </div>
+              <button id="btn-clientes-novo" class="cal-btn cal-btn-primario" type="button" data-i18n="clientes_novo">+ Novo cliente</button>
+            </div>
+          </div>
+
+          <div class="cal-todas-tabela">
+            <div class="cal-todas-cabecalho clientes-linha">
+              <span data-i18n="clientes_col_nome">Nome</span>
+              <span data-i18n="status">Status</span>
+              <span data-i18n="clientes_col_template">Modelo</span>
+              <span data-i18n="clientes_col_valor">Valor</span>
+              <span data-i18n="clientes_col_fechamento">Fechamento</span>
+              <span data-i18n="clientes_col_entrega">Entrega</span>
+            </div>
+            <div id="clientes-lista" class="cal-todas-linhas"></div>
+          </div>
+        </section>
+
       </div>
     </main>
 
@@ -1156,6 +1189,79 @@
         <div class="cal-form-acoes">
           <button type="button" id="ugc-modal-trabalho-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
           <button type="button" id="ugc-modal-trabalho-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: cliente (controle de clientes do pacote painel+portfólio) -->
+    <div id="clientes-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pl-modal-grande">
+        <div class="pl-modal-topo">
+          <input type="text" id="clientes-modal-nome" class="pl-modal-titulo-input" data-i18n-placeholder="clientes_col_nome" placeholder="Nome">
+          <button id="clientes-modal-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="clientes-modal-status" data-i18n="status">Status</label>
+            <select id="clientes-modal-status"></select>
+          </div>
+          <div class="cal-form-campo">
+            <label for="clientes-modal-template" data-i18n="clientes_col_template">Modelo escolhido</label>
+            <input type="text" id="clientes-modal-template" list="clientes-templates-sugeridos" placeholder="Ex: Água-Viva">
+            <datalist id="clientes-templates-sugeridos">
+              <option value="Penumbra Dourada"></option>
+              <option value="Água-Viva"></option>
+              <option value="Recorte &amp; Colagem"></option>
+              <option value="Letreiro UGC"></option>
+              <option value="Clube Zine Varsity"></option>
+              <option value="Estúdio Folhagem"></option>
+            </datalist>
+          </div>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="clientes-modal-email" data-i18n="ugc_email_contato">E-mail do contato</label>
+            <input type="text" id="clientes-modal-email">
+          </div>
+          <div class="cal-form-campo">
+            <label for="clientes-modal-whats" data-i18n="ugc_whatsapp_instagram">WhatsApp/Instagram</label>
+            <input type="text" id="clientes-modal-whats">
+          </div>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="clientes-modal-valor" data-i18n="clientes_valor_combinado">Valor combinado (R$)</label>
+            <input type="number" step="0.01" min="0" id="clientes-modal-valor">
+          </div>
+          <div class="cal-form-campo">
+            <label for="clientes-modal-fechamento" data-i18n="clientes_col_fechamento">Data de fechamento</label>
+            <input type="date" id="clientes-modal-fechamento">
+          </div>
+          <div class="cal-form-campo">
+            <label for="clientes-modal-entrega" data-i18n="clientes_col_entrega">Data de entrega</label>
+            <input type="date" id="clientes-modal-entrega">
+          </div>
+        </div>
+
+        <h4 class="ugc-modal-secao-titulo" data-i18n="clientes_links">Links</h4>
+        <div id="clientes-modal-links-lista" class="ugc-entregaveis-lista"></div>
+        <button type="button" id="clientes-modal-add-link" class="cal-btn" data-i18n="clientes_add_link">+ Adicionar link</button>
+
+        <h4 class="ugc-modal-secao-titulo" data-i18n="clientes_observacoes">Observações</h4>
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <textarea id="clientes-modal-observacoes" class="pl-textarea-grande" rows="3"></textarea>
+          </div>
+        </div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="clientes-modal-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
+          <button type="button" id="clientes-modal-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
         </div>
       </div>
     </div>
@@ -1628,6 +1734,33 @@
     let ugcPropostaItens = [];
     let ugcPropostaDescontoManual = false; // true assim que ela mexe no desconto na mão, pra parar de sobrescrever com a sugestão
 
+    let clientesAbaCarregada = false;
+    let clientesCache = [];
+    let clientesLinksCache = [];
+    let clienteAbertoId = null;
+    let clientesModalLinks = [];
+    let filtroClientes = 'ativos'; // 'ativos' | 'finalizados'
+    const CLIENTES_STATUS = ['Negociando', 'Fechado', 'Em produção', 'Entregue', 'Cancelado'];
+    // Valor gravado em cliente.status continua em português (é o "código");
+    // só o rótulo exibido muda com o idioma.
+    const CLIENTES_STATUS_CHAVE = {
+      'Negociando': 'clientes_status_negociando',
+      'Fechado': 'clientes_status_fechado',
+      'Em produção': 'clientes_status_em_producao',
+      'Entregue': 'clientes_status_entregue',
+      'Cancelado': 'clientes_status_cancelado',
+    };
+    function traduzirStatusCliente(status) {
+      const chave = CLIENTES_STATUS_CHAVE[status];
+      return chave ? tr(chave) : status;
+    }
+    function classeStatusCliente(status) {
+      if (status === 'Entregue') return 'clientes-status-entregue';
+      if (status === 'Cancelado') return 'clientes-status-cancelado';
+      if (status === 'Fechado' || status === 'Em produção') return 'clientes-status-producao';
+      return '';
+    }
+
     const TITULOS_ABA = {
       overview: 'titulo_dashboard',
       portfolio: 'titulo_portfolio',
@@ -1637,6 +1770,7 @@
       planejador: 'titulo_planejador',
       radar: 'titulo_radar',
       ugc: 'titulo_ugc',
+      clientes: 'titulo_clientes',
     };
 
     let configCache = null;
@@ -1662,6 +1796,7 @@
         titulo_planejador: 'Planejador de Conteúdo',
         titulo_radar: 'Radar de Notícias',
         titulo_ugc: 'UGC / Publi',
+        titulo_clientes: 'Clientes',
         nav_dashboard: 'Dashboard',
         nav_portfolio: 'Portfólio',
         nav_calendario: 'Calendário',
@@ -1670,6 +1805,7 @@
         nav_planejador: 'Planejador',
         nav_radar: 'Radar de Notícias',
         nav_ugc: 'UGC / Publi',
+        nav_clientes: 'Clientes',
         nav_configuracoes: 'Configurações',
 
         dash_pergunta: 'O que eu preciso saber agora?',
@@ -2214,6 +2350,35 @@
         ugc_proposta_titulo: 'Proposta',
         ugc_resumo_copiado: 'Resumo copiado para a área de transferência.',
         ugc_erro_copiar: 'Não foi possível copiar agora. Tente de novo em instantes.',
+        clientes_titulo: 'Clientes',
+        clientes_nenhum: 'Nenhum cliente ainda.',
+        clientes_nenhum_aqui: 'Nenhum cliente por aqui.',
+        clientes_singular: 'cliente',
+        clientes_plural: 'clientes',
+        clientes_filtro_ativos: 'Ativos',
+        clientes_filtro_finalizados: 'Finalizados',
+        clientes_novo: '+ Novo cliente',
+        clientes_col_nome: 'Nome',
+        clientes_col_template: 'Modelo',
+        clientes_col_valor: 'Valor',
+        clientes_col_fechamento: 'Fechamento',
+        clientes_col_entrega: 'Entrega',
+        clientes_valor_combinado: 'Valor combinado (R$)',
+        clientes_links: 'Links',
+        clientes_add_link: '+ Adicionar link',
+        clientes_observacoes: 'Observações',
+        clientes_nenhum_link: 'Nenhum link ainda.',
+        clientes_link_rotulo_placeholder: 'Rótulo (ex: Vitrine)',
+        clientes_link_privado: 'Privado',
+        clientes_link_pro_cliente: 'Pro cliente',
+        clientes_remover_link_aria: 'Remover link',
+        clientes_preencha_nome: 'Preencha o nome antes de salvar.',
+        clientes_excluir_confirmar: 'Excluir este cliente? Os links dele também serão excluídos.',
+        clientes_status_negociando: 'Negociando',
+        clientes_status_fechado: 'Fechado',
+        clientes_status_em_producao: 'Em produção',
+        clientes_status_entregue: 'Entregue',
+        clientes_status_cancelado: 'Cancelado',
       },
       en: {
         titulo_dashboard: 'Dashboard',
@@ -2224,6 +2389,7 @@
         titulo_planejador: 'Content Planner',
         titulo_radar: 'News Radar',
         titulo_ugc: 'UGC / Ads',
+        titulo_clientes: 'Clients',
         nav_dashboard: 'Dashboard',
         nav_portfolio: 'Portfolio',
         nav_calendario: 'Calendar',
@@ -2232,6 +2398,7 @@
         nav_planejador: 'Planner',
         nav_radar: 'News Radar',
         nav_ugc: 'UGC / Ads',
+        nav_clientes: 'Clients',
         nav_configuracoes: 'Settings',
 
         dash_pergunta: 'What do I need to know right now?',
@@ -2776,6 +2943,35 @@
         ugc_proposta_titulo: 'Proposal',
         ugc_resumo_copiado: 'Summary copied to clipboard.',
         ugc_erro_copiar: 'Could not copy it right now. Try again in a moment.',
+        clientes_titulo: 'Clients',
+        clientes_nenhum: 'No clients yet.',
+        clientes_nenhum_aqui: 'No clients here.',
+        clientes_singular: 'client',
+        clientes_plural: 'clients',
+        clientes_filtro_ativos: 'Active',
+        clientes_filtro_finalizados: 'Finished',
+        clientes_novo: '+ New client',
+        clientes_col_nome: 'Name',
+        clientes_col_template: 'Template',
+        clientes_col_valor: 'Value',
+        clientes_col_fechamento: 'Closed on',
+        clientes_col_entrega: 'Delivery',
+        clientes_valor_combinado: 'Agreed value ($)',
+        clientes_links: 'Links',
+        clientes_add_link: '+ Add link',
+        clientes_observacoes: 'Notes',
+        clientes_nenhum_link: 'No links yet.',
+        clientes_link_rotulo_placeholder: 'Label (e.g. Showcase)',
+        clientes_link_privado: 'Private',
+        clientes_link_pro_cliente: 'For client',
+        clientes_remover_link_aria: 'Remove link',
+        clientes_preencha_nome: 'Fill in the name before saving.',
+        clientes_excluir_confirmar: 'Delete this client? Their links will also be deleted.',
+        clientes_status_negociando: 'Negotiating',
+        clientes_status_fechado: 'Closed',
+        clientes_status_em_producao: 'In progress',
+        clientes_status_entregue: 'Delivered',
+        clientes_status_cancelado: 'Cancelled',
       },
     };
 
@@ -3247,6 +3443,23 @@
       document.getElementById('ugc-modal-status').addEventListener('change', sincronizarPagamentoComStatus);
       document.getElementById('ugc-modal-publicavel').addEventListener('change', atualizarCamposPortfolio);
       document.getElementById('ugc-modal-add-entregavel').addEventListener('click', adicionarEntregavelModal);
+
+      // Clientes
+      document.querySelectorAll('#panel-clientes .cal-filtro-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          filtroClientes = btn.dataset.filtroCliente;
+          document.querySelectorAll('#panel-clientes .cal-filtro-btn').forEach((b) => b.classList.toggle('ativo', b === btn));
+          renderizarClientes();
+        });
+      });
+      document.getElementById('btn-clientes-novo').addEventListener('click', () => abrirModalCliente(null));
+      document.getElementById('clientes-modal-fechar').addEventListener('click', fecharModalCliente);
+      document.getElementById('clientes-modal-excluir').addEventListener('click', excluirModalCliente);
+      document.getElementById('clientes-modal-salvar').addEventListener('click', salvarModalCliente);
+      document.getElementById('clientes-modal-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'clientes-modal-overlay') fecharModalCliente();
+      });
+      document.getElementById('clientes-modal-add-link').addEventListener('click', adicionarLinkModal);
       document.getElementById('ugc-modal-briefing-anexar').addEventListener('click', () => {
         document.getElementById('ugc-modal-briefing-arquivo-input').click();
       });
@@ -3388,6 +3601,10 @@
           ugcAbaCarregada = true;
           carregarUGC();
         }
+      }
+      if (aba === 'clientes' && !clientesAbaCarregada) {
+        clientesAbaCarregada = true;
+        carregarClientes();
       }
     }
 
@@ -7425,6 +7642,219 @@
       return nome
         .replace(/_/g, ' ')
         .replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
+    // ==========================================================================
+    // Clientes (controle de clientes do pacote painel+portfólio — ver
+    // Playbook do Cliente Novo, na aba UGC não, é módulo próprio)
+    // ==========================================================================
+    async function carregarClientes() {
+      try {
+        const [clientes, links] = await Promise.all([
+          buscarTudo('clientes'),
+          buscarTudo('clientes_links'),
+        ]);
+        clientesCache = clientes;
+        clientesLinksCache = links;
+        renderizarClientes();
+      } catch (err) {
+        console.error('Erro ao carregar Clientes:', err);
+      }
+    }
+
+    function renderizarClientes() {
+      const filtradas = filtroClientes === 'finalizados'
+        ? clientesCache.filter((c) => c.status === 'Entregue' || c.status === 'Cancelado')
+        : clientesCache.filter((c) => c.status !== 'Entregue' && c.status !== 'Cancelado');
+      const ordenadas = [...filtradas].sort((a, b) => (a.data_entrega || '9999-99-99').localeCompare(b.data_entrega || '9999-99-99'));
+
+      document.getElementById('clientes-resumo').textContent =
+        ordenadas.length === 0
+          ? tr('clientes_nenhum_aqui')
+          : `${ordenadas.length} ${tr(ordenadas.length === 1 ? 'clientes_singular' : 'clientes_plural')}.`;
+
+      const lista = document.getElementById('clientes-lista');
+      lista.innerHTML = '';
+      if (ordenadas.length === 0) {
+        lista.innerHTML = `<p class="texto-vazio">${tr('nada_por_aqui')}</p>`;
+        return;
+      }
+      ordenadas.forEach((c) => lista.appendChild(criarLinhaCliente(c)));
+    }
+
+    function criarLinhaCliente(cliente) {
+      const linha = document.createElement('div');
+      linha.className = 'cal-todas-linha clientes-linha';
+      const fechamentoFmt = cliente.data_fechamento ? formatarDataCurta(new Date(cliente.data_fechamento + 'T00:00:00')) : '—';
+      const entregaFmt = cliente.data_entrega ? formatarDataCurta(new Date(cliente.data_entrega + 'T00:00:00')) : '—';
+      const valorFmt = cliente.valor != null ? formatarMoeda(cliente.valor) : '—';
+      linha.innerHTML = `
+        <span class="clientes-nome">${escapeHtml(cliente.nome)}</span>
+        <span class="clientes-status-pill ${classeStatusCliente(cliente.status)}">${escapeHtml(traduzirStatusCliente(cliente.status))}</span>
+        <span>${escapeHtml(cliente.template_escolhido || '—')}</span>
+        <span>${valorFmt}</span>
+        <span>${fechamentoFmt}</span>
+        <span>${entregaFmt}</span>
+      `;
+      linha.addEventListener('click', () => abrirModalCliente(cliente));
+      return linha;
+    }
+
+    // ---- Links (dentro do modal de Cliente) ----
+    function adicionarLinkModal() {
+      clientesModalLinks.push({ rotulo: '', url: '', tipo: 'privado' });
+      renderizarLinksModal();
+    }
+
+    function removerLinkModal(idx) {
+      clientesModalLinks.splice(idx, 1);
+      renderizarLinksModal();
+    }
+
+    function renderizarLinksModal() {
+      const cont = document.getElementById('clientes-modal-links-lista');
+      if (clientesModalLinks.length === 0) {
+        cont.innerHTML = `<p class="texto-vazio">${tr('clientes_nenhum_link')}</p>`;
+        return;
+      }
+      cont.innerHTML = clientesModalLinks
+        .map((item, idx) => `
+          <div class="clientes-link-item" data-idx="${idx}">
+            <input type="text" class="clientes-link-rotulo" data-idx="${idx}" placeholder="${escapeHtml(tr('clientes_link_rotulo_placeholder'))}" value="${escapeHtml(item.rotulo)}">
+            <input type="text" class="clientes-link-url" data-idx="${idx}" placeholder="https://..." value="${escapeHtml(item.url)}">
+            <select class="clientes-link-tipo" data-idx="${idx}">
+              <option value="privado"${item.tipo === 'privado' ? ' selected' : ''}>${escapeHtml(tr('clientes_link_privado'))}</option>
+              <option value="cliente"${item.tipo === 'cliente' ? ' selected' : ''}>${escapeHtml(tr('clientes_link_pro_cliente'))}</option>
+            </select>
+            <button type="button" class="cal-btn cal-btn-icon clientes-link-remover" data-idx="${idx}" aria-label="${escapeHtml(tr('clientes_remover_link_aria'))}">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        `)
+        .join('');
+
+      cont.querySelectorAll('.clientes-link-rotulo').forEach((input) => {
+        input.addEventListener('input', () => {
+          clientesModalLinks[Number(input.dataset.idx)].rotulo = input.value;
+        });
+      });
+      cont.querySelectorAll('.clientes-link-url').forEach((input) => {
+        input.addEventListener('input', () => {
+          clientesModalLinks[Number(input.dataset.idx)].url = input.value;
+        });
+      });
+      cont.querySelectorAll('.clientes-link-tipo').forEach((select) => {
+        select.addEventListener('change', () => {
+          clientesModalLinks[Number(select.dataset.idx)].tipo = select.value;
+        });
+      });
+      cont.querySelectorAll('.clientes-link-remover').forEach((btn) => {
+        btn.addEventListener('click', () => removerLinkModal(Number(btn.dataset.idx)));
+      });
+    }
+
+    // ---- Modal de cliente ----
+    function abrirModalCliente(cliente) {
+      clienteAbertoId = cliente ? cliente.id : null;
+
+      document.getElementById('clientes-modal-nome').value = cliente ? cliente.nome : '';
+
+      const selectStatus = document.getElementById('clientes-modal-status');
+      selectStatus.innerHTML = CLIENTES_STATUS.map((s) => `<option value="${s}">${escapeHtml(traduzirStatusCliente(s))}</option>`).join('');
+      selectStatus.value = cliente ? cliente.status : 'Negociando';
+
+      document.getElementById('clientes-modal-template').value = cliente ? cliente.template_escolhido || '' : '';
+      document.getElementById('clientes-modal-email').value = cliente ? cliente.contato_email || '' : '';
+      document.getElementById('clientes-modal-whats').value = cliente ? cliente.contato_whatsapp || '' : '';
+      document.getElementById('clientes-modal-valor').value = cliente && cliente.valor != null ? cliente.valor : '';
+      document.getElementById('clientes-modal-fechamento').value = cliente && cliente.data_fechamento ? cliente.data_fechamento : '';
+      document.getElementById('clientes-modal-entrega').value = cliente && cliente.data_entrega ? cliente.data_entrega : '';
+      document.getElementById('clientes-modal-observacoes').value = cliente ? cliente.observacoes || '' : '';
+
+      clientesModalLinks = cliente
+        ? clientesLinksCache
+            .filter((l) => l.cliente_id === cliente.id)
+            .sort((a, b) => a.ordem - b.ordem)
+            .map((l) => ({ rotulo: l.rotulo, url: l.url, tipo: l.tipo }))
+        : [];
+      renderizarLinksModal();
+
+      document.getElementById('clientes-modal-excluir').hidden = !cliente;
+      document.getElementById('clientes-modal-overlay').hidden = false;
+    }
+
+    function fecharModalCliente() {
+      clienteAbertoId = null;
+      document.getElementById('clientes-modal-overlay').hidden = true;
+    }
+
+    async function salvarModalCliente() {
+      const nome = document.getElementById('clientes-modal-nome').value.trim();
+      if (!nome) {
+        alert(tr('clientes_preencha_nome'));
+        return;
+      }
+
+      const linha = {
+        nome,
+        status: document.getElementById('clientes-modal-status').value,
+        template_escolhido: document.getElementById('clientes-modal-template').value.trim() || null,
+        contato_email: document.getElementById('clientes-modal-email').value.trim() || null,
+        contato_whatsapp: document.getElementById('clientes-modal-whats').value.trim() || null,
+        valor: document.getElementById('clientes-modal-valor').value ? Number(document.getElementById('clientes-modal-valor').value) : null,
+        data_fechamento: document.getElementById('clientes-modal-fechamento').value || null,
+        data_entrega: document.getElementById('clientes-modal-entrega').value || null,
+        observacoes: document.getElementById('clientes-modal-observacoes').value.trim() || null,
+      };
+
+      const btn = document.getElementById('clientes-modal-salvar');
+      btn.disabled = true;
+      try {
+        let clienteId = clienteAbertoId;
+        if (clienteId) {
+          const { error } = await Auth.sb.from('clientes').update(linha).eq('id', clienteId);
+          if (error) throw error;
+        } else {
+          const { data, error } = await Auth.sb.from('clientes').insert(linha).select();
+          if (error) throw error;
+          clienteId = data[0].id;
+        }
+
+        const linksValidos = clientesModalLinks.filter((l) => l.rotulo.trim() && l.url.trim());
+        const linksParaSalvar = linksValidos.map((l, i) => ({
+          rotulo: l.rotulo.trim(),
+          url: l.url.trim(),
+          tipo: l.tipo === 'cliente' ? 'cliente' : 'privado',
+          ordem: i,
+        }));
+        const { error: erroLinks } = await Auth.sb.rpc('clientes_substituir_links', {
+          p_cliente_id: clienteId,
+          p_links: linksParaSalvar,
+        });
+        if (erroLinks) throw erroLinks;
+
+        fecharModalCliente();
+        await carregarClientes();
+      } catch (err) {
+        console.error('Erro ao salvar cliente:', err);
+        alert(tr('erro_salvar_generico'));
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function excluirModalCliente() {
+      if (!clienteAbertoId) return;
+      if (!(await confirmarAcao(tr('clientes_excluir_confirmar')))) return;
+      try {
+        const { error } = await Auth.sb.from('clientes').delete().eq('id', clienteAbertoId);
+        if (error) throw error;
+        fecharModalCliente();
+        await carregarClientes();
+      } catch (err) {
+        console.error('Erro ao excluir cliente:', err);
+        alert(tr('erro_excluir_generico'));
+      }
     }
 
     // Escapa texto vindo do banco antes de inserir como HTML (evita XSS,

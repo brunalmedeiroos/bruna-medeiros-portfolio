@@ -2369,6 +2369,60 @@
   }
 }
 
+/* ---- Clientes ---- */
+
+.painel-body .cal-todas-cabecalho.clientes-linha,
+.painel-body .cal-todas-linha.clientes-linha {
+  grid-template-columns: 1fr 130px 140px 100px 110px 110px;
+}
+
+.painel-body .clientes-nome {
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .clientes-status-pill {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  width: fit-content;
+  background: rgba(var(--grafite-rgb), 0.08);
+  color: var(--grafite);
+}
+
+.painel-body .clientes-status-fechado,
+.painel-body .clientes-status-producao {
+  background: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .clientes-status-entregue {
+  background: var(--sucesso);
+  color: var(--branco);
+}
+
+.painel-body .clientes-status-cancelado {
+  background: rgba(196, 69, 60, 0.12);
+  color: var(--erro);
+}
+
+.painel-body .clientes-link-item {
+  display: grid;
+  grid-template-columns: 140px 1fr 110px 32px;
+  gap: 8px;
+  align-items: center;
+}
+
+@media (max-width: 480px) {
+  .painel-body .clientes-link-item {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---- Checklist de subitens de uma tarefa do Calendário ---- */
 
 .painel-body .cal-checklist-item {

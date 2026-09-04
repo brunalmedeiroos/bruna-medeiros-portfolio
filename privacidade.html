@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Política de Privacidade — Bruna Medeiros</title>
+<meta name="description" content="Política de privacidade do Painel Bruna e da conexão com o Instagram.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue-light: #7DB7CE;
+    --blue-dark:  #04465D;
+    --butter:     #FFF7C5;
+    --offwhite:   #FAF9F4;
+    --white:      #FFFFFF;
+    --blue-dark-15: rgba(4,70,93,0.12);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    font-family:'Montserrat', sans-serif;
+    color: var(--blue-dark);
+    background: var(--offwhite);
+    line-height: 1.65;
+  }
+  .wrap{
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 64px 24px 96px;
+  }
+  a{ color: var(--blue-dark); text-decoration: underline; text-decoration-color: var(--blue-light); text-underline-offset: 3px; }
+  a:hover{ color: var(--blue-light); }
+  .voltar{
+    display:inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-decoration:none;
+    color: var(--blue-dark);
+    margin-bottom: 40px;
+  }
+  .voltar:hover{ color: var(--blue-light); }
+  .eyebrow{
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    margin-bottom: 10px;
+  }
+  h1{
+    font-size: clamp(28px, 4vw, 38px);
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .atualizado{
+    font-size: 13px;
+    color: rgba(4,70,93,0.6);
+    margin-bottom: 44px;
+  }
+  h2{
+    font-size: 19px;
+    font-weight: 700;
+    margin: 40px 0 12px;
+  }
+  p{ margin-bottom: 14px; font-size: 15.5px; }
+  ul{ margin: 0 0 14px 20px; }
+  li{ margin-bottom: 8px; font-size: 15.5px; }
+  .card{
+    background: var(--white);
+    border: 1px solid var(--blue-dark-15);
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin-top: 44px;
+  }
+  .card h2{ margin-top: 0; }
+  .card a{ font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="voltar" href="index.html">← Voltar pro portfólio</a>
+
+  <span class="eyebrow">Painel Bruna</span>
+  <h1>Política de Privacidade</h1>
+  <p class="atualizado">Última atualização: setembro de 2026</p>
+
+  <p>Esta página explica como o <strong>Painel Bruna</strong> — o painel administrativo usado por Bruna Medeiros pra gerenciar seu trabalho como creator, incluindo a conexão com o Instagram — trata os dados acessados através da API do Instagram.</p>
+
+  <h2>Quem opera este painel</h2>
+  <p>O Painel Bruna é uma ferramenta de uso pessoal, operada e administrada exclusivamente por Bruna Medeiros, para gerenciar sua própria conta profissional do Instagram. Não é um produto oferecido a terceiros nem coleta dados de outras pessoas além do necessário para o funcionamento descrito abaixo.</p>
+
+  <h2>Quais dados são acessados</h2>
+  <p>Ao conectar a conta do Instagram ao painel, através da API oficial do Instagram (Meta), o painel pode acessar:</p>
+  <ul>
+    <li>Informações básicas do perfil profissional (nome de usuário, ID da conta, contagem de seguidores)</li>
+    <li>Métricas e desempenho das publicações (alcance, curtidas, comentários, salvamentos)</li>
+    <li>Comentários feitos em publicações da conta, para identificar palavras-chave configuradas</li>
+    <li>Envio de respostas privadas (mensagens diretas) para pessoas que comentaram uma palavra-chave configurada</li>
+  </ul>
+
+  <h2>Como esses dados são usados</h2>
+  <p>Os dados são usados exclusivamente para:</p>
+  <ul>
+    <li>Exibir métricas e desempenho de publicações no painel, para uso interno de Bruna Medeiros</li>
+    <li>Automatizar o envio de uma resposta privada pré-definida quando alguém comenta uma palavra-chave específica em uma publicação (por exemplo, para enviar um link de interesse)</li>
+    <li>Manter um registro simples (nome da conta, se recebeu a resposta, quantas vezes interagiu) para acompanhamento interno</li>
+  </ul>
+  <p>Esses dados não são vendidos, compartilhados ou usados para qualquer finalidade publicitária, e não são repassados a terceiros.</p>
+
+  <h2>Onde os dados ficam guardados</h2>
+  <p>Os dados são armazenados em um banco de dados privado (Supabase), com acesso restrito à conta de Bruna Medeiros. Os tokens de acesso à API do Instagram são guardados de forma criptografada (Supabase Vault), nunca em texto puro.</p>
+
+  <h2>Retenção e exclusão</h2>
+  <p>Os dados de conexão com o Instagram são mantidos enquanto a integração estiver ativa. Bruna Medeiros pode desconectar a integração a qualquer momento pelo próprio painel, o que apaga o token de acesso guardado. O registro de contas que interagiram com as automações pode ser apagado a pedido, entrando em contato pelo e-mail abaixo.</p>
+
+  <h2>Contato</h2>
+  <p>Dúvidas sobre esta política podem ser enviadas para <a href="mailto:brunamedeirosugc@gmail.com">brunamedeirosugc@gmail.com</a>.</p>
+
+  <div class="card">
+    <h2>Termos de Serviço</h2>
+    <p>Veja também os <a href="termos.html">Termos de Serviço</a> deste painel.</p>
+  </div>
+</div>
+</body>
+</html>

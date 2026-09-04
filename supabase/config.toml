@@ -477,6 +477,11 @@ enabled = true
 import_map = "./functions/instagram-metrics/deno.json"
 entrypoint = "./functions/instagram-metrics/index.ts"
 
+[functions.instagram-oauth-disconnect]
+enabled = true
+import_map = "./functions/instagram-oauth-disconnect/deno.json"
+entrypoint = "./functions/instagram-oauth-disconnect/index.ts"
+
 [functions.radar-atualizar]
 enabled = true
 verify_jwt = false

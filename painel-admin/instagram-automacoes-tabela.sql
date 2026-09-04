@@ -24,12 +24,16 @@ create index if not exists instagram_automacoes_ativo_idx on public.instagram_au
 
 alter table public.instagram_automacoes enable row level security;
 
+drop policy if exists "Painel: leitura autenticada de automações do Instagram" on public.instagram_automacoes;
 create policy "Painel: leitura autenticada de automações do Instagram"
   on public.instagram_automacoes for select to authenticated using (public.is_owner());
+drop policy if exists "Painel: escrita autenticada de automações do Instagram" on public.instagram_automacoes;
 create policy "Painel: escrita autenticada de automações do Instagram"
   on public.instagram_automacoes for insert to authenticated with check (public.is_owner());
+drop policy if exists "Painel: atualização autenticada de automações do Instagram" on public.instagram_automacoes;
 create policy "Painel: atualização autenticada de automações do Instagram"
   on public.instagram_automacoes for update to authenticated using (public.is_owner()) with check (public.is_owner());
+drop policy if exists "Painel: exclusão autenticada de automações do Instagram" on public.instagram_automacoes;
 create policy "Painel: exclusão autenticada de automações do Instagram"
   on public.instagram_automacoes for delete to authenticated using (public.is_owner());
 
@@ -53,12 +57,16 @@ create unique index if not exists instagram_leads_conta_idx on public.instagram_
 
 alter table public.instagram_leads enable row level security;
 
+drop policy if exists "Painel: leitura autenticada de leads do Instagram" on public.instagram_leads;
 create policy "Painel: leitura autenticada de leads do Instagram"
   on public.instagram_leads for select to authenticated using (public.is_owner());
+drop policy if exists "Painel: escrita autenticada de leads do Instagram" on public.instagram_leads;
 create policy "Painel: escrita autenticada de leads do Instagram"
   on public.instagram_leads for insert to authenticated with check (public.is_owner());
+drop policy if exists "Painel: atualização autenticada de leads do Instagram" on public.instagram_leads;
 create policy "Painel: atualização autenticada de leads do Instagram"
   on public.instagram_leads for update to authenticated using (public.is_owner()) with check (public.is_owner());
+drop policy if exists "Painel: exclusão autenticada de leads do Instagram" on public.instagram_leads;
 create policy "Painel: exclusão autenticada de leads do Instagram"
   on public.instagram_leads for delete to authenticated using (public.is_owner());
 
@@ -73,10 +81,13 @@ create table if not exists public.instagram_comentarios_processados (
 
 alter table public.instagram_comentarios_processados enable row level security;
 
+drop policy if exists "Painel: leitura autenticada de comentários processados" on public.instagram_comentarios_processados;
 create policy "Painel: leitura autenticada de comentários processados"
   on public.instagram_comentarios_processados for select to authenticated using (public.is_owner());
+drop policy if exists "Painel: escrita autenticada de comentários processados" on public.instagram_comentarios_processados;
 create policy "Painel: escrita autenticada de comentários processados"
   on public.instagram_comentarios_processados for insert to authenticated with check (public.is_owner());
+drop policy if exists "Painel: exclusão autenticada de comentários processados" on public.instagram_comentarios_processados;
 create policy "Painel: exclusão autenticada de comentários processados"
   on public.instagram_comentarios_processados for delete to authenticated using (public.is_owner());
 
@@ -94,6 +105,13 @@ create policy "Painel: exclusão autenticada de comentários processados"
 -- abaixo, é porque o Claude configurou o secret da Edge Function pra
 -- você nessa mesma sessão; senão, troque o texto de exemplo pelo mesmo
 -- valor usado em "supabase secrets set INSTAGRAM_AUTOMACAO_CRON_SECRET=...".
+do $$
+begin
+  if not exists (select 1 from vault.decrypted_secrets where name = 'instagram_automacao_cron_secret') then
+    perform vault.create_secret('COLE_O_MESMO_VALOR_DO_INSTAGRAM_AUTOMACAO_CRON_SECRET_AQUI', 'instagram_automacao_cron_secret');
+  end if;
+end $$;
+
 select cron.schedule(
   'instagram-automacao-processar-periodico',
   '*/10 * * * *', -- a cada 10 minutos

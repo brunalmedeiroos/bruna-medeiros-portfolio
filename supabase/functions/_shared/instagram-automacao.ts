@@ -6,12 +6,19 @@
 // e manda a resposta privada via Graph API.
 //
 // NÃO usa webhook — receber aviso em tempo real de comentário exige o app
-// do Meta em modo "Live" com Advanced Access aprovado, mesmo sendo só pra
-// conta da própria dona do painel. Em vez disso, é chamado periodicamente
-// (cron a cada 10 min — ver instagram-automacoes-tabela.sql) e cada
-// chamada "confere o que mudou desde a última vez", usando só o Standard
-// Access que o app já tem (suficiente quando o app só serve a própria
-// conta do dono, sem App Review).
+// do Meta em modo "Live" com Advanced Access aprovado. Em vez disso, é
+// chamado periodicamente (cron a cada 10 min — ver
+// instagram-automacoes-tabela.sql) e cada chamada "confere o que mudou
+// desde a última vez".
+//
+// IMPORTANTE — modo do app: o app do Meta precisa estar em modo "Live"
+// (não "Em desenvolvimento") pra listar comentários de verdade — em modo
+// de desenvolvimento, a Graph API aceita a chamada e devolve
+// comments_count certo, mas a lista em si (o edge /comments) sempre volta
+// vazia, mesmo pra própria conta da dona do painel e com a permissão
+// concedida. Não precisa de App Review pra isso (só de app Live), mas
+// exige Política de Privacidade e Termos de Serviço cadastrados nas
+// configurações do app.
 //
 // Regras da API do Instagram que isso respeita (developers.facebook.com/
 // docs/instagram-platform/private-replies):

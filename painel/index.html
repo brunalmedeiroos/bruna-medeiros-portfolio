@@ -2514,6 +2514,8 @@
         instagram_recebeu_nao: 'Não',
         instagram_desconectar: 'Desconectar',
         instagram_desconectar_confirmar: 'Desconectar o Instagram? Você vai precisar autorizar de novo pra reconectar.',
+        instagram_processado_comentarios_prefixo: 'Comentários vistos: ',
+        instagram_processado_respostas_prefixo: ' · Respostas enviadas: ',
       },
       en: {
         titulo_dashboard: 'Dashboard',
@@ -3147,6 +3149,8 @@
         instagram_recebeu_nao: 'No',
         instagram_desconectar: 'Disconnect',
         instagram_desconectar_confirmar: 'Disconnect Instagram? You will need to authorize again to reconnect.',
+        instagram_processado_comentarios_prefixo: 'Comments seen: ',
+        instagram_processado_respostas_prefixo: ' · Replies sent: ',
       },
     };
 
@@ -5587,6 +5591,11 @@
         const resultado = await chamarFuncao('instagram-automacao-processar', { method: 'POST' });
         if (!resultado.ok) throw new Error(resultado.error || 'erro desconhecido');
         await carregarInstagramAutomacoes();
+        let resumo = `${tr('instagram_processado_comentarios_prefixo')}${resultado.comentariosVistos ?? 0}${tr('instagram_processado_respostas_prefixo')}${resultado.respostasEnviadas ?? 0}`;
+        if (resultado.erros && resultado.erros.length) {
+          resumo += `\n\n${resultado.erros.join('\n')}`;
+        }
+        alert(resumo);
       } catch (err) {
         console.error('Erro ao processar automações do Instagram:', err);
         alert(tr('erro_salvar_generico'));

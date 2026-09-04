@@ -54,7 +54,13 @@ interface Comentario {
 
 // deno-lint-ignore no-explicit-any
 export async function processarAutomacoes(supabaseAdmin: any, igUserId: string, accessToken: string) {
-  const resultado = { comentariosVistos: 0, respostasEnviadas: 0, erros: [] as string[] };
+  const resultado = {
+    comentariosVistos: 0,
+    respostasEnviadas: 0,
+    erros: [] as string[],
+    midiasEncontradas: 0,
+    midiasChecadas: 0,
+  };
 
   const { data: automacoes } = await supabaseAdmin
     .from("instagram_automacoes")
@@ -74,11 +80,13 @@ export async function processarAutomacoes(supabaseAdmin: any, igUserId: string, 
     resultado.erros.push(`buscar posts: ${(e as Error).message}`);
     return resultado;
   }
+  resultado.midiasEncontradas = midias.length;
 
   const agora = Date.now();
   // Um post com mais de 7 dias não pode mais gerar resposta privada válida
   // pra nenhum comentário novo nele — nem vale a pena olhar seus comentários.
   const midiasRecentes = midias.filter((m) => agora - new Date(m.timestamp).getTime() < JANELA_RESPOSTA_MS);
+  resultado.midiasChecadas = midiasRecentes.length;
 
   for (const midia of midiasRecentes) {
     let comentarios: Comentario[] = [];

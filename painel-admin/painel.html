@@ -1404,6 +1404,7 @@
 
         <div class="cal-form-acoes">
           <button type="button" id="ugc-modal-roteiro-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
+          <button type="button" id="ugc-modal-roteiro-compartilhar" class="cal-btn" data-i18n="ugc_compartilhar_roteiro">Link para aprovação</button>
           <button type="button" id="ugc-modal-roteiro-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
         </div>
       </div>
@@ -2425,6 +2426,8 @@
         ugc_cena_conferida_label: 'Cena conferida',
         nenhum: 'Nenhum',
         ugc_excluir_roteiro_confirmar: 'Excluir este roteiro? As cenas também serão apagadas.',
+        ugc_compartilhar_roteiro: 'Link para aprovação',
+        ugc_link_roteiro_copiado: 'Link copiado! É só mandar pra marca aprovar o roteiro.',
         ugc_followup_era_prefixo: 'Follow-up era ',
         ugc_sem_followup_marcado: 'Sem follow-up marcado',
         ugc_excluir_prospeccao_confirmar: 'Excluir esta prospecção?',
@@ -3060,6 +3063,8 @@
         ugc_cena_conferida_label: 'Scene checked',
         nenhum: 'None',
         ugc_excluir_roteiro_confirmar: 'Delete this script? The scenes will also be deleted.',
+        ugc_compartilhar_roteiro: 'Link for approval',
+        ugc_link_roteiro_copiado: 'Link copied! Send it to the brand to approve the script.',
         ugc_followup_era_prefixo: 'Follow-up was ',
         ugc_sem_followup_marcado: 'No follow-up scheduled',
         ugc_excluir_prospeccao_confirmar: 'Delete this prospect?',
@@ -3667,6 +3672,7 @@
       document.getElementById('btn-ugc-novo-roteiro').addEventListener('click', () => abrirModalRoteiro(null));
       document.getElementById('ugc-modal-roteiro-fechar').addEventListener('click', fecharModalRoteiro);
       document.getElementById('ugc-modal-roteiro-excluir').addEventListener('click', excluirModalRoteiro);
+      document.getElementById('ugc-modal-roteiro-compartilhar').addEventListener('click', compartilharModalRoteiro);
       document.getElementById('ugc-modal-roteiro-salvar').addEventListener('click', salvarModalRoteiro);
       document.getElementById('ugc-modal-roteiro-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'ugc-modal-roteiro-overlay') fecharModalRoteiro();
@@ -7227,6 +7233,7 @@
       renderizarCenasModal();
 
       document.getElementById('ugc-modal-roteiro-excluir').hidden = !roteiro;
+      document.getElementById('ugc-modal-roteiro-compartilhar').hidden = !roteiro;
       document.getElementById('ugc-modal-roteiro-overlay').hidden = false;
     }
 
@@ -7297,6 +7304,31 @@
       } catch (err) {
         console.error('Erro ao excluir roteiro:', err);
         alert(tr('erro_excluir_generico'));
+      }
+    }
+
+    // Gera (ou reaproveita) o link público de leitura do roteiro — usa o
+    // share_token da própria linha como segredo, então não precisa de RLS
+    // pública nem de login da marca pra ela conseguir ler.
+    async function compartilharModalRoteiro() {
+      if (!ugcRoteiroAbertoId) return;
+      const btn = document.getElementById('ugc-modal-roteiro-compartilhar');
+      btn.disabled = true;
+      try {
+        const { data, error } = await Auth.sb
+          .from('ugc_roteiros')
+          .select('share_token')
+          .eq('id', ugcRoteiroAbertoId)
+          .single();
+        if (error) throw error;
+        const link = `https://brunamedeiros.com/roteiro/?id=${ugcRoteiroAbertoId}&token=${data.share_token}`;
+        await navigator.clipboard.writeText(link);
+        alert(tr('ugc_link_roteiro_copiado'));
+      } catch (err) {
+        console.error('Erro ao gerar link do roteiro:', err);
+        alert(tr('ugc_erro_copiar'));
+      } finally {
+        btn.disabled = false;
       }
     }
 

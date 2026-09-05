@@ -430,6 +430,12 @@ verify_jwt = false
 import_map = "./functions/portfolio-publico/deno.json"
 entrypoint = "./functions/portfolio-publico/index.ts"
 
+[functions.roteiro-publico]
+enabled = true
+verify_jwt = false
+import_map = "./functions/roteiro-publico/deno.json"
+entrypoint = "./functions/roteiro-publico/index.ts"
+
 [functions.gmail-oauth-start]
 enabled = true
 import_map = "./functions/gmail-oauth-start/deno.json"

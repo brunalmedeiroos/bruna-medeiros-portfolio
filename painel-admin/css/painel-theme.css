@@ -2299,6 +2299,51 @@
   margin-top: 4px;
 }
 
+.painel-body .ugc-roteiro-card-comentarios {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-suave);
+  margin-top: 4px;
+}
+
+.painel-body .ugc-roteiro-comentarios-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.painel-body .ugc-roteiro-comentario {
+  background: var(--creme);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 12px 14px;
+}
+
+.painel-body .ugc-roteiro-comentario-cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.painel-body .ugc-roteiro-comentario-autor {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .ugc-roteiro-comentario-data {
+  font-size: 11px;
+  color: var(--texto-suave);
+}
+
+.painel-body .ugc-roteiro-comentario-texto {
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
 .painel-body .ugc-roteiro-progresso-badge {
   font-size: 11px;
   font-weight: 700;

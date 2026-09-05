@@ -206,6 +206,57 @@
     color:var(--blue-dark);
   }
 
+  .comentario-titulo{
+    font-size:17px;
+    font-weight:700;
+    margin-bottom:4px;
+  }
+  .comentario-sub{
+    font-size:13px;
+    color:var(--blue-dark-70);
+    margin-bottom:16px;
+  }
+  .cm-input, .cm-textarea{
+    width:100%;
+    border:1px solid var(--blue-dark-10);
+    border-radius:10px;
+    padding:11px 13px;
+    font-family:var(--font-body);
+    font-size:14px;
+    color:var(--blue-dark);
+    background:var(--offwhite);
+    margin-bottom:10px;
+  }
+  .cm-input:focus, .cm-textarea:focus{
+    outline:none;
+    border-color:var(--blue-light);
+  }
+  .cm-textarea{
+    min-height:90px;
+    resize:vertical;
+  }
+  .cm-botao{
+    border:none;
+    border-radius:999px;
+    padding:11px 22px;
+    font-family:var(--font-body);
+    font-size:13px;
+    font-weight:700;
+    color:var(--white);
+    background:var(--blue-dark);
+    cursor:pointer;
+  }
+  .cm-botao:disabled{
+    opacity:0.5;
+    cursor:default;
+  }
+  .cm-status{
+    margin-top:12px;
+    font-size:13px;
+  }
+  .cm-status-ok{ color:#2E7D4F; }
+  .cm-status-erro{ color:var(--erro); }
+
   [hidden]{ display:none !important; }
 
   @media (max-width:480px){
@@ -253,6 +304,15 @@
       <span id="rt-cenas-contagem" class="cenas-contagem"></span>
     </div>
     <div id="rt-cenas"></div>
+
+    <div class="cartao">
+      <div class="comentario-titulo">Deixar um comentário</div>
+      <p class="comentario-sub">Alguma observação sobre o roteiro? Escreve aqui que a Bruna recebe.</p>
+      <input type="text" id="cm-autor" class="cm-input" placeholder="Seu nome (opcional)" maxlength="100">
+      <textarea id="cm-mensagem" class="cm-textarea" placeholder="Escreva seu comentário..." maxlength="2000"></textarea>
+      <button type="button" id="cm-enviar" class="cm-botao">Enviar comentário</button>
+      <p id="cm-status" class="cm-status" hidden></p>
+    </div>
   </div>
 
   <div class="rodape">
@@ -264,6 +324,7 @@
 <script>
 (function () {
   var FUNCTION_URL = 'https://trfoymytrvdbslwizfqs.supabase.co/functions/v1/roteiro-publico';
+  var COMENTAR_URL = 'https://trfoymytrvdbslwizfqs.supabase.co/functions/v1/roteiro-comentar';
 
   var ICONES = {
     fala: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-4.4 7.4 8.5 8.5 0 0 1-9.1-.5L3 21l1.9-4.5a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 8.5-8.5h.2a8.5 8.5 0 0 1 8.3 8.1v.2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
@@ -361,6 +422,43 @@
       console.error('Erro ao carregar roteiro público:', err);
       mostrarErro(err.message === 'expirado' ? 'Esse link expirou. Peça um novo link pra Bruna.' : null);
     });
+
+  document.getElementById('cm-enviar').addEventListener('click', function () {
+    var mensagem = document.getElementById('cm-mensagem').value.trim();
+    var statusEl = document.getElementById('cm-status');
+    if (!mensagem) return;
+
+    var btn = document.getElementById('cm-enviar');
+    btn.disabled = true;
+    statusEl.hidden = true;
+
+    fetch(COMENTAR_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: id,
+        token: token,
+        mensagem: mensagem,
+        autor: document.getElementById('cm-autor').value.trim(),
+      }),
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (resp) {
+        if (!resp || !resp.ok) throw new Error('erro');
+        document.getElementById('cm-mensagem').value = '';
+        statusEl.textContent = 'Comentário enviado! Obrigada.';
+        statusEl.className = 'cm-status cm-status-ok';
+        statusEl.hidden = false;
+        btn.disabled = false;
+      })
+      .catch(function (err) {
+        console.error('Erro ao enviar comentário:', err);
+        statusEl.textContent = 'Não deu pra enviar agora. Tenta de novo em instantes.';
+        statusEl.className = 'cm-status cm-status-erro';
+        statusEl.hidden = false;
+        btn.disabled = false;
+      });
+  });
 })();
 </script>
 

@@ -436,6 +436,12 @@ verify_jwt = false
 import_map = "./functions/roteiro-publico/deno.json"
 entrypoint = "./functions/roteiro-publico/index.ts"
 
+[functions.roteiro-comentar]
+enabled = true
+verify_jwt = false
+import_map = "./functions/roteiro-comentar/deno.json"
+entrypoint = "./functions/roteiro-comentar/index.ts"
+
 [functions.gmail-oauth-start]
 enabled = true
 import_map = "./functions/gmail-oauth-start/deno.json"

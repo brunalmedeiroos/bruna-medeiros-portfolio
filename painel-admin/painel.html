@@ -1425,6 +1425,11 @@
           <textarea id="ugc-roteiro-observacoes"></textarea>
         </div>
 
+        <div id="ugc-roteiro-comentarios-secao" hidden>
+          <h4 class="ugc-modal-secao-titulo" data-i18n="ugc_comentarios_titulo">Comentários da marca</h4>
+          <div id="ugc-roteiro-comentarios-lista" class="ugc-roteiro-comentarios-lista"></div>
+        </div>
+
         <h4 class="ugc-modal-secao-titulo"><span data-i18n="ugc_cenas">Cenas</span> <span id="ugc-roteiro-progresso" class="ugc-roteiro-progresso-badge"></span></h4>
         <div id="ugc-roteiro-cenas-lista" class="ugc-cenas-lista"></div>
         <button type="button" id="btn-ugc-add-cena" class="cal-btn" data-i18n="ugc_add_cena">+ Adicionar cena</button>
@@ -1750,6 +1755,7 @@
     let ugcRoteirosCache = [];
     let ugcRoteiroCenasCache = [];
     let ugcRoteiroVisualizacoesCache = [];
+    let ugcRoteiroComentariosCache = [];
     let ugcProspeccaoCache = [];
     let ugcContratosCache = [];
     let ugcPrecosCache = [];
@@ -2496,6 +2502,10 @@
         ugc_link_revogado_copiado: 'Novo link copiado! O link antigo já parou de funcionar.',
         ugc_link_valido_prefixo: 'Link válido até ',
         ugc_link_expirado_prefixo: 'Link expirado em ',
+        ugc_comentarios_titulo: 'Comentários da marca',
+        ugc_comentario_autor_padrao: 'Marca',
+        ugc_comentario_singular: 'comentário',
+        ugc_comentario_plural: 'comentários',
         ugc_followup_era_prefixo: 'Follow-up era ',
         ugc_sem_followup_marcado: 'Sem follow-up marcado',
         ugc_excluir_prospeccao_confirmar: 'Excluir esta prospecção?',
@@ -3152,6 +3162,10 @@
         ugc_link_revogado_copiado: 'New link copied! The old link has already stopped working.',
         ugc_link_valido_prefixo: 'Link valid until ',
         ugc_link_expirado_prefixo: 'Link expired on ',
+        ugc_comentarios_titulo: 'Brand comments',
+        ugc_comentario_autor_padrao: 'Brand',
+        ugc_comentario_singular: 'comment',
+        ugc_comentario_plural: 'comments',
         ugc_followup_era_prefixo: 'Follow-up was ',
         ugc_sem_followup_marcado: 'No follow-up scheduled',
         ugc_excluir_prospeccao_confirmar: 'Delete this prospect?',
@@ -6684,12 +6698,13 @@
 
     async function carregarUGC() {
       try {
-        const [trabalhos, entregaveis, roteiros, cenas, visualizacoes, prospeccao, contratos, precos] = await Promise.all([
+        const [trabalhos, entregaveis, roteiros, cenas, visualizacoes, comentarios, prospeccao, contratos, precos] = await Promise.all([
           buscarTudo('ugc_trabalhos'),
           buscarTudo('ugc_trabalho_entregaveis'),
           buscarTudo('ugc_roteiros'),
           buscarTudo('ugc_roteiro_cenas'),
           buscarTudo('ugc_roteiro_visualizacoes'),
+          buscarTudo('ugc_roteiro_comentarios'),
           buscarTudo('ugc_prospeccao'),
           buscarTudo('ugc_contratos'),
           buscarTudo('ugc_precos'),
@@ -6699,6 +6714,7 @@
         ugcRoteirosCache = roteiros;
         ugcRoteiroCenasCache = cenas;
         ugcRoteiroVisualizacoesCache = visualizacoes;
+        ugcRoteiroComentariosCache = comentarios;
         ugcProspeccaoCache = prospeccao;
         ugcContratosCache = contratos;
         ugcPrecosCache = precos;
@@ -7246,6 +7262,7 @@
     function criarCardRoteiro(roteiro) {
       const cenas = ugcRoteiroCenasCache.filter((c) => c.roteiro_id === roteiro.id);
       const gravadas = cenas.filter((c) => c.cena_gravada).length;
+      const comentarios = ugcRoteiroComentariosCache.filter((c) => c.roteiro_id === roteiro.id).length;
       const card = document.createElement('button');
       card.type = 'button';
       card.className = 'ugc-roteiro-card';
@@ -7254,6 +7271,7 @@
         <span class="ugc-roteiro-card-marca">${escapeHtml(roteiro.marca || tr('ugc_sem_marca'))}</span>
         <span class="ugc-roteiro-card-info">${escapeHtml([roteiro.produto, roteiro.campanha].filter(Boolean).join(' · ') || tr('ugc_sem_detalhes_ainda'))}</span>
         <span class="ugc-roteiro-card-progresso">${cenas.length > 0 ? `${gravadas}/${cenas.length} ${tr('ugc_cenas_gravadas')}` : tr('ugc_sem_cenas_ainda')}</span>
+        ${comentarios > 0 ? `<span class="ugc-roteiro-card-comentarios">${comentarios} ${tr(comentarios === 1 ? 'ugc_comentario_singular' : 'ugc_comentario_plural')}</span>` : ''}
       `;
       card.addEventListener('click', () => abrirModalRoteiro(roteiro));
       return card;
@@ -7355,6 +7373,25 @@
         infoValidade.textContent = '';
         infoValidade.classList.remove('ugc-link-expirado');
       }
+
+      const comentarios = roteiro
+        ? ugcRoteiroComentariosCache.filter((c) => c.roteiro_id === roteiro.id).sort((a, b) => a.created_at.localeCompare(b.created_at))
+        : [];
+      const secaoComentarios = document.getElementById('ugc-roteiro-comentarios-secao');
+      secaoComentarios.hidden = comentarios.length === 0;
+      document.getElementById('ugc-roteiro-comentarios-lista').innerHTML = comentarios
+        .map(
+          (c) => `
+            <div class="ugc-roteiro-comentario">
+              <div class="ugc-roteiro-comentario-cabecalho">
+                <span class="ugc-roteiro-comentario-autor">${escapeHtml(c.autor || tr('ugc_comentario_autor_padrao'))}</span>
+                <span class="ugc-roteiro-comentario-data">${formatarDataHora(new Date(c.created_at))}</span>
+              </div>
+              <div class="ugc-roteiro-comentario-texto">${escapeHtml(c.mensagem)}</div>
+            </div>
+          `
+        )
+        .join('');
 
       document.getElementById('ugc-roteiro-marca').value = roteiro ? roteiro.marca || '' : '';
       document.getElementById('ugc-roteiro-produto').value = roteiro ? roteiro.produto || '' : '';

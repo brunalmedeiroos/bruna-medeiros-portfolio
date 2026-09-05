@@ -7414,6 +7414,22 @@
         });
         if (erroCenas) throw erroCenas;
 
+        // Se o roteiro está vinculado a um Trabalho que ainda não chegou na
+        // etapa "Roteiro" (ex: "Aguardando briefing"), avança o status
+        // sozinho — nunca anda pra trás, nem mexe em Trabalhos já concluídos
+        // ou cancelados.
+        if (linha.trabalho_id) {
+          const trabalho = ugcTrabalhosCache.find((t) => t.id === linha.trabalho_id);
+          if (trabalho) {
+            const indiceAtual = UGC_STATUS_TRABALHO.indexOf(trabalho.status);
+            const indiceRoteiro = UGC_STATUS_TRABALHO.indexOf('Roteiro');
+            if (indiceAtual !== -1 && indiceAtual < indiceRoteiro) {
+              const { error: erroTrabalho } = await Auth.sb.from('ugc_trabalhos').update({ status: 'Roteiro' }).eq('id', linha.trabalho_id);
+              if (erroTrabalho) console.error('Erro ao avançar status do trabalho vinculado:', erroTrabalho);
+            }
+          }
+        }
+
         fecharModalRoteiro();
         await carregarUGC();
       } catch (err) {

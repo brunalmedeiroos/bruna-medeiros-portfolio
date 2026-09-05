@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260905a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260905b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -2517,6 +2517,9 @@
         ugc_tipo_cena_texto_tela: 'Texto na tela',
         ugc_descricao_cena: 'Detalhes da cena',
         ugc_descricao_cena_placeholder: 'O que precisa aparecer visualmente...',
+        ugc_referencias_visuais: 'Referências visuais (cenário, roupa, itens...)',
+        ugc_anexar_referencia_aria: 'Adicionar imagem de referência',
+        ugc_remover_referencia_aria: 'Remover imagem de referência',
         ugc_funcao_cena_aria: 'Função da cena na estrutura do vídeo',
         ugc_funcao_cena_hook: 'Hook',
         ugc_funcao_cena_contexto: 'Contexto',
@@ -3200,6 +3203,9 @@
         ugc_tipo_cena_texto_tela: 'On-screen text',
         ugc_descricao_cena: 'Scene details',
         ugc_descricao_cena_placeholder: 'What needs to appear visually...',
+        ugc_referencias_visuais: 'Visual references (setting, outfit, props...)',
+        ugc_anexar_referencia_aria: 'Add reference image',
+        ugc_remover_referencia_aria: 'Remove reference image',
         ugc_funcao_cena_aria: 'Scene role in the video structure',
         ugc_funcao_cena_hook: 'Hook',
         ugc_funcao_cena_contexto: 'Context',
@@ -7429,6 +7435,27 @@
                 <label>${escapeHtml(tr('ugc_descricao_cena'))}</label>
                 <textarea data-index="${i}" data-campo="descricao_cena" placeholder="${escapeHtml(tr('ugc_descricao_cena_placeholder'))}">${escapeHtml(cena.descricao_cena || '')}</textarea>
               </div>
+              <div class="cal-form-campo">
+                <label>${escapeHtml(tr('ugc_referencias_visuais'))}</label>
+                <div class="ugc-cena-referencias-lista">
+                  ${(cena.referencias_imagens || [])
+                    .map(
+                      (url, imgIdx) => `
+                        <div class="ugc-cena-referencia-item">
+                          <img src="${escapeHtml(url)}" alt="">
+                          <button type="button" class="ugc-cena-referencia-remover" data-index="${i}" data-img-index="${imgIdx}" aria-label="${escapeHtml(tr('ugc_remover_referencia_aria'))}">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                          </button>
+                        </div>
+                      `
+                    )
+                    .join('')}
+                  <button type="button" class="ugc-cena-referencia-anexar" data-index="${i}" aria-label="${escapeHtml(tr('ugc_anexar_referencia_aria'))}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  </button>
+                  <input type="file" accept="image/*" multiple class="ugc-cena-referencia-input" data-index="${i}" hidden>
+                </div>
+              </div>
               <div class="ugc-cena-checklist">
                 <label class="ugc-cena-check-label"><input type="checkbox" data-index="${i}" data-campo="cena_gravada" ${cena.cena_gravada ? 'checked' : ''}> ${escapeHtml(tr('ugc_cena_gravada_label'))}</label>
                 <label class="ugc-cena-check-label"><input type="checkbox" data-index="${i}" data-campo="cena_conferida" ${cena.cena_conferida ? 'checked' : ''}> ${escapeHtml(tr('ugc_cena_conferida_label'))}</label>
@@ -7467,6 +7494,28 @@
           renderizarCenasModal();
         });
       });
+      cont.querySelectorAll('.ugc-cena-referencia-anexar').forEach((el) => {
+        el.addEventListener('click', () => {
+          cont.querySelector(`.ugc-cena-referencia-input[data-index="${el.dataset.index}"]`).click();
+        });
+      });
+      cont.querySelectorAll('.ugc-cena-referencia-input').forEach((el) => {
+        el.addEventListener('change', async () => {
+          const indice = Number(el.dataset.index);
+          const arquivos = [...el.files];
+          el.value = '';
+          for (const arquivo of arquivos) {
+            await anexarReferenciaCena(indice, arquivo);
+          }
+          renderizarCenasModal();
+        });
+      });
+      cont.querySelectorAll('.ugc-cena-referencia-remover').forEach((el) => {
+        el.addEventListener('click', () => {
+          ugcModalCenas[Number(el.dataset.index)].referencias_imagens.splice(Number(el.dataset.imgIndex), 1);
+          renderizarCenasModal();
+        });
+      });
       cont.querySelectorAll('.ugc-cena-mover').forEach((el) => {
         el.addEventListener('click', () => {
           const i = Number(el.dataset.index);
@@ -7476,6 +7525,23 @@
           renderizarCenasModal();
         });
       });
+    }
+
+    // Sobe uma imagem de referência (cenário, roupa, item...) pro bucket
+    // público ugc-roteiro-referencias — a marca vê direto no link, sem
+    // precisar de signed URL nem login.
+    async function anexarReferenciaCena(indiceCena, arquivo) {
+      try {
+        const caminho = `cenas/${Date.now()}-${arquivo.name}`;
+        const { error } = await Auth.sb.storage.from('ugc-roteiro-referencias').upload(caminho, arquivo);
+        if (error) throw error;
+        const { data } = Auth.sb.storage.from('ugc-roteiro-referencias').getPublicUrl(caminho);
+        if (!ugcModalCenas[indiceCena].referencias_imagens) ugcModalCenas[indiceCena].referencias_imagens = [];
+        ugcModalCenas[indiceCena].referencias_imagens.push(data.publicUrl);
+      } catch (err) {
+        console.error('Erro ao anexar imagem de referência:', err);
+        alert(tr('ugc_erro_anexar_arquivo'));
+      }
     }
 
     function abrirModalRoteiro(roteiro) {
@@ -7621,6 +7687,7 @@
           cena_conferida: !!c.cena_conferida,
           duracao_segundos: c.duracao_segundos != null ? c.duracao_segundos : null,
           funcao_cena: c.funcao_cena || null,
+          referencias_imagens: c.referencias_imagens || [],
         }));
         const { error: erroCenas } = await Auth.sb.rpc('ugc_substituir_cenas', {
           p_roteiro_id: roteiroId,

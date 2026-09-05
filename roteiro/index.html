@@ -206,6 +206,25 @@
     color:var(--blue-dark-50);
     font-style:italic;
   }
+  .referencias-lista{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .referencias-lista a{
+    display:block;
+    width:72px;
+    height:72px;
+    border-radius:10px;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .referencias-lista img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
 
   .estado{
     text-align:center;
@@ -411,6 +430,22 @@
     });
   }
 
+  function blocoReferencias(imagens) {
+    if (!imagens || imagens.length === 0) return '';
+    return (
+      '<div class="campo">' +
+      '<div class="campo-titulo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="9" r="1.5" fill="currentColor"/><path d="M21 15l-5-5-9 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Referências visuais</span></div>' +
+      '<div class="referencias-lista">' +
+      imagens
+        .map(function (url) {
+          return '<a href="' + escapeHtml(url) + '" target="_blank" rel="noopener"><img src="' + escapeHtml(url) + '" alt="Referência visual"></a>';
+        })
+        .join('') +
+      '</div>' +
+      '</div>'
+    );
+  }
+
   function blocoCampo(chave, valor) {
     if (!valor) return '';
     return (
@@ -459,7 +494,7 @@
       var faixas = calcularFaixasTempoCenas(cenas);
       cont.innerHTML = cenas
         .map(function (c, i) {
-          var blocos = [blocoCampo('fala', c.fala), blocoCampo('o_que_fazer', c.o_que_fazer), blocoCampo('tipo_cena', c.tipo_cena), blocoCampo('descricao_cena', c.descricao_cena)]
+          var blocos = [blocoCampo('fala', c.fala), blocoCampo('o_que_fazer', c.o_que_fazer), blocoCampo('tipo_cena', c.tipo_cena), blocoCampo('descricao_cena', c.descricao_cena), blocoReferencias(c.referencias_imagens)]
             .filter(Boolean)
             .join('');
           return (

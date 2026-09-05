@@ -2449,6 +2449,64 @@
   color: var(--grafite);
 }
 
+.painel-body .ugc-cena-referencias-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.painel-body .ugc-cena-referencia-item {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.painel-body .ugc-cena-referencia-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.painel-body .ugc-cena-referencia-remover {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--branco);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.painel-body .ugc-cena-referencia-anexar {
+  width: 56px;
+  height: 56px;
+  border: 1px dashed var(--borda);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--texto-suave);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.painel-body .ugc-cena-referencia-anexar:hover {
+  color: var(--coral);
+  border-color: var(--coral);
+}
+
 .painel-body .ugc-cena-funcao-select {
   padding: 3px 6px;
   border: 1px solid var(--borda);

@@ -194,11 +194,7 @@
     grid-auto-rows:96px;
     grid-auto-flow:dense;
   }
-  .colagem-muitas.colagem-moodboard{ grid-template-columns:repeat(6, 1fr); grid-auto-rows:118px; }
   .colagem-muitas .foto:first-child{ grid-column:span 2; grid-row:span 2; }
-  @media (max-width:480px){
-    .colagem-muitas.colagem-moodboard{ grid-template-columns:repeat(4, 1fr); grid-auto-rows:96px; }
-  }
 
   .foto{ position:relative; overflow:hidden; }
   .foto img{ width:100%; height:100%; object-fit:cover; display:block; }
@@ -220,6 +216,41 @@
   }
 
   #rt-moodboard-secao{ margin-bottom:32px; }
+
+  /* ---------- moodboard geral: quadro livre, fotos do mesmo tamanho,
+     posição escolhida pela Bruna no painel (pode sobrepor) ---------- */
+  .moodboard-quadro{
+    position:relative;
+    width:100%;
+    aspect-ratio:16/10;
+  }
+  .moodboard-foto{
+    position:absolute;
+    width:24%;
+    aspect-ratio:1;
+    transform:translate(-50%,-50%);
+    border-radius:6px;
+    overflow:hidden;
+    border:3px solid var(--card);
+    box-shadow:0 10px 26px rgba(36,23,38,0.22);
+  }
+  .moodboard-foto img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .moodboard-foto::after{
+    content:'';
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, transparent 55%, rgba(0,0,0,.5));
+  }
+  .moodboard-foto .foto-legenda{
+    position:absolute;
+    left:8px; bottom:6px;
+    z-index:1;
+    color:#fff;
+    font-family:var(--font-display);
+    font-style:italic;
+    font-weight:600;
+    font-size:.85rem;
+    text-shadow:0 2px 8px rgba(0,0,0,.5);
+  }
 
   /* ---------- cena ---------- */
   .cena{
@@ -421,10 +452,6 @@
           <h3>Pontos importantes</h3>
           <p id="rt-pontos"></p>
         </div>
-        <div id="rt-legenda-campo" class="destaque" hidden>
-          <h3>Sugestão de legenda</h3>
-          <p id="rt-legenda"></p>
-        </div>
       </div>
     </div>
 
@@ -435,6 +462,13 @@
 
     <p class="secao-titulo"><span>Cenas</span><span id="rt-cenas-contagem" class="secao-contagem"></span></p>
     <div id="rt-cenas"></div>
+
+    <div id="rt-legenda-campo" class="cartao" hidden>
+      <div class="destaque">
+        <h3>Sugestão de legenda</h3>
+        <p id="rt-legenda"></p>
+      </div>
+    </div>
 
     <div class="cartao">
       <div class="comentario-titulo">Deixar um comentário</div>
@@ -531,6 +565,31 @@
     );
   }
 
+  // Moodboard geral: quadro livre onde cada foto fica no x/y que a Bruna
+  // escolheu no painel (arrastando), todas do mesmo tamanho — não muda
+  // conforme a quantidade de fotos, só a posição é livre (pode sobrepor).
+  function moodboardHtml(imagens) {
+    if (!imagens || imagens.length === 0) return '';
+    return (
+      '<div class="moodboard-quadro">' +
+      imagens
+        .map(function (ref) {
+          var url = ref && ref.url ? ref.url : ref;
+          var rotulo = ref && ref.rotulo ? ref.rotulo : '';
+          var x = ref && typeof ref.x === 'number' ? ref.x : 20;
+          var y = ref && typeof ref.y === 'number' ? ref.y : 20;
+          return (
+            '<div class="moodboard-foto" style="left:' + x + '%; top:' + y + '%;">' +
+            '<img src="' + escapeHtml(url) + '" alt="Referência visual">' +
+            (rotulo ? '<span class="foto-legenda">' + escapeHtml(rotulo) + '</span>' : '') +
+            '</div>'
+          );
+        })
+        .join('') +
+      '</div>'
+    );
+  }
+
   function campo(rotulo, valor, leve) {
     if (!valor) return '';
     return (
@@ -551,7 +610,7 @@
   function renderizar(roteiro, cenas) {
     aplicarTemaMarca(roteiro.marca_cor);
     document.getElementById('topo').hidden = true;
-    document.getElementById('rt-destaques-cartao').hidden = !(roteiro.objetivo || roteiro.pontos_importantes || roteiro.sugestao_legenda);
+    document.getElementById('rt-destaques-cartao').hidden = !(roteiro.objetivo || roteiro.pontos_importantes);
     texto(document.getElementById('rt-marca'), roteiro.marca || 'Roteiro');
     texto(
       document.getElementById('rt-detalhes'),
@@ -582,12 +641,12 @@
     var temMoodboard = roteiro.moodboard_imagens && roteiro.moodboard_imagens.length > 0;
     document.getElementById('rt-moodboard-secao').hidden = !temMoodboard;
     if (temMoodboard) {
-      document.getElementById('rt-moodboard').innerHTML = colagem(roteiro.moodboard_imagens, 'moodboard');
+      document.getElementById('rt-moodboard').innerHTML = moodboardHtml(roteiro.moodboard_imagens);
     }
 
     var cont = document.getElementById('rt-cenas');
     var contagem = document.getElementById('rt-cenas-contagem');
-    contagem.textContent = cenas && cenas.length ? cenas.length + (cenas.length === 1 ? ' cena' : ' cenas') : '';
+    contagem.textContent = cenas && cenas.length ? '· ' + cenas.length : '';
 
     if (!cenas || cenas.length === 0) {
       cont.innerHTML = '<div class="cena"><div class="cena-cabecalho"><span class="campo-texto vazio">Nenhuma cena cadastrada ainda.</span></div></div>';

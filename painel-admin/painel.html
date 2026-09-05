@@ -1464,8 +1464,13 @@
 
         <div class="cal-form-campo">
           <label data-i18n="ugc_moodboard_titulo">Moodboard geral</label>
-          <span class="ugc-roteiro-destaque-nota" data-i18n="ugc_moodboard_nota">Referências que valem pro vídeo inteiro (cenário, vibe, paleta...) — aparecem no topo do link, antes das cenas.</span>
-          <div id="ugc-roteiro-moodboard-lista" class="ugc-cena-referencias-lista"></div>
+          <span class="ugc-roteiro-destaque-nota" data-i18n="ugc_moodboard_arraste_nota">Arraste as fotos pra posicionar como quiser — pode sobrepor, como numa colagem. Todas ficam do mesmo tamanho, não importa quantas você adicionar.</span>
+          <div id="ugc-roteiro-moodboard-canvas" class="ugc-moodboard-canvas"></div>
+          <div id="ugc-roteiro-moodboard-lista" class="ugc-moodboard-controles"></div>
+          <div class="ugc-moodboard-acoes">
+            <button type="button" id="ugc-moodboard-anexar" class="cal-btn" data-i18n="ugc_anexar_foto_moodboard">+ Anexar foto</button>
+            <input type="file" accept="image/*" multiple id="ugc-moodboard-input" hidden>
+          </div>
         </div>
 
         <h4 class="ugc-modal-secao-titulo"><span data-i18n="ugc_cenas">Cenas</span> <span id="ugc-roteiro-progresso" class="ugc-roteiro-progresso-badge"></span></h4>
@@ -2521,7 +2526,8 @@
         ugc_cor_marca_label: 'Cor da marca',
         ugc_cor_marca_ativa_label: 'Personalizar',
         ugc_moodboard_titulo: 'Moodboard geral',
-        ugc_moodboard_nota: 'Referências que valem pro vídeo inteiro (cenário, vibe, paleta...) — aparecem no topo do link, antes das cenas.',
+        ugc_moodboard_arraste_nota: 'Arraste as fotos pra posicionar como quiser — pode sobrepor, como numa colagem. Todas ficam do mesmo tamanho, não importa quantas você adicionar.',
+        ugc_anexar_foto_moodboard: '+ Anexar foto',
         ugc_sem_detalhes_ainda: 'Sem detalhes ainda',
         ugc_cenas_gravadas: 'cenas gravadas',
         ugc_sem_cenas_ainda: 'Sem cenas ainda',
@@ -3214,7 +3220,8 @@
         ugc_cor_marca_label: 'Brand color',
         ugc_cor_marca_ativa_label: 'Customize',
         ugc_moodboard_titulo: 'General moodboard',
-        ugc_moodboard_nota: 'References that apply to the whole video (location, vibe, palette...) — shown at the top of the link, before the scenes.',
+        ugc_moodboard_arraste_nota: 'Drag the photos to place them anywhere — they can overlap, like a real collage. All stay the same size no matter how many you add.',
+        ugc_anexar_foto_moodboard: '+ Attach photo',
         ugc_sem_detalhes_ainda: 'No details yet',
         ugc_cenas_gravadas: 'scenes filmed',
         ugc_sem_cenas_ainda: 'No scenes yet',
@@ -3894,6 +3901,17 @@
       document.getElementById('ugc-modal-roteiro-salvar').addEventListener('click', salvarModalRoteiro);
       document.getElementById('ugc-roteiro-marca-cor-ativa').addEventListener('change', (e) => {
         document.getElementById('ugc-roteiro-marca-cor').disabled = !e.target.checked;
+      });
+      document.getElementById('ugc-moodboard-anexar').addEventListener('click', () => {
+        document.getElementById('ugc-moodboard-input').click();
+      });
+      document.getElementById('ugc-moodboard-input').addEventListener('change', async (e) => {
+        const arquivos = [...e.target.files];
+        e.target.value = '';
+        for (const arquivo of arquivos) {
+          await anexarMoodboardImagem(arquivo);
+        }
+        renderizarMoodboardModal();
       });
       document.getElementById('ugc-modal-roteiro-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'ugc-modal-roteiro-overlay') fecharModalRoteiro();
@@ -7566,41 +7584,68 @@
 
     // Moodboard geral do roteiro (referências que valem pro vídeo inteiro,
     // ex: cenário, vibe, paleta) — separado das referências de cada cena,
-    // que continuam opcionais e específicas daquela cena.
+    // que continuam opcionais e específicas daquela cena. Cada imagem guarda
+    // {url, rotulo, x, y} — x/y são a posição do CENTRO da foto, em % do
+    // quadro (canvas), pra ficar livre de arrastar/sobrepor como colagem e
+    // renderizar do mesmo jeito tanto aqui quanto no link público (mesma
+    // proporção de quadro dos dois lados).
     function renderizarMoodboardModal() {
-      const cont = document.getElementById('ugc-roteiro-moodboard-lista');
-      cont.innerHTML =
-        ugcModalMoodboard
-          .map(
-            (ref, imgIdx) => `
-              <div class="ugc-cena-referencia-item">
-                <img src="${escapeHtml(ref.url)}" alt="">
-                <button type="button" class="ugc-moodboard-remover" data-img-index="${imgIdx}" aria-label="${escapeHtml(tr('ugc_remover_referencia_aria'))}">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
-                </button>
-                <input type="text" class="ugc-moodboard-rotulo-input" data-img-index="${imgIdx}" placeholder="${escapeHtml(tr('ugc_referencia_rotulo_placeholder'))}" value="${escapeHtml(ref.rotulo || '')}">
-              </div>
-            `
-          )
-          .join('') +
-        `
-          <button type="button" id="ugc-moodboard-anexar" class="ugc-cena-referencia-anexar" aria-label="${escapeHtml(tr('ugc_anexar_referencia_aria'))}">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </button>
-          <input type="file" accept="image/*" multiple id="ugc-moodboard-input" hidden>
-        `;
+      const canvas = document.getElementById('ugc-roteiro-moodboard-canvas');
+      canvas.innerHTML = ugcModalMoodboard
+        .map(
+          (ref, imgIdx) => `
+            <div class="ugc-moodboard-foto" data-img-index="${imgIdx}" style="left:${ref.x ?? 20}%; top:${ref.y ?? 20}%;">
+              <img src="${escapeHtml(ref.url)}" alt="" draggable="false">
+            </div>
+          `
+        )
+        .join('');
 
-      document.getElementById('ugc-moodboard-anexar').addEventListener('click', () => {
-        document.getElementById('ugc-moodboard-input').click();
+      canvas.querySelectorAll('.ugc-moodboard-foto').forEach((el) => {
+        const indice = Number(el.dataset.imgIndex);
+        el.addEventListener('pointerdown', (e) => {
+          el.setPointerCapture(e.pointerId);
+          el.classList.add('arrastando');
+          const mover = (ev) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.max(2, Math.min(98, ((ev.clientX - rect.left) / rect.width) * 100));
+            const y = Math.max(2, Math.min(98, ((ev.clientY - rect.top) / rect.height) * 100));
+            ugcModalMoodboard[indice].x = x;
+            ugcModalMoodboard[indice].y = y;
+            el.style.left = x + '%';
+            el.style.top = y + '%';
+          };
+          const soltar = () => {
+            el.classList.remove('arrastando');
+            el.removeEventListener('pointermove', mover);
+            el.removeEventListener('pointerup', soltar);
+            el.removeEventListener('pointercancel', soltar);
+            // Traz pra frente: quem foi arrastado por último vai pro fim do
+            // array, que é o que renderiza por cima na colagem.
+            const [item] = ugcModalMoodboard.splice(indice, 1);
+            ugcModalMoodboard.push(item);
+            renderizarMoodboardModal();
+          };
+          el.addEventListener('pointermove', mover);
+          el.addEventListener('pointerup', soltar);
+          el.addEventListener('pointercancel', soltar);
+        });
       });
-      document.getElementById('ugc-moodboard-input').addEventListener('change', async (e) => {
-        const arquivos = [...e.target.files];
-        e.target.value = '';
-        for (const arquivo of arquivos) {
-          await anexarMoodboardImagem(arquivo);
-        }
-        renderizarMoodboardModal();
-      });
+
+      const cont = document.getElementById('ugc-roteiro-moodboard-lista');
+      cont.innerHTML = ugcModalMoodboard
+        .map(
+          (ref, imgIdx) => `
+            <div class="ugc-moodboard-controle-item">
+              <img src="${escapeHtml(ref.url)}" alt="">
+              <input type="text" class="ugc-moodboard-rotulo-input" data-img-index="${imgIdx}" placeholder="${escapeHtml(tr('ugc_referencia_rotulo_placeholder'))}" value="${escapeHtml(ref.rotulo || '')}">
+              <button type="button" class="ugc-moodboard-remover" data-img-index="${imgIdx}" aria-label="${escapeHtml(tr('ugc_remover_referencia_aria'))}">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+          `
+        )
+        .join('');
       cont.querySelectorAll('.ugc-moodboard-remover').forEach((el) => {
         el.addEventListener('click', () => {
           ugcModalMoodboard.splice(Number(el.dataset.imgIndex), 1);
@@ -7620,7 +7665,13 @@
         const { error } = await Auth.sb.storage.from('ugc-roteiro-referencias').upload(caminho, arquivo);
         if (error) throw error;
         const { data } = Auth.sb.storage.from('ugc-roteiro-referencias').getPublicUrl(caminho);
-        ugcModalMoodboard.push({ url: data.publicUrl, rotulo: '' });
+        // Posição inicial em cascata (não empilhada exatamente uma sobre a
+        // outra) — dá um ponto de partida razoável antes dela arrastar pra
+        // onde quiser.
+        const indice = ugcModalMoodboard.length;
+        const col = indice % 3;
+        const linha = Math.floor(indice / 3);
+        ugcModalMoodboard.push({ url: data.publicUrl, rotulo: '', x: 18 + col * 28, y: 18 + linha * 28 });
       } catch (err) {
         console.error('Erro ao anexar imagem de moodboard:', err);
         alert(tr('ugc_erro_anexar_arquivo'));

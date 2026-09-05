@@ -2207,6 +2207,76 @@
   border-radius: 50%;
 }
 
+/* ---- Moodboard geral do roteiro: quadro pra arrastar fotos e sobrepor
+   como colagem — todas do mesmo tamanho, não importa quantas existam. ---- */
+
+.painel-body .ugc-moodboard-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--creme);
+  border: 1px dashed var(--borda);
+  border-radius: var(--raio-sm);
+  overflow: hidden;
+  touch-action: none;
+}
+
+.painel-body .ugc-moodboard-foto {
+  position: absolute;
+  width: 24%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid var(--branco);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  cursor: grab;
+}
+
+.painel-body .ugc-moodboard-foto.arrastando {
+  cursor: grabbing;
+  z-index: 50;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.painel-body .ugc-moodboard-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.painel-body .ugc-moodboard-controles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.painel-body .ugc-moodboard-controle-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.painel-body .ugc-moodboard-controle-item img {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.painel-body .ugc-moodboard-controle-item input[type="text"] {
+  flex: 1;
+  min-width: 0;
+}
+
+.painel-body .ugc-moodboard-acoes {
+  margin-top: 10px;
+}
+
 /* ---- Modal de trabalho (mais largo que o pl-modal padrão, por ter mais seções) ---- */
 
 .painel-body .pl-modal-grande {

@@ -206,6 +206,10 @@
     color:var(--blue-dark-50);
     font-style:italic;
   }
+  .campo-texto.cena-detalhe{
+    margin-top:6px;
+    color:var(--blue-dark-70);
+  }
   .referencias-lista{
     display:flex;
     flex-wrap:wrap;
@@ -431,6 +435,17 @@
     );
   }
 
+  function blocoCena(tipo, descricao) {
+    if (!tipo && !descricao) return '';
+    return (
+      '<div class="campo">' +
+      '<div class="campo-titulo">' + ICONES.tipo_cena + '<span>' + TITULOS.tipo_cena + '</span></div>' +
+      (tipo ? '<div class="campo-texto">' + escapeHtml(tipo) + '</div>' : '') +
+      (descricao ? '<div class="campo-texto cena-detalhe">' + escapeHtml(descricao) + '</div>' : '') +
+      '</div>'
+    );
+  }
+
   function blocoCampo(chave, valor) {
     if (!valor) return '';
     return (
@@ -478,7 +493,7 @@
     } else {
       cont.innerHTML = cenas
         .map(function (c, i) {
-          var blocos = [blocoCampo('fala', c.fala), blocoCampo('o_que_fazer', c.o_que_fazer), blocoCampo('tipo_cena', c.tipo_cena), blocoCampo('descricao_cena', c.descricao_cena), blocoReferencias(c.referencias_imagens)]
+          var blocos = [blocoCampo('fala', c.fala), blocoCampo('o_que_fazer', c.o_que_fazer), blocoCena(c.tipo_cena, c.descricao_cena), blocoReferencias(c.referencias_imagens)]
             .filter(Boolean)
             .join('');
           return (

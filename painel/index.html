@@ -2451,6 +2451,8 @@
         ugc_sem_cenas_ainda: 'Sem cenas ainda',
         ugc_cena_prefixo: 'CENA',
         ugc_remover_cena_aria: 'Remover cena',
+        ugc_mover_cena_cima_aria: 'Mover cena para cima',
+        ugc_mover_cena_baixo_aria: 'Mover cena para baixo',
         ugc_fala: 'Fala',
         ugc_fala_placeholder: 'O que devo falar...',
         ugc_o_que_fazer: 'O que fazer',
@@ -3100,6 +3102,8 @@
         ugc_sem_cenas_ainda: 'No scenes yet',
         ugc_cena_prefixo: 'SCENE',
         ugc_remover_cena_aria: 'Remove scene',
+        ugc_mover_cena_cima_aria: 'Move scene up',
+        ugc_mover_cena_baixo_aria: 'Move scene down',
         ugc_fala: 'Lines',
         ugc_fala_placeholder: 'What I should say...',
         ugc_o_que_fazer: 'What to do',
@@ -7227,9 +7231,17 @@
             <div class="ugc-cena-card" data-index="${i}">
               <div class="ugc-cena-topo">
                 <span class="ugc-cena-numero">${escapeHtml(tr('ugc_cena_prefixo'))} ${String(i + 1).padStart(2, '0')}</span>
-                <button type="button" class="ugc-cena-remover" data-index="${i}" aria-label="${escapeHtml(tr('ugc_remover_cena_aria'))}">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                </button>
+                <div class="ugc-cena-acoes">
+                  <button type="button" class="ugc-cena-mover" data-index="${i}" data-direcao="cima" ${i === 0 ? 'disabled' : ''} aria-label="${escapeHtml(tr('ugc_mover_cena_cima_aria'))}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button type="button" class="ugc-cena-mover" data-index="${i}" data-direcao="baixo" ${i === ugcModalCenas.length - 1 ? 'disabled' : ''} aria-label="${escapeHtml(tr('ugc_mover_cena_baixo_aria'))}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </button>
+                  <button type="button" class="ugc-cena-remover" data-index="${i}" aria-label="${escapeHtml(tr('ugc_remover_cena_aria'))}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
               </div>
               <div class="cal-form-campo">
                 <label>${escapeHtml(tr('ugc_fala'))}</label>
@@ -7266,6 +7278,15 @@
       cont.querySelectorAll('.ugc-cena-remover').forEach((el) => {
         el.addEventListener('click', () => {
           ugcModalCenas.splice(Number(el.dataset.index), 1);
+          renderizarCenasModal();
+        });
+      });
+      cont.querySelectorAll('.ugc-cena-mover').forEach((el) => {
+        el.addEventListener('click', () => {
+          const i = Number(el.dataset.index);
+          const alvo = el.dataset.direcao === 'cima' ? i - 1 : i + 1;
+          if (alvo < 0 || alvo >= ugcModalCenas.length) return;
+          [ugcModalCenas[i], ugcModalCenas[alvo]] = [ugcModalCenas[alvo], ugcModalCenas[i]];
           renderizarCenasModal();
         });
       });

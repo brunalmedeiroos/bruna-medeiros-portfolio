@@ -2298,7 +2298,14 @@
   color: var(--texto-suave);
 }
 
-.painel-body .ugc-cena-remover {
+.painel-body .ugc-cena-acoes {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.painel-body .ugc-cena-remover,
+.painel-body .ugc-cena-mover {
   background: transparent;
   border: none;
   color: var(--texto-suave);
@@ -2309,6 +2316,15 @@
 
 .painel-body .ugc-cena-remover:hover {
   color: var(--erro);
+}
+
+.painel-body .ugc-cena-mover:hover:not(:disabled) {
+  color: var(--grafite);
+}
+
+.painel-body .ugc-cena-mover:disabled {
+  opacity: 0.3;
+  cursor: default;
 }
 
 .painel-body .ugc-cena-checklist {

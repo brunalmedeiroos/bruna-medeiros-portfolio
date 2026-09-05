@@ -230,30 +230,55 @@
     box-shadow:var(--shadow);
     margin-bottom:24px;
   }
-  .cena-numero-fundo{
-    position:absolute;
-    top:-16px; left:18px;
-    font-family:var(--font-display);
-    font-style:italic;
-    font-weight:600;
-    font-size:4.6rem;
-    line-height:1;
-    color:var(--marca);
-    opacity:.12;
-    pointer-events:none;
-  }
   .cena-cabecalho{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    padding:20px 24px 14px 24px;
+  }
+  .cena-topo-linha{
     position:relative;
     display:flex;
     align-items:center;
-    gap:12px;
-    padding:20px 24px 14px 26px;
+    gap:10px;
+  }
+  .cena-numero-selo{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+  }
+  .cena-numero-fundo{
+    position:absolute;
+    left:-4px;
+    top:50%;
+    transform:translateY(-50%);
+    font-family:var(--font-display);
+    font-style:italic;
+    font-weight:600;
+    font-size:2.1rem;
+    line-height:1;
+    color:var(--marca);
+    opacity:.25;
+    z-index:0;
+    pointer-events:none;
+    white-space:nowrap;
+  }
+  .cena-numero-label{
+    position:relative;
+    z-index:1;
+    font-family:var(--font-mono);
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--ink-45);
+    padding-left:24px;
   }
   .cena-titulo{
     font-family:var(--font-display);
     font-style:italic;
     font-weight:600;
-    font-size:1.28rem;
+    font-size:1.02rem;
   }
   .cena-funcao-tag{
     font-family:var(--font-mono);
@@ -297,6 +322,11 @@
     text-transform:uppercase;
     color:var(--marca-texto-sobre-branco);
     margin:0 0 5px;
+  }
+  .campo-rotulo.campo-rotulo-destaque{
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.06em;
   }
   .campo-texto{
     margin:0;
@@ -538,18 +568,18 @@
     );
   }
 
-  function campo(rotulo, valor, leve) {
+  function campo(rotulo, valor, leve, destaque) {
     if (!valor) return '';
     return (
       '<div>' +
-      '<p class="campo-rotulo">' + rotulo + '</p>' +
+      '<p class="campo-rotulo' + (destaque ? ' campo-rotulo-destaque' : '') + '">' + rotulo + '</p>' +
       '<p class="campo-texto' + (leve ? ' leve' : '') + '">' + escapeHtml(valor) + '</p>' +
       '</div>'
     );
   }
 
   function colTexto(c) {
-    var blocos = [campo('Fala', c.fala), campo('O que fazer', c.o_que_fazer), campo('Detalhes', c.descricao_cena, true)]
+    var blocos = [campo('Fala', c.fala, false, true), campo('O que fazer', c.o_que_fazer), campo('Cena', c.descricao_cena, true)]
       .filter(Boolean)
       .join('');
     return '<div class="cena-texto">' + (blocos || '<p class="campo-texto vazio">Sem detalhes ainda.</p>') + '</div>';
@@ -604,11 +634,16 @@
           var temFotos = c.referencias_imagens && c.referencias_imagens.length > 0;
           return (
             '<article class="cena">' +
-            '<span class="cena-numero-fundo">' + String(i + 1).padStart(2, '0') + '</span>' +
             '<div class="cena-cabecalho">' +
-            '<h3 class="cena-titulo">' + escapeHtml(c.tipo_cena || 'Cena') + '</h3>' +
+            '<div class="cena-topo-linha">' +
+            '<span class="cena-numero-selo">' +
+            '<span class="cena-numero-fundo">' + String(i + 1).padStart(2, '0') + '</span>' +
+            '<span class="cena-numero-label">Cena</span>' +
+            '</span>' +
             (c.funcao_cena ? '<span class="cena-funcao-tag">' + escapeHtml(c.funcao_cena) + '</span>' : '') +
             (c.faixa_tempo ? '<span class="cena-faixa-tempo">' + escapeHtml(c.faixa_tempo) + '</span>' : '') +
+            '</div>' +
+            (c.tipo_cena ? '<h3 class="cena-titulo">' + escapeHtml(c.tipo_cena) + '</h3>' : '') +
             '</div>' +
             '<div class="cena-corpo' + (temFotos ? '' : ' cena-sem-fotos') + '">' +
             (temFotos ? '<div class="cena-fotos">' + quadroLivre(c.referencias_imagens, 'cena') + '</div>' : '') +

@@ -166,6 +166,16 @@
     text-transform:uppercase;
     color:var(--blue-dark-50);
   }
+  .cena-funcao-tag{
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    color:var(--white);
+    background:var(--blue-light);
+    padding:3px 9px;
+    border-radius:999px;
+  }
   .cena-faixa-tempo{
     font-size:11px;
     font-weight:700;
@@ -325,6 +335,14 @@
         </div>
         <div id="rt-pontos" class="destaque-texto"></div>
       </div>
+
+      <div id="rt-legenda-campo" class="destaque-box" hidden>
+        <div class="destaque-titulo">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h10M4 18h7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Sugestão de legenda
+        </div>
+        <div id="rt-legenda" class="destaque-texto"></div>
+      </div>
     </div>
 
     <div class="cenas-cabecalho">
@@ -357,9 +375,9 @@
   var ICONES = {
     fala: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-4.4 7.4 8.5 8.5 0 0 1-9.1-.5L3 21l1.9-4.5a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 8.5-8.5h.2a8.5 8.5 0 0 1 8.3 8.1v.2z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     o_que_fazer: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3 8-8M21 12v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    cena_broll: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M23 7l-7 5 7 5V7z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/></svg>',
+    tipo_cena: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M23 7l-7 5 7 5V7z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/></svg>',
   };
-  var TITULOS = { fala: 'Fala', o_que_fazer: 'O que fazer', cena_broll: 'Cena/B-roll' };
+  var TITULOS = { fala: 'Fala', o_que_fazer: 'O que fazer', tipo_cena: 'Cena' };
 
   function texto(el, valor) {
     el.textContent = valor || '';
@@ -425,6 +443,11 @@
       texto(document.getElementById('rt-pontos'), roteiro.pontos_importantes);
     }
 
+    if (roteiro.sugestao_legenda) {
+      document.getElementById('rt-legenda-campo').hidden = false;
+      texto(document.getElementById('rt-legenda'), roteiro.sugestao_legenda);
+    }
+
     var cont = document.getElementById('rt-cenas');
     var contagem = document.getElementById('rt-cenas-contagem');
     contagem.textContent = cenas && cenas.length ? cenas.length + (cenas.length === 1 ? ' cena' : ' cenas') : '';
@@ -435,7 +458,7 @@
       var faixas = calcularFaixasTempoCenas(cenas);
       cont.innerHTML = cenas
         .map(function (c, i) {
-          var blocos = [blocoCampo('fala', c.fala), blocoCampo('o_que_fazer', c.o_que_fazer), blocoCampo('cena_broll', c.cena_broll)]
+          var blocos = [blocoCampo('fala', c.fala), blocoCampo('o_que_fazer', c.o_que_fazer), blocoCampo('tipo_cena', c.tipo_cena)]
             .filter(Boolean)
             .join('');
           return (
@@ -443,6 +466,7 @@
             '<div class="cena-cabecalho">' +
             '<span class="cena-numero">' + String(i + 1).padStart(2, '0') + '</span>' +
             '<span class="cena-label">Cena</span>' +
+            (c.funcao_cena ? '<span class="cena-funcao-tag">' + escapeHtml(c.funcao_cena) + '</span>' : '') +
             (faixas[i] ? '<span class="cena-faixa-tempo">' + faixas[i] + '</span>' : '') +
             '</div>' +
             (blocos || '<span class="campo-texto vazio">Sem detalhes ainda.</span>') +

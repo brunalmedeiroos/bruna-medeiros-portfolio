@@ -1434,6 +1434,14 @@
           </div>
         </div>
 
+        <div class="ugc-roteiro-destaque">
+          <div class="cal-form-campo">
+            <label for="ugc-roteiro-sugestao-legenda" data-i18n="ugc_sugestao_legenda">Sugestão de legenda</label>
+            <textarea id="ugc-roteiro-sugestao-legenda" data-i18n-placeholder="ugc_sugestao_legenda_placeholder" placeholder="Ex: Depoimento real sobre a Imersão Portfólio Claude..."></textarea>
+            <span class="ugc-roteiro-destaque-nota" data-i18n="ugc_visivel_para_marca">A marca vê isso no link de aprovação.</span>
+          </div>
+        </div>
+
         <div class="cal-form-campo">
           <label for="ugc-roteiro-observacoes" data-i18n="ugc_observacoes">Observações</label>
           <textarea id="ugc-roteiro-observacoes"></textarea>
@@ -2502,8 +2510,20 @@
         ugc_fala_placeholder: 'O que devo falar...',
         ugc_o_que_fazer: 'O que fazer',
         ugc_o_que_fazer_placeholder: 'A ação da cena...',
-        ugc_cena_broll: 'Cena/B-roll',
-        ugc_cena_broll_placeholder: 'O que precisa aparecer visualmente...',
+        ugc_tipo_cena: 'Cena',
+        ugc_tipo_cena_escolher: 'Escolher...',
+        ugc_tipo_cena_falada: 'Cena falada',
+        ugc_tipo_cena_broll_narracao: 'B-roll com narração',
+        ugc_tipo_cena_broll_silencioso: 'B-roll sem narração',
+        ugc_tipo_cena_texto_tela: 'Texto na tela',
+        ugc_funcao_cena_aria: 'Função da cena na estrutura do vídeo',
+        ugc_funcao_cena_hook: 'Hook',
+        ugc_funcao_cena_contexto: 'Contexto',
+        ugc_funcao_cena_desenvolvimento: 'Desenvolvimento',
+        ugc_funcao_cena_prova_social: 'Prova social',
+        ugc_funcao_cena_cta: 'CTA',
+        ugc_sugestao_legenda: 'Sugestão de legenda',
+        ugc_sugestao_legenda_placeholder: 'Ex: Depoimento real sobre a Imersão Portfólio Claude...',
         ugc_cena_gravada_label: 'Cena gravada',
         ugc_cena_conferida_label: 'Cena conferida',
         nenhum: 'Nenhum',
@@ -3171,8 +3191,20 @@
         ugc_fala_placeholder: 'What I should say...',
         ugc_o_que_fazer: 'What to do',
         ugc_o_que_fazer_placeholder: "The scene's action...",
-        ugc_cena_broll: 'Scene/B-roll',
-        ugc_cena_broll_placeholder: 'What needs to appear visually...',
+        ugc_tipo_cena: 'Scene',
+        ugc_tipo_cena_escolher: 'Choose...',
+        ugc_tipo_cena_falada: 'Talking scene',
+        ugc_tipo_cena_broll_narracao: 'B-roll with narration',
+        ugc_tipo_cena_broll_silencioso: 'B-roll without narration',
+        ugc_tipo_cena_texto_tela: 'On-screen text',
+        ugc_funcao_cena_aria: 'Scene role in the video structure',
+        ugc_funcao_cena_hook: 'Hook',
+        ugc_funcao_cena_contexto: 'Context',
+        ugc_funcao_cena_desenvolvimento: 'Development',
+        ugc_funcao_cena_prova_social: 'Social proof',
+        ugc_funcao_cena_cta: 'CTA',
+        ugc_sugestao_legenda: 'Caption suggestion',
+        ugc_sugestao_legenda_placeholder: 'E.g.: Real testimonial about the Portfolio Immersion...',
         ugc_cena_gravada_label: 'Scene filmed',
         ugc_cena_conferida_label: 'Scene checked',
         nenhum: 'None',
@@ -7344,6 +7376,14 @@
               <div class="ugc-cena-topo">
                 <div class="ugc-cena-topo-info">
                   <span class="ugc-cena-numero">${escapeHtml(tr('ugc_cena_prefixo'))} ${String(i + 1).padStart(2, '0')}</span>
+                  <select class="ugc-cena-funcao-select" data-index="${i}" data-campo="funcao_cena" aria-label="${escapeHtml(tr('ugc_funcao_cena_aria'))}">
+                    <option value="">—</option>
+                    <option value="Hook">${escapeHtml(tr('ugc_funcao_cena_hook'))}</option>
+                    <option value="Contexto">${escapeHtml(tr('ugc_funcao_cena_contexto'))}</option>
+                    <option value="Desenvolvimento">${escapeHtml(tr('ugc_funcao_cena_desenvolvimento'))}</option>
+                    <option value="Prova social">${escapeHtml(tr('ugc_funcao_cena_prova_social'))}</option>
+                    <option value="CTA">${escapeHtml(tr('ugc_funcao_cena_cta'))}</option>
+                  </select>
                   ${faixas[i] ? `<span class="ugc-cena-faixa-tempo">${faixas[i]}</span>` : ''}
                 </div>
                 <div class="ugc-cena-topo-direita">
@@ -7373,8 +7413,14 @@
                 <textarea data-index="${i}" data-campo="o_que_fazer" placeholder="${escapeHtml(tr('ugc_o_que_fazer_placeholder'))}">${escapeHtml(cena.o_que_fazer || '')}</textarea>
               </div>
               <div class="cal-form-campo">
-                <label>${escapeHtml(tr('ugc_cena_broll'))}</label>
-                <textarea data-index="${i}" data-campo="cena_broll" placeholder="${escapeHtml(tr('ugc_cena_broll_placeholder'))}">${escapeHtml(cena.cena_broll || '')}</textarea>
+                <label>${escapeHtml(tr('ugc_tipo_cena'))}</label>
+                <select data-index="${i}" data-campo="tipo_cena">
+                  <option value="">${escapeHtml(tr('ugc_tipo_cena_escolher'))}</option>
+                  <option value="Cena falada">${escapeHtml(tr('ugc_tipo_cena_falada'))}</option>
+                  <option value="B-roll com narração">${escapeHtml(tr('ugc_tipo_cena_broll_narracao'))}</option>
+                  <option value="B-roll sem narração">${escapeHtml(tr('ugc_tipo_cena_broll_silencioso'))}</option>
+                  <option value="Texto na tela">${escapeHtml(tr('ugc_tipo_cena_texto_tela'))}</option>
+                </select>
               </div>
               <div class="ugc-cena-checklist">
                 <label class="ugc-cena-check-label"><input type="checkbox" data-index="${i}" data-campo="cena_gravada" ${cena.cena_gravada ? 'checked' : ''}> ${escapeHtml(tr('ugc_cena_gravada_label'))}</label>
@@ -7394,6 +7440,12 @@
         el.addEventListener('change', () => {
           ugcModalCenas[Number(el.dataset.index)].duracao_segundos = el.value === '' ? null : Number(el.value);
           renderizarCenasModal();
+        });
+      });
+      cont.querySelectorAll('select[data-campo="tipo_cena"], select[data-campo="funcao_cena"]').forEach((el) => {
+        el.value = ugcModalCenas[Number(el.dataset.index)][el.dataset.campo] || '';
+        el.addEventListener('change', () => {
+          ugcModalCenas[Number(el.dataset.index)][el.dataset.campo] = el.value || null;
         });
       });
       cont.querySelectorAll('input[type="checkbox"]').forEach((el) => {
@@ -7452,6 +7504,7 @@
       document.getElementById('ugc-roteiro-duracao').value = roteiro ? roteiro.duracao_prevista || '' : '';
       document.getElementById('ugc-roteiro-objetivo').value = roteiro ? roteiro.objetivo || '' : '';
       document.getElementById('ugc-roteiro-pontos-importantes').value = roteiro ? roteiro.pontos_importantes || '' : '';
+      document.getElementById('ugc-roteiro-sugestao-legenda').value = roteiro ? roteiro.sugestao_legenda || '' : '';
       document.getElementById('ugc-roteiro-observacoes').value = roteiro ? roteiro.observacoes || '' : '';
 
       const selectTrabalho = document.getElementById('ugc-roteiro-trabalho');
@@ -7532,6 +7585,7 @@
         duracao_prevista: document.getElementById('ugc-roteiro-duracao').value.trim() || null,
         objetivo: document.getElementById('ugc-roteiro-objetivo').value.trim() || null,
         pontos_importantes: document.getElementById('ugc-roteiro-pontos-importantes').value.trim() || null,
+        sugestao_legenda: document.getElementById('ugc-roteiro-sugestao-legenda').value.trim() || null,
         observacoes: document.getElementById('ugc-roteiro-observacoes').value.trim() || null,
       };
 
@@ -7554,10 +7608,11 @@
           ordem: i,
           fala: c.fala || null,
           o_que_fazer: c.o_que_fazer || null,
-          cena_broll: c.cena_broll || null,
+          tipo_cena: c.tipo_cena || null,
           cena_gravada: !!c.cena_gravada,
           cena_conferida: !!c.cena_conferida,
           duracao_segundos: c.duracao_segundos != null ? c.duracao_segundos : null,
+          funcao_cena: c.funcao_cena || null,
         }));
         const { error: erroCenas } = await Auth.sb.rpc('ugc_substituir_cenas', {
           p_roteiro_id: roteiroId,

@@ -2449,6 +2449,17 @@
   color: var(--grafite);
 }
 
+.painel-body .ugc-cena-funcao-select {
+  padding: 3px 6px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--fonte-corpo);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--coral);
+}
+
 .painel-body .ugc-cena-acoes {
   display: flex;
   align-items: center;

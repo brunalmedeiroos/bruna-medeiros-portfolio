@@ -13,6 +13,7 @@
 .painel-body {
   /* ---- Cores extraídas do :root de index.html ---- */
   --coral: #7DB7CE;                       /* --blue-light: destaque (nav ativa, filtros, gráfico) */
+  --coral-rgb: 125, 183, 206;              /* mesma cor acima, em R,G,B — fallback de --marca-rgb quando o roteiro não tem cor própria */
   --coral-hover: #6796A9;                 /* hover do botão primário — acompanha --coral quando a cor de ênfase muda */
   --creme: #FAF9F4;                       /* --offwhite: fundo da página */
   --branco: #FFFFFF;                      /* --white: fundo dos cards */
@@ -2157,10 +2158,65 @@
   font-weight: 600;
 }
 
+/* ---- Seletor de cor da marca (identidade do roteiro) ---- */
+
+.painel-body .ugc-roteiro-cor-campo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 38px;
+}
+
+.painel-body .ugc-roteiro-cor-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--grafite);
+  cursor: pointer;
+}
+
+.painel-body .ugc-roteiro-cor-input {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--borda);
+  border-radius: 50%;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.painel-body .ugc-roteiro-cor-input:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.painel-body .ugc-roteiro-cor-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.painel-body .ugc-roteiro-cor-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.painel-body .ugc-roteiro-cor-input::-moz-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
 /* ---- Modal de trabalho (mais largo que o pl-modal padrão, por ter mais seções) ---- */
 
 .painel-body .pl-modal-grande {
   max-width: 720px;
+}
+
+/* ---- Modal de roteiro (mais largo ainda, pra caber a cena em 2 colunas) ---- */
+
+.painel-body .pl-modal-xl {
+  max-width: 880px;
 }
 
 .painel-body .ugc-modal-secao-titulo {
@@ -2279,12 +2335,14 @@
 }
 
 .painel-body .ugc-roteiro-card {
+  --marca-rgb: var(--coral-rgb);
   display: flex;
   flex-direction: column;
   gap: 6px;
   text-align: left;
   background: var(--branco);
   border: 1px solid var(--borda);
+  border-top: 4px solid rgb(var(--marca-rgb));
   border-radius: var(--raio-sm);
   padding: 16px;
   cursor: pointer;
@@ -2421,6 +2479,36 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.painel-body .ugc-cena-corpo {
+  display: grid;
+  grid-template-columns: minmax(160px, 34%) 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.painel-body .ugc-cena-corpo.ugc-cena-sem-fotos {
+  grid-template-columns: 1fr;
+}
+
+.painel-body .ugc-cena-col-fotos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.painel-body .ugc-cena-col-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .painel-body .ugc-cena-corpo {
+    grid-template-columns: 1fr;
+  }
 }
 
 .painel-body .ugc-cena-tempo-campo {

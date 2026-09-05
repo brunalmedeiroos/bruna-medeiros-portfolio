@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260905e">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260905f">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -1366,7 +1366,7 @@
 
     <!-- Modal: roteiro (biblioteca de roteiros UGC) -->
     <div id="ugc-modal-roteiro-overlay" class="pl-modal-overlay" hidden>
-      <div class="pl-modal pl-modal-grande">
+      <div class="pl-modal pl-modal-grande pl-modal-xl">
         <div class="pl-modal-topo">
           <input type="text" id="ugc-roteiro-marca" class="pl-modal-titulo-input" data-i18n-placeholder="ugc_col_marca" placeholder="Marca">
           <button id="ugc-modal-roteiro-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
@@ -1387,6 +1387,16 @@
           <div class="cal-form-campo">
             <label data-i18n="ugc_roteiro_visualizado_label">Visualização</label>
             <span id="ugc-roteiro-visualizado-info" class="ugc-roteiro-visualizado-info"></span>
+          </div>
+          <div class="cal-form-campo">
+            <label data-i18n="ugc_cor_marca_label">Cor da marca</label>
+            <div class="ugc-roteiro-cor-campo">
+              <label class="ugc-roteiro-cor-toggle">
+                <input type="checkbox" id="ugc-roteiro-marca-cor-ativa">
+                <span data-i18n="ugc_cor_marca_ativa_label">Personalizar</span>
+              </label>
+              <input type="color" id="ugc-roteiro-marca-cor" class="ugc-roteiro-cor-input" value="#7DB7CE" disabled data-i18n-aria="ugc_cor_marca_label" aria-label="Cor da marca">
+            </div>
           </div>
         </div>
 
@@ -2501,6 +2511,8 @@
         ugc_preencha_marca: 'Preencha a marca antes de salvar.',
         ugc_excluir_trabalho_confirmar: 'Excluir este trabalho?',
         ugc_sem_marca: 'Sem marca',
+        ugc_cor_marca_label: 'Cor da marca',
+        ugc_cor_marca_ativa_label: 'Personalizar',
         ugc_sem_detalhes_ainda: 'Sem detalhes ainda',
         ugc_cenas_gravadas: 'cenas gravadas',
         ugc_sem_cenas_ainda: 'Sem cenas ainda',
@@ -3190,6 +3202,8 @@
         ugc_preencha_marca: 'Fill in the brand before saving.',
         ugc_excluir_trabalho_confirmar: 'Delete this job?',
         ugc_sem_marca: 'No brand',
+        ugc_cor_marca_label: 'Brand color',
+        ugc_cor_marca_ativa_label: 'Customize',
         ugc_sem_detalhes_ainda: 'No details yet',
         ugc_cenas_gravadas: 'scenes filmed',
         ugc_sem_cenas_ainda: 'No scenes yet',
@@ -3867,6 +3881,9 @@
       document.getElementById('ugc-modal-roteiro-compartilhar').addEventListener('click', compartilharModalRoteiro);
       document.getElementById('ugc-modal-roteiro-revogar-link').addEventListener('click', revogarLinkRoteiro);
       document.getElementById('ugc-modal-roteiro-salvar').addEventListener('click', salvarModalRoteiro);
+      document.getElementById('ugc-roteiro-marca-cor-ativa').addEventListener('change', (e) => {
+        document.getElementById('ugc-roteiro-marca-cor').disabled = !e.target.checked;
+      });
       document.getElementById('ugc-modal-roteiro-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'ugc-modal-roteiro-overlay') fecharModalRoteiro();
       });
@@ -7361,6 +7378,8 @@
       const card = document.createElement('button');
       card.type = 'button';
       card.className = 'ugc-roteiro-card';
+      const corRgb = hexParaRgb(roteiro.marca_cor);
+      if (corRgb) card.style.setProperty('--marca-rgb', corRgb);
       card.innerHTML = `
         <span class="ugc-status-pill ${classeStatusRoteiro(roteiro.status || 'Rascunho')}">${escapeHtml(traduzirStatusRoteiro(roteiro.status || 'Rascunho'))}</span>
         <span class="ugc-roteiro-card-marca">${escapeHtml(roteiro.marca || tr('ugc_sem_marca'))}</span>
@@ -7411,48 +7430,52 @@
                   </div>
                 </div>
               </div>
-              <div class="cal-form-campo">
-                <label>${escapeHtml(tr('ugc_fala'))}</label>
-                <textarea data-index="${i}" data-campo="fala" placeholder="${escapeHtml(tr('ugc_fala_placeholder'))}">${escapeHtml(cena.fala || '')}</textarea>
-              </div>
-              <div class="cal-form-campo">
-                <label>${escapeHtml(tr('ugc_o_que_fazer'))}</label>
-                <textarea data-index="${i}" data-campo="o_que_fazer" placeholder="${escapeHtml(tr('ugc_o_que_fazer_placeholder'))}">${escapeHtml(cena.o_que_fazer || '')}</textarea>
-              </div>
-              <div class="cal-form-campo">
-                <label>${escapeHtml(tr('ugc_tipo_cena'))}</label>
-                <select data-index="${i}" data-campo="tipo_cena">
-                  <option value="">${escapeHtml(tr('ugc_tipo_cena_escolher'))}</option>
-                  <option value="Cena falada">${escapeHtml(tr('ugc_tipo_cena_falada'))}</option>
-                  <option value="B-roll com narração">${escapeHtml(tr('ugc_tipo_cena_broll_narracao'))}</option>
-                  <option value="B-roll sem narração">${escapeHtml(tr('ugc_tipo_cena_broll_silencioso'))}</option>
-                  <option value="Texto na tela">${escapeHtml(tr('ugc_tipo_cena_texto_tela'))}</option>
-                </select>
-              </div>
-              <div class="cal-form-campo">
-                <label>${escapeHtml(tr('ugc_descricao_cena'))}</label>
-                <textarea data-index="${i}" data-campo="descricao_cena" placeholder="${escapeHtml(tr('ugc_descricao_cena_placeholder'))}">${escapeHtml(cena.descricao_cena || '')}</textarea>
-              </div>
-              <div class="cal-form-campo">
-                <label>${escapeHtml(tr('ugc_referencias_visuais'))}</label>
-                <div class="ugc-cena-referencias-lista">
-                  ${(cena.referencias_imagens || [])
-                    .map(
-                      (ref, imgIdx) => `
-                        <div class="ugc-cena-referencia-item">
-                          <img src="${escapeHtml(ref.url)}" alt="">
-                          <button type="button" class="ugc-cena-referencia-remover" data-index="${i}" data-img-index="${imgIdx}" aria-label="${escapeHtml(tr('ugc_remover_referencia_aria'))}">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
-                          </button>
-                          <input type="text" class="ugc-cena-referencia-rotulo-input" data-index="${i}" data-img-index="${imgIdx}" placeholder="${escapeHtml(tr('ugc_referencia_rotulo_placeholder'))}" value="${escapeHtml(ref.rotulo || '')}">
-                        </div>
-                      `
-                    )
-                    .join('')}
-                  <button type="button" class="ugc-cena-referencia-anexar" data-index="${i}" aria-label="${escapeHtml(tr('ugc_anexar_referencia_aria'))}">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                  </button>
-                  <input type="file" accept="image/*" multiple class="ugc-cena-referencia-input" data-index="${i}" hidden>
+              <div class="ugc-cena-corpo${(cena.referencias_imagens || []).length === 0 ? ' ugc-cena-sem-fotos' : ''}">
+                <div class="ugc-cena-col-fotos">
+                  <label>${escapeHtml(tr('ugc_referencias_visuais'))}</label>
+                  <div class="ugc-cena-referencias-lista">
+                    ${(cena.referencias_imagens || [])
+                      .map(
+                        (ref, imgIdx) => `
+                          <div class="ugc-cena-referencia-item">
+                            <img src="${escapeHtml(ref.url)}" alt="">
+                            <button type="button" class="ugc-cena-referencia-remover" data-index="${i}" data-img-index="${imgIdx}" aria-label="${escapeHtml(tr('ugc_remover_referencia_aria'))}">
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                            </button>
+                            <input type="text" class="ugc-cena-referencia-rotulo-input" data-index="${i}" data-img-index="${imgIdx}" placeholder="${escapeHtml(tr('ugc_referencia_rotulo_placeholder'))}" value="${escapeHtml(ref.rotulo || '')}">
+                          </div>
+                        `
+                      )
+                      .join('')}
+                    <button type="button" class="ugc-cena-referencia-anexar" data-index="${i}" aria-label="${escapeHtml(tr('ugc_anexar_referencia_aria'))}">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    </button>
+                    <input type="file" accept="image/*" multiple class="ugc-cena-referencia-input" data-index="${i}" hidden>
+                  </div>
+                </div>
+                <div class="ugc-cena-col-texto">
+                  <div class="cal-form-campo">
+                    <label>${escapeHtml(tr('ugc_fala'))}</label>
+                    <textarea data-index="${i}" data-campo="fala" placeholder="${escapeHtml(tr('ugc_fala_placeholder'))}">${escapeHtml(cena.fala || '')}</textarea>
+                  </div>
+                  <div class="cal-form-campo">
+                    <label>${escapeHtml(tr('ugc_o_que_fazer'))}</label>
+                    <textarea data-index="${i}" data-campo="o_que_fazer" placeholder="${escapeHtml(tr('ugc_o_que_fazer_placeholder'))}">${escapeHtml(cena.o_que_fazer || '')}</textarea>
+                  </div>
+                  <div class="cal-form-campo">
+                    <label>${escapeHtml(tr('ugc_tipo_cena'))}</label>
+                    <select data-index="${i}" data-campo="tipo_cena">
+                      <option value="">${escapeHtml(tr('ugc_tipo_cena_escolher'))}</option>
+                      <option value="Cena falada">${escapeHtml(tr('ugc_tipo_cena_falada'))}</option>
+                      <option value="B-roll com narração">${escapeHtml(tr('ugc_tipo_cena_broll_narracao'))}</option>
+                      <option value="B-roll sem narração">${escapeHtml(tr('ugc_tipo_cena_broll_silencioso'))}</option>
+                      <option value="Texto na tela">${escapeHtml(tr('ugc_tipo_cena_texto_tela'))}</option>
+                    </select>
+                  </div>
+                  <div class="cal-form-campo">
+                    <label>${escapeHtml(tr('ugc_descricao_cena'))}</label>
+                    <textarea data-index="${i}" data-campo="descricao_cena" placeholder="${escapeHtml(tr('ugc_descricao_cena_placeholder'))}">${escapeHtml(cena.descricao_cena || '')}</textarea>
+                  </div>
                 </div>
               </div>
               <div class="ugc-cena-checklist">
@@ -7622,6 +7645,11 @@
       document.getElementById('ugc-roteiro-sugestao-legenda').value = roteiro ? roteiro.sugestao_legenda || '' : '';
       document.getElementById('ugc-roteiro-observacoes').value = roteiro ? roteiro.observacoes || '' : '';
 
+      const corAtiva = !!(roteiro && roteiro.marca_cor);
+      document.getElementById('ugc-roteiro-marca-cor-ativa').checked = corAtiva;
+      document.getElementById('ugc-roteiro-marca-cor').disabled = !corAtiva;
+      document.getElementById('ugc-roteiro-marca-cor').value = (roteiro && roteiro.marca_cor) || '#7DB7CE';
+
       const selectTrabalho = document.getElementById('ugc-roteiro-trabalho');
       selectTrabalho.innerHTML =
         `<option value="">${tr('nenhum')}</option>` +
@@ -7702,6 +7730,9 @@
         pontos_importantes: document.getElementById('ugc-roteiro-pontos-importantes').value.trim() || null,
         sugestao_legenda: document.getElementById('ugc-roteiro-sugestao-legenda').value.trim() || null,
         observacoes: document.getElementById('ugc-roteiro-observacoes').value.trim() || null,
+        marca_cor: document.getElementById('ugc-roteiro-marca-cor-ativa').checked
+          ? document.getElementById('ugc-roteiro-marca-cor').value
+          : null,
       };
 
       const btn = document.getElementById('ugc-modal-roteiro-salvar');
@@ -8878,6 +8909,19 @@
       const div = document.createElement('div');
       div.textContent = String(str);
       return div.innerHTML;
+    }
+
+    // Converte "#rrggbb" (ou "#rgb") em "r, g, b" pra usar como custom
+    // property --marca-rgb, seguindo o mesmo padrão de --grafite-rgb do
+    // painel-theme.css (rgba(var(--x-rgb), alpha) em vez de color-mix(),
+    // por segurança de suporte de navegador). Retorna null se inválido/vazio.
+    function hexParaRgb(hex) {
+      if (!hex) return null;
+      let limpo = String(hex).trim().replace('#', '');
+      if (limpo.length === 3) limpo = limpo.split('').map((c) => c + c).join('');
+      if (!/^[0-9a-fA-F]{6}$/.test(limpo)) return null;
+      const num = parseInt(limpo, 16);
+      return `${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}`;
     }
 
     // Substitui o confirm() nativo do navegador por um modal no estilo do

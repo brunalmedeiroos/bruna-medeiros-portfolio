@@ -21,11 +21,23 @@
     --blue-dark-70: rgba(4,70,93,0.7);
     --blue-dark-50: rgba(4,70,93,0.5);
     --blue-dark-10: rgba(4,70,93,0.08);
-    --blue-light-15: rgba(125,183,206,0.16);
     --erro: #C4453C;
     --shadow-soft: 0 20px 45px rgba(4,70,93,0.14);
     --font-body: 'Montserrat', sans-serif;
     --font-script: 'Pinyon Script', cursive;
+
+    /* ---- Tema de marca: default = identidade da Bruna (--blue-dark em
+       RGB). Sobrescrito via JS (aplicarTemaMarca) quando o roteiro tem
+       marca_cor — assim, sem cor definida, nada muda visualmente. ---- */
+    --marca-rgb: 4, 70, 93;
+    --marca: rgb(var(--marca-rgb));
+    --marca-85: rgba(var(--marca-rgb), 0.85);
+    --marca-08: rgba(var(--marca-rgb), 0.08);
+    --marca-texto-capa: var(--white);
+    /* Acento de marca usado como TEXTO sobre fundo branco (faixa de tempo,
+       ícones) — cai pro azul da Bruna quando a cor da marca é clara demais
+       pra ler em cima de branco (mesmo cálculo de luminância do JS). */
+    --marca-texto-sobre-branco: var(--blue-dark);
   }
   *{ box-sizing:border-box; margin:0; padding:0; }
   body{
@@ -70,8 +82,41 @@
     padding:28px 24px;
     margin-bottom:24px;
   }
+
+  .capa{
+    background: linear-gradient(160deg, var(--marca) 0%, var(--marca-85) 100%);
+    color: var(--marca-texto-capa);
+    border-radius:22px;
+    padding:32px 26px 28px;
+    margin-bottom:20px;
+    box-shadow:var(--shadow-soft);
+  }
+  .capa-topo{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .capa-assinatura{
+    font-family: var(--font-script);
+    font-size:1.7rem;
+    line-height:1;
+  }
+  .capa-selo{
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--blue-dark);
+    background:var(--butter);
+    padding:6px 14px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
   .marca{
-    font-size:23px;
+    font-family: var(--font-body);
+    font-size:28px;
     font-weight:700;
     line-height:1.25;
     margin-bottom:6px;
@@ -79,11 +124,11 @@
   .detalhes{
     font-size:14px;
     font-weight:500;
-    color:var(--blue-dark-70);
+    opacity:.85;
   }
   .formato-pill{
     display:inline-flex;
-    margin-top:12px;
+    margin-top:14px;
     font-size:12px;
     font-weight:700;
     letter-spacing:.02em;
@@ -96,8 +141,8 @@
   .destaque-box{
     margin-top:16px;
     padding:16px;
-    background:var(--blue-light-15);
-    border-left:3px solid var(--blue-light);
+    background:var(--marca-08);
+    border-left:3px solid var(--marca-texto-sobre-branco);
     border-radius:10px;
   }
   .destaque-titulo{
@@ -171,20 +216,38 @@
     font-weight:700;
     letter-spacing:.03em;
     text-transform:uppercase;
-    color:var(--white);
-    background:var(--blue-light);
+    color:var(--marca-texto-capa);
+    background:var(--marca);
     padding:3px 9px;
     border-radius:999px;
   }
   .cena-faixa-tempo{
     font-size:11px;
     font-weight:700;
-    color:var(--blue-light);
+    color:var(--marca-texto-sobre-branco);
     margin-left:auto;
   }
 
-  .campo{ margin-bottom:16px; }
-  .campo:last-child{ margin-bottom:0; }
+  .cena-corpo{
+    display:grid;
+    grid-template-columns:minmax(140px, 38%) 1fr;
+    gap:20px;
+    align-items:start;
+  }
+  .cena-corpo.cena-sem-fotos{
+    grid-template-columns:1fr;
+  }
+  .cena-col-fotos, .cena-col-texto{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    min-width:0;
+  }
+  @media (max-width:640px){
+    .cena-corpo{ grid-template-columns:1fr; }
+  }
+
+  .campo{ margin-bottom:0; }
   .campo-titulo{
     display:flex;
     align-items:center;
@@ -196,7 +259,7 @@
     font-weight:700;
     margin-bottom:5px;
   }
-  .campo-titulo svg{ flex-shrink:0; color:var(--blue-light); }
+  .campo-titulo svg{ flex-shrink:0; color:var(--marca-texto-sobre-branco); }
   .campo-texto{
     font-size:15px;
     line-height:1.55;
@@ -212,7 +275,7 @@
   }
   .referencias-lista{
     display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(120px, 1fr));
+    grid-template-columns:repeat(auto-fill, minmax(100px, 1fr));
     gap:10px;
   }
   .referencia-item{
@@ -233,7 +296,7 @@
     position:absolute;
     left:0; right:0; bottom:0;
     padding:16px 10px 7px;
-    background:linear-gradient(180deg, rgba(4,70,93,0) 0%, rgba(4,70,93,0.8) 100%);
+    background:linear-gradient(180deg, rgba(var(--marca-rgb),0) 0%, rgba(var(--marca-rgb),0.85) 100%);
     color:var(--white);
     font-size:11px;
     font-weight:700;
@@ -291,7 +354,7 @@
   }
   .cm-input:focus, .cm-textarea:focus{
     outline:none;
-    border-color:var(--blue-light);
+    border-color:var(--marca-texto-sobre-branco);
   }
   .cm-textarea{
     min-height:90px;
@@ -304,8 +367,8 @@
     font-family:var(--font-body);
     font-size:13px;
     font-weight:700;
-    color:var(--white);
-    background:var(--blue-dark);
+    color:var(--marca-texto-capa);
+    background:var(--marca);
     cursor:pointer;
   }
   .cm-botao:disabled{
@@ -323,14 +386,16 @@
 
   @media (max-width:480px){
     .cartao, .cena{ padding:18px; border-radius:14px; }
-    .topo .assinatura{ font-size:2.2rem; }
+    .capa{ padding:24px 18px 22px; border-radius:16px; }
+    .marca{ font-size:22px; }
+    .capa-assinatura{ font-size:1.4rem; }
   }
 </style>
 </head>
 <body>
 
 <div class="pagina">
-  <div class="topo">
+  <div id="topo" class="topo">
     <div class="assinatura">Bruna Medeiros</div>
     <span class="selo">Roteiro para aprovação</span>
   </div>
@@ -349,11 +414,17 @@
   </div>
 
   <div id="conteudo" hidden>
-    <div class="cartao">
+    <header class="capa">
+      <div class="capa-topo">
+        <span class="capa-assinatura">Bruna Medeiros</span>
+        <span class="capa-selo">Roteiro para aprovação</span>
+      </div>
       <h1 id="rt-marca" class="marca"></h1>
       <div id="rt-detalhes" class="detalhes"></div>
       <span id="rt-formato" class="formato-pill" hidden></span>
+    </header>
 
+    <div id="rt-destaques-cartao" class="cartao" hidden>
       <div id="rt-objetivo-campo" class="destaque-box" hidden>
         <div class="destaque-titulo">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="0.5" stroke="currentColor" stroke-width="1.8"/></svg>
@@ -430,12 +501,42 @@
     document.getElementById('estado-erro').hidden = false;
   }
 
-  function blocoReferencias(imagens) {
+  // Converte "#rrggbb" (ou "#rgb") em [r,g,b] pra usar como custom property
+  // --marca-rgb, seguindo o mesmo padrão de --blue-dark-70 etc (rgba(var(--x-rgb),
+  // alpha) em vez de color-mix(), por segurança de suporte de navegador).
+  function hexParaRgb(hex) {
+    if (!hex) return null;
+    var limpo = String(hex).trim().replace('#', '');
+    if (limpo.length === 3) limpo = limpo.split('').map(function (c) { return c + c; }).join('');
+    if (!/^[0-9a-fA-F]{6}$/.test(limpo)) return null;
+    var num = parseInt(limpo, 16);
+    return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+  }
+
+  function luminanciaRelativa(rgb) {
+    return (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
+  }
+
+  // Sobrescreve --marca-rgb (default = identidade da Bruna) quando o roteiro
+  // tem marca_cor. Escolhe texto branco/escuro na capa conforme a luminância
+  // da cor, pra nunca ficar ilegível independente do tom escolhido pela marca.
+  // --marca-texto-sobre-branco resolve o caso inverso: quando a própria cor
+  // da marca é clara demais pra servir de TEXTO em cima de fundo branco
+  // (faixa de tempo, ícones), cai pro azul da Bruna em vez de sumir.
+  function aplicarTemaMarca(marcaCor) {
+    var rgb = hexParaRgb(marcaCor);
+    if (!rgb) return;
+    var root = document.documentElement.style;
+    var luminancia = luminanciaRelativa(rgb);
+    root.setProperty('--marca-rgb', rgb.join(', '));
+    root.setProperty('--marca-texto-capa', luminancia > 0.6 ? '#04465D' : '#FFFFFF');
+    root.setProperty('--marca-texto-sobre-branco', luminancia > 0.6 ? '#04465D' : 'var(--marca)');
+  }
+
+  function colFotos(imagens) {
     if (!imagens || imagens.length === 0) return '';
     return (
-      '<div class="campo">' +
-      '<div class="campo-titulo"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="9" r="1.5" fill="currentColor"/><path d="M21 15l-5-5-9 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Referências visuais</span></div>' +
-      '<div class="referencias-lista">' +
+      '<div class="cena-col-fotos"><div class="referencias-lista">' +
       imagens
         .map(function (ref) {
           var url = ref && ref.url ? ref.url : ref;
@@ -448,8 +549,7 @@
           );
         })
         .join('') +
-      '</div>' +
-      '</div>'
+      '</div></div>'
     );
   }
 
@@ -474,7 +574,17 @@
     );
   }
 
+  function colTexto(c) {
+    var blocos = [blocoCampo('fala', c.fala), blocoCampo('o_que_fazer', c.o_que_fazer), blocoCena(c.tipo_cena, c.descricao_cena)]
+      .filter(Boolean)
+      .join('');
+    return '<div class="cena-col-texto">' + (blocos || '<span class="campo-texto vazio">Sem detalhes ainda.</span>') + '</div>';
+  }
+
   function renderizar(roteiro, cenas) {
+    aplicarTemaMarca(roteiro.marca_cor);
+    document.getElementById('topo').hidden = true;
+    document.getElementById('rt-destaques-cartao').hidden = !(roteiro.objetivo || roteiro.pontos_importantes || roteiro.sugestao_legenda);
     texto(document.getElementById('rt-marca'), roteiro.marca || 'Roteiro');
     texto(
       document.getElementById('rt-detalhes'),
@@ -511,9 +621,7 @@
     } else {
       cont.innerHTML = cenas
         .map(function (c, i) {
-          var blocos = [blocoCampo('fala', c.fala), blocoCampo('o_que_fazer', c.o_que_fazer), blocoCena(c.tipo_cena, c.descricao_cena), blocoReferencias(c.referencias_imagens)]
-            .filter(Boolean)
-            .join('');
+          var temFotos = c.referencias_imagens && c.referencias_imagens.length > 0;
           return (
             '<div class="cena">' +
             '<div class="cena-cabecalho">' +
@@ -522,7 +630,10 @@
             (c.funcao_cena ? '<span class="cena-funcao-tag">' + escapeHtml(c.funcao_cena) + '</span>' : '') +
             (c.faixa_tempo ? '<span class="cena-faixa-tempo">' + escapeHtml(c.faixa_tempo) + '</span>' : '') +
             '</div>' +
-            (blocos || '<span class="campo-texto vazio">Sem detalhes ainda.</span>') +
+            '<div class="cena-corpo' + (temFotos ? '' : ' cena-sem-fotos') + '">' +
+            colFotos(c.referencias_imagens) +
+            colTexto(c) +
+            '</div>' +
             '</div>'
           );
         })

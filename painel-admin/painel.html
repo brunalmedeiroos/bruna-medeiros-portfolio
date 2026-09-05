@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260905d">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260905e">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -2510,6 +2510,7 @@
         ugc_mover_cena_baixo_aria: 'Mover cena para baixo',
         ugc_cena_tempo_aria: 'Faixa de tempo da cena',
         ugc_cena_tempo_placeholder: 'ex: 0-5s',
+        ugc_referencia_rotulo_placeholder: 'Cenário, roupa, item...',
         ugc_fala: 'Fala',
         ugc_fala_placeholder: 'O que devo falar...',
         ugc_o_que_fazer: 'O que fazer',
@@ -3198,6 +3199,7 @@
         ugc_mover_cena_baixo_aria: 'Move scene down',
         ugc_cena_tempo_aria: 'Scene time range',
         ugc_cena_tempo_placeholder: 'e.g. 0-5s',
+        ugc_referencia_rotulo_placeholder: 'Setting, outfit, prop...',
         ugc_fala: 'Lines',
         ugc_fala_placeholder: 'What I should say...',
         ugc_o_que_fazer: 'What to do',
@@ -7436,12 +7438,13 @@
                 <div class="ugc-cena-referencias-lista">
                   ${(cena.referencias_imagens || [])
                     .map(
-                      (url, imgIdx) => `
+                      (ref, imgIdx) => `
                         <div class="ugc-cena-referencia-item">
-                          <img src="${escapeHtml(url)}" alt="">
+                          <img src="${escapeHtml(ref.url)}" alt="">
                           <button type="button" class="ugc-cena-referencia-remover" data-index="${i}" data-img-index="${imgIdx}" aria-label="${escapeHtml(tr('ugc_remover_referencia_aria'))}">
                             <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
                           </button>
+                          <input type="text" class="ugc-cena-referencia-rotulo-input" data-index="${i}" data-img-index="${imgIdx}" placeholder="${escapeHtml(tr('ugc_referencia_rotulo_placeholder'))}" value="${escapeHtml(ref.rotulo || '')}">
                         </div>
                       `
                     )
@@ -7511,6 +7514,11 @@
           renderizarCenasModal();
         });
       });
+      cont.querySelectorAll('.ugc-cena-referencia-rotulo-input').forEach((el) => {
+        el.addEventListener('input', () => {
+          ugcModalCenas[Number(el.dataset.index)].referencias_imagens[Number(el.dataset.imgIndex)].rotulo = el.value;
+        });
+      });
       cont.querySelectorAll('.ugc-cena-mover').forEach((el) => {
         el.addEventListener('click', () => {
           const i = Number(el.dataset.index);
@@ -7532,7 +7540,7 @@
         if (error) throw error;
         const { data } = Auth.sb.storage.from('ugc-roteiro-referencias').getPublicUrl(caminho);
         if (!ugcModalCenas[indiceCena].referencias_imagens) ugcModalCenas[indiceCena].referencias_imagens = [];
-        ugcModalCenas[indiceCena].referencias_imagens.push(data.publicUrl);
+        ugcModalCenas[indiceCena].referencias_imagens.push({ url: data.publicUrl, rotulo: '' });
       } catch (err) {
         console.error('Erro ao anexar imagem de referência:', err);
         alert(tr('ugc_erro_anexar_arquivo'));

@@ -1429,6 +1429,8 @@
         <div id="ugc-roteiro-cenas-lista" class="ugc-cenas-lista"></div>
         <button type="button" id="btn-ugc-add-cena" class="cal-btn" data-i18n="ugc_add_cena">+ Adicionar cena</button>
 
+        <p id="ugc-roteiro-link-validade-info" class="ugc-roteiro-link-validade-info"></p>
+
         <div class="cal-form-acoes">
           <button type="button" id="ugc-modal-roteiro-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
           <button type="button" id="ugc-modal-roteiro-revogar-link" class="cal-btn" data-i18n="ugc_revogar_link">Gerar novo link</button>
@@ -2492,6 +2494,8 @@
         ugc_revogar_link: 'Gerar novo link',
         ugc_revogar_link_confirmar: 'Gerar um novo link? O link antigo para de funcionar imediatamente.',
         ugc_link_revogado_copiado: 'Novo link copiado! O link antigo já parou de funcionar.',
+        ugc_link_valido_prefixo: 'Link válido até ',
+        ugc_link_expirado_prefixo: 'Link expirado em ',
         ugc_followup_era_prefixo: 'Follow-up era ',
         ugc_sem_followup_marcado: 'Sem follow-up marcado',
         ugc_excluir_prospeccao_confirmar: 'Excluir esta prospecção?',
@@ -3146,6 +3150,8 @@
         ugc_revogar_link: 'Generate new link',
         ugc_revogar_link_confirmar: 'Generate a new link? The old link stops working immediately.',
         ugc_link_revogado_copiado: 'New link copied! The old link has already stopped working.',
+        ugc_link_valido_prefixo: 'Link valid until ',
+        ugc_link_expirado_prefixo: 'Link expired on ',
         ugc_followup_era_prefixo: 'Follow-up was ',
         ugc_sem_followup_marcado: 'No follow-up scheduled',
         ugc_excluir_prospeccao_confirmar: 'Delete this prospect?',
@@ -7339,6 +7345,17 @@
         infoVisualizacao.textContent = `${tr('ugc_roteiro_visualizado_prefixo')}${visualizacoes.length}${tr('ugc_roteiro_visualizado_sufixo')}${formatarDataHora(new Date(maisRecente))}`;
       }
 
+      const infoValidade = document.getElementById('ugc-roteiro-link-validade-info');
+      if (roteiro && roteiro.share_expira_em) {
+        const expira = new Date(roteiro.share_expira_em);
+        const expirado = expira < new Date();
+        infoValidade.textContent = `${tr(expirado ? 'ugc_link_expirado_prefixo' : 'ugc_link_valido_prefixo')}${formatarDataHora(expira)}`;
+        infoValidade.classList.toggle('ugc-link-expirado', expirado);
+      } else {
+        infoValidade.textContent = '';
+        infoValidade.classList.remove('ugc-link-expirado');
+      }
+
       document.getElementById('ugc-roteiro-marca').value = roteiro ? roteiro.marca || '' : '';
       document.getElementById('ugc-roteiro-produto').value = roteiro ? roteiro.produto || '' : '';
       document.getElementById('ugc-roteiro-campanha').value = roteiro ? roteiro.campanha || '' : '';
@@ -7471,14 +7488,19 @@
         const link = `https://brunamedeiros.com/roteiro/?id=${ugcRoteiroAbertoId}&token=${data.share_token}`;
         await navigator.clipboard.writeText(link);
 
-        // Primeiro link gerado marca o roteiro como enviado — não sobrescreve
-        // se já estiver Aprovado/Ajustes pedidos/Enviado de novo.
-        if (data.status === 'Rascunho') {
-          const { error: erroStatus } = await Auth.sb.from('ugc_roteiros').update({ status: 'Enviado' }).eq('id', ugcRoteiroAbertoId);
-          if (!erroStatus) {
-            document.getElementById('ugc-roteiro-status').value = 'Enviado';
-            await carregarUGC();
-          }
+        // Cada vez que o link é (re)compartilhado, a validade é renovada pra
+        // mais 30 dias — e o primeiro compartilhamento marca o roteiro como
+        // enviado (sem sobrescrever Aprovado/Ajustes pedidos/Enviado de novo).
+        const novaExpiracao = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+        const atualizacoes = { share_expira_em: novaExpiracao };
+        if (data.status === 'Rascunho') atualizacoes.status = 'Enviado';
+        const { error: erroAtualizar } = await Auth.sb.from('ugc_roteiros').update(atualizacoes).eq('id', ugcRoteiroAbertoId);
+        if (!erroAtualizar) {
+          if (atualizacoes.status) document.getElementById('ugc-roteiro-status').value = atualizacoes.status;
+          const infoValidade = document.getElementById('ugc-roteiro-link-validade-info');
+          infoValidade.textContent = `${tr('ugc_link_valido_prefixo')}${formatarDataHora(new Date(novaExpiracao))}`;
+          infoValidade.classList.remove('ugc-link-expirado');
+          await carregarUGC();
         }
 
         alert(tr('ugc_link_roteiro_copiado'));
@@ -7499,10 +7521,15 @@
       btn.disabled = true;
       try {
         const novoToken = crypto.randomUUID();
-        const { error } = await Auth.sb.from('ugc_roteiros').update({ share_token: novoToken }).eq('id', ugcRoteiroAbertoId);
+        const novaExpiracao = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+        const { error } = await Auth.sb.from('ugc_roteiros').update({ share_token: novoToken, share_expira_em: novaExpiracao }).eq('id', ugcRoteiroAbertoId);
         if (error) throw error;
         const link = `https://brunamedeiros.com/roteiro/?id=${ugcRoteiroAbertoId}&token=${novoToken}`;
         await navigator.clipboard.writeText(link);
+        const infoValidade = document.getElementById('ugc-roteiro-link-validade-info');
+        infoValidade.textContent = `${tr('ugc_link_valido_prefixo')}${formatarDataHora(new Date(novaExpiracao))}`;
+        infoValidade.classList.remove('ugc-link-expirado');
+        await carregarUGC();
         alert(tr('ugc_link_revogado_copiado'));
       } catch (err) {
         console.error('Erro ao revogar link do roteiro:', err);

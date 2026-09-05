@@ -6,9 +6,10 @@
 //
 // SEGURANÇA: o acesso é protegido pelo "share_token" (uuid aleatório) que
 // mora na própria linha de ugc_roteiros — só quem tem o link (id + token)
-// consegue ler. O select abaixo lista explicitamente cada coluna retornada
-// (nunca "select *") e nunca devolve o share_token, observações internas ou
-// o trabalho_id vinculado — só o que a marca precisa ver pra aprovar.
+// consegue ler, e só enquanto share_expira_em não tiver passado. O select
+// abaixo lista explicitamente cada coluna retornada (nunca "select *") e
+// nunca devolve o share_token, share_expira_em, observações internas ou o
+// trabalho_id vinculado — só o que a marca precisa ver pra aprovar.
 
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "@supabase/server";
@@ -38,12 +39,15 @@ export default {
 
     const { data: roteiro, error } = await ctx.supabaseAdmin
       .from("ugc_roteiros")
-      .select("marca, produto, campanha, tipo_conteudo, duracao_prevista, objetivo, share_token")
+      .select("marca, produto, campanha, tipo_conteudo, duracao_prevista, objetivo, share_token, share_expira_em")
       .eq("id", id)
       .maybeSingle();
 
     if (error) return jsonResponse({ ok: false, error: error.message }, 500);
     if (!roteiro || roteiro.share_token !== token) return jsonResponse({ ok: false, error: "link inválido" }, 404);
+    if (roteiro.share_expira_em && new Date(roteiro.share_expira_em) < new Date()) {
+      return jsonResponse({ ok: false, error: "link expirado" }, 410);
+    }
 
     const { data: cenas, error: erroCenas } = await ctx.supabaseAdmin
       .from("ugc_roteiro_cenas")
@@ -60,7 +64,7 @@ export default {
       .insert({ roteiro_id: id });
     if (erroVisualizacao) console.error("Erro ao registrar visualização do roteiro:", erroVisualizacao.message);
 
-    const { share_token: _descartado, ...roteiroSeguro } = roteiro;
+    const { share_token: _descartado, share_expira_em: _tambemDescartado, ...roteiroSeguro } = roteiro;
     return jsonResponse({ ok: true, roteiro: roteiroSeguro, cenas });
   }),
 };

@@ -159,9 +159,11 @@
     });
   }
 
-  function mostrarErro() {
+  function mostrarErro(mensagem) {
     document.getElementById('estado-carregando').hidden = true;
-    document.getElementById('estado-erro').hidden = false;
+    var erroEl = document.getElementById('estado-erro');
+    if (mensagem) erroEl.textContent = mensagem;
+    erroEl.hidden = false;
   }
 
   function renderizar(roteiro, cenas) {
@@ -215,12 +217,12 @@
   fetch(FUNCTION_URL + '?id=' + encodeURIComponent(id) + '&token=' + encodeURIComponent(token))
     .then(function (r) { return r.json(); })
     .then(function (resp) {
-      if (!resp || !resp.ok) throw new Error('not ok');
+      if (!resp || !resp.ok) throw new Error(resp && resp.error === 'link expirado' ? 'expirado' : 'invalido');
       renderizar(resp.roteiro, resp.cenas);
     })
     .catch(function (err) {
       console.error('Erro ao carregar roteiro público:', err);
-      mostrarErro();
+      mostrarErro(err.message === 'expirado' ? 'Esse link expirou. Peça um novo link pra Bruna.' : null);
     });
 })();
 </script>

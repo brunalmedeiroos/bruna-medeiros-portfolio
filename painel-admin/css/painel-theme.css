@@ -2126,6 +2126,21 @@
   color: rgba(var(--grafite-rgb), 0.7);
 }
 
+.painel-body .ugc-roteiro-link-validade-info {
+  font-size: 13px;
+  color: rgba(var(--grafite-rgb), 0.7);
+  margin-top: -6px;
+}
+
+.painel-body .ugc-roteiro-link-validade-info:empty {
+  display: none;
+}
+
+.painel-body .ugc-roteiro-link-validade-info.ugc-link-expirado {
+  color: var(--erro);
+  font-weight: 600;
+}
+
 /* ---- Modal de trabalho (mais largo que o pl-modal padrão, por ter mais seções) ---- */
 
 .painel-body .pl-modal-grande {

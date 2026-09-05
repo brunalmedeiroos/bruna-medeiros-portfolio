@@ -1366,6 +1366,22 @@
 
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
+            <label for="ugc-roteiro-status" data-i18n="ugc_roteiro_status_label">Status</label>
+            <select id="ugc-roteiro-status">
+              <option value="Rascunho" data-i18n="ugc_roteiro_status_rascunho">Rascunho</option>
+              <option value="Enviado" data-i18n="ugc_roteiro_status_enviado">Enviado</option>
+              <option value="Aprovado" data-i18n="ugc_roteiro_status_aprovado">Aprovado</option>
+              <option value="Ajustes pedidos" data-i18n="ugc_roteiro_status_ajustes">Ajustes pedidos</option>
+            </select>
+          </div>
+          <div class="cal-form-campo">
+            <label data-i18n="ugc_roteiro_visualizado_label">Visualização</label>
+            <span id="ugc-roteiro-visualizado-info" class="ugc-roteiro-visualizado-info"></span>
+          </div>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
             <label for="ugc-roteiro-produto" data-i18n="ugc_produto">Produto</label>
             <input type="text" id="ugc-roteiro-produto">
           </div>
@@ -1405,6 +1421,7 @@
 
         <div class="cal-form-acoes">
           <button type="button" id="ugc-modal-roteiro-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
+          <button type="button" id="ugc-modal-roteiro-revogar-link" class="cal-btn" data-i18n="ugc_revogar_link">Gerar novo link</button>
           <button type="button" id="ugc-modal-roteiro-compartilhar" class="cal-btn" data-i18n="ugc_compartilhar_roteiro">Link para aprovação</button>
           <button type="button" id="ugc-modal-roteiro-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
         </div>
@@ -1720,6 +1737,7 @@
     let ugcTrabalhosCache = [];
     let ugcRoteirosCache = [];
     let ugcRoteiroCenasCache = [];
+    let ugcRoteiroVisualizacoesCache = [];
     let ugcProspeccaoCache = [];
     let ugcContratosCache = [];
     let ugcPrecosCache = [];
@@ -1773,6 +1791,22 @@
     function traduzirStatusPagamento(status) {
       const chave = UGC_STATUS_PAGAMENTO_CHAVE[status];
       return chave ? tr(chave) : status;
+    }
+    const UGC_ROTEIRO_STATUS_CHAVE = {
+      'Rascunho': 'ugc_roteiro_status_rascunho',
+      'Enviado': 'ugc_roteiro_status_enviado',
+      'Aprovado': 'ugc_roteiro_status_aprovado',
+      'Ajustes pedidos': 'ugc_roteiro_status_ajustes',
+    };
+    function traduzirStatusRoteiro(status) {
+      const chave = UGC_ROTEIRO_STATUS_CHAVE[status];
+      return chave ? tr(chave) : status;
+    }
+    function classeStatusRoteiro(status) {
+      if (status === 'Aprovado') return 'ugc-status-pago';
+      if (status === 'Ajustes pedidos') return 'ugc-status-cancelado';
+      if (status === 'Enviado') return 'ugc-status-producao';
+      return 'ugc-status-inicial';
     }
     const UGC_CHECKLIST_ITENS = [
       { campo: 'briefing_recebido', chave: 'ugc_check_briefing_recebido' },
@@ -2429,6 +2463,18 @@
         ugc_excluir_roteiro_confirmar: 'Excluir este roteiro? As cenas também serão apagadas.',
         ugc_compartilhar_roteiro: 'Link para aprovação',
         ugc_link_roteiro_copiado: 'Link copiado! É só mandar pra marca aprovar o roteiro.',
+        ugc_roteiro_status_label: 'Status',
+        ugc_roteiro_status_rascunho: 'Rascunho',
+        ugc_roteiro_status_enviado: 'Enviado',
+        ugc_roteiro_status_aprovado: 'Aprovado',
+        ugc_roteiro_status_ajustes: 'Ajustes pedidos',
+        ugc_roteiro_visualizado_label: 'Visualização',
+        ugc_roteiro_visualizado_nunca: 'Ainda não visualizado pela marca.',
+        ugc_roteiro_visualizado_prefixo: 'Visualizado ',
+        ugc_roteiro_visualizado_sufixo: 'x · última vez em ',
+        ugc_revogar_link: 'Gerar novo link',
+        ugc_revogar_link_confirmar: 'Gerar um novo link? O link antigo para de funcionar imediatamente.',
+        ugc_link_revogado_copiado: 'Novo link copiado! O link antigo já parou de funcionar.',
         ugc_followup_era_prefixo: 'Follow-up era ',
         ugc_sem_followup_marcado: 'Sem follow-up marcado',
         ugc_excluir_prospeccao_confirmar: 'Excluir esta prospecção?',
@@ -3066,6 +3112,18 @@
         ugc_excluir_roteiro_confirmar: 'Delete this script? The scenes will also be deleted.',
         ugc_compartilhar_roteiro: 'Link for approval',
         ugc_link_roteiro_copiado: 'Link copied! Send it to the brand to approve the script.',
+        ugc_roteiro_status_label: 'Status',
+        ugc_roteiro_status_rascunho: 'Draft',
+        ugc_roteiro_status_enviado: 'Sent',
+        ugc_roteiro_status_aprovado: 'Approved',
+        ugc_roteiro_status_ajustes: 'Changes requested',
+        ugc_roteiro_visualizado_label: 'Views',
+        ugc_roteiro_visualizado_nunca: 'Not viewed by the brand yet.',
+        ugc_roteiro_visualizado_prefixo: 'Viewed ',
+        ugc_roteiro_visualizado_sufixo: 'x · last seen on ',
+        ugc_revogar_link: 'Generate new link',
+        ugc_revogar_link_confirmar: 'Generate a new link? The old link stops working immediately.',
+        ugc_link_revogado_copiado: 'New link copied! The old link has already stopped working.',
         ugc_followup_era_prefixo: 'Follow-up was ',
         ugc_sem_followup_marcado: 'No follow-up scheduled',
         ugc_excluir_prospeccao_confirmar: 'Delete this prospect?',
@@ -3674,6 +3732,7 @@
       document.getElementById('ugc-modal-roteiro-fechar').addEventListener('click', fecharModalRoteiro);
       document.getElementById('ugc-modal-roteiro-excluir').addEventListener('click', excluirModalRoteiro);
       document.getElementById('ugc-modal-roteiro-compartilhar').addEventListener('click', compartilharModalRoteiro);
+      document.getElementById('ugc-modal-roteiro-revogar-link').addEventListener('click', revogarLinkRoteiro);
       document.getElementById('ugc-modal-roteiro-salvar').addEventListener('click', salvarModalRoteiro);
       document.getElementById('ugc-modal-roteiro-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'ugc-modal-roteiro-overlay') fecharModalRoteiro();
@@ -6589,11 +6648,12 @@
 
     async function carregarUGC() {
       try {
-        const [trabalhos, entregaveis, roteiros, cenas, prospeccao, contratos, precos] = await Promise.all([
+        const [trabalhos, entregaveis, roteiros, cenas, visualizacoes, prospeccao, contratos, precos] = await Promise.all([
           buscarTudo('ugc_trabalhos'),
           buscarTudo('ugc_trabalho_entregaveis'),
           buscarTudo('ugc_roteiros'),
           buscarTudo('ugc_roteiro_cenas'),
+          buscarTudo('ugc_roteiro_visualizacoes'),
           buscarTudo('ugc_prospeccao'),
           buscarTudo('ugc_contratos'),
           buscarTudo('ugc_precos'),
@@ -6602,6 +6662,7 @@
         ugcTrabalhoEntregaveisCache = entregaveis;
         ugcRoteirosCache = roteiros;
         ugcRoteiroCenasCache = cenas;
+        ugcRoteiroVisualizacoesCache = visualizacoes;
         ugcProspeccaoCache = prospeccao;
         ugcContratosCache = contratos;
         ugcPrecosCache = precos;
@@ -7145,6 +7206,7 @@
       card.type = 'button';
       card.className = 'ugc-roteiro-card';
       card.innerHTML = `
+        <span class="ugc-status-pill ${classeStatusRoteiro(roteiro.status || 'Rascunho')}">${escapeHtml(traduzirStatusRoteiro(roteiro.status || 'Rascunho'))}</span>
         <span class="ugc-roteiro-card-marca">${escapeHtml(roteiro.marca || tr('ugc_sem_marca'))}</span>
         <span class="ugc-roteiro-card-info">${escapeHtml([roteiro.produto, roteiro.campanha].filter(Boolean).join(' · ') || tr('ugc_sem_detalhes_ainda'))}</span>
         <span class="ugc-roteiro-card-progresso">${cenas.length > 0 ? `${gravadas}/${cenas.length} ${tr('ugc_cenas_gravadas')}` : tr('ugc_sem_cenas_ainda')}</span>
@@ -7211,6 +7273,17 @@
 
     function abrirModalRoteiro(roteiro) {
       ugcRoteiroAbertoId = roteiro ? roteiro.id : null;
+      document.getElementById('ugc-roteiro-status').value = roteiro ? roteiro.status || 'Rascunho' : 'Rascunho';
+
+      const visualizacoes = roteiro ? ugcRoteiroVisualizacoesCache.filter((v) => v.roteiro_id === roteiro.id) : [];
+      const infoVisualizacao = document.getElementById('ugc-roteiro-visualizado-info');
+      if (visualizacoes.length === 0) {
+        infoVisualizacao.textContent = tr('ugc_roteiro_visualizado_nunca');
+      } else {
+        const maisRecente = visualizacoes.reduce((max, v) => (v.created_at > max ? v.created_at : max), visualizacoes[0].created_at);
+        infoVisualizacao.textContent = `${tr('ugc_roteiro_visualizado_prefixo')}${visualizacoes.length}${tr('ugc_roteiro_visualizado_sufixo')}${formatarDataHora(new Date(maisRecente))}`;
+      }
+
       document.getElementById('ugc-roteiro-marca').value = roteiro ? roteiro.marca || '' : '';
       document.getElementById('ugc-roteiro-produto').value = roteiro ? roteiro.produto || '' : '';
       document.getElementById('ugc-roteiro-campanha').value = roteiro ? roteiro.campanha || '' : '';
@@ -7235,6 +7308,7 @@
 
       document.getElementById('ugc-modal-roteiro-excluir').hidden = !roteiro;
       document.getElementById('ugc-modal-roteiro-compartilhar').hidden = !roteiro;
+      document.getElementById('ugc-modal-roteiro-revogar-link').hidden = !roteiro;
       document.getElementById('ugc-modal-roteiro-overlay').hidden = false;
     }
 
@@ -7246,6 +7320,7 @@
     async function salvarModalRoteiro() {
       const linha = {
         marca: document.getElementById('ugc-roteiro-marca').value.trim() || null,
+        status: document.getElementById('ugc-roteiro-status').value,
         produto: document.getElementById('ugc-roteiro-produto').value.trim() || null,
         campanha: document.getElementById('ugc-roteiro-campanha').value.trim() || null,
         trabalho_id: document.getElementById('ugc-roteiro-trabalho').value || null,
@@ -7318,15 +7393,48 @@
       try {
         const { data, error } = await Auth.sb
           .from('ugc_roteiros')
-          .select('share_token')
+          .select('share_token, status')
           .eq('id', ugcRoteiroAbertoId)
           .single();
         if (error) throw error;
         const link = `https://brunamedeiros.com/roteiro/?id=${ugcRoteiroAbertoId}&token=${data.share_token}`;
         await navigator.clipboard.writeText(link);
+
+        // Primeiro link gerado marca o roteiro como enviado — não sobrescreve
+        // se já estiver Aprovado/Ajustes pedidos/Enviado de novo.
+        if (data.status === 'Rascunho') {
+          const { error: erroStatus } = await Auth.sb.from('ugc_roteiros').update({ status: 'Enviado' }).eq('id', ugcRoteiroAbertoId);
+          if (!erroStatus) {
+            document.getElementById('ugc-roteiro-status').value = 'Enviado';
+            await carregarUGC();
+          }
+        }
+
         alert(tr('ugc_link_roteiro_copiado'));
       } catch (err) {
         console.error('Erro ao gerar link do roteiro:', err);
+        alert(tr('ugc_erro_copiar'));
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // Troca o share_token por um novo — o link antigo (com o token velho)
+    // passa a responder "link inválido" na Edge Function roteiro-publico.
+    async function revogarLinkRoteiro() {
+      if (!ugcRoteiroAbertoId) return;
+      if (!(await confirmarAcao(tr('ugc_revogar_link_confirmar')))) return;
+      const btn = document.getElementById('ugc-modal-roteiro-revogar-link');
+      btn.disabled = true;
+      try {
+        const novoToken = crypto.randomUUID();
+        const { error } = await Auth.sb.from('ugc_roteiros').update({ share_token: novoToken }).eq('id', ugcRoteiroAbertoId);
+        if (error) throw error;
+        const link = `https://brunamedeiros.com/roteiro/?id=${ugcRoteiroAbertoId}&token=${novoToken}`;
+        await navigator.clipboard.writeText(link);
+        alert(tr('ugc_link_revogado_copiado'));
+      } catch (err) {
+        console.error('Erro ao revogar link do roteiro:', err);
         alert(tr('ugc_erro_copiar'));
       } finally {
         btn.disabled = false;
@@ -8134,6 +8242,10 @@
 
     function formatarDataCurta(data) {
       return data.toLocaleDateString(localeAtual(), { day: '2-digit', month: '2-digit' });
+    }
+
+    function formatarDataHora(data) {
+      return data.toLocaleString(localeAtual(), { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
     }
 
     // Troca "_" por espaço e deixa a primeira letra de cada palavra maiúscula.

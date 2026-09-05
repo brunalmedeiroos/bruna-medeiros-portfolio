@@ -53,6 +53,13 @@ export default {
 
     if (erroCenas) return jsonResponse({ ok: false, error: erroCenas.message }, 500);
 
+    // Best-effort: registra que a marca abriu o link, pra Bruna ver isso no
+    // painel. Se falhar, não impede a marca de ver o roteiro.
+    const { error: erroVisualizacao } = await ctx.supabaseAdmin
+      .from("ugc_roteiro_visualizacoes")
+      .insert({ roteiro_id: id });
+    if (erroVisualizacao) console.error("Erro ao registrar visualização do roteiro:", erroVisualizacao.message);
+
     const { share_token: _descartado, ...roteiroSeguro } = roteiro;
     return jsonResponse({ ok: true, roteiro: roteiroSeguro, cenas });
   }),

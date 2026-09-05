@@ -2118,6 +2118,14 @@
   color: var(--erro);
 }
 
+.painel-body .ugc-roteiro-visualizado-info {
+  display: flex;
+  align-items: center;
+  height: 38px;
+  font-size: 13px;
+  color: rgba(var(--grafite-rgb), 0.7);
+}
+
 /* ---- Modal de trabalho (mais largo que o pl-modal padrão, por ter mais seções) ---- */
 
 .painel-body .pl-modal-grande {

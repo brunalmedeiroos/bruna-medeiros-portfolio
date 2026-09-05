@@ -246,15 +246,18 @@
     position:relative;
     display:inline-flex;
     align-items:center;
+    height:32px;
+    overflow:hidden;
   }
   .cena-numero-fundo{
     position:absolute;
     left:-6px;
-    bottom:-2px;
+    top:50%;
+    transform:translateY(-50%);
     font-family:var(--font-display);
     font-style:italic;
     font-weight:600;
-    font-size:3.2rem;
+    font-size:2.6rem;
     line-height:1;
     color:var(--marca);
     opacity:.3;

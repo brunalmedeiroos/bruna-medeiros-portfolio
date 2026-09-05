@@ -230,7 +230,7 @@
 
   .cena-corpo{
     display:grid;
-    grid-template-columns:minmax(140px, 38%) 1fr;
+    grid-template-columns:minmax(200px, 46%) 1fr;
     gap:20px;
     align-items:start;
   }
@@ -275,12 +275,11 @@
   }
   .referencias-lista{
     display:grid;
-    grid-template-columns:repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
     gap:10px;
   }
   .referencia-item{
     position:relative;
-    display:block;
     aspect-ratio:1;
     border-radius:12px;
     overflow:hidden;
@@ -542,10 +541,10 @@
           var url = ref && ref.url ? ref.url : ref;
           var rotulo = ref && ref.rotulo ? ref.rotulo : '';
           return (
-            '<a class="referencia-item" href="' + escapeHtml(url) + '" target="_blank" rel="noopener">' +
+            '<div class="referencia-item">' +
             '<img src="' + escapeHtml(url) + '" alt="Referência visual">' +
             (rotulo ? '<span class="referencia-rotulo">' + escapeHtml(rotulo) + '</span>' : '') +
-            '</a>'
+            '</div>'
           );
         })
         .join('') +

@@ -2524,6 +2524,12 @@
   gap: 2px;
 }
 
+.painel-body .ugc-cena-acoes-rodape {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .painel-body .ugc-cena-remover,
 .painel-body .ugc-cena-mover {
   background: transparent;

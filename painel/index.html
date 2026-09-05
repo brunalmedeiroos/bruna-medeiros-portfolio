@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260905b">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260905c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -1455,7 +1455,10 @@
 
         <h4 class="ugc-modal-secao-titulo"><span data-i18n="ugc_cenas">Cenas</span> <span id="ugc-roteiro-progresso" class="ugc-roteiro-progresso-badge"></span></h4>
         <div id="ugc-roteiro-cenas-lista" class="ugc-cenas-lista"></div>
-        <button type="button" id="btn-ugc-add-cena" class="cal-btn" data-i18n="ugc_add_cena">+ Adicionar cena</button>
+        <div class="ugc-cena-acoes-rodape">
+          <button type="button" id="btn-ugc-add-cena" class="cal-btn" data-i18n="ugc_add_cena">+ Adicionar cena</button>
+          <button type="button" id="ugc-copiar-roteiro" class="cal-btn" data-i18n="ugc_copiar_roteiro">Copiar roteiro completo</button>
+        </div>
 
         <p id="ugc-roteiro-link-validade-info" class="ugc-roteiro-link-validade-info"></p>
 
@@ -2411,6 +2414,8 @@
         ugc_observacoes_nota: 'Só você vê — não aparece no link.',
         ugc_cenas: 'Cenas',
         ugc_add_cena: '+ Adicionar cena',
+        ugc_copiar_roteiro: 'Copiar roteiro completo',
+        ugc_roteiro_copiado: 'Roteiro copiado! Já pode colar onde quiser.',
         ugc_nao_definido: 'Não definido',
         ugc_data_contato: 'Data do contato',
         ugc_valor_proposto: 'Valor proposto (R$)',
@@ -3097,6 +3102,8 @@
         ugc_observacoes_nota: 'Only you see this — it never appears on the link.',
         ugc_cenas: 'Scenes',
         ugc_add_cena: '+ Add scene',
+        ugc_copiar_roteiro: 'Copy full script',
+        ugc_roteiro_copiado: 'Script copied! You can paste it anywhere now.',
         ugc_nao_definido: 'Not set',
         ugc_data_contato: 'Contact date',
         ugc_valor_proposto: 'Proposed value (R$)',
@@ -3863,9 +3870,21 @@
         if (e.target.id === 'ugc-modal-roteiro-overlay') fecharModalRoteiro();
       });
       document.getElementById('btn-ugc-add-cena').addEventListener('click', () => {
-        ugcModalCenas.push({ id: null, fala: '', o_que_fazer: '', cena_broll: '', cena_gravada: false, cena_conferida: false });
+        ugcModalCenas.push({
+          id: null,
+          fala: '',
+          o_que_fazer: '',
+          tipo_cena: '',
+          descricao_cena: '',
+          cena_gravada: false,
+          cena_conferida: false,
+          duracao_segundos: null,
+          funcao_cena: '',
+          referencias_imagens: [],
+        });
         renderizarCenasModal();
       });
+      document.getElementById('ugc-copiar-roteiro').addEventListener('click', copiarRoteiroCompleto);
       document.getElementById('btn-ugc-nova-prospeccao').addEventListener('click', () => abrirModalProspeccao(null));
       document.getElementById('ugc-modal-prospeccao-fechar').addEventListener('click', fecharModalProspeccao);
       document.getElementById('ugc-modal-prospeccao-excluir').addEventListener('click', excluirModalProspeccao);
@@ -7542,6 +7561,45 @@
       } catch (err) {
         console.error('Erro ao anexar imagem de referência:', err);
         alert(tr('ugc_erro_anexar_arquivo'));
+      }
+    }
+
+    // Monta um texto único com tudo do roteiro (formato, objetivo, pontos
+    // importantes e cada cena) pra colar direto numa IA e pedir sugestão de
+    // legenda — lê do estado atual do modal, então pega até edição que ainda
+    // não foi salva.
+    async function copiarRoteiroCompleto() {
+      const marca = document.getElementById('ugc-roteiro-marca').value.trim();
+      const produto = document.getElementById('ugc-roteiro-produto').value.trim();
+      const campanha = document.getElementById('ugc-roteiro-campanha').value.trim();
+      const tipoConteudo = document.getElementById('ugc-roteiro-tipo-conteudo').value.trim();
+      const duracao = document.getElementById('ugc-roteiro-duracao').value.trim();
+      const objetivo = document.getElementById('ugc-roteiro-objetivo').value.trim();
+      const pontos = document.getElementById('ugc-roteiro-pontos-importantes').value.trim();
+
+      const linhas = [`ROTEIRO — ${marca || tr('ugc_sem_marca')}`];
+      const identificacao = [produto, campanha].filter(Boolean).join(' · ');
+      if (identificacao) linhas.push(identificacao);
+      const formato = [tipoConteudo, duracao].filter(Boolean).join(' · ');
+      if (formato) linhas.push(`Formato: ${formato}`);
+
+      if (objetivo) linhas.push('', 'Objetivo:', objetivo);
+      if (pontos) linhas.push('', 'Pontos importantes:', pontos);
+
+      linhas.push('', 'Cenas:');
+      ugcModalCenas.forEach((cena, i) => {
+        const tags = [cena.funcao_cena, cena.tipo_cena].filter(Boolean).join(' · ');
+        linhas.push('', `${i + 1}. ${tags ? `[${tags}]` : ''}`.trim());
+        if (cena.fala) linhas.push(`Fala: ${cena.fala}`);
+        if (cena.descricao_cena) linhas.push(`Detalhes: ${cena.descricao_cena}`);
+      });
+
+      try {
+        await navigator.clipboard.writeText(linhas.join('\n'));
+        alert(tr('ugc_roteiro_copiado'));
+      } catch (err) {
+        console.error('Erro ao copiar roteiro:', err);
+        alert(tr('ugc_erro_copiar'));
       }
     }
 

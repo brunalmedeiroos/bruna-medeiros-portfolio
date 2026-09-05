@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260905c">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260905d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -2508,8 +2508,8 @@
         ugc_remover_cena_aria: 'Remover cena',
         ugc_mover_cena_cima_aria: 'Mover cena para cima',
         ugc_mover_cena_baixo_aria: 'Mover cena para baixo',
-        ugc_cena_duracao_aria: 'Duração da cena, em segundos',
-        ugc_segundos_abrev: 's',
+        ugc_cena_tempo_aria: 'Faixa de tempo da cena',
+        ugc_cena_tempo_placeholder: 'ex: 0-5s',
         ugc_fala: 'Fala',
         ugc_fala_placeholder: 'O que devo falar...',
         ugc_o_que_fazer: 'O que fazer',
@@ -3196,8 +3196,8 @@
         ugc_remover_cena_aria: 'Remove scene',
         ugc_mover_cena_cima_aria: 'Move scene up',
         ugc_mover_cena_baixo_aria: 'Move scene down',
-        ugc_cena_duracao_aria: 'Scene duration, in seconds',
-        ugc_segundos_abrev: 's',
+        ugc_cena_tempo_aria: 'Scene time range',
+        ugc_cena_tempo_placeholder: 'e.g. 0-5s',
         ugc_fala: 'Lines',
         ugc_fala_placeholder: 'What I should say...',
         ugc_o_que_fazer: 'What to do',
@@ -3877,7 +3877,7 @@
           descricao_cena: '',
           cena_gravada: false,
           cena_conferida: false,
-          duracao_segundos: null,
+          faixa_tempo: null,
           funcao_cena: '',
           referencias_imagens: [],
         });
@@ -7370,32 +7370,11 @@
       return card;
     }
 
-    // Faixa de tempo de cada cena (ex: "0-10s"), calculada somando a duração
-    // das cenas anteriores. Pra de calcular (retorna null) a partir da
-    // primeira cena sem duração preenchida, já que não dá pra saber onde ela
-    // começa sem isso.
-    function calcularFaixasTempoCenas(cenas) {
-      let acumulado = 0;
-      let quebrado = false;
-      return cenas.map((c) => {
-        const duracao = Number(c.duracao_segundos);
-        if (quebrado || !duracao || duracao <= 0) {
-          quebrado = true;
-          return null;
-        }
-        const inicio = acumulado;
-        acumulado += duracao;
-        return `${inicio}-${acumulado}s`;
-      });
-    }
-
     function renderizarCenasModal() {
       const cont = document.getElementById('ugc-roteiro-cenas-lista');
       const gravadas = ugcModalCenas.filter((c) => c.cena_gravada).length;
       document.getElementById('ugc-roteiro-progresso').textContent =
         ugcModalCenas.length > 0 ? `${gravadas}/${ugcModalCenas.length} ${tr('ugc_cenas_gravadas')}` : '';
-
-      const faixas = calcularFaixasTempoCenas(ugcModalCenas);
 
       cont.innerHTML = ugcModalCenas
         .map(
@@ -7412,12 +7391,10 @@
                     <option value="Prova social">${escapeHtml(tr('ugc_funcao_cena_prova_social'))}</option>
                     <option value="CTA">${escapeHtml(tr('ugc_funcao_cena_cta'))}</option>
                   </select>
-                  ${faixas[i] ? `<span class="ugc-cena-faixa-tempo">${faixas[i]}</span>` : ''}
                 </div>
                 <div class="ugc-cena-topo-direita">
-                  <label class="ugc-cena-duracao-campo">
-                    <input type="number" min="0" class="ugc-cena-duracao-input" data-index="${i}" placeholder="seg" aria-label="${escapeHtml(tr('ugc_cena_duracao_aria'))}" value="${cena.duracao_segundos != null ? cena.duracao_segundos : ''}">
-                    <span>${escapeHtml(tr('ugc_segundos_abrev'))}</span>
+                  <label class="ugc-cena-tempo-campo">
+                    <input type="text" class="ugc-cena-tempo-input" data-index="${i}" placeholder="${escapeHtml(tr('ugc_cena_tempo_placeholder'))}" aria-label="${escapeHtml(tr('ugc_cena_tempo_aria'))}" value="${cena.faixa_tempo != null ? escapeHtml(cena.faixa_tempo) : ''}">
                   </label>
                   <div class="ugc-cena-acoes">
                     <button type="button" class="ugc-cena-mover" data-index="${i}" data-direcao="cima" ${i === 0 ? 'disabled' : ''} aria-label="${escapeHtml(tr('ugc_mover_cena_cima_aria'))}">
@@ -7489,10 +7466,9 @@
           ugcModalCenas[Number(el.dataset.index)][el.dataset.campo] = el.value;
         });
       });
-      cont.querySelectorAll('.ugc-cena-duracao-input').forEach((el) => {
-        el.addEventListener('change', () => {
-          ugcModalCenas[Number(el.dataset.index)].duracao_segundos = el.value === '' ? null : Number(el.value);
-          renderizarCenasModal();
+      cont.querySelectorAll('.ugc-cena-tempo-input').forEach((el) => {
+        el.addEventListener('input', () => {
+          ugcModalCenas[Number(el.dataset.index)].faixa_tempo = el.value === '' ? null : el.value;
         });
       });
       cont.querySelectorAll('select[data-campo="tipo_cena"], select[data-campo="funcao_cena"]').forEach((el) => {
@@ -7743,7 +7719,7 @@
           descricao_cena: c.descricao_cena || null,
           cena_gravada: !!c.cena_gravada,
           cena_conferida: !!c.cena_conferida,
-          duracao_segundos: c.duracao_segundos != null ? c.duracao_segundos : null,
+          faixa_tempo: c.faixa_tempo || null,
           funcao_cena: c.funcao_cena || null,
           referencias_imagens: c.referencias_imagens || [],
         }));

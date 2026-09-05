@@ -81,14 +81,26 @@
     font-weight:500;
     color:var(--blue-dark-70);
   }
-  .objetivo-box{
-    margin-top:20px;
+  .formato-pill{
+    display:inline-flex;
+    margin-top:12px;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.02em;
+    color:var(--blue-dark);
+    background:var(--butter);
+    padding:6px 14px;
+    border-radius:999px;
+  }
+
+  .destaque-box{
+    margin-top:16px;
     padding:16px;
     background:var(--blue-light-15);
     border-left:3px solid var(--blue-light);
     border-radius:10px;
   }
-  .objetivo-titulo{
+  .destaque-titulo{
     display:flex;
     align-items:center;
     gap:6px;
@@ -99,7 +111,7 @@
     font-weight:700;
     margin-bottom:6px;
   }
-  .objetivo-texto{
+  .destaque-texto{
     font-size:14px;
     line-height:1.5;
     white-space:pre-wrap;
@@ -290,12 +302,22 @@
     <div class="cartao">
       <h1 id="rt-marca" class="marca"></h1>
       <div id="rt-detalhes" class="detalhes"></div>
-      <div id="rt-objetivo-campo" class="objetivo-box" hidden>
-        <div class="objetivo-titulo">
+      <span id="rt-formato" class="formato-pill" hidden></span>
+
+      <div id="rt-objetivo-campo" class="destaque-box" hidden>
+        <div class="destaque-titulo">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="0.5" stroke="currentColor" stroke-width="1.8"/></svg>
           Objetivo
         </div>
-        <div id="rt-objetivo" class="objetivo-texto"></div>
+        <div id="rt-objetivo" class="destaque-texto"></div>
+      </div>
+
+      <div id="rt-pontos-campo" class="destaque-box" hidden>
+        <div class="destaque-titulo">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 3v18M5 4h11l-2 4 2 4H5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Pontos importantes
+        </div>
+        <div id="rt-pontos" class="destaque-texto"></div>
       </div>
     </div>
 
@@ -363,14 +385,23 @@
     texto(document.getElementById('rt-marca'), roteiro.marca || 'Roteiro');
     texto(
       document.getElementById('rt-detalhes'),
-      [roteiro.produto, roteiro.campanha, roteiro.tipo_conteudo, roteiro.duracao_prevista]
-        .filter(Boolean)
-        .join(' · ')
+      [roteiro.produto, roteiro.campanha].filter(Boolean).join(' · ')
     );
+
+    var formato = [roteiro.tipo_conteudo, roteiro.duracao_prevista].filter(Boolean).join(' · ');
+    if (formato) {
+      document.getElementById('rt-formato').hidden = false;
+      texto(document.getElementById('rt-formato'), formato);
+    }
 
     if (roteiro.objetivo) {
       document.getElementById('rt-objetivo-campo').hidden = false;
       texto(document.getElementById('rt-objetivo'), roteiro.objetivo);
+    }
+
+    if (roteiro.pontos_importantes) {
+      document.getElementById('rt-pontos-campo').hidden = false;
+      texto(document.getElementById('rt-pontos'), roteiro.pontos_importantes);
     }
 
     var cont = document.getElementById('rt-cenas');

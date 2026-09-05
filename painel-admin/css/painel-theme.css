@@ -2118,6 +2118,22 @@
   color: var(--erro);
 }
 
+.painel-body .ugc-roteiro-destaque {
+  background: rgba(var(--grafite-rgb), 0.05);
+  border-left: 3px solid var(--coral);
+  border-radius: var(--raio-sm);
+  padding: 14px 16px;
+}
+
+.painel-body .ugc-roteiro-destaque-nota,
+.painel-body .ugc-roteiro-nota-interna {
+  font-size: 11px;
+  color: var(--texto-suave);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
 .painel-body .ugc-roteiro-visualizado-info {
   display: flex;
   align-items: center;

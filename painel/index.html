@@ -1406,6 +1406,7 @@
           </div>
         </div>
 
+        <h4 class="ugc-modal-secao-titulo" data-i18n="ugc_formato_video_titulo">Formato do vídeo</h4>
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
             <label for="ugc-roteiro-tipo-conteudo" data-i18n="ugc_tipo_conteudo">Tipo de conteúdo</label>
@@ -1417,13 +1418,26 @@
           </div>
         </div>
 
-        <div class="cal-form-campo">
-          <label for="ugc-roteiro-objetivo" data-i18n="ugc_objetivo">Objetivo</label>
-          <textarea id="ugc-roteiro-objetivo"></textarea>
+        <div class="ugc-roteiro-destaque">
+          <div class="cal-form-campo">
+            <label for="ugc-roteiro-objetivo" data-i18n="ugc_objetivo">Objetivo</label>
+            <textarea id="ugc-roteiro-objetivo"></textarea>
+            <span class="ugc-roteiro-destaque-nota" data-i18n="ugc_visivel_para_marca">A marca vê isso no link de aprovação.</span>
+          </div>
         </div>
+
+        <div class="ugc-roteiro-destaque">
+          <div class="cal-form-campo">
+            <label for="ugc-roteiro-pontos-importantes" data-i18n="ugc_pontos_importantes">Pontos importantes</label>
+            <textarea id="ugc-roteiro-pontos-importantes" data-i18n-placeholder="ugc_pontos_importantes_placeholder" placeholder="Ex: mencionar o cupom BRUNA10, focar no benefício X do produto..."></textarea>
+            <span class="ugc-roteiro-destaque-nota" data-i18n="ugc_visivel_para_marca">A marca vê isso no link de aprovação.</span>
+          </div>
+        </div>
+
         <div class="cal-form-campo">
           <label for="ugc-roteiro-observacoes" data-i18n="ugc_observacoes">Observações</label>
           <textarea id="ugc-roteiro-observacoes"></textarea>
+          <span class="ugc-roteiro-nota-interna" data-i18n="ugc_observacoes_nota">Só você vê — não aparece no link.</span>
         </div>
 
         <div id="ugc-roteiro-comentarios-secao" hidden>
@@ -2380,8 +2394,13 @@
         ugc_trabalho_vinculado: 'Trabalho vinculado',
         ugc_tipo_conteudo: 'Tipo de conteúdo',
         ugc_duracao_prevista: 'Duração prevista',
+        ugc_formato_video_titulo: 'Formato do vídeo',
         ugc_objetivo: 'Objetivo',
+        ugc_pontos_importantes: 'Pontos importantes',
+        ugc_pontos_importantes_placeholder: 'Ex: mencionar o cupom BRUNA10, focar no benefício X do produto...',
+        ugc_visivel_para_marca: 'A marca vê isso no link de aprovação.',
         ugc_observacoes: 'Observações',
+        ugc_observacoes_nota: 'Só você vê — não aparece no link.',
         ugc_cenas: 'Cenas',
         ugc_add_cena: '+ Adicionar cena',
         ugc_nao_definido: 'Não definido',
@@ -3042,8 +3061,13 @@
         ugc_trabalho_vinculado: 'Linked job',
         ugc_tipo_conteudo: 'Content type',
         ugc_duracao_prevista: 'Expected duration',
+        ugc_formato_video_titulo: 'Video format',
         ugc_objetivo: 'Objective',
+        ugc_pontos_importantes: 'Key points',
+        ugc_pontos_importantes_placeholder: 'E.g.: mention the coupon BRUNA10, focus on benefit X of the product...',
+        ugc_visivel_para_marca: 'The brand sees this on the approval link.',
         ugc_observacoes: 'Notes',
+        ugc_observacoes_nota: 'Only you see this — it never appears on the link.',
         ugc_cenas: 'Scenes',
         ugc_add_cena: '+ Add scene',
         ugc_nao_definido: 'Not set',
@@ -7387,6 +7411,7 @@
       document.getElementById('ugc-roteiro-tipo-conteudo').value = roteiro ? roteiro.tipo_conteudo || '' : '';
       document.getElementById('ugc-roteiro-duracao').value = roteiro ? roteiro.duracao_prevista || '' : '';
       document.getElementById('ugc-roteiro-objetivo').value = roteiro ? roteiro.objetivo || '' : '';
+      document.getElementById('ugc-roteiro-pontos-importantes').value = roteiro ? roteiro.pontos_importantes || '' : '';
       document.getElementById('ugc-roteiro-observacoes').value = roteiro ? roteiro.observacoes || '' : '';
 
       const selectTrabalho = document.getElementById('ugc-roteiro-trabalho');
@@ -7466,6 +7491,7 @@
         tipo_conteudo: document.getElementById('ugc-roteiro-tipo-conteudo').value.trim() || null,
         duracao_prevista: document.getElementById('ugc-roteiro-duracao').value.trim() || null,
         objetivo: document.getElementById('ugc-roteiro-objetivo').value.trim() || null,
+        pontos_importantes: document.getElementById('ugc-roteiro-pontos-importantes').value.trim() || null,
         observacoes: document.getElementById('ugc-roteiro-observacoes').value.trim() || null,
       };
 

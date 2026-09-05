@@ -249,16 +249,16 @@
   }
   .cena-numero-fundo{
     position:absolute;
-    left:-4px;
+    left:-6px;
     top:50%;
     transform:translateY(-50%);
     font-family:var(--font-display);
     font-style:italic;
     font-weight:600;
-    font-size:2.1rem;
+    font-size:3.2rem;
     line-height:1;
     color:var(--marca);
-    opacity:.25;
+    opacity:.3;
     z-index:0;
     pointer-events:none;
     white-space:nowrap;
@@ -267,12 +267,12 @@
     position:relative;
     z-index:1;
     font-family:var(--font-mono);
-    font-size:11px;
-    font-weight:600;
-    letter-spacing:.12em;
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:.1em;
     text-transform:uppercase;
-    color:var(--ink-45);
-    padding-left:24px;
+    color:var(--ink-70);
+    padding-left:34px;
   }
   .cena-titulo{
     font-family:var(--font-display);
@@ -579,7 +579,7 @@
   }
 
   function colTexto(c) {
-    var blocos = [campo('Fala', c.fala, false, true), campo('O que fazer', c.o_que_fazer), campo('Cena', c.descricao_cena, true)]
+    var blocos = [campo('Narração', c.fala, false, true), campo('O que fazer', c.o_que_fazer), campo('Cena', c.descricao_cena, true, true)]
       .filter(Boolean)
       .join('');
     return '<div class="cena-texto">' + (blocos || '<p class="campo-texto vazio">Sem detalhes ainda.</p>') + '</div>';

@@ -183,49 +183,19 @@
   }
   .secao-contagem{ font-weight:600; color:var(--ink-45); }
 
-  /* ---------- colagem de fotos (moodboard e por cena) ---------- */
-  .colagem{ display:grid; gap:3px; margin-bottom:8px; }
-  .colagem-1{ grid-template-columns:1fr; }
-  .colagem-1 .foto{ aspect-ratio:16/9; }
-  .colagem-2{ grid-template-columns:1fr 1fr; }
-  .colagem-2 .foto{ aspect-ratio:1; }
-  .colagem-muitas{
-    grid-template-columns:repeat(4, 1fr);
-    grid-auto-rows:96px;
-    grid-auto-flow:dense;
-  }
-  .colagem-muitas .foto:first-child{ grid-column:span 2; grid-row:span 2; }
-
-  .foto{ position:relative; overflow:hidden; }
-  .foto img{ width:100%; height:100%; object-fit:cover; display:block; }
-  .foto::after{
-    content:'';
-    position:absolute; inset:0;
-    background:linear-gradient(180deg, transparent 55%, rgba(0,0,0,.5));
-  }
-  .foto-legenda{
-    position:absolute;
-    left:10px; bottom:8px;
-    z-index:1;
-    color:#fff;
-    font-family:var(--font-display);
-    font-style:italic;
-    font-weight:600;
-    font-size:.95rem;
-    text-shadow:0 2px 10px rgba(0,0,0,.5);
-  }
-
+  /* ---------- quadro livre de fotos (moodboard e por cena) — a Bruna
+     arrasta cada foto pra posição que quiser no painel (pode sobrepor,
+     como colagem); todas ficam com a mesma largura e a altura original da
+     imagem (sem cortar em quadrado). ---------- */
   #rt-moodboard-secao{ margin-bottom:32px; }
-
-  /* ---------- moodboard geral: quadro livre, fotos do mesmo tamanho,
-     posição escolhida pela Bruna no painel (pode sobrepor) ---------- */
-  .moodboard-quadro{
+  .quadro-livre{
     position:relative;
     width:100%;
     aspect-ratio:16/10;
     overflow:visible;
   }
-  .moodboard-foto{
+  .quadro-livre.quadro-cena{ aspect-ratio:1/1; }
+  .foto-livre{
     position:absolute;
     width:24%;
     transform:translate(-50%,-50%);
@@ -234,13 +204,14 @@
     border:3px solid var(--card);
     box-shadow:0 10px 26px rgba(36,23,38,0.22);
   }
-  .moodboard-foto img{ width:100%; height:auto; display:block; }
-  .moodboard-foto::after{
+  .foto-livre.foto-cena{ width:36%; }
+  .foto-livre img{ width:100%; height:auto; display:block; }
+  .foto-livre::after{
     content:'';
     position:absolute; inset:0;
     background:linear-gradient(180deg, transparent 55%, rgba(0,0,0,.5));
   }
-  .moodboard-foto .foto-legenda{
+  .foto-livre .foto-legenda{
     position:absolute;
     left:8px; bottom:6px;
     z-index:1;
@@ -258,7 +229,6 @@
     background:var(--card);
     border-radius:4px;
     box-shadow:var(--shadow);
-    overflow:hidden;
     margin-bottom:24px;
   }
   .cena-numero-fundo{
@@ -313,7 +283,6 @@
     .cena-corpo{ grid-template-columns:1fr; }
   }
 
-  .cena-fotos .colagem{ margin-bottom:0; height:100%; }
   .cena-texto{
     padding:22px 26px 26px;
     display:flex;
@@ -539,39 +508,17 @@
     root.setProperty('--marca-texto-sobre-branco', luminancia > 0.6 ? '#04465D' : 'var(--marca)');
   }
 
-  // Colagem de fotos — 1 imagem vira um banner único, 2 ficam lado a lado,
-  // 3+ formam uma colagem com a primeira em destaque (maior) e o resto em
-  // grade ao redor. São só visuais (sem link/clique), pensadas pra ler como
-  // um moodboard, não como galeria clicável.
-  function colagem(imagens, variante) {
+  // Quadro livre de fotos — reaproveitado pelo moodboard geral e pela
+  // galeria de cada cena. Cada foto fica no x/y que a Bruna escolheu no
+  // painel (arrastando), todas com a mesma largura e a altura original da
+  // imagem — não muda conforme a quantidade, só a posição é livre (pode
+  // sobrepor, como colagem). São só visuais, sem link/clique.
+  function quadroLivre(imagens, variante) {
     if (!imagens || imagens.length === 0) return '';
-    var tamanho = imagens.length === 1 ? '1' : imagens.length === 2 ? '2' : 'muitas';
-    var classe = 'colagem colagem-' + tamanho + (variante ? ' colagem-' + variante : '');
+    var sufixo = variante ? ' quadro-' + variante : '';
+    var sufixoFoto = variante ? ' foto-' + variante : '';
     return (
-      '<div class="' + classe + '">' +
-      imagens
-        .map(function (ref) {
-          var url = ref && ref.url ? ref.url : ref;
-          var rotulo = ref && ref.rotulo ? ref.rotulo : '';
-          return (
-            '<div class="foto">' +
-            '<img src="' + escapeHtml(url) + '" alt="Referência visual">' +
-            (rotulo ? '<span class="foto-legenda">' + escapeHtml(rotulo) + '</span>' : '') +
-            '</div>'
-          );
-        })
-        .join('') +
-      '</div>'
-    );
-  }
-
-  // Moodboard geral: quadro livre onde cada foto fica no x/y que a Bruna
-  // escolheu no painel (arrastando), todas do mesmo tamanho — não muda
-  // conforme a quantidade de fotos, só a posição é livre (pode sobrepor).
-  function moodboardHtml(imagens) {
-    if (!imagens || imagens.length === 0) return '';
-    return (
-      '<div class="moodboard-quadro">' +
+      '<div class="quadro-livre' + sufixo + '">' +
       imagens
         .map(function (ref) {
           var url = ref && ref.url ? ref.url : ref;
@@ -579,7 +526,7 @@
           var x = ref && typeof ref.x === 'number' ? ref.x : 20;
           var y = ref && typeof ref.y === 'number' ? ref.y : 20;
           return (
-            '<div class="moodboard-foto" style="left:' + x + '%; top:' + y + '%;">' +
+            '<div class="foto-livre' + sufixoFoto + '" style="left:' + x + '%; top:' + y + '%;">' +
             '<img src="' + escapeHtml(url) + '" alt="Referência visual">' +
             (rotulo ? '<span class="foto-legenda">' + escapeHtml(rotulo) + '</span>' : '') +
             '</div>'
@@ -641,7 +588,7 @@
     var temMoodboard = roteiro.moodboard_imagens && roteiro.moodboard_imagens.length > 0;
     document.getElementById('rt-moodboard-secao').hidden = !temMoodboard;
     if (temMoodboard) {
-      document.getElementById('rt-moodboard').innerHTML = moodboardHtml(roteiro.moodboard_imagens);
+      document.getElementById('rt-moodboard').innerHTML = quadroLivre(roteiro.moodboard_imagens, 'moodboard');
     }
 
     var cont = document.getElementById('rt-cenas');
@@ -663,7 +610,7 @@
             (c.faixa_tempo ? '<span class="cena-faixa-tempo">' + escapeHtml(c.faixa_tempo) + '</span>' : '') +
             '</div>' +
             '<div class="cena-corpo' + (temFotos ? '' : ' cena-sem-fotos') + '">' +
-            (temFotos ? '<div class="cena-fotos">' + colagem(c.referencias_imagens) + '</div>' : '') +
+            (temFotos ? '<div class="cena-fotos">' + quadroLivre(c.referencias_imagens, 'cena') + '</div>' : '') +
             colTexto(c) +
             '</div>' +
             '</article>'

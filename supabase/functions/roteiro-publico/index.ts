@@ -39,7 +39,7 @@ export default {
 
     const { data: roteiro, error } = await ctx.supabaseAdmin
       .from("ugc_roteiros")
-      .select("marca, produto, campanha, tipo_conteudo, duracao_prevista, objetivo, pontos_importantes, sugestao_legenda, marca_cor, share_token, share_expira_em")
+      .select("marca, produto, campanha, tipo_conteudo, duracao_prevista, objetivo, pontos_importantes, sugestao_legenda, marca_cor, moodboard_imagens, share_token, share_expira_em")
       .eq("id", id)
       .maybeSingle();
 

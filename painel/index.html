@@ -1463,6 +1463,12 @@
           <div id="ugc-roteiro-comentarios-lista" class="ugc-roteiro-comentarios-lista"></div>
         </div>
 
+        <div class="cal-form-campo">
+          <label data-i18n="ugc_moodboard_titulo">Moodboard geral</label>
+          <span class="ugc-roteiro-destaque-nota" data-i18n="ugc_moodboard_nota">Referências que valem pro vídeo inteiro (cenário, vibe, paleta...) — aparecem no topo do link, antes das cenas.</span>
+          <div id="ugc-roteiro-moodboard-lista" class="ugc-cena-referencias-lista"></div>
+        </div>
+
         <h4 class="ugc-modal-secao-titulo"><span data-i18n="ugc_cenas">Cenas</span> <span id="ugc-roteiro-progresso" class="ugc-roteiro-progresso-badge"></span></h4>
         <div id="ugc-roteiro-cenas-lista" class="ugc-cenas-lista"></div>
         <div class="ugc-cena-acoes-rodape">
@@ -1882,6 +1888,7 @@
     let ugcModalEntregaveis = [];
     let ugcRoteiroAbertoId = null;
     let ugcModalCenas = [];
+    let ugcModalMoodboard = [];
     let ugcProspeccaoAbertaId = null;
     const UGC_STATUS_PROSPECCAO = ['Para abordar', 'Contato enviado', 'Aguardando resposta', 'Respondeu', 'Negociação', 'Proposta enviada', 'Fechado', 'Recusado', 'Sem resposta', 'Follow-up'];
     const UGC_STATUS_PROSPECCAO_CHAVE = {
@@ -2514,6 +2521,8 @@
         ugc_sem_marca: 'Sem marca',
         ugc_cor_marca_label: 'Cor da marca',
         ugc_cor_marca_ativa_label: 'Personalizar',
+        ugc_moodboard_titulo: 'Moodboard geral',
+        ugc_moodboard_nota: 'Referências que valem pro vídeo inteiro (cenário, vibe, paleta...) — aparecem no topo do link, antes das cenas.',
         ugc_sem_detalhes_ainda: 'Sem detalhes ainda',
         ugc_cenas_gravadas: 'cenas gravadas',
         ugc_sem_cenas_ainda: 'Sem cenas ainda',
@@ -3205,6 +3214,8 @@
         ugc_sem_marca: 'No brand',
         ugc_cor_marca_label: 'Brand color',
         ugc_cor_marca_ativa_label: 'Customize',
+        ugc_moodboard_titulo: 'General moodboard',
+        ugc_moodboard_nota: 'References that apply to the whole video (location, vibe, palette...) — shown at the top of the link, before the scenes.',
         ugc_sem_detalhes_ainda: 'No details yet',
         ugc_cenas_gravadas: 'scenes filmed',
         ugc_sem_cenas_ainda: 'No scenes yet',
@@ -7554,6 +7565,69 @@
       });
     }
 
+    // Moodboard geral do roteiro (referências que valem pro vídeo inteiro,
+    // ex: cenário, vibe, paleta) — separado das referências de cada cena,
+    // que continuam opcionais e específicas daquela cena.
+    function renderizarMoodboardModal() {
+      const cont = document.getElementById('ugc-roteiro-moodboard-lista');
+      cont.innerHTML =
+        ugcModalMoodboard
+          .map(
+            (ref, imgIdx) => `
+              <div class="ugc-cena-referencia-item">
+                <img src="${escapeHtml(ref.url)}" alt="">
+                <button type="button" class="ugc-moodboard-remover" data-img-index="${imgIdx}" aria-label="${escapeHtml(tr('ugc_remover_referencia_aria'))}">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+                </button>
+                <input type="text" class="ugc-moodboard-rotulo-input" data-img-index="${imgIdx}" placeholder="${escapeHtml(tr('ugc_referencia_rotulo_placeholder'))}" value="${escapeHtml(ref.rotulo || '')}">
+              </div>
+            `
+          )
+          .join('') +
+        `
+          <button type="button" id="ugc-moodboard-anexar" class="ugc-cena-referencia-anexar" aria-label="${escapeHtml(tr('ugc_anexar_referencia_aria'))}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <input type="file" accept="image/*" multiple id="ugc-moodboard-input" hidden>
+        `;
+
+      document.getElementById('ugc-moodboard-anexar').addEventListener('click', () => {
+        document.getElementById('ugc-moodboard-input').click();
+      });
+      document.getElementById('ugc-moodboard-input').addEventListener('change', async (e) => {
+        const arquivos = [...e.target.files];
+        e.target.value = '';
+        for (const arquivo of arquivos) {
+          await anexarMoodboardImagem(arquivo);
+        }
+        renderizarMoodboardModal();
+      });
+      cont.querySelectorAll('.ugc-moodboard-remover').forEach((el) => {
+        el.addEventListener('click', () => {
+          ugcModalMoodboard.splice(Number(el.dataset.imgIndex), 1);
+          renderizarMoodboardModal();
+        });
+      });
+      cont.querySelectorAll('.ugc-moodboard-rotulo-input').forEach((el) => {
+        el.addEventListener('input', () => {
+          ugcModalMoodboard[Number(el.dataset.imgIndex)].rotulo = el.value;
+        });
+      });
+    }
+
+    async function anexarMoodboardImagem(arquivo) {
+      try {
+        const caminho = `moodboard/${Date.now()}-${arquivo.name}`;
+        const { error } = await Auth.sb.storage.from('ugc-roteiro-referencias').upload(caminho, arquivo);
+        if (error) throw error;
+        const { data } = Auth.sb.storage.from('ugc-roteiro-referencias').getPublicUrl(caminho);
+        ugcModalMoodboard.push({ url: data.publicUrl, rotulo: '' });
+      } catch (err) {
+        console.error('Erro ao anexar imagem de moodboard:', err);
+        alert(tr('ugc_erro_anexar_arquivo'));
+      }
+    }
+
     // Sobe uma imagem de referência (cenário, roupa, item...) pro bucket
     // público ugc-roteiro-referencias — a marca vê direto no link, sem
     // precisar de signed URL nem login.
@@ -7665,6 +7739,9 @@
         : [];
       renderizarCenasModal();
 
+      ugcModalMoodboard = roteiro && roteiro.moodboard_imagens ? roteiro.moodboard_imagens.map((ref) => ({ ...ref })) : [];
+      renderizarMoodboardModal();
+
       document.getElementById('ugc-modal-roteiro-excluir').hidden = !roteiro;
       document.getElementById('ugc-modal-roteiro-compartilhar').hidden = !roteiro;
       document.getElementById('ugc-modal-roteiro-revogar-link').hidden = !roteiro;
@@ -7734,6 +7811,7 @@
         marca_cor: document.getElementById('ugc-roteiro-marca-cor-ativa').checked
           ? document.getElementById('ugc-roteiro-marca-cor').value
           : null,
+        moodboard_imagens: ugcModalMoodboard,
       };
 
       const btn = document.getElementById('ugc-modal-roteiro-salvar');

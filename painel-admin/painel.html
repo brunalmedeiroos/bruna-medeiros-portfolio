@@ -2506,6 +2506,8 @@
         ugc_comentario_autor_padrao: 'Marca',
         ugc_comentario_singular: 'comentário',
         ugc_comentario_plural: 'comentários',
+        ugc_excluir_comentario_aria: 'Excluir comentário',
+        ugc_excluir_comentario_confirmar: 'Excluir este comentário?',
         ugc_followup_era_prefixo: 'Follow-up era ',
         ugc_sem_followup_marcado: 'Sem follow-up marcado',
         ugc_excluir_prospeccao_confirmar: 'Excluir esta prospecção?',
@@ -3166,6 +3168,8 @@
         ugc_comentario_autor_padrao: 'Brand',
         ugc_comentario_singular: 'comment',
         ugc_comentario_plural: 'comments',
+        ugc_excluir_comentario_aria: 'Delete comment',
+        ugc_excluir_comentario_confirmar: 'Delete this comment?',
         ugc_followup_era_prefixo: 'Follow-up was ',
         ugc_sem_followup_marcado: 'No follow-up scheduled',
         ugc_excluir_prospeccao_confirmar: 'Delete this prospect?',
@@ -7374,24 +7378,7 @@
         infoValidade.classList.remove('ugc-link-expirado');
       }
 
-      const comentarios = roteiro
-        ? ugcRoteiroComentariosCache.filter((c) => c.roteiro_id === roteiro.id).sort((a, b) => a.created_at.localeCompare(b.created_at))
-        : [];
-      const secaoComentarios = document.getElementById('ugc-roteiro-comentarios-secao');
-      secaoComentarios.hidden = comentarios.length === 0;
-      document.getElementById('ugc-roteiro-comentarios-lista').innerHTML = comentarios
-        .map(
-          (c) => `
-            <div class="ugc-roteiro-comentario">
-              <div class="ugc-roteiro-comentario-cabecalho">
-                <span class="ugc-roteiro-comentario-autor">${escapeHtml(c.autor || tr('ugc_comentario_autor_padrao'))}</span>
-                <span class="ugc-roteiro-comentario-data">${formatarDataHora(new Date(c.created_at))}</span>
-              </div>
-              <div class="ugc-roteiro-comentario-texto">${escapeHtml(c.mensagem)}</div>
-            </div>
-          `
-        )
-        .join('');
+      renderizarComentariosRoteiro(roteiro ? roteiro.id : null);
 
       document.getElementById('ugc-roteiro-marca').value = roteiro ? roteiro.marca || '' : '';
       document.getElementById('ugc-roteiro-produto').value = roteiro ? roteiro.produto || '' : '';
@@ -7419,6 +7406,48 @@
       document.getElementById('ugc-modal-roteiro-compartilhar').hidden = !roteiro;
       document.getElementById('ugc-modal-roteiro-revogar-link').hidden = !roteiro;
       document.getElementById('ugc-modal-roteiro-overlay').hidden = false;
+    }
+
+    function renderizarComentariosRoteiro(roteiroId) {
+      const comentarios = roteiroId
+        ? ugcRoteiroComentariosCache.filter((c) => c.roteiro_id === roteiroId).sort((a, b) => a.created_at.localeCompare(b.created_at))
+        : [];
+      document.getElementById('ugc-roteiro-comentarios-secao').hidden = comentarios.length === 0;
+      const lista = document.getElementById('ugc-roteiro-comentarios-lista');
+      lista.innerHTML = comentarios
+        .map(
+          (c) => `
+            <div class="ugc-roteiro-comentario">
+              <div class="ugc-roteiro-comentario-cabecalho">
+                <span class="ugc-roteiro-comentario-autor">${escapeHtml(c.autor || tr('ugc_comentario_autor_padrao'))}</span>
+                <span class="ugc-roteiro-comentario-meta">
+                  <span class="ugc-roteiro-comentario-data">${formatarDataHora(new Date(c.created_at))}</span>
+                  <button type="button" class="ugc-roteiro-comentario-excluir" data-id="${c.id}" aria-label="${escapeHtml(tr('ugc_excluir_comentario_aria'))}">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  </button>
+                </span>
+              </div>
+              <div class="ugc-roteiro-comentario-texto">${escapeHtml(c.mensagem)}</div>
+            </div>
+          `
+        )
+        .join('');
+      lista.querySelectorAll('.ugc-roteiro-comentario-excluir').forEach((el) => {
+        el.addEventListener('click', () => excluirComentarioRoteiro(el.dataset.id, roteiroId));
+      });
+    }
+
+    async function excluirComentarioRoteiro(comentarioId, roteiroId) {
+      if (!(await confirmarAcao(tr('ugc_excluir_comentario_confirmar')))) return;
+      try {
+        const { error } = await Auth.sb.from('ugc_roteiro_comentarios').delete().eq('id', comentarioId);
+        if (error) throw error;
+        await carregarUGC();
+        renderizarComentariosRoteiro(roteiroId);
+      } catch (err) {
+        console.error('Erro ao excluir comentário:', err);
+        alert(tr('erro_excluir_generico'));
+      }
     }
 
     function fecharModalRoteiro() {

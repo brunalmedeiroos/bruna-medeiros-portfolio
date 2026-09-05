@@ -2327,6 +2327,25 @@
   margin-bottom: 4px;
 }
 
+.painel-body .ugc-roteiro-comentario-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.painel-body .ugc-roteiro-comentario-excluir {
+  background: transparent;
+  border: none;
+  color: var(--texto-suave);
+  cursor: pointer;
+  padding: 2px;
+  display: inline-flex;
+}
+
+.painel-body .ugc-roteiro-comentario-excluir:hover {
+  color: var(--erro);
+}
+
 .painel-body .ugc-roteiro-comentario-autor {
   font-size: 12px;
   font-weight: 700;

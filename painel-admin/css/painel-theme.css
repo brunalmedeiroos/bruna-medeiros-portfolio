@@ -2225,7 +2225,6 @@
   position: absolute;
   transform: translate(-50%, -50%);
   border-radius: 6px;
-  border: 2px solid var(--branco);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
   cursor: grab;
 }
@@ -2240,7 +2239,7 @@
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 4px;
+  border-radius: 6px;
   pointer-events: none;
 }
 

@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260905k">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260905l">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -1387,7 +1387,12 @@
           </div>
           <div class="cal-form-campo">
             <label data-i18n="ugc_roteiro_visualizado_label">Visualização</label>
-            <span id="ugc-roteiro-visualizado-info" class="ugc-roteiro-visualizado-info"></span>
+            <div class="ugc-roteiro-visualizado-linha">
+              <span id="ugc-roteiro-visualizado-info" class="ugc-roteiro-visualizado-info"></span>
+              <button type="button" id="ugc-roteiro-zerar-visualizacoes" class="cal-btn cal-btn-icon" data-i18n-aria="ugc_zerar_visualizacoes_aria" aria-label="Zerar visualizações" hidden>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
           </div>
           <div class="cal-form-campo">
             <label data-i18n="ugc_cor_marca_label">Cor da marca</label>
@@ -2577,6 +2582,8 @@
         ugc_roteiro_visualizado_nunca: 'Ainda não visualizado pela marca.',
         ugc_roteiro_visualizado_prefixo: 'Visualizado ',
         ugc_roteiro_visualizado_sufixo: 'x · última vez em ',
+        ugc_zerar_visualizacoes_aria: 'Zerar visualizações',
+        ugc_zerar_visualizacoes_confirmar: 'Apagar o histórico de visualizações deste roteiro? Isso não afeta o link — ele continua valendo.',
         ugc_revogar_link: 'Gerar novo link',
         ugc_revogar_link_confirmar: 'Gerar um novo link? O link antigo para de funcionar imediatamente.',
         ugc_link_revogado_copiado: 'Novo link copiado! O link antigo já parou de funcionar.',
@@ -3271,6 +3278,8 @@
         ugc_roteiro_visualizado_nunca: 'Not viewed by the brand yet.',
         ugc_roteiro_visualizado_prefixo: 'Viewed ',
         ugc_roteiro_visualizado_sufixo: 'x · last seen on ',
+        ugc_zerar_visualizacoes_aria: 'Reset views',
+        ugc_zerar_visualizacoes_confirmar: 'Delete this script\'s view history? This doesn\'t affect the link — it keeps working.',
         ugc_revogar_link: 'Generate new link',
         ugc_revogar_link_confirmar: 'Generate a new link? The old link stops working immediately.',
         ugc_link_revogado_copiado: 'New link copied! The old link has already stopped working.',
@@ -3900,6 +3909,7 @@
       document.getElementById('ugc-modal-roteiro-compartilhar').addEventListener('click', compartilharModalRoteiro);
       document.getElementById('ugc-modal-roteiro-revogar-link').addEventListener('click', revogarLinkRoteiro);
       document.getElementById('ugc-modal-roteiro-salvar').addEventListener('click', salvarModalRoteiro);
+      document.getElementById('ugc-roteiro-zerar-visualizacoes').addEventListener('click', zerarVisualizacoesRoteiro);
       document.getElementById('ugc-roteiro-marca-cor-ativa').addEventListener('change', (e) => {
         document.getElementById('ugc-roteiro-marca-cor').disabled = !e.target.checked;
       });
@@ -7762,6 +7772,23 @@
       }
     }
 
+    // Some com o histórico de visualizações do roteiro aberto — útil pra
+    // limpar visualizações geradas pela própria Bruna testando o link,
+    // sem precisar mexer no banco na mão.
+    async function zerarVisualizacoesRoteiro() {
+      if (!ugcRoteiroAbertoId) return;
+      if (!(await confirmarAcao(tr('ugc_zerar_visualizacoes_confirmar')))) return;
+      try {
+        const { error } = await Auth.sb.from('ugc_roteiro_visualizacoes').delete().eq('roteiro_id', ugcRoteiroAbertoId);
+        if (error) throw error;
+        ugcRoteiroVisualizacoesCache = ugcRoteiroVisualizacoesCache.filter((v) => v.roteiro_id !== ugcRoteiroAbertoId);
+        abrirModalRoteiro(ugcRoteirosCache.find((r) => r.id === ugcRoteiroAbertoId));
+      } catch (err) {
+        console.error('Erro ao zerar visualizações:', err);
+        alert(tr('erro_excluir_generico'));
+      }
+    }
+
     function abrirModalRoteiro(roteiro) {
       ugcRoteiroAbertoId = roteiro ? roteiro.id : null;
       document.getElementById('ugc-roteiro-status').value = roteiro ? roteiro.status || 'Rascunho' : 'Rascunho';
@@ -7774,6 +7801,7 @@
         const maisRecente = visualizacoes.reduce((max, v) => (v.created_at > max ? v.created_at : max), visualizacoes[0].created_at);
         infoVisualizacao.textContent = `${tr('ugc_roteiro_visualizado_prefixo')}${visualizacoes.length}${tr('ugc_roteiro_visualizado_sufixo')}${formatarDataHora(new Date(maisRecente))}`;
       }
+      document.getElementById('ugc-roteiro-zerar-visualizacoes').hidden = visualizacoes.length === 0;
 
       const infoValidade = document.getElementById('ugc-roteiro-link-validade-info');
       if (roteiro && roteiro.share_expira_em) {

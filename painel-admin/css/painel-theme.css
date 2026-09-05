@@ -2135,6 +2135,12 @@
   letter-spacing: normal;
 }
 
+.painel-body .ugc-roteiro-visualizado-linha {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .painel-body .ugc-roteiro-visualizado-info {
   display: flex;
   align-items: center;

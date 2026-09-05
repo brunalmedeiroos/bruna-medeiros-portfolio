@@ -7423,7 +7423,7 @@
     // passa a responder "link inválido" na Edge Function roteiro-publico.
     async function revogarLinkRoteiro() {
       if (!ugcRoteiroAbertoId) return;
-      if (!(await confirmarAcao(tr('ugc_revogar_link_confirmar')))) return;
+      if (!(await confirmarAcao(tr('ugc_revogar_link_confirmar'), { textoConfirmar: tr('ugc_revogar_link'), perigo: false }))) return;
       const btn = document.getElementById('ugc-modal-roteiro-revogar-link');
       btn.disabled = true;
       try {

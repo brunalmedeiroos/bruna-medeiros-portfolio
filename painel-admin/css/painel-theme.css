@@ -2138,8 +2138,10 @@
 .painel-body .ugc-roteiro-visualizado-info {
   display: flex;
   align-items: center;
-  height: 38px;
+  min-height: 38px;
+  padding: 6px 0;
   font-size: 13px;
+  line-height: 1.4;
   color: rgba(var(--grafite-rgb), 0.7);
 }
 

@@ -2516,6 +2516,8 @@
         ugc_tipo_cena_broll_narracao: 'B-roll com narração',
         ugc_tipo_cena_broll_silencioso: 'B-roll sem narração',
         ugc_tipo_cena_texto_tela: 'Texto na tela',
+        ugc_descricao_cena: 'Detalhes da cena',
+        ugc_descricao_cena_placeholder: 'O que precisa aparecer visualmente...',
         ugc_funcao_cena_aria: 'Função da cena na estrutura do vídeo',
         ugc_funcao_cena_hook: 'Hook',
         ugc_funcao_cena_contexto: 'Contexto',
@@ -3197,6 +3199,8 @@
         ugc_tipo_cena_broll_narracao: 'B-roll with narration',
         ugc_tipo_cena_broll_silencioso: 'B-roll without narration',
         ugc_tipo_cena_texto_tela: 'On-screen text',
+        ugc_descricao_cena: 'Scene details',
+        ugc_descricao_cena_placeholder: 'What needs to appear visually...',
         ugc_funcao_cena_aria: 'Scene role in the video structure',
         ugc_funcao_cena_hook: 'Hook',
         ugc_funcao_cena_contexto: 'Context',
@@ -7422,6 +7426,10 @@
                   <option value="Texto na tela">${escapeHtml(tr('ugc_tipo_cena_texto_tela'))}</option>
                 </select>
               </div>
+              <div class="cal-form-campo">
+                <label>${escapeHtml(tr('ugc_descricao_cena'))}</label>
+                <textarea data-index="${i}" data-campo="descricao_cena" placeholder="${escapeHtml(tr('ugc_descricao_cena_placeholder'))}">${escapeHtml(cena.descricao_cena || '')}</textarea>
+              </div>
               <div class="ugc-cena-checklist">
                 <label class="ugc-cena-check-label"><input type="checkbox" data-index="${i}" data-campo="cena_gravada" ${cena.cena_gravada ? 'checked' : ''}> ${escapeHtml(tr('ugc_cena_gravada_label'))}</label>
                 <label class="ugc-cena-check-label"><input type="checkbox" data-index="${i}" data-campo="cena_conferida" ${cena.cena_conferida ? 'checked' : ''}> ${escapeHtml(tr('ugc_cena_conferida_label'))}</label>
@@ -7609,6 +7617,7 @@
           fala: c.fala || null,
           o_que_fazer: c.o_que_fazer || null,
           tipo_cena: c.tipo_cena || null,
+          descricao_cena: c.descricao_cena || null,
           cena_gravada: !!c.cena_gravada,
           cena_conferida: !!c.cena_conferida,
           duracao_segundos: c.duracao_segundos != null ? c.duracao_segundos : null,

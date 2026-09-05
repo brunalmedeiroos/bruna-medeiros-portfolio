@@ -2438,11 +2438,11 @@
 }
 
 .painel-body .ugc-cena-duracao-input {
-  width: 44px;
-  padding: 4px 6px;
+  width: 64px;
+  padding: 6px 8px;
   border: 1px solid var(--borda);
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 13px;
   text-align: center;
   font-family: var(--fonte-corpo);
   background: rgba(255, 255, 255, 0.7);

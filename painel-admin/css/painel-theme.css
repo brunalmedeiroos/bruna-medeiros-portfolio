@@ -2223,10 +2223,8 @@
 
 .painel-body .ugc-moodboard-foto {
   position: absolute;
-  width: 24%;
   transform: translate(-50%, -50%);
   border-radius: 6px;
-  overflow: hidden;
   border: 2px solid var(--branco);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
   cursor: grab;
@@ -2242,7 +2240,21 @@
   width: 100%;
   height: auto;
   display: block;
+  border-radius: 4px;
   pointer-events: none;
+}
+
+.painel-body .ugc-moodboard-redimensionar {
+  position: absolute;
+  right: -7px;
+  bottom: -7px;
+  width: 16px;
+  height: 16px;
+  background: var(--branco);
+  border: 2px solid var(--coral);
+  border-radius: 50%;
+  cursor: nwse-resize;
+  z-index: 5;
 }
 
 .painel-body .ugc-moodboard-controles {

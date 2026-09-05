@@ -517,6 +517,7 @@
     if (!imagens || imagens.length === 0) return '';
     var sufixo = variante ? ' quadro-' + variante : '';
     var sufixoFoto = variante ? ' foto-' + variante : '';
+    var larguraPadrao = variante === 'cena' ? 36 : 24;
     return (
       '<div class="quadro-livre' + sufixo + '">' +
       imagens
@@ -525,8 +526,9 @@
           var rotulo = ref && ref.rotulo ? ref.rotulo : '';
           var x = ref && typeof ref.x === 'number' ? ref.x : 20;
           var y = ref && typeof ref.y === 'number' ? ref.y : 20;
+          var w = ref && typeof ref.w === 'number' ? ref.w : larguraPadrao;
           return (
-            '<div class="foto-livre' + sufixoFoto + '" style="left:' + x + '%; top:' + y + '%;">' +
+            '<div class="foto-livre' + sufixoFoto + '" style="left:' + x + '%; top:' + y + '%; width:' + w + '%;">' +
             '<img src="' + escapeHtml(url) + '" alt="Referência visual">' +
             (rotulo ? '<span class="foto-legenda">' + escapeHtml(rotulo) + '</span>' : '') +
             '</div>'

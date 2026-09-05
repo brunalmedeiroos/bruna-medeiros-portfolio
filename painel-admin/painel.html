@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260905h">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260905i">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -7550,7 +7550,7 @@
       });
       ugcModalCenas.forEach((cena, i) => {
         if (!cena.referencias_imagens) cena.referencias_imagens = [];
-        renderizarQuadroArrastavel(cont.querySelector(`.ugc-cena-referencias-canvas[data-index="${i}"]`), cena.referencias_imagens, renderizarCenasModal);
+        renderizarQuadroArrastavel(cont.querySelector(`.ugc-cena-referencias-canvas[data-index="${i}"]`), cena.referencias_imagens, renderizarCenasModal, 36);
         renderizarControlesReferencias(cont.querySelector(`.ugc-moodboard-controles[data-index="${i}"]`), cena.referencias_imagens, renderizarCenasModal);
       });
       cont.querySelectorAll('.ugc-cena-mover').forEach((el) => {
@@ -7576,12 +7576,19 @@
     // do CENTRO da foto, em % do quadro, livre pra sobrepor como colagem.
     // `imagens` é o array (de ugcModalMoodboard ou de uma cena específica) e
     // `aoSoltar` é chamado ao fim do arraste pra persistir/re-renderizar.
-    function renderizarQuadroArrastavel(canvas, imagens, aoSoltar) {
+    function renderizarQuadroArrastavel(canvas, imagens, aoSoltar, larguraPadrao) {
+      // Sem foto nenhuma ainda, some com o quadro em vez de mostrar uma
+      // área tracejada vazia — só aparece depois que a primeira foto é
+      // anexada (pelo botão "+ anexar", não é aqui que se sobe imagem).
+      canvas.hidden = imagens.length === 0;
+      if (imagens.length === 0) return;
+
       canvas.innerHTML = imagens
         .map(
           (ref, imgIdx) => `
-            <div class="ugc-moodboard-foto" data-img-index="${imgIdx}" style="left:${ref.x ?? 20}%; top:${ref.y ?? 20}%;">
+            <div class="ugc-moodboard-foto" data-img-index="${imgIdx}" style="left:${ref.x ?? 20}%; top:${ref.y ?? 20}%; width:${ref.w ?? larguraPadrao}%;">
               <img src="${escapeHtml(ref.url)}" alt="" draggable="false">
+              <span class="ugc-moodboard-redimensionar" aria-hidden="true"></span>
             </div>
           `
         )
@@ -7616,6 +7623,28 @@
           el.addEventListener('pointerup', soltar);
           el.addEventListener('pointercancel', soltar);
         });
+
+        const alca = el.querySelector('.ugc-moodboard-redimensionar');
+        alca.addEventListener('pointerdown', (e) => {
+          e.stopPropagation(); // não deixa isso também mover a foto
+          alca.setPointerCapture(e.pointerId);
+          const larguraInicial = imagens[indice].w ?? larguraPadrao;
+          const xInicial = e.clientX;
+          const mover = (ev) => {
+            const rect = canvas.getBoundingClientRect();
+            const nova = Math.max(8, Math.min(70, larguraInicial + ((ev.clientX - xInicial) / rect.width) * 100));
+            imagens[indice].w = nova;
+            el.style.width = nova + '%';
+          };
+          const soltar = () => {
+            alca.removeEventListener('pointermove', mover);
+            alca.removeEventListener('pointerup', soltar);
+            alca.removeEventListener('pointercancel', soltar);
+          };
+          alca.addEventListener('pointermove', mover);
+          alca.addEventListener('pointerup', soltar);
+          alca.addEventListener('pointercancel', soltar);
+        });
       });
     }
 
@@ -7649,7 +7678,7 @@
     }
 
     function renderizarMoodboardModal() {
-      renderizarQuadroArrastavel(document.getElementById('ugc-roteiro-moodboard-canvas'), ugcModalMoodboard, renderizarMoodboardModal);
+      renderizarQuadroArrastavel(document.getElementById('ugc-roteiro-moodboard-canvas'), ugcModalMoodboard, renderizarMoodboardModal, 24);
       renderizarControlesReferencias(document.getElementById('ugc-roteiro-moodboard-lista'), ugcModalMoodboard, renderizarMoodboardModal);
     }
 

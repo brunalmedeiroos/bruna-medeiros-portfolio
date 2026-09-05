@@ -51,7 +51,7 @@ export default {
 
     const { data: cenas, error: erroCenas } = await ctx.supabaseAdmin
       .from("ugc_roteiro_cenas")
-      .select("ordem, fala, o_que_fazer, cena_broll")
+      .select("ordem, fala, o_que_fazer, cena_broll, duracao_segundos")
       .eq("roteiro_id", id)
       .order("ordem", { ascending: true });
 

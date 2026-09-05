@@ -2495,6 +2495,8 @@
         ugc_remover_cena_aria: 'Remover cena',
         ugc_mover_cena_cima_aria: 'Mover cena para cima',
         ugc_mover_cena_baixo_aria: 'Mover cena para baixo',
+        ugc_cena_duracao_aria: 'Duração da cena, em segundos',
+        ugc_segundos_abrev: 's',
         ugc_fala: 'Fala',
         ugc_fala_placeholder: 'O que devo falar...',
         ugc_o_que_fazer: 'O que fazer',
@@ -3162,6 +3164,8 @@
         ugc_remover_cena_aria: 'Remove scene',
         ugc_mover_cena_cima_aria: 'Move scene up',
         ugc_mover_cena_baixo_aria: 'Move scene down',
+        ugc_cena_duracao_aria: 'Scene duration, in seconds',
+        ugc_segundos_abrev: 's',
         ugc_fala: 'Lines',
         ugc_fala_placeholder: 'What I should say...',
         ugc_o_que_fazer: 'What to do',
@@ -7305,28 +7309,58 @@
       return card;
     }
 
+    // Faixa de tempo de cada cena (ex: "0-10s"), calculada somando a duração
+    // das cenas anteriores. Pra de calcular (retorna null) a partir da
+    // primeira cena sem duração preenchida, já que não dá pra saber onde ela
+    // começa sem isso.
+    function calcularFaixasTempoCenas(cenas) {
+      let acumulado = 0;
+      let quebrado = false;
+      return cenas.map((c) => {
+        const duracao = Number(c.duracao_segundos);
+        if (quebrado || !duracao || duracao <= 0) {
+          quebrado = true;
+          return null;
+        }
+        const inicio = acumulado;
+        acumulado += duracao;
+        return `${inicio}-${acumulado}s`;
+      });
+    }
+
     function renderizarCenasModal() {
       const cont = document.getElementById('ugc-roteiro-cenas-lista');
       const gravadas = ugcModalCenas.filter((c) => c.cena_gravada).length;
       document.getElementById('ugc-roteiro-progresso').textContent =
         ugcModalCenas.length > 0 ? `${gravadas}/${ugcModalCenas.length} ${tr('ugc_cenas_gravadas')}` : '';
 
+      const faixas = calcularFaixasTempoCenas(ugcModalCenas);
+
       cont.innerHTML = ugcModalCenas
         .map(
           (cena, i) => `
             <div class="ugc-cena-card" data-index="${i}">
               <div class="ugc-cena-topo">
-                <span class="ugc-cena-numero">${escapeHtml(tr('ugc_cena_prefixo'))} ${String(i + 1).padStart(2, '0')}</span>
-                <div class="ugc-cena-acoes">
-                  <button type="button" class="ugc-cena-mover" data-index="${i}" data-direcao="cima" ${i === 0 ? 'disabled' : ''} aria-label="${escapeHtml(tr('ugc_mover_cena_cima_aria'))}">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  </button>
-                  <button type="button" class="ugc-cena-mover" data-index="${i}" data-direcao="baixo" ${i === ugcModalCenas.length - 1 ? 'disabled' : ''} aria-label="${escapeHtml(tr('ugc_mover_cena_baixo_aria'))}">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  </button>
-                  <button type="button" class="ugc-cena-remover" data-index="${i}" aria-label="${escapeHtml(tr('ugc_remover_cena_aria'))}">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                  </button>
+                <div class="ugc-cena-topo-info">
+                  <span class="ugc-cena-numero">${escapeHtml(tr('ugc_cena_prefixo'))} ${String(i + 1).padStart(2, '0')}</span>
+                  ${faixas[i] ? `<span class="ugc-cena-faixa-tempo">${faixas[i]}</span>` : ''}
+                </div>
+                <div class="ugc-cena-topo-direita">
+                  <label class="ugc-cena-duracao-campo">
+                    <input type="number" min="0" class="ugc-cena-duracao-input" data-index="${i}" placeholder="seg" aria-label="${escapeHtml(tr('ugc_cena_duracao_aria'))}" value="${cena.duracao_segundos != null ? cena.duracao_segundos : ''}">
+                    <span>${escapeHtml(tr('ugc_segundos_abrev'))}</span>
+                  </label>
+                  <div class="ugc-cena-acoes">
+                    <button type="button" class="ugc-cena-mover" data-index="${i}" data-direcao="cima" ${i === 0 ? 'disabled' : ''} aria-label="${escapeHtml(tr('ugc_mover_cena_cima_aria'))}">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <button type="button" class="ugc-cena-mover" data-index="${i}" data-direcao="baixo" ${i === ugcModalCenas.length - 1 ? 'disabled' : ''} aria-label="${escapeHtml(tr('ugc_mover_cena_baixo_aria'))}">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <button type="button" class="ugc-cena-remover" data-index="${i}" aria-label="${escapeHtml(tr('ugc_remover_cena_aria'))}">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    </button>
+                  </div>
                 </div>
               </div>
               <div class="cal-form-campo">
@@ -7353,6 +7387,12 @@
       cont.querySelectorAll('textarea').forEach((el) => {
         el.addEventListener('input', () => {
           ugcModalCenas[Number(el.dataset.index)][el.dataset.campo] = el.value;
+        });
+      });
+      cont.querySelectorAll('.ugc-cena-duracao-input').forEach((el) => {
+        el.addEventListener('change', () => {
+          ugcModalCenas[Number(el.dataset.index)].duracao_segundos = el.value === '' ? null : Number(el.value);
+          renderizarCenasModal();
         });
       });
       cont.querySelectorAll('input[type="checkbox"]').forEach((el) => {
@@ -7516,6 +7556,7 @@
           cena_broll: c.cena_broll || null,
           cena_gravada: !!c.cena_gravada,
           cena_conferida: !!c.cena_conferida,
+          duracao_segundos: c.duracao_segundos != null ? c.duracao_segundos : null,
         }));
         const { error: erroCenas } = await Auth.sb.rpc('ugc_substituir_cenas', {
           p_roteiro_id: roteiroId,

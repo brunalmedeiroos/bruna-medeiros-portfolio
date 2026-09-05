@@ -166,6 +166,12 @@
     text-transform:uppercase;
     color:var(--blue-dark-50);
   }
+  .cena-faixa-tempo{
+    font-size:11px;
+    font-weight:700;
+    color:var(--blue-light);
+    margin-left:auto;
+  }
 
   .campo{ margin-bottom:16px; }
   .campo:last-child{ margin-bottom:0; }
@@ -371,6 +377,21 @@
     document.getElementById('estado-erro').hidden = false;
   }
 
+  function calcularFaixasTempoCenas(cenas) {
+    var acumulado = 0;
+    var quebrado = false;
+    return cenas.map(function (c) {
+      var duracao = Number(c.duracao_segundos);
+      if (quebrado || !duracao || duracao <= 0) {
+        quebrado = true;
+        return null;
+      }
+      var inicio = acumulado;
+      acumulado += duracao;
+      return inicio + '-' + acumulado + 's';
+    });
+  }
+
   function blocoCampo(chave, valor) {
     if (!valor) return '';
     return (
@@ -411,6 +432,7 @@
     if (!cenas || cenas.length === 0) {
       cont.innerHTML = '<div class="cena"><span class="campo-texto vazio">Nenhuma cena cadastrada ainda.</span></div>';
     } else {
+      var faixas = calcularFaixasTempoCenas(cenas);
       cont.innerHTML = cenas
         .map(function (c, i) {
           var blocos = [blocoCampo('fala', c.fala), blocoCampo('o_que_fazer', c.o_que_fazer), blocoCampo('cena_broll', c.cena_broll)]
@@ -421,6 +443,7 @@
             '<div class="cena-cabecalho">' +
             '<span class="cena-numero">' + String(i + 1).padStart(2, '0') + '</span>' +
             '<span class="cena-label">Cena</span>' +
+            (faixas[i] ? '<span class="cena-faixa-tempo">' + faixas[i] + '</span>' : '') +
             '</div>' +
             (blocos || '<span class="campo-texto vazio">Sem detalhes ainda.</span>') +
             '</div>'

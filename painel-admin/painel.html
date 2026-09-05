@@ -612,6 +612,17 @@
               <button id="btn-ugc-novo-roteiro" class="cal-btn cal-btn-primario" type="button" data-i18n="ugc_novo_roteiro">+ Novo roteiro</button>
             </div>
 
+            <div class="ugc-roteiros-filtros">
+              <input type="text" id="ugc-roteiros-busca" class="ugc-roteiros-busca" data-i18n-placeholder="ugc_roteiros_buscar_placeholder" placeholder="Buscar por marca, produto ou campanha">
+              <select id="ugc-roteiros-filtro-status">
+                <option value="" data-i18n="ugc_roteiros_todos_status">Todos os status</option>
+                <option value="Rascunho" data-i18n="ugc_roteiro_status_rascunho">Rascunho</option>
+                <option value="Enviado" data-i18n="ugc_roteiro_status_enviado">Enviado</option>
+                <option value="Aprovado" data-i18n="ugc_roteiro_status_aprovado">Aprovado</option>
+                <option value="Ajustes pedidos" data-i18n="ugc_roteiro_status_ajustes">Ajustes pedidos</option>
+              </select>
+            </div>
+
             <div id="ugc-roteiros-grade" class="ugc-roteiros-grade"></div>
           </div>
           <div id="ugc-pagina-prospeccao" class="ugc-pagina" hidden>
@@ -1741,6 +1752,8 @@
     let ugcContratosCache = [];
     let ugcPrecosCache = [];
     let ugcSubAbaAtual = 'visao-geral';
+    let filtroRoteirosTexto = '';
+    let filtroRoteirosStatus = '';
     let ugcTrabalhoAbertoId = null;
     let filtroTrabalhos = 'ativos'; // 'ativos' | 'finalizados'
     const UGC_STATUS_ATIVOS = ['Negociando', 'Fechado', 'Aguardando briefing', 'Aguardando produto', 'Roteiro', 'Gravação', 'Edição', 'Aprovação', 'Entregue', 'Aguardando pagamento'];
@@ -2295,6 +2308,9 @@
         ugc_col_valor: 'Valor',
         ugc_col_pagamento: 'Pagamento',
         ugc_nenhum_roteiro: 'Nenhum roteiro ainda.',
+        ugc_nenhum_roteiro_filtro: 'Nenhum roteiro encontrado com esse filtro.',
+        ugc_roteiros_buscar_placeholder: 'Buscar por marca, produto ou campanha',
+        ugc_roteiros_todos_status: 'Todos os status',
         ugc_novo_roteiro: '+ Novo roteiro',
         ugc_outbound: 'Outbound',
         ugc_inbound: 'Inbound',
@@ -2946,6 +2962,9 @@
         ugc_col_valor: 'Value',
         ugc_col_pagamento: 'Payment',
         ugc_nenhum_roteiro: 'No scripts yet.',
+        ugc_nenhum_roteiro_filtro: 'No script matches this filter.',
+        ugc_roteiros_buscar_placeholder: 'Search by brand, product or campaign',
+        ugc_roteiros_todos_status: 'All statuses',
         ugc_novo_roteiro: '+ New script',
         ugc_outbound: 'Outbound',
         ugc_inbound: 'Inbound',
@@ -3732,6 +3751,14 @@
         if (arquivo) anexarBriefingArquivo(arquivo);
       });
       document.getElementById('btn-ugc-novo-roteiro').addEventListener('click', () => abrirModalRoteiro(null));
+      document.getElementById('ugc-roteiros-busca').addEventListener('input', (e) => {
+        filtroRoteirosTexto = e.target.value;
+        renderizarRoteiros();
+      });
+      document.getElementById('ugc-roteiros-filtro-status').addEventListener('change', (e) => {
+        filtroRoteirosStatus = e.target.value;
+        renderizarRoteiros();
+      });
       document.getElementById('ugc-modal-roteiro-fechar').addEventListener('click', fecharModalRoteiro);
       document.getElementById('ugc-modal-roteiro-excluir').addEventListener('click', excluirModalRoteiro);
       document.getElementById('ugc-modal-roteiro-compartilhar').addEventListener('click', compartilharModalRoteiro);
@@ -7187,17 +7214,25 @@
     // ---- Roteiros (biblioteca) ----
     function renderizarRoteiros() {
       const lista = document.getElementById('ugc-roteiros-grade');
-      document.getElementById('ugc-roteiros-resumo').textContent =
-        ugcRoteirosCache.length === 0
-          ? tr('ugc_nenhum_roteiro')
-          : `${ugcRoteirosCache.length} ${tr(ugcRoteirosCache.length === 1 ? 'ugc_roteiro_singular' : 'ugc_roteiro_plural')}.`;
+      const termo = filtroRoteirosTexto.trim().toLowerCase();
+      const filtrados = ugcRoteirosCache.filter((r) => {
+        if (filtroRoteirosStatus && (r.status || 'Rascunho') !== filtroRoteirosStatus) return false;
+        if (!termo) return true;
+        return [r.marca, r.produto, r.campanha].some((v) => (v || '').toLowerCase().includes(termo));
+      });
+      const semNadaAinda = ugcRoteirosCache.length === 0;
 
-      if (ugcRoteirosCache.length === 0) {
-        lista.innerHTML = `<p class="texto-vazio">${tr('ugc_nenhum_roteiro')}</p>`;
+      document.getElementById('ugc-roteiros-resumo').textContent =
+        filtrados.length === 0
+          ? tr(semNadaAinda ? 'ugc_nenhum_roteiro' : 'ugc_nenhum_roteiro_filtro')
+          : `${filtrados.length} ${tr(filtrados.length === 1 ? 'ugc_roteiro_singular' : 'ugc_roteiro_plural')}.`;
+
+      if (filtrados.length === 0) {
+        lista.innerHTML = `<p class="texto-vazio">${tr(semNadaAinda ? 'ugc_nenhum_roteiro' : 'ugc_nenhum_roteiro_filtro')}</p>`;
         return;
       }
       lista.innerHTML = '';
-      [...ugcRoteirosCache]
+      [...filtrados]
         .sort((a, b) => b.created_at.localeCompare(a.created_at))
         .forEach((r) => lista.appendChild(criarCardRoteiro(r)));
     }

@@ -2217,6 +2217,29 @@
   color: var(--texto-suave);
 }
 
+.painel-body .ugc-roteiros-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.painel-body .ugc-roteiros-busca,
+.painel-body .ugc-roteiros-filtros select {
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: var(--fonte-corpo);
+  background: var(--branco);
+  color: var(--grafite);
+}
+
+.painel-body .ugc-roteiros-busca {
+  flex: 1 1 240px;
+  min-width: 200px;
+}
+
 .painel-body .ugc-roteiros-grade {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

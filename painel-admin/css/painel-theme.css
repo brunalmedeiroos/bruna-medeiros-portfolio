@@ -3098,6 +3098,50 @@
   color: var(--texto-suave);
 }
 
+/* Tiras de resumo do dia — deliberadamente mais discretas que .card-numero
+   (Portfólio): a Portfólio mostra tráfego do site; aqui é só a contagem do
+   que já aparece em "Hoje"/"Precisa da sua atenção" logo abaixo. */
+.painel-body .dash-resumo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.painel-body .dash-resumo-item {
+  flex: 1;
+  min-width: 168px;
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  background: rgba(var(--grafite-rgb), 0.05);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 13px 18px;
+}
+
+.painel-body .dash-resumo-valor {
+  font-family: var(--fonte-titulo);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--coral);
+}
+
+.painel-body .dash-resumo-item.dash-resumo-tem-pendencia {
+  background: rgba(196, 69, 60, 0.08);
+  border-color: rgba(196, 69, 60, 0.3);
+}
+
+.painel-body .dash-resumo-item.dash-resumo-tem-pendencia .dash-resumo-valor {
+  color: var(--erro);
+}
+
+.painel-body .dash-resumo-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
 .painel-body .dash-secao-titulo {
   font-size: 24px;
   margin: 4px 0 0;

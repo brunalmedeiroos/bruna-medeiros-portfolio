@@ -107,6 +107,24 @@
             <p class="dash-data" id="dash-data">Hoje</p>
           </div>
 
+          <!-- Resumo rápido: mesmos dados de "Hoje" e "Precisa da sua atenção" logo
+               abaixo, só contados — não é o gráfico de visitas/cliques do Portfólio
+               (esse é de propósito exclusivo da aba Portfólio, ver renderizarOverview). -->
+          <div class="dash-resumo" id="dash-resumo">
+            <div class="dash-resumo-item">
+              <span class="dash-resumo-valor" id="dash-resumo-hoje">0</span>
+              <span class="dash-resumo-label" data-i18n="dash_stat_hoje">tarefas hoje</span>
+            </div>
+            <div class="dash-resumo-item" id="dash-resumo-item-atencao">
+              <span class="dash-resumo-valor" id="dash-resumo-atencao">0</span>
+              <span class="dash-resumo-label" data-i18n="dash_stat_atencao">precisam de atenção</span>
+            </div>
+            <div class="dash-resumo-item">
+              <span class="dash-resumo-valor" id="dash-resumo-emails">0</span>
+              <span class="dash-resumo-label" data-i18n="dash_stat_emails">e-mails não lidos</span>
+            </div>
+          </div>
+
           <h3 class="dash-secao-titulo" data-i18n="dash_pergunta">O que eu preciso saber agora?</h3>
 
           <div class="dash-secoes">
@@ -2012,6 +2030,9 @@
         nav_configuracoes: 'Configurações',
 
         dash_pergunta: 'O que eu preciso saber agora?',
+        dash_stat_hoje: 'tarefas hoje',
+        dash_stat_atencao: 'precisam de atenção',
+        dash_stat_emails: 'e-mails não lidos',
         dash_hoje: 'Hoje',
         dash_atencao: 'Precisa da sua atenção',
         dash_hoje_vazio: 'Nada marcado para hoje.',
@@ -2708,6 +2729,9 @@
         nav_configuracoes: 'Settings',
 
         dash_pergunta: 'What do I need to know right now?',
+        dash_stat_hoje: 'tasks today',
+        dash_stat_atencao: 'need attention',
+        dash_stat_emails: 'unread emails',
         dash_hoje: 'Today',
         dash_atencao: 'Needs your attention',
         dash_hoje_vazio: 'Nothing scheduled for today.',
@@ -4139,6 +4163,8 @@
       const lista = document.getElementById('dash-hoje-lista');
       lista.innerHTML = '';
 
+      document.getElementById('dash-resumo-hoje').textContent = doDia.length;
+
       if (doDia.length === 0) {
         lista.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('dash_hoje_vazio'))}</p>`;
         return;
@@ -4243,6 +4269,15 @@
           onClick: () => trocarAba('email'),
         }))));
       }
+
+      // Resumo rápido do topo: total de itens em "Precisa da sua atenção"
+      // (sem contar e-mails, que já têm o próprio número ao lado) e e-mails
+      // não lidos — os mesmos totais que os grupos acima, só somados.
+      const totalAtencao = atrasadas.length + pagamentos.length + direitosUso.length + followups.length + contratos.length + proximas.length;
+      const itemAtencao = document.getElementById('dash-resumo-item-atencao');
+      document.getElementById('dash-resumo-atencao').textContent = totalAtencao;
+      itemAtencao.classList.toggle('dash-resumo-tem-pendencia', totalAtencao > 0);
+      document.getElementById('dash-resumo-emails').textContent = propostasNaoVistas.length;
 
       const container = document.getElementById('dash-atencao-lista');
       container.innerHTML = '';

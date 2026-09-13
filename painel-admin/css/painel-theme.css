@@ -57,31 +57,19 @@
   }
 }
 
-/* ==========================================================================
-   Bootzy TM — usada só nos 2 pontos de mais destaque do painel (a logo
-   "Creator Center" e a saudação grande do Dashboard), não em todo título:
-   é uma fonte "gorda"/de exibição, exagerada demais pra títulos de cartão
-   ou texto corrido. Arquivo compartilhado com o site público (mesmo
-   @font-face, dois níveis acima de css/ até a pasta /fonts na raiz).
-   Textos curtos e sem quebra de linha nesses dois pontos (nowrap na logo,
-   "Bom dia, Bru!" cabe numa linha) — sem o problema de sobreposição que
-   essa fonte dá em título de várias linhas com line-height apertado. ---- */
-@font-face {
-  font-family: 'Bootzy TM';
-  src: url('../../fonts/BootzyTM.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
+/* Bru não gostou da Bootzy TM no painel (nem na logo, nem na saudação do
+   Dashboard) — os dois pontos voltam a usar var(--fonte-titulo), igual todo
+   resto do painel. Mantido o espaçamento/tamanho que ela pediu, só sem a
+   Bootzy. O arquivo da fonte segue guardado em /fonts (na raiz do site),
+   caso ela queira usar a Bootzy em algum lugar depois. */
 .painel-body .sidebar-logo,
 .painel-body .logo-mini {
-  font-family: 'Bootzy TM', var(--fonte-titulo);
+  font-family: var(--fonte-titulo);
   letter-spacing: 1.2px;
 }
 
 .painel-body .dash-cabecalho .saudacao {
-  font-family: 'Bootzy TM', var(--fonte-titulo);
+  font-family: var(--fonte-titulo);
   line-height: 1.25;
   letter-spacing: 1.2px;
 }

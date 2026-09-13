@@ -162,9 +162,10 @@
   /* Sem isto, o navegador calcula a altura da linha sozinho a partir das
      métricas internas da fonte ("normal") — em algumas máquinas essa conta
      dá uma altura quase zero pra esse tamanho/peso de fonte específico,
-     cortando o texto quase inteiro apesar do padding estar correto. Um
-     valor fixo evita depender dessa conta. */
-  line-height: 1.4;
+     cortando o texto quase inteiro apesar do padding estar correto. Em px
+     fixo (não múltiplo do font-size) pra não depender de nenhuma conta
+     feita a partir do tamanho da fonte. */
+  line-height: 16px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;

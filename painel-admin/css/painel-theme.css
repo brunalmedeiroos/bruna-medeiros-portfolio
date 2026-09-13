@@ -22,10 +22,12 @@
   --texto-suave: rgba(var(--grafite-rgb), 0.7);
   --borda: rgba(var(--grafite-rgb), 0.18);         /* mesma borda usada nos inputs do site */
 
-  /* ---- Raio e sombra extraídos do card genérico do site (.services-window) ---- */
-  --raio-lg: 22px;
+  /* ---- Raio e sombra extraídos do card genérico do site (.services-window),
+     com cantos um pouco maiores e sombra em duas camadas (mais rasa e mais
+     difusa) pra um ar mais "flutuante"/clean nos cards do painel. ---- */
+  --raio-lg: 26px;
   --raio-sm: 10px;
-  --sombra: 0 20px 45px rgba(var(--grafite-rgb), 0.16);        /* --shadow-soft, pros cards do grid */
+  --sombra: 0 1px 2px rgba(var(--grafite-rgb), 0.04), 0 18px 40px rgba(var(--grafite-rgb), 0.10);
   --sombra-forte: 0 10px 24px rgba(var(--grafite-rgb), 0.22);  /* --shadow-hard, pra sidebar/drawer mobile */
 
   /* ---- Fontes: Quicksand nos títulos (moderna e delicada — traços mais
@@ -65,22 +67,12 @@
 }
 
 /* Ícones do menu são PNGs coloridos com fundo branco, pensados pra "sumir"
-   contra fundo claro via mix-blend-mode: multiply — em fundo escuro esse
-   truque escurece as próprias cores do ícone (fica sujo/ilegível). Em vez de
-   inverter (o que destrói as cores originais do desenho), no escuro a gente
-   desliga o blend e dá um chip branco por trás — o ícone continua colorido
-   e legível, só ganha uma "etiqueta" clara ao redor. */
-@media (prefers-color-scheme: dark) {
-  .painel-body:not([data-tema="claro"]) .nav-icon-img {
-    mix-blend-mode: normal;
-    background: #fff;
-    border-radius: 4px;
-    padding: 1px;
-    box-sizing: border-box;
-  }
-}
-
-.painel-body[data-tema="escuro"] .nav-icon-img {
+   contra fundo claro via mix-blend-mode: multiply (regra original em
+   css/style.css) — contra a sidebar azul (ver bloco abaixo) esse truque
+   sujaria o ícone em qualquer tema. Desliga o blend e dá um chip branco por
+   trás, sempre — o ícone continua colorido e legível, só ganha uma
+   "etiqueta" clara ao redor. */
+.painel-body .sidebar .nav-icon-img {
   mix-blend-mode: normal;
   background: #fff;
   border-radius: 4px;
@@ -88,7 +80,63 @@
   box-sizing: border-box;
 }
 
-/* Ponto da logo (sidebar e topo mobile) acompanha a cor de ênfase escolhida. */
+/* ==========================================================================
+   Sidebar azul — identidade visual do painel. Fundo cravado em var(--coral)
+   (o azul claro da marca) em vez de var(--branco): como --coral não é
+   redefinido no bloco de tema escuro acima (só --coral-hover muda lá), a
+   sidebar fica igual nos dois temas do painel. Por isso os tons abaixo são
+   fixos (branco/preto translúcidos, ou o hex do grafite cravado no texto do
+   item ativo) em vez de var(--grafite)/var(--branco) — essas variáveis
+   invertem no tema escuro e ficariam ilegíveis contra um fundo que não
+   inverte junto.
+   ========================================================================== */
+.painel-body .sidebar {
+  background: var(--coral);
+  border-right: none;
+}
+
+.painel-body .sidebar-logo {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.painel-body .sidebar .logo-dot {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.painel-body .nav-item {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.painel-body .nav-item:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #fff;
+}
+
+.painel-body .nav-item.active {
+  background: rgba(255, 255, 255, 0.95);
+  color: #04465D;
+}
+
+.painel-body .sidebar-footer {
+  border-top-color: rgba(255, 255, 255, 0.22);
+}
+
+.painel-body .user-email {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.painel-body .btn-sair {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.painel-body .btn-sair:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+/* Ponto da logo fora da sidebar (barra mobile) continua acompanhando a cor
+   de ênfase escolhida — só dentro da sidebar que ele vira branco acima. */
 .painel-body .logo-dot {
   color: var(--coral);
 }
@@ -119,10 +167,21 @@
   font-size: 21px;
 }
 
-/* Borda sutil do .services-window do site, nos cartões do painel. */
+/* Borda sutil do .services-window do site, nos cartões do painel — e um
+   respiro interno maior + cantos um pouco mais fechados no card-numero
+   (16px do --raio-md original ficava raso perto do novo --raio-lg de 26px). */
 .painel-body .card,
 .painel-body .card-numero {
   border: 1px solid rgba(var(--grafite-rgb), 0.06);
+}
+
+.painel-body .card {
+  padding: 28px;
+}
+
+.painel-body .card-numero {
+  padding: 22px 24px;
+  border-radius: 18px;
 }
 
 /* Selo "Contato" nas mensagens: tingido de azul (era um tom coral). */
@@ -3083,18 +3142,19 @@
 .painel-body .dash-cabecalho {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 6px;
 }
 
 .painel-body .dash-cabecalho .saudacao {
   margin: 0;
-  font-size: 38px;
+  font-size: 42px;
+  font-weight: 700;
 }
 
 .painel-body .dash-data {
   margin: 0;
-  font-size: 19px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 500;
   color: var(--texto-suave);
 }
 

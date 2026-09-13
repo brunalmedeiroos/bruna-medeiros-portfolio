@@ -141,6 +141,11 @@
 
 .painel-body .nav-item {
   color: rgba(255, 255, 255, 0.78);
+  /* Mesma proteção contra flex-shrink do .nav-group-label logo abaixo —
+     sem isto, este item também pode ser espremido pelo flex quando a lista
+     não cabe inteira (só que aqui é menos perceptível por ter mais
+     conteúdo dentro). */
+  flex-shrink: 0;
 }
 
 .painel-body .nav-item:hover {
@@ -159,12 +164,6 @@
 .painel-body .nav-group-label {
   padding: 16px 14px 4px;
   font-size: 11px;
-  /* Sem isto, o navegador calcula a altura da linha sozinho a partir das
-     métricas internas da fonte ("normal") — em algumas máquinas essa conta
-     dá uma altura quase zero pra esse tamanho/peso de fonte específico,
-     cortando o texto quase inteiro apesar do padding estar correto. Em px
-     fixo (não múltiplo do font-size) pra não depender de nenhuma conta
-     feita a partir do tamanho da fonte. */
   line-height: 16px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -172,6 +171,14 @@
   color: rgba(255, 255, 255, 0.85);
   white-space: nowrap;
   overflow: hidden;
+  /* A causa real do corte: como este item tem overflow diferente de
+     "visible", ele perde a proteção automática que impede um item flex de
+     encolher além do conteúdo (min-height:auto vira 0 nessa situação, pela
+     spec). Isso deixa o algoritmo de flex-shrink livre pra espremer esta
+     caixa bem menor do que o padding+texto precisam, cortando o texto pelo
+     overflow:hidden mesmo sem faltar espaço "de verdade" na tela. Impede
+     que ela encolha, ponto — quem sobra pra rolar é o <nav> por fora. */
+  flex-shrink: 0;
 }
 
 .sidebar.colapsada .nav-group-label {

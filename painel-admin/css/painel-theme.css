@@ -159,6 +159,12 @@
 .painel-body .nav-group-label {
   padding: 16px 14px 4px;
   font-size: 11px;
+  /* Sem isto, o navegador calcula a altura da linha sozinho a partir das
+     métricas internas da fonte ("normal") — em algumas máquinas essa conta
+     dá uma altura quase zero pra esse tamanho/peso de fonte específico,
+     cortando o texto quase inteiro apesar do padding estar correto. Um
+     valor fixo evita depender dessa conta. */
+  line-height: 1.4;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;

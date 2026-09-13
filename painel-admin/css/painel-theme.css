@@ -57,14 +57,22 @@
   }
 }
 
-/* Bru não gostou da Bootzy TM no painel (nem na logo, nem na saudação do
-   Dashboard) — os dois pontos voltam a usar var(--fonte-titulo), igual todo
-   resto do painel. Mantido o espaçamento/tamanho que ela pediu, só sem a
-   Bootzy. O arquivo da fonte segue guardado em /fonts (na raiz do site),
-   caso ela queira usar a Bootzy em algum lugar depois. */
+/* Bootzy TM de volta só na logo "Creator Center" (sidebar + barra mobile) —
+   a saudação do Dashboard continua em Fraunces (Bru não gostou da Bootzy
+   lá). O arquivo só tem 1 peso gravado (não é variável): font-weight/
+   font-variation-settings não afinam o traço, testado e descartado.
+   Arquivo compartilhado com o site público. */
+@font-face {
+  font-family: 'Bootzy TM';
+  src: url('../../fonts/BootzyTM.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 .painel-body .sidebar-logo,
 .painel-body .logo-mini {
-  font-family: var(--fonte-titulo);
+  font-family: 'Bootzy TM', var(--fonte-titulo);
   letter-spacing: 1.2px;
 }
 
@@ -2916,6 +2924,11 @@
 
 .painel-body .cards-numeros-visao-geral-ugc {
   grid-template-columns: repeat(3, 1fr);
+}
+
+.painel-body .cards-numeros-dashboard {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 560px;
 }
 
 .painel-body .cards-numeros-resultados-ugc {

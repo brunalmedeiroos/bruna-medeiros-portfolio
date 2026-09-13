@@ -3020,6 +3020,20 @@
   grid-template-columns: repeat(5, 1fr);
 }
 
+.painel-body .cards-numeros-financeiro {
+  grid-template-columns: repeat(3, 1fr);
+  max-width: 760px;
+}
+
+/* As duas classes de .cards-numeros-financeiro empatam em especificidade com
+   as regras responsivas de .cards-numeros em css/style.css (que só têm uma
+   classe), então sem isto os 3 cartões não encolhiam no celular. */
+@media (max-width: 480px) {
+  .painel-body .cards-numeros-financeiro {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---- Entregáveis (dentro do modal de Trabalho) ---- */
 
 .painel-body .ugc-entregaveis-lista {

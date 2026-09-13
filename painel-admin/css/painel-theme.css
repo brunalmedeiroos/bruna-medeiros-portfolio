@@ -97,8 +97,8 @@
    transparência do próprio PNG já resolve o contraste com o fundo azul. */
 .painel-body .sidebar .nav-icon-img {
   mix-blend-mode: normal;
-  width: 30px;
-  height: 30px;
+  width: 22px;
+  height: 22px;
 }
 
 /* ==========================================================================
@@ -125,20 +125,20 @@
   min-height: 0;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.6) rgba(0, 0, 0, 0.08);
 }
 
 .painel-body .sidebar-nav::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .painel-body .sidebar-nav::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.35);
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 4px;
 }
 
 .painel-body .sidebar-nav::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .painel-body .sidebar-logo {

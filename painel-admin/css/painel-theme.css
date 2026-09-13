@@ -116,6 +116,10 @@
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.6) rgba(0, 0, 0, 0.08);
+  /* Aproxima a barra de scroll da borda direita da sidebar — a sidebar tem
+     20px de padding lateral, então sem isto a barra ficava bem afastada da
+     ponta, quase no meio do respiro. */
+  margin-right: -12px;
 }
 
 .painel-body .sidebar-nav::-webkit-scrollbar {
@@ -163,8 +167,8 @@
    espaço lateral dos nav-item (14px) pra alinhar com os ícones abaixo. */
 .painel-body .nav-group-label {
   padding: 16px 14px 4px;
-  font-size: 11px;
-  line-height: 16px;
+  font-size: 12px;
+  line-height: 17px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;

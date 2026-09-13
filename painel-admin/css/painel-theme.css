@@ -90,18 +90,15 @@
   --grafite-rgb: 232, 240, 243;
 }
 
-/* Ícones do menu são PNGs coloridos com fundo branco, pensados pra "sumir"
-   contra fundo claro via mix-blend-mode: multiply (regra original em
-   css/style.css) — contra a sidebar azul (ver bloco abaixo) esse truque
-   sujaria o ícone em qualquer tema. Desliga o blend e dá um chip branco por
-   trás, sempre — o ícone continua colorido e legível, só ganha uma
-   "etiqueta" clara ao redor. */
+/* Ícones novos do menu (PNGs 3D com transparência de verdade) — desliga o
+   mix-blend-mode: multiply original (pensado pros ícones antigos de fundo
+   sólido; contra a sidebar azul ele sujaria a imagem) e aumenta o tamanho
+   pra dar pra ver o desenho de cada ícone. Sem chip/fundo atrás: a
+   transparência do próprio PNG já resolve o contraste com o fundo azul. */
 .painel-body .sidebar .nav-icon-img {
   mix-blend-mode: normal;
-  background: #fff;
-  border-radius: 4px;
-  padding: 1px;
-  box-sizing: border-box;
+  width: 30px;
+  height: 30px;
 }
 
 /* ==========================================================================
@@ -1941,14 +1938,6 @@
 }
 
 /* ---- Radar de Notícias ---- */
-
-/* O ícone do rolo de jornal tem mais espaço em branco ao redor do desenho
-   do que os outros ícones do menu, então em 20px (tamanho padrão) fica
-   visualmente menor — compensa com um tamanho um pouco maior. */
-.painel-body .nav-item[data-tab="radar"] .nav-icon-img {
-  width: 26px;
-  height: 26px;
-}
 
 .painel-body .radar-topo {
   display: flex;

@@ -30,13 +30,12 @@
   --sombra: 0 1px 2px rgba(var(--grafite-rgb), 0.04), 0 18px 40px rgba(var(--grafite-rgb), 0.10);
   --sombra-forte: 0 10px 24px rgba(var(--grafite-rgb), 0.22);  /* --shadow-hard, pra sidebar/drawer mobile */
 
-  /* ---- Fontes: Quicksand nos títulos (moderna e delicada — traços mais
-     leves e arredondados que a Bootzy TM do site) e Montserrat no corpo,
-     as duas mais legíveis que a fonte de destaque original. Como são
-     variáveis CSS, o painel inteiro fica visualmente consistente sem
-     precisar tocar em cada regra. Fora do painel (index.html, o site
-     público) continua Bootzy — essa troca é só aqui. ---- */
-  --fonte-titulo: 'Quicksand', sans-serif;
+  /* ---- Fontes: mesma Fraunces (fonte de destaque) e Montserrat (corpo) do
+     site público, pro painel ficar com a mesma identidade. Como são
+     variáveis CSS, o painel inteiro fica consistente sem precisar tocar em
+     cada regra — e a Bootzy TM (ver bloco "Bootzy TM" mais abaixo) entra à
+     parte, só nos 2-3 pontos de mais destaque, não em todo título. ---- */
+  --fonte-titulo: 'Fraunces', Georgia, serif;
   --fonte-corpo: 'Montserrat', sans-serif;
 }
 
@@ -56,6 +55,33 @@
     --grafite: #E8F0F3;
     --grafite-rgb: 232, 240, 243;
   }
+}
+
+/* ==========================================================================
+   Bootzy TM — usada só nos 2 pontos de mais destaque do painel (a logo
+   "Creator Center" e a saudação grande do Dashboard), não em todo título:
+   é uma fonte "gorda"/de exibição, exagerada demais pra títulos de cartão
+   ou texto corrido. Arquivo compartilhado com o site público (mesmo
+   @font-face, dois níveis acima de css/ até a pasta /fonts na raiz).
+   Textos curtos e sem quebra de linha nesses dois pontos (nowrap na logo,
+   "Bom dia, Bru!" cabe numa linha) — sem o problema de sobreposição que
+   essa fonte dá em título de várias linhas com line-height apertado. ---- */
+@font-face {
+  font-family: 'Bootzy TM';
+  src: url('../../fonts/BootzyTM.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.painel-body .sidebar-logo,
+.painel-body .logo-mini {
+  font-family: 'Bootzy TM', var(--fonte-titulo);
+}
+
+.painel-body .dash-cabecalho .saudacao {
+  font-family: 'Bootzy TM', var(--fonte-titulo);
+  line-height: 1.25;
 }
 
 .painel-body[data-tema="escuro"] {

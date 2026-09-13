@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260913h">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260913i">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -119,11 +119,24 @@
       <header class="topbar">
         <h1 id="titulo-topo" data-i18n="titulo_dashboard">Dashboard</h1>
 
-        <div class="filtros-periodo" id="filtros-periodo" hidden>
-          <button class="filtro-btn active" data-periodo="all" data-i18n="filtro_tudo" type="button">Tudo</button>
-          <button class="filtro-btn" data-periodo="7" type="button">7d</button>
-          <button class="filtro-btn" data-periodo="30" type="button">30d</button>
-          <button class="filtro-btn" data-periodo="90" type="button">90d</button>
+        <div class="topbar-acoes">
+          <div class="filtros-periodo" id="filtros-periodo" hidden>
+            <button class="filtro-btn active" data-periodo="all" data-i18n="filtro_tudo" type="button">Tudo</button>
+            <button class="filtro-btn" data-periodo="7" type="button">7d</button>
+            <button class="filtro-btn" data-periodo="30" type="button">30d</button>
+            <button class="filtro-btn" data-periodo="90" type="button">90d</button>
+          </div>
+
+          <div class="notif-wrapper">
+            <button class="notif-sino" id="notif-sino-btn" type="button" data-i18n-aria="notif_titulo" aria-label="Notificações">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="notif-badge" id="notif-badge" hidden>0</span>
+            </button>
+            <div class="notif-dropdown" id="notif-dropdown" hidden>
+              <p class="notif-dropdown-titulo" data-i18n="notif_titulo">Notificações</p>
+              <div id="notif-dropdown-lista"></div>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -879,8 +892,8 @@
       </div>
     </main>
 
-    <!-- Modal: Configurações (aparência, cor de ênfase, idioma, fuso, início da
-         semana e perfil) — não é uma aba: abre por cima da tela atual. -->
+    <!-- Modal: Configurações (idioma, início da semana, perfil) — não é uma
+         aba: abre por cima da tela atual. -->
     <div id="config-modal-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal pl-modal-grande">
         <div class="pl-modal-topo">
@@ -921,14 +934,6 @@
         </div>
 
         <div id="config-pagina-perfil" class="config-pagina" hidden>
-          <div class="config-perfil-card">
-            <span class="config-perfil-avatar" id="config-perfil-avatar">B</span>
-            <div class="config-perfil-info">
-              <p class="config-perfil-nome" id="config-perfil-nome-preview">Bru</p>
-              <p class="config-perfil-email" id="config-perfil-email"></p>
-            </div>
-          </div>
-
           <div class="cal-form-campo">
             <label for="config-nome" data-i18n="config_nome">Nome</label>
             <input type="text" id="config-nome" data-i18n-placeholder="config_nome_placeholder" placeholder="Como você quer ser chamada no painel">
@@ -2018,7 +2023,6 @@
     };
 
     let configCache = null;
-    let usuarioEmail = '';
     let configSalvoTimeout = null;
 
     // ==========================================================================
@@ -2073,6 +2077,8 @@
         dash_atencao: 'Precisa da sua atenção',
         dash_hoje_vazio: 'Nada marcado para hoje.',
         dash_atencao_vazio: 'Tudo em dia por aqui.',
+        notif_titulo: 'Notificações',
+        notif_vazio: 'Nenhum aviso por enquanto.',
         saudacao_bom_dia: 'Bom dia',
         saudacao_boa_tarde: 'Boa tarde',
         saudacao_boa_noite: 'Boa noite',
@@ -2764,6 +2770,8 @@
         dash_atencao: 'Needs your attention',
         dash_hoje_vazio: 'Nothing scheduled for today.',
         dash_atencao_vazio: 'All caught up here.',
+        notif_titulo: 'Notifications',
+        notif_vazio: 'No alerts for now.',
         saudacao_bom_dia: 'Good morning',
         saudacao_boa_tarde: 'Good afternoon',
         saudacao_boa_noite: 'Good evening',
@@ -3457,7 +3465,6 @@
     (async function iniciar() {
       const auth = await Auth.checkAuth();
       if (!auth) return; // Auth.checkAuth já redirecionou pra tela de login
-      usuarioEmail = auth.email || '';
 
       configurarEventos();
       configurarColapsarSidebar();
@@ -3567,17 +3574,13 @@
       renderizarPerfil();
     }
 
-    // Iniciais/nome exibidos no card da sidebar e no topo da aba Perfil —
-    // os dois sempre mostram o mesmo dado (configCache.nome, com 'Bru' de
-    // fallback), só em lugares diferentes da tela.
+    // Iniciais/nome exibidos no card fixo da sidebar (configCache.nome, com
+    // 'Bru' de fallback).
     function renderizarPerfil() {
       const nome = (configCache && configCache.nome) || 'Bru';
       const inicial = nome.trim().charAt(0).toUpperCase() || 'B';
       document.getElementById('sidebar-perfil-nome').textContent = nome;
       document.getElementById('sidebar-perfil-avatar').textContent = inicial;
-      document.getElementById('config-perfil-nome-preview').textContent = nome;
-      document.getElementById('config-perfil-avatar').textContent = inicial;
-      document.getElementById('config-perfil-email').textContent = usuarioEmail;
     }
 
     function abrirModalConfiguracoes(pagina) {
@@ -3719,6 +3722,17 @@
       });
       document.getElementById('config-salvar-nome').addEventListener('click', salvarNomePerfil);
       document.getElementById('config-salvar-senha').addEventListener('click', salvarSenhaPerfil);
+
+      // Sino de notificações do topbar
+      document.getElementById('notif-sino-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const dropdown = document.getElementById('notif-dropdown');
+        if (dropdown.hidden) abrirDropdownNotificacoes();
+        else fecharDropdownNotificacoes();
+      });
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.notif-wrapper')) fecharDropdownNotificacoes();
+      });
 
       // Menu mobile (gaveta)
       const btnMenu = document.getElementById('btn-menu');
@@ -4167,6 +4181,8 @@
       const entregas = obterEntregasPendentes();
       const atrasadas = entregas.filter((t) => t.data_entrega < hojeISO);
       const proximas = entregas.filter((t) => t.data_entrega >= hojeISO && t.data_entrega <= daqui3ISO);
+      renderizarSinoNotificacoes(atrasadas, proximas);
+
       const pagamentos = obterPagamentosPendentes();
       const direitosUso = obterDireitosUsoVencendo();
       const followups = obterProspeccaoEsfriando();
@@ -4240,6 +4256,53 @@
       }
 
       grupos.forEach((g) => container.appendChild(g));
+    }
+
+    // Sino de notificações do topbar — visível em qualquer aba. Só cobre
+    // prazos de entrega UGC (atrasadas/próximas) por enquanto; reaproveita as
+    // listas já calculadas em renderizarAtencaoDashboard(), sem buscar dados
+    // de novo nem persistir estado de lido/não lido.
+    function renderizarSinoNotificacoes(atrasadas, proximas) {
+      const total = atrasadas.length + proximas.length;
+      const badge = document.getElementById('notif-badge');
+      badge.textContent = String(total);
+      badge.hidden = total === 0;
+
+      const lista = document.getElementById('notif-dropdown-lista');
+      lista.innerHTML = '';
+
+      if (total === 0) {
+        lista.innerHTML = `<p class="texto-vazio notif-vazio">${escapeHtml(tr('notif_vazio'))}</p>`;
+        return;
+      }
+
+      const itemParaLinha = (t, urgente) => {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'notif-item' + (urgente ? ' notif-item-urgente' : '');
+        const detalhe = urgente
+          ? `${tr('atencao_era')} ${formatarDataCurta(new Date(t.data_entrega + 'T00:00:00'))}`
+          : formatarDataCurta(new Date(t.data_entrega + 'T00:00:00'));
+        item.innerHTML = `<span>${escapeHtml(t.marca)} — ${escapeHtml(traduzirTipoTrabalho(t.tipo_trabalho))}</span><span>${escapeHtml(detalhe)}</span>`;
+        item.addEventListener('click', () => {
+          fecharDropdownNotificacoes();
+          trocarAba('ugc');
+          trocarSubAbaUGC('trabalhos');
+          abrirModalTrabalho(t);
+        });
+        return item;
+      };
+
+      atrasadas.forEach((t) => lista.appendChild(itemParaLinha(t, true)));
+      proximas.forEach((t) => lista.appendChild(itemParaLinha(t, false)));
+    }
+
+    function abrirDropdownNotificacoes() {
+      document.getElementById('notif-dropdown').hidden = false;
+    }
+
+    function fecharDropdownNotificacoes() {
+      document.getElementById('notif-dropdown').hidden = true;
     }
 
     // ==========================================================================

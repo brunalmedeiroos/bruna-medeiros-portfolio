@@ -77,13 +77,13 @@
 .painel-body .sidebar-logo,
 .painel-body .logo-mini {
   font-family: 'Bootzy TM', var(--fonte-titulo);
-  letter-spacing: 0.5px;
+  letter-spacing: 1.2px;
 }
 
 .painel-body .dash-cabecalho .saudacao {
   font-family: 'Bootzy TM', var(--fonte-titulo);
   line-height: 1.25;
-  letter-spacing: 0.5px;
+  letter-spacing: 1.2px;
 }
 
 .painel-body[data-tema="escuro"] {

@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260913g">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260913h">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -103,6 +103,14 @@
           <span data-i18n="nav_configuracoes">Configurações</span>
         </button>
       </nav>
+
+      <button class="sidebar-perfil" id="btn-abrir-perfil" type="button">
+        <span class="sidebar-perfil-avatar" id="sidebar-perfil-avatar">B</span>
+        <span class="sidebar-perfil-info">
+          <span class="sidebar-perfil-nome" id="sidebar-perfil-nome">Bru</span>
+          <span class="sidebar-perfil-link" data-i18n="sidebar_ver_perfil">Ver perfil</span>
+        </span>
+      </button>
     </aside>
 
     <!-- ================= Conteúdo ================= -->
@@ -887,51 +895,12 @@
         </div>
 
         <div id="config-pagina-geral" class="config-pagina">
-          <div class="config-campo">
-            <label class="config-label" data-i18n="config_aparencia">Aparência</label>
-            <div class="config-segmentado">
-              <button class="config-segmentado-btn" data-valor="claro" data-i18n="config_claro" type="button">Claro</button>
-              <button class="config-segmentado-btn" data-valor="escuro" data-i18n="config_escuro" type="button">Escuro</button>
-              <button class="config-segmentado-btn ativo" data-valor="sistema" data-i18n="config_seguir_sistema" type="button">Seguir sistema</button>
-            </div>
-          </div>
-
-          <div class="config-campo">
-            <label class="config-label" data-i18n="config_cor_enfase">Cor de ênfase</label>
-            <div class="config-cores">
-              <button class="config-cor-swatch ativo" data-cor="#7DB7CE" style="background:#7DB7CE" type="button" data-i18n-aria="config_cor_azul" aria-label="Azul"></button>
-              <button class="config-cor-swatch" data-cor="#EF4444" style="background:#EF4444" type="button" data-i18n-aria="config_cor_vermelho" aria-label="Vermelho"></button>
-              <button class="config-cor-swatch" data-cor="#F97316" style="background:#F97316" type="button" data-i18n-aria="config_cor_laranja" aria-label="Laranja"></button>
-              <button class="config-cor-swatch" data-cor="#22C55E" style="background:#22C55E" type="button" data-i18n-aria="config_cor_verde" aria-label="Verde"></button>
-              <button class="config-cor-swatch" data-cor="#A855F7" style="background:#A855F7" type="button" data-i18n-aria="config_cor_roxo" aria-label="Roxo"></button>
-              <button class="config-cor-swatch" data-cor="#EC4899" style="background:#EC4899" type="button" data-i18n-aria="config_cor_rosa" aria-label="Rosa"></button>
-              <button class="config-cor-swatch" data-cor="#64748B" style="background:#64748B" type="button" data-i18n-aria="config_cor_cinza" aria-label="Cinza"></button>
-              <div class="config-cor-custom">
-                <span class="config-cor-preview" id="config-cor-preview"></span>
-                <input type="text" id="config-cor-hex" placeholder="#7DB7CE">
-              </div>
-            </div>
-          </div>
-
           <div class="cal-form-linha">
             <div class="cal-form-campo">
               <label for="config-idioma" data-i18n="config_idioma">Idioma</label>
               <select id="config-idioma">
                 <option value="pt" data-i18n="config_idioma_pt">Português</option>
                 <option value="en" data-i18n="config_idioma_en">Inglês</option>
-              </select>
-            </div>
-            <div class="cal-form-campo">
-              <label for="config-fuso" data-i18n="config_fuso">Fuso horário</label>
-              <select id="config-fuso">
-                <option value="automatico" data-i18n="config_fuso_automatico">Automático (do dispositivo)</option>
-                <option value="America/Noronha" data-i18n="config_fuso_noronha">Fernando de Noronha (UTC−2)</option>
-                <option value="America/Sao_Paulo" data-i18n="config_fuso_brasilia">Brasília (UTC−3)</option>
-                <option value="America/Manaus" data-i18n="config_fuso_manaus">Manaus (UTC−4)</option>
-                <option value="America/Rio_Branco" data-i18n="config_fuso_riobranco">Rio Branco (UTC−5)</option>
-                <option value="Atlantic/Azores" data-i18n="config_fuso_acores">Açores (UTC−1)</option>
-                <option value="Europe/Lisbon" data-i18n="config_fuso_lisboa">Lisboa (UTC+0/+1)</option>
-                <option value="UTC">UTC</option>
               </select>
             </div>
             <div class="cal-form-campo">
@@ -951,6 +920,14 @@
         </div>
 
         <div id="config-pagina-perfil" class="config-pagina" hidden>
+          <div class="config-perfil-card">
+            <span class="config-perfil-avatar" id="config-perfil-avatar">B</span>
+            <div class="config-perfil-info">
+              <p class="config-perfil-nome" id="config-perfil-nome-preview">Bru</p>
+              <p class="config-perfil-email" id="config-perfil-email"></p>
+            </div>
+          </div>
+
           <div class="cal-form-campo">
             <label for="config-nome" data-i18n="config_nome">Nome</label>
             <input type="text" id="config-nome" data-i18n-placeholder="config_nome_placeholder" placeholder="Como você quer ser chamada no painel">
@@ -2040,6 +2017,7 @@
     };
 
     let configCache = null;
+    let usuarioEmail = '';
     let configSalvoTimeout = null;
 
     // ==========================================================================
@@ -2122,29 +2100,9 @@
         config_titulo: 'Configurações',
         config_geral: 'Geral',
         config_perfil: 'Perfil',
-        config_aparencia: 'Aparência',
-        config_claro: 'Claro',
-        config_escuro: 'Escuro',
-        config_seguir_sistema: 'Seguir sistema',
-        config_cor_enfase: 'Cor de ênfase',
-        config_cor_azul: 'Azul',
-        config_cor_vermelho: 'Vermelho',
-        config_cor_laranja: 'Laranja',
-        config_cor_verde: 'Verde',
-        config_cor_roxo: 'Roxo',
-        config_cor_rosa: 'Rosa',
-        config_cor_cinza: 'Cinza',
         config_idioma: 'Idioma',
         config_idioma_pt: 'Português',
         config_idioma_en: 'Inglês',
-        config_fuso: 'Fuso horário',
-        config_fuso_automatico: 'Automático (do dispositivo)',
-        config_fuso_noronha: 'Fernando de Noronha (UTC−2)',
-        config_fuso_brasilia: 'Brasília (UTC−3)',
-        config_fuso_manaus: 'Manaus (UTC−4)',
-        config_fuso_riobranco: 'Rio Branco (UTC−5)',
-        config_fuso_acores: 'Açores (UTC−1)',
-        config_fuso_lisboa: 'Lisboa (UTC+0/+1)',
         config_inicio_semana: 'Início da semana',
         config_domingo: 'Domingo',
         config_segunda: 'Segunda',
@@ -2162,7 +2120,7 @@
         config_senha_nao_coincide: 'As senhas não coincidem.',
         config_senha_sucesso: 'Senha alterada com sucesso.',
         config_senha_erro: 'Não foi possível alterar a senha agora. Tente de novo.',
-        config_cor_invalida: 'Cor inválida. Use o formato #RRGGBB.',
+        sidebar_ver_perfil: 'Ver perfil',
         erro_salvar_generico: 'Não foi possível salvar agora. Tente de novo em instantes.',
         erro_excluir_generico: 'Não foi possível excluir agora. Tente de novo em instantes.',
         confirm_titulo_padrao: 'Confirmar',
@@ -2833,29 +2791,9 @@
         config_titulo: 'Settings',
         config_geral: 'General',
         config_perfil: 'Profile',
-        config_aparencia: 'Appearance',
-        config_claro: 'Light',
-        config_escuro: 'Dark',
-        config_seguir_sistema: 'Follow system',
-        config_cor_enfase: 'Accent color',
-        config_cor_azul: 'Blue',
-        config_cor_vermelho: 'Red',
-        config_cor_laranja: 'Orange',
-        config_cor_verde: 'Green',
-        config_cor_roxo: 'Purple',
-        config_cor_rosa: 'Pink',
-        config_cor_cinza: 'Gray',
         config_idioma: 'Language',
         config_idioma_pt: 'Portuguese',
         config_idioma_en: 'English',
-        config_fuso: 'Time zone',
-        config_fuso_automatico: 'Automatic (device)',
-        config_fuso_noronha: 'Fernando de Noronha (UTC−2)',
-        config_fuso_brasilia: 'Brasília (UTC−3)',
-        config_fuso_manaus: 'Manaus (UTC−4)',
-        config_fuso_riobranco: 'Rio Branco (UTC−5)',
-        config_fuso_acores: 'Azores (UTC−1)',
-        config_fuso_lisboa: 'Lisbon (UTC+0/+1)',
         config_inicio_semana: 'Week starts on',
         config_domingo: 'Sunday',
         config_segunda: 'Monday',
@@ -2873,7 +2811,7 @@
         config_senha_nao_coincide: "Passwords don't match.",
         config_senha_sucesso: 'Password changed successfully.',
         config_senha_erro: "Couldn't change the password right now. Try again.",
-        config_cor_invalida: 'Invalid color. Use the #RRGGBB format.',
+        sidebar_ver_perfil: 'View profile',
         erro_salvar_generico: "Couldn't save right now. Try again shortly.",
         erro_excluir_generico: "Couldn't delete right now. Try again shortly.",
         confirm_titulo_padrao: 'Confirm',
@@ -3518,6 +3456,7 @@
     (async function iniciar() {
       const auth = await Auth.checkAuth();
       if (!auth) return; // Auth.checkAuth já redirecionou pra tela de login
+      usuarioEmail = auth.email || '';
 
       configurarEventos();
       configurarColapsarSidebar();
@@ -3614,7 +3553,7 @@
     // ==========================================================================
 
     async function carregarConfiguracoes() {
-      const padrao = { tema: 'sistema', cor_enfase: '#7DB7CE', idioma: 'pt', fuso_horario: 'automatico', inicio_semana: 'domingo', nome: null };
+      const padrao = { idioma: 'pt', inicio_semana: 'domingo', nome: null };
       try {
         const { data, error } = await Auth.sb.from('painel_configuracoes').select('*').eq('id', 1).maybeSingle();
         if (error) throw error;
@@ -3623,45 +3562,26 @@
         console.error('Erro ao carregar configurações:', err);
         configCache = padrao;
       }
-      aplicarTema(configCache.tema);
-      aplicarCorEnfase(configCache.cor_enfase);
       preencherFormularioConfiguracoes();
+      renderizarPerfil();
     }
 
-    function aplicarTema(tema) {
-      if (tema === 'claro' || tema === 'escuro') {
-        document.body.dataset.tema = tema;
-      } else {
-        delete document.body.dataset.tema;
-      }
+    // Iniciais/nome exibidos no card da sidebar e no topo da aba Perfil —
+    // os dois sempre mostram o mesmo dado (configCache.nome, com 'Bru' de
+    // fallback), só em lugares diferentes da tela.
+    function renderizarPerfil() {
+      const nome = (configCache && configCache.nome) || 'Bru';
+      const inicial = nome.trim().charAt(0).toUpperCase() || 'B';
+      document.getElementById('sidebar-perfil-nome').textContent = nome;
+      document.getElementById('sidebar-perfil-avatar').textContent = inicial;
+      document.getElementById('config-perfil-nome-preview').textContent = nome;
+      document.getElementById('config-perfil-avatar').textContent = inicial;
+      document.getElementById('config-perfil-email').textContent = usuarioEmail;
     }
 
-    function corHexValida(hex) {
-      return /^#[0-9a-fA-F]{6}$/.test(hex);
-    }
-
-    // Escurece um hex misturando com preto — usado pro hover do botão
-    // primário (--coral-hover) acompanhar a cor de ênfase escolhida.
-    function escurecerHex(hex, quantidade) {
-      const n = hex.replace('#', '');
-      const canal = (i) => Math.max(0, Math.round(parseInt(n.substring(i, i + 2), 16) * (1 - quantidade)));
-      return '#' + [canal(0), canal(2), canal(4)].map((c) => c.toString(16).padStart(2, '0')).join('');
-    }
-
-    function aplicarCorEnfase(hex) {
-      if (!corHexValida(hex)) return;
-      document.body.style.setProperty('--coral', hex);
-      document.body.style.setProperty('--coral-hover', escurecerHex(hex, 0.18));
-      document.getElementById('config-cor-preview').style.background = hex;
-      document.getElementById('config-cor-hex').value = hex;
-      document.querySelectorAll('.config-cor-swatch').forEach((btn) => {
-        btn.classList.toggle('ativo', btn.dataset.cor.toLowerCase() === hex.toLowerCase());
-      });
-    }
-
-    function abrirModalConfiguracoes() {
+    function abrirModalConfiguracoes(pagina) {
       document.getElementById('config-modal-overlay').hidden = false;
-      trocarSubPaginaConfig('geral');
+      trocarSubPaginaConfig(pagina || 'geral');
     }
 
     function fecharModalConfiguracoes() {
@@ -3674,11 +3594,7 @@
     }
 
     function preencherFormularioConfiguracoes() {
-      document.querySelectorAll('.config-segmentado-btn').forEach((btn) => {
-        btn.classList.toggle('ativo', btn.dataset.valor === configCache.tema);
-      });
       document.getElementById('config-idioma').value = configCache.idioma;
-      document.getElementById('config-fuso').value = configCache.fuso_horario;
       document.getElementById('config-inicio-semana').value = configCache.inicio_semana;
       document.getElementById('config-nome').value = configCache.nome || '';
     }
@@ -3709,6 +3625,7 @@
       const nome = document.getElementById('config-nome').value.trim();
       await salvarConfiguracao('nome', nome || null);
       renderizarCabecalhoDashboard();
+      renderizarPerfil();
     }
 
     async function salvarSenhaPerfil() {
@@ -3774,37 +3691,14 @@
       });
 
       // Configurações (modal, não é aba)
-      document.getElementById('btn-abrir-configuracoes').addEventListener('click', abrirModalConfiguracoes);
+      document.getElementById('btn-abrir-configuracoes').addEventListener('click', () => abrirModalConfiguracoes('geral'));
+      document.getElementById('btn-abrir-perfil').addEventListener('click', () => abrirModalConfiguracoes('perfil'));
       document.getElementById('config-modal-fechar').addEventListener('click', fecharModalConfiguracoes);
       document.getElementById('config-modal-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'config-modal-overlay') fecharModalConfiguracoes();
       });
       document.querySelectorAll('.config-subnav-btn').forEach((btn) => {
         btn.addEventListener('click', () => trocarSubPaginaConfig(btn.dataset.configPagina));
-      });
-      document.querySelectorAll('.config-segmentado-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.config-segmentado-btn').forEach((b) => b.classList.toggle('ativo', b === btn));
-          aplicarTema(btn.dataset.valor);
-          salvarConfiguracao('tema', btn.dataset.valor);
-        });
-      });
-      document.querySelectorAll('.config-cor-swatch').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          aplicarCorEnfase(btn.dataset.cor);
-          salvarConfiguracao('cor_enfase', btn.dataset.cor);
-        });
-      });
-      document.getElementById('config-cor-hex').addEventListener('change', (e) => {
-        let hex = e.target.value.trim();
-        if (hex && !hex.startsWith('#')) hex = '#' + hex;
-        if (!corHexValida(hex)) {
-          alert(tr('config_cor_invalida'));
-          e.target.value = configCache.cor_enfase;
-          return;
-        }
-        aplicarCorEnfase(hex);
-        salvarConfiguracao('cor_enfase', hex);
       });
       // Idioma recarrega a página depois de salvar — é o jeito mais simples/
       // confiável de re-renderizar TODO o painel no idioma novo, em vez de
@@ -3813,7 +3707,6 @@
         await salvarConfiguracao('idioma', e.target.value);
         window.location.reload();
       });
-      document.getElementById('config-fuso').addEventListener('change', (e) => salvarConfiguracao('fuso_horario', e.target.value));
       document.getElementById('config-inicio-semana').addEventListener('change', (e) => salvarConfiguracao('inicio_semana', e.target.value));
       document.getElementById('config-btn-sair').addEventListener('click', async () => {
         const confirmou = await confirmarAcao(tr('confirm_sair_mensagem'), {

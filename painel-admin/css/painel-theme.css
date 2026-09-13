@@ -40,15 +40,13 @@
 }
 
 /* ==========================================================================
-   Tema escuro — Configurações > Geral > Aparência. Redefine só os tokens
-   acima; como (quase) todo componente do painel já lê cor via var(--...),
-   isso re-tema o app inteiro sem tocar em regra nenhuma de componente.
-   Três estados, igual o padrão de artifact: :root claro é o padrão; a media
-   query cobre "Seguir sistema" (só quando não houver [data-tema="claro"]
-   explícito); e [data-tema="escuro"] cobre a escolha manual, nos dois casos.
+   Tema escuro — 100% automático (segue o sistema/navegador, sem toggle no
+   painel desde que "Aparência" saiu de Configurações). Redefine só os
+   tokens acima; como (quase) todo componente do painel já lê cor via
+   var(--...), isso re-tema o app inteiro sem tocar em regra de componente.
    ========================================================================== */
 @media (prefers-color-scheme: dark) {
-  .painel-body:not([data-tema="claro"]) {
+  .painel-body {
     --coral-hover: #9AD0E2;
     --creme: #0E1E26;
     --branco: #16303A;
@@ -80,14 +78,6 @@
   font-family: var(--fonte-titulo);
   line-height: 1.25;
   letter-spacing: 1.2px;
-}
-
-.painel-body[data-tema="escuro"] {
-  --coral-hover: #9AD0E2;
-  --creme: #0E1E26;
-  --branco: #16303A;
-  --grafite: #E8F0F3;
-  --grafite-rgb: 232, 240, 243;
 }
 
 /* Ícones novos do menu (PNGs 3D com transparência de verdade) — desliga o
@@ -178,6 +168,74 @@
 }
 
 .sidebar.colapsada .nav-group-label {
+  display: none;
+}
+
+/* Card de perfil fixo no rodapé da sidebar (fora do <nav>, não rola com a
+   lista) — avatar com a inicial do nome + "Ver perfil", abre o modal de
+   Configurações já na aba Perfil. Mesmo padrão visual do card da Julia
+   Eduarda na referência. */
+.painel-body .sidebar-perfil {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  border: none;
+  border-radius: var(--raio-sm);
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
+  text-align: left;
+}
+
+.painel-body .sidebar-perfil:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.painel-body .sidebar-perfil-avatar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font-family: var(--fonte-titulo);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.painel-body .sidebar-perfil-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.painel-body .sidebar-perfil-nome {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.painel-body .sidebar-perfil-link {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.sidebar.colapsada .sidebar-perfil {
+  padding: 10px 0;
+  justify-content: center;
+}
+
+.sidebar.colapsada .sidebar-perfil-info {
   display: none;
 }
 
@@ -3341,97 +3399,41 @@
    Aba Configurações
    ========================================================================== */
 
-.painel-body .config-campo {
+/* Card de perfil no topo da aba Perfil — mesmo avatar/nome do card da
+   sidebar (ver bloco "Sidebar azul"), só que maior e com o e-mail da conta
+   embaixo do nome (email só existe aqui: a sidebar fica estreita demais
+   pra caber). */
+.painel-body .config-perfil-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
   margin-bottom: 24px;
 }
 
-.painel-body .config-label {
-  display: block;
-  font-size: 13px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  color: var(--grafite);
-}
-
-.painel-body .config-segmentado {
-  display: inline-flex;
-  gap: 4px;
-  background: var(--creme);
-  border: 1px solid var(--borda);
-  border-radius: var(--raio-sm);
-  padding: 4px;
-}
-
-.painel-body .config-segmentado-btn {
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--texto-suave);
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.painel-body .config-segmentado-btn:hover {
-  color: var(--grafite);
-}
-
-.painel-body .config-segmentado-btn.ativo {
+.painel-body .config-perfil-avatar {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--coral);
   color: var(--branco);
+  font-family: var(--fonte-titulo);
+  font-size: 20px;
+  font-weight: 700;
 }
 
-.painel-body .config-cores {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.painel-body .config-cor-swatch {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 2px solid transparent;
-  padding: 0;
-  cursor: pointer;
-  transition: transform 0.15s ease, border-color 0.15s ease;
-}
-
-.painel-body .config-cor-swatch:hover {
-  transform: scale(1.08);
-}
-
-.painel-body .config-cor-swatch.ativo {
-  border-color: var(--grafite);
-}
-
-.painel-body .config-cor-custom {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: 6px;
-}
-
-.painel-body .config-cor-preview {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1px solid var(--borda);
-  flex-shrink: 0;
-}
-
-.painel-body .config-cor-custom input {
-  width: 110px;
-  box-sizing: border-box;
-  border: 1px solid var(--borda);
-  border-radius: var(--raio-sm);
-  padding: 8px 10px;
-  font-size: 13px;
-  font-family: var(--fonte-corpo);
-  background: rgba(255, 255, 255, 0.7);
+.painel-body .config-perfil-nome {
+  font-size: 17px;
+  font-weight: 700;
   color: var(--grafite);
+}
+
+.painel-body .config-perfil-email {
+  font-size: 13px;
+  color: var(--texto-suave);
 }
 
 .painel-body .config-divisor {

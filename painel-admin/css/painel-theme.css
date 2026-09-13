@@ -141,8 +141,22 @@
   color: #04465D;
 }
 
-.painel-body .sidebar-footer {
-  border-top-color: rgba(255, 255, 255, 0.22);
+/* Rótulo de grupo do menu (Rotina / Minhas fontes de renda / Criação de
+   Conteúdo / Gestão) — só um texto, não é clicável. Reaproveita o mesmo
+   espaço lateral dos nav-item (14px) pra alinhar com os ícones abaixo. */
+.painel-body .nav-group-label {
+  padding: 16px 14px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar.colapsada .nav-group-label {
+  display: none;
 }
 
 .painel-body .user-email {

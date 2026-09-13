@@ -124,11 +124,11 @@
 }
 
 .painel-body .sidebar-logo {
-  color: rgba(255, 255, 255, 0.95);
+  color: #f1f1f1;
 }
 
 .painel-body .sidebar .logo-dot {
-  color: rgba(255, 255, 255, 0.65);
+  color: #f1f1f1;
 }
 
 .painel-body .nav-item {
@@ -174,12 +174,12 @@
    mesmo tamanho de fonte, e "Creator Center" cortava contra o botão de
    colapsar a sidebar. text-overflow como rede de segurança. */
 .painel-body .sidebar-logo {
-  font-size: 1.35rem;
+  font-size: 1.55rem;
   text-overflow: ellipsis;
 }
 
 .painel-body .logo-mini {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   letter-spacing: 1.2px;
 }
 

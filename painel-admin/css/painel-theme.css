@@ -116,6 +116,31 @@
   border-right: none;
 }
 
+/* Com mais itens de menu (grupos + ícones maiores), a lista pode passar da
+   altura da sidebar — sem scroll próprio, o final do menu (E-mail,
+   Configurações) vazava pra fora da caixa azul e aparecia sobre o fundo
+   creme da página. min-height:0 é o que permite um filho flex realmente
+   encolher/rolar em vez de estourar o pai (senão overflow-y não faz nada). */
+.painel-body .sidebar-nav {
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+}
+
+.painel-body .sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.painel-body .sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 3px;
+}
+
+.painel-body .sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .painel-body .sidebar-logo {
   color: #f1f1f1;
 }

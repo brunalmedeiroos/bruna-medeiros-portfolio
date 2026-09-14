@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260913o">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260913p">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -878,13 +878,31 @@
 
         <!-- Financeiro: resumo simples derivado de ugcTrabalhosCache (mesma
              fonte do Dashboard e do UGC/Publicidade), sem cadastro próprio —
-             ver renderizarFinanceiro(). -->
+             ver renderizarFinanceiro(). O card de insight não usa nenhuma IA:
+             é um texto escolhido por regra simples (maior cliente do mês ou
+             variação vs mês passado), calculado na hora. -->
         <section id="panel-financeiro" class="tab-panel" hidden>
-          <div class="cards-numeros cards-numeros-financeiro">
-            <div class="card-numero destaque">
-              <span class="card-label" data-i18n="financeiro_recebido_mes">Recebido este mês</span>
-              <span class="card-valor" id="financeiro-num-recebido-mes">R$ 0</span>
+          <div class="card financeiro-insight-card">
+            <h3 class="financeiro-insight-titulo" data-i18n="financeiro_insight_titulo">Como está seu faturamento?</h3>
+            <p class="financeiro-insight-texto" id="financeiro-insight-texto"></p>
+
+            <div class="financeiro-chips">
+              <div class="financeiro-chip">
+                <span class="financeiro-chip-label" id="financeiro-chip-mes-label">Recebido em</span>
+                <span class="financeiro-chip-valor" id="financeiro-chip-mes-valor">R$ 0</span>
+              </div>
+              <div class="financeiro-chip">
+                <span class="financeiro-chip-label" data-i18n="financeiro_chip_variacao">Vs. mês anterior</span>
+                <span class="financeiro-chip-valor" id="financeiro-chip-variacao">—</span>
+              </div>
+              <div class="financeiro-chip">
+                <span class="financeiro-chip-label" data-i18n="financeiro_chip_maior_cliente">Maior cliente</span>
+                <span class="financeiro-chip-valor" id="financeiro-chip-maior-cliente">—</span>
+              </div>
             </div>
+          </div>
+
+          <div class="cards-numeros cards-numeros-dashboard">
             <div class="card-numero">
               <span class="card-label" data-i18n="financeiro_pendente">Pendente</span>
               <span class="card-valor" id="financeiro-num-pendente">R$ 0</span>
@@ -2063,9 +2081,17 @@
         titulo_produtos_digitais: 'Produtos Digitais',
         titulo_financeiro: 'Financeiro',
         titulo_metas: 'Metas',
-        financeiro_recebido_mes: 'Recebido este mês',
         financeiro_pendente: 'Pendente',
         financeiro_recebido_total: 'Recebido no total',
+        financeiro_insight_titulo: 'Como está seu faturamento?',
+        financeiro_chip_recebido_em: 'Recebido em',
+        financeiro_chip_variacao: 'Vs. mês anterior',
+        financeiro_chip_maior_cliente: 'Maior cliente',
+        financeiro_insight_maior_cliente: '{nome}, a {marca} puxou {pct}% do que você recebeu esse mês!',
+        financeiro_insight_crescimento: '{nome}, você recebeu {pct}% a mais que no mês passado! Continue assim.',
+        financeiro_insight_queda: '{nome}, seus recebimentos caíram {pct}% em relação ao mês passado.',
+        financeiro_insight_vazio: '{nome}, nenhum recebimento confirmado ainda esse mês.',
+        financeiro_insight_estavel: '{nome}, seu faturamento esse mês está estável em relação ao mês passado.',
         nav_dashboard: 'Dashboard',
         nav_portfolio: 'Portfólio',
         nav_calendario: 'Calendário',
@@ -2759,9 +2785,17 @@
         titulo_produtos_digitais: 'Digital Products',
         titulo_financeiro: 'Finance',
         titulo_metas: 'Goals',
-        financeiro_recebido_mes: 'Received this month',
         financeiro_pendente: 'Pending',
         financeiro_recebido_total: 'Total received',
+        financeiro_insight_titulo: "How's your revenue?",
+        financeiro_chip_recebido_em: 'Received in',
+        financeiro_chip_variacao: 'Vs. last month',
+        financeiro_chip_maior_cliente: 'Biggest client',
+        financeiro_insight_maior_cliente: '{nome}, {marca} made up {pct}% of what you received this month!',
+        financeiro_insight_crescimento: '{nome}, you received {pct}% more than last month! Keep it up.',
+        financeiro_insight_queda: '{nome}, your revenue dropped {pct}% compared to last month.',
+        financeiro_insight_vazio: '{nome}, no confirmed payments yet this month.',
+        financeiro_insight_estavel: "{nome}, your revenue this month is steady compared to last month.",
         nav_dashboard: 'Dashboard',
         nav_portfolio: 'Portfolio',
         nav_calendario: 'Calendar',
@@ -7046,10 +7080,14 @@
     function renderizarFinanceiro() {
       const hoje = new Date();
       const anoMes = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0');
+      const mesPassadoData = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1);
+      const anoMesPassado = mesPassadoData.getFullYear() + '-' + String(mesPassadoData.getMonth() + 1).padStart(2, '0');
 
-      const recebidoMes = ugcTrabalhosCache
-        .filter((t) => t.status_pagamento === 'Recebido' && t.data_entrega && t.data_entrega.startsWith(anoMes))
-        .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
+      const recebidosMes = ugcTrabalhosCache.filter((t) => t.status_pagamento === 'Recebido' && t.data_entrega && t.data_entrega.startsWith(anoMes));
+      const recebidosMesPassado = ugcTrabalhosCache.filter((t) => t.status_pagamento === 'Recebido' && t.data_entrega && t.data_entrega.startsWith(anoMesPassado));
+
+      const recebidoMes = recebidosMes.reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
+      const recebidoMesPassado = recebidosMesPassado.reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
       const pendente = ugcTrabalhosCache
         .filter((t) => t.status_pagamento === 'Pendente' && t.status !== 'Cancelado')
         .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
@@ -7057,9 +7095,59 @@
         .filter((t) => t.status_pagamento === 'Recebido')
         .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
 
-      document.getElementById('financeiro-num-recebido-mes').textContent = formatarMoeda(recebidoMes);
       document.getElementById('financeiro-num-pendente').textContent = formatarMoeda(pendente);
       document.getElementById('financeiro-num-recebido-total').textContent = formatarMoeda(recebidoTotal);
+
+      // Maior cliente do mês, pra chip e pro insight.
+      const porMarca = {};
+      recebidosMes.forEach((t) => {
+        porMarca[t.marca] = (porMarca[t.marca] || 0) + (Number(t.valor) || 0);
+      });
+      let maiorMarca = null;
+      let maiorValor = 0;
+      Object.entries(porMarca).forEach(([marca, valor]) => {
+        if (valor > maiorValor) {
+          maiorMarca = marca;
+          maiorValor = valor;
+        }
+      });
+
+      const variacaoPct = recebidoMesPassado > 0
+        ? ((recebidoMes - recebidoMesPassado) / recebidoMesPassado) * 100
+        : (recebidoMes > 0 ? 100 : 0);
+
+      const nomeMes = hoje.toLocaleDateString(localeAtual(), { month: 'long' });
+      document.getElementById('financeiro-chip-mes-label').textContent =
+        `${tr('financeiro_chip_recebido_em')} ${nomeMes}`.toUpperCase();
+      document.getElementById('financeiro-chip-mes-valor').textContent = formatarMoeda(recebidoMes);
+
+      const chipVariacao = document.getElementById('financeiro-chip-variacao');
+      if (recebidoMesPassado === 0 && recebidoMes === 0) {
+        chipVariacao.textContent = '—';
+        chipVariacao.className = 'financeiro-chip-valor';
+      } else {
+        const seta = variacaoPct >= 0 ? '↗' : '↘';
+        chipVariacao.textContent = `${seta} ${Math.abs(Math.round(variacaoPct))}%`;
+        chipVariacao.className = 'financeiro-chip-valor ' + (variacaoPct >= 0 ? 'financeiro-chip-positivo' : 'financeiro-chip-negativo');
+      }
+
+      document.getElementById('financeiro-chip-maior-cliente').textContent = maiorMarca || '—';
+
+      const nome = (configCache && configCache.nome) || 'Bru';
+      const textoInsight = document.getElementById('financeiro-insight-texto');
+      if (maiorMarca && recebidoMes > 0 && maiorValor / recebidoMes >= 0.4) {
+        const pct = Math.round((maiorValor / recebidoMes) * 100);
+        textoInsight.textContent = tr('financeiro_insight_maior_cliente')
+          .replace('{nome}', nome).replace('{marca}', maiorMarca).replace('{pct}', pct);
+      } else if (recebidoMesPassado > 0 && Math.abs(variacaoPct) >= 10) {
+        const pct = Math.round(Math.abs(variacaoPct));
+        textoInsight.textContent = (variacaoPct > 0 ? tr('financeiro_insight_crescimento') : tr('financeiro_insight_queda'))
+          .replace('{nome}', nome).replace('{pct}', pct);
+      } else if (recebidoMes === 0) {
+        textoInsight.textContent = tr('financeiro_insight_vazio').replace('{nome}', nome);
+      } else {
+        textoInsight.textContent = tr('financeiro_insight_estavel').replace('{nome}', nome);
+      }
     }
 
     // ---- Visão Geral: 100% derivada de ugcTrabalhosCache, sem cadastro próprio ----

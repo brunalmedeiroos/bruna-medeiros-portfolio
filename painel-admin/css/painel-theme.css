@@ -3038,18 +3038,68 @@
   grid-template-columns: repeat(5, 1fr);
 }
 
-.painel-body .cards-numeros-financeiro {
-  grid-template-columns: repeat(3, 1fr);
+/* ---- Financeiro: card de insight (inspirado num app de controle de gasto
+   que a Bru mandou de referência, adaptado pra recebimento em vez de
+   gasto) ---- */
+
+.painel-body .financeiro-insight-card {
+  margin-bottom: 24px;
   max-width: 760px;
 }
 
-/* As duas classes de .cards-numeros-financeiro empatam em especificidade com
-   as regras responsivas de .cards-numeros em css/style.css (que só têm uma
-   classe), então sem isto os 3 cartões não encolhiam no celular. */
-@media (max-width: 480px) {
-  .painel-body .cards-numeros-financeiro {
-    grid-template-columns: 1fr;
-  }
+.painel-body .financeiro-insight-titulo {
+  font-family: var(--fonte-titulo);
+  font-size: 22px;
+  color: var(--grafite);
+  margin: 0 0 10px;
+}
+
+.painel-body .financeiro-insight-texto {
+  font-size: 15px;
+  color: var(--texto-suave);
+  margin: 0 0 22px;
+  line-height: 1.5;
+}
+
+.painel-body .financeiro-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.painel-body .financeiro-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 140px;
+  background: var(--creme);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 12px 16px;
+}
+
+.painel-body .financeiro-chip-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.painel-body .financeiro-chip-valor {
+  font-family: var(--fonte-titulo);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .financeiro-chip-positivo {
+  color: var(--sucesso);
+}
+
+.painel-body .financeiro-chip-negativo {
+  color: var(--erro);
 }
 
 /* ---- Entregáveis (dentro do modal de Trabalho) ---- */

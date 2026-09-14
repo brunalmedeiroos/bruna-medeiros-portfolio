@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260913w">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260914a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -259,44 +259,52 @@
           <button id="btn-google-agenda-desconectar" class="cal-btn" type="button" data-i18n="cal_google_desconectar_btn">Desconectar</button>
         </div>
 
-        <div class="cal-layout">
-          <div class="card card-calendario">
-            <div class="cal-topo">
-              <div class="cal-topo-nav">
-                <button id="cal-mes-anterior" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_anterior" aria-label="Mês anterior">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-                <span class="cal-mes-label" id="cal-mes-label">Mês</span>
-                <button id="cal-mes-proximo" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_proximo" aria-label="Próximo mês">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-              </div>
-              <div class="cal-visao-grupo">
-                <button class="cal-visao-btn ativo" data-visao="mes" type="button" data-i18n="cal_visao_mes">Mês</button>
-                <button class="cal-visao-btn" data-visao="semana" type="button" data-i18n="cal_visao_semana">Semana</button>
-                <button class="cal-visao-btn" data-visao="dia" type="button" data-i18n="cal_visao_dia">Dia</button>
-              </div>
+        <div class="card card-calendario">
+          <div class="cal-topo">
+            <div class="cal-topo-nav">
+              <button id="cal-mes-anterior" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_anterior" aria-label="Mês anterior">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <span class="cal-mes-label" id="cal-mes-label">Mês</span>
+              <button id="cal-mes-proximo" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_proximo" aria-label="Próximo mês">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
             </div>
-
-            <div class="cal-semana" id="cal-semana-cabecalho">
-              <span data-i18n="cal_seg">Seg</span><span data-i18n="cal_ter">Ter</span><span data-i18n="cal_qua">Qua</span><span data-i18n="cal_qui">Qui</span><span data-i18n="cal_sex">Sex</span><span data-i18n="cal_sab">Sáb</span><span data-i18n="cal_dom">Dom</span>
+            <div class="cal-visao-grupo">
+              <button class="cal-visao-btn ativo" data-visao="mes" type="button" data-i18n="cal_visao_mes">Mês</button>
+              <button class="cal-visao-btn" data-visao="semana" type="button" data-i18n="cal_visao_semana">Semana</button>
+              <button class="cal-visao-btn" data-visao="dia" type="button" data-i18n="cal_visao_dia">Dia</button>
             </div>
-
-            <div class="cal-grade" id="cal-grade"></div>
-
-            <div class="cal-grade-semana" id="cal-grade-semana" hidden></div>
-            <div class="cal-grade-dia" id="cal-grade-dia" hidden></div>
           </div>
 
-          <div class="card card-cal-dia">
+          <div class="cal-semana" id="cal-semana-cabecalho">
+            <span data-i18n="cal_seg">Seg</span><span data-i18n="cal_ter">Ter</span><span data-i18n="cal_qua">Qua</span><span data-i18n="cal_qui">Qui</span><span data-i18n="cal_sex">Sex</span><span data-i18n="cal_sab">Sáb</span><span data-i18n="cal_dom">Dom</span>
+          </div>
+
+          <div class="cal-grade" id="cal-grade"></div>
+
+          <div class="cal-grade-semana" id="cal-grade-semana" hidden></div>
+          <div class="cal-grade-dia" id="cal-grade-dia" hidden></div>
+        </div>
+
+        <!-- Popup do dia: abre ao clicar num dia (mês) ou num evento/horário
+             (semana/dia) — lista as tarefas daquele dia e, ao clicar em "+",
+             mostra o formulário de nova tarefa dentro do mesmo popup. -->
+        <div id="cal-dia-modal-overlay" class="pl-modal-overlay" hidden>
+          <div class="pl-modal">
             <div class="cal-dia-topo">
               <div>
                 <h3 class="card-titulo" id="cal-dia-titulo" data-i18n="dash_hoje">Hoje</h3>
                 <p class="cal-dia-resumo" id="cal-dia-resumo" data-i18n="cal_nenhuma_entrega">Nenhuma entrega ainda.</p>
               </div>
-              <button id="cal-btn-add" class="cal-btn cal-btn-add" type="button" data-i18n-aria="cal_adicionar_tarefa" aria-label="Adicionar tarefa">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              </button>
+              <div class="cal-dia-modal-acoes">
+                <button id="cal-btn-add" class="cal-btn cal-btn-add" type="button" data-i18n-aria="cal_adicionar_tarefa" aria-label="Adicionar tarefa">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+                <button id="cal-dia-modal-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+              </div>
             </div>
 
             <div id="cal-lista-tarefas" class="cal-lista-tarefas"></div>
@@ -2318,6 +2326,7 @@
         cal_google_desconectar_btn: 'Desconectar',
         cal_google_desconectar_pergunta: 'Desconectar do Google Agenda? Suas tarefas continuam aqui no painel, só param de sincronizar.',
         cal_sincronizar_aria: 'Sincronizar agora',
+        cal_mais: 'mais',
         cal_seg: 'Seg',
         cal_ter: 'Ter',
         cal_qua: 'Qua',
@@ -3037,6 +3046,7 @@
         cal_google_desconectar_btn: 'Disconnect',
         cal_google_desconectar_pergunta: 'Disconnect from Google Calendar? Your tasks stay here in the panel, they just stop syncing.',
         cal_sincronizar_aria: 'Sync now',
+        cal_mais: 'more',
         cal_seg: 'Mon',
         cal_ter: 'Tue',
         cal_qua: 'Wed',
@@ -3936,6 +3946,10 @@
       document.getElementById('cal-cancelar').addEventListener('click', fecharFormularioTarefa);
       document.getElementById('cal-form-tarefa').addEventListener('submit', salvarTarefa);
       document.getElementById('cal-checklist-add').addEventListener('click', adicionarItemChecklistForm);
+      document.getElementById('cal-dia-modal-fechar').addEventListener('click', fecharModalDia);
+      document.getElementById('cal-dia-modal-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'cal-dia-modal-overlay') fecharModalDia();
+      });
       document.getElementById('btn-google-agenda-conectar').addEventListener('click', conectarGoogleAgenda);
       document.getElementById('btn-google-agenda-desconectar').addEventListener('click', desconectarGoogleAgenda);
       document.getElementById('cal-btn-sincronizar').addEventListener('click', () => sincronizarGoogleAgenda({ silencioso: false }));
@@ -4955,6 +4969,8 @@
       return d;
     }
 
+    const CAL_MAX_CHIPS_VISIVEIS = 3;
+
     function renderizarGradeMes() {
       const grade = document.getElementById('cal-grade');
       grade.innerHTML = '';
@@ -4970,26 +4986,43 @@
       for (let i = 0; i < 42; i++) {
         const dia = new Date(inicioGrade);
         dia.setDate(dia.getDate() + i);
-
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'cal-dia cal-btn';
-        btn.textContent = String(dia.getDate());
-
-        if (dia.getMonth() !== calMesAtual.getMonth()) btn.classList.add('cal-dia-fora');
-        if (mesmoDia(dia, hoje)) btn.classList.add('cal-dia-hoje');
-        if (mesmoDia(dia, calDiaSelecionado)) btn.classList.add('cal-dia-selecionado');
-
         const isoDia = dataParaISO(dia);
-        const temTarefa = tarefasCache.some((t) => t.data === isoDia) || entregasUgcPendentesDoDia(isoDia).length > 0;
-        if (temTarefa) btn.classList.add('cal-dia-com-tarefa');
 
-        btn.addEventListener('click', () => {
-          calDiaSelecionado = dia;
-          renderizarCalendario();
+        const celula = document.createElement('div');
+        celula.className = 'cal-dia-celula';
+        if (dia.getMonth() !== calMesAtual.getMonth()) celula.classList.add('cal-dia-fora');
+
+        const tarefasDoDia = tarefasCache.filter((t) => t.data === isoDia && !t.feito);
+        const entregasDoDia = entregasUgcPendentesDoDia(isoDia);
+        const itensDoDia = [
+          ...tarefasDoDia.map((t) => ({ titulo: t.titulo, ugc: false })),
+          ...entregasDoDia.map((t) => ({ titulo: t.marca + (t.campanha ? ' · ' + t.campanha : ''), ugc: true, trabalho: t })),
+        ];
+        const visiveis = itensDoDia.slice(0, CAL_MAX_CHIPS_VISIVEIS);
+        const restantes = itensDoDia.length - visiveis.length;
+
+        celula.innerHTML = `
+          <span class="cal-dia-celula-numero${mesmoDia(dia, hoje) ? ' cal-dia-hoje' : ''}">${dia.getDate()}</span>
+          <div class="cal-dia-celula-chips">
+            ${visiveis.map((item, idx) => `<span class="cal-evento-chip${item.ugc ? ' cal-evento-chip-ugc' : ''}" data-idx="${idx}">${escapeHtml(item.titulo)}</span>`).join('')}
+            ${restantes > 0 ? `<span class="cal-evento-chip-mais">+${restantes} ${tr('cal_mais')}</span>` : ''}
+          </div>
+        `;
+
+        // Clique num chip de UGC leva direto pro trabalho (mesmo padrão de
+        // sempre); clique em qualquer outro lugar da célula abre o popup do
+        // dia — é o dia que "abre", não o evento individual (mais simples e
+        // já cobre marcar feita/editar/excluir de dentro do popup).
+        celula.querySelectorAll('.cal-evento-chip-ugc').forEach((chip) => {
+          const item = visiveis[Number(chip.dataset.idx)];
+          chip.addEventListener('click', (e) => {
+            e.stopPropagation();
+            abrirEntregaUgcNoCalendario(item.trabalho);
+          });
         });
+        celula.addEventListener('click', () => abrirModalDia(dia));
 
-        grade.appendChild(btn);
+        grade.appendChild(celula);
       }
     }
 
@@ -5362,8 +5395,8 @@
 
       linha.querySelector('.cal-todas-dia').addEventListener('click', () => {
         calMesAtual = new Date(dataObj.getFullYear(), dataObj.getMonth(), 1);
-        calDiaSelecionado = dataObj;
         renderizarCalendario();
+        abrirModalDia(dataObj);
       });
       linha.querySelector('.cal-tarefa-check').addEventListener('click', () => alternarFeito(tarefa));
       linha.querySelector('.cal-tarefa-editar').addEventListener('click', () => abrirFormularioTarefa(tarefa));
@@ -5446,9 +5479,33 @@
     // tarefa existente, abre pré-preenchido para edição. "Repetir" só faz
     // sentido ao criar (decidir a recorrência de uma ocorrência já existente
     // não muda a série inteira), então some do form ao editar.
+    // Abre o popup do dia (lista de tarefas + botão de adicionar) pro dia
+    // clicado. É o ponto de entrada usado pela grade do mês (clique na
+    // célula) e pela tabela "Tudo o que está marcado" (clique no dia).
+    function abrirModalDia(dia) {
+      calDiaSelecionado = dia;
+      document.getElementById('cal-form-tarefa').hidden = true;
+      tarefaEditando = null;
+      renderizarTarefasDoDia();
+      document.getElementById('cal-dia-modal-overlay').hidden = false;
+    }
+
+    function fecharModalDia() {
+      document.getElementById('cal-dia-modal-overlay').hidden = true;
+      fecharFormularioTarefa();
+    }
+
     function abrirFormularioTarefa(tarefa) {
       const form = document.getElementById('cal-form-tarefa');
       tarefaEditando = tarefa ? tarefa.id : null;
+
+      // Chamada direto (clique num evento da grade Semana/Dia, ou "editar"
+      // na tabela "Tudo o que está marcado") sem o popup do dia já estar
+      // aberto — abre ele agora, no dia certo, mostrando a lista por trás
+      // do formulário.
+      if (tarefa) calDiaSelecionado = new Date(tarefa.data + 'T00:00:00');
+      renderizarTarefasDoDia();
+      document.getElementById('cal-dia-modal-overlay').hidden = false;
 
       document.getElementById('cal-titulo').value = tarefa ? tarefa.titulo : '';
       document.getElementById('cal-tipo').value = tarefa ? tarefa.tipo : 'Compromisso';

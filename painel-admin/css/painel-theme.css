@@ -322,21 +322,6 @@
    .widget-glass do site: fundo translúcido + blur + borda clara).
    ========================================================================== */
 
-/* Calendário do mês com largura própria; o cartão do dia estica até a
-   borda direita do conteúdo (1fr), em vez de parar antes e deixar vão. */
-.painel-body .cal-layout {
-  display: grid;
-  grid-template-columns: minmax(380px, 480px) 1fr;
-  gap: 20px;
-  align-items: start;
-}
-
-@media (max-width: 860px) {
-  .painel-body .cal-layout {
-    grid-template-columns: 1fr;
-  }
-}
-
 .painel-body .cal-btn {
   background: rgba(255, 255, 255, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.65);
@@ -419,57 +404,85 @@
 .painel-body .cal-grade {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(96px, 1fr);
   gap: 4px;
 }
 
-.painel-body .cal-dia {
-  width: 48px;
-  height: 48px;
-  margin: 2px auto;
-  border-radius: 50%;
-  font-size: 15px;
-  font-weight: 600;
-  box-shadow: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  background: transparent;
-  border: 1px solid transparent;
-  position: relative;
+/* Célula do dia (visão Mês) — em vez de uma bolinha com um pontinho, mostra
+   o número do dia e os próprios eventos como "chips", estilo Google
+   Agenda. Clicar em qualquer parte vazia da célula abre o popup do dia
+   (abrirModalDia); um chip de UGC tem clique próprio que já vai direto pro
+   trabalho, sem abrir o popup. */
+.painel-body .cal-dia-celula {
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 6px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 0.15s ease;
 }
 
-.painel-body .cal-dia:hover {
-  transform: none;
-  background: rgba(var(--grafite-rgb), 0.08);
+.painel-body .cal-dia-celula:hover {
+  background: rgba(var(--grafite-rgb), 0.05);
 }
 
 .painel-body .cal-dia-fora {
-  opacity: 0.35;
+  opacity: 0.4;
 }
 
-.painel-body .cal-dia-hoje {
+.painel-body .cal-dia-celula-numero {
+  font-size: 13px;
+  font-weight: 600;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.painel-body .cal-dia-celula-numero.cal-dia-hoje {
   background: var(--coral);
   color: var(--branco);
-  border-color: var(--coral);
 }
 
-.painel-body .cal-dia-selecionado {
-  border: 2px solid var(--grafite);
+.painel-body .cal-dia-celula-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  overflow: hidden;
 }
 
-.painel-body .cal-dia-com-tarefa::after {
-  content: '';
-  position: absolute;
-  bottom: 5px;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: currentColor;
+.painel-body .cal-evento-chip {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--branco);
+  background: var(--coral);
+  border-radius: 5px;
+  padding: 2px 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* ---- Cartão do dia selecionado ---- */
+.painel-body .cal-evento-chip-ugc {
+  background: rgba(var(--grafite-rgb), 0.75);
+  cursor: pointer;
+}
+
+.painel-body .cal-evento-chip-mais {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--texto-suave);
+  padding: 2px 5px;
+}
+
+/* ---- Popup do dia (abre ao clicar num dia) ---- */
 
 .painel-body .cal-dia-topo {
   display: flex;
@@ -477,6 +490,13 @@
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 18px;
+}
+
+.painel-body .cal-dia-modal-acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .painel-body .cal-dia-resumo {
@@ -684,8 +704,18 @@
 }
 
 @media (max-width: 480px) {
-  .painel-body .cal-dia {
-    font-size: 12px;
+  .painel-body .cal-grade {
+    grid-auto-rows: minmax(64px, 1fr);
+  }
+
+  .painel-body .cal-dia-celula {
+    padding: 3px;
+  }
+
+  .painel-body .cal-evento-chip,
+  .painel-body .cal-evento-chip-mais {
+    font-size: 9px;
+    padding: 1px 3px;
   }
 }
 

@@ -3015,8 +3015,100 @@
   max-width: 560px;
 }
 
-.painel-body .cards-numeros-resultados-ugc {
-  grid-template-columns: repeat(3, 1fr);
+/* ---- UGC/Publicidade: Resultados (mesmo padrão visual do card de insight
+   do Financeiro — dois cartões lado a lado, cada um com número grande e
+   chips de apoio) ---- */
+
+.painel-body .ugc-resultados-topo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 900px) {
+  .painel-body .ugc-resultados-topo {
+    grid-template-columns: 1fr;
+  }
+}
+
+.painel-body .ugc-resultados-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.painel-body .ugc-resultados-card-titulo {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+  margin-bottom: 8px;
+}
+
+.painel-body .ugc-resultados-card-valor {
+  font-family: var(--fonte-titulo);
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--coral);
+  margin-bottom: 20px;
+}
+
+.painel-body .ugc-resultados-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.painel-body .ugc-resultados-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 130px;
+  background: var(--creme);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 12px 16px;
+}
+
+.painel-body .ugc-resultados-chip-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.painel-body .ugc-resultados-chip-valor {
+  font-family: var(--fonte-titulo);
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .ugc-resultados-total-card {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  max-width: 760px;
+}
+
+.painel-body .ugc-resultados-total-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--texto-suave);
+}
+
+.painel-body .ugc-resultados-total-valor {
+  font-family: var(--fonte-titulo);
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--grafite);
 }
 
 /* ---- Financeiro: card de insight (inspirado num app de controle de gasto

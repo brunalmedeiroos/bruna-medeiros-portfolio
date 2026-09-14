@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260913t">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260913u">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -810,31 +810,49 @@
 
           <!-- Resultados: também só leitura, derivado de ugc_trabalhos/ugc_contratos -->
           <div id="ugc-pagina-resultados" class="ugc-pagina" hidden>
-            <div class="cards-numeros cards-numeros-resultados-ugc">
-              <div class="card-numero destaque">
-                <span class="card-label" data-i18n="ugc_trabalhos_finalizados_ugc">Trabalhos finalizados (UGC)</span>
-                <span class="card-valor" id="ugc-num-fechados-ugc">0</span>
+            <div class="ugc-resultados-topo">
+              <div class="card ugc-resultados-card">
+                <span class="ugc-resultados-card-titulo" data-i18n="ugc_ganho_ugc">Ganho em UGC</span>
+                <span class="ugc-resultados-card-valor" id="ugc-num-ganho-ugc">R$ 0</span>
+                <div class="ugc-resultados-chips">
+                  <div class="ugc-resultados-chip">
+                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_trabalhos_finalizados">Trabalhos finalizados</span>
+                    <span class="ugc-resultados-chip-valor" id="ugc-num-fechados-ugc">0</span>
+                  </div>
+                  <div class="ugc-resultados-chip">
+                    <span class="ugc-resultados-chip-label" data-i18n="ugc_contratos_finalizados">Contratos finalizados</span>
+                    <span class="ugc-resultados-chip-valor" id="ugc-num-contratos-finalizados-ugc">0</span>
+                  </div>
+                  <div class="ugc-resultados-chip">
+                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_ticket_medio">Ticket médio</span>
+                    <span class="ugc-resultados-chip-valor" id="ugc-num-ticket-medio-ugc">—</span>
+                  </div>
+                </div>
               </div>
-              <div class="card-numero destaque">
-                <span class="card-label" data-i18n="ugc_trabalhos_finalizados_publicidade">Trabalhos finalizados (Publicidade)</span>
-                <span class="card-valor" id="ugc-num-fechados-publicidade">0</span>
+
+              <div class="card ugc-resultados-card">
+                <span class="ugc-resultados-card-titulo" data-i18n="ugc_ganho_publicidade">Ganho em Publicidade</span>
+                <span class="ugc-resultados-card-valor" id="ugc-num-ganho-publicidade">R$ 0</span>
+                <div class="ugc-resultados-chips">
+                  <div class="ugc-resultados-chip">
+                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_trabalhos_finalizados">Trabalhos finalizados</span>
+                    <span class="ugc-resultados-chip-valor" id="ugc-num-fechados-publicidade">0</span>
+                  </div>
+                  <div class="ugc-resultados-chip">
+                    <span class="ugc-resultados-chip-label" data-i18n="ugc_contratos_finalizados">Contratos finalizados</span>
+                    <span class="ugc-resultados-chip-valor" id="ugc-num-contratos-finalizados-publicidade">0</span>
+                  </div>
+                  <div class="ugc-resultados-chip">
+                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_ticket_medio">Ticket médio</span>
+                    <span class="ugc-resultados-chip-valor" id="ugc-num-ticket-medio-publicidade">—</span>
+                  </div>
+                </div>
               </div>
-              <div class="card-numero">
-                <span class="card-label" data-i18n="ugc_contratos_finalizados">Contratos finalizados</span>
-                <span class="card-valor" id="ugc-num-contratos-finalizados">0</span>
-              </div>
-              <div class="card-numero">
-                <span class="card-label" data-i18n="ugc_ganho_ugc">Ganho em UGC</span>
-                <span class="card-valor" id="ugc-num-ganho-ugc">R$ 0</span>
-              </div>
-              <div class="card-numero">
-                <span class="card-label" data-i18n="ugc_ganho_publicidade">Ganho em Publicidade</span>
-                <span class="card-valor" id="ugc-num-ganho-publicidade">R$ 0</span>
-              </div>
-              <div class="card-numero">
-                <span class="card-label" data-i18n="ugc_ganho_total">Ganho total</span>
-                <span class="card-valor" id="ugc-num-ganho-total">R$ 0</span>
-              </div>
+            </div>
+
+            <div class="card ugc-resultados-total-card">
+              <span class="ugc-resultados-total-label" data-i18n="ugc_ganho_total">Ganho total</span>
+              <span class="ugc-resultados-total-valor" id="ugc-num-ganho-total">R$ 0</span>
             </div>
           </div>
         </section>
@@ -2518,8 +2536,8 @@
         ugc_adicionar_servico_aria: 'Adicionar serviço',
         ugc_publicidade: 'Publicidade',
         ugc_condicoes_direitos: 'Condições/Direitos',
-        ugc_trabalhos_finalizados_ugc: 'Trabalhos finalizados (UGC)',
-        ugc_trabalhos_finalizados_publicidade: 'Trabalhos finalizados (Publicidade)',
+        ugc_resultados_trabalhos_finalizados: 'Trabalhos finalizados',
+        ugc_resultados_ticket_medio: 'Ticket médio',
         ugc_contratos_finalizados: 'Contratos finalizados',
         ugc_ganho_ugc: 'Ganho em UGC',
         ugc_ganho_publicidade: 'Ganho em Publicidade',
@@ -3227,8 +3245,8 @@
         ugc_adicionar_servico_aria: 'Add service',
         ugc_publicidade: 'Advertising',
         ugc_condicoes_direitos: 'Terms/Rights',
-        ugc_trabalhos_finalizados_ugc: 'Finished jobs (UGC)',
-        ugc_trabalhos_finalizados_publicidade: 'Finished jobs (Advertising)',
+        ugc_resultados_trabalhos_finalizados: 'Finished jobs',
+        ugc_resultados_ticket_medio: 'Average ticket',
         ugc_contratos_finalizados: 'Finished contracts',
         ugc_ganho_ugc: 'UGC earnings',
         ugc_ganho_publicidade: 'Advertising earnings',
@@ -7324,7 +7342,12 @@
       const fechadosPorTipo = (tipo) => ugcTrabalhosCache.filter((t) => t.status === 'Pago' && t.tipo_trabalho === tipo);
       const fechadosUgc = fechadosPorTipo('UGC');
       const fechadosPublicidade = fechadosPorTipo('Publicidade');
-      const contratosFinalizados = ugcContratosCache.filter((c) => c.status === 'Encerrado');
+
+      const contratosFinalizadosPorTipo = (tipo) =>
+        ugcContratosCache.filter((c) => c.status === 'Encerrado' && c.tipo_trabalho === tipo);
+      const contratosFinalizadosUgc = contratosFinalizadosPorTipo('UGC');
+      const contratosFinalizadosPublicidade = contratosFinalizadosPorTipo('Publicidade');
+
       const ganhoPorTipo = (tipo) =>
         ugcTrabalhosCache
           .filter((t) => t.tipo_trabalho === tipo && t.status_pagamento === 'Recebido')
@@ -7333,11 +7356,18 @@
       const ganhoUgc = ganhoPorTipo('UGC');
       const ganhoPublicidade = ganhoPorTipo('Publicidade');
 
+      // Ticket médio = ganho ÷ trabalhos finalizados do mesmo tipo. Sem nenhum
+      // finalizado ainda não há o que dividir — mostra "—" pra não sugerir R$ 0.
+      const ticketMedio = (ganho, quantidade) => (quantidade > 0 ? formatarMoeda(ganho / quantidade) : '—');
+
       document.getElementById('ugc-num-fechados-ugc').textContent = formatarNumero(fechadosUgc.length);
       document.getElementById('ugc-num-fechados-publicidade').textContent = formatarNumero(fechadosPublicidade.length);
-      document.getElementById('ugc-num-contratos-finalizados').textContent = formatarNumero(contratosFinalizados.length);
+      document.getElementById('ugc-num-contratos-finalizados-ugc').textContent = formatarNumero(contratosFinalizadosUgc.length);
+      document.getElementById('ugc-num-contratos-finalizados-publicidade').textContent = formatarNumero(contratosFinalizadosPublicidade.length);
       document.getElementById('ugc-num-ganho-ugc').textContent = formatarMoeda(ganhoUgc);
       document.getElementById('ugc-num-ganho-publicidade').textContent = formatarMoeda(ganhoPublicidade);
+      document.getElementById('ugc-num-ticket-medio-ugc').textContent = ticketMedio(ganhoUgc, fechadosUgc.length);
+      document.getElementById('ugc-num-ticket-medio-publicidade').textContent = ticketMedio(ganhoPublicidade, fechadosPublicidade.length);
       document.getElementById('ugc-num-ganho-total').textContent = formatarMoeda(ganhoUgc + ganhoPublicidade);
     }
 

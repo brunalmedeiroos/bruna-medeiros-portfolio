@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260914d">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260914e">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -316,23 +316,21 @@
                 <label for="cal-titulo" data-i18n="cal_o_que_e">O que é</label>
                 <input type="text" id="cal-titulo" data-i18n-placeholder="cal_o_que_precisa_entregar" placeholder="O que você precisa entregar?" required>
               </div>
-              <div class="cal-form-linha">
-                <div class="cal-form-campo">
-                  <label for="cal-tipo" data-i18n="cal_tipo">Tipo</label>
-                  <select id="cal-tipo">
-                    <option value="Compromisso" data-i18n="cal_tipo_compromisso">Compromisso</option>
-                    <option value="Gravação" data-i18n="cal_tipo_gravacao">Gravação</option>
-                    <option value="Entrega" data-i18n="cal_tipo_entrega">Entrega</option>
-                    <option value="Reunião" data-i18n="cal_tipo_reuniao">Reunião</option>
-                    <option value="Estudo" data-i18n="cal_tipo_estudo">Estudo</option>
-                    <option value="Pessoal" data-i18n="cal_tipo_pessoal">Pessoal</option>
-                    <option value="Outro" data-i18n="cal_tipo_outro">Outro</option>
-                  </select>
+              <div class="cal-form-campo">
+                <label data-i18n="cal_categoria">Categoria</label>
+                <div class="cal-categoria-picker" id="cal-categoria-picker"></div>
+                <div class="cal-categoria-novo-form" id="cal-categoria-novo-form" hidden>
+                  <input type="text" id="cal-categoria-novo-nome" data-i18n-placeholder="cal_categoria_nome_placeholder" placeholder="Nome da categoria">
+                  <input type="color" id="cal-categoria-novo-cor" class="ugc-roteiro-cor-input" value="#7DB7CE" data-i18n-aria="cal_categoria_cor_aria" aria-label="Cor da categoria">
+                  <button type="button" id="cal-categoria-novo-criar" class="cal-btn cal-btn-primario" data-i18n="cal_categoria_criar">Criar</button>
+                  <button type="button" id="cal-categoria-novo-cancelar" class="cal-btn cal-btn-icon" data-i18n-aria="fechar" aria-label="Fechar">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  </button>
                 </div>
-                <div class="cal-form-campo">
-                  <label for="cal-data" data-i18n="cal_dia">Dia</label>
-                  <input type="date" id="cal-data" required>
-                </div>
+              </div>
+              <div class="cal-form-campo">
+                <label for="cal-data" data-i18n="cal_dia">Dia</label>
+                <input type="date" id="cal-data" required>
               </div>
               <div class="cal-form-linha">
                 <div class="cal-form-campo">
@@ -352,6 +350,12 @@
                     <option value="diaria" data-i18n="cal_repetir_diaria">Diariamente</option>
                     <option value="semanal" data-i18n="cal_repetir_semanal">Semanalmente</option>
                   </select>
+                </div>
+              </div>
+              <div class="cal-form-linha" id="cal-form-dias-semana-linha" hidden>
+                <div class="cal-form-campo">
+                  <label data-i18n="cal_repetir_dias">Repetir em</label>
+                  <div class="cal-dias-semana-picker" id="cal-dias-semana-picker"></div>
                 </div>
               </div>
               <div class="cal-form-campo">
@@ -1907,6 +1911,9 @@
     let eventosCache = [];
     let leadsCache = [];
     let tarefasCache = [];
+    let categoriasCache = []; // painel_categorias_tarefa (etiquetas coloridas do Calendário)
+    let categoriaFormSelecionadaId = null; // categoria escolhida no formulário aberto no momento
+    let diasSemanaFormSelecionados = []; // dias da semana (0=domingo...6=sábado) marcados no picker de recorrência
     let periodoAtual = 'all'; // 'all' | 7 | 30 | 90
     let calMesAtual = new Date(); // mês exibido na grade do calendário
     let calDiaSelecionado = new Date(); // dia com a lista de tarefas aberta
@@ -2394,6 +2401,20 @@
         cal_repetir_nao: 'Não repete',
         cal_repetir_diaria: 'Diariamente',
         cal_repetir_semanal: 'Semanalmente',
+        cal_repetir_dias: 'Repetir em',
+        cal_dia_semana_abrev_dom: 'Dom',
+        cal_dia_semana_abrev_seg: 'Seg',
+        cal_dia_semana_abrev_ter: 'Ter',
+        cal_dia_semana_abrev_qua: 'Qua',
+        cal_dia_semana_abrev_qui: 'Qui',
+        cal_dia_semana_abrev_sex: 'Sex',
+        cal_dia_semana_abrev_sab: 'Sáb',
+        cal_categoria: 'Categoria',
+        cal_categoria_nova: '+ Nova categoria',
+        cal_categoria_nome_placeholder: 'Nome da categoria',
+        cal_categoria_cor_aria: 'Cor da categoria',
+        cal_categoria_criar: 'Criar',
+        cal_categoria_erro_nome: 'Digite um nome para a categoria.',
         cal_excluir_serie_pergunta: 'Esta tarefa faz parte de uma série recorrente. Excluir a série inteira (esta e as futuras)?',
         cal_excluir_serie_botao: 'Excluir série',
         cal_itens: 'Itens',
@@ -3124,6 +3145,20 @@
         cal_repetir_nao: "Doesn't repeat",
         cal_repetir_diaria: 'Daily',
         cal_repetir_semanal: 'Weekly',
+        cal_repetir_dias: 'Repeat on',
+        cal_dia_semana_abrev_dom: 'Sun',
+        cal_dia_semana_abrev_seg: 'Mon',
+        cal_dia_semana_abrev_ter: 'Tue',
+        cal_dia_semana_abrev_qua: 'Wed',
+        cal_dia_semana_abrev_qui: 'Thu',
+        cal_dia_semana_abrev_sex: 'Fri',
+        cal_dia_semana_abrev_sab: 'Sat',
+        cal_categoria: 'Category',
+        cal_categoria_nova: '+ New category',
+        cal_categoria_nome_placeholder: 'Category name',
+        cal_categoria_cor_aria: 'Category color',
+        cal_categoria_criar: 'Create',
+        cal_categoria_erro_nome: 'Enter a name for the category.',
         cal_excluir_serie_pergunta: 'This task is part of a recurring series. Delete the whole series (this and future ones)?',
         cal_excluir_serie_botao: 'Delete series',
         cal_itens: 'Items',
@@ -3756,6 +3791,7 @@
       }
 
       try {
+        await carregarCategoriasTarefa();
         await carregarTarefas();
       } catch (err) {
         console.error('Erro ao carregar tarefas do calendário:', err);
@@ -3982,6 +4018,19 @@
       document.getElementById('cal-cancelar').addEventListener('click', fecharFormularioTarefa);
       document.getElementById('cal-form-tarefa').addEventListener('submit', salvarTarefa);
       document.getElementById('cal-checklist-add').addEventListener('click', adicionarItemChecklistForm);
+      document.getElementById('cal-repetir').addEventListener('change', (e) => {
+        const semanal = e.target.value === 'semanal';
+        document.getElementById('cal-form-dias-semana-linha').hidden = !semanal;
+        if (semanal && diasSemanaFormSelecionados.length === 0) {
+          const dataValor = document.getElementById('cal-data').value;
+          if (dataValor) diasSemanaFormSelecionados = [new Date(dataValor + 'T00:00:00').getDay()];
+          renderizarDiasSemanaPicker();
+        }
+      });
+      document.getElementById('cal-categoria-novo-criar').addEventListener('click', criarCategoriaTarefa);
+      document.getElementById('cal-categoria-novo-cancelar').addEventListener('click', () => {
+        document.getElementById('cal-categoria-novo-form').hidden = true;
+      });
       document.getElementById('cal-dia-modal-fechar').addEventListener('click', fecharModalDia);
       document.getElementById('cal-dia-modal-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'cal-dia-modal-overlay') fecharModalDia();
@@ -4834,6 +4883,20 @@
       await toparOcorrenciasDasSeries();
     }
 
+    // Etiquetas coloridas do Calendário (painel_categorias_tarefa) — carregada
+    // eager no boot, igual tarefasCache, pra já colorir os eventos assim que
+    // a aba abre. Nunca lança erro pra fora: sem categorias, os eventos só
+    // caem no fallback de cor padrão (ver criarBlocoEvento/renderizarGradeMes).
+    async function carregarCategoriasTarefa() {
+      try {
+        categoriasCache = await buscarTudo('painel_categorias_tarefa');
+        categoriasCache.sort((a, b) => a.ordem - b.ordem);
+      } catch (err) {
+        console.error('Erro ao carregar categorias de tarefa:', err);
+        categoriasCache = [];
+      }
+    }
+
     // ---- Recorrência: cada ocorrência é uma linha de verdade em
     // painel_tarefas (mesmo serie_id), não um evento calculado na hora —
     // assim "marcar como feita"/editar/excluir/checklist funcionam por
@@ -4851,13 +4914,21 @@
     }
 
     // Lista as datas futuras (a partir de, mas sem incluir, dataBase) que
-    // uma série deveria ter ocorrências geradas.
-    function datasOcorrenciasFuturas(recorrencia, dataBase) {
+    // uma série deveria ter ocorrências geradas. Semanal aceita uma lista de
+    // dias da semana (0=domingo...6=sábado, convenção de Date.getDay()) —
+    // sem lista (ou lista vazia), cai no comportamento antigo de só repetir
+    // no mesmo dia da semana de dataBase.
+    function datasOcorrenciasFuturas(recorrencia, dataBase, diasSemana) {
       const datas = [];
       if (recorrencia === 'diaria') {
         for (let i = 1; i <= RECORRENCIA_JANELA_DIAS; i++) datas.push(somarDias(dataBase, i));
       } else if (recorrencia === 'semanal') {
-        for (let i = 1; i <= RECORRENCIA_JANELA_SEMANAS; i++) datas.push(somarDias(dataBase, i * 7));
+        const diasEscolhidos = (diasSemana && diasSemana.length) ? diasSemana : [new Date(dataBase + 'T00:00:00').getDay()];
+        const totalDias = RECORRENCIA_JANELA_SEMANAS * 7;
+        for (let i = 1; i <= totalDias; i++) {
+          const data = somarDias(dataBase, i);
+          if (diasEscolhidos.includes(new Date(data + 'T00:00:00').getDay())) datas.push(data);
+        }
       }
       return datas;
     }
@@ -4872,10 +4943,12 @@
       const linhas = datas.map((data) => ({
         titulo: tarefaBase.titulo,
         tipo: tarefaBase.tipo,
+        categoria_id: tarefaBase.categoria_id || null,
         data,
         hora_inicio: tarefaBase.hora_inicio || null,
         hora_fim: tarefaBase.hora_fim || null,
         recorrencia: tarefaBase.recorrencia,
+        dias_semana: tarefaBase.dias_semana || null,
         serie_id: serieId,
       }));
       const { data: inseridas, error } = await Auth.sb.from('painel_tarefas').insert(linhas).select('id');
@@ -4916,7 +4989,7 @@
           if (ultima.data < hojeISO) continue; // série encerrada (sem ocorrência futura) — não reabastece sozinha
           if (ultima.data >= limiteISO) continue;
 
-          const novasDatas = datasOcorrenciasFuturas(ultima.recorrencia, ultima.data);
+          const novasDatas = datasOcorrenciasFuturas(ultima.recorrencia, ultima.data, ultima.dias_semana);
           if (novasDatas.length === 0) continue;
 
           const itensTemplate = tarefasChecklistCache
@@ -5042,7 +5115,7 @@
         const tarefasDoDia = tarefasCache.filter((t) => t.data === isoDia && !t.feito);
         const entregasDoDia = entregasUgcPendentesDoDia(isoDia);
         const itensDoDia = [
-          ...tarefasDoDia.map((t) => ({ titulo: t.titulo, ugc: false })),
+          ...tarefasDoDia.map((t) => ({ titulo: t.titulo, ugc: false, cor: corCategoriaTarefa(t) })),
           ...entregasDoDia.map((t) => ({ titulo: t.marca + (t.campanha ? ' · ' + t.campanha : ''), ugc: true, trabalho: t })),
         ];
         const visiveis = itensDoDia.slice(0, CAL_MAX_CHIPS_VISIVEIS);
@@ -5051,7 +5124,7 @@
         celula.innerHTML = `
           <span class="cal-dia-celula-numero${mesmoDia(dia, hoje) ? ' cal-dia-hoje' : ''}">${dia.getDate()}</span>
           <div class="cal-dia-celula-chips">
-            ${visiveis.map((item, idx) => `<span class="cal-evento-chip${item.ugc ? ' cal-evento-chip-ugc' : ''}" data-idx="${idx}">${escapeHtml(item.titulo)}</span>`).join('')}
+            ${visiveis.map((item, idx) => `<span class="cal-evento-chip${item.ugc ? ' cal-evento-chip-ugc' : ''}" data-idx="${idx}"${item.cor ? ` style="background:${item.cor}"` : ''}>${escapeHtml(item.titulo)}</span>`).join('')}
             ${restantes > 0 ? `<span class="cal-evento-chip-mais">+${restantes} ${tr('cal_mais')}</span>` : ''}
           </div>
         `;
@@ -5097,6 +5170,13 @@
       };
     }
 
+    // Cor da categoria de uma tarefa, ou '' quando não tem (cai no coral
+    // padrão do CSS — caso de tarefas antigas, de antes das categorias).
+    function corCategoriaTarefa(tarefa) {
+      const cat = categoriasCache.find((c) => c.id === tarefa.categoria_id);
+      return cat ? cat.cor : '';
+    }
+
     // Bloco posicionado por horário, dentro da coluna do dia.
     function criarBlocoEvento(tarefa) {
       const bloco = document.createElement('div');
@@ -5105,12 +5185,120 @@
       bloco.innerHTML = `
         <span class="cal-evento-bloco-horario">${escapeHtml(horario)}</span>
         <span class="cal-evento-bloco-titulo">${escapeHtml(tarefa.titulo)}</span>
+        <div class="cal-evento-bloco-redimensionar"></div>
       `;
       const pos = posicaoBlocoPorHorario(tarefa.hora_inicio, tarefa.hora_fim);
       bloco.style.top = pos.top + '%';
       bloco.style.height = pos.height + '%';
-      bloco.addEventListener('click', () => abrirFormularioTarefa(tarefa));
+      const cor = corCategoriaTarefa(tarefa);
+      if (cor) bloco.style.background = cor;
+      configurarArrasteEvento(bloco, tarefa);
+      bloco.addEventListener('click', () => {
+        if (bloco.dataset.arrastou === '1') { delete bloco.dataset.arrastou; return; }
+        abrirFormularioTarefa(tarefa);
+      });
       return bloco;
+    }
+
+    // ---- Arrastar pra mover/redimensionar um evento com horário (só em
+    // Semana/Dia, só verticalmente dentro do mesmo dia) — mesmo padrão de
+    // pointerdown/pointermove/pointerup+setPointerCapture já usado no
+    // moodboard de fotos do UGC, convertendo pixel em minutos usando a
+    // mesma escala de 48px/hora que posicaoBlocoPorHorario já assume.
+    const CAL_SNAP_MINUTOS = 5;
+    const CAL_DURACAO_MINIMA_MINUTOS = 15;
+
+    function arredondarSnapMinutos(minutos) {
+      return Math.round(minutos / CAL_SNAP_MINUTOS) * CAL_SNAP_MINUTOS;
+    }
+
+    function minutosParaHorario(minutos) {
+      const m = Math.max(0, Math.min(24 * 60 - 1, Math.round(minutos)));
+      return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+    }
+
+    function configurarArrasteEvento(bloco, tarefa) {
+      // Mover: arrasta o corpo do card, mantém a duração, só muda o horário
+      // de início/fim (deslocados juntos).
+      bloco.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('.cal-evento-bloco-redimensionar')) return;
+        e.preventDefault();
+        bloco.setPointerCapture(e.pointerId);
+        const coluna = bloco.parentElement;
+        const alturaColuna = coluna.getBoundingClientRect().height;
+        const inicioMin = minutosDoHorario(tarefa.hora_inicio);
+        const fimMin = tarefa.hora_fim ? minutosDoHorario(tarefa.hora_fim) : inicioMin + 30;
+        const duracaoMin = fimMin - inicioMin;
+        const yInicial = e.clientY;
+        let moveu = false;
+        let novoInicioMin = inicioMin;
+
+        const mover = (ev) => {
+          if (Math.abs(ev.clientY - yInicial) > 3) moveu = true;
+          const deltaMin = ((ev.clientY - yInicial) / alturaColuna) * CAL_MINUTOS_TOTAIS_DIA;
+          novoInicioMin = Math.max(0, Math.min(24 * 60 - duracaoMin, arredondarSnapMinutos(inicioMin + deltaMin)));
+          bloco.style.top = ((novoInicioMin / CAL_MINUTOS_TOTAIS_DIA) * 100) + '%';
+        };
+        const soltar = () => {
+          bloco.removeEventListener('pointermove', mover);
+          bloco.removeEventListener('pointerup', soltar);
+          bloco.removeEventListener('pointercancel', soltar);
+          if (moveu) {
+            bloco.dataset.arrastou = '1';
+            salvarHorarioArrastado(tarefa, minutosParaHorario(novoInicioMin), minutosParaHorario(novoInicioMin + duracaoMin));
+          }
+        };
+        bloco.addEventListener('pointermove', mover);
+        bloco.addEventListener('pointerup', soltar);
+        bloco.addEventListener('pointercancel', soltar);
+      });
+
+      // Redimensionar: arrasta só a alça do rodapé, mantém o início, muda
+      // só o fim (duração mínima de 15min).
+      const alca = bloco.querySelector('.cal-evento-bloco-redimensionar');
+      alca.addEventListener('pointerdown', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        alca.setPointerCapture(e.pointerId);
+        const coluna = bloco.parentElement;
+        const alturaColuna = coluna.getBoundingClientRect().height;
+        const inicioMin = minutosDoHorario(tarefa.hora_inicio);
+        const fimMinInicial = tarefa.hora_fim ? minutosDoHorario(tarefa.hora_fim) : inicioMin + 30;
+        const yInicial = e.clientY;
+        let novoFimMin = fimMinInicial;
+
+        const mover = (ev) => {
+          const deltaMin = ((ev.clientY - yInicial) / alturaColuna) * CAL_MINUTOS_TOTAIS_DIA;
+          novoFimMin = Math.max(inicioMin + CAL_DURACAO_MINIMA_MINUTOS, Math.min(24 * 60, arredondarSnapMinutos(fimMinInicial + deltaMin)));
+          const duracaoVisualMin = Math.max(novoFimMin - inicioMin, 20);
+          bloco.style.height = ((duracaoVisualMin / CAL_MINUTOS_TOTAIS_DIA) * 100) + '%';
+        };
+        const soltar = () => {
+          alca.removeEventListener('pointermove', mover);
+          alca.removeEventListener('pointerup', soltar);
+          alca.removeEventListener('pointercancel', soltar);
+          bloco.dataset.arrastou = '1';
+          salvarHorarioArrastado(tarefa, tarefa.hora_inicio, minutosParaHorario(novoFimMin));
+        };
+        alca.addEventListener('pointermove', mover);
+        alca.addEventListener('pointerup', soltar);
+        alca.addEventListener('pointercancel', soltar);
+      });
+    }
+
+    async function salvarHorarioArrastado(tarefa, novaHoraInicio, novaHoraFim) {
+      try {
+        const { error } = await Auth.sb.from('painel_tarefas')
+          .update({ hora_inicio: novaHoraInicio, hora_fim: novaHoraFim })
+          .eq('id', tarefa.id);
+        if (error) throw error;
+        pushEventoGoogle(tarefa.id);
+        await carregarTarefas();
+      } catch (err) {
+        console.error('Erro ao salvar horário arrastado:', err);
+        alert(tr('erro_salvar_generico'));
+        renderizarCalendario(); // desfaz visualmente, redesenhando na posição original
+      }
     }
 
     // Bloco da faixa "dia inteiro" (tarefa sem horário, ou entrega de UGC —
@@ -5313,6 +5501,8 @@
           `).join('')}</div>`
         : '';
 
+      const corCategoria = corCategoriaTarefa(tarefa);
+
       const item = document.createElement('div');
       item.className = 'cal-tarefa-item' + (tarefa.feito ? ' cal-tarefa-feita' : '');
       item.innerHTML = `
@@ -5321,7 +5511,7 @@
         </button>
         <div class="cal-tarefa-info">
           ${detalhe ? `<span class="cal-tarefa-horario">${detalhe}</span>` : ''}
-          <span class="cal-tarefa-titulo">${escapeHtml(tarefa.titulo)}</span>
+          <span class="cal-tarefa-titulo">${corCategoria ? `<span class="cal-tarefa-categoria-bolinha" style="background:${corCategoria}"></span>` : ''}${escapeHtml(tarefa.titulo)}</span>
           ${checklistHtml}
         </div>
         <button class="cal-tarefa-editar cal-btn cal-btn-icon" type="button" aria-label="${escapeHtml(tr('editar'))}">
@@ -5358,6 +5548,71 @@
       fecharFormularioTarefa();
     }
 
+    const DIAS_SEMANA_ABREV_CHAVES = [
+      'cal_dia_semana_abrev_dom', 'cal_dia_semana_abrev_seg', 'cal_dia_semana_abrev_ter',
+      'cal_dia_semana_abrev_qua', 'cal_dia_semana_abrev_qui', 'cal_dia_semana_abrev_sex', 'cal_dia_semana_abrev_sab',
+    ];
+
+    // Botões-pílula de dia da semana (0=domingo...6=sábado) do formulário de
+    // recorrência semanal — marca os já escolhidos em diasSemanaFormSelecionados.
+    function renderizarDiasSemanaPicker() {
+      const cont = document.getElementById('cal-dias-semana-picker');
+      cont.innerHTML = DIAS_SEMANA_ABREV_CHAVES.map((chave, dia) => `
+        <button type="button" class="cal-dia-semana-btn${diasSemanaFormSelecionados.includes(dia) ? ' ativo' : ''}" data-dia="${dia}">${escapeHtml(tr(chave))}</button>
+      `).join('');
+      cont.querySelectorAll('.cal-dia-semana-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const dia = Number(btn.dataset.dia);
+          const idx = diasSemanaFormSelecionados.indexOf(dia);
+          if (idx === -1) diasSemanaFormSelecionados.push(dia);
+          else diasSemanaFormSelecionados.splice(idx, 1);
+          btn.classList.toggle('ativo');
+        });
+      });
+    }
+
+    // Pílulas de categoria (uma por categoriasCache, cor de fundo = categoria.cor)
+    // mais a pílula final "+ Nova categoria" que abre o mini-formulário inline.
+    function renderizarCategoriaPicker() {
+      const cont = document.getElementById('cal-categoria-picker');
+      cont.innerHTML = categoriasCache.map((cat) => `
+        <button type="button" class="cal-categoria-pill${cat.id === categoriaFormSelecionadaId ? ' ativo' : ''}" data-id="${cat.id}" style="background:${cat.cor}">${escapeHtml(cat.nome)}</button>
+      `).join('') + `<button type="button" class="cal-categoria-pill cal-categoria-pill-nova" id="cal-categoria-pill-nova">${escapeHtml(tr('cal_categoria_nova'))}</button>`;
+
+      cont.querySelectorAll('.cal-categoria-pill[data-id]').forEach((pill) => {
+        pill.addEventListener('click', () => {
+          categoriaFormSelecionadaId = pill.dataset.id;
+          renderizarCategoriaPicker();
+        });
+      });
+      document.getElementById('cal-categoria-pill-nova').addEventListener('click', () => {
+        document.getElementById('cal-categoria-novo-form').hidden = false;
+        document.getElementById('cal-categoria-novo-nome').focus();
+      });
+    }
+
+    // Cria a categoria no banco e já seleciona ela no formulário aberto.
+    async function criarCategoriaTarefa() {
+      const nome = document.getElementById('cal-categoria-novo-nome').value.trim();
+      if (!nome) { alert(tr('cal_categoria_erro_nome')); return; }
+      const cor = document.getElementById('cal-categoria-novo-cor').value;
+      try {
+        const { data, error } = await Auth.sb.from('painel_categorias_tarefa')
+          .insert({ nome, cor, ordem: categoriasCache.length })
+          .select('*')
+          .single();
+        if (error) throw error;
+        categoriasCache.push(data);
+        categoriaFormSelecionadaId = data.id;
+        document.getElementById('cal-categoria-novo-nome').value = '';
+        document.getElementById('cal-categoria-novo-form').hidden = true;
+        renderizarCategoriaPicker();
+      } catch (err) {
+        console.error('Erro ao criar categoria:', err);
+        alert(tr('erro_salvar_generico'));
+      }
+    }
+
     function abrirFormularioTarefa(tarefa) {
       const form = document.getElementById('cal-form-tarefa');
       tarefaEditando = tarefa ? tarefa.id : null;
@@ -5370,13 +5625,25 @@
       document.getElementById('cal-dia-modal-overlay').hidden = false;
 
       document.getElementById('cal-titulo').value = tarefa ? tarefa.titulo : '';
-      document.getElementById('cal-tipo').value = tarefa ? tarefa.tipo : 'Compromisso';
       document.getElementById('cal-data').value = tarefa ? tarefa.data : dataParaISO(calDiaSelecionado);
       document.getElementById('cal-hora-inicio').value = tarefa ? (tarefa.hora_inicio || '') : '';
       document.getElementById('cal-hora-fim').value = tarefa ? (tarefa.hora_fim || '') : '';
       document.getElementById('cal-repetir').value = '';
       document.getElementById('cal-form-repetir-linha').hidden = !!tarefa;
+      document.getElementById('cal-form-dias-semana-linha').hidden = true;
       document.getElementById('cal-btn-salvar-tarefa').textContent = tr(tarefa ? 'salvar_alteracoes' : 'salvar');
+
+      // Categoria: usa a já ligada à tarefa, ou tenta casar pelo texto de
+      // "tipo" (tarefas antigas, de antes das categorias existirem).
+      categoriaFormSelecionadaId = tarefa
+        ? (tarefa.categoria_id || (categoriasCache.find((c) => c.nome === tarefa.tipo) || {}).id || null)
+        : null;
+      document.getElementById('cal-categoria-novo-form').hidden = true;
+      document.getElementById('cal-categoria-novo-nome').value = '';
+      renderizarCategoriaPicker();
+
+      diasSemanaFormSelecionados = (tarefa && tarefa.dias_semana) ? [...tarefa.dias_semana] : [];
+      renderizarDiasSemanaPicker();
 
       calFormChecklist = tarefa
         ? tarefasChecklistCache
@@ -5456,9 +5723,11 @@
     async function salvarTarefa(e) {
       e.preventDefault();
 
+      const categoriaEscolhida = categoriasCache.find((c) => c.id === categoriaFormSelecionadaId);
       const linha = {
         titulo: document.getElementById('cal-titulo').value.trim(),
-        tipo: document.getElementById('cal-tipo').value,
+        categoria_id: categoriaFormSelecionadaId || null,
+        tipo: categoriaEscolhida ? categoriaEscolhida.nome : 'Outro',
         data: document.getElementById('cal-data').value,
         hora_inicio: document.getElementById('cal-hora-inicio').value || null,
         hora_fim: document.getElementById('cal-hora-fim').value || null,
@@ -5479,13 +5748,14 @@
           pushEventoGoogle(tarefaEditando);
         } else if (recorrencia) {
           const serieId = crypto.randomUUID();
-          const tarefaBase = { ...linha, recorrencia, serie_id: serieId };
+          const diasSemana = (recorrencia === 'semanal' && diasSemanaFormSelecionados.length) ? diasSemanaFormSelecionados : null;
+          const tarefaBase = { ...linha, recorrencia, dias_semana: diasSemana, serie_id: serieId };
           const { data: inserida, error } = await Auth.sb.from('painel_tarefas').insert(tarefaBase).select('id').single();
           if (error) throw error;
           tarefaId = inserida.id;
           pushEventoGoogle(tarefaId);
 
-          const futuras = datasOcorrenciasFuturas(recorrencia, linha.data);
+          const futuras = datasOcorrenciasFuturas(recorrencia, linha.data, diasSemana);
           await inserirOcorrencias(tarefaBase, serieId, futuras, itensChecklist);
         } else {
           const { data: inserida, error } = await Auth.sb.from('painel_tarefas').insert(linha).select('id').single();

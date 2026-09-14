@@ -688,6 +688,105 @@
   flex-wrap: wrap;
 }
 
+.painel-body .cal-form-linha[hidden] {
+  display: none;
+}
+
+/* ---- Pílulas de categoria (etiquetas coloridas, estilo Google Agenda) ---- */
+
+.painel-body .cal-categoria-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.painel-body .cal-categoria-pill {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--branco);
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+}
+
+.painel-body .cal-categoria-pill:hover {
+  opacity: 0.8;
+}
+
+.painel-body .cal-categoria-pill.ativo {
+  opacity: 1;
+  box-shadow: 0 0 0 2px var(--grafite);
+}
+
+.painel-body .cal-categoria-pill-nova {
+  background: transparent;
+  color: var(--texto-suave);
+  border: 1px dashed var(--borda);
+  opacity: 1;
+}
+
+.painel-body .cal-categoria-pill-nova:hover {
+  color: var(--grafite);
+  border-color: var(--grafite);
+}
+
+.painel-body .cal-categoria-novo-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.painel-body .cal-categoria-novo-form[hidden] {
+  display: none;
+}
+
+.painel-body .cal-categoria-novo-form input[type="text"] {
+  flex: 1;
+  width: auto;
+}
+
+.painel-body .cal-categoria-novo-form .ugc-roteiro-cor-input {
+  flex: none;
+  width: 32px;
+}
+
+.painel-body .cal-tarefa-categoria-bolinha {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* ---- Picker de dias da semana (recorrência semanal em vários dias) ---- */
+
+.painel-body .cal-dias-semana-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.painel-body .cal-dia-semana-btn {
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--texto-suave);
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.painel-body .cal-dia-semana-btn.ativo {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: var(--branco);
+}
+
 .painel-body .cal-form-acoes {
   display: flex;
   justify-content: flex-end;
@@ -1064,10 +1163,12 @@
   border-radius: 6px;
   padding: 3px 6px;
   overflow: hidden;
-  cursor: pointer;
+  cursor: grab;
   display: flex;
   flex-direction: column;
   line-height: 1.25;
+  touch-action: none;
+  user-select: none;
 }
 
 .painel-body .cal-evento-bloco-horario {
@@ -1082,6 +1183,16 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.painel-body .cal-evento-bloco-redimensionar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 8px;
+  cursor: ns-resize;
+  touch-action: none;
 }
 
 @media (max-width: 480px) {

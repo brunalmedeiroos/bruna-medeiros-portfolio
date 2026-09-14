@@ -762,6 +762,52 @@
   margin-right: 6px;
 }
 
+.painel-body .cal-categoria-gerenciar-link {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--texto-suave);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.painel-body .cal-categoria-gerenciar-link:hover {
+  color: var(--grafite);
+}
+
+.painel-body .cal-categorias-gerenciar-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.painel-body .cal-categoria-gerenciar-linha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.painel-body .cal-categoria-gerenciar-linha .ugc-roteiro-cor-input {
+  flex: none;
+  width: 32px;
+}
+
+.painel-body .cal-categoria-gerenciar-nome {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.painel-body .cal-categoria-gerenciar-excluir {
+  color: var(--texto-suave);
+  flex-shrink: 0;
+}
+
 /* ---- Picker de dias da semana (recorrência semanal em vários dias) ---- */
 
 .painel-body .cal-dias-semana-picker {

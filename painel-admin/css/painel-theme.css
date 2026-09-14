@@ -3481,8 +3481,21 @@
 
 .painel-body .dash-secoes {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: flex-start;
   gap: 24px;
+}
+
+.painel-body .dash-secoes .card-dash-hoje,
+.painel-body .dash-secoes .card-dash-atencao {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .painel-body .dash-secoes {
+    flex-direction: column;
+  }
 }
 
 /* "Hoje" é o bloco principal: acento à esquerda, mais respiro e título

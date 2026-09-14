@@ -2676,6 +2676,56 @@
   letter-spacing: normal;
 }
 
+/* ---- Editor de texto rico do Roteiro (estilo Google Docs) ---- */
+
+.painel-body .ugc-roteiro-doc-toolbar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.painel-body .ugc-roteiro-doc-btn {
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  background: var(--branco);
+  color: var(--grafite);
+  padding: 5px 10px;
+  font-size: 12px;
+  font-family: var(--fonte-corpo);
+  cursor: pointer;
+}
+
+.painel-body .ugc-roteiro-doc-btn:hover {
+  background: rgba(var(--grafite-rgb), 0.06);
+}
+
+.painel-body .ugc-roteiro-doc-area {
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 16px;
+  min-height: 220px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--grafite);
+}
+
+.painel-body .ugc-roteiro-doc-area:focus {
+  outline: none;
+  border-color: var(--coral);
+}
+
+.painel-body .ugc-roteiro-doc-area:empty::before {
+  content: attr(data-placeholder);
+  color: var(--texto-suave);
+}
+
+.painel-body .ugc-roteiro-doc-area ul,
+.painel-body .ugc-roteiro-doc-area ol {
+  padding-left: 22px;
+  margin: 8px 0;
+}
+
 .painel-body .ugc-roteiro-visualizado-linha {
   display: flex;
   align-items: center;

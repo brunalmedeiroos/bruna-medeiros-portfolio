@@ -142,10 +142,6 @@
     padding:26px 30px;
     margin-bottom:28px;
   }
-  .destaques{ display:grid; gap:20px; }
-  @media (min-width:600px){
-    .destaques{ grid-template-columns:1fr 1fr; }
-  }
   .destaque h3{
     font-family:var(--font-display);
     font-style:italic;
@@ -154,13 +150,14 @@
     margin:0 0 6px;
     color:var(--marca-texto-sobre-branco);
   }
-  .destaque p{
-    margin:0;
+  .rt-doc{
     font-size:14.5px;
     line-height:1.6;
     color:var(--ink-70);
-    white-space:pre-wrap;
   }
+  .rt-doc p{ margin:0 0 12px; }
+  .rt-doc p:last-child{ margin-bottom:0; }
+  .rt-doc ul, .rt-doc ol{ margin:0 0 12px; padding-left:22px; }
 
   /* ---------- títulos de seção ---------- */
   .secao-titulo{
@@ -440,16 +437,10 @@
       <span id="rt-formato" class="formato-pill" hidden></span>
     </header>
 
-    <div id="rt-destaques-cartao" class="cartao" hidden>
-      <div class="destaques">
-        <div id="rt-objetivo-campo" class="destaque" hidden>
-          <h3>Objetivo</h3>
-          <p id="rt-objetivo"></p>
-        </div>
-        <div id="rt-pontos-campo" class="destaque" hidden>
-          <h3>Pontos importantes</h3>
-          <p id="rt-pontos"></p>
-        </div>
+    <div id="rt-conteudo-cartao" class="cartao" hidden>
+      <div class="destaque">
+        <h3>Roteiro</h3>
+        <div id="rt-conteudo" class="rt-doc"></div>
       </div>
     </div>
 
@@ -461,12 +452,6 @@
     <p class="secao-titulo"><span>Cenas</span><span id="rt-cenas-contagem" class="secao-contagem"></span></p>
     <div id="rt-cenas"></div>
 
-    <div id="rt-legenda-campo" class="cartao" hidden>
-      <div class="destaque">
-        <h3>Sugestão de legenda</h3>
-        <p id="rt-legenda"></p>
-      </div>
-    </div>
 
     <div class="cartao">
       <div class="comentario-titulo">Deixar um comentário</div>
@@ -588,7 +573,7 @@
   function renderizar(roteiro, cenas) {
     aplicarTemaMarca(roteiro.marca_cor);
     document.getElementById('topo').hidden = true;
-    document.getElementById('rt-destaques-cartao').hidden = !(roteiro.objetivo || roteiro.pontos_importantes);
+    document.getElementById('rt-conteudo-cartao').hidden = !roteiro.conteudo;
     texto(document.getElementById('rt-marca'), roteiro.marca || 'Roteiro');
     texto(
       document.getElementById('rt-detalhes'),
@@ -601,19 +586,11 @@
       texto(document.getElementById('rt-formato'), formato);
     }
 
-    if (roteiro.objetivo) {
-      document.getElementById('rt-objetivo-campo').hidden = false;
-      texto(document.getElementById('rt-objetivo'), roteiro.objetivo);
-    }
-
-    if (roteiro.pontos_importantes) {
-      document.getElementById('rt-pontos-campo').hidden = false;
-      texto(document.getElementById('rt-pontos'), roteiro.pontos_importantes);
-    }
-
-    if (roteiro.sugestao_legenda) {
-      document.getElementById('rt-legenda-campo').hidden = false;
-      texto(document.getElementById('rt-legenda'), roteiro.sugestao_legenda);
+    if (roteiro.conteudo) {
+      // O conteúdo só é escrito pela própria Bru, autenticada, no editor
+      // do painel — não é texto vindo de terceiro, então innerHTML aqui é
+      // seguro (ao contrário de aceitar HTML de qualquer formulário público).
+      document.getElementById('rt-conteudo').innerHTML = roteiro.conteudo;
     }
 
     var temMoodboard = roteiro.moodboard_imagens && roteiro.moodboard_imagens.length > 0;

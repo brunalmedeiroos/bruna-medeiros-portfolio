@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260914f">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260914g">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -1617,26 +1617,23 @@
           </div>
         </div>
 
-        <div class="ugc-roteiro-destaque">
-          <div class="cal-form-campo">
-            <label for="ugc-roteiro-objetivo" data-i18n="ugc_objetivo">Objetivo</label>
-            <textarea id="ugc-roteiro-objetivo"></textarea>
-            <span class="ugc-roteiro-destaque-nota" data-i18n="ugc_visivel_para_marca">A marca vê isso no link de aprovação.</span>
-          </div>
+        <div class="cal-form-campo">
+          <label for="ugc-roteiro-categoria" data-i18n="ugc_categoria">Categoria</label>
+          <input type="text" id="ugc-roteiro-categoria" list="ugc-roteiro-categorias-lista" data-i18n-placeholder="ugc_categoria_placeholder" placeholder="Ex: Conteúdo pro perfil">
+          <datalist id="ugc-roteiro-categorias-lista"></datalist>
         </div>
 
         <div class="ugc-roteiro-destaque">
           <div class="cal-form-campo">
-            <label for="ugc-roteiro-pontos-importantes" data-i18n="ugc_pontos_importantes">Pontos importantes</label>
-            <textarea id="ugc-roteiro-pontos-importantes" data-i18n-placeholder="ugc_pontos_importantes_placeholder" placeholder="Ex: mencionar o cupom BRUNA10, focar no benefício X do produto..."></textarea>
-            <span class="ugc-roteiro-destaque-nota" data-i18n="ugc_visivel_para_marca">A marca vê isso no link de aprovação.</span>
-          </div>
-        </div>
-
-        <div class="ugc-roteiro-destaque">
-          <div class="cal-form-campo">
-            <label for="ugc-roteiro-sugestao-legenda" data-i18n="ugc_sugestao_legenda">Sugestão de legenda</label>
-            <textarea id="ugc-roteiro-sugestao-legenda" data-i18n-placeholder="ugc_sugestao_legenda_placeholder" placeholder="Ex: Depoimento real sobre a Imersão Portfólio Claude..."></textarea>
+            <label data-i18n="ugc_roteiro_conteudo">Roteiro</label>
+            <div class="ugc-roteiro-doc-toolbar">
+              <button type="button" class="ugc-roteiro-doc-btn" data-cmd="bold" data-i18n-aria="ugc_doc_negrito" aria-label="Negrito"><b>B</b></button>
+              <button type="button" class="ugc-roteiro-doc-btn" data-cmd="italic" data-i18n-aria="ugc_doc_italico" aria-label="Itálico"><i>I</i></button>
+              <button type="button" class="ugc-roteiro-doc-btn" data-cmd="underline" data-i18n-aria="ugc_doc_sublinhado" aria-label="Sublinhado"><u>S</u></button>
+              <button type="button" class="ugc-roteiro-doc-btn" data-cmd="insertUnorderedList" data-i18n-aria="ugc_doc_lista_marcadores" aria-label="Lista com marcadores">&bull;&nbsp;Lista</button>
+              <button type="button" class="ugc-roteiro-doc-btn" data-cmd="insertOrderedList" data-i18n-aria="ugc_doc_lista_numerada" aria-label="Lista numerada">1.&nbsp;Lista</button>
+            </div>
+            <div id="ugc-roteiro-conteudo" class="ugc-roteiro-doc-area" contenteditable="true" data-placeholder="Escreva seu roteiro aqui... gancho, desenvolvimento, CTA"></div>
             <span class="ugc-roteiro-destaque-nota" data-i18n="ugc_visivel_para_marca">A marca vê isso no link de aprovação.</span>
           </div>
         </div>
@@ -2696,9 +2693,15 @@
         ugc_tipo_conteudo: 'Tipo de conteúdo',
         ugc_duracao_prevista: 'Duração prevista',
         ugc_formato_video_titulo: 'Formato do vídeo',
-        ugc_objetivo: 'Objetivo',
-        ugc_pontos_importantes: 'Pontos importantes',
-        ugc_pontos_importantes_placeholder: 'Ex: mencionar o cupom BRUNA10, focar no benefício X do produto...',
+        ugc_categoria: 'Categoria',
+        ugc_categoria_placeholder: 'Ex: Conteúdo pro perfil',
+        ugc_roteiro_conteudo: 'Roteiro',
+        ugc_roteiro_conteudo_placeholder: 'Escreva seu roteiro aqui... gancho, desenvolvimento, CTA',
+        ugc_doc_negrito: 'Negrito',
+        ugc_doc_italico: 'Itálico',
+        ugc_doc_sublinhado: 'Sublinhado',
+        ugc_doc_lista_marcadores: 'Lista com marcadores',
+        ugc_doc_lista_numerada: 'Lista numerada',
         ugc_visivel_para_marca: 'A marca vê isso no link de aprovação.',
         ugc_observacoes: 'Observações',
         ugc_observacoes_nota: 'Só você vê — não aparece no link.',
@@ -2828,8 +2831,6 @@
         ugc_funcao_cena_desenvolvimento: 'Desenvolvimento',
         ugc_funcao_cena_prova_social: 'Prova social',
         ugc_funcao_cena_cta: 'CTA',
-        ugc_sugestao_legenda: 'Sugestão de legenda',
-        ugc_sugestao_legenda_placeholder: 'Ex: Depoimento real sobre a Imersão Portfólio Claude...',
         ugc_cena_gravada_label: 'Cena gravada',
         ugc_cena_conferida_label: 'Cena conferida',
         nenhum: 'Nenhum',
@@ -3444,9 +3445,15 @@
         ugc_tipo_conteudo: 'Content type',
         ugc_duracao_prevista: 'Expected duration',
         ugc_formato_video_titulo: 'Video format',
-        ugc_objetivo: 'Objective',
-        ugc_pontos_importantes: 'Key points',
-        ugc_pontos_importantes_placeholder: 'E.g.: mention the coupon BRUNA10, focus on benefit X of the product...',
+        ugc_categoria: 'Category',
+        ugc_categoria_placeholder: 'E.g.: Feed content',
+        ugc_roteiro_conteudo: 'Script',
+        ugc_roteiro_conteudo_placeholder: 'Write your script here... hook, development, CTA',
+        ugc_doc_negrito: 'Bold',
+        ugc_doc_italico: 'Italic',
+        ugc_doc_sublinhado: 'Underline',
+        ugc_doc_lista_marcadores: 'Bulleted list',
+        ugc_doc_lista_numerada: 'Numbered list',
         ugc_visivel_para_marca: 'The brand sees this on the approval link.',
         ugc_observacoes: 'Notes',
         ugc_observacoes_nota: 'Only you see this — it never appears on the link.',
@@ -3576,8 +3583,6 @@
         ugc_funcao_cena_desenvolvimento: 'Development',
         ugc_funcao_cena_prova_social: 'Social proof',
         ugc_funcao_cena_cta: 'CTA',
-        ugc_sugestao_legenda: 'Caption suggestion',
-        ugc_sugestao_legenda_placeholder: 'E.g.: Real testimonial about the Portfolio Immersion...',
         ugc_cena_gravada_label: 'Scene filmed',
         ugc_cena_conferida_label: 'Scene checked',
         nenhum: 'None',
@@ -4252,6 +4257,7 @@
         renderizarCenasModal();
       });
       document.getElementById('ugc-copiar-roteiro').addEventListener('click', copiarRoteiroCompleto);
+      configurarBarraFormatacaoRoteiro();
       document.getElementById('btn-ugc-nova-prospeccao').addEventListener('click', () => abrirModalProspeccao(null));
       document.getElementById('ugc-modal-prospeccao-fechar').addEventListener('click', fecharModalProspeccao);
       document.getElementById('ugc-modal-prospeccao-excluir').addEventListener('click', excluirModalProspeccao);
@@ -8372,6 +8378,7 @@
 
     // ---- Roteiros (biblioteca) ----
     function renderizarRoteiros() {
+      atualizarDatalistCategoriasRoteiro();
       const lista = document.getElementById('ugc-roteiros-grade');
       const termo = filtroRoteirosTexto.trim().toLowerCase();
       const filtrados = ugcRoteirosCache.filter((r) => {
@@ -8718,18 +8725,58 @@
       }
     }
 
-    // Monta um texto único com tudo do roteiro (formato, objetivo, pontos
-    // importantes e cada cena) pra colar direto numa IA e pedir sugestão de
-    // legenda — lê do estado atual do modal, então pega até edição que ainda
-    // não foi salva.
+    // ---- Editor de texto rico do Roteiro (estilo Google Docs) — um
+    // <div contenteditable> com uma barra de 5 botões chamando
+    // document.execCommand(); não existe nenhuma lib de rich text no
+    // projeto, e pra um editor tão simples (negrito/itálico/sublinhado/
+    // listas) não vale a pena trazer uma — mantém a filosofia vanilla JS
+    // sem build step do resto do painel.
+    function configurarBarraFormatacaoRoteiro() {
+      document.querySelectorAll('.ugc-roteiro-doc-btn').forEach((btn) => {
+        btn.addEventListener('mousedown', (e) => {
+          e.preventDefault(); // não deixa o clique tirar o foco do editor antes do comando rodar
+          document.execCommand(btn.dataset.cmd);
+        });
+      });
+
+      // contenteditable às vezes deixa um <br> sozinho pra trás quando o
+      // texto é todo apagado — isso quebra o placeholder via CSS :empty,
+      // então normaliza pra string vazia de verdade nesse caso.
+      const area = document.getElementById('ugc-roteiro-conteudo');
+      area.addEventListener('input', () => {
+        if (conteudoRoteiroVazio(area)) area.innerHTML = '';
+      });
+    }
+
+    function conteudoRoteiroVazio(el) {
+      const html = el.innerHTML.trim();
+      return html === '' || html === '<br>';
+    }
+
+    // Preenche o <datalist> do campo Categoria com as categorias já usadas
+    // em outros roteiros — mesmo padrão de atualizarDatalistPlataformas()
+    // da Afiliação, evita ela digitar a mesma categoria de jeitos diferentes.
+    function atualizarDatalistCategoriasRoteiro() {
+      const categorias = [...new Set(ugcRoteirosCache.map((r) => r.categoria).filter(Boolean))].sort();
+      document.getElementById('ugc-roteiro-categorias-lista').innerHTML = categorias.map((c) => `<option value="${escapeHtml(c)}"></option>`).join('');
+    }
+
+    // Monta um texto único com tudo do roteiro (formato, conteúdo e cada
+    // cena) pra colar direto numa IA e pedir sugestão de legenda — lê do
+    // estado atual do modal, então pega até edição que ainda não foi salva.
     async function copiarRoteiroCompleto() {
       const marca = document.getElementById('ugc-roteiro-marca').value.trim();
       const produto = document.getElementById('ugc-roteiro-produto').value.trim();
       const campanha = document.getElementById('ugc-roteiro-campanha').value.trim();
       const tipoConteudo = document.getElementById('ugc-roteiro-tipo-conteudo').value.trim();
       const duracao = document.getElementById('ugc-roteiro-duracao').value.trim();
-      const objetivo = document.getElementById('ugc-roteiro-objetivo').value.trim();
-      const pontos = document.getElementById('ugc-roteiro-pontos-importantes').value.trim();
+      const areaConteudo = document.getElementById('ugc-roteiro-conteudo');
+      const auxTexto = document.createElement('div');
+      // Troca o fechamento das tags de bloco por quebra de linha ANTES de
+      // ler o textContent, senão parágrafos e itens de lista saem tudo
+      // grudado numa linha só.
+      auxTexto.innerHTML = areaConteudo.innerHTML.replace(/<\/(p|li|div)>/gi, '\n').replace(/<br\s*\/?>/gi, '\n');
+      const conteudo = auxTexto.textContent.replace(/\n{3,}/g, '\n\n').trim();
 
       const linhas = [`ROTEIRO — ${marca || tr('ugc_sem_marca')}`];
       const identificacao = [produto, campanha].filter(Boolean).join(' · ');
@@ -8737,8 +8784,7 @@
       const formato = [tipoConteudo, duracao].filter(Boolean).join(' · ');
       if (formato) linhas.push(`Formato: ${formato}`);
 
-      if (objetivo) linhas.push('', 'Objetivo:', objetivo);
-      if (pontos) linhas.push('', 'Pontos importantes:', pontos);
+      if (conteudo) linhas.push('', conteudo);
 
       linhas.push('', 'Cenas:');
       ugcModalCenas.forEach((cena, i) => {
@@ -8806,9 +8852,10 @@
       document.getElementById('ugc-roteiro-campanha').value = roteiro ? roteiro.campanha || '' : '';
       document.getElementById('ugc-roteiro-tipo-conteudo').value = roteiro ? roteiro.tipo_conteudo || '' : '';
       document.getElementById('ugc-roteiro-duracao').value = roteiro ? roteiro.duracao_prevista || '' : '';
-      document.getElementById('ugc-roteiro-objetivo').value = roteiro ? roteiro.objetivo || '' : '';
-      document.getElementById('ugc-roteiro-pontos-importantes').value = roteiro ? roteiro.pontos_importantes || '' : '';
-      document.getElementById('ugc-roteiro-sugestao-legenda').value = roteiro ? roteiro.sugestao_legenda || '' : '';
+      document.getElementById('ugc-roteiro-categoria').value = roteiro ? roteiro.categoria || '' : '';
+      const areaConteudo = document.getElementById('ugc-roteiro-conteudo');
+      areaConteudo.innerHTML = roteiro ? roteiro.conteudo || '' : '';
+      areaConteudo.setAttribute('data-placeholder', tr('ugc_roteiro_conteudo_placeholder'));
       document.getElementById('ugc-roteiro-observacoes').value = roteiro ? roteiro.observacoes || '' : '';
 
       const corAtiva = !!(roteiro && roteiro.marca_cor);
@@ -8895,9 +8942,8 @@
         trabalho_id: document.getElementById('ugc-roteiro-trabalho').value || null,
         tipo_conteudo: document.getElementById('ugc-roteiro-tipo-conteudo').value.trim() || null,
         duracao_prevista: document.getElementById('ugc-roteiro-duracao').value.trim() || null,
-        objetivo: document.getElementById('ugc-roteiro-objetivo').value.trim() || null,
-        pontos_importantes: document.getElementById('ugc-roteiro-pontos-importantes').value.trim() || null,
-        sugestao_legenda: document.getElementById('ugc-roteiro-sugestao-legenda').value.trim() || null,
+        categoria: document.getElementById('ugc-roteiro-categoria').value.trim() || null,
+        conteudo: conteudoRoteiroVazio(document.getElementById('ugc-roteiro-conteudo')) ? null : document.getElementById('ugc-roteiro-conteudo').innerHTML,
         observacoes: document.getElementById('ugc-roteiro-observacoes').value.trim() || null,
         marca_cor: document.getElementById('ugc-roteiro-marca-cor-ativa').checked
           ? document.getElementById('ugc-roteiro-marca-cor').value

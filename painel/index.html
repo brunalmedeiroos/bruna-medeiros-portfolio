@@ -2164,15 +2164,12 @@
         atencao_entregas_atrasadas: 'Entregas atrasadas',
         atencao_pagamentos_pendentes: 'Pagamentos pendentes',
         atencao_direitos_uso: 'Direitos de uso vencendo',
-        atencao_followups: 'Follow-ups de prospecção',
         atencao_contratos: 'Contratos aguardando assinatura',
         atencao_entregas_proximas: 'Entregas nos próximos dias',
         atencao_propostas: 'Propostas aguardando resposta',
         atencao_era: 'Era',
         atencao_vence_em: 'Vence em',
         atencao_venceu_em: 'Venceu em',
-        atencao_followup_era: 'Follow-up era',
-        atencao_sem_followup: 'Sem follow-up marcado',
         permuta: 'Permuta',
         filtro_tudo: 'Tudo',
         carregando: 'Carregando...',
@@ -2875,15 +2872,12 @@
         atencao_entregas_atrasadas: 'Overdue deliveries',
         atencao_pagamentos_pendentes: 'Pending payments',
         atencao_direitos_uso: 'Usage rights expiring',
-        atencao_followups: 'Prospecting follow-ups',
         atencao_contratos: 'Contracts awaiting signature',
         atencao_entregas_proximas: 'Upcoming deliveries',
         atencao_propostas: 'Proposals awaiting reply',
         atencao_era: 'Was due',
         atencao_vence_em: 'Expires on',
         atencao_venceu_em: 'Expired on',
-        atencao_followup_era: 'Follow-up was due',
-        atencao_sem_followup: 'No follow-up scheduled',
         permuta: 'Trade',
         filtro_tudo: 'All',
         carregando: 'Loading...',
@@ -4282,7 +4276,6 @@
 
       const pagamentos = obterPagamentosPendentes();
       const direitosUso = obterDireitosUsoVencendo();
-      const followups = obterProspeccaoEsfriando();
       const contratos = obterContratosPendentes();
 
       const grupos = [];
@@ -4308,14 +4301,6 @@
           texto: t.marca,
           detalhe: `${tr(t.direitos_uso_ate < hojeISO ? 'atencao_venceu_em' : 'atencao_vence_em')} ${formatarDataCurta(new Date(t.direitos_uso_ate + 'T00:00:00'))}`,
           onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
-        }))));
-      }
-
-      if (followups.length > 0) {
-        grupos.push(criarGrupoAtencao(tr('atencao_followups'), false, followups.map((p) => ({
-          texto: p.marca,
-          detalhe: p.proximo_followup ? `${tr('atencao_followup_era')} ${formatarDataCurta(new Date(p.proximo_followup + 'T00:00:00'))}` : tr('atencao_sem_followup'),
-          onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('prospeccao'); abrirModalProspeccao(p); },
         }))));
       }
 

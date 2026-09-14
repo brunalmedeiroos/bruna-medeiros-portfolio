@@ -505,3 +505,34 @@ enabled = true
 verify_jwt = false
 import_map = "./functions/instagram-automacao-processar/deno.json"
 entrypoint = "./functions/instagram-automacao-processar/index.ts"
+
+[functions.calendar-oauth-start]
+enabled = true
+import_map = "./functions/calendar-oauth-start/deno.json"
+entrypoint = "./functions/calendar-oauth-start/index.ts"
+
+[functions.calendar-oauth-callback]
+enabled = true
+verify_jwt = false
+import_map = "./functions/calendar-oauth-callback/deno.json"
+entrypoint = "./functions/calendar-oauth-callback/index.ts"
+
+[functions.calendar-oauth-disconnect]
+enabled = true
+import_map = "./functions/calendar-oauth-disconnect/deno.json"
+entrypoint = "./functions/calendar-oauth-disconnect/index.ts"
+
+[functions.calendar-push-evento]
+enabled = true
+import_map = "./functions/calendar-push-evento/deno.json"
+entrypoint = "./functions/calendar-push-evento/index.ts"
+
+[functions.calendar-push-excluir]
+enabled = true
+import_map = "./functions/calendar-push-excluir/deno.json"
+entrypoint = "./functions/calendar-push-excluir/index.ts"
+
+[functions.calendar-pull]
+enabled = true
+import_map = "./functions/calendar-pull/deno.json"
+entrypoint = "./functions/calendar-pull/index.ts"

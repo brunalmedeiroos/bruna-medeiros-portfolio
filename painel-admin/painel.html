@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260913v">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260913w">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -242,23 +242,50 @@
 
         <!-- ---------- Aba: Calendário ---------- -->
         <section id="panel-calendario" class="tab-panel" hidden>
+        <div class="card card-google-agenda-conectar" id="google-agenda-conectar" hidden>
+          <h3 class="card-titulo" data-i18n="cal_google_conectar_titulo">Conectar Google Agenda</h3>
+          <p class="cal-google-conectar-texto" data-i18n="cal_google_conectar_texto">
+            Cria automaticamente uma agenda chamada "Creator Center" na sua conta Google e sincroniza nos dois sentidos: o que você marcar aqui aparece lá, e o que você criar lá aparece aqui.
+          </p>
+          <button id="btn-google-agenda-conectar" class="cal-btn cal-btn-primario" type="button" data-i18n="cal_google_conectar_btn">Conectar Google Agenda</button>
+          <p class="cal-google-conectar-erro" id="google-agenda-conectar-erro" hidden></p>
+        </div>
+
+        <div class="cal-google-status" id="google-agenda-status" hidden>
+          <span class="cal-google-status-texto" data-i18n="cal_google_conectado">Google Agenda conectada ("Creator Center")</span>
+          <button id="cal-btn-sincronizar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_sincronizar_aria" aria-label="Sincronizar agora">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button id="btn-google-agenda-desconectar" class="cal-btn" type="button" data-i18n="cal_google_desconectar_btn">Desconectar</button>
+        </div>
+
         <div class="cal-layout">
           <div class="card card-calendario">
             <div class="cal-topo">
-              <button id="cal-mes-anterior" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_anterior" aria-label="Mês anterior">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
-              <span class="cal-mes-label" id="cal-mes-label">Mês</span>
-              <button id="cal-mes-proximo" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_proximo" aria-label="Próximo mês">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
+              <div class="cal-topo-nav">
+                <button id="cal-mes-anterior" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_anterior" aria-label="Mês anterior">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <span class="cal-mes-label" id="cal-mes-label">Mês</span>
+                <button id="cal-mes-proximo" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_proximo" aria-label="Próximo mês">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+              <div class="cal-visao-grupo">
+                <button class="cal-visao-btn ativo" data-visao="mes" type="button" data-i18n="cal_visao_mes">Mês</button>
+                <button class="cal-visao-btn" data-visao="semana" type="button" data-i18n="cal_visao_semana">Semana</button>
+                <button class="cal-visao-btn" data-visao="dia" type="button" data-i18n="cal_visao_dia">Dia</button>
+              </div>
             </div>
 
-            <div class="cal-semana">
+            <div class="cal-semana" id="cal-semana-cabecalho">
               <span data-i18n="cal_seg">Seg</span><span data-i18n="cal_ter">Ter</span><span data-i18n="cal_qua">Qua</span><span data-i18n="cal_qui">Qui</span><span data-i18n="cal_sex">Sex</span><span data-i18n="cal_sab">Sáb</span><span data-i18n="cal_dom">Dom</span>
             </div>
 
             <div class="cal-grade" id="cal-grade"></div>
+
+            <div class="cal-grade-semana" id="cal-grade-semana" hidden></div>
+            <div class="cal-grade-dia" id="cal-grade-dia" hidden></div>
           </div>
 
           <div class="card card-cal-dia">
@@ -1855,6 +1882,7 @@
     let periodoAtual = 'all'; // 'all' | 7 | 30 | 90
     let calMesAtual = new Date(); // mês exibido na grade do calendário
     let calDiaSelecionado = new Date(); // dia com a lista de tarefas aberta
+    let calVisaoAtual = 'mes'; // 'mes' | 'semana' | 'dia' — alternador de visão do Calendário
     let filtroTarefas = 'proximos'; // 'proximos' | 'feitos' — filtro do card "Tudo o que está marcado"
     let tarefaEditando = null; // id da tarefa em edição, ou null quando o formulário é para criar uma nova
     let tarefasChecklistCache = []; // itens de checklist de todas as tarefas (painel_tarefas_checklist)
@@ -2280,6 +2308,16 @@
         // Calendário
         cal_mes_anterior: 'Mês anterior',
         cal_mes_proximo: 'Próximo mês',
+        cal_visao_mes: 'Mês',
+        cal_visao_semana: 'Semana',
+        cal_visao_dia: 'Dia',
+        cal_google_conectar_titulo: 'Conectar Google Agenda',
+        cal_google_conectar_texto: 'Cria automaticamente uma agenda chamada "Creator Center" na sua conta Google e sincroniza nos dois sentidos: o que você marcar aqui aparece lá, e o que você criar lá aparece aqui.',
+        cal_google_conectar_btn: 'Conectar Google Agenda',
+        cal_google_conectado: 'Google Agenda conectada ("Creator Center")',
+        cal_google_desconectar_btn: 'Desconectar',
+        cal_google_desconectar_pergunta: 'Desconectar do Google Agenda? Suas tarefas continuam aqui no painel, só param de sincronizar.',
+        cal_sincronizar_aria: 'Sincronizar agora',
         cal_seg: 'Seg',
         cal_ter: 'Ter',
         cal_qua: 'Qua',
@@ -2989,6 +3027,16 @@
         // Calendar
         cal_mes_anterior: 'Previous month',
         cal_mes_proximo: 'Next month',
+        cal_visao_mes: 'Month',
+        cal_visao_semana: 'Week',
+        cal_visao_dia: 'Day',
+        cal_google_conectar_titulo: 'Connect Google Calendar',
+        cal_google_conectar_texto: 'Automatically creates a calendar called "Creator Center" in your Google account and syncs both ways: what you mark here shows up there, and what you create there shows up here.',
+        cal_google_conectar_btn: 'Connect Google Calendar',
+        cal_google_conectado: 'Google Calendar connected ("Creator Center")',
+        cal_google_desconectar_btn: 'Disconnect',
+        cal_google_desconectar_pergunta: 'Disconnect from Google Calendar? Your tasks stay here in the panel, they just stop syncing.',
+        cal_sincronizar_aria: 'Sync now',
         cal_seg: 'Mon',
         cal_ter: 'Tue',
         cal_qua: 'Wed',
@@ -3660,6 +3708,10 @@
         const card = document.querySelector('.card-cal-dia');
         if (card) card.innerHTML = `<p class="texto-erro">${tr('cal_erro_carregar_tarefas')}</p>`;
       }
+
+      // Sincroniza com o Google Agenda em silêncio — se não estiver
+      // conectada, só mostra o card de conectar, sem nenhum erro visível.
+      await sincronizarGoogleAgenda({ silencioso: true });
     }
 
     function mostrarErroCarregamento() {
@@ -3875,12 +3927,18 @@
           renderizarTodasTarefas();
         });
       });
-      document.getElementById('cal-mes-anterior').addEventListener('click', () => mudarMes(-1));
-      document.getElementById('cal-mes-proximo').addEventListener('click', () => mudarMes(1));
+      document.getElementById('cal-mes-anterior').addEventListener('click', () => navegarPeriodo(-1));
+      document.getElementById('cal-mes-proximo').addEventListener('click', () => navegarPeriodo(1));
+      document.querySelectorAll('.cal-visao-btn').forEach((btn) => {
+        btn.addEventListener('click', () => trocarVisaoCalendario(btn.dataset.visao));
+      });
       document.getElementById('cal-btn-add').addEventListener('click', () => abrirFormularioTarefa());
       document.getElementById('cal-cancelar').addEventListener('click', fecharFormularioTarefa);
       document.getElementById('cal-form-tarefa').addEventListener('submit', salvarTarefa);
       document.getElementById('cal-checklist-add').addEventListener('click', adicionarItemChecklistForm);
+      document.getElementById('btn-google-agenda-conectar').addEventListener('click', conectarGoogleAgenda);
+      document.getElementById('btn-google-agenda-desconectar').addEventListener('click', desconectarGoogleAgenda);
+      document.getElementById('cal-btn-sincronizar').addEventListener('click', () => sincronizarGoogleAgenda({ silencioso: false }));
 
       // E-mail
       document.getElementById('btn-email-conectar').addEventListener('click', conectarGmail);
@@ -4761,6 +4819,11 @@
       const { data: inseridas, error } = await Auth.sb.from('painel_tarefas').insert(linhas).select('id');
       if (error) throw error;
 
+      // Empurra cada ocorrência nova pro Google (uma por vez, sem travar) —
+      // tanto na criação da série quanto nos reabastecimentos futuros feitos
+      // por toparOcorrenciasDasSeries(), que também passa por aqui.
+      (inseridas || []).forEach((nova) => pushEventoGoogle(nova.id));
+
       if (itensChecklist && itensChecklist.length > 0 && inseridas) {
         const itensParaInserir = inseridas.flatMap((nova) =>
           itensChecklist.map((item, i) => ({ tarefa_id: nova.id, texto: item.texto, feito: false, ordem: i }))
@@ -4824,22 +4887,75 @@
       return dataParaISO(a) === dataParaISO(b);
     }
 
-    function mudarMes(delta) {
-      calMesAtual = new Date(calMesAtual.getFullYear(), calMesAtual.getMonth() + delta, 1);
+    // Navega o período pra trás/frente — o que "delta" significa depende da
+    // visão ativa: um mês inteiro na visão Mês, uma semana na visão Semana,
+    // um dia na visão Dia (mesmo conceito das setas do Google Agenda).
+    function navegarPeriodo(delta) {
+      if (calVisaoAtual === 'mes') {
+        calMesAtual = new Date(calMesAtual.getFullYear(), calMesAtual.getMonth() + delta, 1);
+      } else if (calVisaoAtual === 'semana') {
+        calDiaSelecionado = new Date(calDiaSelecionado.getFullYear(), calDiaSelecionado.getMonth(), calDiaSelecionado.getDate() + delta * 7);
+        calMesAtual = new Date(calDiaSelecionado.getFullYear(), calDiaSelecionado.getMonth(), 1);
+      } else {
+        calDiaSelecionado = new Date(calDiaSelecionado.getFullYear(), calDiaSelecionado.getMonth(), calDiaSelecionado.getDate() + delta);
+        calMesAtual = new Date(calDiaSelecionado.getFullYear(), calDiaSelecionado.getMonth(), 1);
+      }
+      renderizarCalendario();
+    }
+
+    function trocarVisaoCalendario(visao) {
+      calVisaoAtual = visao;
+      document.querySelectorAll('.cal-visao-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.visao === visao));
       renderizarCalendario();
     }
 
     function renderizarCalendario() {
-      renderizarGradeMes();
+      document.getElementById('cal-grade').hidden = calVisaoAtual !== 'mes';
+      document.getElementById('cal-semana-cabecalho').hidden = calVisaoAtual !== 'mes';
+      document.getElementById('cal-grade-semana').hidden = calVisaoAtual !== 'semana';
+      document.getElementById('cal-grade-dia').hidden = calVisaoAtual !== 'dia';
+
+      atualizarRotuloPeriodo();
+
+      if (calVisaoAtual === 'mes') renderizarGradeMes();
+      else if (calVisaoAtual === 'semana') renderizarGradeSemana();
+      else renderizarGradeDia();
+
       renderizarTarefasDoDia();
       renderizarTodasTarefas();
       renderizarHojeDashboard();
     }
 
-    function renderizarGradeMes() {
-      const nomeMes = calMesAtual.toLocaleDateString(localeAtual(), { month: 'long' });
-      document.getElementById('cal-mes-label').textContent = `${nomeMes.charAt(0).toUpperCase()}${nomeMes.slice(1)} ${calMesAtual.getFullYear()}`;
+    // Rótulo no topo (ao lado das setas) — muda de formato conforme a visão:
+    // "Setembro 2026" no mês, "08 – 14 de set." na semana, dia por extenso no dia.
+    function atualizarRotuloPeriodo() {
+      const label = document.getElementById('cal-mes-label');
+      if (calVisaoAtual === 'mes') {
+        const nomeMes = calMesAtual.toLocaleDateString(localeAtual(), { month: 'long' });
+        label.textContent = `${nomeMes.charAt(0).toUpperCase()}${nomeMes.slice(1)} ${calMesAtual.getFullYear()}`;
+      } else if (calVisaoAtual === 'semana') {
+        const inicio = inicioDaSemana(calDiaSelecionado);
+        const fim = new Date(inicio);
+        fim.setDate(fim.getDate() + 6);
+        const fmt = (d) => d.toLocaleDateString(localeAtual(), { day: '2-digit', month: 'short' });
+        label.textContent = `${fmt(inicio)} – ${fmt(fim)}`;
+      } else {
+        const texto = calDiaSelecionado.toLocaleDateString(localeAtual(), { day: '2-digit', month: 'long', year: 'numeric', weekday: 'long' });
+        label.textContent = texto.charAt(0).toUpperCase() + texto.slice(1);
+      }
+    }
 
+    // Início (segunda-feira) da semana que contém "data" — mesma convenção
+    // de semana começando na segunda já usada na grade do mês.
+    function inicioDaSemana(data) {
+      const d = new Date(data);
+      d.setHours(0, 0, 0, 0);
+      const offset = (d.getDay() + 6) % 7;
+      d.setDate(d.getDate() - offset);
+      return d;
+    }
+
+    function renderizarGradeMes() {
       const grade = document.getElementById('cal-grade');
       grade.innerHTML = '';
 
@@ -4875,6 +4991,148 @@
 
         grade.appendChild(btn);
       }
+    }
+
+    // ---- Visões Semana/Dia: grade de horas (estilo Google Agenda) ----
+    // Semana e Dia reaproveitam a mesma função — Dia é só "Semana com 1 dia
+    // só" (mesmo grid de horas, mesma lógica de posicionar bloco por
+    // horário, mesma faixa de "dia inteiro" no topo).
+    const CAL_MINUTOS_TOTAIS_DIA = 24 * 60;
+
+    function minutosDoHorario(horaStr) {
+      const [h, m] = horaStr.split(':').map(Number);
+      return h * 60 + (m || 0);
+    }
+
+    // Calcula top/height (em %) do bloco de um evento com horário, relativo
+    // à altura total da coluna do dia (0h–24h). Duração mínima de 20min de
+    // altura visual, pra um evento de 15min não virar uma lasca ilegível.
+    function posicaoBlocoPorHorario(horaInicio, horaFim) {
+      const inicioMin = minutosDoHorario(horaInicio);
+      const fimMin = horaFim ? minutosDoHorario(horaFim) : inicioMin + 30;
+      const duracaoMin = Math.max(fimMin - inicioMin, 20);
+      return {
+        top: (inicioMin / CAL_MINUTOS_TOTAIS_DIA) * 100,
+        height: (duracaoMin / CAL_MINUTOS_TOTAIS_DIA) * 100,
+      };
+    }
+
+    // Bloco posicionado por horário, dentro da coluna do dia.
+    function criarBlocoEvento(tarefa) {
+      const bloco = document.createElement('div');
+      bloco.className = 'cal-evento-bloco';
+      const horario = [tarefa.hora_inicio, tarefa.hora_fim].filter(Boolean).map((h) => h.slice(0, 5)).join(' – ');
+      bloco.innerHTML = `
+        <span class="cal-evento-bloco-horario">${escapeHtml(horario)}</span>
+        <span class="cal-evento-bloco-titulo">${escapeHtml(tarefa.titulo)}</span>
+      `;
+      const pos = posicaoBlocoPorHorario(tarefa.hora_inicio, tarefa.hora_fim);
+      bloco.style.top = pos.top + '%';
+      bloco.style.height = pos.height + '%';
+      bloco.addEventListener('click', () => abrirFormularioTarefa(tarefa));
+      return bloco;
+    }
+
+    // Bloco da faixa "dia inteiro" (tarefa sem horário, ou entrega de UGC —
+    // que nunca tem horário) — sem posicionamento, é uma lista simples.
+    function criarBlocoDiaTodo(item, tipo) {
+      const bloco = document.createElement('div');
+      bloco.className = 'cal-evento-dia-todo' + (tipo === 'ugc' ? ' cal-evento-dia-todo-ugc' : '');
+      bloco.textContent = tipo === 'ugc' ? item.marca + (item.campanha ? ' · ' + item.campanha : '') : item.titulo;
+      bloco.addEventListener('click', () => (tipo === 'ugc' ? abrirEntregaUgcNoCalendario(item) : abrirFormularioTarefa(item)));
+      return bloco;
+    }
+
+    function renderizarGradeHoraria(idContainer, dias) {
+      const container = document.getElementById(idContainer);
+      container.innerHTML = '';
+
+      const hoje = new Date();
+      const colunas = dias.length;
+      const gridColunas = `50px repeat(${colunas}, 1fr)`;
+
+      const cabecalho = document.createElement('div');
+      cabecalho.className = 'cal-grade-cabecalho';
+      cabecalho.style.gridTemplateColumns = gridColunas;
+      cabecalho.innerHTML = '<div class="cal-grade-hora-spacer"></div>' + dias.map((d) => `
+        <button type="button" class="cal-grade-dia-cabecalho cal-btn${mesmoDia(d, hoje) ? ' cal-dia-hoje' : ''}${mesmoDia(d, calDiaSelecionado) ? ' cal-dia-selecionado' : ''}">
+          <span class="cal-grade-dia-cabecalho-semana">${escapeHtml(d.toLocaleDateString(localeAtual(), { weekday: 'short' }).replace('.', ''))}</span>
+          <span class="cal-grade-dia-cabecalho-num">${d.getDate()}</span>
+        </button>
+      `).join('');
+      container.appendChild(cabecalho);
+      cabecalho.querySelectorAll('.cal-grade-dia-cabecalho').forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+          calDiaSelecionado = dias[i];
+          trocarVisaoCalendario('dia');
+        });
+      });
+
+      const diaTodoLinha = document.createElement('div');
+      diaTodoLinha.className = 'cal-grade-dia-todo-linha';
+      diaTodoLinha.style.gridTemplateColumns = gridColunas;
+      diaTodoLinha.innerHTML = '<div class="cal-grade-hora-spacer"></div>' + dias.map(() => '<div class="cal-grade-dia-todo-coluna"></div>').join('');
+      container.appendChild(diaTodoLinha);
+      const colunasDiaTodo = diaTodoLinha.querySelectorAll('.cal-grade-dia-todo-coluna');
+
+      const corpo = document.createElement('div');
+      corpo.className = 'cal-grade-corpo';
+      corpo.style.gridTemplateColumns = gridColunas;
+
+      const horasCol = document.createElement('div');
+      horasCol.className = 'cal-horas-coluna';
+      for (let h = 0; h < 24; h++) {
+        const linha = document.createElement('div');
+        linha.className = 'cal-hora-linha';
+        linha.textContent = `${String(h).padStart(2, '0')}:00`;
+        horasCol.appendChild(linha);
+      }
+      corpo.appendChild(horasCol);
+
+      dias.forEach((dia, i) => {
+        const isoDia = dataParaISO(dia);
+        const coluna = document.createElement('div');
+        coluna.className = 'cal-dia-coluna';
+        for (let h = 0; h < 24; h++) {
+          const linha = document.createElement('div');
+          linha.className = 'cal-dia-coluna-linha';
+          linha.addEventListener('click', () => {
+            calDiaSelecionado = dia;
+            abrirFormularioTarefa();
+            document.getElementById('cal-hora-inicio').value = `${String(h).padStart(2, '0')}:00`;
+          });
+          coluna.appendChild(linha);
+        }
+
+        const tarefasDoDia = tarefasCache.filter((t) => t.data === isoDia && !t.feito);
+        const entregasDoDia = entregasUgcPendentesDoDia(isoDia);
+
+        tarefasDoDia.forEach((tarefa) => {
+          if (tarefa.hora_inicio) coluna.appendChild(criarBlocoEvento(tarefa));
+          else colunasDiaTodo[i].appendChild(criarBlocoDiaTodo(tarefa, 'tarefa'));
+        });
+        entregasDoDia.forEach((trabalho) => colunasDiaTodo[i].appendChild(criarBlocoDiaTodo(trabalho, 'ugc')));
+
+        corpo.appendChild(coluna);
+      });
+
+      container.appendChild(corpo);
+      corpo.scrollTop = 7 * 48 - 24; // abre já rolado pra mostrar o começo da manhã
+    }
+
+    function renderizarGradeSemana() {
+      const inicio = inicioDaSemana(calDiaSelecionado);
+      const dias = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(inicio);
+        d.setDate(d.getDate() + i);
+        dias.push(d);
+      }
+      renderizarGradeHoraria('cal-grade-semana', dias);
+    }
+
+    function renderizarGradeDia() {
+      renderizarGradeHoraria('cal-grade-dia', [new Date(calDiaSelecionado)]);
     }
 
     // ---- Entregas de UGC/Publi no Calendário: só leitura, nunca viram uma
@@ -5299,12 +5557,14 @@
         if (tarefaEditando) {
           const { error } = await Auth.sb.from('painel_tarefas').update(linha).eq('id', tarefaEditando);
           if (error) throw error;
+          pushEventoGoogle(tarefaEditando);
         } else if (recorrencia) {
           const serieId = crypto.randomUUID();
           const tarefaBase = { ...linha, recorrencia, serie_id: serieId };
           const { data: inserida, error } = await Auth.sb.from('painel_tarefas').insert(tarefaBase).select('id').single();
           if (error) throw error;
           tarefaId = inserida.id;
+          pushEventoGoogle(tarefaId);
 
           const futuras = datasOcorrenciasFuturas(recorrencia, linha.data);
           await inserirOcorrencias(tarefaBase, serieId, futuras, itensChecklist);
@@ -5312,6 +5572,7 @@
           const { data: inserida, error } = await Auth.sb.from('painel_tarefas').insert(linha).select('id').single();
           if (error) throw error;
           tarefaId = inserida.id;
+          pushEventoGoogle(tarefaId);
         }
 
         const { error: erroChecklist } = await Auth.sb.rpc('painel_substituir_checklist_tarefa', {
@@ -5343,12 +5604,23 @@
     // futuras — o histórico passado nunca é apagado). Sem confirmação nem
     // recarga própria: quem chama cuida disso.
     async function excluirOcorrenciasDaSerie(serieId, dataDesde) {
+      // Busca os google_event_id ANTES de apagar — depois de apagadas, não
+      // tem mais como saber quais ocorrências tinham evento sincronizado.
+      const { data: linhas, error: erroSelect } = await Auth.sb
+        .from('painel_tarefas')
+        .select('google_event_id')
+        .eq('serie_id', serieId)
+        .gte('data', dataDesde);
+      if (erroSelect) throw erroSelect;
+
       const { error } = await Auth.sb
         .from('painel_tarefas')
         .delete()
         .eq('serie_id', serieId)
         .gte('data', dataDesde);
       if (error) throw error;
+
+      (linhas || []).forEach((l) => { if (l.google_event_id) pushExcluirGoogle(l.google_event_id); });
     }
 
     // Apaga uma série inteira a partir de uma ocorrência específica.
@@ -5400,10 +5672,101 @@
       try {
         const { error } = await Auth.sb.from('painel_tarefas').delete().eq('id', tarefa.id);
         if (error) throw error;
+        if (tarefa.google_event_id) pushExcluirGoogle(tarefa.google_event_id);
         await carregarTarefas();
       } catch (err) {
         console.error('Erro ao excluir tarefa:', err);
         alert(tr('erro_excluir_generico'));
+      }
+    }
+
+    // ==========================================================================
+    // Calendário — sincronização com o Google Agenda (ver supabase/functions/calendar-*)
+    // ==========================================================================
+    // "chamarFuncao" já existe mais abaixo (compartilhado com E-mail/Instagram).
+    // pushEventoGoogle/pushExcluirGoogle são fire-and-forget de propósito: o
+    // salvamento/exclusão no painel nunca deve travar esperando o Google —
+    // se a sincronização falhar (Google fora do ar, não conectada, etc.), o
+    // painel continua funcionando normalmente e tenta de novo na próxima
+    // mudança.
+
+    function pushEventoGoogle(tarefaId) {
+      chamarFuncao('calendar-push-evento', { method: 'POST', body: { tarefa_id: tarefaId } }).catch((err) => {
+        console.error('Erro ao sincronizar tarefa com o Google Agenda:', err);
+      });
+    }
+
+    function pushExcluirGoogle(googleEventId) {
+      chamarFuncao('calendar-push-excluir', { method: 'POST', body: { google_event_id: googleEventId } }).catch((err) => {
+        console.error('Erro ao remover evento no Google Agenda:', err);
+      });
+    }
+
+    function mostrarGoogleAgendaDesconectada(mensagemErro) {
+      document.getElementById('google-agenda-conectar').hidden = false;
+      document.getElementById('google-agenda-status').hidden = true;
+      const erroEl = document.getElementById('google-agenda-conectar-erro');
+      if (mensagemErro) {
+        erroEl.textContent = mensagemErro;
+        erroEl.hidden = false;
+      } else {
+        erroEl.hidden = true;
+      }
+    }
+
+    function mostrarGoogleAgendaConectada() {
+      document.getElementById('google-agenda-conectar').hidden = true;
+      document.getElementById('google-agenda-status').hidden = false;
+    }
+
+    async function conectarGoogleAgenda() {
+      const btn = document.getElementById('btn-google-agenda-conectar');
+      btn.disabled = true;
+      btn.textContent = tr('conectando');
+      try {
+        const resultado = await chamarFuncao('calendar-oauth-start');
+        if (resultado.ok) {
+          window.location.href = resultado.url;
+          return;
+        }
+        mostrarGoogleAgendaDesconectada(tr('erro_iniciar_conexao'));
+      } catch (err) {
+        console.error('Erro ao conectar Google Agenda:', err);
+        mostrarGoogleAgendaDesconectada(tr('erro_iniciar_conexao'));
+      }
+      btn.disabled = false;
+      btn.textContent = tr('cal_google_conectar_btn');
+    }
+
+    async function desconectarGoogleAgenda() {
+      if (!(await confirmarAcao(tr('cal_google_desconectar_pergunta')))) return;
+      try {
+        await chamarFuncao('calendar-oauth-disconnect', { method: 'POST' });
+      } catch (err) {
+        console.error('Erro ao desconectar Google Agenda:', err);
+      }
+      mostrarGoogleAgendaDesconectada();
+      await carregarTarefas();
+    }
+
+    // Busca o que mudou na "Creator Center" desde a última vez e atualiza o
+    // painel. { silencioso: true } (usado no boot) só recarrega a tela se
+    // algo realmente mudou; o botão "Sincronizar agora" força a recarga
+    // sempre, pra dar feedback visual de que algo aconteceu.
+    async function sincronizarGoogleAgenda(opts = {}) {
+      try {
+        const resultado = await chamarFuncao('calendar-pull');
+        if (!resultado.ok) {
+          if (resultado.error === 'not_connected') mostrarGoogleAgendaDesconectada();
+          return;
+        }
+        mostrarGoogleAgendaConectada();
+        const houveMudanca = (resultado.importados || 0) + (resultado.atualizados || 0) + (resultado.removidos || 0) > 0;
+        if (houveMudanca || !opts.silencioso) {
+          await carregarTarefas();
+        }
+      } catch (err) {
+        console.error('Erro ao sincronizar com o Google Agenda:', err);
       }
     }
 

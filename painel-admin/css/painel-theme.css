@@ -879,6 +879,263 @@
 }
 
 /* ==========================================================================
+   Calendário — conexão com o Google Agenda (agenda dedicada "Creator
+   Center") e as visões de Semana/Dia (grade de horas, estilo Google Agenda).
+   ========================================================================== */
+
+.painel-body .card-google-agenda-conectar {
+  max-width: 480px;
+  margin: 0 auto 20px;
+  text-align: center;
+}
+
+.painel-body .cal-google-conectar-texto {
+  font-size: 14px;
+  color: var(--texto-suave);
+  margin: 12px 0 20px;
+  line-height: 1.5;
+}
+
+.painel-body .cal-google-conectar-erro {
+  font-size: 13px;
+  color: #b3413b;
+  margin-top: 14px;
+}
+
+.painel-body .cal-google-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 10px 16px;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+}
+
+.painel-body .cal-google-status-texto {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--grafite);
+  flex: 1;
+}
+
+.painel-body .cal-google-status .cal-btn-icon {
+  width: 30px;
+  height: 30px;
+  box-shadow: none;
+}
+
+/* ---- Cabeçalho do mês: setas+rótulo de um lado, alternador Mês/Semana/Dia do outro ---- */
+
+.painel-body .cal-topo {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.painel-body .cal-topo-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.painel-body .cal-visao-grupo {
+  display: flex;
+  gap: 6px;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 4px;
+}
+
+.painel-body .cal-visao-btn {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--fonte-corpo);
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.painel-body .cal-visao-btn:hover {
+  color: var(--grafite);
+}
+
+.painel-body .cal-visao-btn.ativo {
+  background: var(--coral);
+  color: var(--branco);
+}
+
+/* ---- Visões Semana/Dia: grade de horas ---- */
+
+.painel-body .cal-grade-semana,
+.painel-body .cal-grade-dia {
+  margin-top: 6px;
+}
+
+.painel-body .cal-grade-cabecalho,
+.painel-body .cal-grade-dia-todo-linha,
+.painel-body .cal-grade-corpo {
+  display: grid;
+}
+
+.painel-body .cal-grade-dia-cabecalho {
+  background: transparent;
+  border: none;
+  border-radius: var(--raio-sm);
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  font-family: var(--fonte-corpo);
+}
+
+.painel-body .cal-grade-dia-cabecalho:hover {
+  background: rgba(var(--grafite-rgb), 0.06);
+}
+
+.painel-body .cal-grade-dia-cabecalho-semana {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.painel-body .cal-grade-dia-cabecalho-num {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grafite);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.painel-body .cal-grade-dia-cabecalho.cal-dia-hoje .cal-grade-dia-cabecalho-num {
+  background: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .cal-grade-dia-cabecalho.cal-dia-selecionado .cal-grade-dia-cabecalho-num {
+  border: 2px solid var(--grafite);
+}
+
+.painel-body .cal-grade-dia-todo-linha {
+  min-height: 28px;
+  border-bottom: 1px solid var(--borda);
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+}
+
+.painel-body .cal-grade-dia-todo-coluna {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0 3px;
+}
+
+.painel-body .cal-evento-dia-todo {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--branco);
+  background: var(--coral);
+  border-radius: 6px;
+  padding: 3px 6px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.painel-body .cal-evento-dia-todo-ugc {
+  background: rgba(var(--grafite-rgb), 0.75);
+}
+
+.painel-body .cal-grade-corpo {
+  max-height: 600px;
+  overflow-y: auto;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+}
+
+.painel-body .cal-horas-coluna {
+  border-right: 1px solid var(--borda);
+}
+
+.painel-body .cal-hora-linha {
+  height: 48px;
+  font-size: 10px;
+  color: var(--texto-suave);
+  text-align: right;
+  padding-right: 6px;
+  box-sizing: border-box;
+  transform: translateY(-6px);
+}
+
+.painel-body .cal-dia-coluna {
+  position: relative;
+  border-right: 1px solid var(--borda);
+}
+
+.painel-body .cal-dia-coluna-linha {
+  height: 48px;
+  border-top: 1px solid var(--borda);
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.painel-body .cal-dia-coluna-linha:hover {
+  background: rgba(var(--grafite-rgb), 0.04);
+}
+
+.painel-body .cal-evento-bloco {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  background: var(--coral);
+  color: var(--branco);
+  border-radius: 6px;
+  padding: 3px 6px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.painel-body .cal-evento-bloco-horario {
+  font-size: 10px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.painel-body .cal-evento-bloco-titulo {
+  font-size: 12px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .painel-body .cal-visao-btn {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  .painel-body .cal-grade-corpo {
+    max-height: 420px;
+  }
+}
+
+/* ==========================================================================
    Aba E-mail — caixa de entrada do Gmail conectado (marcador "Propostas").
    ========================================================================== */
 

@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260913s">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260913t">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -811,8 +811,12 @@
           <div id="ugc-pagina-resultados" class="ugc-pagina" hidden>
             <div class="cards-numeros cards-numeros-resultados-ugc">
               <div class="card-numero destaque">
-                <span class="card-label" data-i18n="ugc_trabalhos_finalizados">Trabalhos finalizados</span>
-                <span class="card-valor" id="ugc-num-fechados">0</span>
+                <span class="card-label" data-i18n="ugc_trabalhos_finalizados_ugc">Trabalhos finalizados (UGC)</span>
+                <span class="card-valor" id="ugc-num-fechados-ugc">0</span>
+              </div>
+              <div class="card-numero destaque">
+                <span class="card-label" data-i18n="ugc_trabalhos_finalizados_publicidade">Trabalhos finalizados (Publicidade)</span>
+                <span class="card-valor" id="ugc-num-fechados-publicidade">0</span>
               </div>
               <div class="card-numero">
                 <span class="card-label" data-i18n="ugc_contratos_finalizados">Contratos finalizados</span>
@@ -2513,7 +2517,8 @@
         ugc_adicionar_servico_aria: 'Adicionar serviço',
         ugc_publicidade: 'Publicidade',
         ugc_condicoes_direitos: 'Condições/Direitos',
-        ugc_trabalhos_finalizados: 'Trabalhos finalizados',
+        ugc_trabalhos_finalizados_ugc: 'Trabalhos finalizados (UGC)',
+        ugc_trabalhos_finalizados_publicidade: 'Trabalhos finalizados (Publicidade)',
         ugc_contratos_finalizados: 'Contratos finalizados',
         ugc_ganho_ugc: 'Ganho em UGC',
         ugc_ganho_publicidade: 'Ganho em Publicidade',
@@ -3221,7 +3226,8 @@
         ugc_adicionar_servico_aria: 'Add service',
         ugc_publicidade: 'Advertising',
         ugc_condicoes_direitos: 'Terms/Rights',
-        ugc_trabalhos_finalizados: 'Finished jobs',
+        ugc_trabalhos_finalizados_ugc: 'Finished jobs (UGC)',
+        ugc_trabalhos_finalizados_publicidade: 'Finished jobs (Advertising)',
         ugc_contratos_finalizados: 'Finished contracts',
         ugc_ganho_ugc: 'UGC earnings',
         ugc_ganho_publicidade: 'Advertising earnings',
@@ -7314,7 +7320,9 @@
       // "Finalizado" aqui usa o mesmo critério do Ganho (status_pagamento) — um trabalho
       // Entregue mas ainda não pago não conta como finalizado, senão a contagem diverge
       // do valor de Ganho total mostrado logo abaixo.
-      const fechados = ugcTrabalhosCache.filter((t) => t.status === 'Pago');
+      const fechadosPorTipo = (tipo) => ugcTrabalhosCache.filter((t) => t.status === 'Pago' && t.tipo_trabalho === tipo);
+      const fechadosUgc = fechadosPorTipo('UGC');
+      const fechadosPublicidade = fechadosPorTipo('Publicidade');
       const contratosFinalizados = ugcContratosCache.filter((c) => c.status === 'Encerrado');
       const ganhoPorTipo = (tipo) =>
         ugcTrabalhosCache
@@ -7324,7 +7332,8 @@
       const ganhoUgc = ganhoPorTipo('UGC');
       const ganhoPublicidade = ganhoPorTipo('Publicidade');
 
-      document.getElementById('ugc-num-fechados').textContent = formatarNumero(fechados.length);
+      document.getElementById('ugc-num-fechados-ugc').textContent = formatarNumero(fechadosUgc.length);
+      document.getElementById('ugc-num-fechados-publicidade').textContent = formatarNumero(fechadosPublicidade.length);
       document.getElementById('ugc-num-contratos-finalizados').textContent = formatarNumero(contratosFinalizados.length);
       document.getElementById('ugc-num-ganho-ugc').textContent = formatarMoeda(ganhoUgc);
       document.getElementById('ugc-num-ganho-publicidade').textContent = formatarMoeda(ganhoPublicidade);

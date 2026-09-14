@@ -3016,7 +3016,7 @@
 }
 
 .painel-body .cards-numeros-resultados-ugc {
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
 }
 
 /* ---- Financeiro: card de insight (inspirado num app de controle de gasto

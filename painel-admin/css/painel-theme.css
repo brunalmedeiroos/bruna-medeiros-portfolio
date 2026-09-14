@@ -3102,6 +3102,126 @@
   color: var(--erro);
 }
 
+.painel-body .financeiro-topo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: stretch;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 900px) {
+  .painel-body .financeiro-topo {
+    grid-template-columns: 1fr;
+  }
+}
+
+.painel-body .financeiro-topo .financeiro-insight-card {
+  margin-bottom: 0;
+  max-width: none;
+}
+
+.painel-body .financeiro-ritmo-titulo {
+  display: block;
+  font-family: var(--fonte-titulo);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grafite);
+  margin-bottom: 14px;
+}
+
+.painel-body .financeiro-ritmo-numero-linha {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.painel-body .financeiro-ritmo-valor {
+  font-family: var(--fonte-titulo);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .financeiro-ritmo-rotulo {
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+
+.painel-body .financeiro-ritmo-comparacao {
+  font-size: 13px;
+  color: var(--texto-suave);
+  margin: 4px 0 16px;
+}
+
+.painel-body .financeiro-ritmo-grafico {
+  width: 100%;
+}
+
+.painel-body .financeiro-ritmo-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.painel-body .financeiro-ritmo-eixo {
+  font-size: 9px;
+  fill: var(--texto-suave);
+  font-family: var(--fonte-corpo);
+}
+
+.painel-body .financeiro-ritmo-linha-atual {
+  stroke: var(--coral);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.painel-body .financeiro-ritmo-linha-passado {
+  stroke: rgba(var(--grafite-rgb), 0.3);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 6 5;
+}
+
+.painel-body .financeiro-ritmo-ponto {
+  fill: var(--coral);
+}
+
+.painel-body .financeiro-ritmo-legenda {
+  display: flex;
+  gap: 20px;
+  margin-top: 14px;
+}
+
+.painel-body .financeiro-ritmo-legenda-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.painel-body .financeiro-ritmo-legenda-linha {
+  display: inline-block;
+  width: 16px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.painel-body .financeiro-ritmo-legenda-atual {
+  background: var(--coral);
+}
+
+.painel-body .financeiro-ritmo-legenda-passado {
+  background: rgba(var(--grafite-rgb), 0.3);
+  background-image: linear-gradient(90deg, rgba(var(--grafite-rgb), 0.5) 50%, transparent 50%);
+  background-size: 6px 2px;
+  background-color: transparent;
+}
+
 /* ---- Entregáveis (dentro do modal de Trabalho) ---- */
 
 .painel-body .ugc-entregaveis-lista {

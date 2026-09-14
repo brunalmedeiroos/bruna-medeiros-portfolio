@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260913p">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260913q">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -883,22 +883,51 @@
              é um texto escolhido por regra simples (maior cliente do mês ou
              variação vs mês passado), calculado na hora. -->
         <section id="panel-financeiro" class="tab-panel" hidden>
-          <div class="card financeiro-insight-card">
-            <h3 class="financeiro-insight-titulo" data-i18n="financeiro_insight_titulo">Como está seu faturamento?</h3>
-            <p class="financeiro-insight-texto" id="financeiro-insight-texto"></p>
+          <div class="financeiro-topo">
+            <div class="card financeiro-insight-card">
+              <h3 class="financeiro-insight-titulo" data-i18n="financeiro_insight_titulo">Como está seu faturamento?</h3>
+              <p class="financeiro-insight-texto" id="financeiro-insight-texto"></p>
 
-            <div class="financeiro-chips">
-              <div class="financeiro-chip">
-                <span class="financeiro-chip-label" id="financeiro-chip-mes-label">Recebido em</span>
-                <span class="financeiro-chip-valor" id="financeiro-chip-mes-valor">R$ 0</span>
+              <div class="financeiro-chips">
+                <div class="financeiro-chip">
+                  <span class="financeiro-chip-label" id="financeiro-chip-mes-label">Recebido em</span>
+                  <span class="financeiro-chip-valor" id="financeiro-chip-mes-valor">R$ 0</span>
+                </div>
+                <div class="financeiro-chip">
+                  <span class="financeiro-chip-label" data-i18n="financeiro_chip_variacao">Vs. mês anterior</span>
+                  <span class="financeiro-chip-valor" id="financeiro-chip-variacao">—</span>
+                </div>
+                <div class="financeiro-chip">
+                  <span class="financeiro-chip-label" data-i18n="financeiro_chip_maior_cliente">Maior cliente</span>
+                  <span class="financeiro-chip-valor" id="financeiro-chip-maior-cliente">—</span>
+                </div>
               </div>
-              <div class="financeiro-chip">
-                <span class="financeiro-chip-label" data-i18n="financeiro_chip_variacao">Vs. mês anterior</span>
-                <span class="financeiro-chip-valor" id="financeiro-chip-variacao">—</span>
+            </div>
+
+            <!-- Ritmo de recebimento: compara o acumulado deste mês com o
+                 acumulado do mês passado, dia a dia — ver
+                 renderizarRitmoRecebimento(). SVG desenhado na hora, sem
+                 biblioteca de gráfico. -->
+            <div class="card financeiro-ritmo-card">
+              <span class="financeiro-ritmo-titulo" data-i18n="financeiro_ritmo_titulo">Ritmo de recebimento</span>
+
+              <div class="financeiro-ritmo-numero-linha">
+                <span class="financeiro-ritmo-valor" id="financeiro-ritmo-valor">R$ 0</span>
+                <span class="financeiro-ritmo-rotulo" id="financeiro-ritmo-rotulo"></span>
               </div>
-              <div class="financeiro-chip">
-                <span class="financeiro-chip-label" data-i18n="financeiro_chip_maior_cliente">Maior cliente</span>
-                <span class="financeiro-chip-valor" id="financeiro-chip-maior-cliente">—</span>
+              <p class="financeiro-ritmo-comparacao" id="financeiro-ritmo-comparacao"></p>
+
+              <div class="financeiro-ritmo-grafico" id="financeiro-ritmo-grafico"></div>
+
+              <div class="financeiro-ritmo-legenda">
+                <span class="financeiro-ritmo-legenda-item">
+                  <span class="financeiro-ritmo-legenda-linha financeiro-ritmo-legenda-atual"></span>
+                  <span data-i18n="financeiro_ritmo_este_mes">Este mês</span>
+                </span>
+                <span class="financeiro-ritmo-legenda-item">
+                  <span class="financeiro-ritmo-legenda-linha financeiro-ritmo-legenda-passado"></span>
+                  <span data-i18n="financeiro_ritmo_mes_passado">Mês passado</span>
+                </span>
               </div>
             </div>
           </div>
@@ -2093,6 +2122,13 @@
         financeiro_insight_queda: '{nome}, seus recebimentos caíram {pct}% em relação ao mês passado.',
         financeiro_insight_vazio: '{nome}, nenhum recebimento confirmado ainda esse mês.',
         financeiro_insight_estavel: '{nome}, seu faturamento esse mês está estável em relação ao mês passado.',
+        financeiro_ritmo_titulo: 'Ritmo de recebimento',
+        financeiro_ritmo_acima: 'acima',
+        financeiro_ritmo_abaixo: 'abaixo',
+        financeiro_ritmo_vs: 'vs',
+        financeiro_ritmo_mes_anterior_curto: 'mês anterior',
+        financeiro_ritmo_este_mes: 'Este mês',
+        financeiro_ritmo_mes_passado: 'Mês passado',
         nav_dashboard: 'Dashboard',
         nav_portfolio: 'Portfólio',
         nav_calendario: 'Calendário',
@@ -2797,6 +2833,13 @@
         financeiro_insight_queda: '{nome}, your revenue dropped {pct}% compared to last month.',
         financeiro_insight_vazio: '{nome}, no confirmed payments yet this month.',
         financeiro_insight_estavel: "{nome}, your revenue this month is steady compared to last month.",
+        financeiro_ritmo_titulo: 'Payment pace',
+        financeiro_ritmo_acima: 'ahead',
+        financeiro_ritmo_abaixo: 'behind',
+        financeiro_ritmo_vs: 'vs',
+        financeiro_ritmo_mes_anterior_curto: 'last month',
+        financeiro_ritmo_este_mes: 'This month',
+        financeiro_ritmo_mes_passado: 'Last month',
         nav_dashboard: 'Dashboard',
         nav_portfolio: 'Portfolio',
         nav_calendario: 'Calendar',
@@ -6990,6 +7033,7 @@
       renderizarResultadosUGC();
       renderizarFaturamentoDashboard();
       renderizarFinanceiro();
+      renderizarRitmoRecebimento();
       renderizarAtencaoDashboard();
       // Entregas de UGC aparecem no Calendário (só leitura) — como o
       // Calendário costuma renderizar antes desta função terminar de
@@ -7149,6 +7193,96 @@
       } else {
         textoInsight.textContent = tr('financeiro_insight_estavel').replace('{nome}', nome);
       }
+    }
+
+    // Ritmo de recebimento — compara o acumulado (dia a dia) deste mês com o
+    // acumulado do mês passado no mesmo período, tipo um "photo finish".
+    // Gráfico em SVG puro, sem biblioteca — os pontos já vêm em porcentagem
+    // do viewBox, então o SVG escala junto com o cartão.
+    function acumuladoPorDia(trabalhos, totalDias, limiteDia) {
+      const porDia = new Array(totalDias + 1).fill(0);
+      trabalhos.forEach((t) => {
+        const dia = Number(t.data_entrega.slice(8, 10));
+        if (dia >= 1 && dia <= totalDias) porDia[dia] += Number(t.valor) || 0;
+      });
+      const pontos = [];
+      let soma = 0;
+      const ate = limiteDia || totalDias;
+      for (let d = 1; d <= ate; d++) {
+        soma += porDia[d];
+        pontos.push(soma);
+      }
+      return pontos;
+    }
+
+    function formatarMoedaEixo(valor) {
+      if (valor >= 1000) {
+        const milhares = valor / 1000;
+        return 'R$ ' + (Number.isInteger(milhares) ? milhares : milhares.toFixed(1).replace('.', ',')) + 'k';
+      }
+      return 'R$ ' + Math.round(valor);
+    }
+
+    function renderizarRitmoRecebimento() {
+      const hoje = new Date();
+      const diaHoje = hoje.getDate();
+      const anoAtual = hoje.getFullYear();
+      const mesAtual = hoje.getMonth();
+      const mesPassadoData = new Date(anoAtual, mesAtual - 1, 1);
+
+      const anoMesAtualStr = anoAtual + '-' + String(mesAtual + 1).padStart(2, '0');
+      const anoMesPassadoStr = mesPassadoData.getFullYear() + '-' + String(mesPassadoData.getMonth() + 1).padStart(2, '0');
+
+      const recebidosMes = ugcTrabalhosCache.filter((t) => t.status_pagamento === 'Recebido' && t.data_entrega && t.data_entrega.startsWith(anoMesAtualStr));
+      const recebidosMesPassado = ugcTrabalhosCache.filter((t) => t.status_pagamento === 'Recebido' && t.data_entrega && t.data_entrega.startsWith(anoMesPassadoStr));
+
+      const diasMesAtual = new Date(anoAtual, mesAtual + 1, 0).getDate();
+      const diasMesPassado = new Date(mesPassadoData.getFullYear(), mesPassadoData.getMonth() + 1, 0).getDate();
+
+      const pontosAtual = acumuladoPorDia(recebidosMes, diasMesAtual, diaHoje);
+      const pontosPassado = acumuladoPorDia(recebidosMesPassado, diasMesPassado);
+
+      const totalAtualAteHoje = pontosAtual[pontosAtual.length - 1] || 0;
+      const totalPassadoMesmoDia = pontosPassado[Math.min(diaHoje, diasMesPassado) - 1] || 0;
+      const diffValor = totalAtualAteHoje - totalPassadoMesmoDia;
+      const diffPct = totalPassadoMesmoDia > 0 ? (diffValor / totalPassadoMesmoDia) * 100 : (totalAtualAteHoje > 0 ? 100 : 0);
+
+      document.getElementById('financeiro-ritmo-valor').textContent = formatarMoeda(Math.abs(diffValor));
+      document.getElementById('financeiro-ritmo-rotulo').textContent = tr(diffValor >= 0 ? 'financeiro_ritmo_acima' : 'financeiro_ritmo_abaixo');
+
+      const seta = diffValor >= 0 ? '↗' : '↘';
+      const comparacao = document.getElementById('financeiro-ritmo-comparacao');
+      comparacao.innerHTML = `<span class="${diffValor >= 0 ? 'financeiro-chip-positivo' : 'financeiro-chip-negativo'}">${seta} ${Math.abs(Math.round(diffPct))}%</span> ${tr('financeiro_ritmo_vs')} ${formatarMoeda(totalPassadoMesmoDia)} ${tr('financeiro_ritmo_mes_anterior_curto')}`;
+
+      // ---- SVG ----
+      const maxDias = Math.max(diasMesAtual, diasMesPassado);
+      const maxValor = Math.max(...pontosAtual, ...pontosPassado, 1);
+      const W = 400;
+      const H = 160;
+      const padL = 46;
+      const padR = 8;
+      const padT = 10;
+      const padB = 8;
+      const escalaX = (dia) => padL + ((dia - 1) / (maxDias - 1)) * (W - padL - padR);
+      const escalaY = (valor) => (H - padB) - (valor / maxValor) * (H - padB - padT);
+
+      const caminho = (pontos) => pontos.map((v, i) => `${i === 0 ? 'M' : 'L'} ${escalaX(i + 1).toFixed(1)} ${escalaY(v).toFixed(1)}`).join(' ');
+
+      const marcasY = [0, maxValor / 2, maxValor];
+      const eixosY = marcasY
+        .map((v) => `<text x="0" y="${(escalaY(v) + 3).toFixed(1)}" class="financeiro-ritmo-eixo">${formatarMoedaEixo(v)}</text>`)
+        .join('');
+
+      const ultimo = pontosAtual.length ? { x: escalaX(pontosAtual.length), y: escalaY(pontosAtual[pontosAtual.length - 1]) } : null;
+
+      document.getElementById('financeiro-ritmo-grafico').innerHTML = `
+        <svg viewBox="0 0 ${W} ${H}" class="financeiro-ritmo-svg">
+          ${eixosY}
+          <path d="${caminho(pontosPassado)}" class="financeiro-ritmo-linha-passado" fill="none" />
+          <path d="${caminho(pontosAtual)}" class="financeiro-ritmo-linha-atual" fill="none" />
+          ${ultimo ? `<circle cx="${ultimo.x.toFixed(1)}" cy="${ultimo.y.toFixed(1)}" r="4" class="financeiro-ritmo-ponto" />` : ''}
+        </svg>
+      `;
     }
 
     // ---- Visão Geral: 100% derivada de ugcTrabalhosCache, sem cadastro próprio ----

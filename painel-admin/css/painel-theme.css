@@ -39,22 +39,6 @@
   --fonte-corpo: 'Montserrat', sans-serif;
 }
 
-/* ==========================================================================
-   Tema escuro — 100% automático (segue o sistema/navegador, sem toggle no
-   painel desde que "Aparência" saiu de Configurações). Redefine só os
-   tokens acima; como (quase) todo componente do painel já lê cor via
-   var(--...), isso re-tema o app inteiro sem tocar em regra de componente.
-   ========================================================================== */
-@media (prefers-color-scheme: dark) {
-  .painel-body {
-    --coral-hover: #9AD0E2;
-    --creme: #0E1E26;
-    --branco: #16303A;
-    --grafite: #E8F0F3;
-    --grafite-rgb: 232, 240, 243;
-  }
-}
-
 /* Bootzy TM de volta só na logo "Creator Center" (sidebar + barra mobile) —
    a saudação do Dashboard continua em Fraunces (Bru não gostou da Bootzy
    lá). O arquivo só tem 1 peso gravado (não é variável): font-weight/
@@ -93,13 +77,10 @@
 
 /* ==========================================================================
    Sidebar azul — identidade visual do painel. Fundo cravado em var(--coral)
-   (o azul claro da marca) em vez de var(--branco): como --coral não é
-   redefinido no bloco de tema escuro acima (só --coral-hover muda lá), a
-   sidebar fica igual nos dois temas do painel. Por isso os tons abaixo são
-   fixos (branco/preto translúcidos, ou o hex do grafite cravado no texto do
-   item ativo) em vez de var(--grafite)/var(--branco) — essas variáveis
-   invertem no tema escuro e ficariam ilegíveis contra um fundo que não
-   inverte junto.
+   (o azul claro da marca) em vez de var(--branco). Os tons abaixo (branco/
+   preto translúcidos, hex do grafite no texto do item ativo) são fixos em
+   vez de var(--grafite)/var(--branco) porque o contraste contra o azul
+   precisa ficar sempre igual, independente do restante do painel.
    ========================================================================== */
 .painel-body .sidebar {
   background: var(--coral);

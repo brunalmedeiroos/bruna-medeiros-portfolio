@@ -618,12 +618,6 @@
   margin: 0;
 }
 
-.painel-body .cal-todas-checklist-progresso {
-  font-size: 12px;
-  color: var(--texto-suave);
-  font-variant-numeric: tabular-nums;
-}
-
 /* ---- Entregas de UGC/Publi mostradas (só leitura) no Calendário ---- */
 
 .painel-body .cal-tarefa-item-ugc {
@@ -831,57 +825,6 @@
   white-space: nowrap;
 }
 
-.painel-body .cal-todas-dia {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  justify-self: center;
-  width: 60px;
-  box-sizing: border-box;
-  gap: 1px;
-  padding: 6px 4px;
-  border: 1px solid var(--coral);
-  border-radius: var(--raio-sm);
-  background: transparent;
-  color: var(--grafite);
-  font-family: var(--fonte-corpo);
-  cursor: pointer;
-}
-
-.painel-body .cal-todas-dia-num {
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.painel-body .cal-todas-dia-sem {
-  font-size: 10px;
-  text-transform: lowercase;
-  color: var(--texto-suave);
-}
-
-.painel-body .cal-todas-hora {
-  font-size: 13px;
-  color: var(--texto-suave);
-}
-
-.painel-body .cal-todas-dia-serie {
-  border-color: var(--borda);
-  color: var(--texto-suave);
-  cursor: default;
-  overflow: visible;
-  text-overflow: clip;
-  white-space: normal;
-}
-
-.painel-body .cal-todas-dia-serie-texto {
-  font-size: 10px;
-  text-transform: lowercase;
-  text-align: center;
-  line-height: 1.2;
-  white-space: normal;
-}
-
 .painel-body .cal-todas-tipo-badge {
   display: inline-block;
   width: fit-content;
@@ -893,27 +836,6 @@
   background: rgba(var(--grafite-rgb), 0.08);
   border-radius: 20px;
   padding: 4px 10px;
-}
-
-.painel-body .cal-todas-titulo {
-  font-size: 14px;
-  font-weight: 500;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.painel-body .cal-todas-acoes {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  justify-self: end;
-}
-
-.painel-body .cal-tarefa-feita .cal-todas-titulo {
-  text-decoration: line-through;
-  color: var(--texto-suave);
 }
 
 /* ==========================================================================

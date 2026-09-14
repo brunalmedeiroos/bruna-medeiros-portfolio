@@ -3091,11 +3091,10 @@
 
 .painel-body .ugc-resultados-total-card {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 16px;
-  max-width: 760px;
 }
 
 .painel-body .ugc-resultados-total-label {

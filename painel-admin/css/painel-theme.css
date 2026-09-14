@@ -408,6 +408,14 @@
   gap: 4px;
 }
 
+/* O atributo hidden precisa vencer o display:grid acima (mesma
+   especificidade sem isto — a regra do autor venceria a do agente de
+   usuário, e trocar de visão Mês/Semana/Dia pareceria não fazer nada). */
+.painel-body .cal-grade[hidden],
+.painel-body .cal-semana[hidden] {
+  display: none;
+}
+
 /* Célula do dia (visão Mês) — em vez de uma bolinha com um pontinho, mostra
    o número do dia e os próprios eventos como "chips", estilo Google
    Agenda. Clicar em qualquer parte vazia da célula abre o popup do dia

@@ -3285,6 +3285,92 @@
   }
 }
 
+/* ==========================================================================
+   Aba Afiliação — cards de plataforma gerados dinamicamente (não é um
+   conjunto fixo de categorias como em Preços), então o grid usa auto-fit em
+   vez de um número de colunas travado.
+   ========================================================================== */
+
+.painel-body .afiliacao-plataformas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.painel-body .afiliacao-links-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.painel-body .afiliacao-link-linha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--creme);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 10px 14px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.painel-body .afiliacao-link-linha:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--sombra);
+}
+
+.painel-body .afiliacao-link-linha:active {
+  cursor: grabbing;
+}
+
+.painel-body .afiliacao-link-arrastando {
+  opacity: 0.35;
+}
+
+.painel-body .afiliacao-link-arraste {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--texto-suave);
+  cursor: grab;
+}
+
+.painel-body .afiliacao-link-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.painel-body .afiliacao-link-nome {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--grafite);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.painel-body .afiliacao-link-obs {
+  font-size: 12px;
+  color: var(--texto-suave);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.painel-body .afiliacao-link-acoes {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.painel-body .afiliacao-link-copiar {
+  padding: 6px 12px;
+  font-size: 12px;
+  box-shadow: none;
+}
+
 /* Espaçamento entre os blocos de cada sub-aba de UGC/Publi (cards de número,
    tabelas, "Próximas entregas" etc. — sem isto ficavam grudados). */
 .painel-body .ugc-pagina,

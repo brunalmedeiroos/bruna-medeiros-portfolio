@@ -2093,9 +2093,11 @@
   background: rgba(var(--grafite-rgb), 0.4);
 }
 
-/* Card branco (não creme) só no modal do Roteiro, no estilo do editor
-   de documento pedido — os outros modais continuam com o creme padrão. */
-.painel-body #ugc-modal-roteiro-overlay .pl-modal {
+/* Card branco (não creme) no modal do Roteiro UGC e no modal de ideia do
+   Banco de Ideias (mesmo estilo de editor de documento) — os outros
+   modais continuam com o creme padrão. */
+.painel-body #ugc-modal-roteiro-overlay .pl-modal,
+.painel-body #pl-modal-overlay .pl-modal {
   background: var(--branco);
 }
 

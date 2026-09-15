@@ -2069,6 +2069,28 @@
   flex-direction: column;
   gap: 14px;
   box-shadow: var(--sombra-forte);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--grafite-rgb), 0.3) transparent;
+}
+
+/* Barra de rolagem fina, discreta, nas bordas arredondadas do card — sem
+   isso o scroll nativo do navegador (grosso, quadrado) fica parecendo
+   que "vaza" pra fora do card. */
+.painel-body .pl-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.painel-body .pl-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.painel-body .pl-modal::-webkit-scrollbar-thumb {
+  background: rgba(var(--grafite-rgb), 0.25);
+  border-radius: 999px;
+}
+
+.painel-body .pl-modal::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--grafite-rgb), 0.4);
 }
 
 /* Card branco (não creme) só no modal do Roteiro, no estilo do editor

@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260914k">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260915b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -522,10 +522,16 @@
 
           <div id="pl-pagina-banco" class="pl-pagina" hidden>
             <button class="pl-voltar" type="button" data-i18n="voltar">← Voltar</button>
-            <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_banco_ideias">Banco de ideias</h3>
-            <div class="pl-colunas-scroll">
-              <div id="pl-colunas-banco" class="pl-colunas"></div>
+            <div class="pl-banco-topo">
+              <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_banco_ideias">Banco de ideias</h3>
+              <div class="pl-roteiros-prontos-badge">
+                <span data-i18n="pl_roteiros_prontos">Roteiros prontos</span>: <span id="pl-roteiros-prontos-contagem">0</span>
+              </div>
             </div>
+            <div class="pl-pilar-strip-scroll">
+              <div id="pl-pilar-strip" class="pl-pilar-strip"></div>
+            </div>
+            <div id="pl-banco-roteiros-area"></div>
           </div>
 
           <div id="pl-pagina-achados" class="pl-pagina" hidden>
@@ -2538,8 +2544,12 @@
         achados_col_musica: 'Música',
         achados_col_cta: 'CTA',
         pl_excluir_pilar: 'Excluir pilar',
+        pl_renomear_pilar: 'Renomear pilar',
         pl_novo_pilar_curto: '+ Novo pilar',
         pl_nome_pilar_placeholder: 'Nome do pilar',
+        pl_roteiros_prontos: 'Roteiros prontos',
+        pl_selecione_pilar: 'Selecione um pilar acima pra ver as ideias.',
+        pl_nenhuma_ideia_pilar: 'Nenhuma ideia nesse pilar ainda.',
         pl_erro_criar_pilar: 'Não foi possível criar o pilar agora.',
         pl_erro_criar_ideia: 'Não foi possível criar a ideia agora.',
         pl_excluir_pilar_confirmar_prefixo: 'Excluir o pilar ',
@@ -3255,8 +3265,12 @@
         achados_col_musica: 'Music',
         achados_col_cta: 'CTA',
         pl_excluir_pilar: 'Delete pillar',
+        pl_renomear_pilar: 'Rename pillar',
         pl_novo_pilar_curto: '+ New pillar',
         pl_nome_pilar_placeholder: 'Pillar name',
+        pl_roteiros_prontos: 'Ready scripts',
+        pl_selecione_pilar: 'Select a pillar above to see its ideas.',
+        pl_nenhuma_ideia_pilar: 'No ideas in this pillar yet.',
         pl_erro_criar_pilar: 'Could not create the pillar right now.',
         pl_erro_criar_ideia: 'Could not create the idea right now.',
         pl_excluir_pilar_confirmar_prefixo: 'Delete the pillar ',
@@ -4231,6 +4245,10 @@
       document.getElementById('pl-cronograma').hidden = true;
       document.querySelectorAll('.pl-pagina').forEach((p) => (p.hidden = true));
       document.getElementById('pl-pagina-' + pagina).hidden = false;
+      if (pagina === 'banco') {
+        pilarSelecionadoId = null;
+        renderizarBancoIdeias();
+      }
     }
 
     function fecharPaginaPlanejador() {
@@ -6602,17 +6620,19 @@
     }
 
     // ---- Banco de Ideias (pilares livres, criados pela Bruna) ----
+    // Fileira de pilares em cima (seleciona um por vez, não é mais um board
+    // Trello com todas as colunas visíveis ao mesmo tempo); abaixo, grade de
+    // cards de ideia no mesmo estilo visual dos cards de Roteiro UGC.
+
+    let pilarSelecionadoId = null;
 
     function renderizarBancoIdeias() {
-      const container = document.getElementById('pl-colunas-banco');
-      container.innerHTML = '';
-
-      pilaresCache.forEach((pilar) => {
-        const ideiasDoPilar = ideiasCache.filter((i) => i.pilar_id === pilar.id && !i.gravado);
-        container.appendChild(criarColunaIdeias(pilar, ideiasDoPilar));
-      });
-
-      container.appendChild(criarBotaoNovaColuna());
+      if (pilarSelecionadoId && !pilaresCache.some((p) => p.id === pilarSelecionadoId)) {
+        pilarSelecionadoId = null;
+      }
+      renderizarFileiraPilares();
+      atualizarContadorRoteirosProntos();
+      renderizarRoteirosDoPilarSelecionado();
     }
 
     function temRoteiro(ideia) {
@@ -6623,136 +6643,179 @@
       return (a.ordem - b.ordem) || a.id.localeCompare(b.id);
     }
 
-    // Estado do drag-and-drop das ideias (estilo Trello: arrasta dentro da
-    // coluna pra priorizar, ou pra outra coluna pra mudar o pilar).
-    let cardIdeiaArrastado = null;
-
-    function criarColunaIdeias(pilar, ideias) {
-      const coluna = document.createElement('div');
-      coluna.className = 'pl-coluna';
-      coluna.dataset.pilarId = pilar.id;
-      coluna.innerHTML = `
-        <div class="pl-coluna-topo">
-          <div class="pl-coluna-titulo" contenteditable="true" spellcheck="false" role="textbox" aria-label="${escapeHtml(tr('pl_pilar'))}">${escapeHtml(pilar.nome)}</div>
-          <button class="pl-coluna-excluir cal-btn cal-btn-icon" type="button" aria-label="${escapeHtml(tr('pl_excluir_pilar'))}">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </div>
-        <div class="pl-coluna-cards"></div>
-        <button class="pl-coluna-add" type="button">${escapeHtml(tr('pl_nova_ideia'))}</button>
-      `;
-
-      const listaCards = coluna.querySelector('.pl-coluna-cards');
-      ideias.sort(comparaOrdem).forEach((ideia) => listaCards.appendChild(criarCardIdeia(ideia)));
-
-      configurarDropZoneIdeias(listaCards);
-
-      const inputTitulo = coluna.querySelector('.pl-coluna-titulo');
-      inputTitulo.addEventListener('blur', () => renomearPilar(pilar, inputTitulo.textContent));
-      inputTitulo.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          inputTitulo.blur();
-        }
-      });
-
-      coluna.querySelector('.pl-coluna-add').addEventListener('click', () => mostrarFormNovaIdeia(coluna, pilar.id));
-      coluna.querySelector('.pl-coluna-excluir').addEventListener('click', () => excluirPilar(pilar));
-
-      return coluna;
+    function classeStatusIdeia(status) {
+      if (status === 'Roteiro pronto') return 'ugc-status-producao';
+      if (status === 'Publicado') return 'ugc-status-pago';
+      return 'ugc-status-inicial';
     }
 
-    function criarCardIdeia(ideia) {
+    function selecionarPilar(pilarId) {
+      pilarSelecionadoId = pilarSelecionadoId === pilarId ? null : pilarId;
+      renderizarFileiraPilares();
+      atualizarContadorRoteirosProntos();
+      renderizarRoteirosDoPilarSelecionado();
+    }
+
+    function renderizarFileiraPilares() {
+      const strip = document.getElementById('pl-pilar-strip');
+      strip.innerHTML = '';
+      if (pilarSelecionadoId) {
+        const pilar = pilaresCache.find((p) => p.id === pilarSelecionadoId);
+        if (pilar) strip.appendChild(criarCardPilar(pilar));
+        return;
+      }
+      pilaresCache.forEach((pilar) => strip.appendChild(criarCardPilar(pilar)));
+      strip.appendChild(criarBotaoNovoPilar());
+    }
+
+    function criarCardPilar(pilar) {
+      const selecionado = pilar.id === pilarSelecionadoId;
       const card = document.createElement('div');
-      card.className = 'pl-card';
-      card.draggable = true;
-      card.dataset.id = ideia.id;
+      card.className = 'pl-pilar-card' + (selecionado ? ' is-selecionado' : '');
       card.innerHTML = `
-        ${temRoteiro(ideia) ? `<span class="pl-card-dot" title="${escapeHtml(tr('pl_ja_tem_roteiro'))}"></span>` : ''}
-        <span class="pl-card-titulo">${escapeHtml(ideia.titulo)}</span>
-        <div class="pl-card-rodape">
-          ${ideia.formato ? `<span class="pl-card-formato">${escapeHtml(ideia.formato)}</span>` : ''}
-          <span class="pl-card-status">${escapeHtml(traduzirStatusIdeia(ideia.status))}</span>
-          ${ideia.data_agendada ? `<button type="button" class="pl-card-marcar-gravado">${escapeHtml(tr('pl_marcar_gravado'))}</button>` : ''}
-        </div>
+        <button type="button" class="pl-pilar-card-nome">${escapeHtml(pilar.nome)}</button>
+        ${
+          selecionado
+            ? `<div class="pl-pilar-card-acoes">
+          <button type="button" class="pl-pilar-card-editar cal-btn cal-btn-icon" aria-label="${escapeHtml(tr('pl_renomear_pilar'))}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M16.5 3.5l4 4L7 21l-4.5.5L3 17 16.5 3.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <button type="button" class="pl-pilar-card-excluir cal-btn cal-btn-icon" aria-label="${escapeHtml(tr('pl_excluir_pilar'))}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>`
+            : ''
+        }
       `;
-      card.addEventListener('click', () => {
-        if (card.classList.contains('pl-card-arrastando')) return;
-        abrirModalIdeia(ideia);
-      });
-      const botaoGravado = card.querySelector('.pl-card-marcar-gravado');
-      if (botaoGravado) {
-        botaoGravado.addEventListener('click', (e) => {
+      card.querySelector('.pl-pilar-card-nome').addEventListener('click', () => selecionarPilar(pilar.id));
+      if (selecionado) {
+        card.querySelector('.pl-pilar-card-editar').addEventListener('click', (e) => {
           e.stopPropagation();
-          marcarIdeiaComoGravada(ideia);
+          iniciarRenomeacaoPilar(card, pilar);
+        });
+        card.querySelector('.pl-pilar-card-excluir').addEventListener('click', (e) => {
+          e.stopPropagation();
+          excluirPilar(pilar);
         });
       }
-      card.addEventListener('dragstart', () => {
-        cardIdeiaArrastado = card;
-        setTimeout(() => card.classList.add('pl-card-arrastando'), 0);
+      return card;
+    }
+
+    function iniciarRenomeacaoPilar(card, pilar) {
+      const nomeAtual = card.querySelector('.pl-pilar-card-nome');
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'pl-pilar-card-nome-input';
+      input.value = pilar.nome;
+      nomeAtual.replaceWith(input);
+      input.focus();
+      input.select();
+      input.addEventListener('blur', () => renomearPilar(pilar, input.value));
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          input.blur();
+        }
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          renderizarBancoIdeias();
+        }
       });
-      card.addEventListener('dragend', () => {
-        card.classList.remove('pl-card-arrastando');
-        const listaFinal = card.closest('.pl-coluna-cards');
-        cardIdeiaArrastado = null;
-        if (listaFinal) salvarNovaOrdemIdeias(listaFinal);
+    }
+
+    function criarBotaoNovoPilar() {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'pl-pilar-card pl-pilar-card-novo';
+      wrapper.innerHTML = `<button type="button" class="pl-pilar-card-novo-btn">${escapeHtml(tr('pl_novo_pilar_curto'))}</button>`;
+      wrapper.querySelector('.pl-pilar-card-novo-btn').addEventListener('click', () => mostrarFormNovoPilar(wrapper));
+      return wrapper;
+    }
+
+    function mostrarFormNovoPilar(wrapper) {
+      wrapper.innerHTML = `
+        <input type="text" class="pl-pilar-card-nome-input" placeholder="${escapeHtml(tr('pl_nome_pilar_placeholder'))}">
+        <div class="pl-novo-card-acoes">
+          <button type="button" class="cal-btn cal-btn-primario pl-pilar-card-novo-salvar">${escapeHtml(tr('criar'))}</button>
+          <button type="button" class="cal-btn pl-pilar-card-novo-cancelar">${escapeHtml(tr('confirm_cancelar'))}</button>
+        </div>
+      `;
+      const input = wrapper.querySelector('.pl-pilar-card-nome-input');
+      input.focus();
+
+      wrapper.querySelector('.pl-pilar-card-novo-cancelar').addEventListener('click', () => renderizarBancoIdeias());
+      wrapper.querySelector('.pl-pilar-card-novo-salvar').addEventListener('click', async () => {
+        const nome = input.value.trim();
+        if (!nome) return;
+        try {
+          const { error } = await Auth.sb.from('planejador_pilares').insert({ nome, ordem: pilaresCache.length });
+          if (error) throw error;
+          await carregarPlanejador();
+        } catch (err) {
+          console.error('Erro ao criar pilar:', err);
+          alert(tr('pl_erro_criar_pilar'));
+        }
+      });
+    }
+
+    function atualizarContadorRoteirosProntos() {
+      const ideias = ideiasCache.filter((i) => !i.gravado && (!pilarSelecionadoId || i.pilar_id === pilarSelecionadoId));
+      const prontos = ideias.filter((i) => i.status === 'Roteiro pronto').length;
+      document.getElementById('pl-roteiros-prontos-contagem').textContent = prontos;
+    }
+
+    function renderizarRoteirosDoPilarSelecionado() {
+      const area = document.getElementById('pl-banco-roteiros-area');
+      area.innerHTML = '';
+
+      if (!pilarSelecionadoId) {
+        area.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('pl_selecione_pilar'))}</p>`;
+        return;
+      }
+
+      const botaoNova = document.createElement('button');
+      botaoNova.type = 'button';
+      botaoNova.className = 'cal-btn cal-btn-primario pl-banco-nova-ideia-btn';
+      botaoNova.textContent = tr('pl_nova_ideia');
+      botaoNova.addEventListener('click', () => mostrarFormNovaIdeia(area));
+      area.appendChild(botaoNova);
+
+      const ideias = ideiasCache.filter((i) => i.pilar_id === pilarSelecionadoId && !i.gravado).sort(comparaOrdem);
+
+      if (ideias.length === 0) {
+        area.insertAdjacentHTML('beforeend', `<p class="texto-vazio">${escapeHtml(tr('pl_nenhuma_ideia_pilar'))}</p>`);
+        return;
+      }
+
+      const grade = document.createElement('div');
+      grade.className = 'ugc-roteiros-grade';
+      ideias.forEach((ideia) => grade.appendChild(criarCardIdeiaRoteiro(ideia)));
+      area.appendChild(grade);
+    }
+
+    function criarCardIdeiaRoteiro(ideia) {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'ugc-roteiro-card';
+      card.innerHTML = `
+        <span class="ugc-status-pill ${classeStatusIdeia(ideia.status)}">${escapeHtml(traduzirStatusIdeia(ideia.status || 'Não iniciado'))}</span>
+        <span class="ugc-roteiro-card-marca">${escapeHtml(ideia.titulo)}</span>
+        <span class="ugc-roteiro-card-info">${escapeHtml(ideia.formato || tr('ugc_sem_detalhes_ainda'))}</span>
+        ${temRoteiro(ideia) ? `<span class="ugc-roteiro-card-comentarios">${escapeHtml(tr('pl_ja_tem_roteiro'))}</span>` : ''}
+        ${ideia.data_agendada ? `<span class="pl-card-marcar-gravado">${escapeHtml(tr('pl_marcar_gravado'))}</span>` : ''}
+      `;
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.pl-card-marcar-gravado')) {
+          e.stopPropagation();
+          marcarIdeiaComoGravada(ideia);
+          return;
+        }
+        abrirModalIdeia(ideia);
       });
       return card;
     }
 
-    // Acha, dentro de uma lista de cards, qual elemento deve ficar logo
-    // depois do ponto onde o mouse está — mecânica clássica de drag do Trello.
-    function elementoIdeiaNaPosicao(container, y) {
-      const cards = [...container.querySelectorAll('.pl-card:not(.pl-card-arrastando)')];
-      return cards.reduce(
-        (maisProximo, card) => {
-          const caixa = card.getBoundingClientRect();
-          const distancia = y - caixa.top - caixa.height / 2;
-          if (distancia < 0 && distancia > maisProximo.distancia) {
-            return { distancia, elemento: card };
-          }
-          return maisProximo;
-        },
-        { distancia: Number.NEGATIVE_INFINITY, elemento: null }
-      ).elemento;
-    }
-
-    function configurarDropZoneIdeias(listaCards) {
-      listaCards.addEventListener('dragover', (e) => {
-        if (!cardIdeiaArrastado) return;
-        e.preventDefault();
-        const depois = elementoIdeiaNaPosicao(listaCards, e.clientY);
-        if (depois == null) listaCards.appendChild(cardIdeiaArrastado);
-        else listaCards.insertBefore(cardIdeiaArrastado, depois);
-      });
-    }
-
-    async function salvarNovaOrdemIdeias(listaCards) {
-      const coluna = listaCards.closest('.pl-coluna');
-      const novoPilarId = coluna ? coluna.dataset.pilarId : null;
-      const idsNaOrdem = [...listaCards.querySelectorAll('.pl-card')].map((c) => c.dataset.id);
-      if (!idsNaOrdem.length) return;
-
-      try {
-        const atualizacoes = idsNaOrdem.map((id, indice) => {
-          const ideia = ideiasCache.find((i) => i.id === id);
-          const mudanca = { ordem: indice };
-          if (ideia && novoPilarId && ideia.pilar_id !== novoPilarId) mudanca.pilar_id = novoPilarId;
-          return Auth.sb.from('planejador_ideias').update(mudanca).eq('id', id);
-        });
-        const resultados = await Promise.all(atualizacoes);
-        const comErro = resultados.find((r) => r.error);
-        if (comErro) throw comErro.error;
-        await carregarPlanejador();
-      } catch (err) {
-        console.error('Erro ao salvar nova ordem das ideias:', err);
-        alert(tr('pl_erro_ordem'));
-        await carregarPlanejador();
-      }
-    }
-
-    function mostrarFormNovaIdeia(coluna, pilarId) {
-      if (coluna.querySelector('.pl-novo-card-form')) return;
+    function mostrarFormNovaIdeia(area) {
+      if (area.querySelector('.pl-novo-card-form')) return;
 
       const form = document.createElement('div');
       form.className = 'pl-novo-card-form';
@@ -6763,7 +6826,7 @@
           <button type="button" class="cal-btn pl-novo-card-cancelar">${escapeHtml(tr('confirm_cancelar'))}</button>
         </div>
       `;
-      coluna.querySelector('.pl-coluna-add').before(form);
+      area.querySelector('.pl-banco-nova-ideia-btn').after(form);
 
       const textarea = form.querySelector('textarea');
       textarea.focus();
@@ -6772,7 +6835,7 @@
       form.querySelector('.pl-novo-card-salvar').addEventListener('click', async () => {
         const titulo = textarea.value.trim();
         if (!titulo) return;
-        await criarIdeia(pilarId, titulo);
+        await criarIdeia(pilarSelecionadoId, titulo);
       });
     }
 
@@ -6789,40 +6852,6 @@
         console.error('Erro ao criar ideia:', err);
         alert(tr('pl_erro_criar_ideia'));
       }
-    }
-
-    function criarBotaoNovaColuna() {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'pl-coluna pl-coluna-nova';
-      wrapper.innerHTML = `<button type="button" class="pl-coluna-nova-btn">${escapeHtml(tr('pl_novo_pilar_curto'))}</button>`;
-      wrapper.querySelector('.pl-coluna-nova-btn').addEventListener('click', () => mostrarFormNovaColuna(wrapper));
-      return wrapper;
-    }
-
-    function mostrarFormNovaColuna(wrapper) {
-      wrapper.innerHTML = `
-        <input type="text" class="pl-coluna-nova-input" placeholder="${escapeHtml(tr('pl_nome_pilar_placeholder'))}">
-        <div class="pl-novo-card-acoes">
-          <button type="button" class="cal-btn cal-btn-primario pl-coluna-nova-salvar">${escapeHtml(tr('criar'))}</button>
-          <button type="button" class="cal-btn pl-coluna-nova-cancelar">${escapeHtml(tr('confirm_cancelar'))}</button>
-        </div>
-      `;
-      const input = wrapper.querySelector('.pl-coluna-nova-input');
-      input.focus();
-
-      wrapper.querySelector('.pl-coluna-nova-cancelar').addEventListener('click', () => renderizarBancoIdeias());
-      wrapper.querySelector('.pl-coluna-nova-salvar').addEventListener('click', async () => {
-        const nome = input.value.trim();
-        if (!nome) return;
-        try {
-          const { error } = await Auth.sb.from('planejador_pilares').insert({ nome, ordem: pilaresCache.length });
-          if (error) throw error;
-          await carregarPlanejador();
-        } catch (err) {
-          console.error('Erro ao criar pilar:', err);
-          alert(tr('pl_erro_criar_pilar'));
-        }
-      });
     }
 
     async function renomearPilar(pilar, novoNome) {

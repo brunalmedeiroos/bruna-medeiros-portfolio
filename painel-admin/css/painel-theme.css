@@ -2040,6 +2040,127 @@
   color: var(--grafite);
 }
 
+/* ---- Banco de Ideias: fileira de pilares (seleciona um por vez) +
+   contador de roteiros prontos, no lugar do board estilo Trello ---- */
+
+.painel-body .pl-banco-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.painel-body .pl-roteiros-prontos-badge {
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--texto-suave);
+  white-space: nowrap;
+}
+
+.painel-body .pl-roteiros-prontos-badge span:last-child {
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .pl-pilar-strip-scroll {
+  overflow-x: auto;
+  padding-top: 14px;
+  padding-bottom: 4px;
+}
+
+.painel-body .pl-pilar-strip {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.painel-body .pl-pilar-card {
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 14px 18px;
+  min-width: 150px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.painel-body .pl-pilar-card.is-selecionado {
+  background: var(--coral);
+  border-color: var(--coral);
+}
+
+.painel-body .pl-pilar-card.is-selecionado .pl-pilar-card-nome {
+  color: var(--branco);
+}
+
+.painel-body .pl-pilar-card-nome {
+  background: transparent;
+  border: none;
+  font-family: var(--fonte-corpo);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--grafite);
+  cursor: pointer;
+  text-align: center;
+  padding: 0;
+}
+
+.painel-body .pl-pilar-card-nome-input {
+  font-family: var(--fonte-corpo);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+  border-bottom: 1px solid var(--borda);
+  background: transparent;
+  width: 100%;
+}
+
+.painel-body .pl-pilar-card-acoes {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.painel-body .pl-pilar-card.is-selecionado .pl-pilar-card-acoes {
+  color: var(--branco);
+}
+
+.painel-body .pl-pilar-card-novo {
+  background: transparent;
+  border: 1px dashed var(--borda);
+}
+
+.painel-body .pl-pilar-card-novo-btn {
+  background: transparent;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--fonte-corpo);
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.painel-body .pl-pilar-card-novo-btn:hover {
+  color: var(--grafite);
+}
+
+.painel-body #pl-banco-roteiros-area {
+  margin-top: 20px;
+}
+
+.painel-body .pl-banco-nova-ideia-btn {
+  margin-bottom: 16px;
+}
+
 /* ---- Modais de detalhe (ideia / achado) ---- */
 
 .painel-body .pl-modal-overlay {

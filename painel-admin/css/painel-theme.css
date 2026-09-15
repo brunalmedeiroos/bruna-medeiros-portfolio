@@ -2900,7 +2900,7 @@
 /* ---- Modal de roteiro (mais largo ainda, pra caber a cena em 2 colunas) ---- */
 
 .painel-body .pl-modal-xl {
-  max-width: 880px;
+  max-width: 1100px;
 }
 
 .painel-body .ugc-modal-secao-titulo {

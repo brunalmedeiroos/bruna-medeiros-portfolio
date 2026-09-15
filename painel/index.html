@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260914g">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260914h">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -1596,20 +1596,8 @@
             <input type="text" id="ugc-roteiro-produto">
           </div>
           <div class="cal-form-campo">
-            <label for="ugc-roteiro-campanha" data-i18n="ugc_col_campanha">Campanha</label>
-            <input type="text" id="ugc-roteiro-campanha">
-          </div>
-          <div class="cal-form-campo">
             <label for="ugc-roteiro-trabalho" data-i18n="ugc_trabalho_vinculado">Trabalho vinculado</label>
             <select id="ugc-roteiro-trabalho"></select>
-          </div>
-        </div>
-
-        <h4 class="ugc-modal-secao-titulo" data-i18n="ugc_formato_video_titulo">Formato do vídeo</h4>
-        <div class="pl-modal-linha">
-          <div class="cal-form-campo">
-            <label for="ugc-roteiro-tipo-conteudo" data-i18n="ugc_tipo_conteudo">Tipo de conteúdo</label>
-            <input type="text" id="ugc-roteiro-tipo-conteudo" placeholder="Ex: Reels, Unboxing...">
           </div>
           <div class="cal-form-campo">
             <label for="ugc-roteiro-duracao" data-i18n="ugc_duracao_prevista">Duração prevista</label>
@@ -1638,12 +1626,6 @@
           </div>
         </div>
 
-        <div class="cal-form-campo">
-          <label for="ugc-roteiro-observacoes" data-i18n="ugc_observacoes">Observações</label>
-          <textarea id="ugc-roteiro-observacoes"></textarea>
-          <span class="ugc-roteiro-nota-interna" data-i18n="ugc_observacoes_nota">Só você vê — não aparece no link.</span>
-        </div>
-
         <div id="ugc-roteiro-comentarios-secao" hidden>
           <h4 class="ugc-modal-secao-titulo" data-i18n="ugc_comentarios_titulo">Comentários da marca</h4>
           <div id="ugc-roteiro-comentarios-lista" class="ugc-roteiro-comentarios-lista"></div>
@@ -1660,10 +1642,7 @@
           </div>
         </div>
 
-        <h4 class="ugc-modal-secao-titulo"><span data-i18n="ugc_cenas">Cenas</span> <span id="ugc-roteiro-progresso" class="ugc-roteiro-progresso-badge"></span></h4>
-        <div id="ugc-roteiro-cenas-lista" class="ugc-cenas-lista"></div>
-        <div class="ugc-cena-acoes-rodape">
-          <button type="button" id="btn-ugc-add-cena" class="cal-btn" data-i18n="ugc_add_cena">+ Adicionar cena</button>
+        <div class="ugc-roteiro-rodape-acoes">
           <button type="button" id="ugc-copiar-roteiro" class="cal-btn" data-i18n="ugc_copiar_roteiro">Copiar roteiro completo</button>
         </div>
 
@@ -2004,7 +1983,6 @@
     let ugcAbaCarregada = false;
     let ugcTrabalhosCache = [];
     let ugcRoteirosCache = [];
-    let ugcRoteiroCenasCache = [];
     let ugcRoteiroVisualizacoesCache = [];
     let ugcRoteiroComentariosCache = [];
     let ugcProspeccaoCache = [];
@@ -2096,7 +2074,6 @@
     let ugcTrabalhoEntregaveisCache = [];
     let ugcModalEntregaveis = [];
     let ugcRoteiroAbertoId = null;
-    let ugcModalCenas = [];
     let ugcModalMoodboard = [];
     let ugcProspeccaoAbertaId = null;
     const UGC_STATUS_PROSPECCAO = ['Para abordar', 'Contato enviado', 'Aguardando resposta', 'Respondeu', 'Negociação', 'Proposta enviada', 'Fechado', 'Recusado', 'Sem resposta', 'Follow-up'];
@@ -2690,9 +2667,7 @@
         ugc_cat_entretenimento: 'Entretenimento',
         ugc_cat_experiencia: 'Experiência',
         ugc_trabalho_vinculado: 'Trabalho vinculado',
-        ugc_tipo_conteudo: 'Tipo de conteúdo',
         ugc_duracao_prevista: 'Duração prevista',
-        ugc_formato_video_titulo: 'Formato do vídeo',
         ugc_categoria: 'Categoria',
         ugc_categoria_placeholder: 'Ex: Conteúdo pro perfil',
         ugc_roteiro_conteudo: 'Roteiro',
@@ -2704,9 +2679,6 @@
         ugc_doc_lista_numerada: 'Lista numerada',
         ugc_visivel_para_marca: 'A marca vê isso no link de aprovação.',
         ugc_observacoes: 'Observações',
-        ugc_observacoes_nota: 'Só você vê — não aparece no link.',
-        ugc_cenas: 'Cenas',
-        ugc_add_cena: '+ Adicionar cena',
         ugc_copiar_roteiro: 'Copiar roteiro completo',
         ugc_roteiro_copiado: 'Roteiro copiado! Já pode colar onde quiser.',
         ugc_nao_definido: 'Não definido',
@@ -2801,38 +2773,8 @@
         ugc_moodboard_arraste_nota: 'Arraste as fotos pra posicionar como quiser — pode sobrepor, como numa colagem. Todas ficam do mesmo tamanho, não importa quantas você adicionar.',
         ugc_anexar_foto_moodboard: '+ Anexar foto',
         ugc_sem_detalhes_ainda: 'Sem detalhes ainda',
-        ugc_cenas_gravadas: 'cenas gravadas',
-        ugc_sem_cenas_ainda: 'Sem cenas ainda',
-        ugc_cena_prefixo: 'CENA',
-        ugc_remover_cena_aria: 'Remover cena',
-        ugc_mover_cena_cima_aria: 'Mover cena para cima',
-        ugc_mover_cena_baixo_aria: 'Mover cena para baixo',
-        ugc_cena_tempo_aria: 'Faixa de tempo da cena',
-        ugc_cena_tempo_placeholder: 'ex: 0-5s',
         ugc_referencia_rotulo_placeholder: 'Cenário, roupa, item...',
-        ugc_fala: 'Fala',
-        ugc_fala_placeholder: 'O que devo falar...',
-        ugc_o_que_fazer: 'O que fazer',
-        ugc_o_que_fazer_placeholder: 'A ação da cena...',
-        ugc_tipo_cena: 'Cena',
-        ugc_tipo_cena_escolher: 'Escolher...',
-        ugc_tipo_cena_falada: 'Cena falada',
-        ugc_tipo_cena_broll_narracao: 'B-roll com narração',
-        ugc_tipo_cena_broll_silencioso: 'B-roll sem narração',
-        ugc_tipo_cena_texto_tela: 'Texto na tela',
-        ugc_descricao_cena: 'Detalhes da cena',
-        ugc_descricao_cena_placeholder: 'O que precisa aparecer visualmente...',
-        ugc_referencias_visuais: 'Referências visuais (cenário, roupa, itens...)',
-        ugc_anexar_referencia_aria: 'Adicionar imagem de referência',
         ugc_remover_referencia_aria: 'Remover imagem de referência',
-        ugc_funcao_cena_aria: 'Função da cena na estrutura do vídeo',
-        ugc_funcao_cena_hook: 'Hook',
-        ugc_funcao_cena_contexto: 'Contexto',
-        ugc_funcao_cena_desenvolvimento: 'Desenvolvimento',
-        ugc_funcao_cena_prova_social: 'Prova social',
-        ugc_funcao_cena_cta: 'CTA',
-        ugc_cena_gravada_label: 'Cena gravada',
-        ugc_cena_conferida_label: 'Cena conferida',
         nenhum: 'Nenhum',
         ugc_excluir_roteiro_confirmar: 'Excluir este roteiro? As cenas também serão apagadas.',
         ugc_compartilhar_roteiro: 'Link para aprovação',
@@ -3442,9 +3384,7 @@
         ugc_cat_entretenimento: 'Entertainment',
         ugc_cat_experiencia: 'Experience',
         ugc_trabalho_vinculado: 'Linked job',
-        ugc_tipo_conteudo: 'Content type',
         ugc_duracao_prevista: 'Expected duration',
-        ugc_formato_video_titulo: 'Video format',
         ugc_categoria: 'Category',
         ugc_categoria_placeholder: 'E.g.: Feed content',
         ugc_roteiro_conteudo: 'Script',
@@ -3456,9 +3396,6 @@
         ugc_doc_lista_numerada: 'Numbered list',
         ugc_visivel_para_marca: 'The brand sees this on the approval link.',
         ugc_observacoes: 'Notes',
-        ugc_observacoes_nota: 'Only you see this — it never appears on the link.',
-        ugc_cenas: 'Scenes',
-        ugc_add_cena: '+ Add scene',
         ugc_copiar_roteiro: 'Copy full script',
         ugc_roteiro_copiado: 'Script copied! You can paste it anywhere now.',
         ugc_nao_definido: 'Not set',
@@ -3553,38 +3490,8 @@
         ugc_moodboard_arraste_nota: 'Drag the photos to place them anywhere — they can overlap, like a real collage. All stay the same size no matter how many you add.',
         ugc_anexar_foto_moodboard: '+ Attach photo',
         ugc_sem_detalhes_ainda: 'No details yet',
-        ugc_cenas_gravadas: 'scenes filmed',
-        ugc_sem_cenas_ainda: 'No scenes yet',
-        ugc_cena_prefixo: 'SCENE',
-        ugc_remover_cena_aria: 'Remove scene',
-        ugc_mover_cena_cima_aria: 'Move scene up',
-        ugc_mover_cena_baixo_aria: 'Move scene down',
-        ugc_cena_tempo_aria: 'Scene time range',
-        ugc_cena_tempo_placeholder: 'e.g. 0-5s',
         ugc_referencia_rotulo_placeholder: 'Setting, outfit, prop...',
-        ugc_fala: 'Lines',
-        ugc_fala_placeholder: 'What I should say...',
-        ugc_o_que_fazer: 'What to do',
-        ugc_o_que_fazer_placeholder: "The scene's action...",
-        ugc_tipo_cena: 'Scene',
-        ugc_tipo_cena_escolher: 'Choose...',
-        ugc_tipo_cena_falada: 'Talking scene',
-        ugc_tipo_cena_broll_narracao: 'B-roll with narration',
-        ugc_tipo_cena_broll_silencioso: 'B-roll without narration',
-        ugc_tipo_cena_texto_tela: 'On-screen text',
-        ugc_descricao_cena: 'Scene details',
-        ugc_descricao_cena_placeholder: 'What needs to appear visually...',
-        ugc_referencias_visuais: 'Visual references (setting, outfit, props...)',
-        ugc_anexar_referencia_aria: 'Add reference image',
         ugc_remover_referencia_aria: 'Remove reference image',
-        ugc_funcao_cena_aria: 'Scene role in the video structure',
-        ugc_funcao_cena_hook: 'Hook',
-        ugc_funcao_cena_contexto: 'Context',
-        ugc_funcao_cena_desenvolvimento: 'Development',
-        ugc_funcao_cena_prova_social: 'Social proof',
-        ugc_funcao_cena_cta: 'CTA',
-        ugc_cena_gravada_label: 'Scene filmed',
-        ugc_cena_conferida_label: 'Scene checked',
         nenhum: 'None',
         ugc_excluir_roteiro_confirmar: 'Delete this script? The scenes will also be deleted.',
         ugc_compartilhar_roteiro: 'Link for approval',
@@ -4240,21 +4147,6 @@
       });
       document.getElementById('ugc-modal-roteiro-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'ugc-modal-roteiro-overlay') fecharModalRoteiro();
-      });
-      document.getElementById('btn-ugc-add-cena').addEventListener('click', () => {
-        ugcModalCenas.push({
-          id: null,
-          fala: '',
-          o_que_fazer: '',
-          tipo_cena: '',
-          descricao_cena: '',
-          cena_gravada: false,
-          cena_conferida: false,
-          faixa_tempo: null,
-          funcao_cena: '',
-          referencias_imagens: [],
-        });
-        renderizarCenasModal();
       });
       document.getElementById('ugc-copiar-roteiro').addEventListener('click', copiarRoteiroCompleto);
       configurarBarraFormatacaoRoteiro();
@@ -7641,11 +7533,10 @@
 
     async function carregarUGC() {
       try {
-        const [trabalhos, entregaveis, roteiros, cenas, visualizacoes, comentarios, prospeccao, contratos, precos] = await Promise.all([
+        const [trabalhos, entregaveis, roteiros, visualizacoes, comentarios, prospeccao, contratos, precos] = await Promise.all([
           buscarTudo('ugc_trabalhos'),
           buscarTudo('ugc_trabalho_entregaveis'),
           buscarTudo('ugc_roteiros'),
-          buscarTudo('ugc_roteiro_cenas'),
           buscarTudo('ugc_roteiro_visualizacoes'),
           buscarTudo('ugc_roteiro_comentarios'),
           buscarTudo('ugc_prospeccao'),
@@ -7655,7 +7546,6 @@
         ugcTrabalhosCache = trabalhos;
         ugcTrabalhoEntregaveisCache = entregaveis;
         ugcRoteirosCache = roteiros;
-        ugcRoteiroCenasCache = cenas;
         ugcRoteiroVisualizacoesCache = visualizacoes;
         ugcRoteiroComentariosCache = comentarios;
         ugcProspeccaoCache = prospeccao;
@@ -8404,8 +8294,6 @@
     }
 
     function criarCardRoteiro(roteiro) {
-      const cenas = ugcRoteiroCenasCache.filter((c) => c.roteiro_id === roteiro.id);
-      const gravadas = cenas.filter((c) => c.cena_gravada).length;
       const comentarios = ugcRoteiroComentariosCache.filter((c) => c.roteiro_id === roteiro.id).length;
       const card = document.createElement('button');
       card.type = 'button';
@@ -8415,156 +8303,11 @@
       card.innerHTML = `
         <span class="ugc-status-pill ${classeStatusRoteiro(roteiro.status || 'Rascunho')}">${escapeHtml(traduzirStatusRoteiro(roteiro.status || 'Rascunho'))}</span>
         <span class="ugc-roteiro-card-marca">${escapeHtml(roteiro.marca || tr('ugc_sem_marca'))}</span>
-        <span class="ugc-roteiro-card-info">${escapeHtml([roteiro.produto, roteiro.campanha].filter(Boolean).join(' · ') || tr('ugc_sem_detalhes_ainda'))}</span>
-        <span class="ugc-roteiro-card-progresso">${cenas.length > 0 ? `${gravadas}/${cenas.length} ${tr('ugc_cenas_gravadas')}` : tr('ugc_sem_cenas_ainda')}</span>
+        <span class="ugc-roteiro-card-info">${escapeHtml([roteiro.produto, roteiro.categoria].filter(Boolean).join(' · ') || tr('ugc_sem_detalhes_ainda'))}</span>
         ${comentarios > 0 ? `<span class="ugc-roteiro-card-comentarios">${comentarios} ${tr(comentarios === 1 ? 'ugc_comentario_singular' : 'ugc_comentario_plural')}</span>` : ''}
       `;
       card.addEventListener('click', () => abrirModalRoteiro(roteiro));
       return card;
-    }
-
-    function renderizarCenasModal() {
-      const cont = document.getElementById('ugc-roteiro-cenas-lista');
-      const gravadas = ugcModalCenas.filter((c) => c.cena_gravada).length;
-      document.getElementById('ugc-roteiro-progresso').textContent =
-        ugcModalCenas.length > 0 ? `${gravadas}/${ugcModalCenas.length} ${tr('ugc_cenas_gravadas')}` : '';
-
-      cont.innerHTML = ugcModalCenas
-        .map(
-          (cena, i) => `
-            <div class="ugc-cena-card" data-index="${i}">
-              <div class="ugc-cena-topo">
-                <div class="ugc-cena-topo-info">
-                  <span class="ugc-cena-numero">${escapeHtml(tr('ugc_cena_prefixo'))} ${String(i + 1).padStart(2, '0')}</span>
-                  <select class="ugc-cena-funcao-select" data-index="${i}" data-campo="funcao_cena" aria-label="${escapeHtml(tr('ugc_funcao_cena_aria'))}">
-                    <option value="">—</option>
-                    <option value="Hook">${escapeHtml(tr('ugc_funcao_cena_hook'))}</option>
-                    <option value="Contexto">${escapeHtml(tr('ugc_funcao_cena_contexto'))}</option>
-                    <option value="Desenvolvimento">${escapeHtml(tr('ugc_funcao_cena_desenvolvimento'))}</option>
-                    <option value="Prova social">${escapeHtml(tr('ugc_funcao_cena_prova_social'))}</option>
-                    <option value="CTA">${escapeHtml(tr('ugc_funcao_cena_cta'))}</option>
-                  </select>
-                </div>
-                <div class="ugc-cena-topo-direita">
-                  <label class="ugc-cena-tempo-campo">
-                    <input type="text" class="ugc-cena-tempo-input" data-index="${i}" placeholder="${escapeHtml(tr('ugc_cena_tempo_placeholder'))}" aria-label="${escapeHtml(tr('ugc_cena_tempo_aria'))}" value="${cena.faixa_tempo != null ? escapeHtml(cena.faixa_tempo) : ''}">
-                  </label>
-                  <div class="ugc-cena-acoes">
-                    <button type="button" class="ugc-cena-mover" data-index="${i}" data-direcao="cima" ${i === 0 ? 'disabled' : ''} aria-label="${escapeHtml(tr('ugc_mover_cena_cima_aria'))}">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                    <button type="button" class="ugc-cena-mover" data-index="${i}" data-direcao="baixo" ${i === ugcModalCenas.length - 1 ? 'disabled' : ''} aria-label="${escapeHtml(tr('ugc_mover_cena_baixo_aria'))}">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12l7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                    <button type="button" class="ugc-cena-remover" data-index="${i}" aria-label="${escapeHtml(tr('ugc_remover_cena_aria'))}">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div class="ugc-cena-corpo${(cena.referencias_imagens || []).length === 0 ? ' ugc-cena-sem-fotos' : ''}">
-                <div class="ugc-cena-col-fotos">
-                  <label>${escapeHtml(tr('ugc_referencias_visuais'))}</label>
-                  <div class="ugc-moodboard-canvas ugc-cena-referencias-canvas" data-index="${i}"></div>
-                  <div class="ugc-moodboard-controles" data-index="${i}"></div>
-                  <button type="button" class="ugc-cena-referencia-anexar" data-index="${i}" aria-label="${escapeHtml(tr('ugc_anexar_referencia_aria'))}">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                    ${escapeHtml(tr('ugc_anexar_foto_moodboard'))}
-                  </button>
-                  <input type="file" accept="image/*" multiple class="ugc-cena-referencia-input" data-index="${i}" hidden>
-                </div>
-                <div class="ugc-cena-col-texto">
-                  <div class="cal-form-campo">
-                    <label>${escapeHtml(tr('ugc_fala'))}</label>
-                    <textarea data-index="${i}" data-campo="fala" placeholder="${escapeHtml(tr('ugc_fala_placeholder'))}">${escapeHtml(cena.fala || '')}</textarea>
-                  </div>
-                  <div class="cal-form-campo">
-                    <label>${escapeHtml(tr('ugc_o_que_fazer'))}</label>
-                    <textarea data-index="${i}" data-campo="o_que_fazer" placeholder="${escapeHtml(tr('ugc_o_que_fazer_placeholder'))}">${escapeHtml(cena.o_que_fazer || '')}</textarea>
-                  </div>
-                  <div class="cal-form-campo">
-                    <label>${escapeHtml(tr('ugc_tipo_cena'))}</label>
-                    <select data-index="${i}" data-campo="tipo_cena">
-                      <option value="">${escapeHtml(tr('ugc_tipo_cena_escolher'))}</option>
-                      <option value="Cena falada">${escapeHtml(tr('ugc_tipo_cena_falada'))}</option>
-                      <option value="B-roll com narração">${escapeHtml(tr('ugc_tipo_cena_broll_narracao'))}</option>
-                      <option value="B-roll sem narração">${escapeHtml(tr('ugc_tipo_cena_broll_silencioso'))}</option>
-                      <option value="Texto na tela">${escapeHtml(tr('ugc_tipo_cena_texto_tela'))}</option>
-                    </select>
-                  </div>
-                  <div class="cal-form-campo">
-                    <label>${escapeHtml(tr('ugc_descricao_cena'))}</label>
-                    <textarea data-index="${i}" data-campo="descricao_cena" placeholder="${escapeHtml(tr('ugc_descricao_cena_placeholder'))}">${escapeHtml(cena.descricao_cena || '')}</textarea>
-                  </div>
-                </div>
-              </div>
-              <div class="ugc-cena-checklist">
-                <label class="ugc-cena-check-label"><input type="checkbox" data-index="${i}" data-campo="cena_gravada" ${cena.cena_gravada ? 'checked' : ''}> ${escapeHtml(tr('ugc_cena_gravada_label'))}</label>
-                <label class="ugc-cena-check-label"><input type="checkbox" data-index="${i}" data-campo="cena_conferida" ${cena.cena_conferida ? 'checked' : ''}> ${escapeHtml(tr('ugc_cena_conferida_label'))}</label>
-              </div>
-            </div>
-          `
-        )
-        .join('');
-
-      cont.querySelectorAll('textarea').forEach((el) => {
-        el.addEventListener('input', () => {
-          ugcModalCenas[Number(el.dataset.index)][el.dataset.campo] = el.value;
-        });
-      });
-      cont.querySelectorAll('.ugc-cena-tempo-input').forEach((el) => {
-        el.addEventListener('input', () => {
-          ugcModalCenas[Number(el.dataset.index)].faixa_tempo = el.value === '' ? null : el.value;
-        });
-      });
-      cont.querySelectorAll('select[data-campo="tipo_cena"], select[data-campo="funcao_cena"]').forEach((el) => {
-        el.value = ugcModalCenas[Number(el.dataset.index)][el.dataset.campo] || '';
-        el.addEventListener('change', () => {
-          ugcModalCenas[Number(el.dataset.index)][el.dataset.campo] = el.value || null;
-        });
-      });
-      cont.querySelectorAll('input[type="checkbox"]').forEach((el) => {
-        el.addEventListener('change', () => {
-          ugcModalCenas[Number(el.dataset.index)][el.dataset.campo] = el.checked;
-          renderizarCenasModal();
-        });
-      });
-      cont.querySelectorAll('.ugc-cena-remover').forEach((el) => {
-        el.addEventListener('click', () => {
-          ugcModalCenas.splice(Number(el.dataset.index), 1);
-          renderizarCenasModal();
-        });
-      });
-      cont.querySelectorAll('.ugc-cena-referencia-anexar').forEach((el) => {
-        el.addEventListener('click', () => {
-          cont.querySelector(`.ugc-cena-referencia-input[data-index="${el.dataset.index}"]`).click();
-        });
-      });
-      cont.querySelectorAll('.ugc-cena-referencia-input').forEach((el) => {
-        el.addEventListener('change', async () => {
-          const indice = Number(el.dataset.index);
-          const arquivos = [...el.files];
-          el.value = '';
-          for (const arquivo of arquivos) {
-            await anexarReferenciaCena(indice, arquivo);
-          }
-          renderizarCenasModal();
-        });
-      });
-      ugcModalCenas.forEach((cena, i) => {
-        if (!cena.referencias_imagens) cena.referencias_imagens = [];
-        renderizarQuadroArrastavel(cont.querySelector(`.ugc-cena-referencias-canvas[data-index="${i}"]`), cena.referencias_imagens, renderizarCenasModal, 36);
-        renderizarControlesReferencias(cont.querySelector(`.ugc-moodboard-controles[data-index="${i}"]`), cena.referencias_imagens, renderizarCenasModal);
-      });
-      cont.querySelectorAll('.ugc-cena-mover').forEach((el) => {
-        el.addEventListener('click', () => {
-          const i = Number(el.dataset.index);
-          const alvo = el.dataset.direcao === 'cima' ? i - 1 : i + 1;
-          if (alvo < 0 || alvo >= ugcModalCenas.length) return;
-          [ugcModalCenas[i], ugcModalCenas[alvo]] = [ugcModalCenas[alvo], ugcModalCenas[i]];
-          renderizarCenasModal();
-        });
-      });
     }
 
     // Moodboard geral do roteiro (referências que valem pro vídeo inteiro,
@@ -8707,24 +8450,6 @@
       }
     }
 
-    // Sobe uma imagem de referência (cenário, roupa, item...) pro bucket
-    // público ugc-roteiro-referencias — a marca vê direto no link, sem
-    // precisar de signed URL nem login.
-    async function anexarReferenciaCena(indiceCena, arquivo) {
-      try {
-        const caminho = `cenas/${Date.now()}-${arquivo.name}`;
-        const { error } = await Auth.sb.storage.from('ugc-roteiro-referencias').upload(caminho, arquivo);
-        if (error) throw error;
-        const { data } = Auth.sb.storage.from('ugc-roteiro-referencias').getPublicUrl(caminho);
-        if (!ugcModalCenas[indiceCena].referencias_imagens) ugcModalCenas[indiceCena].referencias_imagens = [];
-        const imagens = ugcModalCenas[indiceCena].referencias_imagens;
-        imagens.push({ url: data.publicUrl, rotulo: '', ...posicaoInicialReferencia(imagens.length) });
-      } catch (err) {
-        console.error('Erro ao anexar imagem de referência:', err);
-        alert(tr('ugc_erro_anexar_arquivo'));
-      }
-    }
-
     // ---- Editor de texto rico do Roteiro (estilo Google Docs) — um
     // <div contenteditable> com uma barra de 5 botões chamando
     // document.execCommand(); não existe nenhuma lib de rich text no
@@ -8767,8 +8492,7 @@
     async function copiarRoteiroCompleto() {
       const marca = document.getElementById('ugc-roteiro-marca').value.trim();
       const produto = document.getElementById('ugc-roteiro-produto').value.trim();
-      const campanha = document.getElementById('ugc-roteiro-campanha').value.trim();
-      const tipoConteudo = document.getElementById('ugc-roteiro-tipo-conteudo').value.trim();
+      const categoria = document.getElementById('ugc-roteiro-categoria').value.trim();
       const duracao = document.getElementById('ugc-roteiro-duracao').value.trim();
       const areaConteudo = document.getElementById('ugc-roteiro-conteudo');
       const auxTexto = document.createElement('div');
@@ -8779,20 +8503,11 @@
       const conteudo = auxTexto.textContent.replace(/\n{3,}/g, '\n\n').trim();
 
       const linhas = [`ROTEIRO — ${marca || tr('ugc_sem_marca')}`];
-      const identificacao = [produto, campanha].filter(Boolean).join(' · ');
+      const identificacao = [produto, categoria].filter(Boolean).join(' · ');
       if (identificacao) linhas.push(identificacao);
-      const formato = [tipoConteudo, duracao].filter(Boolean).join(' · ');
-      if (formato) linhas.push(`Formato: ${formato}`);
+      if (duracao) linhas.push(`Duração: ${duracao}`);
 
       if (conteudo) linhas.push('', conteudo);
-
-      linhas.push('', 'Cenas:');
-      ugcModalCenas.forEach((cena, i) => {
-        const tags = [cena.funcao_cena, cena.tipo_cena].filter(Boolean).join(' · ');
-        linhas.push('', `${i + 1}. ${tags ? `[${tags}]` : ''}`.trim());
-        if (cena.fala) linhas.push(`Fala: ${cena.fala}`);
-        if (cena.descricao_cena) linhas.push(`Detalhes: ${cena.descricao_cena}`);
-      });
 
       try {
         await navigator.clipboard.writeText(linhas.join('\n'));
@@ -8849,14 +8564,11 @@
 
       document.getElementById('ugc-roteiro-marca').value = roteiro ? roteiro.marca || '' : '';
       document.getElementById('ugc-roteiro-produto').value = roteiro ? roteiro.produto || '' : '';
-      document.getElementById('ugc-roteiro-campanha').value = roteiro ? roteiro.campanha || '' : '';
-      document.getElementById('ugc-roteiro-tipo-conteudo').value = roteiro ? roteiro.tipo_conteudo || '' : '';
       document.getElementById('ugc-roteiro-duracao').value = roteiro ? roteiro.duracao_prevista || '' : '';
       document.getElementById('ugc-roteiro-categoria').value = roteiro ? roteiro.categoria || '' : '';
       const areaConteudo = document.getElementById('ugc-roteiro-conteudo');
       areaConteudo.innerHTML = roteiro ? roteiro.conteudo || '' : '';
       areaConteudo.setAttribute('data-placeholder', tr('ugc_roteiro_conteudo_placeholder'));
-      document.getElementById('ugc-roteiro-observacoes').value = roteiro ? roteiro.observacoes || '' : '';
 
       const corAtiva = !!(roteiro && roteiro.marca_cor);
       document.getElementById('ugc-roteiro-marca-cor-ativa').checked = corAtiva;
@@ -8868,14 +8580,6 @@
         `<option value="">${tr('nenhum')}</option>` +
         ugcTrabalhosCache.map((t) => `<option value="${t.id}">${escapeHtml(t.marca)}${t.campanha ? ' — ' + escapeHtml(t.campanha) : ''}</option>`).join('');
       selectTrabalho.value = roteiro && roteiro.trabalho_id ? roteiro.trabalho_id : '';
-
-      ugcModalCenas = roteiro
-        ? ugcRoteiroCenasCache
-            .filter((c) => c.roteiro_id === roteiro.id)
-            .sort((a, b) => a.ordem - b.ordem)
-            .map((c) => ({ ...c }))
-        : [];
-      renderizarCenasModal();
 
       ugcModalMoodboard = roteiro && roteiro.moodboard_imagens ? roteiro.moodboard_imagens.map((ref) => ({ ...ref })) : [];
       renderizarMoodboardModal();
@@ -8938,13 +8642,10 @@
         marca: document.getElementById('ugc-roteiro-marca').value.trim() || null,
         status: document.getElementById('ugc-roteiro-status').value,
         produto: document.getElementById('ugc-roteiro-produto').value.trim() || null,
-        campanha: document.getElementById('ugc-roteiro-campanha').value.trim() || null,
         trabalho_id: document.getElementById('ugc-roteiro-trabalho').value || null,
-        tipo_conteudo: document.getElementById('ugc-roteiro-tipo-conteudo').value.trim() || null,
         duracao_prevista: document.getElementById('ugc-roteiro-duracao').value.trim() || null,
         categoria: document.getElementById('ugc-roteiro-categoria').value.trim() || null,
         conteudo: conteudoRoteiroVazio(document.getElementById('ugc-roteiro-conteudo')) ? null : document.getElementById('ugc-roteiro-conteudo').innerHTML,
-        observacoes: document.getElementById('ugc-roteiro-observacoes').value.trim() || null,
         marca_cor: document.getElementById('ugc-roteiro-marca-cor-ativa').checked
           ? document.getElementById('ugc-roteiro-marca-cor').value
           : null,
@@ -8963,26 +8664,6 @@
           if (error) throw error;
           roteiroId = data[0].id;
         }
-
-        // Reescreve as cenas do zero — apaga e reinsere numa função só do banco
-        // (transação única), mesmo motivo dos entregáveis do Trabalho.
-        const cenasParaSalvar = ugcModalCenas.map((c, i) => ({
-          ordem: i,
-          fala: c.fala || null,
-          o_que_fazer: c.o_que_fazer || null,
-          tipo_cena: c.tipo_cena || null,
-          descricao_cena: c.descricao_cena || null,
-          cena_gravada: !!c.cena_gravada,
-          cena_conferida: !!c.cena_conferida,
-          faixa_tempo: c.faixa_tempo || null,
-          funcao_cena: c.funcao_cena || null,
-          referencias_imagens: c.referencias_imagens || [],
-        }));
-        const { error: erroCenas } = await Auth.sb.rpc('ugc_substituir_cenas', {
-          p_roteiro_id: roteiroId,
-          p_cenas: cenasParaSalvar,
-        });
-        if (erroCenas) throw erroCenas;
 
         // Se o roteiro está vinculado a um Trabalho que ainda não chegou na
         // etapa "Roteiro" (ex: "Aguardando briefing"), avança o status

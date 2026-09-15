@@ -483,6 +483,14 @@
   cursor: pointer;
 }
 
+.painel-body .cal-evento-chip-feito {
+  /* opacity em vez de trocar o background — esse chip pode ter uma cor de
+     categoria aplicada via style inline, que teria prioridade sobre a
+     regra de classe e o "feito" não apareceria. */
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
 .painel-body .cal-evento-chip-mais {
   font-size: 10px;
   font-weight: 600;
@@ -1163,6 +1171,11 @@
   background: rgba(var(--grafite-rgb), 0.75);
 }
 
+.painel-body .cal-evento-dia-todo-feito {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
 .painel-body .cal-grade-corpo {
   max-height: 600px;
   overflow-y: auto;
@@ -1229,6 +1242,16 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.painel-body .cal-evento-bloco-feito {
+  /* opacity em vez de trocar o background — a cor de categoria é aplicada
+     via style inline (maior prioridade que uma classe). */
+  opacity: 0.5;
+}
+
+.painel-body .cal-evento-bloco-feito .cal-evento-bloco-titulo {
+  text-decoration: line-through;
 }
 
 .painel-body .cal-evento-bloco-redimensionar {

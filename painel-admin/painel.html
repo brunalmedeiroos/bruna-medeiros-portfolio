@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260901a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260915b">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260915c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -5065,10 +5065,10 @@
         celula.className = 'cal-dia-celula';
         if (dia.getMonth() !== calMesAtual.getMonth()) celula.classList.add('cal-dia-fora');
 
-        const tarefasDoDia = tarefasCache.filter((t) => t.data === isoDia && !t.feito);
+        const tarefasDoDia = tarefasCache.filter((t) => t.data === isoDia);
         const entregasDoDia = entregasUgcPendentesDoDia(isoDia);
         const itensDoDia = [
-          ...tarefasDoDia.map((t) => ({ titulo: t.titulo, ugc: false, cor: corCategoriaTarefa(t) })),
+          ...tarefasDoDia.map((t) => ({ titulo: t.titulo, ugc: false, cor: corCategoriaTarefa(t), feito: t.feito })),
           ...entregasDoDia.map((t) => ({ titulo: t.marca + (t.campanha ? ' · ' + t.campanha : ''), ugc: true, trabalho: t })),
         ];
         const visiveis = itensDoDia.slice(0, CAL_MAX_CHIPS_VISIVEIS);
@@ -5077,7 +5077,7 @@
         celula.innerHTML = `
           <span class="cal-dia-celula-numero${mesmoDia(dia, hoje) ? ' cal-dia-hoje' : ''}">${dia.getDate()}</span>
           <div class="cal-dia-celula-chips">
-            ${visiveis.map((item, idx) => `<span class="cal-evento-chip${item.ugc ? ' cal-evento-chip-ugc' : ''}" data-idx="${idx}"${item.cor ? ` style="background:${item.cor}"` : ''}>${escapeHtml(item.titulo)}</span>`).join('')}
+            ${visiveis.map((item, idx) => `<span class="cal-evento-chip${item.ugc ? ' cal-evento-chip-ugc' : ''}${item.feito ? ' cal-evento-chip-feito' : ''}" data-idx="${idx}"${item.cor ? ` style="background:${item.cor}"` : ''}>${escapeHtml(item.titulo)}</span>`).join('')}
             ${restantes > 0 ? `<span class="cal-evento-chip-mais">+${restantes} ${tr('cal_mais')}</span>` : ''}
           </div>
         `;
@@ -5133,7 +5133,7 @@
     // Bloco posicionado por horário, dentro da coluna do dia.
     function criarBlocoEvento(tarefa) {
       const bloco = document.createElement('div');
-      bloco.className = 'cal-evento-bloco';
+      bloco.className = 'cal-evento-bloco' + (tarefa.feito ? ' cal-evento-bloco-feito' : '');
       const horario = [tarefa.hora_inicio, tarefa.hora_fim].filter(Boolean).map((h) => h.slice(0, 5)).join(' – ');
       bloco.innerHTML = `
         <span class="cal-evento-bloco-horario">${escapeHtml(horario)}</span>
@@ -5258,7 +5258,7 @@
     // que nunca tem horário) — sem posicionamento, é uma lista simples.
     function criarBlocoDiaTodo(item, tipo) {
       const bloco = document.createElement('div');
-      bloco.className = 'cal-evento-dia-todo' + (tipo === 'ugc' ? ' cal-evento-dia-todo-ugc' : '');
+      bloco.className = 'cal-evento-dia-todo' + (tipo === 'ugc' ? ' cal-evento-dia-todo-ugc' : '') + (tipo !== 'ugc' && item.feito ? ' cal-evento-dia-todo-feito' : '');
       bloco.textContent = tipo === 'ugc' ? item.marca + (item.campanha ? ' · ' + item.campanha : '') : item.titulo;
       bloco.addEventListener('click', () => (tipo === 'ugc' ? abrirEntregaUgcNoCalendario(item) : abrirFormularioTarefa(item)));
       return bloco;
@@ -5325,7 +5325,7 @@
           coluna.appendChild(linha);
         }
 
-        const tarefasDoDia = tarefasCache.filter((t) => t.data === isoDia && !t.feito);
+        const tarefasDoDia = tarefasCache.filter((t) => t.data === isoDia);
         const entregasDoDia = entregasUgcPendentesDoDia(isoDia);
 
         tarefasDoDia.forEach((tarefa) => {
@@ -5390,8 +5390,12 @@
     function renderizarTarefasDoDia() {
       const isoSelecionado = dataParaISO(calDiaSelecionado);
       const doDia = tarefasCache.filter((t) => t.data === isoSelecionado);
-      // Assim que uma tarefa é marcada como feita, ela some daqui (só continua
-      // visível no filtro "Feitos" da tabela "Tudo o que está marcado").
+      // Marcar como feita não tira mais a tarefa da lista do Calendário — ela
+      // só ganha o estilo riscado (cal-tarefa-feita, já aplicado por
+      // criarItemTarefa). Some só da lista "Hoje" do Dashboard? Não: o
+      // Dashboard também mostra tudo, sempre mostrou (renderizarHojeDashboard
+      // nunca filtrou por feito). Quem soma pendências continua ignorando
+      // feitas, só a exibição da lista que mudou.
       const pendentesDoDia = doDia.filter((t) => !t.feito);
       const entregasDoDia = entregasUgcPendentesDoDia(isoSelecionado);
       const totalPendentes = pendentesDoDia.length + entregasDoDia.length;
@@ -5409,13 +5413,12 @@
             ? tr('cal_tudo_feito')
             : `${totalPendentes} ${tr(totalPendentes === 1 ? 'cal_pendente_singular' : 'cal_pendente_plural')}`;
 
-      // O resumo acima já conta o que há pra hoje — não repete a mensagem aqui embaixo.
       const lista = document.getElementById('cal-lista-tarefas');
       lista.innerHTML = '';
 
-      if (totalPendentes === 0) return;
+      if (doDia.length === 0 && entregasDoDia.length === 0) return;
 
-      pendentesDoDia.forEach((tarefa) => lista.appendChild(criarItemTarefa(tarefa, false)));
+      doDia.forEach((tarefa) => lista.appendChild(criarItemTarefa(tarefa, false)));
       entregasDoDia.forEach((trabalho) => lista.appendChild(criarItemEntregaUgc(trabalho)));
     }
 

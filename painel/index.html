@@ -1108,9 +1108,18 @@
           <textarea id="pl-modal-roteiro-breve" data-i18n-placeholder="pl_roteiro_breve_placeholder" placeholder="Uma ideia rápida, um rascunho..."></textarea>
         </div>
 
-        <div class="cal-form-campo">
-          <label for="pl-modal-roteiro-completo" data-i18n="pl_roteiro_completo">Roteiro completo</label>
-          <textarea id="pl-modal-roteiro-completo" class="pl-textarea-grande" data-i18n-placeholder="pl_roteiro_completo_placeholder" placeholder="O roteiro completo, pronto pra gravar..."></textarea>
+        <div class="ugc-roteiro-destaque">
+          <div class="cal-form-campo">
+            <label for="pl-modal-roteiro-completo" data-i18n="pl_roteiro_completo">Roteiro completo</label>
+            <div class="ugc-roteiro-doc-toolbar">
+              <button type="button" class="ugc-roteiro-doc-btn" data-cmd="bold" data-i18n-aria="ugc_doc_negrito" aria-label="Negrito"><b>B</b></button>
+              <button type="button" class="ugc-roteiro-doc-btn" data-cmd="italic" data-i18n-aria="ugc_doc_italico" aria-label="Itálico"><i>I</i></button>
+              <button type="button" class="ugc-roteiro-doc-btn" data-cmd="underline" data-i18n-aria="ugc_doc_sublinhado" aria-label="Sublinhado"><u>S</u></button>
+              <button type="button" class="ugc-roteiro-doc-btn" data-cmd="insertUnorderedList" data-i18n-aria="ugc_doc_lista_marcadores" aria-label="Lista com marcadores">&bull;&nbsp;Lista</button>
+              <button type="button" class="ugc-roteiro-doc-btn" data-cmd="insertOrderedList" data-i18n-aria="ugc_doc_lista_numerada" aria-label="Lista numerada">1.&nbsp;Lista</button>
+            </div>
+            <div id="pl-modal-roteiro-completo" class="ugc-roteiro-doc-area" contenteditable="true" data-placeholder="O roteiro completo, pronto pra gravar..."></div>
+          </div>
         </div>
 
         <div class="cal-form-acoes">
@@ -6862,7 +6871,9 @@
       document.getElementById('pl-modal-formato').value = ideia.formato || '';
       document.getElementById('pl-modal-status').value = ideia.status || 'Não iniciado';
       document.getElementById('pl-modal-roteiro-breve').value = ideia.roteiro_breve || '';
-      document.getElementById('pl-modal-roteiro-completo').value = ideia.roteiro_completo || '';
+      const areaRoteiroCompleto = document.getElementById('pl-modal-roteiro-completo');
+      areaRoteiroCompleto.innerHTML = ideia.roteiro_completo || '';
+      areaRoteiroCompleto.setAttribute('data-placeholder', tr('pl_roteiro_completo_placeholder'));
       document.getElementById('pl-modal-gravado').checked = !!ideia.gravado;
 
       const selectPilar = document.getElementById('pl-modal-pilar');
@@ -6888,7 +6899,10 @@
         pilar_id: document.getElementById('pl-modal-pilar').value,
         gravado: document.getElementById('pl-modal-gravado').checked,
         roteiro_breve: document.getElementById('pl-modal-roteiro-breve').value.trim() || null,
-        roteiro_completo: document.getElementById('pl-modal-roteiro-completo').value.trim() || null,
+        roteiro_completo: (() => {
+          const area = document.getElementById('pl-modal-roteiro-completo');
+          return conteudoRoteiroVazio(area) ? null : area.innerHTML;
+        })(),
       };
       if (!linha.titulo) return;
 
@@ -8466,10 +8480,12 @@
 
       // contenteditable às vezes deixa um <br> sozinho pra trás quando o
       // texto é todo apagado — isso quebra o placeholder via CSS :empty,
-      // então normaliza pra string vazia de verdade nesse caso.
-      const area = document.getElementById('ugc-roteiro-conteudo');
-      area.addEventListener('input', () => {
-        if (conteudoRoteiroVazio(area)) area.innerHTML = '';
+      // então normaliza pra string vazia de verdade nesse caso. Roda pra
+      // toda área desse tipo na página (roteiro UGC + roteiro do Banco de Ideias).
+      document.querySelectorAll('.ugc-roteiro-doc-area').forEach((area) => {
+        area.addEventListener('input', () => {
+          if (conteudoRoteiroVazio(area)) area.innerHTML = '';
+        });
       });
     }
 

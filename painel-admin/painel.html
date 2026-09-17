@@ -4338,7 +4338,7 @@
     function trocarSubAbaDesafio(pagina) {
       document.querySelectorAll('.desafio-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.desafioPagina === pagina));
       const iframe = document.getElementById('desafio-ugc-iframe');
-      iframe.src = pagina === 'painel' ? '../desafio/painel/?v=1' : '../desafio/admin/?v=10';
+      iframe.src = pagina === 'painel' ? '../desafio/painel/?v=2' : '../desafio/admin/?v=10';
     }
 
     function trocarPeriodo(periodo, btn) {

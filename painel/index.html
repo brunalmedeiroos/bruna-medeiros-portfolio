@@ -86,7 +86,6 @@
           <span data-i18n="nav_instagram">Instagram</span>
         </button>
         <button class="nav-item" data-tab="desafio-ugc" type="button">
-          <img class="nav-icon-img" src="../painel-admin/img/nav-icones/desafio-ugc.png" alt="">
           <span>Meu Desafio UGC</span>
         </button>
 
@@ -4339,7 +4338,7 @@
     function trocarSubAbaDesafio(pagina) {
       document.querySelectorAll('.desafio-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.desafioPagina === pagina));
       const iframe = document.getElementById('desafio-ugc-iframe');
-      iframe.src = pagina === 'painel' ? '../desafio/painel/?v=2' : '../desafio/admin/?v=10';
+      iframe.src = pagina === 'painel' ? '../desafio/painel/?v=3' : '../desafio/admin/?v=11';
     }
 
     function trocarPeriodo(periodo, btn) {

@@ -84,6 +84,10 @@
           <img class="nav-icon-img" src="img/nav-icones/instagram.png?v=3" alt="">
           <span data-i18n="nav_instagram">Instagram</span>
         </button>
+        <button class="nav-item" data-tab="desafio-ugc" type="button">
+          <img class="nav-icon-img" src="img/nav-icones/desafio-ugc.svg" alt="">
+          <span>Meu Desafio UGC</span>
+        </button>
 
         <div class="nav-group-label" data-i18n="nav_grupo_gestao">Gestão</div>
         <button class="nav-item" data-tab="financeiro" type="button">
@@ -503,6 +507,13 @@
                 <div id="instagram-leads-lista" class="cal-todas-linhas"></div>
               </div>
             </div>
+          </div>
+        </section>
+
+        <!-- ---------- Aba: Meu Desafio UGC ---------- -->
+        <section id="panel-desafio-ugc" class="tab-panel" hidden>
+          <div class="card desafio-ugc-card">
+            <iframe id="desafio-ugc-iframe" class="desafio-ugc-iframe" title="Meu Desafio UGC"></iframe>
           </div>
         </section>
 
@@ -2165,6 +2176,7 @@
       calendario: 'titulo_calendario',
       email: 'titulo_email',
       instagram: 'titulo_instagram',
+      'desafio-ugc': 'Meu Desafio UGC',
       planejador: 'titulo_planejador',
       radar: 'titulo_radar',
       ugc: 'titulo_ugc',
@@ -4310,6 +4322,10 @@
       if (aba === 'clientes' && !clientesAbaCarregada) {
         clientesAbaCarregada = true;
         carregarClientes();
+      }
+      if (aba === 'desafio-ugc') {
+        const iframe = document.getElementById('desafio-ugc-iframe');
+        if (!iframe.src) iframe.src = '../desafio/admin/';
       }
     }
 

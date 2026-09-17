@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Meu Desafio UGC · entrar</title>
 <meta name="description" content="Cadastre-se no Meu Desafio UGC, da série 'Dia X nos desafiando a viver do UGC' da Bruna Medeiros.">
-<link rel="icon" type="image/svg+xml" href="../painel-admin/favicon.svg">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
@@ -15,7 +15,7 @@
 
   <div class="desafio-wrap">
     <div class="topo">
-      <div class="marca">Meu Desafio <span>UGC</span></div>
+      <div class="marca"><svg class="marca-icone" viewBox="0 0 64 64" fill="none"><path d="M20 10 L44 10 L44 22 Q44 32 32 32 Q20 32 20 22 Z" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M20 13 Q10 13 10 21 Q10 27 18 27" stroke="currentColor" stroke-width="3.5" fill="none" stroke-linecap="round"/><path d="M44 13 Q54 13 54 21 Q54 27 46 27" stroke="currentColor" stroke-width="3.5" fill="none" stroke-linecap="round"/><rect x="29" y="32" width="6" height="9" fill="currentColor"/><rect x="21" y="41" width="22" height="6" rx="2" fill="currentColor"/><path d="M28 15.5 L36.5 20.5 L28 25.5 Z" fill="var(--coral-claro)"/></svg>Meu Desafio <span>UGC</span></div>
     </div>
 
     <div class="card">
@@ -88,10 +88,10 @@
     const chips = document.querySelectorAll('#chips-fase .chip');
     let faseEscolhida = null;
 
-    // Se já tem sessão, pula direto pro painel (ou pro admin, se for a dona).
+    // Se já tem sessão, pula direto pro painel.
     (async () => {
       const { data: { session } } = await DesafioAuth.sb.auth.getSession();
-      if (session) window.location.href = DesafioAuth.isOwner(session.user) ? 'admin/' : 'painel/';
+      if (session) window.location.href = 'painel/';
     })();
 
     function mostrarErro(texto) {
@@ -138,7 +138,7 @@
           senha: document.getElementById('c-senha').value,
           indicadoPor,
         });
-        window.location.href = DesafioAuth.isOwner(user) ? 'admin/' : 'painel/';
+        window.location.href = 'painel/';
       } catch (err) {
         mostrarErro(err.message || 'Não foi possível criar sua conta. Tenta de novo.');
         btn.disabled = false;
@@ -157,7 +157,7 @@
           document.getElementById('l-email').value.trim(),
           document.getElementById('l-senha').value
         );
-        window.location.href = DesafioAuth.isOwner(user) ? 'admin/' : 'painel/';
+        window.location.href = 'painel/';
       } catch (err) {
         mostrarErro(err.message || 'Não foi possível entrar. Tenta de novo.');
         btn.disabled = false;

@@ -41,6 +41,10 @@ body.desafio-body{
 .desafio-wrap{ max-width:640px; margin:0 auto; }
 .desafio-wrap.wide{ max-width:1000px; }
 
+/* Embutido como aba do Creator Center: sem cabeçalho duplicado nem respiro extra. */
+html.embutido body.desafio-body{ padding-block:24px 40px; }
+html.embutido .topo{ display:none; }
+
 h1,h2,h3{ font-family:var(--fonte-titulo); margin:0; text-wrap:balance; }
 
 .topo{ display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; flex-wrap:wrap; gap:10px; }

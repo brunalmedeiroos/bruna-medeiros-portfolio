@@ -471,17 +471,13 @@ input:focus {
   gap: 24px;
 }
 
-.desafio-ugc-card {
-  padding: 0;
-  overflow: hidden;
-}
-
 .desafio-ugc-iframe {
   display: block;
   width: 100%;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 150px);
   min-height: 640px;
   border: none;
+  background: transparent;
 }
 
 /* O atributo hidden precisa vencer o display:flex acima (mesma especificidade,

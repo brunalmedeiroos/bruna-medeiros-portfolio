@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260901a">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
 <link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260915c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
@@ -84,6 +84,10 @@
         <button class="nav-item" data-tab="instagram" type="button">
           <img class="nav-icon-img" src="../painel-admin/img/nav-icones/instagram.png?v=3" alt="">
           <span data-i18n="nav_instagram">Instagram</span>
+        </button>
+        <button class="nav-item" data-tab="desafio-ugc" type="button">
+          <img class="nav-icon-img" src="../painel-admin/img/nav-icones/desafio-ugc.svg" alt="">
+          <span>Meu Desafio UGC</span>
         </button>
 
         <div class="nav-group-label" data-i18n="nav_grupo_gestao">Gestão</div>
@@ -504,6 +508,13 @@
                 <div id="instagram-leads-lista" class="cal-todas-linhas"></div>
               </div>
             </div>
+          </div>
+        </section>
+
+        <!-- ---------- Aba: Meu Desafio UGC ---------- -->
+        <section id="panel-desafio-ugc" class="tab-panel" hidden>
+          <div class="card desafio-ugc-card">
+            <iframe id="desafio-ugc-iframe" class="desafio-ugc-iframe" title="Meu Desafio UGC"></iframe>
           </div>
         </section>
 
@@ -2166,6 +2177,7 @@
       calendario: 'titulo_calendario',
       email: 'titulo_email',
       instagram: 'titulo_instagram',
+      'desafio-ugc': 'Meu Desafio UGC',
       planejador: 'titulo_planejador',
       radar: 'titulo_radar',
       ugc: 'titulo_ugc',
@@ -4311,6 +4323,10 @@
       if (aba === 'clientes' && !clientesAbaCarregada) {
         clientesAbaCarregada = true;
         carregarClientes();
+      }
+      if (aba === 'desafio-ugc') {
+        const iframe = document.getElementById('desafio-ugc-iframe');
+        if (!iframe.src) iframe.src = '../desafio/admin/';
       }
     }
 

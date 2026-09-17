@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Meu painel · Meu Desafio UGC</title>
+<link rel="icon" type="image/svg+xml" href="../../painel-admin/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/desafio.css?v=1">
+</head>
+<body class="desafio-body">
+
+  <div class="desafio-wrap">
+    <div class="topo">
+      <div class="marca">Meu Desafio <span>UGC</span></div>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <a href="https://chat.whatsapp.com/KOLVB7gzI3UFkyTqCgm16s" target="_blank" rel="noopener" class="btn-whatsapp" title="Entrar no grupo do WhatsApp" aria-label="Entrar no grupo do WhatsApp">
+          <svg viewBox="0 0 32 32" width="20" height="20" fill="#fff"><path d="M16.004 3C9.377 3 4 8.373 4 15c0 2.34.653 4.527 1.786 6.39L4 29l7.812-1.75A11.94 11.94 0 0 0 16.004 27C22.63 27 28 21.627 28 15S22.63 3 16.004 3Zm6.98 17.02c-.29.82-1.44 1.5-2.36 1.7-.63.13-1.45.24-4.22-.9-3.54-1.47-5.82-5.06-6-5.3-.18-.24-1.44-1.92-1.44-3.66 0-1.74.9-2.6 1.23-2.96.29-.31.65-.39.87-.39.22 0 .43.002.62.01.2.01.46-.076.72.55.29.7.98 2.4 1.06 2.58.08.18.13.38.02.62-.1.24-.15.38-.3.58-.15.2-.31.44-.44.6-.15.17-.3.36-.13.66.17.31.75 1.24 1.62 2.01 1.12 1 2.06 1.31 2.36 1.46.31.15.49.13.67-.08.18-.2.77-.9.98-1.21.2-.31.4-.26.68-.16.29.1 1.82.86 2.13 1.02.31.15.52.23.6.36.08.13.08.76-.21 1.58Z"/></svg>
+        </a>
+        <span class="sair"><a href="../regras/" style="color:inherit;">Regras</a></span>
+        <span id="link-admin" class="sair" hidden><a href="../admin/" style="color:inherit;">Admin</a></span>
+        <span class="sair" id="btn-sair">Sair</span>
+      </div>
+    </div>
+
+    <div id="conteudo" class="carregando">Carregando seu painel...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/auth.js?v=1"></script>
+  <script>
+    const db = DesafioAuth.sb;
+    const conteudo = document.getElementById('conteudo');
+
+    document.getElementById('btn-sair').addEventListener('click', () => DesafioAuth.logout());
+
+    function iniciais(nome) {
+      return (nome || '?').trim().charAt(0).toUpperCase();
+    }
+
+    async function carregar() {
+      const user = await DesafioAuth.checkAuth();
+      if (!user) return;
+
+      if (DesafioAuth.isOwner(user)) {
+        document.getElementById('link-admin').hidden = false;
+      }
+
+      const [{ data: perfil }, { data: dias }, { data: conclusoes }, { data: rankingCompleto }, { data: bonus }] = await Promise.all([
+        db.from('desafio_perfis').select('nome,instagram,foto_url').eq('id', user.id).maybeSingle(),
+        db.from('desafio_dias').select('*').order('numero_dia', { ascending: false }),
+        db.from('desafio_conclusoes').select('*').eq('participante_id', user.id),
+        db.from('desafio_ranking').select('*').order('pontos', { ascending: false }),
+        db.from('desafio_bonus').select('pontos,motivo,criado_em').eq('participante_id', user.id).order('criado_em', { ascending: false }),
+      ]);
+
+      const ranking = (rankingCompleto || []).slice(0, 5);
+      const minhaLinha = (rankingCompleto || []).find((r) => r.participante_id === user.id);
+      const meusPontos = minhaLinha ? minhaLinha.pontos : 0;
+
+      if (!dias || dias.length === 0) {
+        conteudo.innerHTML = '<div class="card"><p class="vazio">Nenhum desafio publicado ainda. Volta aqui quando eu soltar o Dia 1!</p></div>';
+        return;
+      }
+
+      const conclusaoPorDia = new Map((conclusoes || []).map((c) => [c.dia_id, c]));
+      const hoje = dias[0];
+      const conclusaoHoje = conclusaoPorDia.get(hoje.id) || null;
+
+      let feedbackHoje = null;
+      if (conclusaoHoje) {
+        const { data } = await db.from('desafio_feedback').select('texto').eq('conclusao_id', conclusaoHoje.id).maybeSingle();
+        feedbackHoje = data;
+      }
+
+      // Feedback de todo o histórico, pra mostrar junto de cada dia.
+      const { data: feedbacks } = await db
+        .from('desafio_feedback')
+        .select('texto, conclusao_id, desafio_conclusoes!inner(dia_id,participante_id)')
+        .eq('desafio_conclusoes.participante_id', user.id);
+      const feedbackPorDia = new Map((feedbacks || []).map((f) => [f.desafio_conclusoes.dia_id, f.texto]));
+
+      // Sequência: dias seguidos (começando do mais recente publicado) que têm conclusão.
+      let sequencia = 0;
+      for (const dia of dias) {
+        if (conclusaoPorDia.has(dia.id)) sequencia++;
+        else break;
+      }
+
+      const feitos = conclusoes ? conclusoes.length : 0;
+      const totalDias = dias.length;
+
+      conteudo.innerHTML = `
+        <div class="card" style="margin-bottom:18px;">
+          <div class="dash-head">
+            <div class="avatar avatar-upload" id="avatar-upload" title="Adicionar foto (+1 ponto)" style="cursor:pointer;background:${perfil?.foto_url ? `url('${perfil.foto_url}') center/cover` : ''};">
+              ${perfil?.foto_url ? '' : iniciais(perfil?.nome)}
+              <input type="file" id="input-foto" accept="image/*" style="display:none;">
+            </div>
+            <div>
+              <div class="nome">${perfil?.nome || 'Participante'}</div>
+              <div class="handle">${perfil?.instagram || ''}</div>
+              ${!perfil?.foto_url ? `<div id="foto-hint" style="font-size:11px;color:var(--coral-claro);cursor:pointer;margin-top:2px;">+ adicionar foto (+1 ponto)</div>` : ''}
+            </div>
+          </div>
+
+          <div class="stat-row">
+            <div class="stat"><div class="v">${meusPontos}</div><div class="l">pontos</div></div>
+            <div class="stat"><div class="v">${sequencia}</div><div class="l">dias seguidos</div></div>
+            <div class="stat"><div class="v">${feitos}/${totalDias}</div><div class="l">desafios feitos</div></div>
+          </div>
+
+          <div class="hoje-card">
+            <span class="hoje-tag">DIA ${hoje.numero_dia} · hoje</span>${hoje.pede_video ? '<span class="video-tag">🎥 vídeo opcional</span>' : ''}
+            <h3>${hoje.titulo}</h3>
+            <p>${hoje.descricao}</p>
+            <button type="button" id="btn-toggle" class="btn-toggle ${conclusaoHoje ? 'feito' : 'pendente'}">${conclusaoHoje ? `Dia ${hoje.numero_dia} feito ✓` : 'Marcar como feito'}</button>
+            ${hoje.pede_video ? `
+              <div class="upload-box">
+                <span class="txt"><b>Anexar vídeo (opcional)</b>. Se enviar, eu vejo e te dou um feedback pra você melhorar.</span>
+                <input type="file" id="input-video" accept="video/*">
+                <div id="upload-status" style="font-size:12px;color:var(--texto-suave);margin-top:6px;"></div>
+              </div>
+              <div class="feedback-box ${feedbackHoje ? 'recebido' : 'aguardando'}">
+                <span class="quem">Meu feedback</span>
+                ${feedbackHoje ? feedbackHoje.texto : (conclusaoHoje?.video_path ? 'Vídeo recebido, aguardando avaliação.' : 'Se você enviar o vídeo, eu avalio e respondo aqui.')}
+              </div>
+            ` : ''}
+          </div>
+
+          ${(bonus && bonus.length) ? `
+            <div class="secao-titulo">Seus pontos bônus</div>
+            <div class="hist-list">
+              ${bonus.map((b) => `
+                <div class="hist-item">
+                  <span class="dia" style="color:var(--ok);">+${b.pontos}</span>
+                  <span class="t">${b.motivo}</span>
+                </div>`).join('')}
+            </div>
+          ` : ''}
+
+          <div class="secao-titulo">Seu histórico</div>
+          <div class="hist-list">
+            ${dias.slice(1).map((dia) => {
+              const feita = conclusaoPorDia.has(dia.id);
+              const fb = feedbackPorDia.get(dia.id);
+              return `
+                <div class="hist-item">
+                  <span class="dia">DIA ${dia.numero_dia}</span>
+                  <span class="t">${dia.titulo}${fb ? `<div style="color:var(--texto-suave);font-weight:400;margin-top:3px;"><b style="color:var(--coral-claro);">Feedback:</b> ${fb}</div>` : ''}</span>
+                  <span class="status ${feita ? 'feito' : 'pendente'}">${feita ? 'Feito' : 'Ainda não fiz'}</span>
+                </div>`;
+            }).join('') || '<p class="vazio">Esse é o primeiro dia, sem histórico ainda.</p>'}
+          </div>
+
+          <div class="secao-titulo">Top da semana</div>
+          <div class="rank-list">
+            ${(ranking || []).map((r, i) => `
+              <div class="rank-item ${r.participante_id === user.id ? 'eu' : ''}">
+                <span class="pos">${i + 1}</span>
+                <span class="rn">${r.nome}${r.participante_id === user.id ? ' (você)' : ''}</span>
+                <span class="pts">${r.pontos} pts</span>
+              </div>`).join('')}
+          </div>
+        </div>
+      `;
+
+      const avatarUpload = document.getElementById('avatar-upload');
+      const inputFoto = document.getElementById('input-foto');
+      const fotoHint = document.getElementById('foto-hint');
+      [avatarUpload, fotoHint].forEach((el) => el && el.addEventListener('click', () => inputFoto.click()));
+      inputFoto.addEventListener('change', async () => {
+        const file = inputFoto.files[0];
+        if (!file) return;
+        const ext = file.name.split('.').pop();
+        const path = `${user.id}/foto.${ext}`;
+        const { error: erroUpload } = await db.storage.from('desafio-fotos').upload(path, file, { upsert: true });
+        if (erroUpload) return;
+        const { data: pub } = db.storage.from('desafio-fotos').getPublicUrl(path);
+        await db.from('desafio_perfis').update({ foto_url: `${pub.publicUrl}?t=${Date.now()}` }).eq('id', user.id);
+        carregar();
+      });
+
+      document.getElementById('btn-toggle').addEventListener('click', async (e) => {
+        const btn = e.currentTarget;
+        btn.disabled = true;
+        if (conclusaoHoje) {
+          await db.from('desafio_conclusoes').delete().eq('id', conclusaoHoje.id);
+        } else {
+          await db.from('desafio_conclusoes').insert({ participante_id: user.id, dia_id: hoje.id });
+        }
+        carregar();
+      });
+
+      const inputVideo = document.getElementById('input-video');
+      if (inputVideo) {
+        inputVideo.addEventListener('change', async () => {
+          const file = inputVideo.files[0];
+          if (!file) return;
+          const status = document.getElementById('upload-status');
+          status.textContent = 'Enviando vídeo...';
+          const ext = file.name.split('.').pop();
+          const path = `${user.id}/dia-${hoje.numero_dia}.${ext}`;
+          const { error: erroUpload } = await db.storage.from('desafio-videos').upload(path, file, { upsert: true });
+          if (erroUpload) {
+            status.textContent = 'Não foi possível enviar. Tenta de novo.';
+            return;
+          }
+          await db.from('desafio_conclusoes').upsert(
+            { participante_id: user.id, dia_id: hoje.id, video_path: path },
+            { onConflict: 'participante_id,dia_id' }
+          );
+          carregar();
+        });
+      }
+    }
+
+    carregar();
+  </script>
+</body>
+</html>

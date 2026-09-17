@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Admin · Meu Desafio UGC</title>
+<link rel="icon" type="image/svg+xml" href="../../painel-admin/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/desafio.css?v=1">
+</head>
+<body class="desafio-body">
+
+  <div class="desafio-wrap wide">
+    <div class="topo">
+      <div class="marca">Meu Desafio <span>UGC</span> · admin</div>
+      <div><a href="../painel/" class="sair" style="margin-right:16px;color:inherit;">Meu painel</a><span class="sair" id="btn-sair">Sair</span></div>
+    </div>
+
+    <div id="conteudo" class="carregando">Carregando...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/auth.js?v=1"></script>
+  <script>
+    const db = DesafioAuth.sb;
+    const conteudo = document.getElementById('conteudo');
+    document.getElementById('btn-sair').addEventListener('click', () => DesafioAuth.logout());
+
+    async function carregar() {
+      const user = await DesafioAuth.checkAuth();
+      if (!user) return;
+      if (!DesafioAuth.isOwner(user)) {
+        window.location.href = '../painel/';
+        return;
+      }
+
+      const seteDiasAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+      const [{ count: totalCadastradas }, { data: dias }, { data: ranking }, { data: ativasRows }] = await Promise.all([
+        db.from('desafio_perfis').select('*', { count: 'exact', head: true }),
+        db.from('desafio_dias').select('*').order('numero_dia', { ascending: false }),
+        db.from('desafio_ranking').select('*').order('pontos', { ascending: false }),
+        db.from('desafio_conclusoes').select('participante_id').gte('feito_em', seteDiasAtras),
+      ]);
+
+      const ativasEssaSemana = new Set((ativasRows || []).map((r) => r.participante_id)).size;
+      const ultimoDia = (dias && dias[0]) || null;
+      let pctUltimoDia = 0;
+      if (ultimoDia && totalCadastradas) {
+        const { count } = await db.from('desafio_conclusoes').select('*', { count: 'exact', head: true }).eq('dia_id', ultimoDia.id);
+        pctUltimoDia = Math.round((100 * (count || 0)) / totalCadastradas);
+      }
+
+      const proximoNumero = ultimoDia ? ultimoDia.numero_dia + 1 : 1;
+
+      const { data: videos } = await db
+        .from('desafio_conclusoes')
+        .select('id, video_path, desafio_perfis(nome,instagram), desafio_dias(numero_dia,titulo), desafio_feedback(texto)')
+        .not('video_path', 'is', null)
+        .order('feito_em', { ascending: false });
+
+      const { data: bonusHistorico } = await db
+        .from('desafio_bonus')
+        .select('pontos, motivo, criado_em, desafio_perfis(nome,instagram)')
+        .order('criado_em', { ascending: false })
+        .limit(20);
+
+      conteudo.innerHTML = `
+        <div class="kpi-row">
+          <div class="kpi"><div class="v">${totalCadastradas || 0}</div><div class="l">cadastradas</div></div>
+          <div class="kpi"><div class="v">${ativasEssaSemana}</div><div class="l">ativas essa semana</div></div>
+          <div class="kpi"><div class="v">${pctUltimoDia}%</div><div class="l">completaram o dia ${ultimoDia ? ultimoDia.numero_dia : ''}</div></div>
+        </div>
+
+        <div class="admin-grid">
+          <div class="admin-col card">
+            <h4>Publicar desafio do dia</h4>
+            <form id="form-desafio">
+              <div class="campo"><label>Dia</label><input type="number" id="f-numero" value="${proximoNumero}" min="1" required></div>
+              <div class="campo"><label>Título</label><input type="text" id="f-titulo" required placeholder="Ex: Escolha roupa e cenário pro próximo vídeo"></div>
+              <div class="campo"><label>Descrição</label><textarea id="f-descricao" required placeholder="O que a pessoa precisa fazer hoje"></textarea></div>
+              <div class="check-row"><input type="checkbox" id="f-video"> Aceita vídeo opcional pra avaliação</div>
+              <div id="form-msg" class="msg msg-erro" hidden></div>
+              <button type="submit" class="btn btn-primary">Publicar desafio</button>
+            </form>
+          </div>
+
+          <div class="admin-col card">
+            <h4>Ranking geral</h4>
+            <table class="admin-table">
+              <tr><th>Participante</th><th>Pontos</th></tr>
+              ${(ranking || []).map((r) => `<tr><td>${r.nome} <span style="color:var(--texto-suave);">${r.instagram || ''}</span></td><td>${r.pontos}</td></tr>`).join('') || '<tr><td colspan="2">Ninguém cadastrado ainda.</td></tr>'}
+            </table>
+            <p class="footnote">1pt por desafio feito · +2 por vídeo enviado · +1 por fazer em até 48h · +2 por amiga indicada · bônus manual.</p>
+          </div>
+        </div>
+
+        <div class="secao-titulo">Dar pontos bônus</div>
+        <div class="card" style="margin-bottom:28px;">
+          <form id="form-bonus">
+            <div class="admin-grid" style="align-items:end;">
+              <div class="campo" style="margin-bottom:0;">
+                <label>@ do Instagram</label>
+                <input type="text" id="b-participante-insta" list="lista-participantes" placeholder="@instagram da pessoa" required>
+                <datalist id="lista-participantes">
+                  ${(ranking || []).map((r) => `<option value="${r.instagram || ''}">${r.nome}</option>`).join('')}
+                </datalist>
+              </div>
+              <div class="campo" style="margin-bottom:0;">
+                <label>Pontos</label>
+                <input type="number" id="b-pontos" required placeholder="Ex: 2">
+              </div>
+            </div>
+            <div class="campo">
+              <label>Motivo (a participante vê isso)</label>
+              <input type="text" id="b-motivo" required placeholder="Ex: trouxe 2 amigas pro desafio">
+            </div>
+            <div id="bonus-msg" class="msg msg-erro" hidden></div>
+            <button type="submit" class="btn btn-primary" style="width:auto;padding:11px 22px;">Dar pontos</button>
+          </form>
+
+          ${(bonusHistorico && bonusHistorico.length) ? `
+            <table class="admin-table" style="margin-top:20px;">
+              <tr><th>Participante</th><th>Pontos</th><th>Motivo</th></tr>
+              ${bonusHistorico.map((b) => `<tr><td>${b.desafio_perfis?.nome || ''}</td><td>+${b.pontos}</td><td>${b.motivo}</td></tr>`).join('')}
+            </table>
+          ` : ''}
+        </div>
+
+        <div class="secao-titulo">Vídeos pra avaliar</div>
+        <div id="video-queue">
+          ${(videos && videos.length) ? videos.map((v) => `
+            <div class="vq-item" data-id="${v.id}">
+              <div class="vq-info">
+                <div class="nome">${v.desafio_perfis?.nome || ''} <span class="vq-status ${v.desafio_feedback ? 'avaliado' : 'aguardando'}">${v.desafio_feedback ? 'avaliado' : 'aguardando'}</span></div>
+                <div class="meta">Dia ${v.desafio_dias?.numero_dia} · ${v.desafio_dias?.titulo || ''} · <span class="vq-link" data-path="${v.video_path}">ver vídeo</span></div>
+                <textarea class="campo-feedback" placeholder="Escreve o feedback...">${v.desafio_feedback?.texto || ''}</textarea>
+              </div>
+              <div class="vq-action">
+                <button type="button" class="btn btn-primary btn-feedback" data-conclusao="${v.id}">${v.desafio_feedback ? 'Atualizar feedback' : 'Enviar feedback'}</button>
+              </div>
+            </div>
+          `).join('') : '<p class="vazio">Nenhum vídeo enviado ainda.</p>'}
+        </div>
+      `;
+
+      document.getElementById('form-desafio').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formMsg = document.getElementById('form-msg');
+        formMsg.hidden = true;
+        const { error } = await db.from('desafio_dias').insert({
+          numero_dia: Number(document.getElementById('f-numero').value),
+          titulo: document.getElementById('f-titulo').value.trim(),
+          descricao: document.getElementById('f-descricao').value.trim(),
+          pede_video: document.getElementById('f-video').checked,
+        });
+        if (error) {
+          formMsg.textContent = error.message.includes('duplicate') ? 'Já existe um desafio com esse número de dia.' : error.message;
+          formMsg.hidden = false;
+          return;
+        }
+        carregar();
+      });
+
+      document.getElementById('form-bonus').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const bonusMsg = document.getElementById('bonus-msg');
+        bonusMsg.hidden = true;
+
+        const instaDigitado = document.getElementById('b-participante-insta').value.trim().toLowerCase();
+        const encontrada = (ranking || []).find((r) => (r.instagram || '').trim().toLowerCase() === instaDigitado);
+        if (!encontrada) {
+          bonusMsg.textContent = 'Não achei ninguém com esse @. Confere se digitou certinho (a lista sugere enquanto você digita).';
+          bonusMsg.hidden = false;
+          return;
+        }
+
+        const { error } = await db.from('desafio_bonus').insert({
+          participante_id: encontrada.participante_id,
+          pontos: Number(document.getElementById('b-pontos').value),
+          motivo: document.getElementById('b-motivo').value.trim(),
+        });
+        if (error) {
+          bonusMsg.textContent = error.message;
+          bonusMsg.hidden = false;
+          return;
+        }
+        carregar();
+      });
+
+      document.querySelectorAll('.vq-link').forEach((el) => {
+        el.addEventListener('click', async () => {
+          const { data, error } = await db.storage.from('desafio-videos').createSignedUrl(el.dataset.path, 3600);
+          if (!error && data) window.open(data.signedUrl, '_blank');
+        });
+      });
+
+      document.querySelectorAll('.btn-feedback').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const item = btn.closest('.vq-item');
+          const texto = item.querySelector('.campo-feedback').value.trim();
+          if (!texto) return;
+          btn.disabled = true;
+          btn.textContent = 'Enviando...';
+          await db.from('desafio_feedback').upsert(
+            { conclusao_id: btn.dataset.conclusao, texto },
+            { onConflict: 'conclusao_id' }
+          );
+          carregar();
+        });
+      });
+    }
+
+    carregar();
+  </script>
+</body>
+</html>

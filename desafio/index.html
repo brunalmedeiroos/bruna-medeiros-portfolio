@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu Desafio UGC · entrar</title>
+<meta name="description" content="Cadastre-se no Meu Desafio UGC, da série 'Dia X nos desafiando a viver do UGC' da Bruna Medeiros.">
+<link rel="icon" type="image/svg+xml" href="../painel-admin/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/desafio.css?v=1">
+</head>
+<body class="desafio-body">
+
+  <div class="desafio-wrap">
+    <div class="topo">
+      <div class="marca">Meu Desafio <span>UGC</span></div>
+    </div>
+
+    <div class="card">
+      <h1 style="font-size:22px;font-weight:700;margin-bottom:4px;">Nos desafiando a viver do UGC</h1>
+      <p style="font-size:13.5px;color:var(--texto-suave);margin:0 0 22px;">16 dias, 2 vezes por semana. Entra pra acompanhar sua pontuação e o desafio de cada dia.</p>
+
+      <div id="msg" class="msg" hidden></div>
+      <div id="msg-indicacao" class="msg msg-sucesso" hidden>Você foi indicada por uma amiga que já tá no desafio 🎉</div>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab ativa" id="tab-cadastro">Criar conta</button>
+        <button type="button" class="auth-tab" id="tab-login">Entrar</button>
+      </div>
+
+      <!-- Cadastro -->
+      <form id="form-cadastro">
+        <div class="campo">
+          <label for="c-nome">Nome e sobrenome</label>
+          <input type="text" id="c-nome" required placeholder="Digite seu nome completo">
+        </div>
+        <div class="campo">
+          <label for="c-instagram">@ do Instagram</label>
+          <input type="text" id="c-instagram" required placeholder="@seu.instagram">
+        </div>
+        <div class="campo">
+          <label for="c-email">E-mail</label>
+          <input type="email" id="c-email" required autocomplete="username" placeholder="voce@email.com">
+        </div>
+        <div class="campo">
+          <label for="c-senha">Senha</label>
+          <input type="password" id="c-senha" required minlength="6" autocomplete="new-password" placeholder="Mínimo 6 caracteres">
+        </div>
+        <div class="campo">
+          <label>Em que fase você tá (opcional)</label>
+          <div class="chip-row" id="chips-fase">
+            <span class="chip" data-fase="nunca gravei">nunca gravei</span>
+            <span class="chip" data-fase="já gravo, não postei">já gravo, não postei</span>
+            <span class="chip" data-fase="tenho portfólio">tenho portfólio</span>
+          </div>
+        </div>
+        <button type="submit" id="btn-cadastro" class="btn btn-primary">Entrar no desafio</button>
+      </form>
+
+      <!-- Login -->
+      <form id="form-login" hidden>
+        <div class="campo">
+          <label for="l-email">E-mail</label>
+          <input type="email" id="l-email" required autocomplete="username" placeholder="voce@email.com">
+        </div>
+        <div class="campo">
+          <label for="l-senha">Senha</label>
+          <input type="password" id="l-senha" required autocomplete="current-password" placeholder="Sua senha">
+        </div>
+        <button type="submit" id="btn-login" class="btn btn-primary">Entrar</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/auth.js?v=1"></script>
+  <script>
+    const indicadoPor = new URLSearchParams(location.search).get('ref');
+    if (indicadoPor) document.getElementById('msg-indicacao').hidden = false;
+
+    const tabCadastro = document.getElementById('tab-cadastro');
+    const tabLogin = document.getElementById('tab-login');
+    const formCadastro = document.getElementById('form-cadastro');
+    const formLogin = document.getElementById('form-login');
+    const msg = document.getElementById('msg');
+    const chips = document.querySelectorAll('#chips-fase .chip');
+    let faseEscolhida = null;
+
+    // Se já tem sessão, pula direto pro painel (ou pro admin, se for a dona).
+    (async () => {
+      const { data: { session } } = await DesafioAuth.sb.auth.getSession();
+      if (session) window.location.href = DesafioAuth.isOwner(session.user) ? 'admin/' : 'painel/';
+    })();
+
+    function mostrarErro(texto) {
+      msg.textContent = texto;
+      msg.className = 'msg msg-erro';
+      msg.hidden = false;
+    }
+
+    function trocarAba(paraLogin) {
+      msg.hidden = true;
+      tabCadastro.classList.toggle('ativa', !paraLogin);
+      tabLogin.classList.toggle('ativa', paraLogin);
+      formCadastro.hidden = paraLogin;
+      formLogin.hidden = !paraLogin;
+    }
+    tabCadastro.addEventListener('click', () => trocarAba(false));
+    tabLogin.addEventListener('click', () => trocarAba(true));
+
+    chips.forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const jaSelecionado = chip.classList.contains('sel');
+        chips.forEach((c) => c.classList.remove('sel'));
+        if (!jaSelecionado) {
+          chip.classList.add('sel');
+          faseEscolhida = chip.dataset.fase;
+        } else {
+          faseEscolhida = null;
+        }
+      });
+    });
+
+    formCadastro.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.hidden = true;
+      const btn = document.getElementById('btn-cadastro');
+      btn.disabled = true;
+      btn.textContent = 'Criando conta...';
+      try {
+        const user = await DesafioAuth.cadastrar({
+          nome: document.getElementById('c-nome').value.trim(),
+          instagram: document.getElementById('c-instagram').value.trim(),
+          fase: faseEscolhida,
+          email: document.getElementById('c-email').value.trim(),
+          senha: document.getElementById('c-senha').value,
+          indicadoPor,
+        });
+        window.location.href = DesafioAuth.isOwner(user) ? 'admin/' : 'painel/';
+      } catch (err) {
+        mostrarErro(err.message || 'Não foi possível criar sua conta. Tenta de novo.');
+        btn.disabled = false;
+        btn.textContent = 'Entrar no desafio';
+      }
+    });
+
+    formLogin.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.hidden = true;
+      const btn = document.getElementById('btn-login');
+      btn.disabled = true;
+      btn.textContent = 'Entrando...';
+      try {
+        const user = await DesafioAuth.login(
+          document.getElementById('l-email').value.trim(),
+          document.getElementById('l-senha').value
+        );
+        window.location.href = DesafioAuth.isOwner(user) ? 'admin/' : 'painel/';
+      } catch (err) {
+        mostrarErro(err.message || 'Não foi possível entrar. Tenta de novo.');
+        btn.disabled = false;
+        btn.textContent = 'Entrar';
+      }
+    });
+  </script>
+</body>
+</html>

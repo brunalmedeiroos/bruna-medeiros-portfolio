@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/desafio.css?v=5">
+<link rel="stylesheet" href="../css/desafio.css?v=6">
 <script>
   // Embutido como aba dentro do Creator Center: esconde o cabeçalho
   // próprio da página (o painel já mostra o título e o "Sair").
@@ -115,13 +115,15 @@
               </div>
               <div class="campo">
                 <label>Motivo:</label>
-                <div class="chip-row" style="margin-bottom:8px; justify-content:center;">
-                  <span class="chip chip-motivo" data-motivo="Compartilhou nos stories me marcando" data-pontos="1">📱 Story me marcando</span>
-                  <span class="chip chip-motivo" data-motivo="Comentou no vídeo do desafio no Instagram" data-pontos="1">💬 Comentou no vídeo</span>
+                <div class="chip-row" style="margin-bottom:14px; justify-content:center;">
+                  <span class="chip chip-motivo" data-motivo="compartilhou nos stories me marcando" data-pontos="2">📱 Story me marcando</span>
+                  <span class="chip chip-motivo" data-motivo="comentou no vídeo do desafio no Instagram" data-pontos="1">💬 Comentou no vídeo</span>
                 </div>
-                <input type="text" id="b-motivo" required>
+                <div class="kpi" style="max-width:160px;margin:0 auto;text-align:center;">
+                  <div class="v" id="bonus-pontos-preview">0</div>
+                  <div class="l">pontos a dar</div>
+                </div>
               </div>
-              <input type="hidden" id="b-pontos" value="1">
               <div id="bonus-msg" class="msg msg-erro" hidden></div>
               <button type="submit" class="btn btn-primary" style="width:auto;padding:11px 22px;">Dar pontos</button>
             </form>
@@ -170,10 +172,16 @@
         carregar();
       });
 
+      function atualizarPreviewBonus() {
+        const selecionados = [...document.querySelectorAll('.chip-motivo.sel')];
+        const total = selecionados.reduce((soma, chip) => soma + Number(chip.dataset.pontos), 0);
+        document.getElementById('bonus-pontos-preview').textContent = total;
+      }
+
       document.querySelectorAll('.chip-motivo').forEach((chip) => {
         chip.addEventListener('click', () => {
-          document.getElementById('b-motivo').value = chip.dataset.motivo;
-          document.getElementById('b-pontos').value = chip.dataset.pontos;
+          chip.classList.toggle('sel');
+          atualizarPreviewBonus();
         });
       });
 
@@ -181,6 +189,16 @@
         e.preventDefault();
         const bonusMsg = document.getElementById('bonus-msg');
         bonusMsg.hidden = true;
+
+        const selecionados = [...document.querySelectorAll('.chip-motivo.sel')];
+        if (!selecionados.length) {
+          bonusMsg.textContent = 'Marca pelo menos um motivo.';
+          bonusMsg.hidden = false;
+          return;
+        }
+        const pontos = selecionados.reduce((soma, chip) => soma + Number(chip.dataset.pontos), 0);
+        const motivoBruto = selecionados.map((chip) => chip.dataset.motivo).join(' e ');
+        const motivo = motivoBruto.charAt(0).toUpperCase() + motivoBruto.slice(1);
 
         const instaDigitado = document.getElementById('b-participante-insta').value.trim().toLowerCase();
         const encontrada = (ranking || []).find((r) => (r.instagram || '').trim().toLowerCase() === instaDigitado);
@@ -192,8 +210,8 @@
 
         const { error } = await db.from('desafio_bonus').insert({
           participante_id: encontrada.participante_id,
-          pontos: Number(document.getElementById('b-pontos').value),
-          motivo: document.getElementById('b-motivo').value.trim(),
+          pontos,
+          motivo,
         });
         if (error) {
           bonusMsg.textContent = error.message;

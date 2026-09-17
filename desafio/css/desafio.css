@@ -47,6 +47,7 @@ body.desafio-body{
 html.embutido body.desafio-body{ padding-block:0 40px; }
 html.embutido .topo{ justify-content:flex-end; margin-bottom:14px; }
 html.embutido .oculta-embutido{ display:none; }
+html.embutido .desafio-wrap.wide{ max-width:none; }
 
 h1,h2,h3{ font-family:var(--fonte-titulo); margin:0; text-wrap:balance; }
 

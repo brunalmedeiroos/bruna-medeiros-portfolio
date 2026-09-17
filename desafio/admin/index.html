@@ -117,13 +117,15 @@
                 <span class="chip chip-motivo" data-motivo="Compartilhou nos stories me marcando" data-pontos="1">📱 Story me marcando</span>
                 <span class="chip chip-motivo" data-motivo="Comentou no vídeo do desafio no Instagram" data-pontos="1">💬 Comentou no vídeo</span>
               </div>
-              <div class="campo">
-                <label>Motivo (a participante vê isso)</label>
-                <input type="text" id="b-motivo" required placeholder="Ex: trouxe 2 amigas pro desafio">
-              </div>
-              <div class="campo">
-                <label>Pontos</label>
-                <input type="number" id="b-pontos" required placeholder="Ex: 2">
+              <div class="campo" style="display:flex; gap:10px; align-items:flex-end;">
+                <div style="flex:1;">
+                  <label>Motivo:</label>
+                  <input type="text" id="b-motivo" required placeholder="Ex: trouxe 2 amigas pro desafio">
+                </div>
+                <div style="width:84px; flex-shrink:0;">
+                  <label>Pontos</label>
+                  <input type="number" id="b-pontos" required placeholder="2" style="text-align:center;">
+                </div>
               </div>
               <div id="bonus-msg" class="msg msg-erro" hidden></div>
               <button type="submit" class="btn btn-primary" style="width:auto;padding:11px 22px;">Dar pontos</button>

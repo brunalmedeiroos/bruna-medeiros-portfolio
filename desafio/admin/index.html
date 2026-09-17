@@ -100,39 +100,39 @@
               ${(ranking || []).map((r) => `<tr><td>${r.nome} <span style="color:var(--texto-suave);">${r.instagram || ''}</span></td><td>${r.pontos}</td></tr>`).join('') || '<tr><td colspan="2">Ninguém cadastrado ainda.</td></tr>'}
             </table>
             <p class="footnote">1pt por desafio feito · +2 por vídeo enviado · +1 por fazer em até 48h · +2 por amiga indicada · bônus manual.</p>
-          </div>
-        </div>
 
-        <div class="secao-titulo">Dar pontos bônus</div>
-        <div class="card" style="margin-bottom:28px;">
-          <form id="form-bonus">
-            <div class="admin-grid" style="align-items:end;">
-              <div class="campo" style="margin-bottom:0;">
+            <h4 style="margin-top:26px;">Dar pontos bônus</h4>
+            <form id="form-bonus">
+              <div class="campo">
                 <label>@ do Instagram</label>
                 <input type="text" id="b-participante-insta" list="lista-participantes" placeholder="@instagram da pessoa" required>
                 <datalist id="lista-participantes">
                   ${(ranking || []).map((r) => `<option value="${r.instagram || ''}">${r.nome}</option>`).join('')}
                 </datalist>
               </div>
-              <div class="campo" style="margin-bottom:0;">
+              <div class="chip-row" style="margin-bottom:14px;">
+                <span class="chip chip-motivo" data-motivo="Compartilhou nos stories me marcando" data-pontos="1">📱 Story me marcando</span>
+                <span class="chip chip-motivo" data-motivo="Comentou no vídeo do desafio no Instagram" data-pontos="1">💬 Comentou no vídeo</span>
+              </div>
+              <div class="campo">
+                <label>Motivo (a participante vê isso)</label>
+                <input type="text" id="b-motivo" required placeholder="Ex: trouxe 2 amigas pro desafio">
+              </div>
+              <div class="campo">
                 <label>Pontos</label>
                 <input type="number" id="b-pontos" required placeholder="Ex: 2">
               </div>
-            </div>
-            <div class="campo">
-              <label>Motivo (a participante vê isso)</label>
-              <input type="text" id="b-motivo" required placeholder="Ex: trouxe 2 amigas pro desafio">
-            </div>
-            <div id="bonus-msg" class="msg msg-erro" hidden></div>
-            <button type="submit" class="btn btn-primary" style="width:auto;padding:11px 22px;">Dar pontos</button>
-          </form>
+              <div id="bonus-msg" class="msg msg-erro" hidden></div>
+              <button type="submit" class="btn btn-primary" style="width:auto;padding:11px 22px;">Dar pontos</button>
+            </form>
 
-          ${(bonusHistorico && bonusHistorico.length) ? `
-            <table class="admin-table" style="margin-top:20px;">
-              <tr><th>Participante</th><th>Pontos</th><th>Motivo</th></tr>
-              ${bonusHistorico.map((b) => `<tr><td>${b.desafio_perfis?.nome || ''}</td><td>+${b.pontos}</td><td>${b.motivo}</td></tr>`).join('')}
-            </table>
-          ` : ''}
+            ${(bonusHistorico && bonusHistorico.length) ? `
+              <table class="admin-table" style="margin-top:20px;">
+                <tr><th>Participante</th><th>Pontos</th><th>Motivo</th></tr>
+                ${bonusHistorico.map((b) => `<tr><td>${b.desafio_perfis?.nome || ''}</td><td>+${b.pontos}</td><td>${b.motivo}</td></tr>`).join('')}
+              </table>
+            ` : ''}
+          </div>
         </div>
 
         <div class="secao-titulo">Vídeos pra avaliar</div>
@@ -168,6 +168,13 @@
           return;
         }
         carregar();
+      });
+
+      document.querySelectorAll('.chip-motivo').forEach((chip) => {
+        chip.addEventListener('click', () => {
+          document.getElementById('b-motivo').value = chip.dataset.motivo;
+          document.getElementById('b-pontos').value = chip.dataset.pontos;
+        });
       });
 
       document.getElementById('form-bonus').addEventListener('submit', async (e) => {

@@ -512,6 +512,10 @@
 
         <!-- ---------- Aba: Meu Desafio UGC ---------- -->
         <section id="panel-desafio-ugc" class="tab-panel" hidden>
+          <div class="desafio-subnav">
+            <button class="desafio-subnav-btn ativo" data-desafio-pagina="admin" type="button">Admin</button>
+            <button class="desafio-subnav-btn" data-desafio-pagina="painel" type="button">Meu painel</button>
+          </div>
           <iframe id="desafio-ugc-iframe" class="desafio-ugc-iframe" title="Meu Desafio UGC"></iframe>
         </section>
 
@@ -3914,6 +3918,10 @@
         btn.addEventListener('click', () => trocarAba(btn.dataset.tab));
       });
 
+      document.querySelectorAll('.desafio-subnav-btn').forEach((btn) => {
+        btn.addEventListener('click', () => trocarSubAbaDesafio(btn.dataset.desafioPagina));
+      });
+
       document.querySelectorAll('.filtro-btn').forEach((btn) => {
         btn.addEventListener('click', () => trocarPeriodo(btn.dataset.periodo, btn));
       });
@@ -4323,8 +4331,14 @@
       }
       if (aba === 'desafio-ugc') {
         const iframe = document.getElementById('desafio-ugc-iframe');
-        if (!iframe.src) iframe.src = '../desafio/admin/?v=10';
+        if (!iframe.src) trocarSubAbaDesafio('admin');
       }
+    }
+
+    function trocarSubAbaDesafio(pagina) {
+      document.querySelectorAll('.desafio-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.desafioPagina === pagina));
+      const iframe = document.getElementById('desafio-ugc-iframe');
+      iframe.src = pagina === 'painel' ? '../desafio/painel/?v=1' : '../desafio/admin/?v=10';
     }
 
     function trocarPeriodo(periodo, btn) {

@@ -2709,7 +2709,8 @@
 /* ---- UGC / Publi ---- */
 
 .painel-body .ugc-subnav,
-.painel-body .instagram-subnav {
+.painel-body .instagram-subnav,
+.painel-body .desafio-subnav {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -2721,7 +2722,8 @@
 }
 
 .painel-body .ugc-subnav-btn,
-.painel-body .instagram-subnav-btn {
+.painel-body .instagram-subnav-btn,
+.painel-body .desafio-subnav-btn {
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -2734,12 +2736,14 @@
 }
 
 .painel-body .ugc-subnav-btn:hover,
-.painel-body .instagram-subnav-btn:hover {
+.painel-body .instagram-subnav-btn:hover,
+.painel-body .desafio-subnav-btn:hover {
   color: var(--grafite);
 }
 
 .painel-body .ugc-subnav-btn.ativo,
-.painel-body .instagram-subnav-btn.ativo {
+.painel-body .instagram-subnav-btn.ativo,
+.painel-body .desafio-subnav-btn.ativo {
   background: var(--coral);
   color: var(--branco);
 }

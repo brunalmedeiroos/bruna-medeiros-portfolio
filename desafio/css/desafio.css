@@ -96,6 +96,7 @@ h1,h2,h3{ font-family:var(--fonte-titulo); margin:0; text-wrap:balance; }
 .chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
 .chip{ border:1px solid var(--borda); background:var(--creme); border-radius:999px; padding:7px 13px; font-size:12.5px; color:var(--coral); cursor:pointer; font-family:var(--fonte-corpo); }
 .chip.sel{ background:var(--coral); border-color:var(--coral); color:#fff; }
+.chip-motivo{ padding:11px 20px; font-size:14.5px; }
 
 .btn{ border:none; border-radius:var(--raio-sm); padding:13px 20px; font-size:14px; font-weight:700; font-family:var(--fonte-corpo); cursor:pointer; width:100%; }
 .btn-primary{ background:var(--coral); color:#fff; }

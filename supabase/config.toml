@@ -500,11 +500,28 @@ verify_jwt = false
 import_map = "./functions/radar-atualizar/deno.json"
 entrypoint = "./functions/radar-atualizar/index.ts"
 
-[functions.instagram-automacao-processar]
+# Substitui a antiga instagram-automacao-processar (polling a cada 10
+# min): recebe comentários/mensagens em tempo real. Precisa ficar
+# pública (verify_jwt = false) porque é a própria Meta que chama.
+[functions.instagram-webhook]
 enabled = true
 verify_jwt = false
-import_map = "./functions/instagram-automacao-processar/deno.json"
-entrypoint = "./functions/instagram-automacao-processar/index.ts"
+import_map = "./functions/instagram-webhook/deno.json"
+entrypoint = "./functions/instagram-webhook/index.ts"
+
+# Esvazia a fila do freio de envio e dispara os passos agendados —
+# chamado pelo pg_cron a cada 1 min (segredo no header Authorization,
+# não JWT de usuária) e também pelo botão do painel.
+[functions.instagram-scheduler]
+enabled = true
+verify_jwt = false
+import_map = "./functions/instagram-scheduler/deno.json"
+entrypoint = "./functions/instagram-scheduler/index.ts"
+
+[functions.instagram-media]
+enabled = true
+import_map = "./functions/instagram-media/deno.json"
+entrypoint = "./functions/instagram-media/index.ts"
 
 [functions.calendar-oauth-start]
 enabled = true

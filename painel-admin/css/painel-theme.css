@@ -3075,6 +3075,15 @@
   max-width: 1100px;
 }
 
+/* ---- Editor de automação do Instagram: mais largo ainda que o pl-modal-xl
+   padrão, pra caber o formulário e a prévia do celular confortavelmente,
+   e com fundo branco (igual ao modal de roteiro) em vez do creme padrão ---- */
+
+.painel-body .ig-editor-modal {
+  max-width: 1360px;
+  background: var(--branco);
+}
+
 .painel-body .ugc-modal-secao-titulo {
   font-size: 13px;
   font-weight: 700;
@@ -4384,4 +4393,455 @@
 
 .painel-body .notif-vazio {
   padding: 8px 0;
+}
+
+/* ==========================================================================
+   Editor de automação do Instagram (o "ManyChat"): formulário à esquerda,
+   prévia em formato de celular à direita. Reaproveita as variáveis de cor
+   e as classes de campo (.cal-form-campo, .cal-btn) já usadas no resto do
+   painel.
+   ========================================================================== */
+
+/* ---- Interruptor liga/desliga (usado no lugar da checkbox comum
+   .ugc-permuta-check dentro do editor de automação) ---- */
+
+.painel-body .ig-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.painel-body .ig-toggle input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  width: 40px;
+  height: 22px;
+  margin: 0;
+  border-radius: 999px;
+  background: rgba(var(--grafite-rgb), 0.22);
+  cursor: pointer;
+  outline: none;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.painel-body .ig-toggle input[type="checkbox"]::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--branco);
+  box-shadow: 0 1px 2px rgba(var(--grafite-rgb), 0.35);
+  transition: transform 0.15s ease;
+}
+
+.painel-body .ig-toggle input[type="checkbox"]:checked {
+  background: #1E3A8A;
+}
+
+.painel-body .ig-toggle input[type="checkbox"]:checked::before {
+  transform: translateX(18px);
+}
+
+.painel-body .ig-editor-corpo {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 22px;
+  align-items: start;
+}
+
+.painel-body .ig-editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.painel-body .ig-editor-secao {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.painel-body .ig-editor-secao-titulo {
+  font-family: var(--fonte-corpo);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--texto-suave);
+  margin: 0;
+}
+
+.painel-body .ig-campo-ajuda {
+  font-size: 12px;
+  color: var(--texto-suave);
+  margin: -4px 0 0;
+}
+
+.painel-body .ig-btn-pequeno {
+  align-self: flex-start;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+/* ---- Tags de palavras-gatilho ---- */
+
+.painel-body .ig-tags-input {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.painel-body .ig-tags-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.painel-body .ig-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(var(--coral-rgb), 0.16);
+  color: var(--grafite);
+  border-radius: 999px;
+  padding: 4px 6px 4px 12px;
+  font-size: 13px;
+}
+
+.painel-body .ig-tag button {
+  border: none;
+  background: transparent;
+  color: var(--texto-suave);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  padding: 2px 4px;
+}
+
+.painel-body .ig-tag button:hover {
+  color: var(--erro);
+}
+
+.painel-body .ig-tags-input input[type="text"] {
+  flex: 1;
+  min-width: 120px;
+  border: none;
+  padding: 4px;
+  background: transparent;
+}
+
+/* ---- Seletor de posts ---- */
+
+.painel-body .ig-posts-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 6px;
+}
+
+.painel-body .ig-post-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  border-radius: var(--raio-sm);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.painel-body .ig-post-item:hover {
+  background: rgba(var(--grafite-rgb), 0.05);
+}
+
+.painel-body .ig-post-item img,
+.painel-body .ig-post-sem-capa {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: rgba(var(--grafite-rgb), 0.08);
+  flex-shrink: 0;
+}
+
+.painel-body .ig-post-item input[type="checkbox"] {
+  flex-shrink: 0;
+}
+
+/* ---- Variações de resposta no comentário ---- */
+
+.painel-body .ig-variantes-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.painel-body .ig-variante-linha {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.painel-body .ig-variante-linha input {
+  flex: 1;
+}
+
+/* ---- Barra de emojis ---- */
+
+.painel-body .ig-emoji-barra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.painel-body .ig-emoji-botao {
+  border: none;
+  background: transparent;
+  font-size: 17px;
+  line-height: 1;
+  padding: 3px 5px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.painel-body .ig-emoji-botao:hover {
+  background: rgba(var(--grafite-rgb), 0.08);
+}
+
+/* ---- Botão da mensagem 1 ---- */
+
+.painel-body .ig-editor-linha-botao {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.painel-body .ig-editor-linha-botao .cal-form-campo {
+  position: relative;
+  min-width: 160px;
+  flex: 1;
+}
+
+.painel-body .ig-contador {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  font-size: 11px;
+  color: var(--texto-suave);
+}
+
+.painel-body .ig-link-textarea {
+  min-height: 60px;
+  resize: vertical;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+/* ---- Construtor de conversa (mini-chat) ---- */
+
+.painel-body .ig-fluxo-builder[hidden] {
+  display: none;
+}
+
+.painel-body .ig-fluxo-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.painel-body .ig-fluxo-ref {
+  border: 1px dashed var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 8px 10px;
+  background: rgba(var(--grafite-rgb), 0.03);
+}
+
+.painel-body .ig-fluxo-ref-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--texto-suave);
+  font-weight: 700;
+}
+
+.painel-body .ig-fluxo-ref p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--grafite);
+}
+
+.painel-body .ig-fluxo-passo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 10px 12px;
+  background: var(--branco);
+}
+
+.painel-body .ig-fluxo-passo-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.painel-body .ig-fluxo-passo textarea {
+  min-height: 56px;
+  resize: vertical;
+}
+
+.painel-body .ig-fluxo-botoes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.painel-body .ig-fluxo-botao-linha {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  background: rgba(var(--grafite-rgb), 0.03);
+  border-radius: var(--raio-sm);
+  padding: 6px;
+}
+
+.painel-body .ig-fluxo-botao-linha input[type="text"],
+.painel-body .ig-fluxo-botao-linha select {
+  width: auto;
+  flex: 1;
+  min-width: 100px;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.painel-body .ig-link-inline {
+  font-family: monospace;
+  font-size: 12px;
+}
+
+/* ---- Prévia ao vivo (mockup de celular) ---- */
+
+.painel-body .ig-editor-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  width: 100%;
+}
+
+.painel-body .ig-preview-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--texto-suave);
+  margin: 0;
+}
+
+.painel-body .ig-fone {
+  width: 100%;
+  height: 640px;
+  border-radius: 32px;
+  background: var(--grafite);
+  padding: 12px;
+  box-shadow: var(--sombra-forte);
+  box-sizing: border-box;
+}
+
+.painel-body .ig-fone-tela {
+  height: 100%;
+  border-radius: 22px;
+  background: var(--creme);
+  padding: 16px 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.painel-body .ig-bolha {
+  align-self: flex-start;
+  max-width: 88%;
+  background: var(--branco);
+  border-radius: 16px;
+  padding: 10px 12px;
+  box-shadow: var(--sombra);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.painel-body .ig-bolha-texto {
+  margin: 0;
+  font-size: 13px;
+  color: var(--grafite);
+  white-space: pre-wrap;
+}
+
+.painel-body .ig-bolha-vazio {
+  color: var(--texto-suave);
+  font-style: italic;
+}
+
+.painel-body .ig-bolha-botao {
+  display: block;
+  width: 100%;
+  border: none;
+  border-top: 1px solid var(--borda);
+  background: transparent;
+  color: var(--coral);
+  font-weight: 600;
+  font-size: 12px;
+  padding: 8px 0 0;
+  cursor: default;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .painel-body .ig-editor-corpo {
+    grid-template-columns: 1fr;
+  }
+
+  .painel-body .ig-editor-preview {
+    position: static;
+  }
+
+  .painel-body .ig-fone {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
 }

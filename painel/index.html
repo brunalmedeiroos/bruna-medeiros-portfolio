@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260915c">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260918c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -1539,36 +1539,103 @@
 
     <!-- Modal: automação do Instagram (comentário → resposta privada) -->
     <div id="instagram-modal-automacao-overlay" class="pl-modal-overlay" hidden>
-      <div class="pl-modal">
+      <div class="pl-modal pl-modal-grande pl-modal-xl ig-editor-modal">
         <div class="pl-modal-topo">
-          <input type="text" id="instagram-modal-automacao-nome" class="pl-modal-titulo-input" data-i18n-placeholder="instagram_nome_automacao" placeholder="Nome da automação">
+          <input type="text" id="instagram-modal-automacao-nome" data-field="nome" class="pl-modal-titulo-input" data-i18n-placeholder="instagram_nome_automacao" placeholder="Nome da automação">
           <button id="instagram-modal-automacao-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
 
-        <div class="pl-modal-linha">
-          <div class="cal-form-campo">
-            <label for="instagram-modal-automacao-gatilho" data-i18n="instagram_palavra_gatilho">Palavra-gatilho (no comentário)</label>
-            <input type="text" id="instagram-modal-automacao-gatilho" placeholder="Ex: imersão">
+        <div class="ig-editor-corpo">
+          <div class="ig-editor-form">
+
+            <div class="ig-editor-secao">
+              <h4 class="ig-editor-secao-titulo" data-i18n="instagram_bloco_gatilho">O gatilho</h4>
+
+              <div class="cal-form-campo">
+                <label data-i18n="instagram_palavras_ativam">Palavras que ativam</label>
+                <div class="ig-tags-input">
+                  <div class="ig-tags-lista" id="instagram-tags-lista"></div>
+                  <input type="text" id="instagram-tags-input" data-i18n-placeholder="instagram_palavras_placeholder" placeholder="Digite e aperte Enter">
+                </div>
+              </div>
+
+              <label class="ig-toggle">
+                <input type="checkbox" id="instagram-match-any">
+                <span data-i18n="instagram_qualquer_palavra_ativa">Qualquer palavra ativa</span>
+              </label>
+
+              <div class="cal-form-campo">
+                <label data-i18n="instagram_em_quais_posts">Em quais posts</label>
+                <div class="ig-posts-picker" id="instagram-posts-picker">
+                  <p class="texto-suave" data-i18n="instagram_carregando_posts">Carregando posts...</p>
+                </div>
+                <p class="ig-campo-ajuda" data-i18n="instagram_posts_vazio_ajuda">Vazio = vale pra todos os posts.</p>
+              </div>
+
+              <div class="cal-form-campo">
+                <label data-i18n="instagram_resposta_comentario">Resposta no comentário</label>
+                <div id="instagram-variantes-lista" class="ig-variantes-lista"></div>
+                <button type="button" id="instagram-add-variante" class="cal-btn ig-btn-pequeno" data-action="add-variante" data-i18n="instagram_add_variacao">+ Adicionar variação</button>
+              </div>
+            </div>
+
+            <div class="ig-editor-secao">
+              <h4 class="ig-editor-secao-titulo" data-i18n="instagram_bloco_resposta">A resposta</h4>
+
+              <div class="cal-form-campo">
+                <label data-i18n="instagram_sua_mensagem">Sua mensagem</label>
+                <div class="ig-emoji-barra" id="instagram-emoji-barra-1"></div>
+                <textarea id="instagram-mensagem-1" data-field="mensagem1" rows="3"></textarea>
+              </div>
+
+              <label class="ig-toggle">
+                <input type="checkbox" id="instagram-botao-ativo" checked>
+                <span data-i18n="instagram_botao_na_mensagem">Botão na mensagem</span>
+              </label>
+
+              <div class="ig-editor-linha-botao" id="instagram-botao-config">
+                <div class="cal-form-campo">
+                  <label data-i18n="instagram_texto_botao">Texto do botão</label>
+                  <input type="text" id="instagram-botao-texto" data-field="botao-texto" maxlength="20">
+                  <span class="ig-contador" id="instagram-botao-texto-contador">0/20</span>
+                </div>
+                <div class="cal-form-campo">
+                  <label data-i18n="instagram_botao_faz_o_que">O que o botão faz quando ela toca</label>
+                  <select id="instagram-botao-modo">
+                    <option value="continua" data-i18n="instagram_modo_continua">Continua a conversa</option>
+                    <option value="link" data-i18n="instagram_modo_link">Um link</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="cal-form-campo" id="instagram-link-campo">
+                <label data-i18n="instagram_link_completo">Link completo</label>
+                <textarea id="instagram-link-url" data-field="link-url" class="ig-link-textarea" rows="2"></textarea>
+              </div>
+
+              <div id="instagram-fluxo-builder" class="ig-fluxo-builder"></div>
+
+              <div class="cal-form-campo">
+                <label data-i18n="instagram_anexar_arquivo">Anexar um arquivo (opcional)</label>
+                <select id="instagram-arquivo-select"></select>
+              </div>
+            </div>
+
+            <label class="ig-toggle">
+              <input type="checkbox" id="instagram-modal-automacao-ativo" checked>
+              <span data-i18n="instagram_automacao_ativa">Automação ativa</span>
+            </label>
           </div>
-          <div class="cal-form-campo">
-            <label for="instagram-modal-automacao-post" data-i18n="instagram_aplicar_em">Aplicar em</label>
-            <select id="instagram-modal-automacao-post"></select>
+
+          <div class="ig-editor-preview">
+            <p class="ig-preview-label" data-i18n="instagram_previa_ao_vivo">Prévia ao vivo</p>
+            <div class="ig-fone">
+              <div class="ig-fone-tela" id="instagram-preview-tela"></div>
+            </div>
           </div>
         </div>
-
-        <div class="pl-modal-linha">
-          <div class="cal-form-campo">
-            <label for="instagram-modal-automacao-mensagem" data-i18n="instagram_mensagem_resposta">Mensagem da resposta privada</label>
-            <textarea id="instagram-modal-automacao-mensagem" class="pl-textarea-grande" rows="3"></textarea>
-          </div>
-        </div>
-
-        <label class="ugc-permuta-check">
-          <input type="checkbox" id="instagram-modal-automacao-ativo" checked>
-          <span data-i18n="instagram_automacao_ativa">Automação ativa</span>
-        </label>
 
         <div class="cal-form-acoes">
           <button type="button" id="instagram-modal-automacao-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
@@ -1947,10 +2014,15 @@
     let instagramAbaCarregada = false;
     let instagramSubAbaAtual = 'visao-geral';
     let instagramPostsCache = [];
+    let instagramMediaCache = [];
     let instagramAutomacoesCarregadas = false;
     let instagramAutomacoesCache = [];
     let instagramLeadsCache = [];
+    let instagramArquivosCache = [];
     let instagramAutomacaoAbertaId = null;
+    let instagramEditorEstado = null;
+    let instagramEditorSujo = false;
+    let instagramUltimoTextareaFocado = null;
     let filtroLeadsTexto = '';
     let planejadorAbaCarregada = false;
     let pilaresCache = [];
@@ -2907,7 +2979,7 @@
         instagram_lead_singular: 'lead',
         instagram_lead_plural: 'leads',
         instagram_buscar_conta_palavra: 'Buscar por @ ou palavra',
-        instagram_processar_agora: 'Processar agora',
+        instagram_processar_agora: 'Processar fila agora',
         instagram_processando: 'Processando...',
         instagram_exportar_csv: '↓ Exportar CSV',
         instagram_col_conta: 'Conta',
@@ -2924,6 +2996,50 @@
         instagram_desconectar_confirmar: 'Desconectar o Instagram? Você vai precisar autorizar de novo pra reconectar.',
         instagram_processado_comentarios_prefixo: 'Comentários vistos: ',
         instagram_processado_respostas_prefixo: ' · Respostas enviadas: ',
+        instagram_fila_enviados_prefixo: 'Enviados da fila: ',
+        instagram_fila_na_fila_prefixo: ' · Ainda na fila: ',
+        instagram_fila_agendados_prefixo: ' · Agendados disparados: ',
+        instagram_bloco_gatilho: 'O gatilho',
+        instagram_palavras_ativam: 'Palavras que ativam',
+        instagram_palavras_placeholder: 'Digite e aperte Enter',
+        instagram_qualquer_palavra_ativa: 'Qualquer palavra ativa',
+        instagram_em_quais_posts: 'Em quais posts',
+        instagram_posts_vazio_ajuda: 'Vazio = vale pra todos os posts.',
+        instagram_resposta_comentario: 'Resposta no comentário',
+        instagram_resposta_comentario_placeholder: 'Ex: te chamei no direct!',
+        instagram_add_variacao: '+ Adicionar variação',
+        instagram_bloco_resposta: 'A resposta',
+        instagram_sua_mensagem: 'Sua mensagem',
+        instagram_botao_na_mensagem: 'Botão na mensagem',
+        instagram_texto_botao: 'Texto do botão',
+        instagram_botao_faz_o_que: 'O que o botão faz quando ela toca',
+        instagram_modo_link: 'Um link',
+        instagram_modo_continua: 'Continua a conversa',
+        instagram_link_completo: 'Link completo',
+        instagram_anexar_arquivo: 'Anexar um arquivo (opcional)',
+        instagram_nenhum_arquivo: 'Nenhum arquivo',
+        instagram_previa_ao_vivo: 'Prévia ao vivo',
+        instagram_mensagem_1_referencia: 'Mensagem 1 (editada acima)',
+        instagram_mensagem_1_referencia_curta: 'Mensagem 1',
+        instagram_mensagem_numero: 'Mensagem {n}',
+        instagram_add_botao: '+ Adicionar botão',
+        instagram_add_mensagem: '+ Adicionar mensagem',
+        instagram_nome_botao_placeholder: 'Nome do botão',
+        instagram_destino_proxima: 'Ir pra outra mensagem',
+        instagram_destino_link: 'Abrir um link',
+        instagram_destino_encerrar: 'Encerrar',
+        instagram_texto_padrao_acessar: 'Acessar',
+        instagram_preview_mensagem_vazia: '(mensagem vazia)',
+        instagram_preview_botao_sem_nome: '(botão sem nome)',
+        instagram_nenhum_post_encontrado: 'Nenhum post encontrado.',
+        instagram_sair_sem_salvar_confirmar: 'Você tem alterações não salvas nessa automação. Sair sem salvar?',
+        instagram_preencha_nome: 'Dê um nome pra essa automação antes de salvar.',
+        instagram_preencha_palavra_ou_qualquer: 'Adicione pelo menos uma palavra-gatilho, ou ative "qualquer palavra ativa".',
+        instagram_preencha_mensagem: 'Escreva a Mensagem 1 antes de salvar.',
+        instagram_resumo_um_link: 'Manda um link ao tocar no botão.',
+        instagram_resumo_n_mensagens: '{n} mensagens na conversa.',
+        instagram_resumo_sem_botao: 'Mensagem única, sem botão.',
+        instagram_resumo_n_posts: '{n} posts selecionados',
       },
       en: {
         titulo_dashboard: 'Dashboard',
@@ -3628,7 +3744,7 @@
         instagram_lead_singular: 'lead',
         instagram_lead_plural: 'leads',
         instagram_buscar_conta_palavra: 'Search by @ or word',
-        instagram_processar_agora: 'Process now',
+        instagram_processar_agora: 'Process queue now',
         instagram_processando: 'Processing...',
         instagram_exportar_csv: '↓ Export CSV',
         instagram_col_conta: 'Account',
@@ -3645,6 +3761,50 @@
         instagram_desconectar_confirmar: 'Disconnect Instagram? You will need to authorize again to reconnect.',
         instagram_processado_comentarios_prefixo: 'Comments seen: ',
         instagram_processado_respostas_prefixo: ' · Replies sent: ',
+        instagram_fila_enviados_prefixo: 'Sent from queue: ',
+        instagram_fila_na_fila_prefixo: ' · Still queued: ',
+        instagram_fila_agendados_prefixo: ' · Scheduled sent: ',
+        instagram_bloco_gatilho: 'The trigger',
+        instagram_palavras_ativam: 'Words that trigger it',
+        instagram_palavras_placeholder: 'Type and press Enter',
+        instagram_qualquer_palavra_ativa: 'Any word triggers it',
+        instagram_em_quais_posts: 'On which posts',
+        instagram_posts_vazio_ajuda: 'Empty = applies to every post.',
+        instagram_resposta_comentario: 'Reply on the comment',
+        instagram_resposta_comentario_placeholder: 'E.g.: sent you a DM!',
+        instagram_add_variacao: '+ Add variation',
+        instagram_bloco_resposta: 'The reply',
+        instagram_sua_mensagem: 'Your message',
+        instagram_botao_na_mensagem: 'Button on the message',
+        instagram_texto_botao: 'Button text',
+        instagram_botao_faz_o_que: 'What the button does when tapped',
+        instagram_modo_link: 'A link',
+        instagram_modo_continua: 'Continues the conversation',
+        instagram_link_completo: 'Full link',
+        instagram_anexar_arquivo: 'Attach a file (optional)',
+        instagram_nenhum_arquivo: 'No file',
+        instagram_previa_ao_vivo: 'Live preview',
+        instagram_mensagem_1_referencia: 'Message 1 (edited above)',
+        instagram_mensagem_1_referencia_curta: 'Message 1',
+        instagram_mensagem_numero: 'Message {n}',
+        instagram_add_botao: '+ Add button',
+        instagram_add_mensagem: '+ Add message',
+        instagram_nome_botao_placeholder: 'Button name',
+        instagram_destino_proxima: 'Go to another message',
+        instagram_destino_link: 'Open a link',
+        instagram_destino_encerrar: 'End',
+        instagram_texto_padrao_acessar: 'Open',
+        instagram_preview_mensagem_vazia: '(empty message)',
+        instagram_preview_botao_sem_nome: '(button with no name)',
+        instagram_nenhum_post_encontrado: 'No posts found.',
+        instagram_sair_sem_salvar_confirmar: 'You have unsaved changes on this automation. Leave without saving?',
+        instagram_preencha_nome: 'Give this automation a name before saving.',
+        instagram_preencha_palavra_ou_qualquer: 'Add at least one trigger word, or turn on "any word triggers it".',
+        instagram_preencha_mensagem: 'Write Message 1 before saving.',
+        instagram_resumo_um_link: 'Sends a link when the button is tapped.',
+        instagram_resumo_n_mensagens: '{n} messages in the conversation.',
+        instagram_resumo_sem_botao: 'Single message, no button.',
+        instagram_resumo_n_posts: '{n} posts selected',
       },
     };
 
@@ -4138,18 +4298,68 @@
         btn.addEventListener('click', () => trocarSubAbaInstagram(btn.dataset.instagramPagina));
       });
       document.getElementById('btn-instagram-nova-automacao').addEventListener('click', () => abrirModalAutomacao(null));
-      document.getElementById('instagram-modal-automacao-fechar').addEventListener('click', fecharModalAutomacao);
+      document.getElementById('instagram-modal-automacao-fechar').addEventListener('click', () => tentarFecharModalAutomacao());
       document.getElementById('instagram-modal-automacao-excluir').addEventListener('click', excluirModalAutomacao);
       document.getElementById('instagram-modal-automacao-salvar').addEventListener('click', salvarModalAutomacao);
       document.getElementById('instagram-modal-automacao-overlay').addEventListener('click', (e) => {
-        if (e.target.id === 'instagram-modal-automacao-overlay') fecharModalAutomacao();
+        if (e.target.id === 'instagram-modal-automacao-overlay') tentarFecharModalAutomacao();
       });
       document.getElementById('instagram-leads-busca').addEventListener('input', (e) => {
         filtroLeadsTexto = e.target.value;
         renderizarInstagramLeads();
       });
       document.getElementById('btn-instagram-exportar-csv').addEventListener('click', exportarLeadsCSV);
-      document.getElementById('btn-instagram-processar-agora').addEventListener('click', processarAutomacoesAgora);
+      document.getElementById('btn-instagram-processar-agora').addEventListener('click', processarFilaInstagramAgora);
+
+      // Editor de automação: campos estáticos (topo, fora da parte dinâmica do fluxo)
+      document.getElementById('instagram-match-any').addEventListener('change', (e) => {
+        instagramEditorEstado.matchAny = e.target.checked;
+        marcarEditorInstagramSujo();
+      });
+      document.getElementById('instagram-botao-ativo').addEventListener('change', (e) => {
+        instagramEditorEstado.botaoAtivo = e.target.checked;
+        marcarEditorInstagramSujo();
+        atualizarVisibilidadeBotaoConfigInstagram();
+        renderizarFluxoBuilderInstagram();
+        renderizarPreviewInstagram();
+      });
+      document.getElementById('instagram-botao-modo').addEventListener('change', (e) => {
+        const estado = instagramEditorEstado;
+        if (e.target.value === 'link' && pareceUrlInstagram(estado.botaoTexto)) {
+          estado.linkUrl = estado.botaoTexto.trim();
+          estado.botaoTexto = tr('instagram_texto_padrao_acessar');
+          document.getElementById('instagram-botao-texto').value = estado.botaoTexto;
+        }
+        estado.modo = e.target.value;
+        marcarEditorInstagramSujo();
+        atualizarVisibilidadeBotaoConfigInstagram();
+        renderizarFluxoBuilderInstagram();
+        renderizarPreviewInstagram();
+      });
+      document.getElementById('instagram-modal-automacao-ativo').addEventListener('change', (e) => {
+        instagramEditorEstado.ativo = e.target.checked;
+      });
+      document.getElementById('instagram-tags-input').addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        const valor = e.target.value.trim();
+        if (!valor) return;
+        instagramEditorEstado.keywords.push(valor);
+        e.target.value = '';
+        marcarEditorInstagramSujo();
+        renderizarTagsInstagram();
+      });
+
+      // Editor de automação: tudo que é gerado dinamicamente (tags, variações,
+      // posts, passos do fluxo, botões) usa listeners delegados no modal
+      // inteiro — assim não precisa reamarrar eventos a cada nova renderização.
+      const modalAutomacaoEl = document.getElementById('instagram-modal-automacao-overlay');
+      modalAutomacaoEl.addEventListener('input', tratarInputEditorInstagram);
+      modalAutomacaoEl.addEventListener('change', tratarChangeEditorInstagram);
+      modalAutomacaoEl.addEventListener('click', tratarClickEditorInstagram);
+      modalAutomacaoEl.addEventListener('focusin', (e) => {
+        if (e.target.tagName === 'TEXTAREA') instagramUltimoTextareaFocado = e.target;
+      });
       document.getElementById('ugc-modal-briefing-anexar').addEventListener('click', () => {
         document.getElementById('ugc-modal-briefing-arquivo-input').click();
       });
@@ -6408,13 +6618,21 @@
       instagramAutomacoesCache.forEach((a) => lista.appendChild(criarCardAutomacao(a)));
     }
 
+    function resumoFluxoAutomacao(automacao) {
+      const passos = automacao.flow?.steps || [];
+      const botao0 = passos[0]?.buttons?.[0];
+      if (botao0?.url) return tr('instagram_resumo_um_link');
+      if (passos.length > 1) return tr('instagram_resumo_n_mensagens').replace('{n}', String(passos.length));
+      return tr('instagram_resumo_sem_botao');
+    }
+
     function criarCardAutomacao(automacao) {
       const card = document.createElement('div');
       card.className = 'instagram-automacao-card';
-      const post = automacao.media_id ? instagramPostsCache.find((p) => p.id === automacao.media_id) : null;
-      const aplicaEm = automacao.media_id
-        ? (post ? (post.legenda || tr('instagram_post_sem_legenda')).slice(0, 40) : automacao.media_legenda || tr('instagram_post_nao_encontrado'))
+      const aplicaEm = (automacao.media_ids && automacao.media_ids.length)
+        ? tr('instagram_resumo_n_posts').replace('{n}', String(automacao.media_ids.length))
         : tr('instagram_qualquer_post');
+      const gatilho = automacao.match_any ? tr('instagram_qualquer_palavra_ativa') : (automacao.palavra_gatilho || '—');
 
       card.innerHTML = `
         <div class="instagram-automacao-info">
@@ -6422,8 +6640,8 @@
             <span class="instagram-automacao-nome">${escapeHtml(automacao.nome)}</span>
             <button type="button" class="instagram-automacao-status-pill${automacao.ativo ? '' : ' pausada'}">${escapeHtml(automacao.ativo ? tr('instagram_ativa') : tr('instagram_pausada'))}</button>
           </div>
-          <p class="instagram-automacao-detalhe">${escapeHtml(tr('instagram_gatilho_prefixo'))} "${escapeHtml(automacao.palavra_gatilho)}" · ${escapeHtml(tr('instagram_aplicar_em'))}: ${escapeHtml(aplicaEm)}</p>
-          <p class="instagram-automacao-mensagem">${escapeHtml(automacao.mensagem)}</p>
+          <p class="instagram-automacao-detalhe">${escapeHtml(tr('instagram_gatilho_prefixo'))} "${escapeHtml(gatilho)}" · ${escapeHtml(tr('instagram_aplicar_em'))}: ${escapeHtml(aplicaEm)}</p>
+          <p class="instagram-automacao-mensagem">${escapeHtml(resumoFluxoAutomacao(automacao))}</p>
         </div>
         <div class="instagram-automacao-acoes">
           <button type="button" class="cal-btn instagram-automacao-editar">${escapeHtml(tr('editar'))}</button>
@@ -6448,64 +6666,510 @@
       }
     }
 
-    function preencherSelectPostsAutomacao(mediaIdSelecionado) {
-      const select = document.getElementById('instagram-modal-automacao-post');
-      const opcoes = [`<option value="">${escapeHtml(tr('instagram_qualquer_post'))}</option>`].concat(
-        instagramPostsCache.map(
-          (p) => `<option value="${escapeHtml(p.id)}">${escapeHtml((p.legenda || tr('instagram_post_sem_legenda')).slice(0, 60))}</option>`,
-        ),
-      );
-      select.innerHTML = opcoes.join('');
-      select.value = mediaIdSelecionado || '';
+    // ==========================================================================
+    // Editor de automação (o "ManyChat"): estado em memória + renderização.
+    // Tudo que a pessoa digita mexe em instagramEditorEstado; cada função de
+    // renderizar* lê esse estado e desenha a parte correspondente da tela
+    // (a lista de tags, os passos do fluxo, a prévia no fone). Nada aqui
+    // salva sozinho — só o botão "Salvar" grava no Supabase.
+    // ==========================================================================
+
+    function estadoVazioInstagram() {
+      return {
+        automacaoId: null,
+        nome: '',
+        keywords: [],
+        matchAny: false,
+        mediaIds: [],
+        variantes: [''],
+        mensagem1: '',
+        botaoAtivo: true,
+        botaoTexto: '',
+        modo: 'continua',
+        linkUrl: '',
+        steps: [],
+        assetId: null,
+        ativo: true,
+      };
     }
 
-    function abrirModalAutomacao(automacao) {
+    function estadoDeAutomacaoInstagram(automacao) {
+      if (!automacao) return estadoVazioInstagram();
+      const flow = automacao.flow || { steps: [] };
+      const passo0 = flow.steps?.[0] || { message: '', buttons: [] };
+      const botao0 = (passo0.buttons || [])[0] || null;
+      const modo = botao0 && botao0.url ? 'link' : 'continua';
+      const steps = (flow.steps || []).slice(1).map((p) => ({
+        id: p.id,
+        message: p.message || '',
+        buttons: (p.buttons || []).map((b) => ({
+          title: b.title || '',
+          destino: b.url ? 'link' : (typeof b.next === 'number' ? 'proxima' : 'encerrar'),
+          next: typeof b.next === 'number' ? b.next : null,
+          url: b.url || '',
+        })),
+      }));
+      const variantes = (automacao.resposta_comentario_variantes && automacao.resposta_comentario_variantes.length)
+        ? automacao.resposta_comentario_variantes
+        : (automacao.resposta_comentario ? [automacao.resposta_comentario] : ['']);
+      return {
+        automacaoId: automacao.id,
+        nome: automacao.nome || '',
+        keywords: (automacao.palavra_gatilho || '').split(',').map((s) => s.trim()).filter(Boolean),
+        matchAny: !!automacao.match_any,
+        mediaIds: automacao.media_ids || [],
+        variantes,
+        mensagem1: passo0.message || '',
+        botaoAtivo: !!botao0,
+        botaoTexto: botao0 ? botao0.title || '' : '',
+        modo,
+        linkUrl: modo === 'link' ? (botao0.url || '') : '',
+        steps,
+        assetId: (automacao.asset_ids && automacao.asset_ids[0]) || null,
+        ativo: !!automacao.ativo,
+      };
+    }
+
+    function proximoIdPassoInstagram(estado) {
+      const usados = new Set([1, ...estado.steps.map((s) => s.id)]);
+      let candidato = 2;
+      while (usados.has(candidato)) candidato++;
+      return candidato;
+    }
+
+    function pareceUrlInstagram(texto) {
+      return /^https?:\/\//i.test((texto || '').trim()) || /^www\./i.test((texto || '').trim());
+    }
+
+    function construirFlowDoEstadoInstagram(estado) {
+      const passo0Botoes = [];
+      if (estado.botaoAtivo && estado.botaoTexto.trim()) {
+        if (estado.modo === 'link' && estado.linkUrl.trim()) {
+          passo0Botoes.push({ title: estado.botaoTexto.trim().slice(0, 20), url: estado.linkUrl.trim() });
+        } else if (estado.modo === 'continua' && estado.steps[0]) {
+          passo0Botoes.push({ title: estado.botaoTexto.trim().slice(0, 20), next: estado.steps[0].id });
+        }
+      }
+      const passos = [{ id: 1, message: estado.mensagem1.trim(), buttons: passo0Botoes }];
+      estado.steps.forEach((s) => {
+        const botoes = (s.buttons || [])
+          .map((b) => {
+            if (b.destino === 'link' && b.url && b.url.trim()) return { title: (b.title || tr('instagram_texto_padrao_acessar')).trim().slice(0, 20), url: b.url.trim() };
+            if (b.destino === 'proxima' && typeof b.next === 'number') return { title: (b.title || '').trim().slice(0, 20), next: b.next };
+            return null;
+          })
+          .filter(Boolean);
+        passos.push({ id: s.id, message: (s.message || '').trim(), buttons: botoes });
+      });
+      return { steps: passos };
+    }
+
+    function marcarEditorInstagramSujo() {
+      instagramEditorSujo = true;
+    }
+
+    function atualizarVisibilidadeBotaoConfigInstagram() {
+      const ativo = instagramEditorEstado.botaoAtivo;
+      document.getElementById('instagram-botao-config').hidden = !ativo;
+      document.getElementById('instagram-link-campo').hidden = !ativo || instagramEditorEstado.modo !== 'link';
+      document.getElementById('instagram-fluxo-builder').hidden = !ativo || instagramEditorEstado.modo !== 'continua';
+      document.getElementById('instagram-botao-texto').value = instagramEditorEstado.botaoTexto;
+      document.getElementById('instagram-botao-texto-contador').textContent = `${instagramEditorEstado.botaoTexto.length}/20`;
+      document.getElementById('instagram-botao-modo').value = instagramEditorEstado.modo;
+      document.getElementById('instagram-link-url').value = instagramEditorEstado.linkUrl;
+    }
+
+    function renderizarTagsInstagram() {
+      document.getElementById('instagram-tags-lista').innerHTML = instagramEditorEstado.keywords
+        .map((k, i) => `<span class="ig-tag">${escapeHtml(k)}<button type="button" data-action="remover-tag" data-idx="${i}" aria-label="${escapeHtml(tr('excluir'))}">×</button></span>`)
+        .join('');
+    }
+
+    function renderizarVariantesInstagram() {
+      document.getElementById('instagram-variantes-lista').innerHTML = instagramEditorEstado.variantes
+        .map(
+          (v, i) => `
+        <div class="ig-variante-linha">
+          <input type="text" data-field="variante" data-idx="${i}" value="${escapeHtml(v)}" placeholder="${escapeHtml(tr('instagram_resposta_comentario_placeholder'))}">
+          ${instagramEditorEstado.variantes.length > 1 ? `<button type="button" class="cal-btn cal-btn-icon" data-action="remover-variante" data-idx="${i}" aria-label="${escapeHtml(tr('excluir'))}">×</button>` : ''}
+        </div>
+      `,
+        )
+        .join('');
+    }
+
+    function renderizarPostsPickerInstagram() {
+      const wrap = document.getElementById('instagram-posts-picker');
+      if (!instagramMediaCache.length) {
+        wrap.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('instagram_nenhum_post_encontrado'))}</p>`;
+        return;
+      }
+      wrap.innerHTML = instagramMediaCache
+        .map(
+          (p) => `
+        <label class="ig-post-item">
+          <input type="checkbox" data-action="toggle-post" value="${escapeHtml(p.id)}" ${instagramEditorEstado.mediaIds.includes(p.id) ? 'checked' : ''}>
+          ${p.capa ? `<img src="${escapeHtml(p.capa)}" alt="">` : '<span class="ig-post-sem-capa"></span>'}
+          <span>${escapeHtml((p.legenda || tr('instagram_post_sem_legenda')).slice(0, 50))}</span>
+        </label>
+      `,
+        )
+        .join('');
+    }
+
+    function criarBarraEmojiHTML() {
+      return ['🫶', '👀', '😍', '🥰', '😂', '😮', '🔥', '✨', '💌', '👉', '🙌', '💕']
+        .map((e) => `<button type="button" class="ig-emoji-botao" data-action="emoji" data-emoji="${e}">${e}</button>`)
+        .join('');
+    }
+
+    function renderizarLinhaBotaoInstagram(stepId, idx, botao) {
+      const opcoesPassos = [{ id: 1, label: tr('instagram_mensagem_1_referencia_curta') }]
+        .concat(instagramEditorEstado.steps.map((s, i) => ({ id: s.id, label: tr('instagram_mensagem_numero').replace('{n}', String(i + 2)) })))
+        .filter((o) => o.id !== stepId);
+      return `
+        <div class="ig-fluxo-botao-linha">
+          <input type="text" data-field="titulo-botao" data-step-id="${stepId}" data-botao-idx="${idx}" maxlength="20" value="${escapeHtml(botao.title || '')}" placeholder="${escapeHtml(tr('instagram_nome_botao_placeholder'))}">
+          <select data-field="destino-botao" data-step-id="${stepId}" data-botao-idx="${idx}">
+            <option value="proxima" ${botao.destino === 'proxima' ? 'selected' : ''}>${escapeHtml(tr('instagram_destino_proxima'))}</option>
+            <option value="link" ${botao.destino === 'link' ? 'selected' : ''}>${escapeHtml(tr('instagram_destino_link'))}</option>
+            <option value="encerrar" ${botao.destino === 'encerrar' ? 'selected' : ''}>${escapeHtml(tr('instagram_destino_encerrar'))}</option>
+          </select>
+          ${
+            botao.destino === 'proxima'
+              ? `<select data-field="next-botao" data-step-id="${stepId}" data-botao-idx="${idx}">${opcoesPassos.map((o) => `<option value="${o.id}" ${botao.next === o.id ? 'selected' : ''}>${escapeHtml(o.label)}</option>`).join('')}</select>`
+              : ''
+          }
+          ${botao.destino === 'link' ? `<input type="text" class="ig-link-inline" data-field="url-botao" data-step-id="${stepId}" data-botao-idx="${idx}" value="${escapeHtml(botao.url || '')}" placeholder="https://...">` : ''}
+          <button type="button" class="cal-btn cal-btn-icon" data-action="remover-botao" data-step-id="${stepId}" data-botao-idx="${idx}" aria-label="${escapeHtml(tr('excluir'))}">×</button>
+        </div>
+      `;
+    }
+
+    function renderizarFluxoBuilderInstagram() {
+      const wrap = document.getElementById('instagram-fluxo-builder');
+      const estado = instagramEditorEstado;
+      wrap.hidden = !estado.botaoAtivo || estado.modo !== 'continua';
+      if (wrap.hidden) return;
+
+      let html = `
+        <div class="ig-fluxo-ref">
+          <span class="ig-fluxo-ref-label">${escapeHtml(tr('instagram_mensagem_1_referencia'))}</span>
+          <p>${escapeHtml(estado.mensagem1 || '')}</p>
+        </div>
+      `;
+
+      estado.steps.forEach((s, idx) => {
+        html += `
+          <div class="ig-fluxo-passo" data-step-id="${s.id}">
+            <div class="ig-fluxo-passo-cabecalho">
+              <span>${escapeHtml(tr('instagram_mensagem_numero').replace('{n}', String(idx + 2)))}</span>
+              <button type="button" class="cal-btn cal-btn-icon" data-action="remover-passo" data-step-id="${s.id}" aria-label="${escapeHtml(tr('excluir'))}">×</button>
+            </div>
+            <div class="ig-emoji-barra">${criarBarraEmojiHTML()}</div>
+            <textarea data-field="message" data-step-id="${s.id}" rows="2">${escapeHtml(s.message || '')}</textarea>
+            <div class="ig-fluxo-botoes">
+              ${(s.buttons || []).map((b, bi) => renderizarLinhaBotaoInstagram(s.id, bi, b)).join('')}
+            </div>
+            ${(s.buttons || []).length < 3 ? `<button type="button" class="cal-btn ig-btn-pequeno" data-action="add-botao" data-step-id="${s.id}">${escapeHtml(tr('instagram_add_botao'))}</button>` : ''}
+          </div>
+        `;
+      });
+
+      html += `<button type="button" class="cal-btn cal-btn-primario ig-btn-pequeno" data-action="add-passo">${escapeHtml(tr('instagram_add_mensagem'))}</button>`;
+      wrap.innerHTML = html;
+    }
+
+    function renderizarPreviewInstagram() {
+      const estado = instagramEditorEstado;
+      const bolhas = [];
+      const botoes0 = [];
+      if (estado.botaoAtivo && estado.botaoTexto.trim()) {
+        if (estado.modo === 'link' && estado.linkUrl.trim()) botoes0.push({ title: estado.botaoTexto, link: true });
+        else if (estado.modo === 'continua' && estado.steps.length) botoes0.push({ title: estado.botaoTexto, link: false });
+      }
+      bolhas.push({ texto: estado.mensagem1, botoes: botoes0 });
+      estado.steps.forEach((s) => {
+        const botoes = (s.buttons || [])
+          .filter((b) => (b.destino === 'link' && b.url) || (b.destino === 'proxima' && typeof b.next === 'number'))
+          .map((b) => ({ title: b.title || (b.destino === 'link' ? tr('instagram_texto_padrao_acessar') : ''), link: b.destino === 'link' }));
+        bolhas.push({ texto: s.message, botoes });
+      });
+
+      document.getElementById('instagram-preview-tela').innerHTML = bolhas
+        .map((b) => {
+          const texto = (b.texto || '').trim()
+            ? escapeHtml(b.texto).replace(/\n/g, '<br>')
+            : `<span class="ig-bolha-vazio">${escapeHtml(tr('instagram_preview_mensagem_vazia'))}</span>`;
+          const botoesHtml = b.botoes
+            .map((bt) => `<button type="button" class="ig-bolha-botao">${bt.link ? '🔗 ' : ''}${escapeHtml(bt.title || tr('instagram_preview_botao_sem_nome'))}</button>`)
+            .join('');
+          return `<div class="ig-bolha"><p class="ig-bolha-texto">${texto}</p>${botoesHtml}</div>`;
+        })
+        .join('');
+    }
+
+    function renderizarEditorInstagramCompleto() {
+      const estado = instagramEditorEstado;
+      document.getElementById('instagram-modal-automacao-nome').value = estado.nome;
+      document.getElementById('instagram-match-any').checked = estado.matchAny;
+      document.getElementById('instagram-mensagem-1').value = estado.mensagem1;
+      document.getElementById('instagram-botao-ativo').checked = estado.botaoAtivo;
+      document.getElementById('instagram-modal-automacao-ativo').checked = estado.ativo;
+      renderizarTagsInstagram();
+      renderizarVariantesInstagram();
+      renderizarPostsPickerInstagram();
+      atualizarVisibilidadeBotaoConfigInstagram();
+      renderizarFluxoBuilderInstagram();
+      renderizarPreviewInstagram();
+      preencherSelectArquivoInstagram();
+    }
+
+    async function preencherSelectArquivoInstagram() {
+      const select = document.getElementById('instagram-arquivo-select');
+      const opcoes = [`<option value="">${escapeHtml(tr('instagram_nenhum_arquivo'))}</option>`].concat(
+        instagramArquivosCache.map((a) => `<option value="${escapeHtml(a.id)}">${escapeHtml(a.nome)}</option>`),
+      );
+      select.innerHTML = opcoes.join('');
+      select.value = instagramEditorEstado.assetId || '';
+    }
+
+    async function abrirModalAutomacao(automacao) {
       instagramAutomacaoAbertaId = automacao ? automacao.id : null;
-      document.getElementById('instagram-modal-automacao-nome').value = automacao ? automacao.nome : '';
-      document.getElementById('instagram-modal-automacao-gatilho').value = automacao ? automacao.palavra_gatilho : '';
-      preencherSelectPostsAutomacao(automacao ? automacao.media_id : null);
-      document.getElementById('instagram-modal-automacao-mensagem').value = automacao ? automacao.mensagem : '';
-      document.getElementById('instagram-modal-automacao-ativo').checked = automacao ? automacao.ativo : true;
+      instagramEditorEstado = estadoDeAutomacaoInstagram(automacao);
+      instagramEditorSujo = false;
+      document.getElementById('instagram-emoji-barra-1').innerHTML = criarBarraEmojiHTML();
       document.getElementById('instagram-modal-automacao-excluir').hidden = !automacao;
       document.getElementById('instagram-modal-automacao-overlay').hidden = false;
+      renderizarEditorInstagramCompleto();
+
+      if (!instagramArquivosCache.length) {
+        try {
+          instagramArquivosCache = await buscarTudo('instagram_arquivos');
+        } catch (err) {
+          console.error('Erro ao carregar arquivos do Instagram:', err);
+        }
+        preencherSelectArquivoInstagram();
+      }
+
+      try {
+        const resultado = await chamarFuncao('instagram-media');
+        instagramMediaCache = resultado?.ok ? (resultado.posts || []) : [];
+      } catch (err) {
+        console.error('Erro ao carregar posts do Instagram:', err);
+        instagramMediaCache = [];
+      }
+      renderizarPostsPickerInstagram();
+    }
+
+    async function tentarFecharModalAutomacao() {
+      if (instagramEditorSujo && !(await confirmarAcao(tr('instagram_sair_sem_salvar_confirmar')))) return;
+      fecharModalAutomacao();
     }
 
     function fecharModalAutomacao() {
       instagramAutomacaoAbertaId = null;
+      instagramEditorEstado = null;
+      instagramEditorSujo = false;
       document.getElementById('instagram-modal-automacao-overlay').hidden = true;
     }
 
-    async function salvarModalAutomacao() {
-      const nome = document.getElementById('instagram-modal-automacao-nome').value.trim();
-      const gatilho = document.getElementById('instagram-modal-automacao-gatilho').value.trim();
-      const mensagem = document.getElementById('instagram-modal-automacao-mensagem').value.trim();
-      if (!nome || !gatilho || !mensagem) {
-        alert(tr('instagram_preencha_automacao'));
+    function tratarInputEditorInstagram(e) {
+      const campo = e.target.dataset.field;
+      if (!campo) return;
+      const estado = instagramEditorEstado;
+      const stepId = e.target.dataset.stepId ? Number(e.target.dataset.stepId) : null;
+      const botaoIdx = e.target.dataset.botaoIdx !== undefined ? Number(e.target.dataset.botaoIdx) : null;
+      marcarEditorInstagramSujo();
+
+      switch (campo) {
+        case 'nome':
+          estado.nome = e.target.value;
+          return;
+        case 'mensagem1':
+          estado.mensagem1 = e.target.value;
+          break;
+        case 'botao-texto':
+          estado.botaoTexto = e.target.value;
+          document.getElementById('instagram-botao-texto-contador').textContent = `${e.target.value.length}/20`;
+          break;
+        case 'link-url':
+          estado.linkUrl = e.target.value;
+          break;
+        case 'variante':
+          estado.variantes[Number(e.target.dataset.idx)] = e.target.value;
+          return;
+        case 'message': {
+          const passo = estado.steps.find((s) => s.id === stepId);
+          if (passo) passo.message = e.target.value;
+          break;
+        }
+        case 'titulo-botao': {
+          const passo = estado.steps.find((s) => s.id === stepId);
+          if (passo && passo.buttons[botaoIdx]) passo.buttons[botaoIdx].title = e.target.value;
+          break;
+        }
+        case 'url-botao': {
+          const passo = estado.steps.find((s) => s.id === stepId);
+          if (passo && passo.buttons[botaoIdx]) passo.buttons[botaoIdx].url = e.target.value;
+          break;
+        }
+        default:
+          return;
+      }
+      renderizarPreviewInstagram();
+    }
+
+    function tratarChangeEditorInstagram(e) {
+      const estado = instagramEditorEstado;
+      marcarEditorInstagramSujo();
+
+      if (e.target.dataset.action === 'toggle-post') {
+        const id = e.target.value;
+        if (e.target.checked) estado.mediaIds.push(id);
+        else estado.mediaIds = estado.mediaIds.filter((x) => x !== id);
         return;
       }
 
-      const mediaId = document.getElementById('instagram-modal-automacao-post').value || null;
-      const post = mediaId ? instagramPostsCache.find((p) => p.id === mediaId) : null;
+      const campo = e.target.dataset.field;
+      if (campo === 'destino-botao') {
+        const stepId = Number(e.target.dataset.stepId);
+        const botaoIdx = Number(e.target.dataset.botaoIdx);
+        const passo = estado.steps.find((s) => s.id === stepId);
+        if (!passo) return;
+        const botao = passo.buttons[botaoIdx];
+        if (e.target.value === 'link' && pareceUrlInstagram(botao.title)) {
+          botao.url = botao.title.trim();
+          botao.title = tr('instagram_texto_padrao_acessar');
+        }
+        botao.destino = e.target.value;
+        renderizarFluxoBuilderInstagram();
+        renderizarPreviewInstagram();
+        return;
+      }
+      if (campo === 'next-botao') {
+        const stepId = Number(e.target.dataset.stepId);
+        const botaoIdx = Number(e.target.dataset.botaoIdx);
+        const passo = estado.steps.find((s) => s.id === stepId);
+        if (passo && passo.buttons[botaoIdx]) passo.buttons[botaoIdx].next = Number(e.target.value);
+        renderizarPreviewInstagram();
+        return;
+      }
+    }
 
+    function inserirEmojiNoCampoFocado(emoji) {
+      const campo = instagramUltimoTextareaFocado || document.getElementById('instagram-mensagem-1');
+      const inicio = campo.selectionStart ?? campo.value.length;
+      const fim = campo.selectionEnd ?? campo.value.length;
+      campo.value = campo.value.slice(0, inicio) + emoji + campo.value.slice(fim);
+      campo.focus();
+      campo.selectionStart = campo.selectionEnd = inicio + emoji.length;
+      campo.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    function tratarClickEditorInstagram(e) {
+      const acaoEl = e.target.closest('[data-action]');
+      if (!acaoEl) return;
+      const estado = instagramEditorEstado;
+      const acao = acaoEl.dataset.action;
+      marcarEditorInstagramSujo();
+
+      if (acao === 'add-passo') {
+        estado.steps.push({ id: proximoIdPassoInstagram(estado), message: '', buttons: [{ title: '', destino: 'encerrar', next: null, url: '' }] });
+        renderizarFluxoBuilderInstagram();
+        renderizarPreviewInstagram();
+        return;
+      }
+      if (acao === 'remover-passo') {
+        const stepId = Number(acaoEl.dataset.stepId);
+        estado.steps = estado.steps.filter((s) => s.id !== stepId);
+        estado.steps.forEach((s) => s.buttons.forEach((b) => {
+          if (b.destino === 'proxima' && b.next === stepId) { b.destino = 'encerrar'; b.next = null; }
+        }));
+        renderizarFluxoBuilderInstagram();
+        renderizarPreviewInstagram();
+        return;
+      }
+      if (acao === 'add-botao') {
+        const stepId = Number(acaoEl.dataset.stepId);
+        const passo = estado.steps.find((s) => s.id === stepId);
+        if (passo && passo.buttons.length < 3) passo.buttons.push({ title: '', destino: 'encerrar', next: null, url: '' });
+        renderizarFluxoBuilderInstagram();
+        renderizarPreviewInstagram();
+        return;
+      }
+      if (acao === 'remover-botao') {
+        const stepId = Number(acaoEl.dataset.stepId);
+        const botaoIdx = Number(acaoEl.dataset.botaoIdx);
+        const passo = estado.steps.find((s) => s.id === stepId);
+        if (passo) passo.buttons.splice(botaoIdx, 1);
+        renderizarFluxoBuilderInstagram();
+        renderizarPreviewInstagram();
+        return;
+      }
+      if (acao === 'emoji') {
+        inserirEmojiNoCampoFocado(acaoEl.dataset.emoji);
+        return;
+      }
+      if (acao === 'remover-tag') {
+        estado.keywords.splice(Number(acaoEl.dataset.idx), 1);
+        renderizarTagsInstagram();
+        return;
+      }
+      if (acao === 'remover-variante') {
+        if (estado.variantes.length > 1) estado.variantes.splice(Number(acaoEl.dataset.idx), 1);
+        renderizarVariantesInstagram();
+        return;
+      }
+      if (acao === 'add-variante') {
+        estado.variantes.push('');
+        renderizarVariantesInstagram();
+        return;
+      }
+    }
+
+    async function salvarModalAutomacao() {
+      const estado = instagramEditorEstado;
+      estado.assetId = document.getElementById('instagram-arquivo-select').value || null;
+
+      if (!estado.nome.trim()) {
+        alert(tr('instagram_preencha_nome'));
+        return;
+      }
+      if (!estado.matchAny && estado.keywords.length === 0) {
+        alert(tr('instagram_preencha_palavra_ou_qualquer'));
+        return;
+      }
+      if (!estado.mensagem1.trim()) {
+        alert(tr('instagram_preencha_mensagem'));
+        return;
+      }
+
+      const flow = construirFlowDoEstadoInstagram(estado);
       const linha = {
-        nome,
-        palavra_gatilho: gatilho,
-        media_id: mediaId,
-        media_legenda: post ? (post.legenda || '').slice(0, 120) : null,
-        mensagem,
-        ativo: document.getElementById('instagram-modal-automacao-ativo').checked,
+        nome: estado.nome.trim(),
+        palavra_gatilho: estado.keywords.join(', '),
+        match_any: estado.matchAny,
+        media_ids: estado.mediaIds,
+        flow,
+        resposta_comentario: estado.variantes[0] || null,
+        resposta_comentario_variantes: estado.variantes.filter((v) => v.trim()),
+        asset_ids: estado.assetId ? [estado.assetId] : [],
+        ativo: estado.ativo,
+        updated_at: new Date().toISOString(),
       };
 
       const btn = document.getElementById('instagram-modal-automacao-salvar');
       btn.disabled = true;
       try {
-        if (instagramAutomacaoAbertaId) {
-          const { error } = await Auth.sb.from('instagram_automacoes').update(linha).eq('id', instagramAutomacaoAbertaId);
+        if (estado.automacaoId) {
+          const { error } = await Auth.sb.from('instagram_automacoes').update(linha).eq('id', estado.automacaoId);
           if (error) throw error;
         } else {
           const { error } = await Auth.sb.from('instagram_automacoes').insert(linha);
           if (error) throw error;
         }
+        instagramEditorSujo = false;
         fecharModalAutomacao();
         await carregarInstagramAutomacoes();
       } catch (err) {
@@ -6522,6 +7186,7 @@
       try {
         const { error } = await Auth.sb.from('instagram_automacoes').delete().eq('id', instagramAutomacaoAbertaId);
         if (error) throw error;
+        instagramEditorSujo = false;
         fecharModalAutomacao();
         await carregarInstagramAutomacoes();
       } catch (err) {
@@ -6590,22 +7255,19 @@
       URL.revokeObjectURL(url);
     }
 
-    async function processarAutomacoesAgora() {
+    async function processarFilaInstagramAgora() {
       const btn = document.getElementById('btn-instagram-processar-agora');
       const textoOriginal = btn.textContent;
       btn.disabled = true;
       btn.textContent = tr('instagram_processando');
       try {
-        const resultado = await chamarFuncao('instagram-automacao-processar', { method: 'POST' });
+        const resultado = await chamarFuncao('instagram-scheduler', { method: 'POST' });
         if (!resultado.ok) throw new Error(resultado.error || 'erro desconhecido');
         await carregarInstagramAutomacoes();
-        let resumo = `${tr('instagram_processado_comentarios_prefixo')}${resultado.comentariosVistos ?? 0}${tr('instagram_processado_respostas_prefixo')}${resultado.respostasEnviadas ?? 0}`;
-        if (resultado.erros && resultado.erros.length) {
-          resumo += `\n\n${resultado.erros.join('\n')}`;
-        }
+        const resumo = `${tr('instagram_fila_enviados_prefixo')}${resultado.fila?.enviados ?? 0} · ${tr('instagram_fila_na_fila_prefixo')}${resultado.fila?.aindaNaFila ?? 0} · ${tr('instagram_fila_agendados_prefixo')}${resultado.agendados?.enviados ?? 0}`;
         alert(resumo);
       } catch (err) {
-        console.error('Erro ao processar automações do Instagram:', err);
+        console.error('Erro ao processar a fila do Instagram:', err);
         alert(tr('erro_salvar_generico'));
       } finally {
         btn.disabled = false;

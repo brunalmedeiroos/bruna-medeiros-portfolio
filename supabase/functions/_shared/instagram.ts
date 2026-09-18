@@ -20,19 +20,19 @@ export const AUTHORIZE_URL = "https://www.instagram.com/oauth/authorize";
 export const TOKEN_URL_CURTO = "https://api.instagram.com/oauth/access_token";
 export const GRAPH_API = "https://graph.instagram.com";
 
-// Só as permissões que o painel realmente usa (perfil + insights +
-// comentários, pra automação "comentário → resposta privada"). Pedir
-// permissões a mais que o app do Meta não tem configuradas faz o Meta
-// bloquear a autorização inteira, não só a parte extra.
-//
-// instagram_business_manage_comments cobre tanto ler comentários quanto
-// mandar resposta privada (POST /{ig-id}/messages com recipient.comment_id)
-// — não precisa de instagram_business_manage_messages pra isso, só pra
-// DM aberta de verdade (fora do escopo desta automação).
+// Permissões que o painel usa: perfil + insights + comentários (pra
+// resposta privada por comentário) + mensagens (pra conversa de botões
+// continuar depois da primeira resposta, e pra receber postback/
+// quick_reply pelo webhook). Pedir permissões a mais que o app do Meta
+// não tem configuradas faz o Meta bloquear a autorização inteira, não
+// só a parte extra — se você já tinha conectado o Instagram ANTES da
+// automação de conversa com botões existir, desconecte e conecte de
+// novo depois de habilitar instagram_business_manage_messages no app.
 export const INSTAGRAM_SCOPES = [
   "instagram_business_basic",
   "instagram_business_manage_insights",
   "instagram_business_manage_comments",
+  "instagram_business_manage_messages",
 ].join(",");
 
 function env(nome: string): string {
@@ -105,6 +105,45 @@ export async function chamarGraph(caminho: string, params: Record<string, string
     throw new Error(`Erro na API do Instagram (${res.status}): ${JSON.stringify(data.error || data)}`);
   }
   return data;
+}
+
+// POST autenticado por querystring (?access_token=...) com corpo JSON —
+// usado pra mandar mensagens (resposta privada, DM, botões).
+export async function chamarGraphPost(caminho: string, accessToken: string, corpo: unknown) {
+  const url = new URL(`${GRAPH_API}${caminho}`);
+  url.searchParams.set("access_token", accessToken);
+  const res = await fetch(url.toString(), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(corpo),
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(`Erro na API do Instagram (${res.status}): ${JSON.stringify(data.error || data)}`);
+  }
+  return data;
+}
+
+// Confere a assinatura HMAC SHA-256 que o Meta manda no cabeçalho
+// X-Hub-Signature-256, pra garantir que a chamada ao webhook é
+// mesmo da Meta e não de qualquer um que descobriu a URL.
+export async function assinaturaValida(corpoBruto: string, assinaturaHeader: string | null, appSecret: string): Promise<boolean> {
+  if (!assinaturaHeader) return false;
+  const esperado = assinaturaHeader.replace(/^sha256=/, "");
+  const chave = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(appSecret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const assinatura = await crypto.subtle.sign("HMAC", chave, new TextEncoder().encode(corpoBruto));
+  const calculado = Array.from(new Uint8Array(assinatura)).map((b) => b.toString(16).padStart(2, "0")).join("");
+  if (calculado.length !== esperado.length) return false;
+  // Comparação em tempo constante, pra não vazar quantos caracteres bateram.
+  let diferenca = 0;
+  for (let i = 0; i < calculado.length; i++) diferenca |= calculado.charCodeAt(i) ^ esperado.charCodeAt(i);
+  return diferenca === 0;
 }
 
 // Lê o token guardado no banco e devolve um access_token válido, renovando

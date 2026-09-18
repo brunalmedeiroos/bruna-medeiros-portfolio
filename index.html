@@ -428,7 +428,12 @@ body.lock-active{ overflow:hidden; height:100vh; }
 #sobre .wrap{ max-width:1960px; padding:0 90px; }
 #sobre.section--blue{ padding-top:40px; position:relative; }
 /* a janela fica encostada à direita da seção */
-.about-panel{ display:flex; justify-content:flex-end; padding:80px 0; }
+.about-panel{ display:flex; align-items:center; justify-content:center; gap:64px; padding:80px 0; flex-wrap:wrap; }
+.about-photo-frame{ width:100%; max-width:420px; flex-shrink:0; border-width:0; }
+.about-photo-frame img{ width:100%; height:420px; object-fit:cover; object-position:center 40%; display:block; }
+.about-photo-frame .file-dot.d1{ background:#FF5F57; }
+.about-photo-frame .file-dot.d2{ background:#FEBC2E; }
+.about-photo-frame .file-dot.d3{ background:#28C840; }
 
 /* --open vai de 0 (fechada, pequena) a 1 (aberta, no lugar) — controlado via JS
    preso ao scroll (não é uma transição de tempo fixo), pra imitar uma janela do Mac
@@ -892,7 +897,10 @@ a.info-value:hover{ text-decoration:underline; }
 @media (max-width: 768px){
   .wrap{ padding:0 20px; }
   .section{ padding:70px 0; }
-  .about-panel{ padding:40px 0; }
+  #sobre .wrap{ padding:0 20px; }
+  .about-panel{ padding:40px 0; gap:28px; }
+  .about-photo-frame{ max-width:320px; }
+  .about-photo-frame img{ height:320px; }
   .notes-window{ padding:28px 24px 30px; max-width:none; }
   .footer-grid{ grid-template-columns: 1fr 1fr; gap:32px; }
   .footer-bottom{ justify-content:center; text-align:center; }
@@ -1084,6 +1092,15 @@ a.info-value:hover{ text-decoration:underline; }
 <section class="section section--blue" id="sobre">
   <div class="wrap">
     <div class="about-panel">
+      <div class="file-window about-photo-frame">
+        <div class="file-titlebar">
+          <div class="file-titlebar-left">
+            <span class="file-dot d1"></span><span class="file-dot d2"></span><span class="file-dot d3"></span>
+            <span class="fname">sobre.jpg</span>
+          </div>
+        </div>
+        <img src="fotos/sobre.jpg" alt="Bruna Medeiros">
+      </div>
       <div class="notes-window" id="notesWindow">
         <div class="notes-appbar">
           <span class="notes-back">

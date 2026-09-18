@@ -182,11 +182,25 @@ section{ position:relative; }
    TELA DE BLOQUEIO — abre o "computador" antes do hero
 ===================================================================== */
 .lock-screen{
-  position: fixed; inset:0; z-index: 3000;
+  position: fixed; inset:0; z-index: 3000; overflow:hidden;
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px;
   transition: opacity .6s ease, visibility .6s ease;
 }
 .lock-screen.is-unlocking{ opacity:0; visibility:hidden; pointer-events:none; }
+.lock-screen::before{
+  content:""; position:absolute; inset:-20px;
+  background-image:url("fotos/fundo-hero.png");
+  background-size:cover; background-position:center;
+  filter: blur(22px) brightness(.82);
+  transform: scale(1.08);
+  z-index:0;
+}
+.lock-screen::after{
+  content:""; position:absolute; inset:0;
+  background: rgba(4,70,93,0.35);
+  z-index:0;
+}
+.lock-screen > *{ position:relative; z-index:1; }
 .lock-hint{
   font-family: var(--font-body); font-weight:700; font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
   color: rgba(250,249,244,0.55);
@@ -197,7 +211,7 @@ section{ position:relative; }
   border:3px solid rgba(255,255,255,0.85); box-shadow: 0 20px 45px rgba(4,70,93,0.3);
   animation: lockFadeUp .55s cubic-bezier(.2,.8,.2,1) both;
 }
-.lock-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+.lock-avatar img{ width:100%; height:100%; object-fit:cover; object-position:center 22%; display:block; }
 .lock-name{
   font-family: var(--font-script); font-size:2.2rem; color: var(--offwhite);
   text-shadow: 0 2px 12px rgba(0,0,0,0.25);
@@ -698,10 +712,10 @@ body.lock-active{ overflow:hidden; height:100vh; }
    07 — FEEDBACKS (pastas ffoscas)
 ===================================================================== */
 .feedback-grid{
-  display:flex; gap:40px; margin-top:40px;
+  display:flex; gap:40px; margin-top:8px; justify-content:center;
   margin-left: max(24px, calc((100vw - 1560px) / 2 + 24px));
   margin-right: max(50px, calc((100vw - 1560px) / 2 + 50px));
-  padding: 30px 0 40px;
+  padding: 10px 0 40px;
   overflow-x:auto; overflow-y:visible; scroll-snap-type:x proximity; cursor:grab;
   scrollbar-width:thin; scrollbar-color: var(--blue-dark) var(--gray-light);
 }
@@ -979,8 +993,8 @@ a.info-value:hover{ text-decoration:underline; }
   </filter>
 </svg>
 
-<div class="lock-screen mac-bg" id="lockScreen">
-  <div class="lock-avatar"><img src="fotos/hero-capa.png" alt="Bruna Medeiros"></div>
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-avatar"><img src="fotos/lock-avatar.jpg" alt="Bruna Medeiros"></div>
   <div class="lock-name font-script">Bruna Medeiros</div>
   <div class="lock-dots" id="lockDots">
     <span class="lock-dot"></span>
@@ -1759,8 +1773,8 @@ a.info-value:hover{ text-decoration:underline; }
     lockDots.forEach(function(dot, i){
       setTimeout(function(){
         dot.classList.add('is-filled');
-        if (i === lockDots.length - 1){ setTimeout(unlockScreen, 220); }
-      }, 120 + i * 110);
+        if (i === lockDots.length - 1){ setTimeout(unlockScreen, 150); }
+      }, 70 + i * 65);
     });
     lockScreen.addEventListener('click', unlockScreen);
   }

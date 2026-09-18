@@ -155,7 +155,7 @@ section{ position:relative; }
 #sobre.section--blue{
   background: transparent;
   box-shadow: none;
-  padding-bottom:100px;
+  padding-bottom:30px;
 }
 .section-kicker{
   font-weight:700; font-size:.78rem; letter-spacing:.14em; text-transform:uppercase;
@@ -428,7 +428,7 @@ body.lock-active{ overflow:hidden; height:100vh; }
 #sobre .wrap{ max-width:1960px; padding:0 90px; }
 #sobre.section--blue{ padding-top:40px; position:relative; }
 /* a janela fica encostada à direita da seção */
-.about-panel{ display:flex; align-items:center; justify-content:center; gap:64px; padding:80px 0; flex-wrap:wrap; }
+.about-panel{ display:flex; align-items:center; justify-content:center; gap:64px; padding:80px 0 20px; flex-wrap:wrap; }
 .about-photo-frame{ width:100%; max-width:420px; flex-shrink:0; border-width:0; }
 .about-photo-frame img{ width:100%; height:420px; object-fit:cover; object-position:center 40%; display:block; }
 .about-photo-frame .file-dot.d1{ background:#FF5F57; }
@@ -898,7 +898,7 @@ a.info-value:hover{ text-decoration:underline; }
   .wrap{ padding:0 20px; }
   .section{ padding:70px 0; }
   #sobre .wrap{ padding:0 20px; }
-  .about-panel{ padding:40px 0; gap:28px; }
+  .about-panel{ padding:40px 0 16px; gap:28px; }
   .about-photo-frame{ max-width:320px; }
   .about-photo-frame img{ height:320px; }
   .notes-window{ padding:28px 24px 30px; max-width:none; }
@@ -1244,8 +1244,7 @@ a.info-value:hover{ text-decoration:underline; }
       <div class="finder-app-body" id="finderAppBody">
         <nav class="finder-sidebar" id="folderTabs">
           <div class="finder-sidebar-label" data-pt="nichos" data-en="niches">nichos</div>
-          <button class="folder-tab is-active" data-filter="todos" data-pt="Todos" data-en="All">Todos</button>
-          <button class="folder-tab" data-filter="tech" data-pt="Tech" data-en="Tech">Tech</button>
+          <button class="folder-tab is-active" data-filter="tech" data-pt="Tech" data-en="Tech">Tech</button>
           <button class="folder-tab" data-filter="beleza" data-pt="Beleza" data-en="Beauty">Beleza</button>
           <button class="folder-tab" data-filter="entretenimento" data-pt="Entretenimento" data-en="Entertainment">Entretenimento</button>
           <button class="folder-tab" data-filter="experiencia" data-pt="Experiência" data-en="Experience">Experiência</button>
@@ -1343,6 +1342,30 @@ a.info-value:hover{ text-decoration:underline; }
                 <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
               </div>
               <div class="file-meta"><span class="fname">Labotrat</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+            </div>
+
+            <div class="file-card" data-cat="beleza" data-type="video" data-title="Eudora" data-youtube="-Fh4qfVLY30">
+              <div class="file-thumb">
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/-Fh4qfVLY30/maxresdefault.jpg" alt="" loading="lazy">
+                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+              </div>
+              <div class="file-meta"><span class="fname">Eudora</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+            </div>
+
+            <div class="file-card" data-cat="beleza" data-type="video" data-title="Eudora" data-youtube="cct8j7zrnU0">
+              <div class="file-thumb">
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/cct8j7zrnU0/maxresdefault.jpg" alt="" loading="lazy">
+                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+              </div>
+              <div class="file-meta"><span class="fname">Eudora</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+            </div>
+
+            <div class="file-card" data-cat="experiencia" data-type="video" data-title="Imersão Portfólio Claude" data-youtube="x7Fd9mtw5VQ">
+              <div class="file-thumb">
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/x7Fd9mtw5VQ/maxresdefault.jpg" alt="" loading="lazy">
+                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+              </div>
+              <div class="file-meta"><span class="fname">Imersão Portfólio Claude</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
             </div>
 
           </div>
@@ -1511,10 +1534,10 @@ a.info-value:hover{ text-decoration:underline; }
     </div>
     <div class="feedback-folder">
       <div class="folder-shape"></div>
-      <span class="feedback-peek" data-pt="[Nome da marca]" data-en="[Brand name]">[Nome da marca]</span>
+      <span class="feedback-peek" data-pt="Imersão Porfólio Claude - Lara" data-en="Claude Portfolio Immersion - Lara">Imersão Porfólio Claude - Lara</span>
       <div class="feedback-note">
-        <p data-pt="&quot;[Feedback da marca sobre o trabalho da Bruna aqui]&quot;" data-en="&quot;[Brand's feedback about Bruna's work goes here]&quot;">"[Feedback da marca sobre o trabalho da Bruna aqui]"</p>
-        <span class="brand" data-pt="[Nome da marca]" data-en="[Brand name]">[Nome da marca]</span>
+        <p data-pt="&quot;OIEEE DIVA, eu amei amei amei o vídeo, ficou muto bom, obrigadaaaaa.&quot;" data-en="&quot;HEEY DIVA, I loved loved loved the video, it turned out so good, thank youuuu.&quot;">"OIEEE DIVA, eu amei amei amei o vídeo, ficou muto bom, obrigadaaaaa."</p>
+        <span class="brand" data-pt="Imersão Porfólio Claude - Lara" data-en="Claude Portfolio Immersion - Lara">Imersão Porfólio Claude - Lara</span>
       </div>
     </div>
   </div>
@@ -1848,7 +1871,6 @@ a.info-value:hover{ text-decoration:underline; }
   var tabs = document.querySelectorAll('.folder-tab');
   var cards = document.querySelectorAll('.file-card');
   var countEl = document.getElementById('finderCount');
-  updateFinderCount(cards.length);
 
   function updateFinderCount(visible){
     if (currentLang === 'en'){
@@ -1858,18 +1880,23 @@ a.info-value:hover{ text-decoration:underline; }
     }
   }
 
+  function applyFilter(filter){
+    var visible = 0;
+    cards.forEach(function(card){
+      var match = card.getAttribute('data-cat') === filter;
+      card.classList.toggle('is-hidden', !match);
+      if (match) visible++;
+    });
+    updateFinderCount(visible);
+  }
+
+  applyFilter(document.querySelector('.folder-tab.is-active').getAttribute('data-filter'));
+
   tabs.forEach(function(tab){
     tab.addEventListener('click', function(){
       tabs.forEach(function(t){ t.classList.remove('is-active'); });
       tab.classList.add('is-active');
-      var filter = tab.getAttribute('data-filter');
-      var visible = 0;
-      cards.forEach(function(card){
-        var match = (filter === 'todos' || card.getAttribute('data-cat') === filter);
-        card.classList.toggle('is-hidden', !match);
-        if (match) visible++;
-      });
-      updateFinderCount(visible);
+      applyFilter(tab.getAttribute('data-filter'));
     });
   });
 

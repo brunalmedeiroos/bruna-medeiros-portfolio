@@ -326,6 +326,42 @@ body.lock-active{ overflow:hidden; height:100vh; }
 }
 
 /* =====================================================================
+   NOTIFICAÇÃO — estilo notificação do macOS, com datas comemorativas
+===================================================================== */
+.mac-notif{
+  position:absolute; z-index:5; top:96px; right:6%; width:340px; max-width:calc(100% - 40px);
+  display:flex; align-items:flex-start; gap:12px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px) saturate(150%); -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border:1px solid var(--glass-brd); box-shadow: var(--shadow-soft);
+  border-radius:18px; padding:14px 16px;
+  text-decoration:none; color:inherit; cursor:pointer;
+  opacity:0; transform: translateY(-18px) scale(.96);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.mac-notif.is-visible{ animation: notifSlideIn .55s cubic-bezier(.2,.8,.2,1) forwards; }
+.mac-notif:hover{ transform: translateY(-2px); box-shadow: 0 24px 45px rgba(4,70,93,0.22); }
+@keyframes notifSlideIn{ from{ opacity:0; transform: translateY(-18px) scale(.96); } to{ opacity:1; transform: translateY(0) scale(1); } }
+.mac-notif-icon{
+  width:38px; height:38px; border-radius:24%; flex-shrink:0;
+  background: var(--blue-dark); color: var(--offwhite);
+  display:flex; align-items:center; justify-content:center;
+}
+.mac-notif-icon svg{ width:20px; height:20px; }
+.mac-notif-body{ min-width:0; flex:1; }
+.mac-notif-app{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:2px; }
+.mac-notif-appname{ font-size:.66rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color: var(--blue-dark-70); }
+.mac-notif-time{ font-size:.66rem; font-weight:600; color: var(--blue-dark-70); flex-shrink:0; }
+.mac-notif-title{ display:block; font-size:.88rem; font-weight:800; color: var(--blue-dark); line-height:1.3; margin-bottom:2px; }
+.mac-notif-sub{ display:block; font-size:.8rem; font-weight:600; color: var(--blue-dark-70); line-height:1.35; }
+@media (max-width: 1280px){
+  .mac-notif{ top:86px; right:5%; width:280px; }
+}
+@media (max-width: 768px){
+  .mac-notif{ position:relative; top:auto; right:auto; left:auto; width:100%; max-width:none; margin-top:16px; }
+}
+
+/* =====================================================================
    01 — HERO — capa com foto de fundo em tela cheia
 ===================================================================== */
 .hero{ position:relative; overflow:hidden; }
@@ -380,7 +416,9 @@ body.lock-active{ overflow:hidden; height:100vh; }
 
 /* cartão em vidro estilo widget, com o crachá + frase + nichos + cta */
 .hero-widget-card{
-  background: var(--offwhite);
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px) saturate(150%); -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border:1px solid var(--glass-brd);
   border-radius:36px; padding:64px 64px 56px;
   box-shadow: var(--shadow-soft);
   max-width:900px;
@@ -1055,6 +1093,20 @@ a.info-value:hover{ text-decoration:underline; }
         </div>
       </div>
     </div>
+
+    <a href="#contato" class="mac-notif" id="macNotif" aria-label="Datas comemorativas para contratar a Bruna">
+      <span class="mac-notif-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M20 12v7a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="8" width="18" height="4" rx="1" stroke="currentColor" stroke-width="2"/><path d="M12 8v12M12 8c-1.2-3-3-4.5-4.5-4.5A2 2 0 0 0 5.5 5.5C5.5 7.4 7.8 8 12 8Zm0 0c1.2-3 3-4.5 4.5-4.5A2 2 0 0 1 18.5 5.5C18.5 7.4 16.2 8 12 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="mac-notif-body">
+        <span class="mac-notif-app">
+          <span class="mac-notif-appname" data-pt="Calendário" data-en="Calendar">Calendário</span>
+          <span class="mac-notif-time" data-pt="agora" data-en="now">agora</span>
+        </span>
+        <span class="mac-notif-title" id="macNotifTitle"></span>
+        <span class="mac-notif-sub" id="macNotifSub"></span>
+      </span>
+    </a>
 
     <nav class="mac-dock" aria-label="Apps">
       <a class="dock-icon" href="#sobre" aria-label="Notas">
@@ -1757,6 +1809,10 @@ a.info-value:hover{ text-decoration:underline; }
       lockScreen.classList.add('is-unlocking');
       document.body.classList.remove('lock-active');
       setTimeout(function(){ lockScreen.style.display = 'none'; }, 650);
+      setTimeout(function(){
+        var notif = document.getElementById('macNotif');
+        if (notif) notif.classList.add('is-visible');
+      }, 900);
     }
     lockDots.forEach(function(dot, i){
       setTimeout(function(){
@@ -1765,7 +1821,94 @@ a.info-value:hover{ text-decoration:underline; }
       }, 70 + i * 65);
     });
     lockScreen.addEventListener('click', unlockScreen);
+  } else {
+    var macNotifFallback = document.getElementById('macNotif');
+    if (macNotifFallback) macNotifFallback.classList.add('is-visible');
   }
+
+  /* ---------------- Notificação do hero com data comemorativa mais próxima ----------------
+     Mostra sempre a PRÓXIMA data comemorativa (frase "está chegando"); no dia exato
+     dela, o dia já deixa de ser "> hoje" e a conta passa a apontar pra próxima da lista,
+     sem precisar de nenhuma janela de dias fixa. */
+  (function(){
+    var notifTitle = document.getElementById('macNotifTitle');
+    var notifSub = document.getElementById('macNotifSub');
+    if (!notifTitle || !notifSub) return;
+
+    function easterSunday(year){
+      var a = year % 19, b = Math.floor(year / 100), c = year % 100;
+      var d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25);
+      var g = Math.floor((b - f + 1) / 3);
+      var h = (19 * a + b - d - g + 15) % 30;
+      var i = Math.floor(c / 4), k = c % 4;
+      var l = (32 + 2 * e + 2 * i - h - k) % 7;
+      var m = Math.floor((a + 11 * h + 22 * l) / 451);
+      var monthDay = h + l - 7 * m + 114;
+      var month = Math.floor(monthDay / 31);
+      var day = (monthDay % 31) + 1;
+      return new Date(year, month - 1, day);
+    }
+    function nthSunday(year, month, n){
+      var first = new Date(year, month, 1);
+      var offset = (7 - first.getDay()) % 7;
+      return new Date(year, month, 1 + offset + (n - 1) * 7);
+    }
+    function lastWeekday(year, month, weekday){
+      var last = new Date(year, month + 1, 0);
+      var diff = (last.getDay() - weekday + 7) % 7;
+      return new Date(year, month, last.getDate() - diff);
+    }
+    function buildYearEvents(year){
+      var carnaval = new Date(easterSunday(year).getTime() - 47 * 86400000);
+      return [
+        { date: carnaval,
+          pt:{ t:'Carnaval está chegando!', s:'Bora criar um conteúdo com a energia da folia? Clique aqui →' },
+          en:{ t:'Carnival is coming!', s:'Let’s make content with festival energy — click here →' } },
+        { date: new Date(year, 2, 8),
+          pt:{ t:'O Dia da Mulher está chegando!', s:'Ótimo momento pra campanhas que valorizam quem é mulher — clique aqui →' },
+          en:{ t:'Women’s Day is coming!', s:'A great moment for campaigns that celebrate women — click here →' } },
+        { date: nthSunday(year, 4, 2),
+          pt:{ t:'O Dia das Mães está chegando!', s:'Presente, beleza e casa bombam nessa época — clique aqui →' },
+          en:{ t:'Mother’s Day is coming!', s:'Gift, beauty and home brands shine this season — click here →' } },
+        { date: new Date(year, 5, 12),
+          pt:{ t:'O Dia dos Namorados está chegando!', s:'Hora de criar campanhas de presente que conectam — clique aqui →' },
+          en:{ t:'Valentine’s Day is coming!', s:'Time for gift campaigns that connect — click here →' } },
+        { date: nthSunday(year, 7, 2),
+          pt:{ t:'O Dia dos Pais está chegando!', s:'Ótimo momento pra campanhas de presente — clique aqui →' },
+          en:{ t:'Father’s Day is coming!', s:'A great moment for gift campaigns — click here →' } },
+        { date: new Date(year, 8, 15),
+          pt:{ t:'A Semana do Cliente está chegando!', s:'Esse é o momento de contar histórias incríveis — clique aqui →' },
+          en:{ t:'Customer Week is coming!', s:'This is the moment for great brand stories — click here →' } },
+        { date: new Date(year, 9, 12),
+          pt:{ t:'O Dia das Crianças está chegando!', s:'Marcas infantis e de presente bombam agora — clique aqui →' },
+          en:{ t:'Children’s Day is coming!', s:'Kids and gift brands shine right now — click here →' } },
+        { date: lastWeekday(year, 10, 5),
+          pt:{ t:'A Black Friday está chegando!', s:'Hora de criar conteúdo que converte de verdade — clique aqui →' },
+          en:{ t:'Black Friday is coming!', s:'Time to create content that really converts — click here →' } },
+        { date: new Date(year, 11, 25),
+          pt:{ t:'O Natal está chegando!', s:'Campanhas de fim de ano pedem conteúdo com carinho — clique aqui →' },
+          en:{ t:'Christmas is coming!', s:'Year-end campaigns need content made with care — click here →' } },
+        { date: new Date(year, 0, 1),
+          pt:{ t:'O Ano Novo está chegando!', s:'Comece o ano com uma campanha que conecta — clique aqui →' },
+          en:{ t:'New Year is coming!', s:'Start the year with a campaign that connects — click here →' } }
+      ];
+    }
+
+    var now = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var events = buildYearEvents(today.getFullYear()).concat(buildYearEvents(today.getFullYear() + 1));
+    events = events.filter(function(ev){ return ev.date.getTime() > today.getTime(); });
+    events.sort(function(a, b){ return a.date - b.date; });
+    var next = events[0];
+    if (!next) return;
+
+    notifTitle.setAttribute('data-pt', next.pt.t);
+    notifTitle.setAttribute('data-en', next.en.t);
+    notifTitle.textContent = currentLang === 'en' ? next.en.t : next.pt.t;
+    notifSub.setAttribute('data-pt', next.pt.s);
+    notifSub.setAttribute('data-en', next.en.s);
+    notifSub.textContent = currentLang === 'en' ? next.en.s : next.pt.s;
+  })();
 
   /* ---------------- Mini relógio do menu ---------------- */
   var navClockTime = document.getElementById('navClockTime');

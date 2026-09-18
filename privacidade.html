@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Política de Privacidade — Bruna Medeiros</title>
-<meta name="description" content="Política de privacidade do Painel Bruna e da conexão com o Instagram.">
+<title>Política de Privacidade de Bruna Medeiros</title>
+<meta name="description" content="Política de privacidade do Painel Bruna e da automação de comentários e mensagens do Instagram, incluindo direitos garantidos pela LGPD.">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,6 +32,7 @@
   }
   a{ color: var(--blue-dark); text-decoration: underline; text-decoration-color: var(--blue-light); text-underline-offset: 3px; }
   a:hover{ color: var(--blue-light); }
+  a:focus-visible, button:focus-visible{ outline: 2px solid var(--blue-light); outline-offset: 2px; }
   .voltar{
     display:inline-block;
     font-size: 13px;
@@ -58,16 +59,30 @@
   .atualizado{
     font-size: 13px;
     color: rgba(4,70,93,0.6);
-    margin-bottom: 44px;
+    margin-bottom: 28px;
   }
+  .indice{
+    background: var(--white);
+    border: 1px solid var(--blue-dark-15);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 40px;
+  }
+  .indice p{ font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--blue-light); margin-bottom: 10px; }
+  .indice ol{ margin: 0; padding-left: 20px; }
+  .indice li{ font-size: 14px; margin-bottom: 6px; }
+  .indice a{ text-decoration: none; }
+  .indice a:hover{ text-decoration: underline; }
   h2{
     font-size: 19px;
     font-weight: 700;
     margin: 40px 0 12px;
+    scroll-margin-top: 20px;
   }
   p{ margin-bottom: 14px; font-size: 15.5px; }
-  ul{ margin: 0 0 14px 20px; }
+  ul, ol.lista{ margin: 0 0 14px 20px; }
   li{ margin-bottom: 8px; font-size: 15.5px; }
+  strong{ font-weight: 700; }
   .card{
     background: var(--white);
     border: 1px solid var(--blue-dark-15);
@@ -77,52 +92,115 @@
   }
   .card h2{ margin-top: 0; }
   .card a{ font-weight: 600; }
+  .destaque{
+    background: var(--butter);
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin: 16px 0 14px;
+  }
+  .destaque h2{ margin-top: 0; }
+  .destaque p:last-child{ margin-bottom: 0; }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <a class="voltar" href="index.html">← Voltar pro portfólio</a>
+  <a class="voltar" href="index.html">&larr; Voltar pro portfólio</a>
 
   <span class="eyebrow">Painel Bruna</span>
   <h1>Política de Privacidade</h1>
-  <p class="atualizado">Última atualização: setembro de 2026</p>
+  <p class="atualizado">Última atualização: 18 de setembro de 2026</p>
 
-  <p>Esta página explica como o <strong>Painel Bruna</strong> — o painel administrativo usado por Bruna Medeiros pra gerenciar seu trabalho como creator, incluindo a conexão com o Instagram — trata os dados acessados através da API do Instagram.</p>
+  <nav class="indice" aria-label="Sumário desta política">
+    <p>Nesta página</p>
+    <ol>
+      <li><a href="#quem-somos">Quem somos</a></li>
+      <li><a href="#dados-que-coletamos">Dados que coletamos</a></li>
+      <li><a href="#como-usamos">Como e por que usamos os dados</a></li>
+      <li><a href="#compartilhamento">Compartilhamento e operadores</a></li>
+      <li><a href="#transferencia-internacional">Transferência internacional</a></li>
+      <li><a href="#retencao">Retenção dos dados</a></li>
+      <li><a href="#seguranca">Segurança</a></li>
+      <li><a href="#direitos">Seus direitos pela LGPD</a></li>
+      <li><a href="#exclusao-de-dados"><strong>Como pedir a exclusão dos seus dados</strong></a></li>
+      <li><a href="#menores">Dados de menores</a></li>
+      <li><a href="#alteracoes">Alterações nesta política</a></li>
+      <li><a href="#contato">Contato</a></li>
+    </ol>
+  </nav>
 
-  <h2>Quem opera este painel</h2>
-  <p>O Painel Bruna é uma ferramenta de uso pessoal, operada e administrada exclusivamente por Bruna Medeiros, para gerenciar sua própria conta profissional do Instagram. Não é um produto oferecido a terceiros nem coleta dados de outras pessoas além do necessário para o funcionamento descrito abaixo.</p>
+  <p>Esta página explica como Bruna Medeiros (<a href="https://www.instagram.com/brunalmedeiroos" target="_blank" rel="noopener">@brunalmedeiroos</a>) trata os dados pessoais no <strong>Painel Bruna</strong>, o painel administrativo que ela usa para gerenciar seu trabalho como creator, incluindo a automação de respostas a comentários e mensagens diretas do Instagram através da API oficial da Meta.</p>
 
-  <h2>Quais dados são acessados</h2>
-  <p>Ao conectar a conta do Instagram ao painel, através da API oficial do Instagram (Meta), o painel pode acessar:</p>
+  <h2 id="quem-somos">1. Quem somos</h2>
+  <p>O Painel Bruna é operado exclusivamente por <strong>Bruna Medeiros</strong>, criadora de conteúdo, com sede em Eusébio, Ceará, Brasil. É uma ferramenta de uso pessoal, não é um produto oferecido a terceiros, e serve apenas para administrar a própria conta profissional do Instagram (@brunalmedeiroos) e o próprio negócio como creator.</p>
+  <p>A automação de Instagram funciona assim: quando alguém comenta uma palavra-chave configurada em uma publicação, ou manda uma mensagem direta com essa palavra, o sistema responde automaticamente no comentário e/ou por mensagem privada, podendo seguir uma conversa com botões definida por Bruna Medeiros.</p>
+
+  <h2 id="dados-que-coletamos">2. Dados que coletamos</h2>
+  <p>Ao interagir com a automação (comentando uma palavra-chave ou mandando uma mensagem direta), podemos coletar:</p>
   <ul>
-    <li>Informações básicas do perfil profissional (nome de usuário, ID da conta, contagem de seguidores)</li>
-    <li>Métricas e desempenho das publicações (alcance, curtidas, comentários, salvamentos)</li>
-    <li>Comentários feitos em publicações da conta, para identificar palavras-chave configuradas</li>
-    <li>Envio de respostas privadas (mensagens diretas) para pessoas que comentaram uma palavra-chave configurada</li>
+    <li>Seu nome de usuário e o identificador da sua conta no Instagram (o ID que a própria Meta fornece a quem opera a automação)</li>
+    <li>O texto do comentário ou da mensagem que você enviou, e em qual publicação, quando aplicável</li>
+    <li>Se você já recebeu uma resposta antes e quantas vezes interagiu com uma automação</li>
+    <li>E-mail ou telefone, apenas se e quando você fornecer voluntariamente essa informação numa etapa da conversa que peça esse dado especificamente</li>
+  </ul>
+  <div class="destaque">
+    <p><strong>Não coletamos sua senha, nem dados de cartão ou pagamento.</strong> Também não acessamos comentários, mensagens ou conversas de contas que nunca interagiram com esta automação: só vemos o que é necessário para responder quem comentou ou escreveu para nós.</p>
+  </div>
+
+  <h2 id="como-usamos">3. Como e por que usamos os dados</h2>
+  <p>Usamos esses dados apenas para:</p>
+  <ul>
+    <li>Identificar a palavra-chave comentada ou enviada e disparar a resposta configurada</li>
+    <li>Manter a conversa (o passo em que você está, quando a automação tem várias mensagens em sequência)</li>
+    <li>Manter um registro simples de quem já interagiu, para não repetir o envio sem necessidade e para acompanhamento interno do desempenho da automação</li>
+  </ul>
+  <p>A base legal, conforme o artigo 7º da Lei Geral de Proteção de Dados (Lei 13.709/2018, "LGPD"), é o <strong>consentimento</strong>: você aciona a automação voluntariamente, ao comentar publicamente uma palavra-chave ou ao nos mandar uma mensagem direta, sabendo que isso vai gerar uma resposta automática. Também nos apoiamos no <strong>legítimo interesse</strong> de Bruna Medeiros em administrar sua própria conta e medir o desempenho do seu conteúdo.</p>
+  <p>Só respondemos quem interagiu primeiro com a gente. Esta automação nunca manda mensagem para quem nunca comentou ou escreveu para a conta, e não faz disparo em massa nem usa listas compradas.</p>
+
+  <h2 id="compartilhamento">4. Compartilhamento e operadores</h2>
+  <p>Não vendemos seus dados, não os compartilhamos para fins de marketing de terceiros, e não os repassamos além do necessário para o funcionamento descrito nesta página. Os únicos operadores envolvidos são:</p>
+  <ul>
+    <li><strong>Meta (Instagram)</strong>: a plataforma onde a interação acontece e cuja API oficial é usada para ler comentários e mensagens e enviar as respostas. O uso dos seus dados pela própria Meta segue a política de privacidade dela.</li>
+    <li><strong>Supabase</strong>: o serviço de banco de dados onde as informações citadas na seção 2 ficam guardadas, com acesso restrito à conta de Bruna Medeiros.</li>
   </ul>
 
-  <h2>Como esses dados são usados</h2>
-  <p>Os dados são usados exclusivamente para:</p>
+  <h2 id="transferencia-internacional">5. Transferência internacional</h2>
+  <p>O banco de dados desta automação é hospedado em servidores no Brasil (região São Paulo). Ainda assim, como a automação opera sobre a plataforma do Instagram, os dados também passam pela infraestrutura global da Meta, empresa americana com operação internacional, sujeita à política de privacidade e aos termos próprios dela.</p>
+
+  <h2 id="retencao">6. Retenção dos dados</h2>
+  <p>O registro de contas que interagiram com as automações é mantido enquanto a integração com o Instagram estiver ativa, para permitir o acompanhamento descrito na seção 3. Bruna Medeiros pode desconectar a integração a qualquer momento pelo próprio painel, o que apaga o token de acesso guardado. Você também pode pedir a exclusão dos seus dados a qualquer momento, como explicado na seção 9.</p>
+
+  <h2 id="seguranca">7. Segurança</h2>
+  <p>Adotamos medidas razoáveis de proteção: toda comunicação com o painel e com a API do Instagram é feita por conexão criptografada (HTTPS), o token de acesso à sua conta do Instagram é guardado de forma criptografada (Supabase Vault, nunca em texto puro), e o acesso ao banco de dados é restrito exclusivamente à conta de Bruna Medeiros.</p>
+
+  <h2 id="direitos">8. Seus direitos pela LGPD</h2>
+  <p>Como titular dos dados, você tem direito, nos termos do artigo 18 da LGPD, a:</p>
   <ul>
-    <li>Exibir métricas e desempenho de publicações no painel, para uso interno de Bruna Medeiros</li>
-    <li>Automatizar o envio de uma resposta privada pré-definida quando alguém comenta uma palavra-chave específica em uma publicação (por exemplo, para enviar um link de interesse)</li>
-    <li>Manter um registro simples (nome da conta, se recebeu a resposta, quantas vezes interagiu) para acompanhamento interno</li>
+    <li>Confirmar a existência de tratamento e acessar os seus dados</li>
+    <li>Corrigir dados incompletos, inexatos ou desatualizados</li>
+    <li>Solicitar a exclusão ou anonimização dos seus dados</li>
+    <li>Solicitar a portabilidade dos seus dados a outro fornecedor</li>
+    <li>Revogar o seu consentimento a qualquer momento</li>
   </ul>
-  <p>Esses dados não são vendidos, compartilhados ou usados para qualquer finalidade publicitária, e não são repassados a terceiros.</p>
+  <p>Para exercer qualquer um desses direitos, escreva para <a href="mailto:brunamedeirosugc@gmail.com">brunamedeirosugc@gmail.com</a>.</p>
 
-  <h2>Onde os dados ficam guardados</h2>
-  <p>Os dados são armazenados em um banco de dados privado (Supabase), com acesso restrito à conta de Bruna Medeiros. Os tokens de acesso à API do Instagram são guardados de forma criptografada (Supabase Vault), nunca em texto puro.</p>
+  <h2 id="exclusao-de-dados">9. Como pedir a exclusão dos seus dados</h2>
+  <p>Para pedir a exclusão dos seus dados guardados por esta automação (registro de interação, mensagens salvas, e qualquer e-mail ou telefone que você tenha fornecido), mande um e-mail para <a href="mailto:brunamedeirosugc@gmail.com?subject=Exclus%C3%A3o%20de%20dados%20-%20Instagram">brunamedeirosugc@gmail.com</a> informando o @ da conta do Instagram usada na interação. O pedido é atendido em até 15 dias, prazo previsto pela LGPD para resposta a requisições do titular.</p>
 
-  <h2>Retenção e exclusão</h2>
-  <p>Os dados de conexão com o Instagram são mantidos enquanto a integração estiver ativa. Bruna Medeiros pode desconectar a integração a qualquer momento pelo próprio painel, o que apaga o token de acesso guardado. O registro de contas que interagiram com as automações pode ser apagado a pedido, entrando em contato pelo e-mail abaixo.</p>
+  <h2 id="menores">10. Dados de menores</h2>
+  <p>Esta automação segue a idade mínima exigida pelo próprio Instagram para ter uma conta na plataforma. Não coletamos intencionalmente dados adicionais de menores além do que já é inerente ao uso comum do Instagram.</p>
 
-  <h2>Contato</h2>
-  <p>Dúvidas sobre esta política podem ser enviadas para <a href="mailto:brunamedeirosugc@gmail.com">brunamedeirosugc@gmail.com</a>.</p>
+  <h2 id="alteracoes">11. Alterações nesta política</h2>
+  <p>Esta política pode ser atualizada conforme o painel evolui. A data da última atualização fica sempre indicada no topo desta página.</p>
+
+  <h2 id="contato">12. Contato</h2>
+  <p>Dúvidas sobre esta política, ou sobre como seus dados são tratados, podem ser enviadas para <a href="mailto:brunamedeirosugc@gmail.com">brunamedeirosugc@gmail.com</a>.</p>
 
   <div class="card">
     <h2>Termos de Serviço</h2>
     <p>Veja também os <a href="termos.html">Termos de Serviço</a> deste painel.</p>
   </div>
+
+  <p style="margin-top:44px; font-size:12.5px; color:rgba(4,70,93,0.55);">Esta automação usa a Plataforma da Meta e segue os Termos da Plataforma e as Políticas de Desenvolvedor da Meta.</p>
 </div>
 </body>
 </html>

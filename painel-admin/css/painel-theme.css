@@ -3183,6 +3183,11 @@
      elemento inline — sem isso o círculo nasce achatado ("torta") e o
      input nativo por cima fica com a área de clique fora do lugar. */
   display: inline-block;
+  /* Existe um `label { margin-top: 12px }` global (pros campos do login)
+     que pega TODO <label> da página, inclusive este — sem zerar aqui,
+     essa bolinha nasce empurrada 12px pra baixo das outras na mesma
+     fileira ("torta"/desalinhada). */
+  margin: 0;
   position: relative;
   width: 22px;
   height: 22px;

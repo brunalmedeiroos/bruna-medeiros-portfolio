@@ -3077,6 +3077,8 @@
 
 .painel-body .ugc-roteiro-doc-toolbar {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 4px;
   margin-bottom: 6px;
 }
@@ -3094,6 +3096,80 @@
 
 .painel-body .ugc-roteiro-doc-btn:hover {
   background: rgba(var(--grafite-rgb), 0.06);
+}
+
+/* Marcadinho: mostra qual formatação está ativa onde o cursor está,
+   igual ao Google Docs. */
+.painel-body .ugc-roteiro-doc-btn.ativo {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .ugc-roteiro-doc-cor-wrap {
+  position: relative;
+}
+
+.painel-body .ugc-roteiro-doc-cor-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  line-height: 1;
+}
+
+.painel-body .ugc-roteiro-doc-cor-letra,
+.painel-body .ugc-roteiro-doc-grifo-letra {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.painel-body .ugc-roteiro-doc-cor-barra {
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.painel-body .ugc-roteiro-doc-cor-paleta {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 132px;
+  padding: 8px;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  box-shadow: var(--sombra);
+}
+
+.painel-body .ugc-roteiro-doc-cor-paleta[hidden] {
+  display: none;
+}
+
+.painel-body .ugc-roteiro-doc-cor-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--grafite-rgb), 0.15);
+  cursor: pointer;
+  padding: 0;
+}
+
+.painel-body .ugc-roteiro-doc-cor-swatch:hover {
+  transform: scale(1.12);
+}
+
+.painel-body .ugc-roteiro-doc-cor-swatch-remover {
+  background: var(--branco);
+  color: var(--texto-suave);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .painel-body .ugc-roteiro-doc-area {

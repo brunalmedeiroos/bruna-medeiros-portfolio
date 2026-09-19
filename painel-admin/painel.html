@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260919c">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260919d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -1240,6 +1240,36 @@
               <button type="button" class="ugc-roteiro-doc-btn" data-cmd="underline" data-i18n-aria="ugc_doc_sublinhado" aria-label="Sublinhado"><u>S</u></button>
               <button type="button" class="ugc-roteiro-doc-btn" data-cmd="insertUnorderedList" data-i18n-aria="ugc_doc_lista_marcadores" aria-label="Lista com marcadores">&bull;&nbsp;Lista</button>
               <button type="button" class="ugc-roteiro-doc-btn" data-cmd="insertOrderedList" data-i18n-aria="ugc_doc_lista_numerada" aria-label="Lista numerada">1.&nbsp;Lista</button>
+              <div class="ugc-roteiro-doc-cor-wrap">
+                <button type="button" class="ugc-roteiro-doc-btn ugc-roteiro-doc-cor-btn" data-tipo="cor" data-i18n-aria="ugc_doc_cor_texto" aria-label="Cor do texto">
+                  <span class="ugc-roteiro-doc-cor-letra">A</span>
+                  <span class="ugc-roteiro-doc-cor-barra" style="background:#1A1A1A"></span>
+                </button>
+                <div class="ugc-roteiro-doc-cor-paleta" hidden>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#1A1A1A" style="background:#1A1A1A" aria-label="Preto"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#DC2626" style="background:#DC2626" aria-label="Vermelho"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#EA580C" style="background:#EA580C" aria-label="Laranja"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#CA8A04" style="background:#CA8A04" aria-label="Amarelo"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#16A34A" style="background:#16A34A" aria-label="Verde"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#2563EB" style="background:#2563EB" aria-label="Azul"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#7C3AED" style="background:#7C3AED" aria-label="Roxo"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#DB2777" style="background:#DB2777" aria-label="Rosa"></button>
+                </div>
+              </div>
+              <div class="ugc-roteiro-doc-cor-wrap">
+                <button type="button" class="ugc-roteiro-doc-btn ugc-roteiro-doc-cor-btn" data-tipo="grifo" data-i18n-aria="ugc_doc_grifar" aria-label="Grifar">
+                  <span class="ugc-roteiro-doc-grifo-letra">🖊</span>
+                  <span class="ugc-roteiro-doc-cor-barra" style="background:#FFF59D"></span>
+                </button>
+                <div class="ugc-roteiro-doc-cor-paleta" hidden>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FFF59D" style="background:#FFF59D" aria-label="Amarelo"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#A7F3D0" style="background:#A7F3D0" aria-label="Verde"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#BFDBFE" style="background:#BFDBFE" aria-label="Azul"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FBCFE8" style="background:#FBCFE8" aria-label="Rosa"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FDE68A" style="background:#FDE68A" aria-label="Laranja claro"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch ugc-roteiro-doc-cor-swatch-remover" data-cor="transparent" data-i18n-aria="ugc_doc_remover_grifo" aria-label="Remover grifo">✕</button>
+                </div>
+              </div>
             </div>
             <div id="pl-modal-roteiro-completo" class="ugc-roteiro-doc-area" contenteditable="true" data-placeholder="O roteiro completo, pronto pra gravar..."></div>
           </div>
@@ -1819,6 +1849,36 @@
               <button type="button" class="ugc-roteiro-doc-btn" data-cmd="underline" data-i18n-aria="ugc_doc_sublinhado" aria-label="Sublinhado"><u>S</u></button>
               <button type="button" class="ugc-roteiro-doc-btn" data-cmd="insertUnorderedList" data-i18n-aria="ugc_doc_lista_marcadores" aria-label="Lista com marcadores">&bull;&nbsp;Lista</button>
               <button type="button" class="ugc-roteiro-doc-btn" data-cmd="insertOrderedList" data-i18n-aria="ugc_doc_lista_numerada" aria-label="Lista numerada">1.&nbsp;Lista</button>
+              <div class="ugc-roteiro-doc-cor-wrap">
+                <button type="button" class="ugc-roteiro-doc-btn ugc-roteiro-doc-cor-btn" data-tipo="cor" data-i18n-aria="ugc_doc_cor_texto" aria-label="Cor do texto">
+                  <span class="ugc-roteiro-doc-cor-letra">A</span>
+                  <span class="ugc-roteiro-doc-cor-barra" style="background:#1A1A1A"></span>
+                </button>
+                <div class="ugc-roteiro-doc-cor-paleta" hidden>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#1A1A1A" style="background:#1A1A1A" aria-label="Preto"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#DC2626" style="background:#DC2626" aria-label="Vermelho"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#EA580C" style="background:#EA580C" aria-label="Laranja"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#CA8A04" style="background:#CA8A04" aria-label="Amarelo"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#16A34A" style="background:#16A34A" aria-label="Verde"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#2563EB" style="background:#2563EB" aria-label="Azul"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#7C3AED" style="background:#7C3AED" aria-label="Roxo"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#DB2777" style="background:#DB2777" aria-label="Rosa"></button>
+                </div>
+              </div>
+              <div class="ugc-roteiro-doc-cor-wrap">
+                <button type="button" class="ugc-roteiro-doc-btn ugc-roteiro-doc-cor-btn" data-tipo="grifo" data-i18n-aria="ugc_doc_grifar" aria-label="Grifar">
+                  <span class="ugc-roteiro-doc-grifo-letra">🖊</span>
+                  <span class="ugc-roteiro-doc-cor-barra" style="background:#FFF59D"></span>
+                </button>
+                <div class="ugc-roteiro-doc-cor-paleta" hidden>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FFF59D" style="background:#FFF59D" aria-label="Amarelo"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#A7F3D0" style="background:#A7F3D0" aria-label="Verde"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#BFDBFE" style="background:#BFDBFE" aria-label="Azul"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FBCFE8" style="background:#FBCFE8" aria-label="Rosa"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FDE68A" style="background:#FDE68A" aria-label="Laranja claro"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch ugc-roteiro-doc-cor-swatch-remover" data-cor="transparent" data-i18n-aria="ugc_doc_remover_grifo" aria-label="Remover grifo">✕</button>
+                </div>
+              </div>
             </div>
             <div id="ugc-roteiro-conteudo" class="ugc-roteiro-doc-area" contenteditable="true" data-placeholder="Escreva seu roteiro aqui... gancho, desenvolvimento, CTA"></div>
             <span class="ugc-roteiro-destaque-nota" data-i18n="ugc_visivel_para_marca">A marca vê isso no link de aprovação.</span>
@@ -2937,6 +2997,9 @@
         ugc_doc_sublinhado: 'Sublinhado',
         ugc_doc_lista_marcadores: 'Lista com marcadores',
         ugc_doc_lista_numerada: 'Lista numerada',
+        ugc_doc_cor_texto: 'Cor do texto',
+        ugc_doc_grifar: 'Grifar',
+        ugc_doc_remover_grifo: 'Remover grifo',
         ugc_visivel_para_marca: 'A marca vê isso no link de aprovação.',
         ugc_observacoes: 'Observações',
         ugc_copiar_roteiro: 'Copiar roteiro completo',
@@ -3750,6 +3813,9 @@
         ugc_doc_sublinhado: 'Underline',
         ugc_doc_lista_marcadores: 'Bulleted list',
         ugc_doc_lista_numerada: 'Numbered list',
+        ugc_doc_cor_texto: 'Text color',
+        ugc_doc_grifar: 'Highlight',
+        ugc_doc_remover_grifo: 'Remove highlight',
         ugc_visivel_para_marca: 'The brand sees this on the approval link.',
         ugc_observacoes: 'Notes',
         ugc_copiar_roteiro: 'Copy full script',
@@ -9635,16 +9701,17 @@
     }
 
     // ---- Editor de texto rico do Roteiro (estilo Google Docs) — um
-    // <div contenteditable> com uma barra de 5 botões chamando
+    // <div contenteditable> com uma barra de botões chamando
     // document.execCommand(); não existe nenhuma lib de rich text no
     // projeto, e pra um editor tão simples (negrito/itálico/sublinhado/
-    // listas) não vale a pena trazer uma — mantém a filosofia vanilla JS
-    // sem build step do resto do painel.
+    // listas/cor/grifo) não vale a pena trazer uma — mantém a filosofia
+    // vanilla JS sem build step do resto do painel.
     function configurarBarraFormatacaoRoteiro() {
-      document.querySelectorAll('.ugc-roteiro-doc-btn').forEach((btn) => {
+      document.querySelectorAll('.ugc-roteiro-doc-btn[data-cmd]').forEach((btn) => {
         btn.addEventListener('mousedown', (e) => {
           e.preventDefault(); // não deixa o clique tirar o foco do editor antes do comando rodar
           document.execCommand(btn.dataset.cmd);
+          atualizarEstadoBarraFormatacao(btn.closest('.ugc-roteiro-doc-toolbar'));
         });
       });
 
@@ -9652,10 +9719,70 @@
       // texto é todo apagado — isso quebra o placeholder via CSS :empty,
       // então normaliza pra string vazia de verdade nesse caso. Roda pra
       // toda área desse tipo na página (roteiro UGC + roteiro do Banco de Ideias).
+      // O clique/soltar do mouse e as setas do teclado também precisam
+      // atualizar os botões marcadinhos — o cursor pode entrar ou sair de
+      // um trecho em negrito/itálico sem digitar nada.
       document.querySelectorAll('.ugc-roteiro-doc-area').forEach((area) => {
+        const toolbar = area.previousElementSibling;
         area.addEventListener('input', () => {
           if (conteudoRoteiroVazio(area)) area.innerHTML = '';
+          atualizarEstadoBarraFormatacao(toolbar);
         });
+        ['keyup', 'mouseup', 'focus'].forEach((evento) => {
+          area.addEventListener(evento, () => atualizarEstadoBarraFormatacao(toolbar));
+        });
+      });
+
+      configurarPaletasCorRoteiro();
+    }
+
+    function atualizarEstadoBarraFormatacao(toolbar) {
+      if (!toolbar) return;
+      toolbar.querySelectorAll('.ugc-roteiro-doc-btn[data-cmd]').forEach((btn) => {
+        let ativo = false;
+        try {
+          ativo = document.queryCommandState(btn.dataset.cmd);
+        } catch (e) {
+          ativo = false;
+        }
+        btn.classList.toggle('ativo', ativo);
+      });
+    }
+
+    // Cor do texto e grifo: um botão que abre uma paletinha de cores perto
+    // dele (não um <input type="color"> nativo, que abre o seletor do
+    // sistema operacional e não combina com o resto do editor) — clicar
+    // numa cor aplica na seleção via execCommand e fecha a paleta.
+    function configurarPaletasCorRoteiro() {
+      document.querySelectorAll('.ugc-roteiro-doc-cor-wrap').forEach((wrap) => {
+        const botaoAbrir = wrap.querySelector('.ugc-roteiro-doc-cor-btn');
+        const paleta = wrap.querySelector('.ugc-roteiro-doc-cor-paleta');
+        const barra = botaoAbrir.querySelector('.ugc-roteiro-doc-cor-barra');
+        const comando = botaoAbrir.dataset.tipo === 'grifo' ? 'hiliteColor' : 'foreColor';
+
+        botaoAbrir.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          const jaAberta = !paleta.hidden;
+          document.querySelectorAll('.ugc-roteiro-doc-cor-paleta').forEach((p) => (p.hidden = true));
+          paleta.hidden = jaAberta;
+        });
+
+        paleta.querySelectorAll('[data-cor]').forEach((swatch) => {
+          swatch.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            const cor = swatch.dataset.cor;
+            document.execCommand(comando, false, cor);
+            if (cor !== 'transparent') barra.style.background = cor;
+            paleta.hidden = true;
+          });
+        });
+      });
+
+      // Clicar fora de qualquer paleta aberta fecha ela.
+      document.addEventListener('mousedown', (e) => {
+        if (!e.target.closest('.ugc-roteiro-doc-cor-wrap')) {
+          document.querySelectorAll('.ugc-roteiro-doc-cor-paleta').forEach((p) => (p.hidden = true));
+        }
       });
     }
 

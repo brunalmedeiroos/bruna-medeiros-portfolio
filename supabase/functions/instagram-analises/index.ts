@@ -148,15 +148,9 @@ async function seriePorDiaPeriodo(
   return serie;
 }
 
-async function buscarMelhoresPosts(accessToken: string, diasTotal: number, erros: string[]) {
-  const resposta = await chamarGraph("/me/media", {
-    fields: "id,caption,media_type,media_product_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count",
-    limit: "50",
-    access_token: accessToken,
-  });
-
+async function buscarMelhoresPosts(mediaLista: Record<string, unknown>[], accessToken: string, diasTotal: number, erros: string[]) {
   const desdeMs = Date.now() - diasTotal * 24 * 60 * 60 * 1000;
-  const doPeriodo = (resposta.data || []).filter(
+  const doPeriodo = mediaLista.filter(
     (m: Record<string, unknown>) => new Date(m.timestamp as string).getTime() >= desdeMs,
   );
 
@@ -203,6 +197,42 @@ async function buscarMelhoresPosts(accessToken: string, diasTotal: number, erros
   return posts.sort((a, b) => b.score - a.score);
 }
 
+const LIMITE_POSTS_COMENTARIOS = 30;
+
+// "Todos os posts" — ao contrário dos cards e do gráfico, não filtra pelo
+// período escolhido (7/30/90 dias): é o ranking geral de quem mais comenta
+// na conta. Cada post custa 1 chamada extra pra listar os comentários, por
+// isso limita aos N mais recentes em vez de todo o histórico.
+async function buscarQuemMaisComenta(mediaLista: Record<string, unknown>[], accessToken: string, erros: string[]) {
+  const contagem = new Map<string, number>();
+
+  await Promise.all(
+    mediaLista.slice(0, LIMITE_POSTS_COMENTARIOS).map(async (m) => {
+      try {
+        const resposta = await chamarGraph(`/${m.id}/comments`, {
+          fields: "username",
+          limit: "50",
+          access_token: accessToken,
+        });
+        (resposta.data || []).forEach((c: Record<string, unknown>) => {
+          const usuario = c.username as string | undefined;
+          if (!usuario) return;
+          contagem.set(usuario, (contagem.get(usuario) || 0) + 1);
+        });
+      } catch (e) {
+        // Post com comentários desativados, ou outra falha pontual — não
+        // impede de contar os demais posts.
+        erros.push(`quem mais comenta [${m.id}]: ${(e as Error).message}`);
+      }
+    }),
+  );
+
+  return [...contagem.entries()]
+    .map(([usuario, total]) => ({ usuario, total }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 10);
+}
+
 export default {
   fetch: withSupabase({ auth: "user" }, async (req, ctx) => {
     if (req.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
@@ -242,11 +272,30 @@ export default {
     ]);
     const alcance = alcancePorDia ? alcancePorDia.reduce((soma, d) => soma + d.valor, 0) : null;
 
+    let mediaLista: Record<string, unknown>[] = [];
+    try {
+      const respostaMedia = await chamarGraph("/me/media", {
+        fields: "id,caption,media_type,media_product_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count",
+        limit: "50",
+        access_token: accessToken,
+      });
+      mediaLista = respostaMedia.data || [];
+    } catch (e) {
+      erros.push(`posts: ${(e as Error).message}`);
+    }
+
     let posts: Awaited<ReturnType<typeof buscarMelhoresPosts>> = [];
     try {
-      posts = await buscarMelhoresPosts(accessToken, periodoDias, erros);
+      posts = await buscarMelhoresPosts(mediaLista, accessToken, periodoDias, erros);
     } catch (e) {
       erros.push(`melhores posts: ${(e as Error).message}`);
+    }
+
+    let quemMaisComenta: Awaited<ReturnType<typeof buscarQuemMaisComenta>> = [];
+    try {
+      quemMaisComenta = await buscarQuemMaisComenta(mediaLista, accessToken, erros);
+    } catch (e) {
+      erros.push(`quem mais comenta: ${(e as Error).message}`);
     }
 
     return jsonResponse({
@@ -260,6 +309,7 @@ export default {
       interacoes,
       alcancePorDia,
       posts,
+      quemMaisComenta,
       atualizadoEm: new Date().toISOString(),
       erros: erros.length ? erros : undefined,
     });

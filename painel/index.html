@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260918i">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260919a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -453,7 +453,7 @@
               <p class="instagram-avisos" id="instagram-avisos" hidden></p>
 
               <div class="instagram-metricas-grid">
-                <div class="card-numero destaque">
+                <div class="card-numero">
                   <span class="card-label" data-i18n="instagram_seguidores">Seguidores</span>
                   <span class="card-valor" id="instagram-num-seguidores">–</span>
                 </div>
@@ -570,7 +570,7 @@
               </div>
 
               <div class="instagram-metricas-grid">
-                <div class="card-numero destaque">
+                <div class="card-numero">
                   <span class="card-label" data-i18n="instagram_seguidores">Seguidores</span>
                   <span class="card-valor" id="instagram-an-seguidores">–</span>
                 </div>
@@ -610,6 +610,11 @@
                   </div>
                 </div>
                 <div class="instagram-posts-lista" id="instagram-an-posts-lista"></div>
+              </div>
+
+              <div class="card">
+                <h3 class="card-titulo" data-i18n="instagram_quem_mais_comenta">Quem mais comenta (todos os posts)</h3>
+                <div class="instagram-ranking" id="instagram-an-quem-comenta"></div>
               </div>
 
               <p class="instagram-analises-atualizado" id="instagram-analises-atualizado"></p>
@@ -2667,18 +2672,18 @@
         instagram_conectar_texto: 'Conecte a conta Business/Criador do seu Instagram (vinculada a uma Página do Facebook) pra ver seguidores, alcance, cliques no link da bio e o desempenho dos seus posts direto aqui.',
         instagram_conectar_btn: 'Conectar Instagram',
         instagram_atualizar_metricas_aria: 'Atualizar métricas',
-        instagram_seguidores: 'Seguidores',
-        instagram_alcance: 'Alcance',
+        instagram_seguidores: '👥 Seguidores',
+        instagram_alcance: '📢 Alcance',
         instagram_visitas_perfil: 'Visitas ao perfil (7 dias)',
         instagram_cliques_link: 'Cliques no link (7 dias)',
         instagram_desempenho_post: 'Desempenho por post',
         instagram_carregando_posts: 'Carregando posts...',
-        instagram_leads_captados: 'Leads captados',
-        instagram_crescimento_perfil: 'Crescimento do perfil',
+        instagram_leads_captados: '🎯 Leads captados',
+        instagram_crescimento_perfil: '📈 Crescimento do perfil',
         instagram_grafico_carregando: 'Carregando...',
-        instagram_saude_envio: 'Saúde do envio',
+        instagram_saude_envio: '🌡️ Saúde do envio',
         instagram_ultimos_30_dias: 'Últimos 30 dias',
-        instagram_o_que_pessoas_querem: 'O que as pessoas querem',
+        instagram_o_que_pessoas_querem: '💡 O que as pessoas querem',
         instagram_pill_token: 'Token {n} dias',
         instagram_pill_token_desconhecido: 'Token: data desconhecida',
         instagram_pill_entregas: '{n} entregas 24h',
@@ -2690,27 +2695,28 @@
         instagram_saude_falharam: 'falharam',
         instagram_saude_cancelados: 'cancelados',
         instagram_sem_interacoes_ainda: 'Nenhuma interação ainda.',
-        instagram_interacoes: 'Interações',
+        instagram_interacoes: '💬 Interações',
         instagram_col_contato: 'Contato',
         instagram_col_etiquetas: 'Etiquetas',
-        instagram_int_pessoas: 'Pessoas',
+        instagram_int_pessoas: '👥 Pessoas',
         instagram_int_pessoas_desc: 'Já falaram com você',
-        instagram_int_7dias: 'Nos últimos 7 dias',
+        instagram_int_7dias: '🕒 Nos últimos 7 dias',
         instagram_int_7dias_desc: 'Movimento recente',
-        instagram_int_receberam_link: 'Receberam o link',
+        instagram_int_receberam_link: '🔗 Receberam o link',
         instagram_int_receberam_link_desc: 'Chegaram até o final da conversa',
-        instagram_int_deixaram_contato: 'Deixaram contato',
+        instagram_int_deixaram_contato: '📇 Deixaram contato',
         instagram_int_deixaram_contato_desc: 'Email ou telefone na conversa',
-        instagram_analises: 'Análises',
+        instagram_analises: '📈 Análises',
         instagram_analises_resumo: 'Alcance, engajamento e melhores posts por período.',
         instagram_atualizar: '↻ Atualizar',
         instagram_atualizando: 'Atualizando...',
-        instagram_novos_seguidores: 'Novos seguidores',
-        instagram_contas_engajadas: 'Contas engajadas',
-        instagram_interacoes_totais: 'Interações',
-        instagram_alcance_por_dia: 'Alcance por dia',
+        instagram_novos_seguidores: '➕ Novos seguidores',
+        instagram_contas_engajadas: '🤝 Contas engajadas',
+        instagram_interacoes_totais: '💬 Interações',
+        instagram_alcance_por_dia: '📊 Alcance por dia',
         instagram_alcance_legenda_periodo: 'contas alcançadas · {n} dias',
-        instagram_melhores_posts: 'Melhores posts',
+        instagram_melhores_posts: '🔥 Melhores posts',
+        instagram_quem_mais_comenta: '🗨️ Quem mais comenta (todos os posts)',
         instagram_ordenar_melhores: 'Melhores',
         instagram_ordenar_curtidos: 'Mais curtidos',
         instagram_ordenar_comentados: 'Mais comentados',
@@ -3110,8 +3116,8 @@
         clientes_status_em_producao: 'Em produção',
         clientes_status_entregue: 'Entregue',
         clientes_status_cancelado: 'Cancelado',
-        instagram_visao_geral: 'Visão Geral',
-        instagram_automacoes: 'Automações',
+        instagram_visao_geral: '📊 Visão Geral',
+        instagram_automacoes: '🤖 Automações',
         instagram_leads: 'Leads',
         instagram_automacoes_nenhuma: 'Nenhuma automação ainda.',
         instagram_nova_automacao: '+ Nova automação',
@@ -3479,18 +3485,18 @@
         instagram_conectar_texto: 'Connect your Instagram Business/Creator account (linked to a Facebook Page) to see followers, reach, bio link clicks, and how your posts are performing, right here.',
         instagram_conectar_btn: 'Connect Instagram',
         instagram_atualizar_metricas_aria: 'Refresh metrics',
-        instagram_seguidores: 'Followers',
-        instagram_alcance: 'Reach',
+        instagram_seguidores: '👥 Followers',
+        instagram_alcance: '📢 Reach',
         instagram_visitas_perfil: 'Profile visits (7 days)',
         instagram_cliques_link: 'Link clicks (7 days)',
         instagram_desempenho_post: 'Post performance',
         instagram_carregando_posts: 'Loading posts...',
-        instagram_leads_captados: 'Leads captured',
-        instagram_crescimento_perfil: 'Profile growth',
+        instagram_leads_captados: '🎯 Leads captured',
+        instagram_crescimento_perfil: '📈 Profile growth',
         instagram_grafico_carregando: 'Loading...',
-        instagram_saude_envio: 'Delivery health',
+        instagram_saude_envio: '🌡️ Delivery health',
         instagram_ultimos_30_dias: 'Last 30 days',
-        instagram_o_que_pessoas_querem: 'What people want',
+        instagram_o_que_pessoas_querem: '💡 What people want',
         instagram_pill_token: 'Token {n} days',
         instagram_pill_token_desconhecido: 'Token: unknown date',
         instagram_pill_entregas: '{n} deliveries 24h',
@@ -3502,27 +3508,28 @@
         instagram_saude_falharam: 'failed',
         instagram_saude_cancelados: 'cancelled',
         instagram_sem_interacoes_ainda: 'No interactions yet.',
-        instagram_interacoes: 'Interactions',
+        instagram_interacoes: '💬 Interactions',
         instagram_col_contato: 'Contact',
         instagram_col_etiquetas: 'Tags',
-        instagram_int_pessoas: 'People',
+        instagram_int_pessoas: '👥 People',
         instagram_int_pessoas_desc: 'Have talked to you',
-        instagram_int_7dias: 'In the last 7 days',
+        instagram_int_7dias: '🕒 In the last 7 days',
         instagram_int_7dias_desc: 'Recent activity',
-        instagram_int_receberam_link: 'Received the link',
+        instagram_int_receberam_link: '🔗 Received the link',
         instagram_int_receberam_link_desc: 'Reached the end of the conversation',
-        instagram_int_deixaram_contato: 'Left contact info',
+        instagram_int_deixaram_contato: '📇 Left contact info',
         instagram_int_deixaram_contato_desc: 'Email or phone in the conversation',
-        instagram_analises: 'Analytics',
+        instagram_analises: '📈 Analytics',
         instagram_analises_resumo: 'Reach, engagement, and top posts by period.',
         instagram_atualizar: '↻ Refresh',
         instagram_atualizando: 'Refreshing...',
-        instagram_novos_seguidores: 'New followers',
-        instagram_contas_engajadas: 'Accounts engaged',
-        instagram_interacoes_totais: 'Interactions',
-        instagram_alcance_por_dia: 'Reach by day',
+        instagram_novos_seguidores: '➕ New followers',
+        instagram_contas_engajadas: '🤝 Accounts engaged',
+        instagram_interacoes_totais: '💬 Interactions',
+        instagram_alcance_por_dia: '📊 Reach by day',
         instagram_alcance_legenda_periodo: 'accounts reached · {n} days',
-        instagram_melhores_posts: 'Top posts',
+        instagram_melhores_posts: '🔥 Top posts',
+        instagram_quem_mais_comenta: '🗨️ Top commenters (all posts)',
         instagram_ordenar_melhores: 'Top',
         instagram_ordenar_curtidos: 'Most liked',
         instagram_ordenar_comentados: 'Most commented',
@@ -3922,8 +3929,8 @@
         clientes_status_em_producao: 'In progress',
         clientes_status_entregue: 'Delivered',
         clientes_status_cancelado: 'Cancelled',
-        instagram_visao_geral: 'Overview',
-        instagram_automacoes: 'Automations',
+        instagram_visao_geral: '📊 Overview',
+        instagram_automacoes: '🤖 Automations',
         instagram_leads: 'Leads',
         instagram_automacoes_nenhuma: 'No automations yet.',
         instagram_nova_automacao: '+ New automation',
@@ -7623,9 +7630,30 @@
         tr('instagram_alcance_legenda_periodo').replace('{n}', String(resultado.periodoDias)),
       );
       renderizarInstagramMelhoresPosts();
+      renderizarQuemMaisComentaInstagram(resultado.quemMaisComenta);
 
       document.getElementById('instagram-analises-atualizado').textContent =
         tr('instagram_atualizado_em') + ' ' + formatarDataHora(new Date(resultado.atualizadoEm));
+    }
+
+    function renderizarQuemMaisComentaInstagram(ranking) {
+      const wrap = document.getElementById('instagram-an-quem-comenta');
+      if (!ranking || ranking.length === 0) {
+        wrap.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('instagram_sem_interacoes_ainda'))}</p>`;
+        return;
+      }
+      const maximo = Math.max(1, ...ranking.map((r) => r.total));
+      wrap.innerHTML = ranking
+        .map(
+          (r) => `
+        <div class="instagram-ranking-linha">
+          <span class="instagram-ranking-palavra">@${escapeHtml(r.usuario)}</span>
+          <div class="instagram-ranking-barra-fundo"><div class="instagram-ranking-barra" style="width:${Math.max(6, Math.round((r.total / maximo) * 100))}%"></div></div>
+          <span class="instagram-ranking-total">${formatarMetricaInstagram(r.total)}</span>
+        </div>
+      `,
+        )
+        .join('');
     }
 
     function renderizarInstagramMelhoresPosts() {
@@ -7644,10 +7672,10 @@
         <a class="instagram-post-card" href="${escapeHtml(p.permalink || '#')}" target="_blank" rel="noopener">
           ${p.capa ? `<img class="instagram-post-capa" src="${escapeHtml(p.capa)}" alt="">` : `<div class="instagram-post-capa instagram-post-capa-vazia"></div>`}
           <div class="instagram-post-metricas">
-            <div><strong>${formatarNumero(p.curtidas)}</strong><span>${escapeHtml(tr('instagram_curtidas'))}</span></div>
-            <div><strong>${formatarNumero(p.comentarios)}</strong><span>${escapeHtml(tr('instagram_comentarios'))}</span></div>
-            <div><strong>${formatarNumero(p.salvos)}</strong><span>${escapeHtml(tr('instagram_col_salvos'))}</span></div>
-            <div><strong>${p.vistos != null ? formatarNumero(p.vistos) : '—'}</strong><span>${escapeHtml(tr('instagram_col_vistos'))}</span></div>
+            <div><span class="instagram-post-emoji" aria-hidden="true">❤️</span><strong>${formatarNumero(p.curtidas)}</strong></div>
+            <div><span class="instagram-post-emoji" aria-hidden="true">🗨️</span><strong>${formatarNumero(p.comentarios)}</strong></div>
+            <div><span class="instagram-post-emoji" aria-hidden="true">🔖</span><strong>${formatarNumero(p.salvos)}</strong></div>
+            <div><span class="instagram-post-emoji" aria-hidden="true">👀</span><strong>${p.vistos != null ? formatarNumero(p.vistos) : '—'}</strong></div>
           </div>
         </a>
       `).join('');

@@ -1957,7 +1957,9 @@
 
 .painel-body .instagram-post-metricas div {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
   line-height: 1.2;
 }
 
@@ -1966,11 +1968,8 @@
   color: var(--grafite);
 }
 
-.painel-body .instagram-post-metricas span {
-  font-size: 10px;
-  color: var(--texto-suave);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+.painel-body .instagram-post-emoji {
+  font-size: 13px;
 }
 
 .painel-body .instagram-analises-atualizado {
@@ -2952,10 +2951,6 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  background: var(--branco);
-  border: 1px solid var(--borda);
-  border-radius: var(--raio-sm);
-  padding: 4px;
   margin-bottom: 20px;
 }
 
@@ -2963,14 +2958,15 @@
 .painel-body .instagram-subnav-btn,
 .painel-body .desafio-subnav-btn {
   background: transparent;
-  border: none;
-  border-radius: 8px;
+  border: 1px solid rgba(var(--grafite-rgb), 0.14);
+  border-radius: 999px;
   padding: 9px 16px;
   font-size: 13px;
   font-weight: 600;
   font-family: var(--fonte-corpo);
   color: var(--texto-suave);
   cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .painel-body .ugc-subnav-btn:hover,
@@ -2983,6 +2979,7 @@
 .painel-body .instagram-subnav-btn.ativo,
 .painel-body .desafio-subnav-btn.ativo {
   background: var(--coral);
+  border-color: var(--coral);
   color: var(--branco);
 }
 
@@ -4463,24 +4460,22 @@
 
 .painel-body .config-subnav {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
-  background: var(--creme);
-  border: 1px solid var(--borda);
-  border-radius: var(--raio-sm);
-  padding: 4px;
   margin-bottom: 20px;
 }
 
 .painel-body .config-subnav-btn {
   background: transparent;
-  border: none;
-  border-radius: 8px;
+  border: 1px solid rgba(var(--grafite-rgb), 0.14);
+  border-radius: 999px;
   padding: 9px 16px;
   font-size: 13px;
   font-weight: 600;
   font-family: var(--fonte-corpo);
   color: var(--texto-suave);
-  transition: background 0.15s ease, color 0.15s ease;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .painel-body .config-subnav-btn:hover {
@@ -4489,6 +4484,7 @@
 
 .painel-body .config-subnav-btn.ativo {
   background: var(--coral);
+  border-color: var(--coral);
   color: var(--branco);
 }
 

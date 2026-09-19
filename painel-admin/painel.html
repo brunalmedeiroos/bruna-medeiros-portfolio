@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260919a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260919b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -156,7 +156,7 @@
                Visão Geral e Resultados do UGC), sem cadastro próprio — ver
                renderizarFaturamentoDashboard(). -->
           <div class="cards-numeros cards-numeros-dashboard">
-            <div class="card-numero destaque">
+            <div class="card-numero">
               <span class="card-label" data-i18n="dash_ja_recebido">Já recebido</span>
               <span class="card-valor" id="dash-num-recebido">R$ 0</span>
             </div>
@@ -188,7 +188,7 @@
           <h2 class="saudacao" data-i18n="portfolio_ola">Olá! Aqui estão os números do seu portfólio.</h2>
 
           <div class="cards-numeros">
-            <div class="card-numero destaque">
+            <div class="card-numero">
               <span class="card-label" data-i18n="portfolio_visitas">Visitas</span>
               <span class="card-valor" id="num-visitas">0</span>
             </div>
@@ -633,14 +633,8 @@
         <!-- ---------- Aba: Planejador de Conteúdo ---------- -->
         <section id="panel-planejador" class="tab-panel" hidden>
           <div id="pl-hub" class="pl-hub">
-            <button class="pl-hub-card" data-pagina="banco" type="button">
-              <span class="pl-hub-card-titulo" data-i18n="pl_banco_ideias">Banco de ideias</span>
-              <span class="pl-hub-card-desc" data-i18n="pl_banco_desc">Minhas ideias organizadas por pilar de conteúdo, com espaço pro roteiro.</span>
-            </button>
-            <button class="pl-hub-card" data-pagina="achados" type="button">
-              <span class="pl-hub-card-titulo" data-i18n="pl_achados">Achados</span>
-              <span class="pl-hub-card-desc" data-i18n="pl_achados_desc">Ganchos, frases, formatos, músicas e CTAs pra virarem ideia depois.</span>
-            </button>
+            <button class="pl-hub-card" data-pagina="banco" type="button" data-i18n="pl_banco_ideias">Banco de ideias</button>
+            <button class="pl-hub-card" data-pagina="achados" type="button" data-i18n="pl_achados">Achados</button>
           </div>
 
           <div id="pl-pagina-banco" class="pl-pagina" hidden>
@@ -705,7 +699,7 @@
           <p class="radar-avisos" id="radar-avisos" hidden></p>
 
           <div class="cards-numeros">
-            <div class="card-numero destaque">
+            <div class="card-numero">
               <span class="card-label" data-i18n="radar_capturadas_hoje">Capturadas hoje</span>
               <span class="card-valor" id="radar-num-hoje">0</span>
             </div>
@@ -747,7 +741,7 @@
           <!-- Visão Geral: só leitura, tudo derivado de ugc_trabalhos -->
           <div id="ugc-pagina-visao-geral" class="ugc-pagina">
             <div class="cards-numeros cards-numeros-visao-geral-ugc">
-              <div class="card-numero destaque">
+              <div class="card-numero">
                 <span class="card-label" data-i18n="ugc_trabalhos_ativos">Trabalhos ativos</span>
                 <span class="card-valor" id="ugc-num-ativos">0</span>
               </div>
@@ -830,7 +824,7 @@
           </div>
           <div id="ugc-pagina-prospeccao" class="ugc-pagina" hidden>
             <div class="cards-numeros cards-numeros-prospeccao">
-              <div class="card-numero destaque">
+              <div class="card-numero">
                 <span class="card-label" data-i18n="ugc_outbound">Outbound</span>
                 <span class="card-valor" id="ugc-prosp-outbound">0</span>
               </div>
@@ -2737,11 +2731,11 @@
 
         // Planejador de Conteúdo
         voltar: '← Voltar',
-        pl_banco_ideias: 'Banco de ideias',
+        pl_banco_ideias: '💡 Banco de ideias',
         pl_banco_desc: 'Minhas ideias organizadas por pilar de conteúdo, com espaço pro roteiro.',
-        pl_achados: 'Achados',
+        pl_achados: '🔍 Achados',
         pl_achados_desc: 'Ganchos, frases, formatos, músicas e CTAs pra virarem ideia depois.',
-        pl_cronograma: 'Cronograma de postagem',
+        pl_cronograma: '📅 Cronograma de postagem',
         pl_pilar: 'Pilar',
         pl_dia_semana: 'Dia da semana',
         pl_novo_pilar: '+ Novo pilar do cronograma',
@@ -2848,13 +2842,13 @@
         criar: 'Criar',
 
         // UGC / Publi
-        ugc_visao_geral: 'Visão Geral',
-        ugc_trabalhos: 'Trabalhos',
-        ugc_roteiros: 'Roteiros',
-        ugc_prospeccao: 'Prospecção',
-        ugc_contratos: 'Contratos',
-        ugc_precos: 'Preços',
-        ugc_resultados: 'Resultados',
+        ugc_visao_geral: '📊 Visão Geral',
+        ugc_trabalhos: '💼 Trabalhos',
+        ugc_roteiros: '📝 Roteiros',
+        ugc_prospeccao: '🎯 Prospecção',
+        ugc_contratos: '📄 Contratos',
+        ugc_precos: '💰 Preços',
+        ugc_resultados: '📈 Resultados',
         ugc_trabalhos_ativos: 'Trabalhos ativos',
         ugc_em_producao: 'Em produção',
         ugc_a_receber: 'A receber',
@@ -3550,11 +3544,11 @@
 
         // Content Planner
         voltar: '← Back',
-        pl_banco_ideias: 'Idea bank',
+        pl_banco_ideias: '💡 Idea bank',
         pl_banco_desc: 'My ideas organized by content pillar, with room for the script.',
-        pl_achados: 'Finds',
+        pl_achados: '🔍 Finds',
         pl_achados_desc: 'Hooks, phrases, formats, music, and CTAs to turn into an idea later.',
-        pl_cronograma: 'Posting schedule',
+        pl_cronograma: '📅 Posting schedule',
         pl_pilar: 'Pillar',
         pl_dia_semana: 'Day of the week',
         pl_novo_pilar: '+ New schedule pillar',
@@ -3661,13 +3655,13 @@
         criar: 'Create',
 
         // UGC / Ads
-        ugc_visao_geral: 'Overview',
-        ugc_trabalhos: 'Jobs',
-        ugc_roteiros: 'Scripts',
-        ugc_prospeccao: 'Prospecting',
-        ugc_contratos: 'Contracts',
-        ugc_precos: 'Pricing',
-        ugc_resultados: 'Results',
+        ugc_visao_geral: '📊 Overview',
+        ugc_trabalhos: '💼 Jobs',
+        ugc_roteiros: '📝 Scripts',
+        ugc_prospeccao: '🎯 Prospecting',
+        ugc_contratos: '📄 Contracts',
+        ugc_precos: '💰 Pricing',
+        ugc_resultados: '📈 Results',
         ugc_trabalhos_ativos: 'Active jobs',
         ugc_em_producao: 'In production',
         ugc_a_receber: 'Receivable',

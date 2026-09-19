@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/desafio.css?v=15">
+<link rel="stylesheet" href="../css/desafio.css?v=16">
 <script>
   // Embutido como aba dentro do Creator Center: esconde o cabeçalho
   // próprio da página (o painel já mostra o título e o "Sair").
@@ -215,6 +215,11 @@
         : '<span class="processo-pill a-fazer">Ainda vai acontecer</span>';
     }
 
+    function resumir(texto, max) {
+      if (!texto) return '';
+      return texto.length > max ? texto.slice(0, max).trim() + '…' : texto;
+    }
+
     function linhaTabelaProcesso(dia, ideiasPorId) {
       const idea = dia.roteiro_ideia_id ? ideiasPorId.get(dia.roteiro_ideia_id) : null;
       const botaoAbrir = dia.roteiro_ideia_id
@@ -224,7 +229,7 @@
         <tr data-dia="${dia.id}">
           <td>${dia.numero_dia}</td>
           <td>${dia.titulo || '<span class="processo-vazio">Sem tema ainda</span>'}</td>
-          <td>${dia.descricao || '<span class="processo-vazio">—</span>'}</td>
+          <td class="processo-td-resumo">${dia.descricao ? resumir(dia.descricao, 60) : '<span class="processo-vazio">—</span>'}</td>
           <td>${pillRoteiro(dia, idea)} ${botaoAbrir}</td>
           <td>${idea && idea.formato ? idea.formato : '—'}</td>
           <td><input type="date" class="processo-tabela-campo" data-campo="data_publicacao" data-dia="${dia.id}" value="${dia.data_publicacao || ''}"></td>

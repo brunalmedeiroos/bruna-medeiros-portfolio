@@ -290,6 +290,7 @@ h1,h2,h3{ font-family:var(--fonte-titulo); margin:0; text-wrap:balance; }
 .processo-pill.sem-vinculo{ background:var(--cinza-claro); color:var(--texto-suave); }
 .processo-link-abrir{ font-size:12px; font-weight:700; color:var(--coral-claro); text-decoration:underline; cursor:pointer; margin-left:6px; background:none; border:none; font-family:var(--fonte-corpo); padding:0; }
 .processo-check{ width:16px; height:16px; accent-color:var(--coral); cursor:pointer; }
+.processo-vazio{ color:var(--texto-suave); font-style:italic; }
 .processo-acoes{ display:flex; gap:10px; }
 .processo-acoes button{ background:none; border:none; color:var(--coral-claro); font-size:12.5px; font-weight:700; cursor:pointer; font-family:var(--fonte-corpo); padding:0; }
 .processo-acoes button.apagar{ color:var(--pendente); }
@@ -331,4 +332,3 @@ h1,h2,h3{ font-family:var(--fonte-titulo); margin:0; text-wrap:balance; }
 .processo-tabela-campo{ width:100%; min-width:110px; border:1px solid transparent; background:transparent; border-radius:6px; padding:6px 8px; font-size:12.5px; font-family:var(--fonte-corpo); color:var(--coral); transition:border-color .15s ease, background .15s ease; }
 .processo-tabela-campo:hover{ border-color:var(--borda); }
 .processo-tabela-campo:focus{ outline:none; border-color:var(--coral-claro); background:var(--branco); }
-textarea.processo-tabela-campo{ resize:vertical; min-height:38px; }

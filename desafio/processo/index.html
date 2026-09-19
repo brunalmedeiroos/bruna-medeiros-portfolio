@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/desafio.css?v=14">
+<link rel="stylesheet" href="../css/desafio.css?v=15">
 <script>
   // Embutido como aba dentro do Creator Center: esconde o cabeçalho
   // próprio da página (o painel já mostra o título e o "Sair").
@@ -204,10 +204,6 @@
       return '<span class="processo-pill a-fazer">A fazer</span>';
     }
 
-    function escaparAtributo(texto) {
-      return String(texto || '').replace(/"/g, '&quot;');
-    }
-
     function statusDia(dia) {
       if (!dia.publicado) return '<span class="processo-pill sem-vinculo">Rascunho</span>';
       if (!dia.data_publicacao) return '<span class="processo-pill a-fazer">Ainda vai acontecer</span>';
@@ -227,8 +223,8 @@
       return `
         <tr data-dia="${dia.id}">
           <td>${dia.numero_dia}</td>
-          <td><input type="text" class="processo-tabela-campo" data-campo="titulo" data-dia="${dia.id}" value="${escaparAtributo(dia.titulo)}" placeholder="Tema do dia..."></td>
-          <td><textarea class="processo-tabela-campo" data-campo="descricao" data-dia="${dia.id}" placeholder="O que a pessoa precisa fazer...">${dia.descricao || ''}</textarea></td>
+          <td>${dia.titulo || '<span class="processo-vazio">Sem tema ainda</span>'}</td>
+          <td>${dia.descricao || '<span class="processo-vazio">—</span>'}</td>
           <td>${pillRoteiro(dia, idea)} ${botaoAbrir}</td>
           <td>${idea && idea.formato ? idea.formato : '—'}</td>
           <td><input type="date" class="processo-tabela-campo" data-campo="data_publicacao" data-dia="${dia.id}" value="${dia.data_publicacao || ''}"></td>

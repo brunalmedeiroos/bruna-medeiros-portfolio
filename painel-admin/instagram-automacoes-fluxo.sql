@@ -318,7 +318,7 @@ select cron.schedule(
   '* * * * *', -- a cada 1 minuto
   $$
   select net.http_post(
-    url := 'https://<PROJECT_REF>.supabase.co/functions/v1/instagram-scheduler',
+    url := 'https://trfoymytrvdbslwizfqs.supabase.co/functions/v1/instagram-scheduler',
     headers := jsonb_build_object(
       'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'instagram_automacao_cron_secret'),
       'Content-Type', 'application/json'
@@ -328,6 +328,4 @@ select cron.schedule(
   $$
 );
 
--- Lembrete: troque <PROJECT_REF> pela referência do seu projeto Supabase
--- antes de rodar este arquivo (o mesmo valor que aparece na URL do seu
--- painel do Supabase, algo como "abcdefghijklmnop").
+-- (a referência do projeto acima já está preenchida: trfoymytrvdbslwizfqs)

@@ -58,11 +58,23 @@ export async function trocarCodePorTokenCurto(params: Record<string, string>) {
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams(params),
   });
-  const data = await res.json();
+  const corpoBruto = await res.text();
+  const data = JSON.parse(corpoBruto);
   if (!res.ok) {
     throw new Error(`Falha ao trocar code no Instagram: ${JSON.stringify(data)}`);
   }
-  return data as { access_token: string; user_id: string; permissions?: string[] };
+
+  // O user_id do Instagram tem 17 dígitos, maior do que Number.MAX_SAFE_INTEGER
+  // (~9 x 10^15). Se a Meta manda esse campo como número (não como texto) no
+  // JSON, o "await res.json()" arredondaria ele e trocaria os últimos dígitos
+  // — foi exatamente esse bug que fez o envio de mensagem falhar (o id salvo
+  // no banco ficava diferente do id real da conta). Por isso extrai o valor
+  // direto do texto bruto da resposta, com regex, antes de qualquer parsing
+  // que passe pelo tipo number do JavaScript.
+  const casaUserId = /"user_id"\s*:\s*"?(\d+)"?/.exec(corpoBruto);
+  const userIdTexto = casaUserId ? casaUserId[1] : String(data.user_id);
+
+  return { ...data, user_id: userIdTexto } as { access_token: string; user_id: string; permissions?: string[] };
 }
 
 // Troca o token curto por um de longa duração (~60 dias).

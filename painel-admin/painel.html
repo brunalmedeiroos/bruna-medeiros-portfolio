@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260918c">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260918d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -430,12 +430,16 @@
             <div class="instagram-subnav">
               <button class="instagram-subnav-btn ativo" data-instagram-pagina="visao-geral" type="button" data-i18n="instagram_visao_geral">Visão Geral</button>
               <button class="instagram-subnav-btn" data-instagram-pagina="automacoes" type="button" data-i18n="instagram_automacoes">Automações</button>
-              <button class="instagram-subnav-btn" data-instagram-pagina="leads" type="button" data-i18n="instagram_leads">Leads</button>
+              <button class="instagram-subnav-btn" data-instagram-pagina="leads" type="button" data-i18n="instagram_interacoes">Interações</button>
             </div>
 
             <div id="instagram-pagina-visao-geral" class="instagram-pagina">
               <div class="instagram-topo">
                 <span class="instagram-perfil-nome" id="instagram-perfil-nome">@usuario</span>
+                <div class="instagram-topo-pills">
+                  <span class="instagram-pill" id="instagram-pill-token">–</span>
+                  <span class="instagram-pill" id="instagram-pill-entregas">–</span>
+                </div>
                 <div class="ugc-trabalhos-topo-acoes">
                   <button id="btn-instagram-desconectar" class="cal-btn" type="button" data-i18n="instagram_desconectar">Desconectar</button>
                   <button id="btn-instagram-atualizar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="instagram_atualizar_metricas_aria" aria-label="Atualizar métricas">
@@ -452,22 +456,36 @@
                   <span class="card-valor" id="instagram-num-seguidores">–</span>
                 </div>
                 <div class="card-numero">
-                  <span class="card-label" data-i18n="instagram_alcance">Alcance (7 dias)</span>
-                  <span class="card-valor" id="instagram-num-alcance">–</span>
-                </div>
-                <div class="card-numero">
-                  <span class="card-label" data-i18n="instagram_visitas_perfil">Visitas ao perfil (7 dias)</span>
-                  <span class="card-valor" id="instagram-num-visitas-perfil">–</span>
-                </div>
-                <div class="card-numero">
-                  <span class="card-label" data-i18n="instagram_cliques_link">Cliques no link (7 dias)</span>
-                  <span class="card-valor" id="instagram-num-cliques-link">–</span>
+                  <span class="card-label" data-i18n="instagram_leads_captados">Leads captados</span>
+                  <span class="card-valor" id="instagram-num-leads">–</span>
                 </div>
               </div>
 
-              <div class="card card-instagram-posts">
-                <h3 class="card-titulo" data-i18n="instagram_desempenho_post">Desempenho por post</h3>
-                <div id="instagram-posts-lista" class="instagram-posts-lista"><p class="texto-suave" data-i18n="instagram_carregando_posts">Carregando posts...</p></div>
+              <div class="instagram-graficos-grid">
+                <div class="card instagram-card-grafico">
+                  <h3 class="card-titulo" data-i18n="instagram_crescimento_perfil">Crescimento do perfil</h3>
+                  <p class="instagram-grafico-legenda" id="instagram-crescimento-legenda" data-i18n="instagram_grafico_carregando">Carregando...</p>
+                  <div class="instagram-barras" id="instagram-grafico-crescimento"></div>
+                </div>
+                <div class="card instagram-card-grafico">
+                  <h3 class="card-titulo" data-i18n="instagram_alcance">Alcance</h3>
+                  <p class="instagram-grafico-legenda" id="instagram-alcance-legenda" data-i18n="instagram_grafico_carregando">Carregando...</p>
+                  <div class="instagram-barras" id="instagram-grafico-alcance"></div>
+                </div>
+              </div>
+
+              <div class="instagram-saude-quer-grid">
+                <div class="card">
+                  <h3 class="card-titulo" data-i18n="instagram_saude_envio">Saúde do envio</h3>
+                  <p class="instagram-grafico-legenda" data-i18n="instagram_ultimos_30_dias">Últimos 30 dias</p>
+                  <div class="instagram-saude-barra" id="instagram-saude-barra"></div>
+                  <div class="instagram-saude-legenda" id="instagram-saude-legenda"></div>
+                  <div class="instagram-saude-erros" id="instagram-saude-erros"></div>
+                </div>
+                <div class="card">
+                  <h3 class="card-titulo" data-i18n="instagram_o_que_pessoas_querem">O que as pessoas querem</h3>
+                  <div class="instagram-ranking" id="instagram-ranking-palavras"></div>
+                </div>
               </div>
             </div>
 
@@ -485,22 +503,23 @@
             <div id="instagram-pagina-leads" class="instagram-pagina" hidden>
               <div class="cal-todas-topo">
                 <div>
-                  <h3 class="card-titulo" data-i18n="instagram_leads">Leads</h3>
+                  <h3 class="card-titulo" data-i18n="instagram_interacoes">Interações</h3>
                   <p class="cal-todas-resumo" id="instagram-leads-resumo" data-i18n="instagram_nenhum_lead">Nenhum lead ainda.</p>
                 </div>
                 <div class="ugc-trabalhos-topo-acoes">
                   <input type="text" id="instagram-leads-busca" class="instagram-leads-busca" data-i18n-placeholder="instagram_buscar_conta_palavra" placeholder="Buscar por @ ou palavra">
-                  <button id="btn-instagram-processar-agora" class="cal-btn" type="button" data-i18n="instagram_processar_agora">Processar agora</button>
+                  <button id="btn-instagram-processar-agora" class="cal-btn" type="button" data-i18n="instagram_processar_agora">Processar fila agora</button>
                   <button id="btn-instagram-exportar-csv" class="cal-btn" type="button" data-i18n="instagram_exportar_csv">↓ Exportar CSV</button>
                 </div>
               </div>
 
-              <div class="cal-todas-tabela">
+              <div class="cal-todas-tabela instagram-interacoes-tabela">
                 <div class="cal-todas-cabecalho instagram-leads-linha">
                   <span data-i18n="instagram_col_conta">Conta</span>
                   <span data-i18n="instagram_col_origem">Origem</span>
                   <span data-i18n="instagram_col_palavra">Palavra</span>
-                  <span data-i18n="instagram_col_recebeu">Recebeu?</span>
+                  <span data-i18n="instagram_col_contato">Contato</span>
+                  <span data-i18n="instagram_col_etiquetas">Etiquetas</span>
                   <span data-i18n="instagram_col_interacoes">Interações</span>
                   <span data-i18n="instagram_col_ultima_vez">Última vez</span>
                 </div>
@@ -2012,7 +2031,6 @@
     let emailAbertoId = null;
     let instagramAbaCarregada = false;
     let instagramSubAbaAtual = 'visao-geral';
-    let instagramPostsCache = [];
     let instagramMediaCache = [];
     let instagramAutomacoesCarregadas = false;
     let instagramAutomacoesCache = [];
@@ -2558,11 +2576,31 @@
         instagram_conectar_btn: 'Conectar Instagram',
         instagram_atualizar_metricas_aria: 'Atualizar métricas',
         instagram_seguidores: 'Seguidores',
-        instagram_alcance: 'Alcance (7 dias)',
+        instagram_alcance: 'Alcance',
         instagram_visitas_perfil: 'Visitas ao perfil (7 dias)',
         instagram_cliques_link: 'Cliques no link (7 dias)',
         instagram_desempenho_post: 'Desempenho por post',
         instagram_carregando_posts: 'Carregando posts...',
+        instagram_leads_captados: 'Leads captados',
+        instagram_crescimento_perfil: 'Crescimento do perfil',
+        instagram_grafico_carregando: 'Carregando...',
+        instagram_saude_envio: 'Saúde do envio',
+        instagram_ultimos_30_dias: 'Últimos 30 dias',
+        instagram_o_que_pessoas_querem: 'O que as pessoas querem',
+        instagram_pill_token: 'Token {n} dias',
+        instagram_pill_token_desconhecido: 'Token: data desconhecida',
+        instagram_pill_entregas: '{n} entregas 24h',
+        instagram_sem_dados_suficientes: 'Sem dados suficientes ainda.',
+        instagram_novos_seguidores_legenda: 'novos seguidores · 15 dias',
+        instagram_alcance_legenda: 'contas alcançadas · 15 dias',
+        instagram_sem_envios_ainda: 'Nenhum envio registrado ainda.',
+        instagram_saude_entregues: 'entregues',
+        instagram_saude_falharam: 'falharam',
+        instagram_saude_cancelados: 'cancelados',
+        instagram_sem_interacoes_ainda: 'Nenhuma interação ainda.',
+        instagram_interacoes: 'Interações',
+        instagram_col_contato: 'Contato',
+        instagram_col_etiquetas: 'Etiquetas',
         instagram_erro_carregar_prefixo: 'Não foi possível carregar as métricas: ',
         instagram_erro_carregar_generico: 'Não foi possível carregar as métricas agora.',
         instagram_alguns_dados: 'Alguns dados não carregaram:',
@@ -3323,11 +3361,31 @@
         instagram_conectar_btn: 'Connect Instagram',
         instagram_atualizar_metricas_aria: 'Refresh metrics',
         instagram_seguidores: 'Followers',
-        instagram_alcance: 'Reach (7 days)',
+        instagram_alcance: 'Reach',
         instagram_visitas_perfil: 'Profile visits (7 days)',
         instagram_cliques_link: 'Link clicks (7 days)',
         instagram_desempenho_post: 'Post performance',
         instagram_carregando_posts: 'Loading posts...',
+        instagram_leads_captados: 'Leads captured',
+        instagram_crescimento_perfil: 'Profile growth',
+        instagram_grafico_carregando: 'Loading...',
+        instagram_saude_envio: 'Delivery health',
+        instagram_ultimos_30_dias: 'Last 30 days',
+        instagram_o_que_pessoas_querem: 'What people want',
+        instagram_pill_token: 'Token {n} days',
+        instagram_pill_token_desconhecido: 'Token: unknown date',
+        instagram_pill_entregas: '{n} deliveries 24h',
+        instagram_sem_dados_suficientes: 'Not enough data yet.',
+        instagram_novos_seguidores_legenda: 'new followers · 15 days',
+        instagram_alcance_legenda: 'accounts reached · 15 days',
+        instagram_sem_envios_ainda: 'No deliveries logged yet.',
+        instagram_saude_entregues: 'delivered',
+        instagram_saude_falharam: 'failed',
+        instagram_saude_cancelados: 'cancelled',
+        instagram_sem_interacoes_ainda: 'No interactions yet.',
+        instagram_interacoes: 'Interactions',
+        instagram_col_contato: 'Contact',
+        instagram_col_etiquetas: 'Tags',
         instagram_erro_carregar_prefixo: "Couldn't load metrics: ",
         instagram_erro_carregar_generico: "Couldn't load metrics right now.",
         instagram_alguns_dados: "Some data didn't load:",
@@ -6511,12 +6569,12 @@
     }
 
     async function carregarInstagram() {
-      const lista = document.getElementById('instagram-posts-lista');
       try {
         const resultado = await chamarFuncao('instagram-metrics');
         if (!resultado.ok) {
           mostrarInstagramConectado();
-          lista.innerHTML = '<p class="texto-erro">' + escapeHtml(tr('instagram_erro_carregar_prefixo')) + escapeHtml(resultado.error) + '</p>';
+          document.getElementById('instagram-avisos').hidden = false;
+          document.getElementById('instagram-avisos').textContent = tr('instagram_erro_carregar_prefixo') + resultado.error;
           return;
         }
         if (!resultado.conectado) {
@@ -6528,19 +6586,19 @@
       } catch (err) {
         console.error('Erro ao carregar métricas do Instagram:', err);
         mostrarInstagramConectado();
-        lista.innerHTML = `<p class="texto-erro">${escapeHtml(tr('instagram_erro_carregar_generico'))}</p>`;
+        document.getElementById('instagram-avisos').hidden = false;
+        document.getElementById('instagram-avisos').textContent = tr('instagram_erro_carregar_generico');
       }
     }
 
     function renderizarInstagram(resultado) {
-      const { perfil, insights, posts, erros } = resultado;
-      instagramPostsCache = posts || [];
+      const { perfil, tokenDiasRestantes, entregas24h, leadsCaptados, alcancePorDia, crescimentoPorDia, saudeEnvio, oQuePessoasQuerem, erros } = resultado;
 
       document.getElementById('instagram-perfil-nome').textContent = perfil.username ? '@' + perfil.username : '—';
       document.getElementById('instagram-num-seguidores').textContent = formatarMetricaInstagram(perfil.seguidores);
-      document.getElementById('instagram-num-alcance').textContent = formatarMetricaInstagram(insights.alcance);
-      document.getElementById('instagram-num-visitas-perfil').textContent = formatarMetricaInstagram(insights.visitasPerfil);
-      document.getElementById('instagram-num-cliques-link').textContent = formatarMetricaInstagram(insights.cliquesLink);
+      document.getElementById('instagram-num-leads').textContent = formatarMetricaInstagram(leadsCaptados);
+      document.getElementById('instagram-pill-token').textContent = tokenDiasRestantes == null ? tr('instagram_pill_token_desconhecido') : tr('instagram_pill_token').replace('{n}', String(tokenDiasRestantes));
+      document.getElementById('instagram-pill-entregas').textContent = tr('instagram_pill_entregas').replace('{n}', String(entregas24h ?? 0));
 
       const avisoEl = document.getElementById('instagram-avisos');
       if (erros && erros.length) {
@@ -6551,28 +6609,85 @@
         avisoEl.hidden = true;
       }
 
-      const lista = document.getElementById('instagram-posts-lista');
-      if (!posts || posts.length === 0) {
-        lista.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('instagram_nenhuma_publicacao'))}</p>`;
+      renderizarGraficoBarrasInstagram('instagram-grafico-crescimento', 'instagram-crescimento-legenda', crescimentoPorDia, tr('instagram_novos_seguidores_legenda'));
+      renderizarGraficoBarrasInstagram('instagram-grafico-alcance', 'instagram-alcance-legenda', alcancePorDia, tr('instagram_alcance_legenda'));
+      renderizarSaudeEnvioInstagram(saudeEnvio);
+      renderizarRankingPalavrasInstagram(oQuePessoasQuerem);
+    }
+
+    function renderizarGraficoBarrasInstagram(idGrafico, idLegenda, serie, legendaBase) {
+      const wrap = document.getElementById(idGrafico);
+      const legendaEl = document.getElementById(idLegenda);
+      if (!serie || serie.length === 0) {
+        wrap.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('instagram_sem_dados_suficientes'))}</p>`;
+        legendaEl.textContent = legendaBase;
+        return;
+      }
+      const total = serie.reduce((soma, d) => soma + (d.valor || 0), 0);
+      const maximo = Math.max(1, ...serie.map((d) => d.valor || 0));
+      legendaEl.textContent = `${legendaBase} · ${formatarMetricaInstagram(total)}`;
+
+      wrap.innerHTML = serie.map((d) => {
+        const alturaPct = Math.max(4, Math.round(((d.valor || 0) / maximo) * 100));
+        const dataFmt = d.data ? formatarDataCurta(new Date(d.data + 'T00:00:00')) : '';
+        return `
+          <div class="instagram-barra-col">
+            <div class="instagram-barra" style="height:${alturaPct}%">
+              <span class="instagram-barra-tooltip">${escapeHtml(dataFmt)}: ${formatarMetricaInstagram(d.valor)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderizarSaudeEnvioInstagram(saude) {
+      const barraEl = document.getElementById('instagram-saude-barra');
+      const legendaEl = document.getElementById('instagram-saude-legenda');
+      const errosEl = document.getElementById('instagram-saude-erros');
+      const dados = saude || { entregues: 0, falharam: 0, cancelados: 0, erros: [] };
+      const total = dados.entregues + dados.falharam + dados.cancelados;
+
+      if (total === 0) {
+        barraEl.innerHTML = '';
+        legendaEl.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('instagram_sem_envios_ainda'))}</p>`;
+        errosEl.innerHTML = '';
         return;
       }
 
-      lista.innerHTML = posts.map((post) => `
-        <div class="instagram-post-item">
-          ${post.capa ? `<img class="instagram-post-capa" src="${escapeHtml(post.capa)}" alt="">` : '<div class="instagram-post-capa instagram-post-capa-vazia"></div>'}
-          <div class="instagram-post-info">
-            <p class="instagram-post-legenda">${escapeHtml((post.legenda || tr('sem_legenda')).slice(0, 90))}</p>
-            <span class="instagram-post-data">${post.data ? new Date(post.data).toLocaleDateString(localeAtual()) : ''}</span>
-            <div class="instagram-post-metricas">
-              <span>${escapeHtml(tr('instagram_curtidas'))}: ${formatarMetricaInstagram(post.curtidas)}</span>
-              <span>${escapeHtml(tr('instagram_comentarios'))}: ${formatarMetricaInstagram(post.comentarios)}</span>
-              <span>${escapeHtml(tr('instagram_alcance_curto'))}: ${formatarMetricaInstagram(post.alcance)}</span>
-              <span>${escapeHtml(tr('instagram_salvos'))}: ${formatarMetricaInstagram(post.salvos)}</span>
-            </div>
-          </div>
-          <a class="instagram-post-link" href="${escapeHtml(post.link || '#')}" target="_blank" rel="noopener">${escapeHtml(tr('instagram_ver_post'))}</a>
+      const pct = (n) => Math.max(0, Math.round((n / total) * 1000) / 10);
+      barraEl.innerHTML = `
+        <span class="instagram-saude-seg instagram-saude-ok" style="width:${pct(dados.entregues)}%"></span>
+        <span class="instagram-saude-seg instagram-saude-erro" style="width:${pct(dados.falharam)}%"></span>
+        <span class="instagram-saude-seg instagram-saude-cancelado" style="width:${pct(dados.cancelados)}%"></span>
+      `;
+      legendaEl.innerHTML = `
+        <span><i class="instagram-saude-dot instagram-saude-ok"></i>${formatarMetricaInstagram(dados.entregues)} ${escapeHtml(tr('instagram_saude_entregues'))}</span>
+        <span><i class="instagram-saude-dot instagram-saude-erro"></i>${formatarMetricaInstagram(dados.falharam)} ${escapeHtml(tr('instagram_saude_falharam'))}</span>
+        <span><i class="instagram-saude-dot instagram-saude-cancelado"></i>${formatarMetricaInstagram(dados.cancelados)} ${escapeHtml(tr('instagram_saude_cancelados'))}</span>
+      `;
+      errosEl.innerHTML = (dados.erros || [])
+        .map((e) => `<div class="instagram-saude-erro-linha"><span>${escapeHtml(e.mensagem)}</span><strong>${formatarMetricaInstagram(e.total)}</strong></div>`)
+        .join('');
+    }
+
+    function renderizarRankingPalavrasInstagram(ranking) {
+      const wrap = document.getElementById('instagram-ranking-palavras');
+      if (!ranking || ranking.length === 0) {
+        wrap.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('instagram_sem_interacoes_ainda'))}</p>`;
+        return;
+      }
+      const maximo = Math.max(1, ...ranking.map((r) => r.total));
+      wrap.innerHTML = ranking
+        .map(
+          (r) => `
+        <div class="instagram-ranking-linha">
+          <span class="instagram-ranking-palavra">${escapeHtml(r.palavra)}</span>
+          <div class="instagram-ranking-barra-fundo"><div class="instagram-ranking-barra" style="width:${Math.max(6, Math.round((r.total / maximo) * 100))}%"></div></div>
+          <span class="instagram-ranking-total">${formatarMetricaInstagram(r.total)}</span>
         </div>
-      `).join('');
+      `,
+        )
+        .join('');
     }
 
     // ---- Sub-abas (Visão Geral / Automações / Leads) ----
@@ -6598,6 +6713,16 @@
         renderizarInstagramLeads();
       } catch (err) {
         console.error('Erro ao carregar automações do Instagram:', err);
+      }
+
+      if (!instagramMediaCache.length) {
+        try {
+          const resultadoMedia = await chamarFuncao('instagram-media');
+          instagramMediaCache = resultadoMedia?.ok ? (resultadoMedia.posts || []) : [];
+          renderizarInstagramAutomacoes();
+        } catch (err) {
+          console.error('Erro ao carregar posts do Instagram:', err);
+        }
       }
     }
 
@@ -6632,8 +6757,14 @@
         ? tr('instagram_resumo_n_posts').replace('{n}', String(automacao.media_ids.length))
         : tr('instagram_qualquer_post');
       const gatilho = automacao.match_any ? tr('instagram_qualquer_palavra_ativa') : (automacao.palavra_gatilho || '—');
+      const primeiroMediaId = automacao.media_ids && automacao.media_ids[0];
+      const post = primeiroMediaId ? instagramMediaCache.find((p) => p.id === primeiroMediaId) : null;
+      const capaHtml = post && post.capa
+        ? `<img class="instagram-automacao-capa" src="${escapeHtml(post.capa)}" alt="">`
+        : '<div class="instagram-automacao-capa instagram-automacao-capa-vazia"></div>';
 
       card.innerHTML = `
+        ${capaHtml}
         <div class="instagram-automacao-info">
           <div class="instagram-automacao-cabecalho">
             <span class="instagram-automacao-nome">${escapeHtml(automacao.nome)}</span>
@@ -7220,11 +7351,14 @@
       const linha = document.createElement('div');
       linha.className = 'cal-todas-linha instagram-leads-linha';
       const ultimaVezFmt = lead.ultima_vez ? formatarDataCurta(new Date(lead.ultima_vez)) : '—';
+      const contato = [lead.email, lead.telefone].filter(Boolean).join(' · ') || '—';
+      const etiquetas = (lead.tags && lead.tags.length) ? lead.tags.map((t) => `<span class="instagram-etiqueta">${escapeHtml(t)}</span>`).join('') : '—';
       linha.innerHTML = `
         <span class="instagram-lead-conta">@${escapeHtml(lead.conta)}</span>
         <span>${escapeHtml(lead.origem === 'Direct' ? tr('instagram_origem_direct') : tr('instagram_origem_comentario'))}</span>
         <span>${escapeHtml(lead.palavra || '—')}</span>
-        <span class="instagram-lead-recebeu${lead.recebeu ? '' : ' nao'}">${escapeHtml(lead.recebeu ? tr('instagram_recebeu_sim') : tr('instagram_recebeu_nao'))}</span>
+        <span>${escapeHtml(contato)}</span>
+        <span>${etiquetas}</span>
         <span>${formatarNumero(lead.interacoes)}</span>
         <span>${ultimaVezFmt}</span>
       `;
@@ -7233,12 +7367,14 @@
 
     function exportarLeadsCSV() {
       if (instagramLeadsCache.length === 0) return;
-      const cabecalho = ['conta', 'origem', 'palavra', 'recebeu', 'interacoes', 'ultima_vez'];
+      const cabecalho = ['conta', 'origem', 'palavra', 'email', 'telefone', 'etiquetas', 'interacoes', 'ultima_vez'];
       const linhas = instagramLeadsCache.map((l) => [
         l.conta,
         l.origem,
         l.palavra || '',
-        l.recebeu ? 'sim' : 'nao',
+        l.email || '',
+        l.telefone || '',
+        (l.tags || []).join('; '),
         l.interacoes,
         l.ultima_vez || '',
       ]);
@@ -7249,7 +7385,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'leads-instagram.csv';
+      a.download = 'interacoes-instagram.csv';
       a.click();
       URL.revokeObjectURL(url);
     }

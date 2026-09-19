@@ -1521,7 +1521,25 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
   margin-bottom: 16px;
+}
+
+.painel-body .instagram-topo-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.painel-body .instagram-pill {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-suave);
+  background: rgba(var(--grafite-rgb), 0.06);
+  border-radius: 999px;
+  padding: 6px 12px;
+  white-space: nowrap;
 }
 
 .painel-body .instagram-perfil-nome {
@@ -1545,15 +1563,186 @@
 
 .painel-body .instagram-metricas-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+/* ---- Gráficos (Crescimento do perfil, Alcance) ---- */
+
+.painel-body .instagram-graficos-grid,
+.painel-body .instagram-saude-quer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
   margin-bottom: 20px;
 }
 
 @media (max-width: 860px) {
-  .painel-body .instagram-metricas-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .painel-body .instagram-graficos-grid,
+  .painel-body .instagram-saude-quer-grid {
+    grid-template-columns: 1fr;
   }
+}
+
+.painel-body .instagram-card-grafico {
+  margin-top: 0;
+}
+
+.painel-body .instagram-grafico-legenda {
+  font-size: 12px;
+  color: var(--texto-suave);
+  margin: -2px 0 14px;
+}
+
+.painel-body .instagram-barras {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 120px;
+}
+
+.painel-body .instagram-barra-col {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.painel-body .instagram-barra {
+  position: relative;
+  width: 100%;
+  min-height: 4px;
+  border-radius: 4px 4px 0 0;
+  background: var(--coral);
+  transition: background 0.15s ease;
+}
+
+.painel-body .instagram-barra:hover {
+  background: var(--coral-hover);
+}
+
+.painel-body .instagram-barra-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--grafite);
+  color: var(--branco);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.1s ease;
+  z-index: 2;
+}
+
+.painel-body .instagram-barra:hover .instagram-barra-tooltip {
+  opacity: 1;
+}
+
+/* ---- Saúde do envio ---- */
+
+.painel-body .instagram-saude-barra {
+  display: flex;
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(var(--grafite-rgb), 0.08);
+  margin-bottom: 12px;
+}
+
+.painel-body .instagram-saude-seg {
+  height: 100%;
+}
+
+.painel-body .instagram-saude-seg.instagram-saude-ok { background: var(--sucesso); }
+.painel-body .instagram-saude-seg.instagram-saude-erro { background: var(--erro); }
+.painel-body .instagram-saude-seg.instagram-saude-cancelado { background: rgba(var(--grafite-rgb), 0.35); }
+
+.painel-body .instagram-saude-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 13px;
+  color: var(--grafite);
+  margin-bottom: 12px;
+}
+
+.painel-body .instagram-saude-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.painel-body .instagram-saude-dot.instagram-saude-ok { background: var(--sucesso); }
+.painel-body .instagram-saude-dot.instagram-saude-erro { background: var(--erro); }
+.painel-body .instagram-saude-dot.instagram-saude-cancelado { background: rgba(var(--grafite-rgb), 0.35); }
+
+.painel-body .instagram-saude-erro-linha {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--texto-suave);
+  padding: 6px 0;
+  border-top: 1px solid var(--borda);
+}
+
+.painel-body .instagram-saude-erro-linha:first-child {
+  border-top: none;
+}
+
+/* ---- O que as pessoas querem (ranking de palavras) ---- */
+
+.painel-body .instagram-ranking {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.painel-body .instagram-ranking-linha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.painel-body .instagram-ranking-palavra {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--grafite);
+  min-width: 90px;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.painel-body .instagram-ranking-barra-fundo {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(var(--grafite-rgb), 0.08);
+  overflow: hidden;
+}
+
+.painel-body .instagram-ranking-barra {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--coral);
+}
+
+.painel-body .instagram-ranking-total {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--grafite);
+  min-width: 28px;
+  text-align: right;
 }
 
 .painel-body .card-instagram-posts {
@@ -1650,6 +1839,19 @@
   flex-wrap: wrap;
 }
 
+.painel-body .instagram-automacao-capa {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--raio-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--creme);
+}
+
+.painel-body .instagram-automacao-capa-vazia {
+  background: rgba(var(--grafite-rgb), 0.08);
+}
+
 .painel-body .instagram-automacao-info {
   min-width: 0;
   flex: 1;
@@ -1715,7 +1917,7 @@
 
 .painel-body .cal-todas-cabecalho.instagram-leads-linha,
 .painel-body .cal-todas-linha.instagram-leads-linha {
-  grid-template-columns: 1fr 110px 130px 90px 100px 140px;
+  grid-template-columns: 1fr 100px 120px 140px 140px 90px 130px;
 }
 
 .painel-body .instagram-lead-conta {
@@ -1723,22 +1925,15 @@
   color: var(--grafite);
 }
 
-.painel-body .instagram-lead-recebeu {
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  white-space: nowrap;
-  width: fit-content;
-  background: var(--sucesso);
-  color: var(--branco);
-}
-
-.painel-body .instagram-lead-recebeu.nao {
-  background: rgba(196, 69, 60, 0.12);
-  color: var(--erro);
+.painel-body .instagram-etiqueta {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(var(--grafite-rgb), 0.06);
+  color: var(--texto-suave);
+  border-radius: 999px;
+  padding: 2px 8px;
+  margin: 0 4px 4px 0;
 }
 
 /* ==========================================================================

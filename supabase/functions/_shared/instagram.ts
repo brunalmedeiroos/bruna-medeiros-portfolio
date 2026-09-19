@@ -227,6 +227,37 @@ export async function insightDeConta(
   return null;
 }
 
+// Igual insightDeConta, mas devolve a série dia a dia em vez de somar tudo
+// — usada pelos gráficos "Crescimento do perfil" e "Alcance" da Visão
+// Geral, que mostram uma barra por dia com o valor ao passar o mouse.
+export async function insightDeContaPorDia(
+  igUserId: string,
+  accessToken: string,
+  nomesPossiveis: string[],
+  dataInicio: string,
+  dataFim: string,
+  erros?: string[],
+): Promise<Array<{ data: string; valor: number }> | null> {
+  for (const metrica of nomesPossiveis) {
+    try {
+      const resposta = await chamarGraph(`/${igUserId}/insights`, {
+        metric: metrica,
+        period: "day",
+        since: dataInicio,
+        until: dataFim,
+        access_token: accessToken,
+      });
+      const valores = resposta.data?.[0]?.values || [];
+      if (!valores.length) continue;
+      return valores.map((v: { end_time: string; value: number }) => ({ data: v.end_time.slice(0, 10), valor: v.value || 0 }));
+    } catch (e) {
+      erros?.push(`insight conta por dia [${metrica}]: ${(e as Error).message}`);
+      continue;
+    }
+  }
+  return null;
+}
+
 // Igual acima, mas pra insights de uma publicação específica (métricas
 // diferem entre foto/carrossel e vídeo/reels).
 export async function insightDeMidia(

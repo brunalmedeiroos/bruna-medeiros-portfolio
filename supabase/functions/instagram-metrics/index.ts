@@ -1,15 +1,17 @@
 // ==========================================================================
 // supabase/functions/instagram-metrics/index.ts
 // ==========================================================================
-// Chamada pelo painel (autenticada) pra buscar o perfil, os indicadores
-// gerais (alcance, visitas ao perfil, cliques no link) e o desempenho das
-// últimas publicações. Cada bloco é buscado com try/catch isolado: se um
-// pedaço falhar (permissão faltando, métrica descontinuada pela Meta), o
-// resto da resposta continua normal em vez de derrubar a aba inteira.
+// Chamada pelo painel (autenticada) pra montar a Visão Geral do Instagram:
+// perfil, crescimento e alcance dia a dia, saúde do envio das automações
+// (últimos 30 dias), o que as pessoas mais comentam/mandam, quantos dias
+// faltam pro token vencer e quantas entregas saíram nas últimas 24h. Cada
+// bloco é buscado com try/catch isolado: se um pedaço falhar (permissão
+// faltando, métrica descontinuada pela Meta), o resto da resposta continua
+// normal em vez de derrubar a aba inteira.
 
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "@supabase/server";
-import { chamarGraph, insightDeConta, insightDeMidia, obterAccessTokenValido } from "../_shared/instagram.ts";
+import { chamarGraph, insightDeContaPorDia, obterAccessTokenValido } from "../_shared/instagram.ts";
 import { ehDono } from "../_shared/dono.ts";
 
 const CORS_HEADERS = {
@@ -29,6 +31,51 @@ function dataISO(diasAtras: number): string {
   const d = new Date();
   d.setDate(d.getDate() - diasAtras);
   return d.toISOString().slice(0, 10);
+}
+
+// deno-lint-ignore no-explicit-any
+async function calcularSaudeEnvio(supabaseAdmin: any) {
+  const desde = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+  const [{ data: entregas }, { data: canceladosFila }] = await Promise.all([
+    supabaseAdmin.from("instagram_entregas").select("status, erro").gte("created_at", desde),
+    supabaseAdmin.from("instagram_fila_envio").select("id", { count: "exact", head: true }).eq("status", "expirado").gte("created_at", desde),
+  ]);
+
+  const linhas: Array<{ status: string; erro: string | null }> = entregas || [];
+  const entregues = linhas.filter((l) => l.status === "ok").length;
+  const falharam = linhas.filter((l) => l.status === "erro").length;
+
+  const contagemErros = new Map<string, number>();
+  linhas
+    .filter((l) => l.status === "erro" && l.erro)
+    .forEach((l) => {
+      // Agrupa pelo código Graph (ex: "Erro na API do Instagram (400): ...")
+      // pra não espalhar a mesma falha em N linhas diferentes por causa de
+      // detalhe variável (fbtrace_id etc.) dentro da mensagem.
+      const chave = (l.erro || "").split(":").slice(0, 2).join(":").trim().slice(0, 90);
+      contagemErros.set(chave, (contagemErros.get(chave) || 0) + 1);
+    });
+  const erros = [...contagemErros.entries()]
+    .map(([mensagem, total]) => ({ mensagem, total }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 5);
+
+  return { entregues, falharam, cancelados: (canceladosFila as unknown as { count?: number })?.count ?? 0, erros };
+}
+
+// deno-lint-ignore no-explicit-any
+async function calcularOQuePessoasQuerem(supabaseAdmin: any) {
+  const { data } = await supabaseAdmin.from("instagram_leads").select("palavra");
+  const contagem = new Map<string, number>();
+  (data || []).forEach((l: { palavra: string | null }) => {
+    const chave = (l.palavra || "—").trim();
+    contagem.set(chave, (contagem.get(chave) || 0) + 1);
+  });
+  return [...contagem.entries()]
+    .map(([palavra, total]) => ({ palavra, total }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 6);
 }
 
 export default {
@@ -51,74 +98,72 @@ export default {
       return jsonResponse({ ok: true, conectado: false });
     }
 
-    const { access_token: accessToken, ig_username: igUsername } = token;
-    const desde = dataISO(7);
+    const { access_token: accessToken, ig_username: igUsername, expires_at: expiresAt } = token;
+    const desde15 = dataISO(15);
     const ate = dataISO(0);
     const erros: string[] = [];
 
     // "/me" é o jeito documentado de buscar os dados da própria conta nesse
     // fluxo — o ID numérico bruto não funciona como caminho direto.
-    // ---- Perfil (seguidores, nº de publicações) ----
-    let perfil = { username: igUsername, seguidores: null as number | null, publicacoes: null as number | null };
+    let perfil = { username: igUsername, seguidores: null as number | null };
     try {
-      const dados = await chamarGraph("/me", {
-        fields: "username,followers_count,media_count",
-        access_token: accessToken,
-      });
-      perfil = { username: dados.username, seguidores: dados.followers_count ?? null, publicacoes: dados.media_count ?? null };
+      const dados = await chamarGraph("/me", { fields: "username,followers_count", access_token: accessToken });
+      perfil = { username: dados.username, seguidores: dados.followers_count ?? null };
     } catch (e) {
       console.error("Erro ao buscar perfil do Instagram:", e);
       erros.push(`perfil: ${(e as Error).message}`);
     }
 
-    // ---- Indicadores da conta nos últimos 7 dias ----
-    const [alcance, visitasPerfil, cliquesLink] = await Promise.all([
-      insightDeConta("me", accessToken, ["reach"], desde, ate, erros),
-      insightDeConta("me", accessToken, ["profile_views"], desde, ate, erros),
-      insightDeConta("me", accessToken, ["website_clicks", "profile_links_taps"], desde, ate, erros),
+    const [alcancePorDia, crescimentoPorDia] = await Promise.all([
+      insightDeContaPorDia("me", accessToken, ["reach"], desde15, ate, erros),
+      insightDeContaPorDia("me", accessToken, ["follower_count"], desde15, ate, erros),
     ]);
 
-    // ---- Últimas publicações + desempenho de cada uma ----
-    let posts: Array<Record<string, unknown>> = [];
-    try {
-      const resposta = await chamarGraph("/me/media", {
-        fields: "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count",
-        limit: "6",
-        access_token: accessToken,
-      });
-      const midias: Array<Record<string, unknown>> = resposta.data || [];
+    const tokenDiasRestantes = expiresAt ? Math.max(0, Math.ceil((new Date(expiresAt).getTime() - Date.now()) / (24 * 60 * 60 * 1000))) : null;
 
-      posts = await Promise.all(
-        midias.map(async (m) => {
-          const [alcancePost, salvosPost] = await Promise.all([
-            insightDeMidia(m.id as string, accessToken, ["reach"], erros),
-            insightDeMidia(m.id as string, accessToken, ["saved"], erros),
-          ]);
-          return {
-            id: m.id,
-            legenda: m.caption || "",
-            tipo: m.media_type,
-            capa: (m.thumbnail_url as string) || (m.media_url as string) || null,
-            link: m.permalink,
-            data: m.timestamp,
-            curtidas: m.like_count ?? null,
-            comentarios: m.comments_count ?? null,
-            alcance: alcancePost,
-            salvos: salvosPost,
-          };
-        }),
-      );
+    let leadsCaptados = 0;
+    let entregas24h = 0;
+    let saudeEnvio = { entregues: 0, falharam: 0, cancelados: 0, erros: [] as Array<{ mensagem: string; total: number }> };
+    let oQuePessoasQuerem: Array<{ palavra: string; total: number }> = [];
+
+    try {
+      const { count } = await ctx.supabaseAdmin.from("instagram_leads").select("id", { count: "exact", head: true });
+      leadsCaptados = count ?? 0;
     } catch (e) {
-      console.error("Erro ao buscar publicações do Instagram:", e);
-      erros.push(`publicações: ${(e as Error).message}`);
+      erros.push(`leads captados: ${(e as Error).message}`);
+    }
+
+    try {
+      const desde24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const { count } = await ctx.supabaseAdmin.from("instagram_entregas").select("id", { count: "exact", head: true }).eq("status", "ok").gte("created_at", desde24h);
+      entregas24h = count ?? 0;
+    } catch (e) {
+      erros.push(`entregas 24h: ${(e as Error).message}`);
+    }
+
+    try {
+      saudeEnvio = await calcularSaudeEnvio(ctx.supabaseAdmin);
+    } catch (e) {
+      erros.push(`saúde do envio: ${(e as Error).message}`);
+    }
+
+    try {
+      oQuePessoasQuerem = await calcularOQuePessoasQuerem(ctx.supabaseAdmin);
+    } catch (e) {
+      erros.push(`o que as pessoas querem: ${(e as Error).message}`);
     }
 
     return jsonResponse({
       ok: true,
       conectado: true,
       perfil,
-      insights: { alcance, visitasPerfil, cliquesLink },
-      posts,
+      tokenDiasRestantes,
+      entregas24h,
+      leadsCaptados,
+      alcancePorDia,
+      crescimentoPorDia,
+      saudeEnvio,
+      oQuePessoasQuerem,
       erros: erros.length ? erros : undefined,
     });
   }),

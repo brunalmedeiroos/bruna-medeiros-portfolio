@@ -208,6 +208,32 @@ function contasDeTeste(): string[] {
   return (Deno.env.get("INSTAGRAM_TEST_ACCOUNTS") || "").split(",").map((s) => s.trim()).filter(Boolean);
 }
 
+// Registra o resultado de UMA tentativa de envio (privado ou resposta
+// pública no comentário) no log usado pelo card "Saúde do envio" da
+// Visão Geral. Nunca lança erro — um problema aqui não pode derrubar o
+// envio real.
+// deno-lint-ignore no-explicit-any
+async function registrarEntrega(supabaseAdmin: any, dados: {
+  automacaoId?: string | null;
+  igUserId?: string | null;
+  canal: "privado" | "comentario_publico";
+  tipo?: string;
+  ok: boolean;
+  erro?: string;
+}) {
+  await supabaseAdmin
+    .from("instagram_entregas")
+    .insert({
+      automacao_id: dados.automacaoId || null,
+      ig_user_id: dados.igUserId || null,
+      canal: dados.canal,
+      tipo: dados.tipo || null,
+      status: dados.ok ? "ok" : "erro",
+      erro: dados.erro || null,
+    })
+    .then(() => {}, () => {});
+}
+
 // Depois de mandar um passo com sucesso: se ele tem "collect", guarda o
 // que a próxima mensagem de texto da pessoa deve alimentar; se tem
 // "delay", agenda o próximo passo pra sair sozinho, sem precisar de
@@ -258,6 +284,7 @@ async function entregarPasso(
 
   const resultado = await enviarPasso(contaId, accessToken, recipient, automacao.id, passo);
   await supabaseAdmin.rpc("instagram_registrar_envio", { p_chave: "privado", p_ok: resultado.ok, p_falha_grave: !!resultado.falhaGrave });
+  await registrarEntrega(supabaseAdmin, { automacaoId: automacao.id, igUserId, canal: "privado", tipo: resultado.tipo, ok: resultado.ok, erro: resultado.erro });
 
   if (!resultado.ok) {
     console.error(`Falha ao entregar passo ${passo.id} da automação ${automacao.id}:`, resultado.erro);
@@ -361,8 +388,12 @@ export async function processarComentario(supabaseAdmin: any, contaId: string, a
 
   try {
     const textoResposta = escolherResposta(automacao.resposta_comentario, automacao.resposta_comentario_variantes);
-    if (textoResposta) await chamarGraphPost(`/${value.id}/replies`, accessToken, { message: textoResposta });
+    if (textoResposta) {
+      await chamarGraphPost(`/${value.id}/replies`, accessToken, { message: textoResposta });
+      await registrarEntrega(supabaseAdmin, { automacaoId: automacao.id, igUserId, canal: "comentario_publico", ok: true });
+    }
   } catch (e) {
+    await registrarEntrega(supabaseAdmin, { automacaoId: automacao.id, igUserId, canal: "comentario_publico", ok: false, erro: (e as Error).message });
     console.error("Erro ao responder o comentário publicamente:", (e as Error).message);
   }
 
@@ -525,6 +556,7 @@ export async function processarFilaEnvio(supabaseAdmin: any, contaId: string, ac
 
     const envio = await enviarPasso(contaId, accessToken, item.payload.recipient, automacao.id, passo);
     await supabaseAdmin.rpc("instagram_registrar_envio", { p_chave: "privado", p_ok: envio.ok, p_falha_grave: !!envio.falhaGrave });
+    await registrarEntrega(supabaseAdmin, { automacaoId: automacao.id, igUserId: item.ig_user_id, canal: "privado", tipo: envio.tipo, ok: envio.ok, erro: envio.erro });
 
     if (envio.ok) {
       await supabaseAdmin.from("instagram_fila_envio").update({ status: "enviado", sent_at: new Date().toISOString() }).eq("id", item.id);
@@ -565,6 +597,7 @@ export async function processarAgendados(supabaseAdmin: any, contaId: string, ac
 
     const envio = await enviarPasso(contaId, accessToken, { id: item.ig_user_id }, automacao.id, passo);
     await supabaseAdmin.from("instagram_agendados").update({ enviado: true }).eq("id", item.id);
+    await registrarEntrega(supabaseAdmin, { automacaoId: automacao.id, igUserId: item.ig_user_id, canal: "privado", tipo: envio.tipo, ok: envio.ok, erro: envio.erro });
 
     if (envio.ok) {
       if (envio.mid) await supabaseAdmin.from("instagram_envios_bot").insert({ mid: envio.mid }).then(() => {}, () => {});

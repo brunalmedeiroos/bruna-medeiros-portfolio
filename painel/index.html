@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260918d">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260918e">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -511,6 +511,29 @@
                   <input type="text" id="instagram-leads-busca" class="instagram-leads-busca" data-i18n-placeholder="instagram_buscar_conta_palavra" placeholder="Buscar por @ ou palavra">
                   <button id="btn-instagram-processar-agora" class="cal-btn" type="button" data-i18n="instagram_processar_agora">Processar fila agora</button>
                   <button id="btn-instagram-exportar-csv" class="cal-btn" type="button" data-i18n="instagram_exportar_csv">↓ Exportar CSV</button>
+                </div>
+              </div>
+
+              <div class="instagram-metricas-grid">
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="instagram_int_pessoas">Pessoas</span>
+                  <span class="card-valor" id="instagram-int-pessoas">–</span>
+                  <span class="card-descricao" data-i18n="instagram_int_pessoas_desc">Já falaram com você</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="instagram_int_7dias">Nos últimos 7 dias</span>
+                  <span class="card-valor" id="instagram-int-7dias">–</span>
+                  <span class="card-descricao" data-i18n="instagram_int_7dias_desc">Movimento recente</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="instagram_int_receberam_link">Receberam o link</span>
+                  <span class="card-valor" id="instagram-int-receberam-link">–</span>
+                  <span class="card-descricao" data-i18n="instagram_int_receberam_link_desc">Chegaram até o final da conversa</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="instagram_int_deixaram_contato">Deixaram contato</span>
+                  <span class="card-valor" id="instagram-int-deixaram-contato">–</span>
+                  <span class="card-descricao" data-i18n="instagram_int_deixaram_contato_desc">Email ou telefone na conversa</span>
                 </div>
               </div>
 
@@ -2602,6 +2625,14 @@
         instagram_interacoes: 'Interações',
         instagram_col_contato: 'Contato',
         instagram_col_etiquetas: 'Etiquetas',
+        instagram_int_pessoas: 'Pessoas',
+        instagram_int_pessoas_desc: 'Já falaram com você',
+        instagram_int_7dias: 'Nos últimos 7 dias',
+        instagram_int_7dias_desc: 'Movimento recente',
+        instagram_int_receberam_link: 'Receberam o link',
+        instagram_int_receberam_link_desc: 'Chegaram até o final da conversa',
+        instagram_int_deixaram_contato: 'Deixaram contato',
+        instagram_int_deixaram_contato_desc: 'Email ou telefone na conversa',
         instagram_erro_carregar_prefixo: 'Não foi possível carregar as métricas: ',
         instagram_erro_carregar_generico: 'Não foi possível carregar as métricas agora.',
         instagram_alguns_dados: 'Alguns dados não carregaram:',
@@ -3387,6 +3418,14 @@
         instagram_interacoes: 'Interactions',
         instagram_col_contato: 'Contact',
         instagram_col_etiquetas: 'Tags',
+        instagram_int_pessoas: 'People',
+        instagram_int_pessoas_desc: 'Have talked to you',
+        instagram_int_7dias: 'In the last 7 days',
+        instagram_int_7dias_desc: 'Recent activity',
+        instagram_int_receberam_link: 'Received the link',
+        instagram_int_receberam_link_desc: 'Reached the end of the conversation',
+        instagram_int_deixaram_contato: 'Left contact info',
+        instagram_int_deixaram_contato_desc: 'Email or phone in the conversation',
         instagram_erro_carregar_prefixo: "Couldn't load metrics: ",
         instagram_erro_carregar_generico: "Couldn't load metrics right now.",
         instagram_alguns_dados: "Some data didn't load:",
@@ -7327,7 +7366,24 @@
     }
 
     // ---- Leads ----
+    function renderizarMetricasInteracoesInstagram() {
+      const total = instagramLeadsCache.length;
+      const seteDiasAtras = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      const nosUltimos7Dias = instagramLeadsCache.filter((l) => {
+        const quando = l.ultima_vez || l.created_at;
+        return quando && new Date(quando).getTime() >= seteDiasAtras;
+      }).length;
+      const receberamLink = instagramLeadsCache.filter((l) => l.link_enviado).length;
+      const deixaramContato = instagramLeadsCache.filter((l) => l.email || l.telefone).length;
+
+      document.getElementById('instagram-int-pessoas').textContent = formatarNumero(total);
+      document.getElementById('instagram-int-7dias').textContent = formatarNumero(nosUltimos7Dias);
+      document.getElementById('instagram-int-receberam-link').textContent = formatarNumero(receberamLink);
+      document.getElementById('instagram-int-deixaram-contato').textContent = formatarNumero(deixaramContato);
+    }
+
     function renderizarInstagramLeads() {
+      renderizarMetricasInteracoesInstagram();
       const termo = filtroLeadsTexto.trim().toLowerCase().replace(/^@/, '');
       const filtrados = termo
         ? instagramLeadsCache.filter((l) => l.conta.toLowerCase().includes(termo) || (l.palavra || '').toLowerCase().includes(termo))

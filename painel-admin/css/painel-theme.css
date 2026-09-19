@@ -1568,6 +1568,11 @@
   margin-bottom: 20px;
 }
 
+.painel-body .card-descricao {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
 /* ---- Gráficos (Crescimento do perfil, Alcance) ---- */
 
 .painel-body .instagram-graficos-grid,

@@ -143,10 +143,19 @@
   color: #04465D;
 }
 
-/* Rótulo de grupo do menu (Rotina / Minhas fontes de renda / Criação de
-   Conteúdo / Gestão) — só um texto, não é clicável. Reaproveita o mesmo
-   espaço lateral dos nav-item (14px) pra alinhar com os ícones abaixo. */
-.painel-body .nav-group-label {
+/* Tópico do menu (Rotina / Minhas fontes de renda / Criação de Conteúdo /
+   Gestão) — virou acordeão: o cabeçalho clicável (.nav-group-header) some
+   pra fechar o grupo, ficando só o rótulo visível. Mesmo espaço lateral
+   dos nav-item (14px) pra alinhar com os ícones abaixo. */
+.painel-body .nav-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--fonte-corpo);
   padding: 16px 14px 4px;
   font-size: 12px;
   line-height: 17px;
@@ -155,19 +164,47 @@
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.85);
   white-space: nowrap;
-  overflow: hidden;
-  /* A causa real do corte: como este item tem overflow diferente de
-     "visible", ele perde a proteção automática que impede um item flex de
-     encolher além do conteúdo (min-height:auto vira 0 nessa situação, pela
-     spec). Isso deixa o algoritmo de flex-shrink livre pra espremer esta
-     caixa bem menor do que o padding+texto precisam, cortando o texto pelo
-     overflow:hidden mesmo sem faltar espaço "de verdade" na tela. Impede
-     que ela encolha, ponto — quem sobra pra rolar é o <nav> por fora. */
+  /* Mesma proteção contra flex-shrink que o rótulo antigo precisava (ver
+     histórico: overflow diferente de "visible" tira a proteção automática
+     de min-height:auto, deixando o flex espremer a caixa e cortar o
+     texto mesmo sem faltar espaço real). */
   flex-shrink: 0;
 }
 
-.sidebar.colapsada .nav-group-label {
+.painel-body .nav-group-header:hover {
+  color: #fff;
+}
+
+.nav-group-seta {
+  flex-shrink: 0;
+  opacity: 0.85;
+  transition: transform 0.15s ease;
+}
+
+.nav-grupo.fechado .nav-group-seta {
+  transform: rotate(-90deg);
+}
+
+.nav-group-itens {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.nav-grupo.fechado .nav-group-itens {
   display: none;
+}
+
+.sidebar.colapsada .nav-group-header {
+  display: none;
+}
+
+/* Sidebar minimizada (só ícones) ignora o acordeão — sempre mostra todos
+   os itens navegáveis, independente do que a Bruna deixou fechado na
+   sidebar expandida. */
+.sidebar.colapsada .nav-grupo.fechado .nav-group-itens {
+  display: flex;
 }
 
 /* Card de perfil fixo no rodapé da sidebar (fora do <nav>, não rola com a

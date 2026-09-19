@@ -296,8 +296,9 @@ h1,h2,h3{ font-family:var(--fonte-titulo); margin:0; text-wrap:balance; }
 
 /* Modal simples de editar/vincular dia. */
 .processo-modal-overlay{ position:fixed; inset:0; background:rgba(4,70,93,0.35); display:flex; align-items:center; justify-content:center; padding:20px; z-index:100; }
-.processo-modal{ background:var(--branco); border-radius:var(--raio-lg); box-shadow:var(--sombra); padding:26px; max-width:480px; width:100%; max-height:86vh; overflow-y:auto; }
-.processo-modal h3{ margin-bottom:16px; }
+.processo-modal{ background:var(--branco); border-radius:var(--raio-lg); box-shadow:var(--sombra); padding:32px 36px; max-width:660px; width:100%; max-height:88vh; overflow-y:auto; }
+.processo-modal h3{ margin-bottom:16px; font-size:20px; }
+.processo-modal textarea{ min-height:120px; }
 .processo-modal-acoes{ display:flex; justify-content:flex-end; gap:10px; margin-top:18px; }
 .processo-modal-acoes .btn{ width:auto; padding:10px 18px; }
 .btn-secundario{ background:var(--cinza-claro); color:var(--coral); }

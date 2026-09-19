@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260919b">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260919c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -7898,10 +7898,39 @@
         return;
       }
 
-      const grade = document.createElement('div');
-      grade.className = 'ugc-roteiros-grade';
-      ideias.forEach((ideia) => grade.appendChild(criarCardIdeiaRoteiro(ideia)));
-      area.appendChild(grade);
+      // Agrupado por status, com "Roteiro pronto" sempre primeiro — assim,
+      // ao marcar uma ideia como pronta, ela some do grupo "Não iniciado"
+      // e reaparece automaticamente junto com as outras já prontas.
+      const ORDEM_STATUS_BANCO = ['Roteiro pronto', 'Não iniciado', 'Publicado'];
+      const grupos = new Map();
+      ideias.forEach((ideia) => {
+        const status = ideia.status || 'Não iniciado';
+        if (!grupos.has(status)) grupos.set(status, []);
+        grupos.get(status).push(ideia);
+      });
+
+      [...grupos.keys()]
+        .sort((a, b) => {
+          const ia = ORDEM_STATUS_BANCO.indexOf(a);
+          const ib = ORDEM_STATUS_BANCO.indexOf(b);
+          return (ia === -1 ? ORDEM_STATUS_BANCO.length : ia) - (ib === -1 ? ORDEM_STATUS_BANCO.length : ib);
+        })
+        .forEach((status) => {
+          const ideiasDoGrupo = grupos.get(status);
+          const secao = document.createElement('div');
+          secao.className = 'pl-banco-grupo';
+          secao.innerHTML = `
+            <div class="pl-banco-grupo-titulo">
+              <span class="ugc-status-pill ${classeStatusIdeia(status)}">${escapeHtml(traduzirStatusIdeia(status))}</span>
+              <span class="pl-banco-grupo-contagem">${ideiasDoGrupo.length}</span>
+            </div>
+          `;
+          const grade = document.createElement('div');
+          grade.className = 'ugc-roteiros-grade';
+          ideiasDoGrupo.forEach((ideia) => grade.appendChild(criarCardIdeiaRoteiro(ideia)));
+          secao.appendChild(grade);
+          area.appendChild(secao);
+        });
     }
 
     function criarCardIdeiaRoteiro(ideia) {

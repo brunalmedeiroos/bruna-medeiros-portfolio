@@ -3418,6 +3418,28 @@
   margin-top: 16px;
 }
 
+.painel-body .pl-banco-grupo {
+  margin-top: 20px;
+}
+
+.painel-body .pl-banco-grupo + .pl-banco-grupo {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--borda);
+}
+
+.painel-body .pl-banco-grupo-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.painel-body .pl-banco-grupo-contagem {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
 .painel-body .ugc-roteiro-card {
   --marca-rgb: var(--coral-rgb);
   display: flex;

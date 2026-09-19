@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260918e">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260918g">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -432,6 +432,7 @@
               <button class="instagram-subnav-btn ativo" data-instagram-pagina="visao-geral" type="button" data-i18n="instagram_visao_geral">Visão Geral</button>
               <button class="instagram-subnav-btn" data-instagram-pagina="automacoes" type="button" data-i18n="instagram_automacoes">Automações</button>
               <button class="instagram-subnav-btn" data-instagram-pagina="leads" type="button" data-i18n="instagram_interacoes">Interações</button>
+              <button class="instagram-subnav-btn" data-instagram-pagina="analises" type="button" data-i18n="instagram_analises">Análises</button>
             </div>
 
             <div id="instagram-pagina-visao-geral" class="instagram-pagina">
@@ -549,6 +550,69 @@
                 </div>
                 <div id="instagram-leads-lista" class="cal-todas-linhas"></div>
               </div>
+            </div>
+
+            <div id="instagram-pagina-analises" class="instagram-pagina" hidden>
+              <div class="cal-todas-topo">
+                <div>
+                  <h3 class="card-titulo" data-i18n="instagram_analises">Análises</h3>
+                  <p class="cal-todas-resumo" data-i18n="instagram_analises_resumo">Alcance, engajamento e melhores posts por período.</p>
+                </div>
+                <button id="btn-instagram-analises-atualizar" class="cal-btn" type="button" data-i18n="instagram_atualizar">↻ Atualizar</button>
+              </div>
+
+              <p class="instagram-avisos" id="instagram-analises-avisos" hidden></p>
+
+              <div class="instagram-periodo-grupo" id="instagram-periodo-grupo">
+                <button class="instagram-periodo-btn" data-periodo="7" type="button">7 dias</button>
+                <button class="instagram-periodo-btn ativo" data-periodo="30" type="button">30 dias</button>
+                <button class="instagram-periodo-btn" data-periodo="90" type="button">90 dias</button>
+              </div>
+
+              <div class="instagram-metricas-grid">
+                <div class="card-numero destaque">
+                  <span class="card-label" data-i18n="instagram_seguidores">Seguidores</span>
+                  <span class="card-valor" id="instagram-an-seguidores">–</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="instagram_novos_seguidores">Novos seguidores</span>
+                  <span class="card-valor" id="instagram-an-novos-seguidores">–</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="instagram_alcance">Alcance</span>
+                  <span class="card-valor" id="instagram-an-alcance">–</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="instagram_contas_engajadas">Contas engajadas</span>
+                  <span class="card-valor" id="instagram-an-contas-engajadas">–</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="instagram_interacoes_totais">Interações</span>
+                  <span class="card-valor" id="instagram-an-interacoes">–</span>
+                </div>
+              </div>
+
+              <div class="card instagram-card-grafico">
+                <h3 class="card-titulo" data-i18n="instagram_alcance_por_dia">Alcance por dia</h3>
+                <p class="instagram-grafico-legenda" id="instagram-an-alcance-legenda" data-i18n="instagram_grafico_carregando">Carregando...</p>
+                <div class="instagram-barras" id="instagram-an-grafico-alcance"></div>
+              </div>
+
+              <div class="card instagram-melhores-posts">
+                <div class="instagram-melhores-topo">
+                  <h3 class="card-titulo" data-i18n="instagram_melhores_posts">Melhores posts</h3>
+                  <div class="instagram-ordenar-grupo" id="instagram-ordenar-grupo">
+                    <button class="instagram-ordenar-btn ativo" data-ordenar="score" type="button" data-i18n="instagram_ordenar_melhores">Melhores</button>
+                    <button class="instagram-ordenar-btn" data-ordenar="curtidas" type="button" data-i18n="instagram_ordenar_curtidos">Mais curtidos</button>
+                    <button class="instagram-ordenar-btn" data-ordenar="comentarios" type="button" data-i18n="instagram_ordenar_comentados">Mais comentados</button>
+                    <button class="instagram-ordenar-btn" data-ordenar="salvos" type="button" data-i18n="instagram_ordenar_salvos">Mais salvos</button>
+                    <button class="instagram-ordenar-btn" data-ordenar="vistos" type="button" data-i18n="instagram_ordenar_vistos">Mais vistos</button>
+                  </div>
+                </div>
+                <div class="instagram-posts-lista" id="instagram-an-posts-lista"></div>
+              </div>
+
+              <p class="instagram-analises-atualizado" id="instagram-analises-atualizado"></p>
             </div>
           </div>
         </section>
@@ -2065,6 +2129,10 @@
     let instagramEditorSujo = false;
     let instagramUltimoTextareaFocado = null;
     let filtroLeadsTexto = '';
+    let instagramAnalisesPeriodo = 30;
+    let instagramAnalisesCache = null;
+    let instagramAnalisesOrdenacao = 'score';
+    let instagramAnalisesCarregando = false;
     let planejadorAbaCarregada = false;
     let pilaresCache = [];
     let ideiasCache = [];
@@ -2633,6 +2701,25 @@
         instagram_int_receberam_link_desc: 'Chegaram até o final da conversa',
         instagram_int_deixaram_contato: 'Deixaram contato',
         instagram_int_deixaram_contato_desc: 'Email ou telefone na conversa',
+        instagram_analises: 'Análises',
+        instagram_analises_resumo: 'Alcance, engajamento e melhores posts por período.',
+        instagram_atualizar: '↻ Atualizar',
+        instagram_atualizando: 'Atualizando...',
+        instagram_novos_seguidores: 'Novos seguidores',
+        instagram_contas_engajadas: 'Contas engajadas',
+        instagram_interacoes_totais: 'Interações',
+        instagram_alcance_por_dia: 'Alcance por dia',
+        instagram_alcance_legenda_periodo: 'contas alcançadas · {n} dias',
+        instagram_melhores_posts: 'Melhores posts',
+        instagram_ordenar_melhores: 'Melhores',
+        instagram_ordenar_curtidos: 'Mais curtidos',
+        instagram_ordenar_comentados: 'Mais comentados',
+        instagram_ordenar_salvos: 'Mais salvos',
+        instagram_ordenar_vistos: 'Mais vistos',
+        instagram_col_salvos: 'Salvos',
+        instagram_col_vistos: 'Visualizações',
+        instagram_sem_posts_periodo: 'Nenhum post encontrado nesse período.',
+        instagram_atualizado_em: 'Atualizado em',
         instagram_erro_carregar_prefixo: 'Não foi possível carregar as métricas: ',
         instagram_erro_carregar_generico: 'Não foi possível carregar as métricas agora.',
         instagram_alguns_dados: 'Alguns dados não carregaram:',
@@ -3426,6 +3513,25 @@
         instagram_int_receberam_link_desc: 'Reached the end of the conversation',
         instagram_int_deixaram_contato: 'Left contact info',
         instagram_int_deixaram_contato_desc: 'Email or phone in the conversation',
+        instagram_analises: 'Analytics',
+        instagram_analises_resumo: 'Reach, engagement, and top posts by period.',
+        instagram_atualizar: '↻ Refresh',
+        instagram_atualizando: 'Refreshing...',
+        instagram_novos_seguidores: 'New followers',
+        instagram_contas_engajadas: 'Accounts engaged',
+        instagram_interacoes_totais: 'Interactions',
+        instagram_alcance_por_dia: 'Reach by day',
+        instagram_alcance_legenda_periodo: 'accounts reached · {n} days',
+        instagram_melhores_posts: 'Top posts',
+        instagram_ordenar_melhores: 'Top',
+        instagram_ordenar_curtidos: 'Most liked',
+        instagram_ordenar_comentados: 'Most commented',
+        instagram_ordenar_salvos: 'Most saved',
+        instagram_ordenar_vistos: 'Most viewed',
+        instagram_col_salvos: 'Saves',
+        instagram_col_vistos: 'Views',
+        instagram_sem_posts_periodo: 'No posts found in this period.',
+        instagram_atualizado_em: 'Updated at',
         instagram_erro_carregar_prefixo: "Couldn't load metrics: ",
         instagram_erro_carregar_generico: "Couldn't load metrics right now.",
         instagram_alguns_dados: "Some data didn't load:",
@@ -4407,6 +4513,23 @@
       });
       document.getElementById('btn-instagram-exportar-csv').addEventListener('click', exportarLeadsCSV);
       document.getElementById('btn-instagram-processar-agora').addEventListener('click', processarFilaInstagramAgora);
+      document.getElementById('btn-instagram-analises-atualizar').addEventListener('click', () => carregarInstagramAnalises());
+      document.querySelectorAll('#instagram-periodo-grupo .instagram-periodo-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const periodo = Number(btn.dataset.periodo);
+          if (periodo === instagramAnalisesPeriodo) return;
+          instagramAnalisesPeriodo = periodo;
+          document.querySelectorAll('#instagram-periodo-grupo .instagram-periodo-btn').forEach((b) => b.classList.toggle('ativo', b === btn));
+          carregarInstagramAnalises();
+        });
+      });
+      document.querySelectorAll('#instagram-ordenar-grupo .instagram-ordenar-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          instagramAnalisesOrdenacao = btn.dataset.ordenar;
+          document.querySelectorAll('#instagram-ordenar-grupo .instagram-ordenar-btn').forEach((b) => b.classList.toggle('ativo', b === btn));
+          renderizarInstagramMelhoresPosts();
+        });
+      });
 
       // Editor de automação: campos estáticos (topo, fora da parte dinâmica do fluxo)
       document.getElementById('instagram-match-any').addEventListener('change', (e) => {
@@ -6739,6 +6862,9 @@
         instagramAutomacoesCarregadas = true;
         carregarInstagramAutomacoes();
       }
+      if (pagina === 'analises' && !instagramAnalisesCache) {
+        carregarInstagramAnalises();
+      }
     }
 
     async function carregarInstagramAutomacoes() {
@@ -7445,6 +7571,86 @@
       a.download = 'interacoes-instagram.csv';
       a.click();
       URL.revokeObjectURL(url);
+    }
+
+    // ---- Análises ----
+    async function carregarInstagramAnalises() {
+      if (instagramAnalisesCarregando) return;
+      instagramAnalisesCarregando = true;
+      const btn = document.getElementById('btn-instagram-analises-atualizar');
+      const textoOriginalBtn = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = tr('instagram_atualizando');
+      try {
+        const resultado = await chamarFuncao('instagram-analises?periodo=' + instagramAnalisesPeriodo);
+        if (!resultado.ok) {
+          document.getElementById('instagram-analises-atualizado').textContent = tr('instagram_erro_carregar_prefixo') + resultado.error;
+          return;
+        }
+        if (!resultado.conectado) return;
+        instagramAnalisesCache = resultado;
+        renderizarInstagramAnalises(resultado);
+      } catch (err) {
+        console.error('Erro ao carregar análises do Instagram:', err);
+        document.getElementById('instagram-analises-atualizado').textContent = tr('instagram_erro_carregar_generico');
+      } finally {
+        instagramAnalisesCarregando = false;
+        btn.disabled = false;
+        btn.textContent = textoOriginalBtn;
+      }
+    }
+
+    function renderizarInstagramAnalises(resultado) {
+      document.getElementById('instagram-an-seguidores').textContent = formatarMetricaInstagram(resultado.seguidores);
+      document.getElementById('instagram-an-novos-seguidores').textContent = formatarMetricaInstagram(resultado.novosSeguidores);
+      document.getElementById('instagram-an-alcance').textContent = formatarMetricaInstagram(resultado.alcance);
+      document.getElementById('instagram-an-contas-engajadas').textContent = formatarMetricaInstagram(resultado.contasEngajadas);
+      document.getElementById('instagram-an-interacoes').textContent = formatarMetricaInstagram(resultado.interacoes);
+
+      const avisoEl = document.getElementById('instagram-analises-avisos');
+      if (resultado.erros && resultado.erros.length) {
+        console.error('Avisos ao carregar análises do Instagram:', resultado.erros);
+        avisoEl.innerHTML = `<strong>${escapeHtml(tr('instagram_alguns_dados'))}</strong><br>` + resultado.erros.map((e) => escapeHtml(e)).join('<br>');
+        avisoEl.hidden = false;
+      } else {
+        avisoEl.hidden = true;
+      }
+
+      renderizarGraficoBarrasInstagram(
+        'instagram-an-grafico-alcance',
+        'instagram-an-alcance-legenda',
+        resultado.alcancePorDia,
+        tr('instagram_alcance_legenda_periodo').replace('{n}', String(resultado.periodoDias)),
+      );
+      renderizarInstagramMelhoresPosts();
+
+      document.getElementById('instagram-analises-atualizado').textContent =
+        tr('instagram_atualizado_em') + ' ' + formatarDataHora(new Date(resultado.atualizadoEm));
+    }
+
+    function renderizarInstagramMelhoresPosts() {
+      const lista = document.getElementById('instagram-an-posts-lista');
+      const posts = instagramAnalisesCache?.posts || [];
+      if (posts.length === 0) {
+        lista.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('instagram_sem_posts_periodo'))}</p>`;
+        return;
+      }
+      const chave = instagramAnalisesOrdenacao;
+      const ordenados = [...posts].sort((a, b) => {
+        if (chave === 'vistos') return (b.vistos ?? -1) - (a.vistos ?? -1);
+        return (b[chave] ?? 0) - (a[chave] ?? 0);
+      });
+      lista.innerHTML = ordenados.map((p) => `
+        <a class="instagram-post-card" href="${escapeHtml(p.permalink || '#')}" target="_blank" rel="noopener">
+          ${p.capa ? `<img class="instagram-post-capa" src="${escapeHtml(p.capa)}" alt="">` : `<div class="instagram-post-capa instagram-post-capa-vazia"></div>`}
+          <div class="instagram-post-metricas">
+            <div><strong>${formatarNumero(p.curtidas)}</strong><span>${escapeHtml(tr('instagram_curtidas'))}</span></div>
+            <div><strong>${formatarNumero(p.comentarios)}</strong><span>${escapeHtml(tr('instagram_comentarios'))}</span></div>
+            <div><strong>${formatarNumero(p.salvos)}</strong><span>${escapeHtml(tr('instagram_col_salvos'))}</span></div>
+            <div><strong>${p.vistos != null ? formatarNumero(p.vistos) : '—'}</strong><span>${escapeHtml(tr('instagram_col_vistos'))}</span></div>
+          </div>
+        </a>
+      `).join('');
     }
 
     async function processarFilaInstagramAgora() {

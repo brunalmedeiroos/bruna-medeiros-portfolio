@@ -1754,77 +1754,6 @@
   margin-top: 0;
 }
 
-.painel-body .instagram-posts-lista {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.painel-body .instagram-post-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 14px;
-  border-radius: var(--raio-sm);
-  background: rgba(255, 255, 255, 0.5);
-}
-
-.painel-body .instagram-post-capa {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--raio-sm);
-  object-fit: cover;
-  flex-shrink: 0;
-  background: var(--creme);
-}
-
-.painel-body .instagram-post-capa-vazia {
-  background: rgba(var(--grafite-rgb), 0.08);
-}
-
-.painel-body .instagram-post-info {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.painel-body .instagram-post-legenda {
-  font-size: 14px;
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.painel-body .instagram-post-data {
-  font-size: 12px;
-  color: var(--texto-suave);
-}
-
-.painel-body .instagram-post-metricas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 14px;
-  font-size: 12px;
-  color: var(--texto-suave);
-  margin-top: 2px;
-}
-
-.painel-body .instagram-post-link {
-  flex-shrink: 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--coral);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.painel-body .instagram-post-link:hover {
-  text-decoration: underline;
-}
-
 /* ---- Automações (comentário → resposta privada) ---- */
 
 .painel-body .instagram-automacoes-lista {
@@ -1939,6 +1868,115 @@
   border-radius: 999px;
   padding: 2px 8px;
   margin: 0 4px 4px 0;
+}
+
+/* ---- Aba Análises (dentro da Automação do Instagram) ---- */
+
+.painel-body .instagram-periodo-grupo,
+.painel-body .instagram-ordenar-grupo {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.painel-body .instagram-periodo-btn,
+.painel-body .instagram-ordenar-btn {
+  background: transparent;
+  border: 1px solid rgba(var(--grafite-rgb), 0.14);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--fonte-corpo);
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.painel-body .instagram-periodo-btn:hover,
+.painel-body .instagram-ordenar-btn:hover {
+  color: var(--grafite);
+}
+
+.painel-body .instagram-periodo-btn.ativo,
+.painel-body .instagram-ordenar-btn.ativo {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .instagram-melhores-posts {
+  margin-top: 20px;
+}
+
+.painel-body .instagram-melhores-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.painel-body .instagram-posts-lista {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.painel-body .instagram-post-card {
+  flex: 0 0 160px;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid rgba(var(--grafite-rgb), 0.08);
+  border-radius: var(--raio-md);
+  overflow: hidden;
+  background: var(--branco);
+}
+
+.painel-body .instagram-post-capa {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  background: var(--creme);
+}
+
+.painel-body .instagram-post-capa-vazia {
+  background: rgba(var(--grafite-rgb), 0.08);
+}
+
+.painel-body .instagram-post-metricas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 10px 12px;
+}
+
+.painel-body .instagram-post-metricas div {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.painel-body .instagram-post-metricas strong {
+  font-size: 14px;
+  color: var(--grafite);
+}
+
+.painel-body .instagram-post-metricas span {
+  font-size: 10px;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.painel-body .instagram-analises-atualizado {
+  font-size: 12px;
+  color: var(--texto-suave);
+  margin-top: 14px;
 }
 
 /* ==========================================================================

@@ -9902,12 +9902,16 @@
             const sel = window.getSelection();
             if (sel && sel.rangeCount > 0) rangeSalva = sel.getRangeAt(0).cloneRange();
           });
+          // Só atualiza a bolinha de pré-visualização enquanto arrasta dentro
+          // do seletor nativo — nada de focar o editor ou rodar execCommand
+          // aqui, senão o foco troca a cada pixel do arraste e o seletor
+          // nativo trava (era a causa de "não consigo mover o cursor").
           inputCustom.addEventListener('input', (e) => {
-            aplicarCor(e.target.value);
             custom.style.background = e.target.value;
           });
           inputCustom.addEventListener('change', (e) => {
             const cor = e.target.value;
+            aplicarCor(cor);
             const cores = lerPaletaCorPersonalizada(chavePersonalizada).filter((c) => c !== cor);
             cores.unshift(cor);
             salvarPaletaCorPersonalizada(chavePersonalizada, cores);

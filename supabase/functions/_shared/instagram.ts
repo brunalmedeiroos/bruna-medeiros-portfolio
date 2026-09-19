@@ -217,6 +217,10 @@ export async function insightDeConta(
         access_token: accessToken,
       });
       const valores = resposta.data?.[0]?.values || [];
+      // Resposta "vazia" (sem values) não é sucesso de verdade — é sinal de
+      // que essa métrica não se aplica desse jeito pra essa conta. Se
+      // devolvesse aqui, um 0 falso "ganharia" da próxima métrica da lista.
+      if (!valores.length) continue;
       return valores.reduce((soma: number, v: { value: number }) => soma + (v.value || 0), 0);
     } catch (e) {
       // Métrica não existe pra essa versão/tipo de conta — tenta a próxima.

@@ -224,13 +224,19 @@ export default {
       erros.push(`seguidores: ${(e as Error).message}`);
     }
 
-    const [alcancePorDia, novosSeguidores, contasEngajadas, interacoes] = await Promise.all([
-      seriePorDiaPeriodo("me", accessToken, ["reach"], periodoDias, erros),
-      somaInsightPeriodo("me", accessToken, ["follower_count"], periodoDias, erros),
+    // "views" (não "reach") é o que a Meta mostra hoje como métrica
+    // principal na Visão geral do painel profissional ("Visualizações"),
+    // e "follows_and_unfollows" é o líquido (ganhos menos perdas) que
+    // aparece como "Seguidores líquidos" — bateram nos testes reais contra
+    // o app, diferente de reach/follower_count (que contam coisas distintas
+    // e não fecham com o que a pessoa vê no Instagram).
+    const [visualizacoesPorDia, seguidoresLiquidos, contasEngajadas, interacoes] = await Promise.all([
+      seriePorDiaPeriodo("me", accessToken, ["views"], periodoDias, erros),
+      somaInsightPeriodo("me", accessToken, ["follows_and_unfollows"], periodoDias, erros),
       somaTotalValuePeriodo("me", accessToken, "accounts_engaged", periodoDias, erros),
       somaTotalValuePeriodo("me", accessToken, "total_interactions", periodoDias, erros),
     ]);
-    const alcance = alcancePorDia ? alcancePorDia.reduce((soma, d) => soma + d.valor, 0) : null;
+    const visualizacoes = visualizacoesPorDia ? visualizacoesPorDia.reduce((soma, d) => soma + d.valor, 0) : null;
 
     let posts: Awaited<ReturnType<typeof buscarMelhoresPosts>> = [];
     try {
@@ -244,11 +250,11 @@ export default {
       conectado: true,
       periodoDias,
       seguidores,
-      novosSeguidores,
-      alcance,
+      seguidoresLiquidos,
+      visualizacoes,
       contasEngajadas,
       interacoes,
-      alcancePorDia,
+      visualizacoesPorDia,
       posts,
       atualizadoEm: new Date().toISOString(),
       erros: erros.length ? erros : undefined,

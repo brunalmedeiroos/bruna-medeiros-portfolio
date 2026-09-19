@@ -28,14 +28,12 @@
       <button class="processo-subnav-btn ativo" data-aba-processo="visao-geral" type="button">Visão Geral</button>
       <button class="processo-subnav-btn" data-aba-processo="tabela" type="button">Tabela de processo</button>
       <button class="processo-subnav-btn" data-aba-processo="videos" type="button">Vídeos</button>
-      <button class="processo-subnav-btn" data-aba-processo="desafios" type="button">Desafios</button>
       <button class="processo-subnav-btn" data-aba-processo="meu-painel" type="button">Meu painel</button>
     </div>
 
     <div id="painel-visao-geral" class="processo-painel carregando">Carregando...</div>
     <div id="painel-tabela" class="processo-painel" hidden></div>
     <div id="painel-videos" class="processo-painel" hidden></div>
-    <div id="painel-desafios" class="processo-painel" hidden></div>
   </div>
 
   <div class="processo-modal-overlay" id="processo-modal-overlay" hidden>
@@ -73,7 +71,6 @@
 
     let abaProcessoAtual = null;
     let diasTabelaCache = [];
-    let diasDesafiosCache = [];
     let ideiasVinculoCache = null;
     let diaModalId = null;
     let diaModalRoteiroId = null;
@@ -82,7 +79,6 @@
       'visao-geral': carregarVisaoGeral,
       tabela: carregarTabela,
       videos: carregarVideos,
-      desafios: carregarDesafios,
     };
 
     function trocarAbaProcesso(aba) {
@@ -212,6 +208,17 @@
       return String(texto || '').replace(/"/g, '&quot;');
     }
 
+    function statusDia(dia) {
+      if (!dia.publicado) return '<span class="processo-pill sem-vinculo">Rascunho</span>';
+      if (!dia.data_publicacao) return '<span class="processo-pill a-fazer">Ainda vai acontecer</span>';
+      const data = new Date(dia.data_publicacao + 'T00:00:00');
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      return data <= hoje
+        ? '<span class="processo-pill pronto">Já passou</span>'
+        : '<span class="processo-pill a-fazer">Ainda vai acontecer</span>';
+    }
+
     function linhaTabelaProcesso(dia, ideiasPorId) {
       const idea = dia.roteiro_ideia_id ? ideiasPorId.get(dia.roteiro_ideia_id) : null;
       const botaoAbrir = dia.roteiro_ideia_id
@@ -226,6 +233,11 @@
           <td>${idea && idea.formato ? idea.formato : '—'}</td>
           <td><input type="date" class="processo-tabela-campo" data-campo="data_publicacao" data-dia="${dia.id}" value="${dia.data_publicacao || ''}"></td>
           <td><input type="checkbox" class="processo-check" data-gravado="${dia.id}" ${dia.gravado_postado ? 'checked' : ''}></td>
+          <td>${statusDia(dia)}</td>
+          <td class="processo-acoes">
+            <button type="button" data-editar="${dia.id}">Editar</button>
+            <button type="button" class="apagar" data-apagar="${dia.id}">Apagar</button>
+          </td>
         </tr>
       `;
     }
@@ -242,12 +254,14 @@
       const ideiasPorId = new Map(ideias.map((i) => [i.id, i]));
 
       painel.innerHTML = `
+        <button type="button" class="btn btn-primary" id="btn-novo-desafio" style="width:auto;padding:10px 18px;margin-bottom:16px;">+ Novo desafio</button>
         <table class="admin-table">
-          <tr><th>Dia</th><th>Tema</th><th>Descrição</th><th>Roteiro</th><th>Formato</th><th>Data</th><th>Gravado</th></tr>
-          ${diasTabelaCache.map((dia) => linhaTabelaProcesso(dia, ideiasPorId)).join('') || '<tr><td colspan="7">Nenhum desafio publicado ainda.</td></tr>'}
+          <tr><th>Dia</th><th>Tema</th><th>Descrição</th><th>Roteiro</th><th>Formato</th><th>Data</th><th>Gravado</th><th>Status</th><th></th></tr>
+          ${diasTabelaCache.map((dia) => linhaTabelaProcesso(dia, ideiasPorId)).join('') || '<tr><td colspan="9">Nenhum desafio publicado ainda.</td></tr>'}
         </table>
       `;
 
+      document.getElementById('btn-novo-desafio').addEventListener('click', () => abrirModalDia(null));
       document.querySelectorAll('[data-abrir]').forEach((btn) => {
         btn.addEventListener('click', () => window.parent.abrirRoteiroDesafio(btn.dataset.abrir));
       });
@@ -255,6 +269,21 @@
         btn.addEventListener('click', () => {
           const dia = diasTabelaCache.find((d) => d.id === btn.dataset.vincular);
           if (dia) abrirModalDia(dia);
+        });
+      });
+      document.querySelectorAll('[data-editar]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const dia = diasTabelaCache.find((d) => d.id === btn.dataset.editar);
+          if (dia) abrirModalDia(dia);
+        });
+      });
+      document.querySelectorAll('[data-apagar]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const dia = diasTabelaCache.find((d) => d.id === btn.dataset.apagar);
+          if (!dia) return;
+          if (!confirm(`Apagar o desafio do dia ${dia.numero_dia}?`)) return;
+          await db.from('desafio_dias').delete().eq('id', dia.id);
+          carregarTabela();
         });
       });
       document.querySelectorAll('[data-gravado]').forEach((chk) => {
@@ -297,78 +326,16 @@
       wireVideoQueueHandlers(db, { onChanged: carregarVideos });
     }
 
-    // ---- Aba 4: Desafios ----
-
-    function statusDia(dia) {
-      if (!dia.publicado) return '<span class="processo-pill sem-vinculo">Rascunho</span>';
-      if (!dia.data_publicacao) return '<span class="processo-pill a-fazer">Ainda vai acontecer</span>';
-      const data = new Date(dia.data_publicacao + 'T00:00:00');
-      const hoje = new Date();
-      hoje.setHours(0, 0, 0, 0);
-      return data <= hoje
-        ? '<span class="processo-pill pronto">Já passou</span>'
-        : '<span class="processo-pill a-fazer">Ainda vai acontecer</span>';
-    }
-
-    function linhaDesafio(dia) {
-      return `
-        <tr data-dia="${dia.id}">
-          <td>${dia.numero_dia}</td>
-          <td>${dia.data_publicacao || '—'}</td>
-          <td>${dia.titulo}</td>
-          <td>${statusDia(dia)}</td>
-          <td class="processo-acoes">
-            <button type="button" data-editar="${dia.id}">Editar</button>
-            <button type="button" class="apagar" data-apagar="${dia.id}">Apagar</button>
-          </td>
-        </tr>
-      `;
-    }
-
-    async function carregarDesafios() {
-      const painel = document.getElementById('painel-desafios');
-      painel.innerHTML = '<p class="carregando">Carregando...</p>';
-
-      const { data: dias } = await db.from('desafio_dias').select('*').order('numero_dia', { ascending: true });
-      diasDesafiosCache = dias || [];
-
-      painel.innerHTML = `
-        <button type="button" class="btn btn-primary" id="btn-novo-desafio" style="width:auto;padding:10px 18px;margin-bottom:16px;">+ Novo desafio</button>
-        <table class="admin-table">
-          <tr><th>Dia</th><th>Data</th><th>Tema</th><th>Status</th><th></th></tr>
-          ${diasDesafiosCache.map((dia) => linhaDesafio(dia)).join('') || '<tr><td colspan="5">Nenhum desafio publicado ainda.</td></tr>'}
-        </table>
-      `;
-
-      document.getElementById('btn-novo-desafio').addEventListener('click', () => abrirModalDia(null));
-      document.querySelectorAll('[data-editar]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const dia = diasDesafiosCache.find((d) => d.id === btn.dataset.editar);
-          if (dia) abrirModalDia(dia);
-        });
-      });
-      document.querySelectorAll('[data-apagar]').forEach((btn) => {
-        btn.addEventListener('click', async () => {
-          const dia = diasDesafiosCache.find((d) => d.id === btn.dataset.apagar);
-          if (!dia) return;
-          if (!confirm(`Apagar o desafio do dia ${dia.numero_dia}?`)) return;
-          await db.from('desafio_dias').delete().eq('id', dia.id);
-          carregarDesafios();
-        });
-      });
-    }
-
-    // ---- Modal compartilhado: editar/criar dia + vincular roteiro ----
-    // Aberto tanto pela aba Desafios (Editar/+ Novo) quanto pela Tabela de
-    // processo (Vincular).
+    // ---- Modal compartilhado: editar/criar/apagar dia + vincular roteiro ----
+    // Aberto pela própria Tabela de processo agora (Editar/+ Novo/Vincular
+    // viraram tudo a mesma tabela — Desafios era uma segunda tabela com os
+    // mesmos dias, só com Status/Editar/Apagar, então foi incorporada aqui).
 
     async function abrirModalDia(dia) {
       diaModalId = dia ? dia.id : null;
       diaModalRoteiroId = dia ? dia.roteiro_ideia_id : null;
 
-      const proximoNumero = diasDesafiosCache.length
-        ? Math.max(...diasDesafiosCache.map((d) => d.numero_dia)) + 1
-        : diasTabelaCache.length
+      const proximoNumero = diasTabelaCache.length
         ? Math.max(...diasTabelaCache.map((d) => d.numero_dia)) + 1
         : 1;
 

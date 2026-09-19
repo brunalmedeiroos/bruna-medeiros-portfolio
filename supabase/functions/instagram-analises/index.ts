@@ -67,6 +67,56 @@ async function somaInsightPeriodo(
   return algumaFuncionou ? soma : null;
 }
 
+// "accounts_engaged" e "total_interactions" são métricas agregadas — a
+// Graph API só devolve valor pra elas com metric_type=total_value (uma
+// conta pro intervalo inteiro), não com a série diária (period=day sem
+// metric_type) que funciona pra reach/follower_count. Pedir do jeito
+// errado não dá erro, só volta vazio — por isso essas duas métricas
+// tinham um helper próprio, em vez de reusar somaInsightPeriodo.
+async function totalValueInsight(
+  igUserId: string,
+  accessToken: string,
+  metrica: string,
+  desde: string,
+  ate: string,
+  erros: string[],
+): Promise<number | null> {
+  try {
+    const resposta = await chamarGraph(`/${igUserId}/insights`, {
+      metric: metrica,
+      metric_type: "total_value",
+      period: "day",
+      since: desde,
+      until: ate,
+      access_token: accessToken,
+    });
+    const valor = resposta.data?.[0]?.total_value?.value;
+    return typeof valor === "number" ? valor : null;
+  } catch (e) {
+    erros.push(`insight total_value [${metrica}]: ${(e as Error).message}`);
+    return null;
+  }
+}
+
+async function somaTotalValuePeriodo(
+  igUserId: string,
+  accessToken: string,
+  metrica: string,
+  diasTotal: number,
+  erros: string[],
+): Promise<number | null> {
+  let soma = 0;
+  let algumaFuncionou = false;
+  for (const janela of janelasDoPeriodo(diasTotal)) {
+    const valor = await totalValueInsight(igUserId, accessToken, metrica, janela.desde, janela.ate, erros);
+    if (valor !== null) {
+      soma += valor;
+      algumaFuncionou = true;
+    }
+  }
+  return algumaFuncionou ? soma : null;
+}
+
 async function seriePorDiaPeriodo(
   igUserId: string,
   accessToken: string,
@@ -177,8 +227,8 @@ export default {
     const [alcancePorDia, novosSeguidores, contasEngajadas, interacoes] = await Promise.all([
       seriePorDiaPeriodo("me", accessToken, ["reach"], periodoDias, erros),
       somaInsightPeriodo("me", accessToken, ["follower_count"], periodoDias, erros),
-      somaInsightPeriodo("me", accessToken, ["accounts_engaged"], periodoDias, erros),
-      somaInsightPeriodo("me", accessToken, ["total_interactions"], periodoDias, erros),
+      somaTotalValuePeriodo("me", accessToken, "accounts_engaged", periodoDias, erros),
+      somaTotalValuePeriodo("me", accessToken, "total_interactions", periodoDias, erros),
     ]);
     const alcance = alcancePorDia ? alcancePorDia.reduce((soma, d) => soma + d.valor, 0) : null;
 

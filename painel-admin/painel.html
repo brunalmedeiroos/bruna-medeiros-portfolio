@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260918g">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260918h">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -574,12 +574,12 @@
                   <span class="card-valor" id="instagram-an-seguidores">–</span>
                 </div>
                 <div class="card-numero">
-                  <span class="card-label" data-i18n="instagram_seguidores_liquidos">Seguidores líquidos</span>
-                  <span class="card-valor" id="instagram-an-seguidores-liquidos">–</span>
+                  <span class="card-label" data-i18n="instagram_novos_seguidores">Novos seguidores</span>
+                  <span class="card-valor" id="instagram-an-novos-seguidores">–</span>
                 </div>
                 <div class="card-numero">
-                  <span class="card-label" data-i18n="instagram_visualizacoes">Visualizações</span>
-                  <span class="card-valor" id="instagram-an-visualizacoes">–</span>
+                  <span class="card-label" data-i18n="instagram_alcance">Alcance</span>
+                  <span class="card-valor" id="instagram-an-alcance">–</span>
                 </div>
                 <div class="card-numero">
                   <span class="card-label" data-i18n="instagram_contas_engajadas">Contas engajadas</span>
@@ -590,11 +590,12 @@
                   <span class="card-valor" id="instagram-an-interacoes">–</span>
                 </div>
               </div>
+              <p class="instagram-analises-nota" data-i18n="instagram_analises_nota">Números reais da API pública do Instagram. "Visualizações" e "Seguidores líquidos" do app não são liberados por essa API — por isso aqui mostramos Alcance (contas únicas alcançadas) e Novos seguidores (ganhos no período, sem descontar quem deixou de seguir).</p>
 
               <div class="card instagram-card-grafico">
-                <h3 class="card-titulo" data-i18n="instagram_visualizacoes_por_dia">Visualizações por dia</h3>
-                <p class="instagram-grafico-legenda" id="instagram-an-visualizacoes-legenda" data-i18n="instagram_grafico_carregando">Carregando...</p>
-                <div class="instagram-barras" id="instagram-an-grafico-visualizacoes"></div>
+                <h3 class="card-titulo" data-i18n="instagram_alcance_por_dia">Alcance por dia</h3>
+                <p class="instagram-grafico-legenda" id="instagram-an-alcance-legenda" data-i18n="instagram_grafico_carregando">Carregando...</p>
+                <div class="instagram-barras" id="instagram-an-grafico-alcance"></div>
               </div>
 
               <div class="card instagram-melhores-posts">
@@ -2709,10 +2710,7 @@
         instagram_interacoes_totais: 'Interações',
         instagram_alcance_por_dia: 'Alcance por dia',
         instagram_alcance_legenda_periodo: 'contas alcançadas · {n} dias',
-        instagram_seguidores_liquidos: 'Seguidores líquidos',
-        instagram_visualizacoes: 'Visualizações',
-        instagram_visualizacoes_por_dia: 'Visualizações por dia',
-        instagram_visualizacoes_legenda_periodo: 'visualizações · {n} dias',
+        instagram_analises_nota: 'Números reais da API pública do Instagram. "Visualizações" e "Seguidores líquidos" do app não são liberados por essa API — por isso aqui mostramos Alcance (contas únicas alcançadas) e Novos seguidores (ganhos no período, sem descontar quem deixou de seguir).',
         instagram_melhores_posts: 'Melhores posts',
         instagram_ordenar_melhores: 'Melhores',
         instagram_ordenar_curtidos: 'Mais curtidos',
@@ -3525,10 +3523,7 @@
         instagram_interacoes_totais: 'Interactions',
         instagram_alcance_por_dia: 'Reach by day',
         instagram_alcance_legenda_periodo: 'accounts reached · {n} days',
-        instagram_seguidores_liquidos: 'Net followers',
-        instagram_visualizacoes: 'Views',
-        instagram_visualizacoes_por_dia: 'Views by day',
-        instagram_visualizacoes_legenda_periodo: 'views · {n} days',
+        instagram_analises_nota: 'Real numbers from Instagram\'s public API. "Views" and "Net followers" from the app aren\'t exposed by this API — so here we show Reach (unique accounts) and New followers (gains for the period, not counting unfollows).',
         instagram_melhores_posts: 'Top posts',
         instagram_ordenar_melhores: 'Top',
         instagram_ordenar_curtidos: 'Most liked',
@@ -7609,8 +7604,8 @@
 
     function renderizarInstagramAnalises(resultado) {
       document.getElementById('instagram-an-seguidores').textContent = formatarMetricaInstagram(resultado.seguidores);
-      document.getElementById('instagram-an-seguidores-liquidos').textContent = formatarMetricaInstagram(resultado.seguidoresLiquidos);
-      document.getElementById('instagram-an-visualizacoes').textContent = formatarMetricaInstagram(resultado.visualizacoes);
+      document.getElementById('instagram-an-novos-seguidores').textContent = formatarMetricaInstagram(resultado.novosSeguidores);
+      document.getElementById('instagram-an-alcance').textContent = formatarMetricaInstagram(resultado.alcance);
       document.getElementById('instagram-an-contas-engajadas').textContent = formatarMetricaInstagram(resultado.contasEngajadas);
       document.getElementById('instagram-an-interacoes').textContent = formatarMetricaInstagram(resultado.interacoes);
 
@@ -7624,10 +7619,10 @@
       }
 
       renderizarGraficoBarrasInstagram(
-        'instagram-an-grafico-visualizacoes',
-        'instagram-an-visualizacoes-legenda',
-        resultado.visualizacoesPorDia,
-        tr('instagram_visualizacoes_legenda_periodo').replace('{n}', String(resultado.periodoDias)),
+        'instagram-an-grafico-alcance',
+        'instagram-an-alcance-legenda',
+        resultado.alcancePorDia,
+        tr('instagram_alcance_legenda_periodo').replace('{n}', String(resultado.periodoDias)),
       );
       renderizarInstagramMelhoresPosts();
 

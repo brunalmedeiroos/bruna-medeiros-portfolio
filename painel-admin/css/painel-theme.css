@@ -1979,6 +1979,12 @@
   margin-top: 14px;
 }
 
+.painel-body .instagram-analises-nota {
+  font-size: 12px;
+  color: var(--texto-suave);
+  margin: -8px 0 20px;
+}
+
 /* ==========================================================================
    Aba Planejador de Conteúdo — hub com 3 páginas (Banco de Ideias, Achados
    e Cronograma de Postagem), guardadas em planejador_pilares/

@@ -11,7 +11,7 @@
 
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "@supabase/server";
-import { chamarGraph, insightDeMidia, obterAccessTokenValido } from "../_shared/instagram.ts";
+import { chamarGraph, insightDeConta, insightDeContaPorDia, insightDeMidia, obterAccessTokenValido } from "../_shared/instagram.ts";
 import { ehDono } from "../_shared/dono.ts";
 
 const CORS_HEADERS = {
@@ -48,12 +48,11 @@ function janelasDoPeriodo(diasTotal: number): Array<{ desde: string; ate: string
   return janelas;
 }
 
-// "accounts_engaged", "total_interactions" e "follows_and_unfollows" são
-// métricas agregadas — a Graph API só devolve valor pra elas com
-// metric_type=total_value (uma conta pro intervalo inteiro), não com a
-// série diária (period=day sem metric_type) que funciona pra reach/
-// follower_count na Visão Geral. Pedir do jeito errado não dá erro, só
-// volta vazio.
+// "accounts_engaged" e "total_interactions" são métricas agregadas — a
+// Graph API só devolve valor pra elas com metric_type=total_value (uma
+// conta pro intervalo inteiro), não com a série diária (period=day sem
+// metric_type) que funciona pra reach/follower_count abaixo. Pedir do
+// jeito errado não dá erro, só volta vazio.
 async function totalValueInsight(
   igUserId: string,
   accessToken: string,
@@ -102,51 +101,43 @@ async function somaTotalValuePeriodo(
   return algumaFuncionou ? soma : null;
 }
 
-// "views" só devolve a série diária se pedir metric_type=time_series
-// explícito — sem isso a Graph API responde 200 OK com "data" vazio, sem
-// erro nenhum (foi o que aconteceu: virou "–" sem nenhum aviso). reach e
-// follower_count (usados na Visão Geral, num outro arquivo, via
-// insightDeContaPorDia) continuam funcionando sem esse parâmetro.
-async function seriePorDiaMetrica(
+// "views" e "follows_and_unfollows" (o que o app mostra hoje como
+// "Visualizações" e "Seguidores líquidos") foram testados com e sem
+// metric_type explícito e nos dois casos a Graph API devolveu 200 OK
+// vazio, sem erro — sinal de que essas duas métricas específicas não são
+// liberadas por essa API pra esse tipo de conta, mesmo aparecendo no app.
+// Por isso ficamos com reach/follower_count, que são reais e funcionam,
+// avisando na tela que não é 1:1 com o que a Meta mostra no app dela.
+async function somaInsightPeriodo(
   igUserId: string,
   accessToken: string,
-  metrica: string,
-  desde: string,
-  ate: string,
+  metricas: string[],
+  diasTotal: number,
   erros: string[],
-): Promise<Array<{ data: string; valor: number }> | null> {
-  try {
-    const resposta = await chamarGraph(`/${igUserId}/insights`, {
-      metric: metrica,
-      metric_type: "time_series",
-      period: "day",
-      since: desde,
-      until: ate,
-      access_token: accessToken,
-    });
-    const valores = resposta.data?.[0]?.values || [];
-    if (!valores.length) {
-      erros.push(`insight time_series [${metrica}]: resposta sem values nesse período (${desde} a ${ate})`);
-      return null;
+): Promise<number | null> {
+  let soma = 0;
+  let algumaFuncionou = false;
+  for (const janela of janelasDoPeriodo(diasTotal)) {
+    const valor = await insightDeConta(igUserId, accessToken, metricas, janela.desde, janela.ate, erros);
+    if (valor !== null) {
+      soma += valor;
+      algumaFuncionou = true;
     }
-    return valores.map((v: { end_time: string; value: number }) => ({ data: v.end_time.slice(0, 10), valor: v.value || 0 }));
-  } catch (e) {
-    erros.push(`insight time_series [${metrica}]: ${(e as Error).message}`);
-    return null;
   }
+  return algumaFuncionou ? soma : null;
 }
 
-async function seriePorDiaMetricaPeriodo(
+async function seriePorDiaPeriodo(
   igUserId: string,
   accessToken: string,
-  metrica: string,
+  metricas: string[],
   diasTotal: number,
   erros: string[],
 ): Promise<Array<{ data: string; valor: number }> | null> {
   let serie: Array<{ data: string; valor: number }> = [];
   let algumaFuncionou = false;
   for (const janela of janelasDoPeriodo(diasTotal)) {
-    const trecho = await seriePorDiaMetrica(igUserId, accessToken, metrica, janela.desde, janela.ate, erros);
+    const trecho = await insightDeContaPorDia(igUserId, accessToken, metricas, janela.desde, janela.ate, erros);
     if (trecho) {
       serie = serie.concat(trecho);
       algumaFuncionou = true;
@@ -243,18 +234,13 @@ export default {
       erros.push(`seguidores: ${(e as Error).message}`);
     }
 
-    // "views" (não "reach") é o que a Meta mostra hoje como métrica
-    // principal na Visão geral do painel profissional ("Visualizações"),
-    // e "follows_and_unfollows" é o líquido (ganhos menos perdas) que
-    // aparece como "Seguidores líquidos" — reach/follower_count contam
-    // coisas diferentes e não fecham com o que a pessoa vê no Instagram.
-    const [visualizacoesPorDia, seguidoresLiquidos, contasEngajadas, interacoes] = await Promise.all([
-      seriePorDiaMetricaPeriodo("me", accessToken, "views", periodoDias, erros),
-      somaTotalValuePeriodo("me", accessToken, "follows_and_unfollows", periodoDias, erros),
+    const [alcancePorDia, novosSeguidores, contasEngajadas, interacoes] = await Promise.all([
+      seriePorDiaPeriodo("me", accessToken, ["reach"], periodoDias, erros),
+      somaInsightPeriodo("me", accessToken, ["follower_count"], periodoDias, erros),
       somaTotalValuePeriodo("me", accessToken, "accounts_engaged", periodoDias, erros),
       somaTotalValuePeriodo("me", accessToken, "total_interactions", periodoDias, erros),
     ]);
-    const visualizacoes = visualizacoesPorDia ? visualizacoesPorDia.reduce((soma, d) => soma + d.valor, 0) : null;
+    const alcance = alcancePorDia ? alcancePorDia.reduce((soma, d) => soma + d.valor, 0) : null;
 
     let posts: Awaited<ReturnType<typeof buscarMelhoresPosts>> = [];
     try {
@@ -268,11 +254,11 @@ export default {
       conectado: true,
       periodoDias,
       seguidores,
-      seguidoresLiquidos,
-      visualizacoes,
+      novosSeguidores,
+      alcance,
       contasEngajadas,
       interacoes,
-      visualizacoesPorDia,
+      alcancePorDia,
       posts,
       atualizadoEm: new Date().toISOString(),
       erros: erros.length ? erros : undefined,

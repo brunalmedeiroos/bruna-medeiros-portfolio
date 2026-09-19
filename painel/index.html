@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260919g">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260919h">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -622,12 +622,11 @@
         </section>
 
         <!-- ---------- Aba: Meu Desafio UGC ---------- -->
+        <!-- A navegação (Visão Geral/Tabela de processo/Vídeos/Desafios/Meu
+             painel) mora DENTRO do iframe agora (desafio/processo/index.html)
+             — não precisa mais de pills aqui fora escolhendo entre
+             admin/painel/processo. -->
         <section id="panel-desafio-ugc" class="tab-panel" hidden>
-          <div class="desafio-subnav">
-            <button class="desafio-subnav-btn ativo" data-desafio-pagina="admin" type="button">Admin</button>
-            <button class="desafio-subnav-btn" data-desafio-pagina="painel" type="button">Meu painel</button>
-            <button class="desafio-subnav-btn" data-desafio-pagina="processo" type="button">Processo</button>
-          </div>
           <iframe id="desafio-ugc-iframe" class="desafio-ugc-iframe" title="Meu Desafio UGC"></iframe>
         </section>
 
@@ -4379,10 +4378,6 @@
         btn.addEventListener('click', () => trocarAba(btn.dataset.tab));
       });
 
-      document.querySelectorAll('.desafio-subnav-btn').forEach((btn) => {
-        btn.addEventListener('click', () => trocarSubAbaDesafio(btn.dataset.desafioPagina));
-      });
-
       document.querySelectorAll('.filtro-btn').forEach((btn) => {
         btn.addEventListener('click', () => trocarPeriodo(btn.dataset.periodo, btn));
       });
@@ -4859,19 +4854,23 @@
       }
       if (aba === 'desafio-ugc') {
         const iframe = document.getElementById('desafio-ugc-iframe');
-        if (!iframe.src) trocarSubAbaDesafio('admin');
+        if (!iframe.src) trocarSubAbaDesafio('processo');
       }
     }
 
+    // A navegação visível (Visão Geral/Tabela de processo/Vídeos/Desafios/
+    // Meu painel) mora dentro do iframe agora — essa função só troca qual
+    // documento ele carrega, chamada pelo próprio iframe via
+    // window.parent.trocarSubAbaDesafio(...) (ex: o botão "Meu painel"
+    // dentro de desafio/processo/index.html).
     function trocarSubAbaDesafio(pagina) {
-      document.querySelectorAll('.desafio-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.desafioPagina === pagina));
       const iframe = document.getElementById('desafio-ugc-iframe');
       const urls = {
         admin: '../desafio/admin/?v=11',
-        painel: '../desafio/painel/?v=3',
+        painel: '../desafio/painel/?v=4',
         processo: '../desafio/processo/?v=2',
       };
-      iframe.src = urls[pagina] || urls.admin;
+      iframe.src = urls[pagina] || urls.processo;
     }
 
     function trocarPeriodo(periodo, btn) {

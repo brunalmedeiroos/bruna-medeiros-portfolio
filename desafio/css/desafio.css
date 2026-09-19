@@ -47,6 +47,13 @@ body.desafio-body{
 html.embutido body.desafio-body{ padding-block:0 40px; }
 html.embutido .topo{ justify-content:flex-end; margin-bottom:14px; }
 html.embutido .oculta-embutido{ display:none; }
+/* Oposto de .oculta-embutido: só aparece quando embutido no iframe do
+   painel — usado pro link "Voltar" que só faz sentido ali dentro.
+   Especificidade de elemento (não só classe) de propósito: .sair já
+   define display:inline-block com a mesma especificidade de classe, e
+   caso ela venha depois no arquivo essa regra base perderia o empate. */
+span.somente-embutido{ display:none; }
+html.embutido .somente-embutido{ display:inline-block; }
 html.embutido .desafio-wrap{ max-width:none; }
 
 h1,h2,h3{ font-family:var(--fonte-titulo); margin:0; text-wrap:balance; }

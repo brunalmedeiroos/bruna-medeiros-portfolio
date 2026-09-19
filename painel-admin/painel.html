@@ -626,6 +626,7 @@
           <div class="desafio-subnav">
             <button class="desafio-subnav-btn ativo" data-desafio-pagina="admin" type="button">Admin</button>
             <button class="desafio-subnav-btn" data-desafio-pagina="painel" type="button">Meu painel</button>
+            <button class="desafio-subnav-btn" data-desafio-pagina="processo" type="button">Processo</button>
           </div>
           <iframe id="desafio-ugc-iframe" class="desafio-ugc-iframe" title="Meu Desafio UGC"></iframe>
         </section>
@@ -4865,7 +4866,12 @@
     function trocarSubAbaDesafio(pagina) {
       document.querySelectorAll('.desafio-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.desafioPagina === pagina));
       const iframe = document.getElementById('desafio-ugc-iframe');
-      iframe.src = pagina === 'painel' ? '../desafio/painel/?v=3' : '../desafio/admin/?v=11';
+      const urls = {
+        admin: '../desafio/admin/?v=11',
+        painel: '../desafio/painel/?v=3',
+        processo: '../desafio/processo/?v=1',
+      };
+      iframe.src = urls[pagina] || urls.admin;
     }
 
     function trocarPeriodo(periodo, btn) {

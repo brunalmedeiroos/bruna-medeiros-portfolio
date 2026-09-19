@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Processo · Meu Desafio UGC</title>
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/desafio.css?v=9">
+<script>
+  // Embutido como aba dentro do Creator Center: esconde o cabeçalho
+  // próprio da página (o painel já mostra o título e o "Sair").
+  if (window.self !== window.top) document.documentElement.classList.add('embutido');
+</script>
+</head>
+<body class="desafio-body">
+
+  <div class="desafio-wrap wide">
+    <div class="topo">
+      <div class="marca oculta-embutido">Meu Desafio <span>UGC</span> · processo</div>
+      <div><a href="../painel/" class="sair oculta-embutido" style="margin-right:16px;color:inherit;">Meu painel</a><span class="sair" id="btn-sair">Sair</span></div>
+    </div>
+
+    <div id="conteudo" class="carregando">Carregando...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/auth.js?v=1"></script>
+  <script>
+    const db = DesafioAuth.sb;
+    const conteudo = document.getElementById('conteudo');
+    document.getElementById('btn-sair').addEventListener('click', () => DesafioAuth.logout());
+
+    // Template de partida — só entra se a nota ainda estiver vazia
+    // (primeira vez que a página abre). Nunca sobrescreve o que ela
+    // já escreveu.
+    const TEMPLATE_INICIAL = `
+      <h2>Visão geral do desafio</h2>
+      <p><b>Datas:</b> ___ a ___ (16 dias) &nbsp;·&nbsp; <b>Prêmio:</b> a decidir &nbsp;·&nbsp; <b>Inscrição:</b> brunamedeiros.com/desafio</p>
+      <p>Como pontua: 1pt por desafio feito, +2 por vídeo enviado, +1 por fazer em até 48h, +2 por indicar amiga, +1 por foto de perfil, bônus manual. Quem tiver mais pontos no dia 16 ganha.</p>
+
+      <h2>Grade dos 16 dias</h2>
+      <ol>
+        <li>Dia 1 — tema: ___</li>
+        <li>Dia 2 — tema: ___</li>
+        <li>Dia 3 — tema: ___</li>
+        <li>Dia 4 — tema: ___</li>
+        <li>Dia 5 — tema: ___</li>
+        <li>Dia 6 — tema: ___</li>
+        <li>Dia 7 — tema: ___</li>
+        <li>Dia 8 — tema: ___</li>
+        <li>Dia 9 — tema: ___</li>
+        <li>Dia 10 — tema: ___</li>
+        <li>Dia 11 — tema: ___</li>
+        <li>Dia 12 — tema: ___</li>
+        <li>Dia 13 — tema: ___</li>
+        <li>Dia 14 — tema: ___</li>
+        <li>Dia 15 — tema: ___</li>
+        <li>Dia 16 — tema: ___ (encerramento)</li>
+      </ol>
+
+      <h2>Pipeline de conteúdo</h2>
+      <p><b>Gravação:</b> quando gravo cada vídeo diário, com quanta antecedência</p>
+      <p><b>Edição:</b> quem edita, prazo de entrega antes de postar</p>
+      <p><b>Postagem:</b> horário fixo no Instagram, quem sobe</p>
+      <p><b>Banco de ideias de reserva:</b> temas extras pra caso falte ideia num dia</p>
+      <ul>
+        <li>Ideia reserva 1</li>
+        <li>Ideia reserva 2</li>
+        <li>Ideia reserva 3</li>
+      </ul>
+
+      <h2>Cronograma de divulgação (antes de abrir inscrições)</h2>
+      <ul>
+        <li>Data que anuncio que o desafio vai existir: ___</li>
+        <li>Quantos posts/stories de aquecimento antes de abrir: ___</li>
+        <li>Data que abro inscrições: ___</li>
+        <li>Data que começa o desafio: ___</li>
+      </ul>
+
+      <h2>Rotina durante o desafio</h2>
+      <p>O que eu faço todo dia enquanto o desafio roda (gravar, publicar, responder comentários/DMs, avaliar vídeos das participantes, atualizar ranking).</p>
+
+      <h2>Prêmio e encerramento</h2>
+      <p><b>Prêmio:</b> ___ (a decidir) &nbsp;·&nbsp; <b>Como anuncio a ganhadora:</b> ___ &nbsp;·&nbsp; <b>Quando entrego:</b> ___</p>
+
+      <h2>Checklist pré-lançamento</h2>
+      <ul>
+        <li>16 temas dos dias definidos</li>
+        <li>Prêmio decidido e confirmado</li>
+        <li>Textos de divulgação escritos</li>
+        <li>Banco de ideias de reserva pronto</li>
+        <li>Fluxo de avaliação de vídeo e feedback testado</li>
+      </ul>
+    `;
+
+    async function carregar() {
+      const user = await DesafioAuth.checkAuth();
+      if (!user) return;
+      if (!DesafioAuth.isOwner(user)) {
+        window.location.href = '../painel/';
+        return;
+      }
+
+      const { data: linha } = await db.from('desafio_processo').select('conteudo').eq('id', 1).maybeSingle();
+
+      conteudo.innerHTML = `
+        <div class="card">
+          <div class="ugc-roteiro-doc-toolbar">
+            <button type="button" class="ugc-roteiro-doc-btn" data-cmd="bold"><b>B</b></button>
+            <button type="button" class="ugc-roteiro-doc-btn" data-cmd="italic"><i>I</i></button>
+            <button type="button" class="ugc-roteiro-doc-btn" data-cmd="underline"><u>S</u></button>
+            <button type="button" class="ugc-roteiro-doc-btn" data-cmd="insertUnorderedList">&bull;&nbsp;Lista</button>
+            <button type="button" class="ugc-roteiro-doc-btn" data-cmd="insertOrderedList">1.&nbsp;Lista</button>
+            <div class="ugc-roteiro-doc-cor-wrap">
+              <button type="button" class="ugc-roteiro-doc-btn ugc-roteiro-doc-cor-btn" data-tipo="cor" aria-label="Cor do texto">
+                <span class="ugc-roteiro-doc-cor-letra">A</span>
+                <span class="ugc-roteiro-doc-cor-barra" style="background:#1A1A1A"></span>
+              </button>
+              <div class="ugc-roteiro-doc-cor-paleta" hidden>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#1A1A1A" style="background:#1A1A1A" aria-label="Preto"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#4B5563" style="background:#4B5563" aria-label="Cinza"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#DC2626" style="background:#DC2626" aria-label="Vermelho"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#EA580C" style="background:#EA580C" aria-label="Laranja"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#CA8A04" style="background:#CA8A04" aria-label="Amarelo"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#65A30D" style="background:#65A30D" aria-label="Oliva"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#16A34A" style="background:#16A34A" aria-label="Verde"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#0D9488" style="background:#0D9488" aria-label="Verde-azulado"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#2563EB" style="background:#2563EB" aria-label="Azul"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#4F46E5" style="background:#4F46E5" aria-label="Índigo"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#7C3AED" style="background:#7C3AED" aria-label="Roxo"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#DB2777" style="background:#DB2777" aria-label="Rosa"></button>
+                <label class="ugc-roteiro-doc-cor-custom" aria-label="Escolher outra cor">
+                  <input type="color" value="#1A1A1A">
+                </label>
+              </div>
+            </div>
+            <div class="ugc-roteiro-doc-cor-wrap">
+              <button type="button" class="ugc-roteiro-doc-btn ugc-roteiro-doc-cor-btn" data-tipo="grifo" aria-label="Grifar">
+                <span class="ugc-roteiro-doc-grifo-letra">🖊</span>
+                <span class="ugc-roteiro-doc-cor-barra" style="background:#FFF59D"></span>
+              </button>
+              <div class="ugc-roteiro-doc-cor-paleta" hidden>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FFF59D" style="background:#FFF59D" aria-label="Amarelo"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FDE68A" style="background:#FDE68A" aria-label="Âmbar"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FED7AA" style="background:#FED7AA" aria-label="Laranja claro"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FECACA" style="background:#FECACA" aria-label="Vermelho claro"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FBCFE8" style="background:#FBCFE8" aria-label="Rosa"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#E9D5FF" style="background:#E9D5FF" aria-label="Roxo claro"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#BFDBFE" style="background:#BFDBFE" aria-label="Azul"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#A7F3D0" style="background:#A7F3D0" aria-label="Verde"></button>
+                <button type="button" class="ugc-roteiro-doc-cor-swatch ugc-roteiro-doc-cor-swatch-remover" data-cor="transparent" aria-label="Remover grifo">✕</button>
+                <label class="ugc-roteiro-doc-cor-custom" aria-label="Escolher outra cor">
+                  <input type="color" value="#FFF59D">
+                </label>
+              </div>
+            </div>
+          </div>
+          <div id="processo-conteudo" class="ugc-roteiro-doc-area" contenteditable="true" data-placeholder="Escreva aqui como o desafio vai se organizar..."></div>
+          <div id="processo-msg" class="msg msg-sucesso" hidden style="margin-top:14px;margin-bottom:0;"></div>
+          <button type="button" id="btn-salvar-processo" class="btn btn-primary" style="width:auto;padding:11px 22px;margin-top:14px;">Salvar</button>
+        </div>
+      `;
+
+      const area = document.getElementById('processo-conteudo');
+      area.innerHTML = (linha && linha.conteudo) ? linha.conteudo : TEMPLATE_INICIAL;
+
+      configurarBarraFormatacaoRoteiro();
+      prepararEstiloPadraoRoteiro(area);
+
+      document.getElementById('btn-salvar-processo').addEventListener('click', async () => {
+        const btn = document.getElementById('btn-salvar-processo');
+        const msg = document.getElementById('processo-msg');
+        btn.disabled = true;
+        const { error } = await db.from('desafio_processo').update({
+          conteudo: area.innerHTML,
+          atualizado_em: new Date().toISOString(),
+        }).eq('id', 1);
+        btn.disabled = false;
+        msg.classList.toggle('msg-erro', !!error);
+        msg.classList.toggle('msg-sucesso', !error);
+        if (error) {
+          msg.textContent = error.message;
+        } else {
+          const agora = new Date();
+          msg.textContent = `Salvo às ${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`;
+        }
+        msg.hidden = false;
+      });
+    }
+
+    // ---- Editor de texto rico (portado de painel-admin/painel.html) ----
+
+    function conteudoRoteiroVazio(el) {
+      const html = el.innerHTML.trim();
+      return html === '' || html === '<br>';
+    }
+
+    function configurarBarraFormatacaoRoteiro() {
+      document.querySelectorAll('.ugc-roteiro-doc-btn[data-cmd]').forEach((btn) => {
+        btn.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          document.execCommand(btn.dataset.cmd);
+          atualizarEstadoBarraFormatacao(btn.closest('.ugc-roteiro-doc-toolbar'));
+        });
+      });
+
+      document.querySelectorAll('.ugc-roteiro-doc-area').forEach((area) => {
+        const toolbar = area.previousElementSibling;
+        area.addEventListener('input', () => {
+          if (conteudoRoteiroVazio(area)) area.innerHTML = '';
+          atualizarEstadoBarraFormatacao(toolbar);
+        });
+        ['keyup', 'mouseup', 'focus'].forEach((evento) => {
+          area.addEventListener(evento, () => atualizarEstadoBarraFormatacao(toolbar));
+        });
+      });
+
+      configurarPaletasCorRoteiro();
+    }
+
+    function atualizarEstadoBarraFormatacao(toolbar) {
+      if (!toolbar) return;
+      toolbar.querySelectorAll('.ugc-roteiro-doc-btn[data-cmd]').forEach((btn) => {
+        let ativo = false;
+        try {
+          ativo = document.queryCommandState(btn.dataset.cmd);
+        } catch (e) {
+          ativo = false;
+        }
+        btn.classList.toggle('ativo', ativo);
+      });
+    }
+
+    const CHAVE_PALETA_COR_TEXTO_PROCESSO = 'desafio_processo_paleta_cor_texto';
+    const CHAVE_PALETA_COR_GRIFO_PROCESSO = 'desafio_processo_paleta_cor_grifo';
+    const MAX_CORES_PERSONALIZADAS_PROCESSO = 12;
+
+    function lerPaletaCorPersonalizada(chave) {
+      try {
+        const bruto = localStorage.getItem(chave);
+        const cores = bruto ? JSON.parse(bruto) : [];
+        return Array.isArray(cores) ? cores : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function salvarPaletaCorPersonalizada(chave, cores) {
+      try {
+        localStorage.setItem(chave, JSON.stringify(cores.slice(0, MAX_CORES_PERSONALIZADAS_PROCESSO)));
+      } catch (e) {
+        // Sem localStorage (modo privado etc.) — a cor ainda aplica, só não fica salva.
+      }
+    }
+
+    function configurarPaletasCorRoteiro() {
+      const repintarPorChave = { [CHAVE_PALETA_COR_TEXTO_PROCESSO]: [], [CHAVE_PALETA_COR_GRIFO_PROCESSO]: [] };
+
+      document.querySelectorAll('.ugc-roteiro-doc-cor-wrap').forEach((wrap) => {
+        const botaoAbrir = wrap.querySelector('.ugc-roteiro-doc-cor-btn');
+        const paleta = wrap.querySelector('.ugc-roteiro-doc-cor-paleta');
+        const barra = botaoAbrir.querySelector('.ugc-roteiro-doc-cor-barra');
+        const comando = botaoAbrir.dataset.tipo === 'grifo' ? 'hiliteColor' : 'foreColor';
+        const chavePersonalizada = comando === 'hiliteColor' ? CHAVE_PALETA_COR_GRIFO_PROCESSO : CHAVE_PALETA_COR_TEXTO_PROCESSO;
+        const area = wrap.closest('.ugc-roteiro-doc-toolbar')?.nextElementSibling;
+        const custom = paleta.querySelector('.ugc-roteiro-doc-cor-custom');
+
+        let rangeSalva = null;
+
+        function aplicarCor(cor) {
+          if (area) area.focus();
+          if (rangeSalva) {
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(rangeSalva);
+          }
+          document.execCommand(comando, false, cor);
+          if (cor !== 'transparent') barra.style.background = cor;
+        }
+
+        function repintarCoresPersonalizadas() {
+          paleta.querySelectorAll('.ugc-roteiro-doc-cor-custom-item').forEach((item) => item.remove());
+          lerPaletaCorPersonalizada(chavePersonalizada).forEach((cor) => {
+            const item = document.createElement('span');
+            item.className = 'ugc-roteiro-doc-cor-custom-item';
+
+            const swatch = document.createElement('button');
+            swatch.type = 'button';
+            swatch.className = 'ugc-roteiro-doc-cor-swatch';
+            swatch.style.background = cor;
+            swatch.setAttribute('aria-label', cor);
+            swatch.addEventListener('mousedown', (e) => {
+              e.preventDefault();
+              aplicarCor(cor);
+              paleta.hidden = true;
+            });
+
+            const remover = document.createElement('button');
+            remover.type = 'button';
+            remover.className = 'ugc-roteiro-doc-cor-custom-remover';
+            remover.textContent = '✕';
+            remover.title = 'Remover esta cor';
+            remover.setAttribute('aria-label', 'Remover esta cor');
+            remover.addEventListener('mousedown', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const restantes = lerPaletaCorPersonalizada(chavePersonalizada).filter((c) => c !== cor);
+              salvarPaletaCorPersonalizada(chavePersonalizada, restantes);
+              repintarPorChave[chavePersonalizada].forEach((fn) => fn());
+            });
+
+            item.appendChild(swatch);
+            item.appendChild(remover);
+            custom.before(item);
+          });
+        }
+
+        repintarPorChave[chavePersonalizada].push(repintarCoresPersonalizadas);
+        repintarCoresPersonalizadas();
+
+        botaoAbrir.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          const jaAberta = !paleta.hidden;
+          document.querySelectorAll('.ugc-roteiro-doc-cor-paleta').forEach((p) => (p.hidden = true));
+          paleta.hidden = jaAberta;
+        });
+
+        paleta.querySelectorAll('.ugc-roteiro-doc-cor-swatch[data-cor]').forEach((swatch) => {
+          swatch.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            aplicarCor(swatch.dataset.cor);
+            paleta.hidden = true;
+          });
+        });
+
+        const inputCustom = paleta.querySelector('input[type="color"]');
+        if (inputCustom) {
+          inputCustom.addEventListener('mousedown', () => {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0) rangeSalva = sel.getRangeAt(0).cloneRange();
+          });
+          // Só atualiza a bolinha de pré-visualização enquanto arrasta dentro
+          // do seletor nativo — nada de focar o editor ou rodar execCommand
+          // aqui, senão o foco troca a cada pixel do arraste e o seletor
+          // nativo trava.
+          inputCustom.addEventListener('input', (e) => {
+            custom.style.background = e.target.value;
+          });
+          inputCustom.addEventListener('change', (e) => {
+            const cor = e.target.value;
+            aplicarCor(cor);
+            const cores = lerPaletaCorPersonalizada(chavePersonalizada).filter((c) => c !== cor);
+            cores.unshift(cor);
+            salvarPaletaCorPersonalizada(chavePersonalizada, cores);
+            repintarPorChave[chavePersonalizada].forEach((fn) => fn());
+            paleta.hidden = true;
+          });
+        }
+      });
+
+      document.addEventListener('mousedown', (e) => {
+        if (!e.target.closest('.ugc-roteiro-doc-cor-wrap')) {
+          document.querySelectorAll('.ugc-roteiro-doc-cor-paleta').forEach((p) => (p.hidden = true));
+        }
+      });
+    }
+
+    const COR_PADRAO_TEXTO_PROCESSO = '#1A1A1A';
+
+    function prepararEstiloPadraoRoteiro(area) {
+      if (!conteudoRoteiroVazio(area)) return;
+      area.focus();
+      const range = document.createRange();
+      range.selectNodeContents(area);
+      range.collapse(true);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand('foreColor', false, COR_PADRAO_TEXTO_PROCESSO);
+      document.execCommand('hiliteColor', false, 'transparent');
+      area.blur();
+    }
+
+    carregar();
+  </script>
+</body>
+</html>

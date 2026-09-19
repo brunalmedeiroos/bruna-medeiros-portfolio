@@ -186,3 +186,72 @@ h1,h2,h3{ font-family:var(--fonte-titulo); margin:0; text-wrap:balance; }
 .vq-action .btn{ padding:9px 14px; font-size:12.5px; }
 
 .carregando{ font-size:13px; color:var(--texto-suave); padding:20px 0; text-align:center; }
+
+/* ---- Editor de texto rico do Processo (estilo Google Docs) ----
+   Portado de painel-admin/css/painel-theme.css — mesmo componente já
+   testado e corrigido lá (contenteditable + execCommand, sem lib). */
+.ugc-roteiro-doc-toolbar{ display:flex; flex-wrap:wrap; align-items:center; gap:4px; margin-bottom:6px; }
+
+.ugc-roteiro-doc-btn{
+  border:1px solid var(--borda); border-radius:var(--raio-sm); background:var(--branco);
+  color:var(--coral); padding:5px 10px; font-size:12px; font-family:var(--fonte-corpo); cursor:pointer;
+}
+.ugc-roteiro-doc-btn:hover{ background:var(--cinza-claro); }
+
+/* Marcadinho: mostra qual formatação está ativa onde o cursor está. */
+.ugc-roteiro-doc-btn.ativo{ background:var(--coral); border-color:var(--coral); color:var(--branco); }
+
+.ugc-roteiro-doc-cor-wrap{ position:relative; }
+.ugc-roteiro-doc-cor-btn{ display:flex; flex-direction:column; align-items:center; gap:2px; line-height:1; }
+.ugc-roteiro-doc-cor-letra, .ugc-roteiro-doc-grifo-letra{ font-size:12px; font-weight:700; }
+.ugc-roteiro-doc-cor-barra{ width:16px; height:3px; border-radius:2px; }
+
+.ugc-roteiro-doc-cor-paleta{
+  position:absolute; top:calc(100% + 4px); left:0; z-index:20; display:flex; flex-wrap:wrap; gap:6px;
+  width:168px; padding:8px; background:var(--branco); border:1px solid var(--borda);
+  border-radius:var(--raio-sm); box-shadow:var(--sombra);
+}
+.ugc-roteiro-doc-cor-paleta[hidden]{ display:none; }
+
+.ugc-roteiro-doc-cor-swatch{
+  width:22px; height:22px; border-radius:50%; border:1px solid var(--borda); cursor:pointer; padding:0;
+}
+.ugc-roteiro-doc-cor-swatch:hover{ transform:scale(1.12); }
+.ugc-roteiro-doc-cor-swatch-remover{ background:var(--branco); color:var(--texto-suave); font-size:11px; display:flex; align-items:center; justify-content:center; }
+
+/* Gatilho de cor personalizada: um <input type="color"> nativo, sem
+   aparência própria visível, sobreposto num círculo com gradiente. */
+.ugc-roteiro-doc-cor-custom{
+  /* <label> é inline por padrão, e width/height não têm efeito em
+     elemento inline — sem isso o círculo nasce achatado. */
+  display:inline-block;
+  margin:0;
+  position:relative; width:22px; height:22px; border-radius:50%; overflow:hidden;
+  border:1px solid var(--borda); cursor:pointer;
+  background:conic-gradient(from 0deg, #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000);
+}
+.ugc-roteiro-doc-cor-custom input[type="color"]{
+  position:absolute; inset:-6px; width:calc(100% + 12px); height:calc(100% + 12px);
+  border:none; padding:0; cursor:pointer; opacity:0;
+}
+
+.ugc-roteiro-doc-cor-custom-item{ position:relative; display:inline-flex; }
+.ugc-roteiro-doc-cor-custom-remover{
+  position:absolute; top:-6px; right:-6px; width:14px; height:14px; border-radius:50%;
+  border:1px solid var(--borda); background:var(--branco); color:var(--texto-suave); font-size:9px;
+  line-height:1; padding:0; cursor:pointer; display:none; align-items:center; justify-content:center;
+}
+.ugc-roteiro-doc-cor-custom-item:hover .ugc-roteiro-doc-cor-custom-remover{ display:flex; }
+
+.ugc-roteiro-doc-area{
+  background:var(--branco); border:1px solid var(--borda); border-radius:var(--raio-sm);
+  padding:16px; min-height:220px; font-size:14px; line-height:1.6; color:var(--coral);
+}
+.ugc-roteiro-doc-area:focus{ outline:none; border-color:var(--coral); }
+.ugc-roteiro-doc-area:empty::before{ content:attr(data-placeholder); color:var(--texto-suave); }
+.ugc-roteiro-doc-area ul, .ugc-roteiro-doc-area ol{ padding-left:22px; margin:8px 0; }
+
+/* Espaçamento pros títulos do template inicial dentro da área editável
+   (o reset h1,h2,h3{margin:0} lá em cima deixaria tudo colado). */
+.ugc-roteiro-doc-area h2{ font-size:16px; margin:18px 0 8px; }
+.ugc-roteiro-doc-area h2:first-child{ margin-top:0; }

@@ -325,6 +325,31 @@ create policy "desafio-fotos - select proprio ou publico" on storage.objects
   using (bucket_id = 'desafio-fotos');
 
 -- ---------------------------------------------------------------------
+-- Tabela: desafio_processo
+-- Bloco de notas livre só seu — planejamento dos 16 dias, pipeline de
+-- conteúdo, ideias de reserva, "basicamente tudo" sobre o desafio antes
+-- dele começar. Uma linha só (id sempre 1): não é por participante, é
+-- só a sua anotação. Nunca aparece pro lado do participante.
+-- ---------------------------------------------------------------------
+create table if not exists public.desafio_processo (
+  id int primary key default 1,
+  conteudo text not null default '',
+  atualizado_em timestamptz not null default now(),
+  constraint desafio_processo_singleton check (id = 1)
+);
+
+alter table public.desafio_processo enable row level security;
+
+create policy "processo - so dona" on public.desafio_processo
+  for all to authenticated
+  using (public.is_owner())
+  with check (public.is_owner());
+
+insert into public.desafio_processo (id, conteudo)
+values (1, '')
+on conflict (id) do nothing;
+
+-- ---------------------------------------------------------------------
 -- Seed: os 16 dias do desafio (edite título/descrição se quiser antes
 -- de rodar — ou publique um por um direto no admin.html no dia certo).
 -- Comentado de propósito: descomente só se quiser popular tudo de uma

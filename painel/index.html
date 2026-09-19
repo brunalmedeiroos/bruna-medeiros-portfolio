@@ -12,7 +12,7 @@
 <!-- Reaproveita o CSS do painel-admin, para não duplicar o design system -->
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260919d">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260919e">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
@@ -1248,13 +1248,20 @@
                 </button>
                 <div class="ugc-roteiro-doc-cor-paleta" hidden>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#1A1A1A" style="background:#1A1A1A" aria-label="Preto"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#4B5563" style="background:#4B5563" aria-label="Cinza"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#DC2626" style="background:#DC2626" aria-label="Vermelho"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#EA580C" style="background:#EA580C" aria-label="Laranja"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#CA8A04" style="background:#CA8A04" aria-label="Amarelo"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#65A30D" style="background:#65A30D" aria-label="Oliva"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#16A34A" style="background:#16A34A" aria-label="Verde"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#0D9488" style="background:#0D9488" aria-label="Verde-azulado"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#2563EB" style="background:#2563EB" aria-label="Azul"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#4F46E5" style="background:#4F46E5" aria-label="Índigo"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#7C3AED" style="background:#7C3AED" aria-label="Roxo"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#DB2777" style="background:#DB2777" aria-label="Rosa"></button>
+                  <label class="ugc-roteiro-doc-cor-custom" data-i18n-aria="ugc_doc_outra_cor" aria-label="Escolher outra cor">
+                    <input type="color" value="#1A1A1A">
+                  </label>
                 </div>
               </div>
               <div class="ugc-roteiro-doc-cor-wrap">
@@ -1264,11 +1271,17 @@
                 </button>
                 <div class="ugc-roteiro-doc-cor-paleta" hidden>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FFF59D" style="background:#FFF59D" aria-label="Amarelo"></button>
-                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#A7F3D0" style="background:#A7F3D0" aria-label="Verde"></button>
-                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#BFDBFE" style="background:#BFDBFE" aria-label="Azul"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FDE68A" style="background:#FDE68A" aria-label="Âmbar"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FED7AA" style="background:#FED7AA" aria-label="Laranja claro"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FECACA" style="background:#FECACA" aria-label="Vermelho claro"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FBCFE8" style="background:#FBCFE8" aria-label="Rosa"></button>
-                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FDE68A" style="background:#FDE68A" aria-label="Laranja claro"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#E9D5FF" style="background:#E9D5FF" aria-label="Roxo claro"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#BFDBFE" style="background:#BFDBFE" aria-label="Azul"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#A7F3D0" style="background:#A7F3D0" aria-label="Verde"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch ugc-roteiro-doc-cor-swatch-remover" data-cor="transparent" data-i18n-aria="ugc_doc_remover_grifo" aria-label="Remover grifo">✕</button>
+                  <label class="ugc-roteiro-doc-cor-custom" data-i18n-aria="ugc_doc_outra_cor" aria-label="Escolher outra cor">
+                    <input type="color" value="#FFF59D">
+                  </label>
                 </div>
               </div>
             </div>
@@ -1857,13 +1870,20 @@
                 </button>
                 <div class="ugc-roteiro-doc-cor-paleta" hidden>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#1A1A1A" style="background:#1A1A1A" aria-label="Preto"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#4B5563" style="background:#4B5563" aria-label="Cinza"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#DC2626" style="background:#DC2626" aria-label="Vermelho"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#EA580C" style="background:#EA580C" aria-label="Laranja"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#CA8A04" style="background:#CA8A04" aria-label="Amarelo"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#65A30D" style="background:#65A30D" aria-label="Oliva"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#16A34A" style="background:#16A34A" aria-label="Verde"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#0D9488" style="background:#0D9488" aria-label="Verde-azulado"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#2563EB" style="background:#2563EB" aria-label="Azul"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#4F46E5" style="background:#4F46E5" aria-label="Índigo"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#7C3AED" style="background:#7C3AED" aria-label="Roxo"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#DB2777" style="background:#DB2777" aria-label="Rosa"></button>
+                  <label class="ugc-roteiro-doc-cor-custom" data-i18n-aria="ugc_doc_outra_cor" aria-label="Escolher outra cor">
+                    <input type="color" value="#1A1A1A">
+                  </label>
                 </div>
               </div>
               <div class="ugc-roteiro-doc-cor-wrap">
@@ -1873,11 +1893,17 @@
                 </button>
                 <div class="ugc-roteiro-doc-cor-paleta" hidden>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FFF59D" style="background:#FFF59D" aria-label="Amarelo"></button>
-                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#A7F3D0" style="background:#A7F3D0" aria-label="Verde"></button>
-                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#BFDBFE" style="background:#BFDBFE" aria-label="Azul"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FDE68A" style="background:#FDE68A" aria-label="Âmbar"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FED7AA" style="background:#FED7AA" aria-label="Laranja claro"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FECACA" style="background:#FECACA" aria-label="Vermelho claro"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FBCFE8" style="background:#FBCFE8" aria-label="Rosa"></button>
-                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#FDE68A" style="background:#FDE68A" aria-label="Laranja claro"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#E9D5FF" style="background:#E9D5FF" aria-label="Roxo claro"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#BFDBFE" style="background:#BFDBFE" aria-label="Azul"></button>
+                  <button type="button" class="ugc-roteiro-doc-cor-swatch" data-cor="#A7F3D0" style="background:#A7F3D0" aria-label="Verde"></button>
                   <button type="button" class="ugc-roteiro-doc-cor-swatch ugc-roteiro-doc-cor-swatch-remover" data-cor="transparent" data-i18n-aria="ugc_doc_remover_grifo" aria-label="Remover grifo">✕</button>
+                  <label class="ugc-roteiro-doc-cor-custom" data-i18n-aria="ugc_doc_outra_cor" aria-label="Escolher outra cor">
+                    <input type="color" value="#FFF59D">
+                  </label>
                 </div>
               </div>
             </div>
@@ -3001,6 +3027,7 @@
         ugc_doc_cor_texto: 'Cor do texto',
         ugc_doc_grifar: 'Grifar',
         ugc_doc_remover_grifo: 'Remover grifo',
+        ugc_doc_outra_cor: 'Escolher outra cor',
         ugc_visivel_para_marca: 'A marca vê isso no link de aprovação.',
         ugc_observacoes: 'Observações',
         ugc_copiar_roteiro: 'Copiar roteiro completo',
@@ -3817,6 +3844,7 @@
         ugc_doc_cor_texto: 'Text color',
         ugc_doc_grifar: 'Highlight',
         ugc_doc_remover_grifo: 'Remove highlight',
+        ugc_doc_outra_cor: 'Choose another color',
         ugc_visivel_para_marca: 'The brand sees this on the approval link.',
         ugc_observacoes: 'Notes',
         ugc_copiar_roteiro: 'Copy full script',
@@ -9760,6 +9788,23 @@
         const paleta = wrap.querySelector('.ugc-roteiro-doc-cor-paleta');
         const barra = botaoAbrir.querySelector('.ugc-roteiro-doc-cor-barra');
         const comando = botaoAbrir.dataset.tipo === 'grifo' ? 'hiliteColor' : 'foreColor';
+        const area = wrap.closest('.ugc-roteiro-doc-toolbar')?.nextElementSibling;
+
+        // Guarda onde a seleção estava antes de abrir o seletor de cor do
+        // sistema — ele rouba o foco do editor, e sem isso o navegador
+        // esquece o que tinha selecionado e a cor não aplica em nada.
+        let rangeSalva = null;
+
+        function aplicarCor(cor) {
+          if (area) area.focus();
+          if (rangeSalva) {
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(rangeSalva);
+          }
+          document.execCommand(comando, false, cor);
+          if (cor !== 'transparent') barra.style.background = cor;
+        }
 
         botaoAbrir.addEventListener('mousedown', (e) => {
           e.preventDefault();
@@ -9771,12 +9816,25 @@
         paleta.querySelectorAll('[data-cor]').forEach((swatch) => {
           swatch.addEventListener('mousedown', (e) => {
             e.preventDefault();
-            const cor = swatch.dataset.cor;
-            document.execCommand(comando, false, cor);
-            if (cor !== 'transparent') barra.style.background = cor;
+            aplicarCor(swatch.dataset.cor);
             paleta.hidden = true;
           });
         });
+
+        const inputCustom = paleta.querySelector('input[type="color"]');
+        if (inputCustom) {
+          inputCustom.addEventListener('mousedown', () => {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0) rangeSalva = sel.getRangeAt(0).cloneRange();
+          });
+          inputCustom.addEventListener('input', (e) => {
+            aplicarCor(e.target.value);
+            inputCustom.closest('.ugc-roteiro-doc-cor-custom').style.background = e.target.value;
+          });
+          inputCustom.addEventListener('change', () => {
+            paleta.hidden = true;
+          });
+        }
       });
 
       // Clicar fora de qualquer paleta aberta fecha ela.

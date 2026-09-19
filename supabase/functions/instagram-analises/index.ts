@@ -11,7 +11,7 @@
 
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "@supabase/server";
-import { chamarGraph, insightDeConta, insightDeContaPorDia, insightDeMidia, obterAccessTokenValido } from "../_shared/instagram.ts";
+import { chamarGraph, insightDeMidia, obterAccessTokenValido } from "../_shared/instagram.ts";
 import { ehDono } from "../_shared/dono.ts";
 
 const CORS_HEADERS = {
@@ -48,31 +48,12 @@ function janelasDoPeriodo(diasTotal: number): Array<{ desde: string; ate: string
   return janelas;
 }
 
-async function somaInsightPeriodo(
-  igUserId: string,
-  accessToken: string,
-  metricas: string[],
-  diasTotal: number,
-  erros: string[],
-): Promise<number | null> {
-  let soma = 0;
-  let algumaFuncionou = false;
-  for (const janela of janelasDoPeriodo(diasTotal)) {
-    const valor = await insightDeConta(igUserId, accessToken, metricas, janela.desde, janela.ate, erros);
-    if (valor !== null) {
-      soma += valor;
-      algumaFuncionou = true;
-    }
-  }
-  return algumaFuncionou ? soma : null;
-}
-
-// "accounts_engaged" e "total_interactions" são métricas agregadas — a
-// Graph API só devolve valor pra elas com metric_type=total_value (uma
-// conta pro intervalo inteiro), não com a série diária (period=day sem
-// metric_type) que funciona pra reach/follower_count. Pedir do jeito
-// errado não dá erro, só volta vazio — por isso essas duas métricas
-// tinham um helper próprio, em vez de reusar somaInsightPeriodo.
+// "accounts_engaged", "total_interactions" e "follows_and_unfollows" são
+// métricas agregadas — a Graph API só devolve valor pra elas com
+// metric_type=total_value (uma conta pro intervalo inteiro), não com a
+// série diária (period=day sem metric_type) que funciona pra reach/
+// follower_count na Visão Geral. Pedir do jeito errado não dá erro, só
+// volta vazio.
 async function totalValueInsight(
   igUserId: string,
   accessToken: string,
@@ -91,7 +72,11 @@ async function totalValueInsight(
       access_token: accessToken,
     });
     const valor = resposta.data?.[0]?.total_value?.value;
-    return typeof valor === "number" ? valor : null;
+    if (typeof valor !== "number") {
+      erros.push(`insight total_value [${metrica}]: resposta sem total_value nesse período (${desde} a ${ate})`);
+      return null;
+    }
+    return valor;
   } catch (e) {
     erros.push(`insight total_value [${metrica}]: ${(e as Error).message}`);
     return null;
@@ -117,17 +102,51 @@ async function somaTotalValuePeriodo(
   return algumaFuncionou ? soma : null;
 }
 
-async function seriePorDiaPeriodo(
+// "views" só devolve a série diária se pedir metric_type=time_series
+// explícito — sem isso a Graph API responde 200 OK com "data" vazio, sem
+// erro nenhum (foi o que aconteceu: virou "–" sem nenhum aviso). reach e
+// follower_count (usados na Visão Geral, num outro arquivo, via
+// insightDeContaPorDia) continuam funcionando sem esse parâmetro.
+async function seriePorDiaMetrica(
   igUserId: string,
   accessToken: string,
-  metricas: string[],
+  metrica: string,
+  desde: string,
+  ate: string,
+  erros: string[],
+): Promise<Array<{ data: string; valor: number }> | null> {
+  try {
+    const resposta = await chamarGraph(`/${igUserId}/insights`, {
+      metric: metrica,
+      metric_type: "time_series",
+      period: "day",
+      since: desde,
+      until: ate,
+      access_token: accessToken,
+    });
+    const valores = resposta.data?.[0]?.values || [];
+    if (!valores.length) {
+      erros.push(`insight time_series [${metrica}]: resposta sem values nesse período (${desde} a ${ate})`);
+      return null;
+    }
+    return valores.map((v: { end_time: string; value: number }) => ({ data: v.end_time.slice(0, 10), valor: v.value || 0 }));
+  } catch (e) {
+    erros.push(`insight time_series [${metrica}]: ${(e as Error).message}`);
+    return null;
+  }
+}
+
+async function seriePorDiaMetricaPeriodo(
+  igUserId: string,
+  accessToken: string,
+  metrica: string,
   diasTotal: number,
   erros: string[],
 ): Promise<Array<{ data: string; valor: number }> | null> {
   let serie: Array<{ data: string; valor: number }> = [];
   let algumaFuncionou = false;
   for (const janela of janelasDoPeriodo(diasTotal)) {
-    const trecho = await insightDeContaPorDia(igUserId, accessToken, metricas, janela.desde, janela.ate, erros);
+    const trecho = await seriePorDiaMetrica(igUserId, accessToken, metrica, janela.desde, janela.ate, erros);
     if (trecho) {
       serie = serie.concat(trecho);
       algumaFuncionou = true;
@@ -227,12 +246,11 @@ export default {
     // "views" (não "reach") é o que a Meta mostra hoje como métrica
     // principal na Visão geral do painel profissional ("Visualizações"),
     // e "follows_and_unfollows" é o líquido (ganhos menos perdas) que
-    // aparece como "Seguidores líquidos" — bateram nos testes reais contra
-    // o app, diferente de reach/follower_count (que contam coisas distintas
-    // e não fecham com o que a pessoa vê no Instagram).
+    // aparece como "Seguidores líquidos" — reach/follower_count contam
+    // coisas diferentes e não fecham com o que a pessoa vê no Instagram.
     const [visualizacoesPorDia, seguidoresLiquidos, contasEngajadas, interacoes] = await Promise.all([
-      seriePorDiaPeriodo("me", accessToken, ["views"], periodoDias, erros),
-      somaInsightPeriodo("me", accessToken, ["follows_and_unfollows"], periodoDias, erros),
+      seriePorDiaMetricaPeriodo("me", accessToken, "views", periodoDias, erros),
+      somaTotalValuePeriodo("me", accessToken, "follows_and_unfollows", periodoDias, erros),
       somaTotalValuePeriodo("me", accessToken, "accounts_engaged", periodoDias, erros),
       somaTotalValuePeriodo("me", accessToken, "total_interactions", periodoDias, erros),
     ]);

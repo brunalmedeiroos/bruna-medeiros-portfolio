@@ -175,6 +175,20 @@
   color: #fff;
 }
 
+.nav-group-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-group-icon-img {
+  width: 15px;
+  height: 15px;
+  object-fit: contain;
+  flex-shrink: 0;
+  mix-blend-mode: normal;
+}
+
 .nav-group-seta {
   flex-shrink: 0;
   opacity: 0.85;

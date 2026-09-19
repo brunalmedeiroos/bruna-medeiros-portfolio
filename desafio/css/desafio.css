@@ -255,3 +255,47 @@ h1,h2,h3{ font-family:var(--fonte-titulo); margin:0; text-wrap:balance; }
    (o reset h1,h2,h3{margin:0} lá em cima deixaria tudo colado). */
 .ugc-roteiro-doc-area h2{ font-size:16px; margin:18px 0 8px; }
 .ugc-roteiro-doc-area h2:first-child{ margin-top:0; }
+
+/* ---- Processo: nav interna das 5 abas (Visão Geral/Tabela de
+   processo/Vídeos/Desafios/Meu painel), embaixo da nav externa
+   Admin/Meu painel/Processo. ---- */
+.processo-subnav{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:20px; }
+.processo-subnav-btn{
+  background:transparent; border:1px solid var(--borda); border-radius:999px;
+  padding:9px 16px; font-size:13px; font-weight:600; font-family:var(--fonte-corpo);
+  color:var(--texto-suave); cursor:pointer;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.processo-subnav-btn:hover{ color:var(--coral); }
+.processo-subnav-btn.ativo{ background:var(--coral); border-color:var(--coral); color:var(--branco); }
+
+/* Card "Dia X de 16" no topo da Visão Geral. */
+.processo-dia-card{ background:linear-gradient(135deg,var(--coral-fundo),var(--coral-claro-fundo)); border:1px solid var(--borda); border-radius:16px; padding:18px 20px; margin-bottom:22px; }
+.processo-dia-card .titulo{ font-size:18px; font-weight:700; margin-bottom:4px; }
+.processo-dia-card .periodo{ font-size:12.5px; color:var(--texto-suave); }
+.processo-dia-card input[type="date"]{ border:1px solid var(--borda); background:var(--branco); border-radius:var(--raio-sm); padding:8px 10px; font-size:13px; font-family:var(--fonte-corpo); color:var(--coral); }
+
+/* Pills de status na Tabela de processo / Desafios — reaproveita as
+   variáveis --ok/--pendente já definidas lá em cima e até agora sem uso. */
+.processo-pill{ font-size:11px; font-weight:700; padding:3px 10px; border-radius:999px; white-space:nowrap; display:inline-block; }
+.processo-pill.pronto{ background:var(--ok-fundo); color:var(--ok); }
+.processo-pill.a-fazer{ background:var(--pendente-fundo); color:var(--pendente); }
+.processo-pill.sem-vinculo{ background:var(--cinza-claro); color:var(--texto-suave); }
+.processo-link-abrir{ font-size:12px; font-weight:700; color:var(--coral-claro); text-decoration:underline; cursor:pointer; margin-left:6px; background:none; border:none; font-family:var(--fonte-corpo); padding:0; }
+.processo-check{ width:16px; height:16px; accent-color:var(--coral); cursor:pointer; }
+.processo-acoes{ display:flex; gap:10px; }
+.processo-acoes button{ background:none; border:none; color:var(--coral-claro); font-size:12.5px; font-weight:700; cursor:pointer; font-family:var(--fonte-corpo); padding:0; }
+.processo-acoes button.apagar{ color:var(--pendente); }
+
+/* Modal simples de editar/vincular dia. */
+.processo-modal-overlay{ position:fixed; inset:0; background:rgba(4,70,93,0.35); display:flex; align-items:center; justify-content:center; padding:20px; z-index:100; }
+.processo-modal{ background:var(--branco); border-radius:var(--raio-lg); box-shadow:var(--sombra); padding:26px; max-width:480px; width:100%; max-height:86vh; overflow-y:auto; }
+.processo-modal h3{ margin-bottom:16px; }
+.processo-modal-acoes{ display:flex; justify-content:flex-end; gap:10px; margin-top:18px; }
+.processo-modal-acoes .btn{ width:auto; padding:10px 18px; }
+.btn-secundario{ background:var(--cinza-claro); color:var(--coral); }
+.processo-modal-lista-busca{ max-height:220px; overflow-y:auto; border:1px solid var(--borda); border-radius:var(--raio-sm); margin-top:8px; }
+.processo-modal-lista-item{ padding:9px 12px; font-size:13px; cursor:pointer; border-bottom:1px solid var(--borda); }
+.processo-modal-lista-item:last-child{ border-bottom:none; }
+.processo-modal-lista-item:hover{ background:var(--cinza-claro); }
+.processo-modal-lista-item .pilar{ color:var(--texto-suave); font-size:11px; }

@@ -4869,7 +4869,7 @@
       const urls = {
         admin: '../desafio/admin/?v=11',
         painel: '../desafio/painel/?v=3',
-        processo: '../desafio/processo/?v=1',
+        processo: '../desafio/processo/?v=2',
       };
       iframe.src = urls[pagina] || urls.admin;
     }
@@ -8160,6 +8160,36 @@
     function fecharModalIdeia() {
       ideiaAbertaId = null;
       document.getElementById('pl-modal-overlay').hidden = true;
+    }
+
+    // ---- Ponte pra aba "Processo" do Desafio UGC (iframe same-origin) ----
+    // window.parent.<fn>() a partir de desafio/processo/index.html. Precisa
+    // ser function declaration (não let/const) pra pendurar em window.
+
+    async function listarIdeiasParaVincularDesafio() {
+      if (!planejadorAbaCarregada) {
+        planejadorAbaCarregada = true;
+        await carregarPlanejador();
+      }
+      return ideiasCache.map((i) => ({
+        id: i.id,
+        titulo: i.titulo,
+        status: i.status,
+        formato: i.formato || '',
+        pilar: (pilaresCache.find((p) => p.id === i.pilar_id) || {}).nome || '',
+      }));
+    }
+
+    async function abrirRoteiroDesafio(ideiaId) {
+      if (!planejadorAbaCarregada) {
+        planejadorAbaCarregada = true;
+        await carregarPlanejador();
+      }
+      const idea = ideiasCache.find((i) => i.id === ideiaId);
+      if (!idea) return;
+      trocarAba('planejador');
+      abrirPaginaPlanejador('banco');
+      abrirModalIdeia(idea);
     }
 
     async function salvarModalIdeia() {

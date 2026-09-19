@@ -350,6 +350,22 @@ values (1, '')
 on conflict (id) do nothing;
 
 -- ---------------------------------------------------------------------
+-- Processo — colunas novas pra virar mini-dashboard de 5 abas.
+-- data_publicacao/gravado_postado: usadas na "Tabela de processo" e em
+-- "Desafios" (mesma data, um só lugar). roteiro_ideia_id: link solto pro
+-- id de uma linha em planejador_ideias (projeto Supabase PRINCIPAL, não
+-- este) — sem FK de verdade possível entre os dois projetos, resolvido
+-- em tempo de leitura pelas pontes em painel-admin/painel.html.
+-- ---------------------------------------------------------------------
+alter table public.desafio_dias
+  add column if not exists data_publicacao date,
+  add column if not exists gravado_postado boolean not null default false,
+  add column if not exists roteiro_ideia_id uuid;
+
+alter table public.desafio_processo
+  add column if not exists data_inicio date;
+
+-- ---------------------------------------------------------------------
 -- Seed: os 16 dias do desafio (edite título/descrição se quiser antes
 -- de rodar — ou publique um por um direto no admin.html no dia certo).
 -- Comentado de propósito: descomente só se quiser popular tudo de uma

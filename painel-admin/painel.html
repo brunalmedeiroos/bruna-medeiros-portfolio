@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260919e">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260919f">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/auth.js?v=20260901c"></script>
@@ -3027,6 +3027,7 @@
         ugc_doc_grifar: 'Grifar',
         ugc_doc_remover_grifo: 'Remover grifo',
         ugc_doc_outra_cor: 'Escolher outra cor',
+        ugc_doc_cor_remover: 'Remover esta cor',
         ugc_visivel_para_marca: 'A marca vê isso no link de aprovação.',
         ugc_observacoes: 'Observações',
         ugc_copiar_roteiro: 'Copiar roteiro completo',
@@ -3844,6 +3845,7 @@
         ugc_doc_grifar: 'Highlight',
         ugc_doc_remover_grifo: 'Remove highlight',
         ugc_doc_outra_cor: 'Choose another color',
+        ugc_doc_cor_remover: 'Remove this color',
         ugc_visivel_para_marca: 'The brand sees this on the approval link.',
         ugc_observacoes: 'Notes',
         ugc_copiar_roteiro: 'Copy full script',
@@ -8138,6 +8140,7 @@
       const areaRoteiroCompleto = document.getElementById('pl-modal-roteiro-completo');
       areaRoteiroCompleto.innerHTML = ideia.roteiro_completo || '';
       areaRoteiroCompleto.setAttribute('data-placeholder', tr('pl_roteiro_completo_placeholder'));
+      prepararEstiloPadraoRoteiro(areaRoteiroCompleto);
       document.getElementById('pl-modal-gravado').checked = !!ideia.gravado;
 
       const selectPilar = document.getElementById('pl-modal-pilar');
@@ -9777,17 +9780,50 @@
       });
     }
 
+    // Paleta de cores personalizada: fica salva no navegador (não é por
+    // roteiro, é "a paleta padrão dela") — cada tom escolhido no seletor
+    // nativo entra como uma cor fixa na paletinha, disponível em qualquer
+    // roteiro (Banco de Ideias ou UGC/Publi) daí em diante.
+    const CHAVE_PALETA_COR_TEXTO_ROTEIRO = 'painel_roteiro_paleta_cor_texto';
+    const CHAVE_PALETA_COR_GRIFO_ROTEIRO = 'painel_roteiro_paleta_cor_grifo';
+    const MAX_CORES_PERSONALIZADAS_ROTEIRO = 12;
+
+    function lerPaletaCorPersonalizada(chave) {
+      try {
+        const bruto = localStorage.getItem(chave);
+        const cores = bruto ? JSON.parse(bruto) : [];
+        return Array.isArray(cores) ? cores : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function salvarPaletaCorPersonalizada(chave, cores) {
+      try {
+        localStorage.setItem(chave, JSON.stringify(cores.slice(0, MAX_CORES_PERSONALIZADAS_ROTEIRO)));
+      } catch (e) {
+        // Sem localStorage (modo privado etc.) — a cor ainda aplica, só não fica salva.
+      }
+    }
+
     // Cor do texto e grifo: um botão que abre uma paletinha de cores perto
     // dele (não um <input type="color"> nativo, que abre o seletor do
     // sistema operacional e não combina com o resto do editor) — clicar
     // numa cor aplica na seleção via execCommand e fecha a paleta.
     function configurarPaletasCorRoteiro() {
+      // Agrupa por chave (texto/grifo) pra repintar TODAS as paletas
+      // daquele tipo — inclusive a do outro modal — quando uma cor
+      // personalizada é adicionada ou removida em qualquer uma delas.
+      const repintarPorChave = { [CHAVE_PALETA_COR_TEXTO_ROTEIRO]: [], [CHAVE_PALETA_COR_GRIFO_ROTEIRO]: [] };
+
       document.querySelectorAll('.ugc-roteiro-doc-cor-wrap').forEach((wrap) => {
         const botaoAbrir = wrap.querySelector('.ugc-roteiro-doc-cor-btn');
         const paleta = wrap.querySelector('.ugc-roteiro-doc-cor-paleta');
         const barra = botaoAbrir.querySelector('.ugc-roteiro-doc-cor-barra');
         const comando = botaoAbrir.dataset.tipo === 'grifo' ? 'hiliteColor' : 'foreColor';
+        const chavePersonalizada = comando === 'hiliteColor' ? CHAVE_PALETA_COR_GRIFO_ROTEIRO : CHAVE_PALETA_COR_TEXTO_ROTEIRO;
         const area = wrap.closest('.ugc-roteiro-doc-toolbar')?.nextElementSibling;
+        const custom = paleta.querySelector('.ugc-roteiro-doc-cor-custom');
 
         // Guarda onde a seleção estava antes de abrir o seletor de cor do
         // sistema — ele rouba o foco do editor, e sem isso o navegador
@@ -9805,6 +9841,46 @@
           if (cor !== 'transparent') barra.style.background = cor;
         }
 
+        function repintarCoresPersonalizadas() {
+          paleta.querySelectorAll('.ugc-roteiro-doc-cor-custom-item').forEach((item) => item.remove());
+          lerPaletaCorPersonalizada(chavePersonalizada).forEach((cor) => {
+            const item = document.createElement('span');
+            item.className = 'ugc-roteiro-doc-cor-custom-item';
+
+            const swatch = document.createElement('button');
+            swatch.type = 'button';
+            swatch.className = 'ugc-roteiro-doc-cor-swatch';
+            swatch.style.background = cor;
+            swatch.setAttribute('aria-label', cor);
+            swatch.addEventListener('mousedown', (e) => {
+              e.preventDefault();
+              aplicarCor(cor);
+              paleta.hidden = true;
+            });
+
+            const remover = document.createElement('button');
+            remover.type = 'button';
+            remover.className = 'ugc-roteiro-doc-cor-custom-remover';
+            remover.textContent = '✕';
+            remover.title = tr('ugc_doc_cor_remover');
+            remover.setAttribute('aria-label', tr('ugc_doc_cor_remover'));
+            remover.addEventListener('mousedown', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const restantes = lerPaletaCorPersonalizada(chavePersonalizada).filter((c) => c !== cor);
+              salvarPaletaCorPersonalizada(chavePersonalizada, restantes);
+              repintarPorChave[chavePersonalizada].forEach((fn) => fn());
+            });
+
+            item.appendChild(swatch);
+            item.appendChild(remover);
+            custom.before(item);
+          });
+        }
+
+        repintarPorChave[chavePersonalizada].push(repintarCoresPersonalizadas);
+        repintarCoresPersonalizadas();
+
         botaoAbrir.addEventListener('mousedown', (e) => {
           e.preventDefault();
           const jaAberta = !paleta.hidden;
@@ -9812,7 +9888,7 @@
           paleta.hidden = jaAberta;
         });
 
-        paleta.querySelectorAll('[data-cor]').forEach((swatch) => {
+        paleta.querySelectorAll('.ugc-roteiro-doc-cor-swatch[data-cor]').forEach((swatch) => {
           swatch.addEventListener('mousedown', (e) => {
             e.preventDefault();
             aplicarCor(swatch.dataset.cor);
@@ -9828,9 +9904,14 @@
           });
           inputCustom.addEventListener('input', (e) => {
             aplicarCor(e.target.value);
-            inputCustom.closest('.ugc-roteiro-doc-cor-custom').style.background = e.target.value;
+            custom.style.background = e.target.value;
           });
-          inputCustom.addEventListener('change', () => {
+          inputCustom.addEventListener('change', (e) => {
+            const cor = e.target.value;
+            const cores = lerPaletaCorPersonalizada(chavePersonalizada).filter((c) => c !== cor);
+            cores.unshift(cor);
+            salvarPaletaCorPersonalizada(chavePersonalizada, cores);
+            repintarPorChave[chavePersonalizada].forEach((fn) => fn());
             paleta.hidden = true;
           });
         }
@@ -9842,6 +9923,25 @@
           document.querySelectorAll('.ugc-roteiro-doc-cor-paleta').forEach((p) => (p.hidden = true));
         }
       });
+    }
+
+    // Ao abrir um roteiro novo/vazio, garante que o texto comece preto —
+    // sem isso o navegador pode manter a última cor/grifo usados nesse
+    // mesmo campo (o campo é reaproveitado entre roteiros diferentes).
+    const COR_PADRAO_TEXTO_ROTEIRO = '#1A1A1A';
+
+    function prepararEstiloPadraoRoteiro(area) {
+      if (!conteudoRoteiroVazio(area)) return;
+      area.focus();
+      const range = document.createRange();
+      range.selectNodeContents(area);
+      range.collapse(true);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      document.execCommand('foreColor', false, COR_PADRAO_TEXTO_ROTEIRO);
+      document.execCommand('hiliteColor', false, 'transparent');
+      area.blur();
     }
 
     function conteudoRoteiroVazio(el) {
@@ -9940,6 +10040,7 @@
       const areaConteudo = document.getElementById('ugc-roteiro-conteudo');
       areaConteudo.innerHTML = roteiro ? roteiro.conteudo || '' : '';
       areaConteudo.setAttribute('data-placeholder', tr('ugc_roteiro_conteudo_placeholder'));
+      prepararEstiloPadraoRoteiro(areaConteudo);
 
       const corAtiva = !!(roteiro && roteiro.marca_cor);
       document.getElementById('ugc-roteiro-marca-cor-ativa').checked = corAtiva;

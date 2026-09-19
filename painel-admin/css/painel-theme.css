@@ -3179,6 +3179,10 @@
    de melhor; não vale a pena reinventar isso em JS puro). Depois de
    escolher uma vez, o círculo passa a mostrar a última cor escolhida. */
 .painel-body .ugc-roteiro-doc-cor-custom {
+  /* <label> é inline por padrão, e width/height não têm efeito em
+     elemento inline — sem isso o círculo nasce achatado ("torta") e o
+     input nativo por cima fica com a área de clique fora do lugar. */
+  display: inline-block;
   position: relative;
   width: 22px;
   height: 22px;
@@ -3198,6 +3202,34 @@
   padding: 0;
   cursor: pointer;
   opacity: 0;
+}
+
+.painel-body .ugc-roteiro-doc-cor-custom-item {
+  position: relative;
+  display: inline-flex;
+}
+
+.painel-body .ugc-roteiro-doc-cor-custom-remover {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--grafite-rgb), 0.15);
+  background: var(--branco);
+  color: var(--texto-suave);
+  font-size: 9px;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.painel-body .ugc-roteiro-doc-cor-custom-item:hover .ugc-roteiro-doc-cor-custom-remover {
+  display: flex;
 }
 
 .painel-body .ugc-roteiro-doc-area {

@@ -17,19 +17,34 @@ function renderKpiRow({ totalCadastradas, ativasEssaSemana, pctUltimoDia, ultimo
   `;
 }
 
-function renderAdminGrid({ proximoNumero, ranking, bonusHistorico }) {
+function renderAdminGrid({ rascunhos, ranking, bonusHistorico }) {
+  const opcoesDias = (rascunhos || [])
+    .map((d) => `<option value="${d.id}">Dia ${d.numero_dia}${d.titulo ? ' — ' + d.titulo : ' (sem tema ainda)'}</option>`)
+    .join('');
   return `
     <div class="admin-grid">
       <div class="admin-col card">
-        <h4>Publicar desafio do dia</h4>
-        <form id="form-desafio">
-          <div class="campo"><label>Dia</label><input type="number" id="f-numero" value="${proximoNumero}" min="1" required></div>
-          <div class="campo"><label>Título</label><input type="text" id="f-titulo" required placeholder="Ex: Escolha roupa e cenário pro próximo vídeo"></div>
-          <div class="campo"><label>Descrição</label><textarea id="f-descricao" required placeholder="O que a pessoa precisa fazer hoje"></textarea></div>
-          <div class="check-row"><input type="checkbox" id="f-video"> Aceita vídeo opcional pra avaliação</div>
-          <div id="form-msg" class="msg msg-erro" hidden></div>
-          <button type="submit" class="btn btn-primary">Publicar desafio</button>
-        </form>
+        <h4>Desafio do dia!</h4>
+        ${(rascunhos && rascunhos.length) ? `
+          <div id="wz-passo-1">
+            <div class="campo">
+              <label>Dia</label>
+              <select id="wz-dia">
+                <option value="">Escolha o dia...</option>
+                ${opcoesDias}
+              </select>
+            </div>
+            <button type="button" id="wz-continuar" class="btn-wizard desabilitado" disabled>Continuar</button>
+          </div>
+          <div id="wz-passo-2" hidden>
+            <button type="button" id="wz-voltar" class="btn-link-voltar">← Trocar o dia</button>
+            <div class="campo"><label>Título</label><input type="text" id="wz-titulo" placeholder="Ex: Escolha roupa e cenário pro próximo vídeo"></div>
+            <div class="campo"><label>Descrição</label><textarea id="wz-descricao" placeholder="O que a pessoa precisa fazer hoje"></textarea></div>
+            <label class="toggle-row"><span class="toggle-switch"><input type="checkbox" id="wz-video"><span class="trilho"></span></span>Desafio com vídeo</label>
+            <div id="wz-msg" class="msg msg-erro" hidden></div>
+            <button type="button" id="wz-publicar" class="btn-wizard desabilitado" disabled>Publicar desafio</button>
+          </div>
+        ` : `<p class="vazio">Todos os 16 desafios já foram publicados 🎉</p>`}
       </div>
 
       <div class="admin-col card">
@@ -78,25 +93,74 @@ function renderAdminGrid({ proximoNumero, ranking, bonusHistorico }) {
 }
 
 // Precisa do `ranking` já buscado pra achar a participante pelo @ digitado
-// no formulário de bônus, sem refazer a query.
-function wireAdminGridHandlers(db, ranking, { onChanged }) {
-  document.getElementById('form-desafio').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formMsg = document.getElementById('form-msg');
-    formMsg.hidden = true;
-    const { error } = await db.from('desafio_dias').insert({
-      numero_dia: Number(document.getElementById('f-numero').value),
-      titulo: document.getElementById('f-titulo').value.trim(),
-      descricao: document.getElementById('f-descricao').value.trim(),
-      pede_video: document.getElementById('f-video').checked,
-    });
-    if (error) {
-      formMsg.textContent = error.message.includes('duplicate') ? 'Já existe um desafio com esse número de dia.' : error.message;
-      formMsg.hidden = false;
-      return;
+// no formulário de bônus, e do `rascunhos` pra preencher o assistente
+// "Desafio do dia!" quando ela escolhe um dia — sem refazer query.
+function wireAdminGridHandlers(db, { ranking, rascunhos, onChanged }) {
+  const selectDia = document.getElementById('wz-dia');
+  if (selectDia) {
+    const passo1 = document.getElementById('wz-passo-1');
+    const passo2 = document.getElementById('wz-passo-2');
+    const btnContinuar = document.getElementById('wz-continuar');
+    const btnVoltar = document.getElementById('wz-voltar');
+    const btnPublicar = document.getElementById('wz-publicar');
+    const inputTitulo = document.getElementById('wz-titulo');
+    const inputDescricao = document.getElementById('wz-descricao');
+    const inputVideo = document.getElementById('wz-video');
+    const wzMsg = document.getElementById('wz-msg');
+    let diaEscolhido = null;
+
+    function atualizarBotao(btn, pronto) {
+      btn.disabled = !pronto;
+      btn.classList.toggle('pronto', pronto);
+      btn.classList.toggle('desabilitado', !pronto);
     }
-    onChanged();
-  });
+
+    selectDia.addEventListener('change', () => atualizarBotao(btnContinuar, !!selectDia.value));
+
+    function atualizarBotaoPublicar() {
+      atualizarBotao(btnPublicar, !!(inputTitulo.value.trim() && inputDescricao.value.trim()));
+    }
+    inputTitulo.addEventListener('input', atualizarBotaoPublicar);
+    inputDescricao.addEventListener('input', atualizarBotaoPublicar);
+
+    btnContinuar.addEventListener('click', () => {
+      if (btnContinuar.disabled) return;
+      diaEscolhido = (rascunhos || []).find((d) => d.id === selectDia.value);
+      if (!diaEscolhido) return;
+      inputTitulo.value = diaEscolhido.titulo || '';
+      inputDescricao.value = diaEscolhido.descricao || '';
+      inputVideo.checked = !!diaEscolhido.pede_video;
+      wzMsg.hidden = true;
+      atualizarBotaoPublicar();
+      passo1.hidden = true;
+      passo2.hidden = false;
+    });
+
+    btnVoltar.addEventListener('click', () => {
+      passo2.hidden = true;
+      passo1.hidden = false;
+    });
+
+    btnPublicar.addEventListener('click', async () => {
+      if (btnPublicar.disabled || !diaEscolhido) return;
+      wzMsg.hidden = true;
+      const agora = new Date();
+      const { error } = await db.from('desafio_dias').update({
+        titulo: inputTitulo.value.trim(),
+        descricao: inputDescricao.value.trim(),
+        pede_video: inputVideo.checked,
+        publicado: true,
+        data_publicacao: agora.toISOString().slice(0, 10),
+        publicado_em: agora.toISOString(),
+      }).eq('id', diaEscolhido.id);
+      if (error) {
+        wzMsg.textContent = error.message;
+        wzMsg.hidden = false;
+        return;
+      }
+      onChanged();
+    });
+  }
 
   function atualizarPreviewBonus() {
     const selecionados = [...document.querySelectorAll('.chip-motivo.sel')];

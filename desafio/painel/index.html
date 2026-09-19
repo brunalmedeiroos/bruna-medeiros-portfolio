@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/desafio.css?v=12">
+<link rel="stylesheet" href="../css/desafio.css?v=13">
 <script>
   // Embutido como aba dentro do Creator Center: esconde o cabeçalho
   // próprio da página (o painel já mostra o título).
@@ -52,7 +52,7 @@
 
       const [{ data: perfil }, { data: dias }, { data: conclusoes }, { data: rankingCompleto }, { data: bonus }] = await Promise.all([
         db.from('desafio_perfis').select('nome,instagram,foto_url').eq('id', user.id).maybeSingle(),
-        db.from('desafio_dias').select('*').order('numero_dia', { ascending: false }),
+        db.from('desafio_dias').select('*').eq('publicado', true).order('numero_dia', { ascending: false }),
         db.from('desafio_conclusoes').select('*').eq('participante_id', user.id),
         db.from('desafio_ranking').select('*').order('pontos', { ascending: false }),
         db.from('desafio_bonus').select('pontos,motivo,criado_em').eq('participante_id', user.id).order('criado_em', { ascending: false }),

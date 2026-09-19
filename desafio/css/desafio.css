@@ -306,3 +306,28 @@ h1,h2,h3{ font-family:var(--fonte-titulo); margin:0; text-wrap:balance; }
 .processo-modal-lista-item:last-child{ border-bottom:none; }
 .processo-modal-lista-item:hover{ background:var(--cinza-claro); }
 .processo-modal-lista-item .pilar{ color:var(--texto-suave); font-size:11px; }
+
+/* Assistente "Desafio do dia!" — botão cinza→verde (mesma mecânica pro
+   "Continuar" e pro "Publicar desafio") e o toggle "Desafio com vídeo". */
+.btn-wizard{ border:none; border-radius:var(--raio-sm); padding:13px 20px; font-size:14px; font-weight:700; font-family:var(--fonte-corpo); cursor:pointer; width:100%; transition:background .15s ease, color .15s ease; }
+.btn-wizard.desabilitado{ background:var(--cinza-claro); color:var(--texto-suave); cursor:default; }
+.btn-wizard.pronto{ background:var(--ok); color:#fff; }
+.btn-wizard.pronto:hover{ background:#156b45; }
+.btn-link-voltar{ background:none; border:none; padding:0; margin-bottom:14px; font-size:12px; font-weight:700; color:var(--texto-suave); cursor:pointer; font-family:var(--fonte-corpo); display:inline-block; }
+.btn-link-voltar:hover{ color:var(--coral); }
+
+.toggle-row{ display:flex; align-items:center; gap:10px; margin-bottom:16px; font-size:13px; font-weight:600; color:var(--coral); cursor:pointer; }
+.toggle-switch{ position:relative; display:inline-block; width:40px; height:23px; flex:0 0 auto; }
+.toggle-switch input{ opacity:0; width:0; height:0; position:absolute; }
+.toggle-switch .trilho{ position:absolute; inset:0; background:var(--borda); border-radius:999px; transition:background .15s ease; }
+.toggle-switch .trilho::before{ content:''; position:absolute; width:17px; height:17px; left:3px; top:3px; background:var(--branco); border-radius:50%; transition:transform .15s ease; box-shadow:var(--sombra); }
+.toggle-switch input:checked + .trilho{ background:var(--ok); }
+.toggle-switch input:checked + .trilho::before{ transform:translateX(17px); }
+
+/* Campos editáveis direto na Tabela de processo — sem borda até
+   passar o mouse/focar, pra parecer "clica e escreve" e não um
+   formulário pesado espremido dentro da tabela. */
+.processo-tabela-campo{ width:100%; min-width:110px; border:1px solid transparent; background:transparent; border-radius:6px; padding:6px 8px; font-size:12.5px; font-family:var(--fonte-corpo); color:var(--coral); transition:border-color .15s ease, background .15s ease; }
+.processo-tabela-campo:hover{ border-color:var(--borda); }
+.processo-tabela-campo:focus{ outline:none; border-color:var(--coral-claro); background:var(--branco); }
+textarea.processo-tabela-campo{ resize:vertical; min-height:38px; }

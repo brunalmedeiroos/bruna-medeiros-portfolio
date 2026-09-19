@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/desafio.css?v=12">
+<link rel="stylesheet" href="../css/desafio.css?v=13">
 <script>
   // Embutido como aba dentro do Creator Center: esconde o cabeçalho
   // próprio da página (o painel já mostra o título e o "Sair").
@@ -159,10 +159,11 @@
 
       const seteDiasAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-      const [{ data: processo }, { count: totalCadastradas }, { data: dias }, { data: ranking }, { data: ativasRows }] = await Promise.all([
+      const [{ data: processo }, { count: totalCadastradas }, { data: dias }, { data: rascunhos }, { data: ranking }, { data: ativasRows }] = await Promise.all([
         db.from('desafio_processo').select('data_inicio').eq('id', 1).maybeSingle(),
         db.from('desafio_perfis').select('*', { count: 'exact', head: true }),
-        db.from('desafio_dias').select('*').order('numero_dia', { ascending: false }),
+        db.from('desafio_dias').select('*').eq('publicado', true).order('numero_dia', { ascending: false }),
+        db.from('desafio_dias').select('*').eq('publicado', false).order('numero_dia', { ascending: true }),
         db.from('desafio_ranking').select('*').order('pontos', { ascending: false }),
         db.from('desafio_conclusoes').select('participante_id').gte('feito_em', seteDiasAtras),
       ]);
@@ -174,7 +175,6 @@
         const { count } = await db.from('desafio_conclusoes').select('*', { count: 'exact', head: true }).eq('dia_id', ultimoDia.id);
         pctUltimoDia = Math.round((100 * (count || 0)) / totalCadastradas);
       }
-      const proximoNumero = ultimoDia ? ultimoDia.numero_dia + 1 : 1;
 
       const { data: videos } = await db
         .from('desafio_conclusoes')
@@ -193,11 +193,11 @@
       painel.innerHTML = `
         ${renderCardDia(processo && processo.data_inicio)}
         ${renderKpiRow({ totalCadastradas, ativasEssaSemana, pctUltimoDia, ultimoDia, videosPendentes })}
-        ${renderAdminGrid({ proximoNumero, ranking, bonusHistorico })}
+        ${renderAdminGrid({ rascunhos, ranking, bonusHistorico })}
       `;
 
       wireCardDia();
-      wireAdminGridHandlers(db, ranking, { onChanged: carregarVisaoGeral });
+      wireAdminGridHandlers(db, { ranking, rascunhos, onChanged: carregarVisaoGeral });
     }
 
     // ---- Aba 2: Tabela de processo ----
@@ -208,6 +208,10 @@
       return '<span class="processo-pill a-fazer">A fazer</span>';
     }
 
+    function escaparAtributo(texto) {
+      return String(texto || '').replace(/"/g, '&quot;');
+    }
+
     function linhaTabelaProcesso(dia, ideiasPorId) {
       const idea = dia.roteiro_ideia_id ? ideiasPorId.get(dia.roteiro_ideia_id) : null;
       const botaoAbrir = dia.roteiro_ideia_id
@@ -216,10 +220,11 @@
       return `
         <tr data-dia="${dia.id}">
           <td>${dia.numero_dia}</td>
-          <td>${dia.titulo}</td>
+          <td><input type="text" class="processo-tabela-campo" data-campo="titulo" data-dia="${dia.id}" value="${escaparAtributo(dia.titulo)}" placeholder="Tema do dia..."></td>
+          <td><textarea class="processo-tabela-campo" data-campo="descricao" data-dia="${dia.id}" placeholder="O que a pessoa precisa fazer...">${dia.descricao || ''}</textarea></td>
           <td>${pillRoteiro(dia, idea)} ${botaoAbrir}</td>
           <td>${idea && idea.formato ? idea.formato : '—'}</td>
-          <td>${dia.data_publicacao || '—'}</td>
+          <td><input type="date" class="processo-tabela-campo" data-campo="data_publicacao" data-dia="${dia.id}" value="${dia.data_publicacao || ''}"></td>
           <td><input type="checkbox" class="processo-check" data-gravado="${dia.id}" ${dia.gravado_postado ? 'checked' : ''}></td>
         </tr>
       `;
@@ -238,8 +243,8 @@
 
       painel.innerHTML = `
         <table class="admin-table">
-          <tr><th>Dia</th><th>Tema</th><th>Roteiro</th><th>Formato</th><th>Data</th><th>Gravado</th></tr>
-          ${diasTabelaCache.map((dia) => linhaTabelaProcesso(dia, ideiasPorId)).join('') || '<tr><td colspan="6">Nenhum desafio publicado ainda.</td></tr>'}
+          <tr><th>Dia</th><th>Tema</th><th>Descrição</th><th>Roteiro</th><th>Formato</th><th>Data</th><th>Gravado</th></tr>
+          ${diasTabelaCache.map((dia) => linhaTabelaProcesso(dia, ideiasPorId)).join('') || '<tr><td colspan="7">Nenhum desafio publicado ainda.</td></tr>'}
         </table>
       `;
 
@@ -255,6 +260,13 @@
       document.querySelectorAll('[data-gravado]').forEach((chk) => {
         chk.addEventListener('change', () => {
           db.from('desafio_dias').update({ gravado_postado: chk.checked }).eq('id', chk.dataset.gravado);
+        });
+      });
+      document.querySelectorAll('.processo-tabela-campo[data-campo]').forEach((el) => {
+        el.addEventListener('change', () => {
+          const campo = el.dataset.campo;
+          const valor = campo === 'data_publicacao' ? (el.value || null) : el.value;
+          db.from('desafio_dias').update({ [campo]: valor }).eq('id', el.dataset.dia);
         });
       });
     }
@@ -288,6 +300,7 @@
     // ---- Aba 4: Desafios ----
 
     function statusDia(dia) {
+      if (!dia.publicado) return '<span class="processo-pill sem-vinculo">Rascunho</span>';
       if (!dia.data_publicacao) return '<span class="processo-pill a-fazer">Ainda vai acontecer</span>';
       const data = new Date(dia.data_publicacao + 'T00:00:00');
       const hoje = new Date();

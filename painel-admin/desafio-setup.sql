@@ -366,12 +366,32 @@ alter table public.desafio_processo
   add column if not exists data_inicio date;
 
 -- ---------------------------------------------------------------------
--- Seed: os 16 dias do desafio (edite título/descrição se quiser antes
--- de rodar — ou publique um por um direto no admin.html no dia certo).
--- Comentado de propósito: descomente só se quiser popular tudo de uma
--- vez em vez de publicar dia a dia pelo admin.
+-- Rascunho vs publicado: agora dá pra pré-criar os 16 dias e escrever
+-- tema/descrição com calma na Tabela de processo, sem isso aparecer
+-- pra participante — só vira visível de verdade quando a Bruna passar
+-- pelo assistente "Desafio do dia!" na Visão Geral (que dá
+-- update publicado=true naquela linha).
+--
+-- Os dias que já existiam antes desta coluna existir já estavam, de
+-- fato, publicados de verdade (não existia rascunho antes dela) — por
+-- isso o update abaixo marca todo mundo como publicado, ANTES de criar
+-- os dias que ainda faltam (esses sim nascem como rascunho).
 -- ---------------------------------------------------------------------
--- insert into public.desafio_dias (numero_dia, titulo, descricao, pede_video) values
---   (1, 'Por que ninguém começa do zero sabendo nada', 'Escreva por que você quer viver de UGC.', false),
---   (2, 'O que eu preciso ter antes de gravar o 1º vídeo', 'Liste o que você já tem e o que ainda falta.', false)
--- on conflict (numero_dia) do nothing;
+alter table public.desafio_dias
+  add column if not exists publicado boolean not null default false;
+
+update public.desafio_dias set publicado = true;
+
+insert into public.desafio_dias (numero_dia, titulo, descricao, pede_video, publicado)
+select n, '', '', false, false
+from generate_series(1, 16) as n
+where not exists (select 1 from public.desafio_dias d where d.numero_dia = n);
+
+-- A policy antiga deixava qualquer participante logada ler TODAS as
+-- linhas (inclusive rascunho) via API direta — o que vazaria o tema
+-- dos dias futuros antes da hora. Rascunho (publicado=false) agora só
+-- a dona consegue ler.
+drop policy if exists "dias - select autenticado" on public.desafio_dias;
+create policy "dias - select publicado ou dona" on public.desafio_dias
+  for select to authenticated
+  using (publicado = true or public.is_owner());

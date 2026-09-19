@@ -310,8 +310,21 @@ h1,h2,h3{ font-family:var(--fonte-titulo); margin:0; text-wrap:balance; }
 .processo-modal-lista-item:hover{ background:var(--cinza-claro); }
 .processo-modal-lista-item .pilar{ color:var(--texto-suave); font-size:11px; }
 
-/* Assistente "Desafio do dia!" — botão cinza→verde (mesma mecânica pro
-   "Continuar" e pro "Publicar desafio") e o toggle "Desafio com vídeo". */
+/* Assistente "Desafio do dia!" — título em destaque à esquerda, a
+   caixa "Dia" ao lado do rótulo (não empilhada), e o botão cinza→verde
+   (mesma mecânica pro "Continuar" e pro "Publicar desafio") e o toggle
+   "Desafio com vídeo". */
+.wz-titulo{ font-size:22px; font-weight:800; color:var(--coral); text-align:left; margin-bottom:18px; }
+.wz-dia-row{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+.wz-dia-label{ font-size:11.5px; font-weight:700; color:var(--texto-suave); text-transform:uppercase; letter-spacing:.03em; flex:0 0 auto; }
+.wz-select{
+  flex:1; border:1px solid var(--borda); background-color:var(--creme); border-radius:var(--raio-sm);
+  padding:11px 34px 11px 13px; font-size:14px; color:var(--coral); font-family:var(--fonte-corpo); cursor:pointer;
+  appearance:none; -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2304465D'%3E%3Cpath d='M5.5 7.5L10 12l4.5-4.5' stroke='%2304465D' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 12px center;
+}
+.wz-select:focus{ outline:2px solid var(--coral-claro); outline-offset:1px; }
 .btn-wizard{ border:none; border-radius:var(--raio-sm); padding:13px 20px; font-size:14px; font-weight:700; font-family:var(--fonte-corpo); cursor:pointer; width:100%; transition:background .15s ease, color .15s ease; }
 .btn-wizard.desabilitado{ background:var(--cinza-claro); color:var(--texto-suave); cursor:default; }
 .btn-wizard.pronto{ background:var(--ok); color:#fff; }

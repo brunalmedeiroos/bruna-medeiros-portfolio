@@ -24,12 +24,12 @@ function renderAdminGrid({ rascunhos, ranking, bonusHistorico }) {
   return `
     <div class="admin-grid">
       <div class="admin-col card">
-        <h4>Desafio do dia!</h4>
+        <h4 class="wz-titulo">Desafio do dia!</h4>
         ${(rascunhos && rascunhos.length) ? `
           <div id="wz-passo-1">
-            <div class="campo">
-              <label>Dia</label>
-              <select id="wz-dia">
+            <div class="wz-dia-row">
+              <label class="wz-dia-label" for="wz-dia">Dia</label>
+              <select id="wz-dia" class="wz-select">
                 <option value="">Escolha o dia...</option>
                 ${opcoesDias}
               </select>

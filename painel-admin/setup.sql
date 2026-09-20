@@ -392,10 +392,10 @@ create table if not exists public.ugc_trabalhos (
   contato_whatsapp text,
   origem text check (origem in ('Inbound', 'Outbound', 'Indicação', 'Direto com a marca', 'Agência', 'Plataforma', 'Outro')),
   plataforma text, -- texto livre: ela pode cadastrar novas plataformas pelo painel, sem check fixo
-  status text not null default 'Negociando' check (status in (
-    'Negociando', 'Fechado', 'Aguardando briefing', 'Aguardando produto', 'Roteiro', 'Gravação',
-    'Edição', 'Aprovação', 'Entregue', 'Aguardando pagamento', 'Pago', 'Cancelado'
+  status text not null default 'Briefing' check (status in (
+    'Briefing', 'Roteiro', 'Aprovação Roteiro', 'Gravação', 'Edição', 'Aprovado', 'Entregue', 'Cancelado'
   )),
+  destaque boolean not null default false, -- estrela: marca a campanha como destaque na lista
   data_entrega date,
   valor numeric(10, 2),
   permuta boolean not null default false, -- fechado por troca, sem valor em R$ (o campo valor fica null)

@@ -754,7 +754,7 @@
         <section id="panel-ugc" class="tab-panel" hidden>
           <div class="ugc-subnav">
             <button class="ugc-subnav-btn ativo" data-ugc-pagina="visao-geral" type="button" data-i18n="ugc_visao_geral">Visão Geral</button>
-            <button class="ugc-subnav-btn" data-ugc-pagina="trabalhos" type="button" data-i18n="ugc_trabalhos">Trabalhos</button>
+            <button class="ugc-subnav-btn" data-ugc-pagina="trabalhos" type="button" data-i18n="ugc_trabalhos">Campanhas</button>
             <button class="ugc-subnav-btn" data-ugc-pagina="roteiros" type="button" data-i18n="ugc_roteiros">Roteiros</button>
             <button class="ugc-subnav-btn" data-ugc-pagina="prospeccao" type="button" data-i18n="ugc_prospeccao">Prospecção</button>
             <button class="ugc-subnav-btn" data-ugc-pagina="contratos" type="button" data-i18n="ugc_contratos">Contratos</button>
@@ -766,7 +766,7 @@
           <div id="ugc-pagina-visao-geral" class="ugc-pagina">
             <div class="cards-numeros cards-numeros-visao-geral-ugc">
               <div class="card-numero">
-                <span class="card-label" data-i18n="ugc_trabalhos_ativos">Trabalhos ativos</span>
+                <span class="card-label" data-i18n="ugc_trabalhos_ativos">Campanhas ativas</span>
                 <span class="card-valor" id="ugc-num-ativos">0</span>
               </div>
               <div class="card-numero">
@@ -793,32 +793,48 @@
             </div>
           </div>
 
-          <!-- Trabalhos -->
+          <!-- Campanhas (antes "Trabalhos") -->
           <div id="ugc-pagina-trabalhos" class="ugc-pagina" hidden>
+            <div class="cards-numeros cards-numeros-campanhas">
+              <div class="card-numero">
+                <span class="card-label">Total de campanhas</span>
+                <span class="card-valor" id="campanhas-num-total">0</span>
+              </div>
+              <div class="card-numero">
+                <span class="card-label">Ativas</span>
+                <span class="card-valor" id="campanhas-num-ativas">0</span>
+              </div>
+              <div class="card-numero card-numero-dupla">
+                <span class="card-label">Valor total</span>
+                <span class="card-valor" id="campanhas-num-valor-total">R$ 0</span>
+                <span class="card-subvalor">Ticket médio por vídeo: <span id="campanhas-num-ticket-medio">—</span></span>
+              </div>
+              <div class="card-numero card-numero-dupla">
+                <span class="card-label">A receber</span>
+                <span class="card-valor" id="campanhas-num-a-receber">R$ 0</span>
+                <span class="card-subvalor">Já recebido: <span id="campanhas-num-ja-recebido">R$ 0</span></span>
+              </div>
+            </div>
+
             <div class="cal-todas-topo">
               <div>
-                <h3 class="card-titulo" data-i18n="ugc_trabalhos">Trabalhos</h3>
-                <p class="cal-todas-resumo" id="ugc-trabalhos-resumo" data-i18n="ugc_nenhum_trabalho">Nenhum trabalho ainda.</p>
+                <h3 class="card-titulo" data-i18n="ugc_trabalhos">Campanhas</h3>
+                <p class="cal-todas-resumo" id="ugc-trabalhos-resumo">Nenhuma campanha ainda.</p>
               </div>
               <div class="ugc-trabalhos-topo-acoes">
                 <div class="cal-filtro-grupo">
-                  <button class="cal-filtro-btn ativo" data-filtro-trabalho="ativos" type="button" data-i18n="ugc_filtro_ativos">Ativos</button>
-                  <button class="cal-filtro-btn" data-filtro-trabalho="finalizados" type="button" data-i18n="ugc_filtro_finalizados">Finalizados</button>
+                  <button class="cal-filtro-btn" data-filtro-trabalho="todas" type="button">Todas</button>
+                  <button class="cal-filtro-btn ativo" data-filtro-trabalho="ativas" type="button">Ativas</button>
+                  <button class="cal-filtro-btn" data-filtro-trabalho="finalizadas" type="button">Finalizadas</button>
                 </div>
-                <button id="btn-ugc-novo-trabalho" class="cal-btn cal-btn-primario" type="button" data-i18n="ugc_novo_trabalho">+ Novo trabalho</button>
+                <input type="text" id="campanhas-busca" class="ugc-roteiros-busca" placeholder="Buscar por cliente ou campanha">
+                <button id="btn-campanhas-baixar-csv" class="cal-btn" type="button">↓ Baixar CSV</button>
+                <button id="btn-ugc-novo-trabalho" class="cal-btn cal-btn-primario" type="button">+ Nova campanha</button>
               </div>
             </div>
 
             <div class="cal-todas-tabela">
-              <div class="cal-todas-cabecalho ugc-trabalhos-linha">
-                <span data-i18n="ugc_col_marca">Marca</span>
-                <span data-i18n="ugc_col_campanha">Campanha</span>
-                <span data-i18n="ugc_col_tipo">Tipo</span>
-                <span data-i18n="status">Status</span>
-                <span data-i18n="ugc_col_entrega">Entrega</span>
-                <span data-i18n="ugc_col_valor">Valor</span>
-                <span data-i18n="ugc_col_pagamento">Pagamento</span>
-              </div>
+              <div class="cal-todas-cabecalho ugc-trabalhos-linha" id="ugc-trabalhos-cabecalho"></div>
               <div id="ugc-trabalhos-lista" class="cal-todas-linhas"></div>
             </div>
           </div>
@@ -980,7 +996,7 @@
                 <span class="ugc-resultados-card-valor" id="ugc-num-ganho-ugc">R$ 0</span>
                 <div class="ugc-resultados-chips">
                   <div class="ugc-resultados-chip">
-                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_trabalhos_finalizados">Trabalhos finalizados</span>
+                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_trabalhos_finalizados">Campanhas finalizadas</span>
                     <span class="ugc-resultados-chip-valor" id="ugc-num-fechados-ugc">0</span>
                   </div>
                   <div class="ugc-resultados-chip">
@@ -999,7 +1015,7 @@
                 <span class="ugc-resultados-card-valor" id="ugc-num-ganho-publicidade">R$ 0</span>
                 <div class="ugc-resultados-chips">
                   <div class="ugc-resultados-chip">
-                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_trabalhos_finalizados">Trabalhos finalizados</span>
+                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_trabalhos_finalizados">Campanhas finalizadas</span>
                     <span class="ugc-resultados-chip-valor" id="ugc-num-fechados-publicidade">0</span>
                   </div>
                   <div class="ugc-resultados-chip">
@@ -2302,24 +2318,21 @@
     let filtroRoteirosTexto = '';
     let filtroRoteirosStatus = '';
     let ugcTrabalhoAbertoId = null;
-    let filtroTrabalhos = 'ativos'; // 'ativos' | 'finalizados'
-    const UGC_STATUS_ATIVOS = ['Negociando', 'Fechado', 'Aguardando briefing', 'Aguardando produto', 'Roteiro', 'Gravação', 'Edição', 'Aprovação', 'Entregue', 'Aguardando pagamento'];
-    const UGC_STATUS_EM_PRODUCAO = ['Roteiro', 'Gravação', 'Edição', 'Aprovação'];
-    const UGC_STATUS_TRABALHO = ['Negociando', 'Fechado', 'Aguardando briefing', 'Aguardando produto', 'Roteiro', 'Gravação', 'Edição', 'Aprovação', 'Entregue', 'Aguardando pagamento', 'Pago', 'Cancelado'];
+    let filtroTrabalhos = 'ativas'; // 'todas' | 'ativas' | 'finalizadas'
+    let buscaCampanhas = '';
+    let ordenacaoCampanhas = { coluna: 'prazo', direcao: 'asc' };
+    const UGC_STATUS_EM_PRODUCAO = ['Roteiro', 'Aprovação Roteiro', 'Gravação', 'Edição', 'Aprovado'];
+    const UGC_STATUS_TRABALHO = ['Briefing', 'Roteiro', 'Aprovação Roteiro', 'Gravação', 'Edição', 'Aprovado', 'Entregue', 'Cancelado'];
     // Valor gravado em trabalho.status continua em português (é o "código");
     // só o rótulo exibido muda com o idioma.
     const UGC_STATUS_TRABALHO_CHAVE = {
-      'Negociando': 'ugc_status_negociando',
-      'Fechado': 'ugc_status_fechado',
-      'Aguardando briefing': 'ugc_status_aguardando_briefing',
-      'Aguardando produto': 'ugc_status_aguardando_produto',
+      'Briefing': 'ugc_status_briefing',
       'Roteiro': 'ugc_status_roteiro',
+      'Aprovação Roteiro': 'ugc_status_aprovacao_roteiro',
       'Gravação': 'ugc_status_gravacao',
       'Edição': 'ugc_status_edicao',
-      'Aprovação': 'ugc_status_aprovacao',
+      'Aprovado': 'ugc_status_aprovado',
       'Entregue': 'ugc_status_entregue',
-      'Aguardando pagamento': 'ugc_status_aguardando_pagamento',
-      'Pago': 'ugc_status_pago',
       'Cancelado': 'ugc_status_cancelado',
     };
     function traduzirStatusTrabalho(status) {
@@ -2946,13 +2959,13 @@
 
         // UGC / Publi
         ugc_visao_geral: '📊 Visão Geral',
-        ugc_trabalhos: '💼 Trabalhos',
+        ugc_trabalhos: '💼 Campanhas',
         ugc_roteiros: '📝 Roteiros',
         ugc_prospeccao: '🎯 Prospecção',
         ugc_contratos: '📄 Contratos',
         ugc_precos: '💰 Preços',
         ugc_resultados: '📈 Resultados',
-        ugc_trabalhos_ativos: 'Trabalhos ativos',
+        ugc_trabalhos_ativos: 'Campanhas ativas',
         ugc_em_producao: 'Em produção',
         ugc_a_receber: 'A receber',
         ugc_direitos_uso_vencendo: 'Direitos de uso vencendo',
@@ -2994,7 +3007,7 @@
         ugc_adicionar_servico_aria: 'Adicionar serviço',
         ugc_publicidade: 'Publicidade',
         ugc_condicoes_direitos: 'Condições/Direitos',
-        ugc_resultados_trabalhos_finalizados: 'Trabalhos finalizados',
+        ugc_resultados_trabalhos_finalizados: 'Campanhas finalizadas',
         ugc_resultados_ticket_medio: 'Ticket médio',
         ugc_contratos_finalizados: 'Contratos finalizados',
         ugc_ganho_ugc: 'Ganho em UGC',
@@ -3070,17 +3083,13 @@
         ugc_urgencia: 'Urgência',
         ugc_valor_final: 'Valor final',
         ugc_copiar_resumo: 'Copiar resumo',
-        ugc_status_negociando: 'Negociando',
-        ugc_status_fechado: 'Fechado',
-        ugc_status_aguardando_briefing: 'Aguardando briefing',
-        ugc_status_aguardando_produto: 'Aguardando produto',
+        ugc_status_briefing: 'Briefing',
         ugc_status_roteiro: 'Roteiro',
+        ugc_status_aprovacao_roteiro: 'Aprovação Roteiro',
         ugc_status_gravacao: 'Gravação',
         ugc_status_edicao: 'Edição',
-        ugc_status_aprovacao: 'Aprovação',
+        ugc_status_aprovado: 'Aprovado',
         ugc_status_entregue: 'Entregue',
-        ugc_status_aguardando_pagamento: 'Aguardando pagamento',
-        ugc_status_pago: 'Pago',
         ugc_status_cancelado: 'Cancelado',
         ugc_origem_inbound: 'Inbound',
         ugc_origem_outbound: 'Outbound',
@@ -3133,7 +3142,7 @@
         ugc_nenhum_entregavel: 'Nenhum entregável adicionado ainda.',
         ugc_remover_entregavel_aria: 'Remover entregável',
         ugc_preencha_marca: 'Preencha a marca antes de salvar.',
-        ugc_excluir_trabalho_confirmar: 'Excluir este trabalho?',
+        ugc_excluir_trabalho_confirmar: 'Excluir esta campanha?',
         ugc_sem_marca: 'Sem marca',
         ugc_cor_marca_label: 'Cor da marca',
         ugc_cor_marca_ativa_label: 'Personalizar',
@@ -4599,6 +4608,11 @@
           renderizarTrabalhos();
         });
       });
+      document.getElementById('campanhas-busca').addEventListener('input', (e) => {
+        buscaCampanhas = e.target.value;
+        renderizarTrabalhos();
+      });
+      document.getElementById('btn-campanhas-baixar-csv').addEventListener('click', exportarCampanhasCSV);
       document.getElementById('btn-ugc-novo-trabalho').addEventListener('click', () => abrirModalTrabalho(null));
       document.getElementById('ugc-modal-trabalho-fechar').addEventListener('click', fecharModalTrabalho);
       document.getElementById('ugc-modal-trabalho-excluir').addEventListener('click', excluirModalTrabalho);
@@ -4608,7 +4622,6 @@
       });
       document.getElementById('ugc-modal-tipo').addEventListener('change', atualizarSugestoesEntregaveis);
       document.getElementById('ugc-modal-permuta').addEventListener('change', atualizarCampoValorPermuta);
-      document.getElementById('ugc-modal-status').addEventListener('change', sincronizarPagamentoComStatus);
       document.getElementById('ugc-modal-publicavel').addEventListener('change', atualizarCamposPortfolio);
       document.getElementById('ugc-modal-add-entregavel').addEventListener('click', adicionarEntregavelModal);
 
@@ -5971,7 +5984,7 @@
     // eagerly no boot, ver IIFE perto de carregarDados()) por data_entrega,
     // escondendo trabalhos já finalizados (mesmo critério de "some quando
     // termina" que uma tarefa marcada como feita já tem).
-    const UGC_STATUS_FINALIZADOS_CALENDARIO = ['Entregue', 'Aguardando pagamento', 'Pago', 'Cancelado'];
+    const UGC_STATUS_FINALIZADOS_CALENDARIO = ['Entregue', 'Cancelado'];
 
     function entregasUgcPendentesDoDia(isoData) {
       return ugcTrabalhosCache.filter((t) => t.data_entrega === isoData && !UGC_STATUS_FINALIZADOS_CALENDARIO.includes(t.status));
@@ -8990,17 +9003,15 @@
     // do bloco "Precisa da sua atenção" do Dashboard.
     function obterEntregasPendentes() {
       return ugcTrabalhosCache
-        .filter((t) => t.data_entrega && !['Entregue', 'Aguardando pagamento', 'Pago', 'Cancelado'].includes(t.status))
+        .filter((t) => t.data_entrega && !['Entregue', 'Cancelado'].includes(t.status))
         .sort((a, b) => a.data_entrega.localeCompare(b.data_entrega));
     }
 
-    // Trabalhos já entregues (ou aguardando pagamento) cujo valor ainda não caiu —
-    // mais restrito que o total "a receber" da Visão Geral (que soma qualquer
-    // trabalho ativo), porque aqui o ponto é sinalizar só o que já pode ser cobrado.
+    // Trabalhos já entregues cujo valor ainda não caiu — mais restrito que o
+    // total "a receber" da Visão Geral (que soma qualquer trabalho ativo),
+    // porque aqui o ponto é sinalizar só o que já pode ser cobrado.
     function obterPagamentosPendentes() {
-      return ugcTrabalhosCache.filter(
-        (t) => t.status_pagamento === 'Pendente' && ['Entregue', 'Aguardando pagamento'].includes(t.status)
-      );
+      return ugcTrabalhosCache.filter((t) => t.status_pagamento === 'Pendente' && t.status === 'Entregue');
     }
 
     // Faturamento do Dashboard — mesma fonte/regra da Visão Geral (a receber)
@@ -9188,7 +9199,7 @@
     // ---- Visão Geral: 100% derivada de ugcTrabalhosCache, sem cadastro próprio ----
     function renderizarVisaoGeralUGC() {
       renderizarDireitosUsoAlerta();
-      const ativos = ugcTrabalhosCache.filter((t) => t.status !== 'Pago' && t.status !== 'Cancelado');
+      const ativos = ugcTrabalhosCache.filter((t) => t.status !== 'Entregue' && t.status !== 'Cancelado');
       const emProducao = ugcTrabalhosCache.filter((t) => UGC_STATUS_EM_PRODUCAO.includes(t.status));
       const aReceber = ugcTrabalhosCache
         .filter((t) => t.status_pagamento === 'Pendente' && t.status !== 'Cancelado')
@@ -9230,7 +9241,7 @@
       // "Finalizado" aqui usa o mesmo critério do Ganho (status_pagamento) — um trabalho
       // Entregue mas ainda não pago não conta como finalizado, senão a contagem diverge
       // do valor de Ganho total mostrado logo abaixo.
-      const fechadosPorTipo = (tipo) => ugcTrabalhosCache.filter((t) => t.status === 'Pago' && t.tipo_trabalho === tipo);
+      const fechadosPorTipo = (tipo) => ugcTrabalhosCache.filter((t) => t.status_pagamento === 'Recebido' && t.tipo_trabalho === tipo);
       const fechadosUgc = fechadosPorTipo('UGC');
       const fechadosPublicidade = fechadosPorTipo('Publicidade');
 
@@ -9262,24 +9273,148 @@
       document.getElementById('ugc-num-ganho-total').textContent = formatarMoeda(ganhoUgc + ganhoPublicidade);
     }
 
-    // ---- Trabalhos ----
+    // ---- Campanhas (antes "Trabalhos") ----
     function classeStatusTrabalho(status) {
-      if (status === 'Pago') return 'ugc-status-pago';
+      if (status === 'Entregue') return 'ugc-status-pago';
       if (status === 'Cancelado') return 'ugc-status-cancelado';
-      if (UGC_STATUS_EM_PRODUCAO.includes(status) || status === 'Entregue' || status === 'Aguardando pagamento') return 'ugc-status-producao';
+      if (UGC_STATUS_EM_PRODUCAO.includes(status)) return 'ugc-status-producao';
       return 'ugc-status-inicial';
     }
 
+    function qtdEntregaveisCampanha(trabalhoId) {
+      return ugcTrabalhoEntregaveisCache
+        .filter((e) => e.trabalho_id === trabalhoId)
+        .reduce((soma, e) => soma + (Number(e.quantidade) || 0), 0);
+    }
+
+    // Etiqueta de prazo: vermelha se já passou, amarela se vence em até 3
+    // dias. Uma campanha já entregue ou cancelada nunca recebe aviso — não
+    // faz sentido cobrar prazo de algo que já terminou.
+    function tagPrazoCampanha(trabalho) {
+      if (!trabalho.data_entrega || trabalho.status === 'Entregue' || trabalho.status === 'Cancelado') return '';
+      const hoje = new Date(dataParaISO(new Date()) + 'T00:00:00');
+      const prazo = new Date(trabalho.data_entrega + 'T00:00:00');
+      const dias = Math.round((prazo - hoje) / 86400000);
+      if (dias < 0) {
+        const atraso = Math.abs(dias);
+        return `<span class="campanhas-prazo-tag campanhas-prazo-atrasado">${atraso} ${atraso === 1 ? 'dia atrasado' : 'dias atrasado'}</span>`;
+      }
+      if (dias <= 3) {
+        const texto = dias === 0 ? 'Vence hoje' : dias === 1 ? 'Vence amanhã' : `Vence em ${dias} dias`;
+        return `<span class="campanhas-prazo-tag campanhas-prazo-proximo">${texto}</span>`;
+      }
+      return '';
+    }
+
+    function renderizarResumoCampanhas() {
+      const total = ugcTrabalhosCache.length;
+      const ativas = ugcTrabalhosCache.filter((t) => t.status !== 'Entregue' && t.status !== 'Cancelado').length;
+      const valorTotal = ugcTrabalhosCache.reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
+      const qtdTotalVideos = ugcTrabalhosCache.reduce((soma, t) => soma + qtdEntregaveisCampanha(t.id), 0);
+      const ticketMedio = qtdTotalVideos > 0 ? formatarMoeda(valorTotal / qtdTotalVideos) : '—';
+      const aReceber = ugcTrabalhosCache
+        .filter((t) => t.status_pagamento === 'Pendente' && t.status !== 'Cancelado')
+        .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
+      const jaRecebido = ugcTrabalhosCache
+        .filter((t) => t.status_pagamento === 'Recebido')
+        .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
+
+      document.getElementById('campanhas-num-total').textContent = formatarNumero(total);
+      document.getElementById('campanhas-num-ativas').textContent = formatarNumero(ativas);
+      document.getElementById('campanhas-num-valor-total').textContent = formatarMoeda(valorTotal);
+      document.getElementById('campanhas-num-ticket-medio').textContent = ticketMedio;
+      document.getElementById('campanhas-num-a-receber').textContent = formatarMoeda(aReceber);
+      document.getElementById('campanhas-num-ja-recebido').textContent = formatarMoeda(jaRecebido);
+    }
+
+    const CAMPANHAS_COLUNAS = [
+      { chave: 'estrela', label: '' },
+      { chave: 'campanha', label: 'Campanha' },
+      { chave: 'cliente', label: 'Cliente' },
+      { chave: 'tipo', label: 'Tipo' },
+      { chave: 'status', label: 'Status' },
+      { chave: 'qtd', label: 'Qtd' },
+      { chave: 'valor', label: 'Valor' },
+      { chave: 'prazo', label: 'Prazo' },
+      { chave: 'pagamento', label: 'Pagamento' },
+    ];
+
+    function valorOrdenavelCampanha(t, coluna) {
+      switch (coluna) {
+        case 'estrela': return t.destaque ? 1 : 0;
+        case 'campanha': return (t.campanha || '').toLowerCase();
+        case 'cliente': return (t.marca || '').toLowerCase();
+        case 'tipo': return traduzirTipoTrabalho(t.tipo_trabalho).toLowerCase();
+        case 'status': return UGC_STATUS_TRABALHO.indexOf(t.status);
+        case 'qtd': return qtdEntregaveisCampanha(t.id);
+        case 'valor': return t.valor != null ? Number(t.valor) : -1;
+        case 'prazo': return t.data_entrega || '9999-99-99';
+        case 'pagamento': return t.status_pagamento;
+        default: return '';
+      }
+    }
+
+    function compararCampanhas(a, b) {
+      const { coluna, direcao } = ordenacaoCampanhas;
+      const va = valorOrdenavelCampanha(a, coluna);
+      const vb = valorOrdenavelCampanha(b, coluna);
+      const cmp = typeof va === 'number' && typeof vb === 'number' ? va - vb : String(va).localeCompare(String(vb));
+      return direcao === 'asc' ? cmp : -cmp;
+    }
+
+    function ordenarPorColunaCampanhas(coluna) {
+      if (ordenacaoCampanhas.coluna === coluna) {
+        ordenacaoCampanhas.direcao = ordenacaoCampanhas.direcao === 'asc' ? 'desc' : 'asc';
+      } else {
+        ordenacaoCampanhas = { coluna, direcao: 'asc' };
+      }
+      renderizarTrabalhos();
+    }
+
+    function renderizarCabecalhoCampanhas() {
+      const cabecalho = document.getElementById('ugc-trabalhos-cabecalho');
+      cabecalho.innerHTML = CAMPANHAS_COLUNAS.map((col) => {
+        const ativa = ordenacaoCampanhas.coluna === col.chave;
+        const seta = ativa && ordenacaoCampanhas.direcao === 'desc' ? 'M6 9l6 6 6-6' : 'M6 15l6-6 6 6';
+        return `
+          <button type="button" class="campanhas-th${ativa ? ' ativa' : ''}" data-sort="${col.chave}">
+            <span>${col.label}</span>
+            <svg class="campanhas-seta" width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="${seta}" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        `;
+      }).join('');
+      cabecalho.querySelectorAll('.campanhas-th').forEach((btn) => {
+        btn.addEventListener('click', () => ordenarPorColunaCampanhas(btn.dataset.sort));
+      });
+    }
+
+    async function alternarDestaqueCampanha(trabalho) {
+      const novoValor = !trabalho.destaque;
+      trabalho.destaque = novoValor;
+      renderizarTrabalhos();
+      const { error } = await Auth.sb.from('ugc_trabalhos').update({ destaque: novoValor }).eq('id', trabalho.id);
+      if (error) {
+        console.error('Erro ao destacar campanha:', error);
+        trabalho.destaque = !novoValor;
+        renderizarTrabalhos();
+      }
+    }
+
     function renderizarTrabalhos() {
-      const filtradas = filtroTrabalhos === 'finalizados'
-        ? ugcTrabalhosCache.filter((t) => t.status === 'Pago' || t.status === 'Cancelado')
-        : ugcTrabalhosCache.filter((t) => t.status !== 'Pago' && t.status !== 'Cancelado');
-      const ordenadas = [...filtradas].sort((a, b) => (a.data_entrega || '9999-99-99').localeCompare(b.data_entrega || '9999-99-99'));
+      renderizarResumoCampanhas();
+      renderizarCabecalhoCampanhas();
+
+      let filtradas = ugcTrabalhosCache;
+      if (filtroTrabalhos === 'ativas') filtradas = filtradas.filter((t) => t.status !== 'Entregue' && t.status !== 'Cancelado');
+      else if (filtroTrabalhos === 'finalizadas') filtradas = filtradas.filter((t) => t.status === 'Entregue' || t.status === 'Cancelado');
+      if (buscaCampanhas.trim()) {
+        const termo = buscaCampanhas.trim().toLowerCase();
+        filtradas = filtradas.filter((t) => (t.marca || '').toLowerCase().includes(termo) || (t.campanha || '').toLowerCase().includes(termo));
+      }
+      const ordenadas = [...filtradas].sort(compararCampanhas);
 
       document.getElementById('ugc-trabalhos-resumo').textContent =
-        ordenadas.length === 0
-          ? tr('ugc_nenhum_trabalho_aqui')
-          : `${ordenadas.length} ${tr(ordenadas.length === 1 ? 'ugc_trabalho_singular' : 'ugc_trabalho_plural')}.`;
+        ordenadas.length === 0 ? 'Nenhuma campanha aqui ainda.' : `${ordenadas.length} ${ordenadas.length === 1 ? 'campanha' : 'campanhas'}.`;
 
       const lista = document.getElementById('ugc-trabalhos-lista');
       lista.innerHTML = '';
@@ -9292,20 +9427,56 @@
 
     function criarLinhaTrabalho(trabalho) {
       const linha = document.createElement('div');
-      linha.className = 'cal-todas-linha ugc-trabalhos-linha';
+      linha.className = 'cal-todas-linha ugc-trabalhos-linha' + (trabalho.destaque ? ' campanhas-linha-destaque' : '');
       const entregaFmt = trabalho.data_entrega ? formatarDataCurta(new Date(trabalho.data_entrega + 'T00:00:00')) : '—';
       const valorFmt = trabalho.permuta ? tr('permuta') : trabalho.valor != null ? formatarMoeda(trabalho.valor) : '—';
+      const qtd = qtdEntregaveisCampanha(trabalho.id);
+      const tipoClasse = trabalho.tipo_trabalho === 'Publicidade' ? 'campanhas-tipo-publicidade' : 'campanhas-tipo-ugc';
       linha.innerHTML = `
-        <span class="ugc-trabalhos-marca">${escapeHtml(trabalho.marca)}</span>
-        <span>${escapeHtml(trabalho.campanha || '—')}</span>
-        <span class="cal-todas-tipo-badge">${escapeHtml(traduzirTipoTrabalho(trabalho.tipo_trabalho))}</span>
+        <button type="button" class="campanhas-estrela${trabalho.destaque ? ' ativa' : ''}" data-id="${trabalho.id}" aria-label="Destacar campanha">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="${trabalho.destaque ? 'currentColor' : 'none'}"><path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6-4.6-4.1 6.1-.6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        </button>
+        <span class="ugc-trabalhos-marca">${escapeHtml(trabalho.campanha || '—')}</span>
+        <span>${escapeHtml(trabalho.marca)}</span>
+        <span class="cal-todas-tipo-badge ${tipoClasse}">${escapeHtml(traduzirTipoTrabalho(trabalho.tipo_trabalho))}</span>
         <span class="ugc-status-pill ${classeStatusTrabalho(trabalho.status)}">${escapeHtml(traduzirStatusTrabalho(trabalho.status))}</span>
-        <span>${entregaFmt}</span>
+        <span>${qtd || '—'}</span>
         <span>${valorFmt}</span>
+        <span class="campanhas-prazo-cel">${entregaFmt}${tagPrazoCampanha(trabalho)}</span>
         <span>${escapeHtml(traduzirStatusPagamento(trabalho.status_pagamento))}</span>
       `;
+      linha.querySelector('.campanhas-estrela').addEventListener('click', (e) => {
+        e.stopPropagation();
+        alternarDestaqueCampanha(trabalho);
+      });
       linha.addEventListener('click', () => abrirModalTrabalho(trabalho));
       return linha;
+    }
+
+    function exportarCampanhasCSV() {
+      if (ugcTrabalhosCache.length === 0) return;
+      const cabecalho = ['campanha', 'cliente', 'tipo', 'status', 'qtd', 'valor', 'prazo', 'pagamento', 'destaque'];
+      const linhas = ugcTrabalhosCache.map((t) => [
+        t.campanha || '',
+        t.marca,
+        traduzirTipoTrabalho(t.tipo_trabalho),
+        traduzirStatusTrabalho(t.status),
+        qtdEntregaveisCampanha(t.id),
+        t.valor != null ? t.valor : '',
+        t.data_entrega || '',
+        traduzirStatusPagamento(t.status_pagamento),
+        t.destaque ? 'sim' : 'não',
+      ]);
+      const csv = [cabecalho, ...linhas]
+        .map((linha) => linha.map((valor) => `"${String(valor).replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+      const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'campanhas.csv';
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
     // ---- Modal de trabalho ----
@@ -9423,7 +9594,7 @@
 
       const selectStatus = document.getElementById('ugc-modal-status');
       selectStatus.innerHTML = UGC_STATUS_TRABALHO.map((s) => `<option value="${s}">${escapeHtml(traduzirStatusTrabalho(s))}</option>`).join('');
-      selectStatus.value = trabalho ? trabalho.status : 'Negociando';
+      selectStatus.value = trabalho ? trabalho.status : 'Briefing';
 
       document.getElementById('ugc-modal-valor').value = trabalho && trabalho.valor != null ? trabalho.valor : '';
       document.getElementById('ugc-modal-permuta').checked = trabalho ? !!trabalho.permuta : false;
@@ -9452,15 +9623,6 @@
     function fecharModalTrabalho() {
       ugcTrabalhoAbertoId = null;
       document.getElementById('ugc-modal-trabalho-overlay').hidden = true;
-    }
-
-    // Status "Pago" sempre implica pagamento recebido. Sem isso, os dois campos ficam
-    // independentes e é fácil marcar o trabalho como Pago sem atualizar o Pagamento,
-    // fazendo Visão Geral/Resultados mostrarem números que não batem entre si.
-    function sincronizarPagamentoComStatus() {
-      if (document.getElementById('ugc-modal-status').value === 'Pago') {
-        document.getElementById('ugc-modal-status-pagamento').value = 'Recebido';
-      }
     }
 
     // Só mostra os campos de vídeo/categoria se ela realmente quiser publicar
@@ -9538,9 +9700,7 @@
       }
 
       const status = document.getElementById('ugc-modal-status').value;
-      // Reforça a mesma regra de sincronizarPagamentoComStatus() aqui: status "Pago"
-      // nunca deve ser salvo com pagamento diferente de "Recebido".
-      const statusPagamento = status === 'Pago' ? 'Recebido' : document.getElementById('ugc-modal-status-pagamento').value;
+      const statusPagamento = document.getElementById('ugc-modal-status-pagamento').value;
 
       const linha = {
         marca,

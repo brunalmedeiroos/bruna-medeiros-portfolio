@@ -1165,13 +1165,6 @@
         <div id="config-pagina-geral" class="config-pagina">
           <div class="cal-form-linha">
             <div class="cal-form-campo">
-              <label for="config-idioma" data-i18n="config_idioma">Idioma</label>
-              <select id="config-idioma">
-                <option value="pt" data-i18n="config_idioma_pt">Português</option>
-                <option value="en" data-i18n="config_idioma_en">Inglês</option>
-              </select>
-            </div>
-            <div class="cal-form-campo">
               <label for="config-inicio-semana" data-i18n="config_inicio_semana">Início da semana</label>
               <select id="config-inicio-semana">
                 <option value="domingo" data-i18n="config_domingo">Domingo</option>
@@ -4131,9 +4124,12 @@
       },
     };
 
+    // Painel travado em português — a troca pra inglês foi removida (era só
+    // pra dona mesmo, não fazia sentido ter idioma alternativo). tr() ainda
+    // existe porque todo o HTML usa data-i18n; só não olha mais
+    // configCache.idioma, então nem um valor 'en' salvo antes disso muda nada.
     function tr(chave) {
-      const idioma = (configCache && configCache.idioma === 'en') ? 'en' : 'pt';
-      return TRADUCOES[idioma][chave] ?? TRADUCOES.pt[chave] ?? chave;
+      return TRADUCOES.pt[chave] ?? chave;
     }
 
     // Preenche todo elemento marcado com data-i18n (texto), data-i18n-placeholder
@@ -4154,14 +4150,14 @@
       document.querySelectorAll('[data-i18n-html]').forEach((el) => {
         el.innerHTML = tr(el.dataset.i18nHtml);
       });
-      document.documentElement.lang = (configCache && configCache.idioma === 'en') ? 'en' : 'pt-BR';
+      document.documentElement.lang = 'pt-BR';
     }
 
     // Locale usado em toLocaleDateString/toLocaleString de DATAS (nomes de mês
-    // e dia da semana acompanham o idioma). Dinheiro NUNCA usa isso — o que
-    // ela ganha é sempre em Reais, independente do idioma da tela.
+    // e dia da semana). Dinheiro NUNCA usa isso — o que ela ganha é sempre em
+    // Reais, independente do locale.
     function localeAtual() {
-      return (configCache && configCache.idioma === 'en') ? 'en-US' : 'pt-BR';
+      return 'pt-BR';
     }
 
     // Mesmo projeto Supabase de js/auth.js — hardcoded aqui porque auth.js
@@ -4311,7 +4307,6 @@
     }
 
     function preencherFormularioConfiguracoes() {
-      document.getElementById('config-idioma').value = configCache.idioma;
       document.getElementById('config-inicio-semana').value = configCache.inicio_semana;
       document.getElementById('config-nome').value = configCache.nome || '';
     }
@@ -4452,13 +4447,6 @@
       });
       document.querySelectorAll('.config-subnav-btn').forEach((btn) => {
         btn.addEventListener('click', () => trocarSubPaginaConfig(btn.dataset.configPagina));
-      });
-      // Idioma recarrega a página depois de salvar — é o jeito mais simples/
-      // confiável de re-renderizar TODO o painel no idioma novo, em vez de
-      // tentar re-traduzir ao vivo cada aba (inclusive as com cache lazy).
-      document.getElementById('config-idioma').addEventListener('change', async (e) => {
-        await salvarConfiguracao('idioma', e.target.value);
-        window.location.reload();
       });
       document.getElementById('config-inicio-semana').addEventListener('change', (e) => salvarConfiguracao('inicio_semana', e.target.value));
       document.getElementById('config-btn-sair').addEventListener('click', async () => {

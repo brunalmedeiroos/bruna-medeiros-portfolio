@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260920a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260920b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -45,10 +45,10 @@
         </button>
 
         <div class="nav-grupo" data-grupo="rotina">
-          <button type="button" class="nav-group-header">
-            <span class="nav-group-titulo"><img class="nav-group-icon-img" src="../painel-admin/img/nav-icones/rotina.png?v=1" alt=""><span data-i18n="nav_grupo_rotina">Rotina</span></span>
-            <svg class="nav-group-seta" width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
+          <div class="nav-group-label">
+            <img class="nav-group-icon-img" src="../painel-admin/img/nav-icones/rotina.png?v=1" alt="">
+            <span data-i18n="nav_grupo_rotina">Rotina</span>
+          </div>
           <div class="nav-group-itens">
             <button class="nav-item" data-tab="calendario" type="button">
               <img class="nav-icon-img" src="../painel-admin/img/nav-icones/calendario.png?v=3" alt="">
@@ -58,10 +58,10 @@
         </div>
 
         <div class="nav-grupo" data-grupo="fontes-renda">
-          <button type="button" class="nav-group-header">
-            <span class="nav-group-titulo"><img class="nav-group-icon-img" src="../painel-admin/img/nav-icones/fontes-renda.png?v=1" alt=""><span data-i18n="nav_grupo_fontes_renda">Fontes de renda</span></span>
-            <svg class="nav-group-seta" width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
+          <div class="nav-group-label">
+            <img class="nav-group-icon-img" src="../painel-admin/img/nav-icones/fontes-renda.png?v=1" alt="">
+            <span data-i18n="nav_grupo_fontes_renda">Fontes de renda</span>
+          </div>
           <div class="nav-group-itens">
             <button class="nav-item" data-tab="ugc" type="button">
               <img class="nav-icon-img" src="../painel-admin/img/nav-icones/ugc.png?v=3" alt="">
@@ -83,10 +83,10 @@
         </div>
 
         <div class="nav-grupo" data-grupo="criacao">
-          <button type="button" class="nav-group-header">
-            <span class="nav-group-titulo"><img class="nav-group-icon-img" src="../painel-admin/img/nav-icones/criacao.png?v=1" alt=""><span data-i18n="nav_grupo_criacao">Criação de Conteúdo</span></span>
-            <svg class="nav-group-seta" width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
+          <div class="nav-group-label">
+            <img class="nav-group-icon-img" src="../painel-admin/img/nav-icones/criacao.png?v=1" alt="">
+            <span data-i18n="nav_grupo_criacao">Criação de Conteúdo</span>
+          </div>
           <div class="nav-group-itens">
             <button class="nav-item" data-tab="planejador" type="button">
               <img class="nav-icon-img" src="../painel-admin/img/nav-icones/planejador.png?v=3" alt="">
@@ -112,10 +112,10 @@
         </div>
 
         <div class="nav-grupo" data-grupo="gestao">
-          <button type="button" class="nav-group-header">
-            <span class="nav-group-titulo"><img class="nav-group-icon-img" src="../painel-admin/img/nav-icones/gestao.png?v=1" alt=""><span data-i18n="nav_grupo_gestao">Gestão</span></span>
-            <svg class="nav-group-seta" width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
+          <div class="nav-group-label">
+            <img class="nav-group-icon-img" src="../painel-admin/img/nav-icones/gestao.png?v=1" alt="">
+            <span data-i18n="nav_grupo_gestao">Gestão</span>
+          </div>
           <div class="nav-group-itens">
             <button class="nav-item" data-tab="financeiro" type="button">
               <img class="nav-icon-img" src="../painel-admin/img/nav-icones/financeiro.png?v=2" alt="">
@@ -4479,7 +4479,6 @@
 
       configurarEventos();
       configurarColapsarSidebar();
-      configurarGruposMenu();
 
       // Aplica tema/cor/idioma ANTES de revelar o body, pra não piscar o tema
       // claro (ou o texto em português) por uma fração de segundo.
@@ -4693,43 +4692,6 @@
         const colapsada = sidebar.classList.toggle('colapsada');
         localStorage.setItem(CHAVE, colapsada ? '1' : '0');
       });
-    }
-
-    // Tópicos do menu (Rotina/Fontes de renda/Criação/Gestão) virando
-    // acordeão — cada .nav-grupo lembra se estava fechado, mesmo padrão de
-    // localStorage do configurarColapsarSidebar() acima.
-    function configurarGruposMenu() {
-      const CHAVE = 'painelGruposMenuFechados';
-      const fechados = new Set(JSON.parse(localStorage.getItem(CHAVE) || '[]'));
-
-      document.querySelectorAll('.nav-grupo').forEach((grupo) => {
-        if (fechados.has(grupo.dataset.grupo)) grupo.classList.add('fechado');
-      });
-
-      function salvar() {
-        const atual = [...document.querySelectorAll('.nav-grupo.fechado')].map((g) => g.dataset.grupo);
-        localStorage.setItem(CHAVE, JSON.stringify(atual));
-      }
-
-      document.querySelectorAll('.nav-group-header').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          btn.closest('.nav-grupo').classList.toggle('fechado');
-          salvar();
-        });
-      });
-    }
-
-    // Se a aba ativa está dentro de um grupo fechado, reabre e persiste —
-    // usado por trocarAba() pra nunca esconder o item que acabou de ficar
-    // ativo (ex: navegação programática, não só clique no próprio menu).
-    function reabrirGrupoDaAba(aba) {
-      const item = document.querySelector(`.nav-item[data-tab="${aba}"]`);
-      const grupo = item && item.closest('.nav-grupo');
-      if (!grupo || !grupo.classList.contains('fechado')) return;
-      grupo.classList.remove('fechado');
-      const CHAVE = 'painelGruposMenuFechados';
-      const atual = [...document.querySelectorAll('.nav-grupo.fechado')].map((g) => g.dataset.grupo);
-      localStorage.setItem(CHAVE, JSON.stringify(atual));
     }
 
     function configurarEventos() {
@@ -5246,7 +5208,6 @@
 
     function trocarAba(aba) {
       document.querySelectorAll('.nav-item').forEach((b) => b.classList.toggle('active', b.dataset.tab === aba));
-      reabrirGrupoDaAba(aba);
       document.querySelectorAll('.tab-panel').forEach((p) => (p.hidden = true));
       document.getElementById('panel-' + aba).hidden = false;
       document.getElementById('titulo-topo').textContent = tr(TITULOS_ABA[aba]);

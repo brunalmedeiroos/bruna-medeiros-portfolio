@@ -143,18 +143,15 @@
   color: #04465D;
 }
 
-/* Tópico do menu (Rotina / Minhas fontes de renda / Criação de Conteúdo /
-   Gestão) — virou acordeão: o cabeçalho clicável (.nav-group-header) some
-   pra fechar o grupo, ficando só o rótulo visível. Mesmo espaço lateral
-   dos nav-item (14px) pra alinhar com os ícones abaixo. */
-.painel-body .nav-group-header {
+/* Tópico do menu (Rotina / Fontes de renda / Criação de Conteúdo / Gestão)
+   — só texto, não é clicável (o acordeão que recolhia os grupos foi tirado:
+   a Bru não se adaptou). Mesmo espaço lateral dos nav-item (14px) pra
+   alinhar com os ícones abaixo. */
+.painel-body .nav-group-label {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
   width: 100%;
-  background: none;
-  border: none;
-  cursor: pointer;
   font-family: var(--fonte-corpo);
   padding: 16px 14px 4px;
   font-size: 12px;
@@ -171,32 +168,12 @@
   flex-shrink: 0;
 }
 
-.painel-body .nav-group-header:hover {
-  color: #fff;
-}
-
-.nav-group-titulo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .nav-group-icon-img {
   width: 15px;
   height: 15px;
   object-fit: contain;
   flex-shrink: 0;
   mix-blend-mode: normal;
-}
-
-.nav-group-seta {
-  flex-shrink: 0;
-  opacity: 0.85;
-  transition: transform 0.15s ease;
-}
-
-.nav-grupo.fechado .nav-group-seta {
-  transform: rotate(-90deg);
 }
 
 .nav-group-itens {
@@ -206,19 +183,8 @@
   overflow: hidden;
 }
 
-.nav-grupo.fechado .nav-group-itens {
+.sidebar.colapsada .nav-group-label {
   display: none;
-}
-
-.sidebar.colapsada .nav-group-header {
-  display: none;
-}
-
-/* Sidebar minimizada (só ícones) ignora o acordeão — sempre mostra todos
-   os itens navegáveis, independente do que a Bruna deixou fechado na
-   sidebar expandida. */
-.sidebar.colapsada .nav-grupo.fechado .nav-group-itens {
-  display: flex;
 }
 
 /* Card de perfil fixo no rodapé da sidebar (fora do <nav>, não rola com a

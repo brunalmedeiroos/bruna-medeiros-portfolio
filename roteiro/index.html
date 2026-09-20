@@ -613,7 +613,7 @@
       var mCabecalho = linha.match(cabecalhoRe);
       if (mCabecalho) {
         if (atual) finalizar(atual);
-        atual = { funcao_cena: mCabecalho[1].trim(), tipo_cena: 'Cena falada', falaLinhas: [], detalhesLinhas: [] };
+        atual = { funcao_cena: mCabecalho[1].trim(), falaLinhas: [], detalhesLinhas: [] };
         cenasEncontradas.push(atual);
         modo = null;
         continue;

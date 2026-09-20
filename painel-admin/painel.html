@@ -125,10 +125,6 @@
               <img class="nav-icon-img" src="img/nav-icones/metas.png?v=2" alt="">
               <span data-i18n="nav_metas">Metas</span>
             </button>
-            <button class="nav-item" data-tab="email" type="button">
-              <img class="nav-icon-img" src="img/nav-icones/email.png?v=3" alt="">
-              <span data-i18n="nav_email">E-mail</span>
-            </button>
           </div>
         </div>
       </nav>
@@ -400,42 +396,6 @@
           </div>
         </div>
 
-        </section>
-
-        <section id="panel-email" class="tab-panel" hidden>
-          <div class="card card-email-conectar" id="email-conectar" hidden>
-            <h3 class="card-titulo" data-i18n="email_conectar_titulo">Conectar sua conta do Gmail</h3>
-            <p class="email-conectar-texto" data-i18n-html="email_conectar_texto_html">
-              Depois de conectar, esta aba mostra as mensagens marcadas com o
-              rótulo <strong>"Propostas"</strong> no seu Gmail, e você pode
-              responder direto por aqui.
-            </p>
-            <button id="btn-email-conectar" class="cal-btn cal-btn-primario" type="button" data-i18n="email_conectar_btn">Conectar Gmail</button>
-            <p class="email-conectar-erro" id="email-conectar-erro" hidden></p>
-          </div>
-
-          <div class="email-layout" id="email-layout">
-            <div class="card card-email-lista">
-              <h3 class="card-titulo" data-i18n="email_mensagens">Mensagens</h3>
-              <div id="email-lista" class="email-lista"><p class="texto-suave" data-i18n="email_carregando_mensagens">Carregando mensagens...</p></div>
-            </div>
-
-            <div class="card card-email-detalhe">
-              <div id="email-detalhe">
-                <p class="email-detalhe-vazio" data-i18n="email_selecione_mensagem">Selecione uma mensagem na lista ao lado.</p>
-              </div>
-
-              <form id="email-form-resposta" class="email-form" hidden>
-                <div class="email-form-topo">
-                  <span data-i18n="email_responder">Responder</span>
-                </div>
-                <textarea id="email-resposta-texto" data-i18n-placeholder="email_placeholder_resposta" placeholder="Escreva sua resposta..." required></textarea>
-                <div class="cal-form-acoes">
-                  <button type="submit" class="cal-btn cal-btn-primario" id="email-btn-enviar" data-i18n="email_enviar_resposta">Enviar resposta</button>
-                </div>
-              </form>
-            </div>
-          </div>
         </section>
 
         <!-- ---------- Aba: Instagram ---------- -->
@@ -2347,9 +2307,6 @@
     let tarefaEditando = null; // id da tarefa em edição, ou null quando o formulário é para criar uma nova
     let tarefasChecklistCache = []; // itens de checklist de todas as tarefas (painel_tarefas_checklist)
     let calFormChecklist = []; // itens de checklist do formulário aberto no momento (antes de salvar)
-    let emailsCache = [];
-    let emailAbaCarregada = false;
-    let emailAbertoId = null;
     let instagramAbaCarregada = false;
     let instagramSubAbaAtual = 'visao-geral';
     let instagramMediaCache = [];
@@ -2592,7 +2549,6 @@
       overview: 'titulo_dashboard',
       portfolio: 'titulo_portfolio',
       calendario: 'titulo_calendario',
-      email: 'titulo_email',
       instagram: 'titulo_instagram',
       'desafio-ugc': 'Nosso Desafio UGC',
       planejador: 'titulo_planejador',
@@ -4311,20 +4267,14 @@
 
       await carregarDados();
 
-      // UGC/Publi e E-mail normalmente só carregam quando a aba é aberta
-      // (carregarUGC/carregarEmails, guardados por ugcAbaCarregada/emailAbaCarregada).
-      // Como agora alimentam "Precisa da sua atenção" já na tela inicial, adianta
-      // essa busca aqui — sem esperar por ela (o Dashboard não trava nisso) e sem
-      // duplicar a query: quando a aba correspondente for aberta depois, os dados
-      // já estão no cache e não são buscados de novo. Só depois de carregarDados()
-      // porque chamarFuncao() (usado por carregarEmails) lê o token da sessão na
-      // hora — disparar tudo junto logo após o login, antes de qualquer resposta
-      // do Supabase ter voltado, arriscava pegar o token no meio de uma renovação
-      // e a função de e-mail devolver "forbidden".
+      // UGC/Publi normalmente só carrega quando a aba é aberta (carregarUGC,
+      // guardado por ugcAbaCarregada). Como agora alimenta "Precisa da sua
+      // atenção" já na tela inicial, adianta essa busca aqui — sem esperar
+      // por ela (o Dashboard não trava nisso) e sem duplicar a query: quando
+      // a aba for aberta depois, os dados já estão no cache e não são
+      // buscados de novo.
       ugcAbaCarregada = true;
-      emailAbaCarregada = true;
       carregarUGC();
-      carregarEmails();
     })();
 
     // ==========================================================================
@@ -4654,12 +4604,9 @@
       document.getElementById('btn-google-agenda-desconectar').addEventListener('click', desconectarGoogleAgenda);
       document.getElementById('cal-btn-sincronizar').addEventListener('click', () => sincronizarGoogleAgenda({ silencioso: false }));
 
-      // E-mail
-      document.getElementById('btn-email-conectar').addEventListener('click', conectarGmail);
       document.getElementById('btn-instagram-conectar').addEventListener('click', conectarInstagram);
       document.getElementById('btn-instagram-atualizar').addEventListener('click', carregarInstagram);
       document.getElementById('btn-instagram-desconectar').addEventListener('click', desconectarInstagram);
-      document.getElementById('email-form-resposta').addEventListener('submit', enviarResposta);
 
       // Planejador de Conteúdo
       document.querySelectorAll('.pl-hub-card').forEach((btn) => {
@@ -5037,10 +4984,6 @@
 
       if (aba === 'overview') renderizarCabecalhoDashboard();
 
-      if (aba === 'email' && !emailAbaCarregada) {
-        emailAbaCarregada = true;
-        carregarEmails();
-      }
       if (aba === 'instagram') {
         trocarSubAbaInstagram('visao-geral');
         if (!instagramAbaCarregada) {
@@ -5129,8 +5072,8 @@
     // ==========================================================================
     // Aba: Dashboard ("O que eu preciso saber agora?") — só leitura, junta o que
     // já existe em Calendário (painel_tarefas) e UGC/Publi (ugcTrabalhosCache,
-    // ugcProspeccaoCache, ugcContratosCache) e E-mail (emailsCache), sem cadastro
-    // nem tabela própria e sem recalcular nenhuma regra que já exista em outra aba.
+    // ugcProspeccaoCache, ugcContratosCache), sem cadastro nem tabela própria
+    // e sem recalcular nenhuma regra que já exista em outra aba.
     // ==========================================================================
 
     function saudacaoPorHorario() {
@@ -5193,8 +5136,8 @@
 
     // Junta, só pra exibição, o que já está calculado em cada área do sistema:
     // entregas (UGC), pagamento (UGC), direitos de uso (UGC), follow-up de
-    // prospecção (UGC), contrato (UGC) e propostas por e-mail (Gmail). Nenhuma
-    // dessas listas é recalculada — todas vêm de função já usada em outra aba.
+    // prospecção (UGC) e contrato (UGC). Nenhuma dessas listas é recalculada
+    // — todas vêm de função já usada em outra aba.
     function renderizarAtencaoDashboard() {
       const hojeISO = dataParaISO(new Date());
       const daqui3ISO = dataParaISO(new Date(Date.now() + 3 * 86400000));
@@ -5247,15 +5190,6 @@
           texto: `${t.marca} — ${traduzirTipoTrabalho(t.tipo_trabalho)}`,
           detalhe: formatarDataCurta(new Date(t.data_entrega + 'T00:00:00')),
           onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
-        }))));
-      }
-
-      const propostasNaoVistas = emailsCache.filter((m) => m.unread);
-      if (propostasNaoVistas.length > 0) {
-        grupos.push(criarGrupoAtencao(tr('atencao_propostas'), false, propostasNaoVistas.map((m) => ({
-          texto: nomeRemetente(m.from),
-          detalhe: m.subject || tr('sem_assunto'),
-          onClick: () => trocarAba('email'),
         }))));
       }
 
@@ -6750,7 +6684,8 @@
     }
 
     // ==========================================================================
-    // E-mail (aba E-mail — Gmail conectado via OAuth, ver supabase/functions/gmail-*)
+    // Helper compartilhado por Calendário (Google Agenda), Instagram e Radar
+    // pra chamar as Supabase Edge Functions autenticadas de cada integração.
     // ==========================================================================
 
     async function chamarFuncao(caminho, opts = {}) {
@@ -6764,231 +6699,6 @@
         body: opts.body ? JSON.stringify(opts.body) : undefined,
       });
       return res.json();
-    }
-
-    function mostrarEmailDesconectado(mensagemErro) {
-      document.getElementById('email-conectar').hidden = false;
-      document.getElementById('email-layout').hidden = true;
-      const erroEl = document.getElementById('email-conectar-erro');
-      if (mensagemErro) {
-        erroEl.textContent = mensagemErro;
-        erroEl.hidden = false;
-      } else {
-        erroEl.hidden = true;
-      }
-    }
-
-    function mostrarEmailConectado() {
-      document.getElementById('email-conectar').hidden = true;
-      document.getElementById('email-layout').hidden = false;
-    }
-
-    async function conectarGmail() {
-      const btn = document.getElementById('btn-email-conectar');
-      btn.disabled = true;
-      btn.textContent = tr('conectando');
-      try {
-        const resultado = await chamarFuncao('gmail-oauth-start');
-        if (resultado.ok) {
-          window.location.href = resultado.url;
-          return;
-        }
-        mostrarEmailDesconectado(tr('erro_iniciar_conexao'));
-      } catch (err) {
-        console.error('Erro ao conectar Gmail:', err);
-        mostrarEmailDesconectado(tr('erro_iniciar_conexao'));
-      }
-      btn.disabled = false;
-      btn.textContent = tr('email_conectar_btn');
-    }
-
-    async function carregarEmails() {
-      const lista = document.getElementById('email-lista');
-      try {
-        const resultado = await chamarFuncao('gmail-inbox');
-        if (!resultado.ok) {
-          if (resultado.error === 'not_connected') {
-            mostrarEmailDesconectado();
-          } else {
-            mostrarEmailConectado();
-            lista.innerHTML = '<p class="texto-erro">' + escapeHtml(tr('email_erro_carregar_prefixo')) + escapeHtml(resultado.error) + '</p>';
-          }
-          return;
-        }
-        emailsCache = resultado.mensagens || [];
-        mostrarEmailConectado();
-        renderizarListaEmails();
-        renderizarAtencaoDashboard();
-      } catch (err) {
-        console.error('Erro ao carregar e-mails:', err);
-        mostrarEmailConectado();
-        lista.innerHTML = `<p class="texto-erro">${escapeHtml(tr('email_erro_carregar_generico'))}</p>`;
-      }
-    }
-
-    // Extrai só o nome de exibição de um campo "Nome <email@dominio.com>".
-    function nomeRemetente(campoDe) {
-      const m = campoDe.match(/^"?([^"<]+)"?\s*</);
-      return m ? m[1].trim() : campoDe;
-    }
-
-    function renderizarListaEmails() {
-      const lista = document.getElementById('email-lista');
-
-      if (emailsCache.length === 0) {
-        lista.innerHTML = `<p class="email-lista-vazia">${escapeHtml(tr('email_nenhuma_mensagem'))}</p>`;
-        return;
-      }
-
-      lista.innerHTML = emailsCache.map((msg) => `
-        <div class="email-item-linha">
-          <button type="button" class="email-item${msg.id === emailAbertoId ? ' email-item-ativo' : ''}${msg.unread ? '' : ' email-item-lida'}" data-id="${escapeHtml(msg.id)}">
-            <span class="email-item-topo-linha">
-              <span class="email-item-remetente">${escapeHtml(nomeRemetente(msg.from))}</span>
-              ${msg.unread ? '' : `<span class="email-item-selo-vista">${escapeHtml(tr('email_vista_selo'))}</span>`}
-            </span>
-            <span class="email-item-assunto">${escapeHtml(msg.subject || tr('sem_assunto'))}</span>
-            <span class="email-item-resumo">${escapeHtml(msg.snippet)}</span>
-          </button>
-          ${msg.unread ? `
-          <button type="button" class="email-item-marcar-lida" data-id="${escapeHtml(msg.id)}" aria-label="${escapeHtml(tr('email_marcar_visto_aria'))}" title="${escapeHtml(tr('email_marcar_visto_aria'))}">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M4 12l6 6L20 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>` : ''}
-          <button type="button" class="email-item-desmarcar" data-id="${escapeHtml(msg.id)}" aria-label="${escapeHtml(tr('email_desmarcar_aria'))}" title="${escapeHtml(tr('email_desmarcar_title'))}">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </button>
-        </div>
-      `).join('');
-
-      lista.querySelectorAll('.email-item').forEach((btn) => {
-        btn.addEventListener('click', () => abrirEmail(btn.dataset.id));
-      });
-      lista.querySelectorAll('.email-item-marcar-lida').forEach((btn) => {
-        btn.addEventListener('click', () => marcarEmailVisto(btn.dataset.id));
-      });
-      lista.querySelectorAll('.email-item-desmarcar').forEach((btn) => {
-        btn.addEventListener('click', () => desmarcarEmail(btn.dataset.id));
-      });
-    }
-
-    // Marca como lida usando o próprio estado "lido/não lido" do Gmail (remove
-    // o marcador de sistema UNREAD) — não é um controle novo, é o mesmo "já vi
-    // esse e-mail" que existe no Gmail de verdade, então reflete lá também.
-    async function marcarEmailVisto(id) {
-      try {
-        const resultado = await chamarFuncao('gmail-marcar-lida', {
-          method: 'POST',
-          body: { messageId: id },
-        });
-        if (!resultado.ok) {
-          alert(tr('email_erro_marcar_visto_prefixo') + resultado.error);
-          return;
-        }
-        const msg = emailsCache.find((m) => m.id === id);
-        if (msg) msg.unread = false;
-        renderizarListaEmails();
-        renderizarAtencaoDashboard();
-      } catch (err) {
-        console.error('Erro ao marcar e-mail como visto:', err);
-        alert(tr('email_erro_marcar_visto_generico'));
-      }
-    }
-
-    function fecharEmailAberto() {
-      emailAbertoId = null;
-      document.getElementById('email-detalhe').innerHTML =
-        `<p class="email-detalhe-vazio">${escapeHtml(tr('email_selecione_mensagem'))}</p>`;
-      document.getElementById('email-form-resposta').hidden = true;
-      renderizarListaEmails();
-    }
-
-    async function desmarcarEmail(id) {
-      if (!(await confirmarAcao(tr('email_confirmar_desmarcar'), { textoConfirmar: tr('remover') }))) return;
-      try {
-        const resultado = await chamarFuncao('gmail-unmark', {
-          method: 'POST',
-          body: { messageId: id },
-        });
-        if (!resultado.ok) {
-          alert(tr('email_erro_desmarcar_prefixo') + resultado.error);
-          return;
-        }
-        emailsCache = emailsCache.filter((m) => m.id !== id);
-        if (emailAbertoId === id) fecharEmailAberto();
-        else renderizarListaEmails();
-        renderizarAtencaoDashboard();
-      } catch (err) {
-        console.error('Erro ao desmarcar e-mail:', err);
-        alert(tr('email_erro_desmarcar_generico'));
-      }
-    }
-
-    async function abrirEmail(id) {
-      emailAbertoId = id;
-      renderizarListaEmails();
-
-      const detalhe = document.getElementById('email-detalhe');
-      const form = document.getElementById('email-form-resposta');
-      detalhe.innerHTML = `<p class="email-detalhe-vazio">${escapeHtml(tr('carregando'))}</p>`;
-      form.hidden = true;
-
-      try {
-        const resultado = await chamarFuncao(`gmail-inbox?id=${encodeURIComponent(id)}`);
-        if (!resultado.ok) {
-          detalhe.innerHTML = `<p class="texto-erro">${escapeHtml(tr('email_erro_abrir_prefixo'))}${escapeHtml(resultado.error)}</p>`;
-          return;
-        }
-
-        const msg = resultado.mensagem;
-        detalhe.innerHTML = `
-          <div class="email-detalhe-cabecalho">
-            <div class="email-detalhe-topo">
-              <h3 class="card-titulo">${escapeHtml(msg.subject || tr('sem_assunto'))}</h3>
-              <button type="button" id="email-fechar-detalhe" class="cal-btn cal-btn-icon" aria-label="${escapeHtml(tr('email_fechar_mensagem_aria'))}">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-              </button>
-            </div>
-            <p class="email-detalhe-meta">${escapeHtml(nomeRemetente(msg.from))} · ${escapeHtml(msg.date)}</p>
-          </div>
-          <div class="email-detalhe-corpo">${escapeHtml(msg.body)}</div>
-        `;
-        document.getElementById('email-fechar-detalhe').addEventListener('click', fecharEmailAberto);
-        document.getElementById('email-resposta-texto').value = '';
-        form.hidden = false;
-      } catch (err) {
-        console.error('Erro ao abrir e-mail:', err);
-        detalhe.innerHTML = `<p class="texto-erro">${escapeHtml(tr('email_erro_abrir_generico'))}</p>`;
-      }
-    }
-
-    async function enviarResposta(e) {
-      e.preventDefault();
-      if (!emailAbertoId) return;
-
-      const textarea = document.getElementById('email-resposta-texto');
-      const btn = document.getElementById('email-btn-enviar');
-      const texto = textarea.value.trim();
-      if (!texto) return;
-
-      btn.disabled = true;
-      btn.textContent = tr('enviando');
-      try {
-        const resultado = await chamarFuncao('gmail-reply', {
-          method: 'POST',
-          body: { messageId: emailAbertoId, body: texto },
-        });
-        if (resultado.ok) {
-          textarea.value = '';
-          alert(tr('email_resposta_enviada'));
-        } else {
-          alert(tr('email_erro_enviar_prefixo') + resultado.error);
-        }
-      } catch (err) {
-        console.error('Erro ao enviar resposta:', err);
-        alert(tr('email_erro_enviar_generico'));
-      }
-      btn.disabled = false;
-      btn.textContent = tr('email_enviar_resposta');
     }
 
     // ==========================================================================

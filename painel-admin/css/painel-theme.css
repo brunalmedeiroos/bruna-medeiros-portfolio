@@ -145,12 +145,12 @@
 
 /* Tópico do menu (Rotina / Fontes de renda / Criação de Conteúdo / Gestão)
    — só texto, não é clicável (o acordeão que recolhia os grupos foi tirado:
-   a Bru não se adaptou). Mesmo espaço lateral dos nav-item (14px) pra
-   alinhar com os ícones abaixo. */
+   a Bru não se adaptou). Sem ícone, cada tópico tem sua própria cor de
+   destaque pra diferenciar um do outro. Mesmo espaço lateral dos nav-item
+   (14px) pra alinhar com os ícones abaixo. */
 .painel-body .nav-group-label {
   display: flex;
   align-items: center;
-  gap: 8px;
   width: 100%;
   font-family: var(--fonte-corpo);
   padding: 16px 14px 4px;
@@ -159,7 +159,6 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.85);
   white-space: nowrap;
   /* Mesma proteção contra flex-shrink que o rótulo antigo precisava (ver
      histórico: overflow diferente de "visible" tira a proteção automática
@@ -168,12 +167,20 @@
   flex-shrink: 0;
 }
 
-.nav-group-icon-img {
-  width: 15px;
-  height: 15px;
-  object-fit: contain;
-  flex-shrink: 0;
-  mix-blend-mode: normal;
+.painel-body .nav-grupo[data-grupo="rotina"] .nav-group-label {
+  color: #FFD166;
+}
+
+.painel-body .nav-grupo[data-grupo="fontes-renda"] .nav-group-label {
+  color: #8BE8B8;
+}
+
+.painel-body .nav-grupo[data-grupo="criacao"] .nav-group-label {
+  color: #D0BFFF;
+}
+
+.painel-body .nav-grupo[data-grupo="gestao"] .nav-group-label {
+  color: #FFAFC5;
 }
 
 .nav-group-itens {

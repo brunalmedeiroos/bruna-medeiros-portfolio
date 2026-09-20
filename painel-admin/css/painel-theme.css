@@ -3866,7 +3866,33 @@
 
 .painel-body .cal-todas-cabecalho.contatos-linha,
 .painel-body .cal-todas-linha.contatos-linha {
-  grid-template-columns: 140px 130px 1fr 150px 110px 110px;
+  grid-template-columns: 28px 140px 130px 1fr 150px 110px 110px;
+}
+
+.painel-body .contatos-checkbox-cel {
+  display: flex;
+  align-items: center;
+}
+
+.painel-body .contatos-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--coral);
+}
+
+.painel-body .contatos-checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.3;
+}
+
+.painel-body .contatos-selecao-barra {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--texto-suave);
 }
 
 .painel-body .contatos-vazio {
@@ -5434,5 +5460,396 @@
     width: 100%;
     max-width: 300px;
     margin: 0 auto;
+  }
+}
+
+/* ==========================================================================
+   Aba E-mail (disparo de prospecção em massa pra Base de Contatos)
+   ========================================================================== */
+
+.painel-body .email-capa {
+  background: linear-gradient(135deg, var(--coral) 0%, var(--coral-hover) 100%);
+  border-radius: var(--raio-lg);
+  padding: 32px 36px;
+  color: var(--branco);
+  margin-bottom: 20px;
+}
+
+.painel-body .email-capa-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.painel-body .email-capa-icone {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.painel-body .email-capa-titulo {
+  font-family: var(--fonte-titulo);
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: var(--branco);
+}
+
+.painel-body .email-capa-descricao {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 420px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.painel-body .email-capa-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.painel-body .email-capa-tag {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--branco);
+}
+
+.painel-body .email-capa-numero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.painel-body .email-capa-numero-valor {
+  font-family: var(--fonte-titulo);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--branco);
+}
+
+.painel-body .email-capa-numero-legenda {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 6px;
+}
+
+.painel-body .email-cards-numeros {
+  grid-template-columns: repeat(5, 1fr);
+  margin-bottom: 20px;
+}
+
+.painel-body .email-card {
+  border-left: 3px solid transparent;
+  position: relative;
+}
+
+.painel-body .email-card-coral {
+  border-left-color: var(--coral);
+}
+.painel-body .email-card-coral .card-valor {
+  color: var(--coral);
+}
+
+.painel-body .email-card-azul {
+  border-left-color: #4a90d9;
+}
+.painel-body .email-card-azul .card-valor {
+  color: #4a90d9;
+}
+
+.painel-body .email-card-verde {
+  border-left-color: var(--sucesso);
+}
+.painel-body .email-card-verde .card-valor {
+  color: var(--sucesso);
+}
+
+.painel-body .email-card-ambar {
+  border-left-color: #c98a1c;
+}
+.painel-body .email-card-ambar .card-valor {
+  color: #c98a1c;
+}
+
+.painel-body .email-card-vermelho {
+  border-left-color: var(--erro);
+}
+.painel-body .email-card-vermelho .card-valor {
+  color: var(--erro);
+}
+
+.painel-body .email-vazio {
+  text-align: center;
+  padding: 40px 24px;
+}
+
+.painel-body .email-vazio .cal-todas-resumo {
+  margin: 8px 0 18px;
+}
+
+.painel-body .email-corpo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 20px;
+}
+
+.painel-body .email-corpo[hidden] {
+  display: none;
+}
+
+.painel-body .email-form-coluna .card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.painel-body .email-lembrete {
+  font-size: 12px;
+  color: var(--texto-suave);
+  margin: 0 0 10px;
+}
+
+.painel-body .email-destino-contagem {
+  font-size: 12px;
+  color: var(--texto-suave);
+  margin: 6px 0 14px;
+}
+
+.painel-body .email-modo-envio-grupo,
+.painel-body .email-modo-escrita-grupo {
+  margin-bottom: 16px;
+  width: fit-content;
+}
+
+.painel-body .email-modo-aviso {
+  font-size: 13px;
+  color: #9a6b0a;
+  background: rgba(212, 160, 23, 0.12);
+  border-radius: var(--raio-sm);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+
+.painel-body .email-aviso-html {
+  font-size: 12px;
+  color: var(--erro);
+  margin: -4px 0 10px;
+}
+
+.painel-body .email-textarea-codigo {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+
+.painel-body .email-acoes-envio {
+  margin-top: 8px;
+}
+
+.painel-body .email-progresso {
+  margin-top: 16px;
+}
+
+.painel-body .email-progresso-barra {
+  height: 8px;
+  border-radius: 20px;
+  background: rgba(var(--grafite-rgb), 0.08);
+  overflow: hidden;
+}
+
+.painel-body .email-progresso-preenchido {
+  height: 100%;
+  background: var(--coral);
+  border-radius: 20px;
+  width: 0%;
+  transition: width 0.2s ease;
+}
+
+.painel-body .email-progresso-texto {
+  font-size: 12px;
+  color: var(--texto-suave);
+  margin: 8px 0 0;
+}
+
+.painel-body .email-resumo-envio {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: var(--raio-sm);
+  background: rgba(var(--grafite-rgb), 0.04);
+  font-size: 13px;
+}
+
+.painel-body .email-fila-rascunho {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--borda);
+}
+
+.painel-body .email-fila-rascunho textarea,
+.painel-body .email-fila-rascunho input {
+  background: rgba(var(--grafite-rgb), 0.03);
+}
+
+.painel-body .email-preview-coluna {
+  position: sticky;
+  top: 20px;
+}
+
+.painel-body .email-preview-palco {
+  background: rgba(var(--grafite-rgb), 0.05);
+  border-radius: var(--raio-lg);
+  padding: 28px;
+  position: relative;
+}
+
+.painel-body .email-preview-fullscreen-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1;
+}
+
+.painel-body .email-preview-janela {
+  background: var(--branco);
+  border-radius: 16px;
+  box-shadow: var(--sombra-forte);
+  overflow: hidden;
+}
+
+.painel-body .email-preview-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--borda);
+}
+
+.painel-body .email-preview-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--coral);
+  color: var(--branco);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.painel-body .email-preview-cabecalho-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.painel-body .email-preview-assunto {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .email-preview-remetente {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.painel-body .email-preview-iframe {
+  width: 100%;
+  height: 420px;
+  border: 0;
+  display: block;
+  background: var(--branco);
+}
+
+.painel-body .email-preview-lembrete {
+  font-size: 12px;
+  color: var(--texto-suave);
+  text-align: center;
+  margin: 14px 0 0;
+}
+
+.painel-body .email-preview-fullscreen-conteudo {
+  position: relative;
+  width: min(700px, 92vw);
+  margin: 4vh auto;
+}
+
+.painel-body .email-preview-fullscreen-fechar {
+  position: absolute;
+  top: -44px;
+  right: 0;
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--branco);
+}
+
+.painel-body .email-preview-janela-grande .email-preview-iframe {
+  height: 70vh;
+}
+
+.painel-body .cal-todas-cabecalho.email-historico-linha,
+.painel-body .cal-todas-linha.email-historico-linha {
+  grid-template-columns: 1fr 1fr 110px 100px;
+}
+
+.painel-body .email-descadastro-titulo {
+  margin-top: 24px;
+}
+
+.painel-body .email-descadastro-form {
+  display: flex;
+  gap: 10px;
+  max-width: 420px;
+}
+
+.painel-body .email-descadastro-form input {
+  flex: 1;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: var(--fonte-corpo);
+}
+
+@media (max-width: 900px) {
+  .painel-body .email-corpo {
+    grid-template-columns: 1fr;
+  }
+
+  .painel-body .email-preview-coluna {
+    position: static;
+  }
+
+  .painel-body .email-cards-numeros {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .painel-body .email-capa-topo {
+    flex-direction: column;
+  }
+
+  .painel-body .email-capa-numero {
+    align-items: flex-start;
+    text-align: left;
   }
 }

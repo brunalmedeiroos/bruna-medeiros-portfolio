@@ -559,7 +559,13 @@ create table if not exists public.ugc_base_contatos (
   telefone text,
   situacao text not null default 'Lead' check (situacao in ('Lead', 'Conversando', 'Cliente', 'Parada')),
   observacao text,
-  ultimo_contato date
+  ultimo_contato date,
+  -- Usados pelo disparo de e-mail em massa (aba E-mail): "selecionada"
+  -- guarda a seleção manual pra um disparo (fica salva entre sessões);
+  -- "ultimo_envio_email" guarda quando essa marca recebeu o último e-mail
+  -- de prospecção.
+  selecionada boolean not null default false,
+  ultimo_envio_email date
 );
 
 create index if not exists ugc_base_contatos_situacao_idx on public.ugc_base_contatos (situacao);
@@ -574,6 +580,44 @@ create policy "Painel: atualização autenticada de base de contatos UGC"
   on public.ugc_base_contatos for update to authenticated using (public.is_owner()) with check (public.is_owner());
 create policy "Painel: exclusão autenticada de base de contatos UGC"
   on public.ugc_base_contatos for delete to authenticated using (public.is_owner());
+
+-- Tabela: email_envios (uma linha por destinatário de cada disparo da aba
+-- E-mail, mesmo quando dá erro — é o que permite saber quem já recebeu)
+create table if not exists public.email_envios (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  email text not null,
+  assunto text not null,
+  status text not null check (status in ('ok', 'erro')),
+  erro text,
+  resend_id text
+);
+
+create index if not exists email_envios_email_idx on public.email_envios (email);
+create index if not exists email_envios_assunto_idx on public.email_envios (assunto);
+
+alter table public.email_envios enable row level security;
+
+create policy "Painel: leitura autenticada de envios de e-mail"
+  on public.email_envios for select to authenticated using (public.is_owner());
+create policy "Painel: escrita autenticada de envios de e-mail"
+  on public.email_envios for insert to authenticated with check (public.is_owner());
+
+-- Tabela: email_optout (quem respondeu "SAIR" — nunca mais entra em
+-- nenhum disparo da aba E-mail depois de estar aqui)
+create table if not exists public.email_optout (
+  email text primary key,
+  created_at timestamptz not null default now()
+);
+
+alter table public.email_optout enable row level security;
+
+create policy "Painel: leitura autenticada de descadastro"
+  on public.email_optout for select to authenticated using (public.is_owner());
+create policy "Painel: escrita autenticada de descadastro"
+  on public.email_optout for insert to authenticated with check (public.is_owner());
+create policy "Painel: exclusão autenticada de descadastro"
+  on public.email_optout for delete to authenticated using (public.is_owner());
 
 -- Tabela: ugc_contratos
 create table if not exists public.ugc_contratos (

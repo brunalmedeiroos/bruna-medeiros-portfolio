@@ -15,6 +15,10 @@ create table if not exists public.painel_configuracoes (
   fuso_horario text not null default 'automatico',
   inicio_semana text not null default 'domingo' check (inicio_semana in ('domingo', 'segunda')),
   nome text,
+  -- Usados pelo disparo de e-mail em massa (aba E-mail): remetente ("From")
+  -- e e-mail de contato (reply-to) das mensagens enviadas pelo Resend.
+  email_remetente text,
+  email_contato text,
   updated_at timestamptz not null default now(),
   constraint painel_configuracoes_singleton check (id = 1)
 );

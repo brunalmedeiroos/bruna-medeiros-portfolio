@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260919h">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260920a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -66,6 +66,10 @@
             <button class="nav-item" data-tab="ugc" type="button">
               <img class="nav-icon-img" src="img/nav-icones/ugc.png?v=3" alt="">
               <span data-i18n="nav_ugc">UGC/Publicidade</span>
+            </button>
+            <button class="nav-item" data-tab="email" type="button">
+              <img class="nav-icon-img" src="img/nav-icones/email.png?v=3" alt="">
+              <span data-i18n="nav_email">E-mail</span>
             </button>
             <button class="nav-item" data-tab="afiliacao" type="button">
               <img class="nav-icon-img" src="img/nav-icones/afiliacao.png?v=2" alt="">
@@ -397,6 +401,208 @@
         </div>
 
         </section>
+
+        <!-- ---------- Aba: E-mail (prospecção em massa pra Base de Contatos) ---------- -->
+        <section id="panel-email" class="tab-panel" hidden>
+          <div class="email-capa">
+            <div class="email-capa-topo">
+              <div class="email-capa-texto">
+                <div class="email-capa-icone">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 6l9 7 9-7M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <h2 class="email-capa-titulo">Prospecção</h2>
+                <p class="email-capa-descricao">Manda seu e-mail de apresentação pra várias marcas de uma vez, chamando cada uma pelo nome.</p>
+                <div class="email-capa-tags">
+                  <span class="email-capa-tag">Teste antes sempre</span>
+                  <span class="email-capa-tag">A chave vive no Supabase</span>
+                  <span class="email-capa-tag">Quem responde SAIR sai da lista</span>
+                </div>
+              </div>
+              <div class="email-capa-numero">
+                <span class="email-capa-numero-valor" id="email-capa-total">—</span>
+                <span class="email-capa-numero-legenda">enviados até agora</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="cards-numeros email-cards-numeros">
+            <div class="card-numero email-card email-card-coral">
+              <span class="card-valor" id="email-num-com-email">—</span>
+              <span class="card-label">Marcas com e-mail</span>
+            </div>
+            <div class="card-numero email-card email-card-azul">
+              <span class="card-valor" id="email-num-a-enviar">—</span>
+              <span class="card-label">A enviar</span>
+            </div>
+            <div class="card-numero email-card email-card-verde">
+              <span class="card-valor" id="email-num-receberam">—</span>
+              <span class="card-label">Já receberam</span>
+            </div>
+            <div class="card-numero email-card email-card-ambar">
+              <span class="card-valor" id="email-num-falhas">—</span>
+              <span class="card-label">Falhas</span>
+            </div>
+            <div class="card-numero email-card email-card-vermelho">
+              <span class="card-valor" id="email-num-descadastrados">—</span>
+              <span class="card-label">Descadastrados</span>
+            </div>
+          </div>
+
+          <div class="card email-vazio" id="email-vazio-base" hidden>
+            <h3 class="card-titulo">Sua base ainda está sem e-mail</h3>
+            <p class="cal-todas-resumo">Cadastre ou importe sua planilha de contatos primeiro, na Base de contatos.</p>
+            <button type="button" class="cal-btn cal-btn-primario" id="btn-email-ir-marcas">Ir pra Base de contatos</button>
+          </div>
+
+          <div class="email-corpo" id="email-corpo">
+            <div class="email-form-coluna">
+              <div class="card">
+                <div class="cal-filtro-grupo email-modo-envio-grupo">
+                  <button type="button" class="cal-filtro-btn ativo" data-modo-envio="resend">Automático (Resend)</button>
+                  <button type="button" class="cal-filtro-btn" data-modo-envio="rascunho">Rascunho (Gmail manual)</button>
+                </div>
+
+                <div id="email-config-resend" class="pl-modal-linha">
+                  <div class="cal-form-campo">
+                    <label for="email-config-remetente">Remetente (De)</label>
+                    <input type="text" id="email-config-remetente" placeholder="Bruna Medeiros <contato@seudominio.com>">
+                  </div>
+                  <div class="cal-form-campo">
+                    <label for="email-config-contato">E-mail de contato (reply-to)</label>
+                    <input type="text" id="email-config-contato" placeholder="contato@seudominio.com">
+                  </div>
+                </div>
+
+                <h4 class="ugc-modal-secao-titulo">Pra quem vai</h4>
+                <p class="email-lembrete">Os e-mails vêm da sua Base de contatos.</p>
+                <div class="cal-form-campo">
+                  <label for="email-destino-select">Destinatários</label>
+                  <select id="email-destino-select"></select>
+                </div>
+                <p class="email-destino-contagem" id="email-destino-contagem"></p>
+                <label class="ugc-permuta-check">
+                  <input type="checkbox" id="email-pular-repetidos" checked>
+                  <span>Pular quem já recebeu este mesmo assunto</span>
+                </label>
+
+                <h4 class="ugc-modal-secao-titulo">Escrever o e-mail</h4>
+                <div class="cal-filtro-grupo email-modo-escrita-grupo">
+                  <button type="button" class="cal-filtro-btn ativo" data-modo-escrita="texto">Texto fácil</button>
+                  <button type="button" class="cal-filtro-btn" data-modo-escrita="html">HTML</button>
+                </div>
+
+                <div class="cal-form-campo">
+                  <label for="email-assunto">Assunto</label>
+                  <input type="text" id="email-assunto" placeholder="Ex: Parceria com {{marca}}">
+                </div>
+
+                <div id="email-modo-texto-campos">
+                  <div class="cal-form-campo">
+                    <label for="email-corpo-texto">Texto do e-mail</label>
+                    <textarea id="email-corpo-texto" rows="10" placeholder="Oi, {{nome}}! Meu nome é Bruna..."></textarea>
+                  </div>
+                  <div class="pl-modal-linha">
+                    <div class="cal-form-campo">
+                      <label for="email-botao-texto">Texto do botão (opcional)</label>
+                      <input type="text" id="email-botao-texto" placeholder="Ex: Ver meu portfólio">
+                    </div>
+                    <div class="cal-form-campo">
+                      <label for="email-botao-link">Link do botão (opcional)</label>
+                      <input type="text" id="email-botao-link" placeholder="https://...">
+                    </div>
+                  </div>
+                </div>
+
+                <div id="email-modo-html-campos" hidden>
+                  <button type="button" class="cal-btn" id="btn-email-comecar-modelo">Começar do modelo pronto</button>
+                  <p class="email-aviso-html" id="email-aviso-html-sair" hidden>O rodapé de SAIR não foi encontrado no HTML. Adicione antes de disparar.</p>
+                  <div class="cal-form-campo">
+                    <label for="email-corpo-html">HTML do e-mail</label>
+                    <textarea id="email-corpo-html" rows="14" class="email-textarea-codigo" placeholder="<html>..."></textarea>
+                  </div>
+                </div>
+
+                <div class="cal-form-acoes email-acoes-envio">
+                  <button type="button" class="cal-btn" id="btn-email-teste">Enviar teste pra mim</button>
+                  <button type="button" class="cal-btn cal-btn-primario" id="btn-email-disparar">Disparar</button>
+                </div>
+
+                <div class="email-progresso" id="email-progresso" hidden>
+                  <div class="email-progresso-barra"><div class="email-progresso-preenchido" id="email-progresso-preenchido"></div></div>
+                  <p class="email-progresso-texto" id="email-progresso-texto"></p>
+                </div>
+
+                <div class="email-resumo-envio" id="email-resumo-envio" hidden></div>
+
+                <div class="email-fila-rascunho" id="email-fila-rascunho" hidden></div>
+              </div>
+            </div>
+
+            <div class="email-preview-coluna">
+              <div class="email-preview-palco">
+                <button type="button" class="cal-btn cal-btn-icon email-preview-fullscreen-btn" id="btn-email-preview-fullscreen" aria-label="Ver em tela cheia">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3m11-5v3a2 2 0 0 0-2 2h-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div class="email-preview-janela">
+                  <div class="email-preview-cabecalho">
+                    <span class="email-preview-avatar" id="email-preview-avatar">B</span>
+                    <div class="email-preview-cabecalho-texto">
+                      <span class="email-preview-assunto" id="email-preview-assunto">Assunto do e-mail</span>
+                      <span class="email-preview-remetente" id="email-preview-remetente">Você · para você</span>
+                    </div>
+                  </div>
+                  <iframe class="email-preview-iframe" id="email-preview-iframe" title="Prévia do e-mail" sandbox="allow-same-origin"></iframe>
+                </div>
+              </div>
+              <p class="email-preview-lembrete">Lembre de mandar o teste pra você mesma e abrir no celular antes de disparar.</p>
+            </div>
+          </div>
+
+          <div class="card email-historico">
+            <div class="cal-todas-topo">
+              <div>
+                <h3 class="card-titulo">Histórico de envios</h3>
+                <p class="cal-todas-resumo" id="email-historico-resumo"></p>
+              </div>
+              <input type="text" id="email-historico-busca" class="ugc-roteiros-busca" placeholder="Buscar por e-mail">
+            </div>
+            <div class="cal-todas-tabela">
+              <div class="cal-todas-cabecalho email-historico-linha">
+                <span>E-mail</span>
+                <span>Assunto</span>
+                <span>Quando</span>
+                <span>Status</span>
+              </div>
+              <div id="email-historico-lista" class="cal-todas-linhas"></div>
+            </div>
+
+            <h4 class="ugc-modal-secao-titulo email-descadastro-titulo">Descadastro manual</h4>
+            <p class="email-lembrete">Quando uma marca responder SAIR na sua caixa, cole o e-mail aqui pra ela nunca mais receber.</p>
+            <div class="email-descadastro-form">
+              <input type="text" id="email-descadastro-input" placeholder="email@marca.com">
+              <button type="button" class="cal-btn" id="btn-email-descadastrar">Adicionar ao descadastro</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Prévia em tela cheia -->
+        <div id="email-preview-fullscreen-overlay" class="pl-modal-overlay" hidden>
+          <div class="email-preview-fullscreen-conteudo">
+            <button type="button" class="cal-btn cal-btn-icon email-preview-fullscreen-fechar" id="btn-email-preview-fullscreen-fechar" aria-label="Fechar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <div class="email-preview-janela email-preview-janela-grande">
+              <div class="email-preview-cabecalho">
+                <span class="email-preview-avatar" id="email-preview-fs-avatar">B</span>
+                <div class="email-preview-cabecalho-texto">
+                  <span class="email-preview-assunto" id="email-preview-fs-assunto"></span>
+                  <span class="email-preview-remetente" id="email-preview-fs-remetente"></span>
+                </div>
+              </div>
+              <iframe class="email-preview-iframe email-preview-iframe-grande" id="email-preview-fs-iframe" title="Prévia do e-mail em tela cheia" sandbox="allow-same-origin"></iframe>
+            </div>
+          </div>
+        </div>
 
         <!-- ---------- Aba: Instagram ---------- -->
         <section id="panel-instagram" class="tab-panel" hidden>
@@ -909,8 +1115,15 @@
                 </div>
               </div>
 
+              <div class="contatos-selecao-barra">
+                <span id="contatos-selecao-resumo">0 marcas selecionadas</span>
+                <button type="button" id="btn-contatos-selecionar-todas" class="cal-btn">Selecionar todas (0)</button>
+                <button type="button" id="btn-contatos-limpar-selecao" class="cal-btn">Limpar seleção</button>
+              </div>
+
               <div class="cal-todas-tabela">
                 <div class="cal-todas-cabecalho contatos-linha">
+                  <span></span>
                   <span>Marca</span>
                   <span>Instagram</span>
                   <span>E-mail</span>
@@ -2389,6 +2602,15 @@
     let vistaProspeccao = 'pipeline'; // 'pipeline' | 'contatos'
     let filtroSituacaoContato = 'todas';
     let buscaContatos = '';
+    let emailProspAbaCarregada = false;
+    let emailEnviosCache = [];
+    let emailOptoutCache = [];
+    let emailTabelasDisponiveis = true;
+    let modoEnvioEmail = 'resend'; // 'resend' | 'rascunho'
+    let modoEscritaEmail = 'texto'; // 'texto' | 'html'
+    let filaRascunho = [];
+    let filaRascunhoIndice = 0;
+    let buscaHistoricoEmail = '';
     let ugcContratosCache = [];
     let ugcPrecosCache = [];
     let ugcSubAbaAtual = 'visao-geral';
@@ -2549,6 +2771,7 @@
       overview: 'titulo_dashboard',
       portfolio: 'titulo_portfolio',
       calendario: 'titulo_calendario',
+      email: 'titulo_email',
       instagram: 'titulo_instagram',
       'desafio-ugc': 'Nosso Desafio UGC',
       planejador: 'titulo_planejador',
@@ -4875,6 +5098,8 @@
       });
       document.getElementById('btn-contatos-novo').addEventListener('click', () => abrirModalContato(null));
       document.getElementById('btn-contatos-baixar-csv').addEventListener('click', exportarContatosCSV);
+      document.getElementById('btn-contatos-selecionar-todas').addEventListener('click', selecionarTodosContatosFiltrados);
+      document.getElementById('btn-contatos-limpar-selecao').addEventListener('click', limparSelecaoContatos);
       document.getElementById('contato-modal-fechar').addEventListener('click', fecharModalContato);
       document.getElementById('contato-modal-excluir').addEventListener('click', excluirModalContato);
       document.getElementById('contato-modal-salvar').addEventListener('click', salvarModalContato);
@@ -4898,6 +5123,52 @@
         }
       });
       document.getElementById('contatos-importar-confirmar').addEventListener('click', confirmarImportacaoContatos);
+
+      // Aba E-mail
+      document.getElementById('btn-email-ir-marcas').addEventListener('click', irParaBaseDeContatos);
+      document.querySelectorAll('.email-modo-envio-grupo .cal-filtro-btn').forEach((btn) => {
+        btn.addEventListener('click', () => configurarModoEnvioEmail(btn.dataset.modoEnvio));
+      });
+      document.querySelectorAll('.email-modo-escrita-grupo .cal-filtro-btn').forEach((btn) => {
+        btn.addEventListener('click', () => configurarModoEscritaEmail(btn.dataset.modoEscrita));
+      });
+      document.getElementById('email-config-remetente').addEventListener('change', (e) => salvarConfiguracao('email_remetente', e.target.value.trim() || null));
+      document.getElementById('email-config-contato').addEventListener('change', (e) => {
+        salvarConfiguracao('email_contato', e.target.value.trim() || null);
+        atualizarPreviaEmail();
+      });
+      document.getElementById('email-destino-select').addEventListener('change', atualizarContagemDestino);
+      document.getElementById('email-pular-repetidos').addEventListener('change', atualizarContagemDestino);
+      document.getElementById('email-assunto').addEventListener('input', () => {
+        atualizarPreviaEmail();
+        atualizarContagemDestino();
+      });
+      document.getElementById('email-corpo-texto').addEventListener('input', atualizarPreviaEmail);
+      document.getElementById('email-botao-texto').addEventListener('input', atualizarPreviaEmail);
+      document.getElementById('email-botao-link').addEventListener('input', atualizarPreviaEmail);
+      document.getElementById('email-corpo-html').addEventListener('input', atualizarPreviaEmail);
+      document.getElementById('btn-email-comecar-modelo').addEventListener('click', () => {
+        const corpoTexto = document.getElementById('email-corpo-texto').value || 'Oi, {{nome}}! Meu nome é Bruna Medeiros, sou creator de conteúdo e queria conversar sobre uma parceria com a {{marca}}.';
+        const botaoTexto = document.getElementById('email-botao-texto').value.trim();
+        const botaoLink = document.getElementById('email-botao-link').value.trim();
+        document.getElementById('email-corpo-html').value = montarHtmlEmailTextoFacil(corpoTexto, botaoTexto, botaoLink);
+        atualizarPreviaEmail();
+      });
+      document.getElementById('btn-email-preview-fullscreen').addEventListener('click', abrirPreviaFullscreen);
+      document.getElementById('btn-email-preview-fullscreen-fechar').addEventListener('click', fecharPreviaFullscreen);
+      document.getElementById('email-preview-fullscreen-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'email-preview-fullscreen-overlay') fecharPreviaFullscreen();
+      });
+      document.getElementById('btn-email-teste').addEventListener('click', enviarTestePraMim);
+      document.getElementById('btn-email-disparar').addEventListener('click', () => {
+        if (modoEnvioEmail === 'resend') dispararEmailsResend();
+        else iniciarFilaRascunho();
+      });
+      document.getElementById('email-historico-busca').addEventListener('input', (e) => {
+        buscaHistoricoEmail = e.target.value;
+        renderizarHistoricoEmail();
+      });
+      document.getElementById('btn-email-descadastrar').addEventListener('click', adicionarDescadastroManual);
 
       document.querySelectorAll('#ugc-pagina-contratos .cal-filtro-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -4984,6 +5255,10 @@
 
       if (aba === 'overview') renderizarCabecalhoDashboard();
 
+      if (aba === 'email' && !emailProspAbaCarregada) {
+        emailProspAbaCarregada = true;
+        carregarEmailProspeccao();
+      }
       if (aba === 'instagram') {
         trocarSubAbaInstagram('visao-geral');
         if (!instagramAbaCarregada) {
@@ -10615,7 +10890,7 @@
       return `https://wa.me/${telefone.replace(/\D/g, '')}`;
     }
 
-    function renderizarBaseContatos() {
+    function obterContatosFiltrados() {
       let filtrados = ugcBaseContatosCache;
       if (filtroSituacaoContato !== 'todas') filtrados = filtrados.filter((c) => c.situacao === filtroSituacaoContato);
       if (buscaContatos.trim()) {
@@ -10627,10 +10902,20 @@
             (c.email || '').toLowerCase().includes(termo)
         );
       }
-      const ordenados = [...filtrados].sort((a, b) => a.marca.localeCompare(b.marca));
+      return [...filtrados].sort((a, b) => a.marca.localeCompare(b.marca));
+    }
+
+    function renderizarBaseContatos() {
+      const ordenados = obterContatosFiltrados();
 
       document.getElementById('contatos-resumo').textContent =
         ordenados.length === 0 ? 'Nenhum contato ainda.' : `${ordenados.length} ${ordenados.length === 1 ? 'contato' : 'contatos'}.`;
+
+      const selecionados = ugcBaseContatosCache.filter((c) => c.selecionada).length;
+      const comEmailNoFiltro = ordenados.filter((c) => c.email).length;
+      document.getElementById('contatos-selecao-resumo').textContent =
+        `${selecionados} ${selecionados === 1 ? 'marca selecionada' : 'marcas selecionadas'}`;
+      document.getElementById('btn-contatos-selecionar-todas').textContent = `Selecionar todas (${comEmailNoFiltro})`;
 
       const lista = document.getElementById('contatos-lista');
       lista.innerHTML = '';
@@ -10639,6 +10924,48 @@
         return;
       }
       ordenados.forEach((c) => lista.appendChild(criarLinhaContato(c)));
+    }
+
+    async function alternarSelecaoContato(contato, marcado) {
+      contato.selecionada = marcado;
+      renderizarBaseContatos();
+      const { error } = await Auth.sb.from('ugc_base_contatos').update({ selecionada: marcado }).eq('id', contato.id);
+      if (error) {
+        console.error('Erro ao salvar seleção do contato:', error);
+        contato.selecionada = !marcado;
+        renderizarBaseContatos();
+      }
+    }
+
+    async function selecionarTodosContatosFiltrados() {
+      const ids = obterContatosFiltrados()
+        .filter((c) => c.email)
+        .map((c) => c.id);
+      if (ids.length === 0) return;
+      ugcBaseContatosCache.forEach((c) => {
+        if (ids.includes(c.id)) c.selecionada = true;
+      });
+      renderizarBaseContatos();
+      const { error } = await Auth.sb.from('ugc_base_contatos').update({ selecionada: true }).in('id', ids);
+      if (error) {
+        console.error('Erro ao selecionar contatos:', error);
+        alert(tr('erro_salvar_generico'));
+        await carregarUGC();
+      }
+    }
+
+    async function limparSelecaoContatos() {
+      const selecionados = ugcBaseContatosCache.filter((c) => c.selecionada);
+      if (selecionados.length === 0) return;
+      const ids = selecionados.map((c) => c.id);
+      selecionados.forEach((c) => (c.selecionada = false));
+      renderizarBaseContatos();
+      const { error } = await Auth.sb.from('ugc_base_contatos').update({ selecionada: false }).in('id', ids);
+      if (error) {
+        console.error('Erro ao limpar seleção:', error);
+        alert(tr('erro_salvar_generico'));
+        await carregarUGC();
+      }
     }
 
     function criarLinhaContato(contato) {
@@ -10655,6 +10982,9 @@
         : '<span class="contatos-vazio">—</span>';
       const ultimoContatoFmt = contato.ultimo_contato ? formatarDataCurta(new Date(contato.ultimo_contato + 'T00:00:00')) : '—';
       linha.innerHTML = `
+        <span class="contatos-checkbox-cel">
+          <input type="checkbox" class="contatos-checkbox" ${contato.selecionada ? 'checked' : ''} ${contato.email ? '' : 'disabled'} title="${contato.email ? 'Selecionar pra e-mail' : 'Sem e-mail cadastrado'}">
+        </span>
         <span class="ugc-trabalhos-marca">${escapeHtml(contato.marca)}</span>
         <span>${instagramHtml}</span>
         <span>${escapeHtml(contato.email || '—')}</span>
@@ -10663,6 +10993,9 @@
         <span>${ultimoContatoFmt}</span>
       `;
       linha.querySelectorAll('a').forEach((a) => a.addEventListener('click', (e) => e.stopPropagation()));
+      const checkbox = linha.querySelector('.contatos-checkbox');
+      checkbox.addEventListener('click', (e) => e.stopPropagation());
+      checkbox.addEventListener('change', (e) => alternarSelecaoContato(contato, e.target.checked));
       linha.addEventListener('click', () => abrirModalContato(contato));
       return linha;
     }
@@ -10887,6 +11220,570 @@
       } finally {
         btn.disabled = false;
         btn.textContent = 'Importar';
+      }
+    }
+
+    // ==========================================================================
+    // Aba E-mail: dispara e-mail de prospecção em massa pra Base de Contatos
+    // (ugcBaseContatosCache, já carregada por carregarUGC). Nunca cria cadastro
+    // próprio de destinatários — só lê e marca a Base de Contatos que já existe.
+    // ==========================================================================
+
+    function primeiroNomeCliente(marca) {
+      return (marca || '').trim().split(/\s+/)[0] || marca || '';
+    }
+
+    function substituirVariaveisCliente(texto, marca) {
+      return (texto || '')
+        .replace(/\{\{\s*nome\s*\}\}/gi, primeiroNomeCliente(marca))
+        .replace(/\{\{\s*marca\s*\}\}/gi, marca || '');
+    }
+
+    function htmlTemRodapeSair(html) {
+      return /sair/i.test(html || '');
+    }
+
+    // Monta o HTML do "modo texto fácil": fundo branco, letra escura, largura
+    // máxima de 560px, links do texto viram clicáveis, botão só se preenchido,
+    // e o rodapé do SAIR sempre presente (nesse modo o sistema garante isso).
+    function montarHtmlEmailTextoFacil(corpoTexto, botaoTexto, botaoLink) {
+      const corpoEscapado = escapeHtml(corpoTexto || '');
+      const corpoComLinks = corpoEscapado.replace(/(https?:\/\/[^\s<]+)/g, (url) => `<a href="${url}" style="color:#7DB7CE;">${url}</a>`);
+      const corpoComQuebras = corpoComLinks.replace(/\n/g, '<br>');
+      const botaoHtml = botaoTexto && botaoLink
+        ? `<div style="text-align:center;margin:32px 0 8px;"><a href="${escapeHtml(botaoLink)}" style="background:#7DB7CE;color:#ffffff;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:600;display:inline-block;font-family:Arial,sans-serif;">${escapeHtml(botaoTexto)}</a></div>`
+        : '';
+      return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+<body style="margin:0;padding:24px 16px;background:#ffffff;">
+  <div style="max-width:560px;margin:0 auto;font-family:Arial,Helvetica,sans-serif;color:#1A1816;font-size:15px;line-height:1.65;">
+    <div>${corpoComQuebras}</div>
+    ${botaoHtml}
+    <p style="margin-top:40px;padding-top:16px;border-top:1px solid #e5e5e5;font-size:12px;color:#9a9a9a;">
+      Se não quiser mais receber e-mails como este, é só responder com o assunto SAIR.
+    </p>
+  </div>
+</body>
+</html>`;
+    }
+
+    function obterHtmlFinalEmail() {
+      if (modoEscritaEmail === 'html') return document.getElementById('email-corpo-html').value;
+      return montarHtmlEmailTextoFacil(
+        document.getElementById('email-corpo-texto').value,
+        document.getElementById('email-botao-texto').value.trim(),
+        document.getElementById('email-botao-link').value.trim()
+      );
+    }
+
+    async function carregarEmailProspeccao() {
+      try {
+        const [envios, optout] = await Promise.all([buscarTudo('email_envios'), buscarTudo('email_optout')]);
+        emailEnviosCache = envios;
+        emailOptoutCache = optout;
+        emailTabelasDisponiveis = true;
+      } catch (err) {
+        console.error('Tabelas de e-mail (disparo.sql) ainda não disponíveis:', err);
+        emailEnviosCache = [];
+        emailOptoutCache = [];
+        emailTabelasDisponiveis = false;
+      }
+      preencherConfigEmail();
+      renderizarEmailProspeccao();
+    }
+
+    function preencherConfigEmail() {
+      document.getElementById('email-config-remetente').value = (configCache && configCache.email_remetente) || '';
+      document.getElementById('email-config-contato').value = (configCache && configCache.email_contato) || '';
+    }
+
+    function renderizarEmailProspeccao() {
+      renderizarCardsEmail();
+      popularSelectDestino();
+      atualizarContagemDestino();
+      renderizarHistoricoEmail();
+      atualizarPreviaEmail();
+    }
+
+    function renderizarCardsEmail() {
+      const comEmail = ugcBaseContatosCache.filter((c) => c.email && c.email.trim());
+      document.getElementById('email-num-com-email').textContent = formatarNumero(comEmail.length);
+      document.getElementById('email-num-a-enviar').textContent = formatarNumero(comEmail.filter((c) => !c.ultimo_envio_email).length);
+      document.getElementById('email-num-receberam').textContent = formatarNumero(comEmail.filter((c) => c.ultimo_envio_email).length);
+      document.getElementById('email-num-falhas').textContent = emailTabelasDisponiveis
+        ? formatarNumero(emailEnviosCache.filter((e) => e.status === 'erro').length)
+        : '—';
+      document.getElementById('email-num-descadastrados').textContent = emailTabelasDisponiveis
+        ? formatarNumero(emailOptoutCache.length)
+        : '—';
+      document.getElementById('email-capa-total').textContent = emailTabelasDisponiveis
+        ? formatarNumero(emailEnviosCache.filter((e) => e.status === 'ok').length)
+        : '—';
+
+      const semEmailAlgum = comEmail.length === 0;
+      document.getElementById('email-vazio-base').hidden = !semEmailAlgum;
+      document.getElementById('email-corpo').hidden = semEmailAlgum;
+    }
+
+    function popularSelectDestino() {
+      const select = document.getElementById('email-destino-select');
+      const valorAnterior = select.value;
+      const selecionadas = ugcBaseContatosCache.filter((c) => c.selecionada && c.email && c.email.trim()).length;
+      const comEmail = ugcBaseContatosCache.filter((c) => c.email && c.email.trim()).length;
+      const situacoes = [...new Set(ugcBaseContatosCache.map((c) => c.situacao).filter(Boolean))];
+
+      const opcoes = [
+        { valor: 'selecionadas', label: `Só as marcas selecionadas (${selecionadas})` },
+        { valor: 'teste', label: 'Só pra mim (teste)' },
+        { valor: 'todas', label: `Todas as marcas com e-mail (${comEmail})` },
+      ];
+      situacoes.forEach((s) => {
+        const qtd = ugcBaseContatosCache.filter((c) => c.situacao === s && c.email && c.email.trim()).length;
+        opcoes.push({ valor: `situacao:${s}`, label: `Só quem está em "${s}" (${qtd})` });
+      });
+
+      select.innerHTML = opcoes.map((o) => `<option value="${escapeHtml(o.valor)}">${escapeHtml(o.label)}</option>`).join('');
+      if (opcoes.some((o) => o.valor === valorAnterior)) select.value = valorAnterior;
+    }
+
+    function obterEmailsOptoutSet() {
+      return new Set(emailOptoutCache.map((o) => o.email.toLowerCase()));
+    }
+
+    function obterEmailsJaEnviadosParaAssunto(assunto) {
+      const alvo = assunto.trim().toLowerCase();
+      return new Set(
+        emailEnviosCache
+          .filter((e) => e.status === 'ok' && e.assunto.trim().toLowerCase() === alvo)
+          .map((e) => e.email.toLowerCase())
+      );
+    }
+
+    // Marcas que batem com o filtro escolhido, SEM ainda exigir e-mail — usado
+    // só pra calcular quantas "ficaram de fora por não ter e-mail".
+    function obterContatosPeloFiltroDestino(exigirEmail) {
+      const valor = document.getElementById('email-destino-select').value;
+      let base = ugcBaseContatosCache;
+      if (exigirEmail) base = base.filter((c) => c.email && c.email.trim());
+      if (valor === 'selecionadas') return base.filter((c) => c.selecionada);
+      if (valor === 'todas') return base;
+      if (valor.startsWith('situacao:')) return base.filter((c) => c.situacao === valor.slice('situacao:'.length));
+      return [];
+    }
+
+    function resolverDestinatariosFinal() {
+      const valor = document.getElementById('email-destino-select').value;
+      if (valor === 'teste') return { lista: [], teste: true };
+
+      const base = obterContatosPeloFiltroDestino(true);
+      const optout = obterEmailsOptoutSet();
+      const assunto = document.getElementById('email-assunto').value.trim();
+      const pularRepetidos = document.getElementById('email-pular-repetidos').checked;
+      const jaEnviados = pularRepetidos && assunto ? obterEmailsJaEnviadosParaAssunto(assunto) : new Set();
+
+      const vistos = new Set();
+      const lista = [];
+      base.forEach((c) => {
+        const email = c.email.trim().toLowerCase();
+        if (vistos.has(email) || optout.has(email) || jaEnviados.has(email)) return;
+        vistos.add(email);
+        lista.push({ email: c.email.trim(), marca: c.marca, id: c.id });
+      });
+
+      return { lista };
+    }
+
+    function atualizarContagemDestino() {
+      const valor = document.getElementById('email-destino-select').value;
+      const contagemEl = document.getElementById('email-destino-contagem');
+      if (valor === 'teste') {
+        contagemEl.textContent = 'Vai só pro seu e-mail, o da sua conta de login.';
+        return;
+      }
+      const { lista } = resolverDestinatariosFinal();
+      const foraSemEmail = obterContatosPeloFiltroDestino(false).filter((c) => !c.email || !c.email.trim()).length;
+      let texto = `${lista.length} ${lista.length === 1 ? 'marca' : 'marcas'} nessa seleção`;
+      if (foraSemEmail > 0) texto += `, ${foraSemEmail} ${foraSemEmail === 1 ? 'ficou' : 'ficaram'} de fora por não ter e-mail`;
+      texto += '.';
+      contagemEl.textContent = texto;
+    }
+
+    function configurarModoEnvioEmail(modo) {
+      modoEnvioEmail = modo;
+      document.querySelectorAll('.email-modo-envio-grupo .cal-filtro-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.modoEnvio === modo));
+      document.getElementById('email-config-resend').hidden = modo !== 'resend';
+      document.getElementById('btn-email-disparar').textContent = modo === 'resend' ? 'Disparar' : 'Montar fila de rascunhos';
+      document.getElementById('btn-email-teste').hidden = modo !== 'resend';
+      document.getElementById('email-progresso').hidden = true;
+      document.getElementById('email-resumo-envio').hidden = true;
+      document.getElementById('email-fila-rascunho').hidden = true;
+    }
+
+    function configurarModoEscritaEmail(modo) {
+      modoEscritaEmail = modo;
+      document.querySelectorAll('.email-modo-escrita-grupo .cal-filtro-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.modoEscrita === modo));
+      document.getElementById('email-modo-texto-campos').hidden = modo !== 'texto';
+      document.getElementById('email-modo-html-campos').hidden = modo !== 'html';
+      atualizarPreviaEmail();
+    }
+
+    function atualizarPreviaEmail() {
+      const assunto = document.getElementById('email-assunto').value.trim() || 'Assunto do e-mail';
+      const htmlBruto = obterHtmlFinalEmail();
+      const htmlComExemplo = substituirVariaveisCliente(htmlBruto, 'Loja Exemplo');
+      const assuntoComExemplo = substituirVariaveisCliente(assunto, 'Loja Exemplo');
+
+      document.getElementById('email-preview-assunto').textContent = assuntoComExemplo;
+      document.getElementById('email-preview-iframe').srcdoc = htmlComExemplo;
+
+      const nome = (configCache && configCache.nome) || 'Bru';
+      const contato = document.getElementById('email-config-contato').value.trim();
+      document.getElementById('email-preview-avatar').textContent = nome.charAt(0).toUpperCase();
+      document.getElementById('email-preview-remetente').textContent = `${nome}${contato ? ' · ' + contato : ''} · para você`;
+
+      const avisoSair = document.getElementById('email-aviso-html-sair');
+      avisoSair.hidden = modoEscritaEmail !== 'html' || htmlTemRodapeSair(htmlBruto);
+    }
+
+    function abrirPreviaFullscreen() {
+      const iframeOrigem = document.getElementById('email-preview-iframe');
+      document.getElementById('email-preview-fs-iframe').srcdoc = iframeOrigem.srcdoc || '';
+      document.getElementById('email-preview-fs-avatar').textContent = document.getElementById('email-preview-avatar').textContent;
+      document.getElementById('email-preview-fs-assunto').textContent = document.getElementById('email-preview-assunto').textContent;
+      document.getElementById('email-preview-fs-remetente').textContent = document.getElementById('email-preview-remetente').textContent;
+      document.getElementById('email-preview-fullscreen-overlay').hidden = false;
+    }
+
+    function fecharPreviaFullscreen() {
+      document.getElementById('email-preview-fullscreen-overlay').hidden = true;
+    }
+
+    function irParaBaseDeContatos() {
+      trocarAba('ugc');
+      trocarSubAbaUGC('prospeccao');
+      trocarVistaProspeccao('contatos');
+    }
+
+    function validarConfigEnvio() {
+      const remetente = document.getElementById('email-config-remetente').value.trim();
+      const contato = document.getElementById('email-config-contato').value.trim();
+      if (!remetente || !contato) {
+        alert('Preencha o remetente e o e-mail de contato antes de mandar (logo no topo do formulário).');
+        return null;
+      }
+      return { remetente, contato };
+    }
+
+    async function enviarLoteEdgeFunction(destinatarios, assunto, corpoHtml, remetente, replyTo) {
+      return chamarFuncao('enviar-emails', {
+        method: 'POST',
+        body: { destinatarios, assunto, corpoHtml, remetente, replyTo },
+      });
+    }
+
+    async function confirmarSeHtmlSemSair() {
+      const html = obterHtmlFinalEmail();
+      if (modoEscritaEmail !== 'html' || htmlTemRodapeSair(html)) return true;
+      return confirmarAcao('O HTML colado não parece ter o aviso de SAIR. Mandar assim mesmo?', {
+        perigo: false,
+        textoConfirmar: 'Mandar assim mesmo',
+      });
+    }
+
+    async function enviarTestePraMim() {
+      const config = validarConfigEnvio();
+      if (!config) return;
+      const assunto = document.getElementById('email-assunto').value.trim();
+      if (!assunto) {
+        alert('Escreva o assunto antes de testar.');
+        return;
+      }
+      if (!(await confirmarSeHtmlSemSair())) return;
+
+      const { data: userData } = await Auth.sb.auth.getUser();
+      const meuEmail = userData.user?.email;
+      if (!meuEmail) {
+        alert('Não consegui identificar o e-mail da sua conta de login.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-email-teste');
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      try {
+        const resultado = await enviarLoteEdgeFunction(
+          [{ email: meuEmail, marca: 'Você (teste)' }],
+          assunto,
+          obterHtmlFinalEmail(),
+          config.remetente,
+          config.contato
+        );
+        if (!resultado.ok) {
+          alert('Não consegui mandar o teste: ' + (resultado.error || 'erro desconhecido'));
+        } else if (resultado.falhas > 0) {
+          alert('O teste falhou ao enviar. Confira o histórico embaixo pra ver o erro.');
+        } else {
+          alert(`Teste enviado pra ${meuEmail}! Confira sua caixa (e o spam) e abra no celular antes de disparar de verdade.`);
+        }
+        await carregarEmailProspeccao();
+      } catch (err) {
+        console.error('Erro ao enviar teste:', err);
+        alert('Não consegui mandar o teste agora. Tente de novo.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Enviar teste pra mim';
+      }
+    }
+
+    async function dispararEmailsResend() {
+      const config = validarConfigEnvio();
+      if (!config) return;
+      const assunto = document.getElementById('email-assunto').value.trim();
+      if (!assunto) {
+        alert('Escreva o assunto antes de disparar.');
+        return;
+      }
+      if (!(await confirmarSeHtmlSemSair())) return;
+
+      if (document.getElementById('email-destino-select').value === 'selecionadas') {
+        const { lista } = resolverDestinatariosFinal();
+        if (lista.length === 0) {
+          if (await confirmarAcao('Você ainda não selecionou nenhuma marca. Ir pra Base de contatos selecionar agora?', { perigo: false, textoConfirmar: 'Ir agora' })) {
+            irParaBaseDeContatos();
+          }
+          return;
+        }
+      }
+
+      const { lista } = resolverDestinatariosFinal();
+      if (lista.length === 0) {
+        alert('Não sobrou nenhuma marca pra mandar com esses filtros.');
+        return;
+      }
+
+      const labelDestino = document.getElementById('email-destino-select').selectedOptions[0].textContent;
+      const confirmou = await confirmarAcao(
+        `Vai para ${lista.length} ${lista.length === 1 ? 'marca' : 'marcas'}, da lista "${labelDestino}". Não dá pra desfazer.`,
+        { perigo: false, textoConfirmar: 'Disparar' }
+      );
+      if (!confirmou) return;
+
+      const TAMANHO_LOTE = 100;
+      const progresso = document.getElementById('email-progresso');
+      const preenchido = document.getElementById('email-progresso-preenchido');
+      const textoProgresso = document.getElementById('email-progresso-texto');
+      const resumoEl = document.getElementById('email-resumo-envio');
+      progresso.hidden = false;
+      preenchido.style.width = '0%';
+      resumoEl.hidden = true;
+      document.getElementById('btn-email-disparar').disabled = true;
+      document.getElementById('btn-email-teste').disabled = true;
+
+      let totalEnviados = 0;
+      let totalFalhas = 0;
+      let totalPulados = 0;
+      let cotaEsgotada = false;
+      const corpoHtml = obterHtmlFinalEmail();
+
+      for (let i = 0; i < lista.length; i += TAMANHO_LOTE) {
+        const lote = lista.slice(i, i + TAMANHO_LOTE);
+        textoProgresso.textContent = `Enviando ${Math.min(i + TAMANHO_LOTE, lista.length)} de ${lista.length}...`;
+        try {
+          const resultado = await enviarLoteEdgeFunction(
+            lote.map((d) => ({ email: d.email, marca: d.marca })),
+            assunto,
+            corpoHtml,
+            config.remetente,
+            config.contato
+          );
+          if (!resultado.ok) {
+            alert('Deu erro no disparo: ' + (resultado.error || 'erro desconhecido'));
+            break;
+          }
+          totalEnviados += resultado.enviados;
+          totalFalhas += resultado.falhas;
+          totalPulados += resultado.pulados;
+          preenchido.style.width = `${Math.round(((i + lote.length) / lista.length) * 100)}%`;
+          if (resultado.cotaEsgotada) {
+            cotaEsgotada = true;
+            break;
+          }
+        } catch (err) {
+          console.error('Erro ao chamar enviar-emails:', err);
+          alert('Deu erro de conexão no meio do disparo. Confira o histórico pra ver até onde foi.');
+          break;
+        }
+      }
+
+      progresso.hidden = true;
+      document.getElementById('btn-email-disparar').disabled = false;
+      document.getElementById('btn-email-teste').disabled = false;
+
+      resumoEl.hidden = false;
+      resumoEl.innerHTML = `
+        <p><strong>${totalEnviados}</strong> enviados, <strong>${totalFalhas}</strong> falhas, <strong>${totalPulados}</strong> pulados.</p>
+        ${cotaEsgotada ? '<p class="email-aviso-html">A cota diária do Resend acabou no meio do disparo. Volte amanhã, cole o mesmo assunto e o mesmo texto, deixe marcada a caixinha de pular quem já recebeu, e ele manda só pros que faltaram.</p>' : ''}
+      `;
+
+      // Descobre quem recebeu de verdade pelo próprio registro de envios (a
+      // função só devolve totais, não a lista) e só aí marca essas marcas
+      // como enviadas, com a data de hoje.
+      try {
+        const emailsTentados = new Set(lista.map((d) => d.email.toLowerCase()));
+        const { data: enviosDesteDisparo } = await Auth.sb.from('email_envios').select('email').eq('assunto', assunto).eq('status', 'ok');
+        const emailsComSucesso = new Set((enviosDesteDisparo || []).map((e) => e.email.toLowerCase()).filter((e) => emailsTentados.has(e)));
+        const idsComSucesso = lista.filter((d) => emailsComSucesso.has(d.email.toLowerCase())).map((d) => d.id);
+        if (idsComSucesso.length > 0) {
+          await Auth.sb.from('ugc_base_contatos').update({ ultimo_envio_email: dataParaISO(new Date()) }).in('id', idsComSucesso);
+        }
+      } catch (err) {
+        console.error('Erro ao marcar marcas como enviadas:', err);
+      }
+
+      await carregarEmailProspeccao();
+      await carregarUGC();
+
+      if (document.getElementById('email-destino-select').value === 'selecionadas' && totalEnviados > 0) {
+        if (await confirmarAcao('Disparo feito. Quer limpar a seleção de marcas agora?', { perigo: false, textoConfirmar: 'Limpar seleção' })) {
+          await limparSelecaoContatos();
+        }
+      }
+    }
+
+    function montarCorpoTextoPersonalizado(marca) {
+      return substituirVariaveisCliente(document.getElementById('email-corpo-texto').value, marca);
+    }
+
+    function iniciarFilaRascunho() {
+      const assunto = document.getElementById('email-assunto').value.trim();
+      if (!assunto) {
+        alert('Escreva o assunto antes de montar a fila.');
+        return;
+      }
+      if (document.getElementById('email-destino-select').value === 'selecionadas') {
+        const { lista: listaChecagem } = resolverDestinatariosFinal();
+        if (listaChecagem.length === 0) {
+          confirmarAcao('Você ainda não selecionou nenhuma marca. Ir pra Base de contatos selecionar agora?', { perigo: false, textoConfirmar: 'Ir agora' }).then(
+            (ir) => { if (ir) irParaBaseDeContatos(); }
+          );
+          return;
+        }
+      }
+      const { lista } = resolverDestinatariosFinal();
+      if (lista.length === 0) {
+        alert('Não sobrou nenhuma marca pra mandar com esses filtros.');
+        return;
+      }
+      filaRascunho = lista;
+      filaRascunhoIndice = 0;
+      document.getElementById('email-fila-rascunho').hidden = false;
+      document.getElementById('email-resumo-envio').hidden = true;
+      renderizarFilaRascunho();
+    }
+
+    function renderizarFilaRascunho() {
+      const cont = document.getElementById('email-fila-rascunho');
+      if (filaRascunhoIndice >= filaRascunho.length) {
+        cont.innerHTML = `<p class="cal-todas-resumo">Fila concluída! Todas as marcas dessa lista já foram marcadas como enviadas.</p>`;
+        return;
+      }
+      const atual = filaRascunho[filaRascunhoIndice];
+      const assunto = substituirVariaveisCliente(document.getElementById('email-assunto').value.trim(), atual.marca);
+      const corpo = montarCorpoTextoPersonalizado(atual.marca);
+      const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(atual.email)}&su=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
+
+      cont.innerHTML = `
+        <p class="cal-todas-resumo">Marca ${filaRascunhoIndice + 1} de ${filaRascunho.length}: <strong>${escapeHtml(atual.marca)}</strong> (${escapeHtml(atual.email)})</p>
+        <div class="cal-form-campo">
+          <label>Assunto</label>
+          <input type="text" readonly value="${escapeHtml(assunto)}">
+        </div>
+        <div class="cal-form-campo">
+          <label>Texto</label>
+          <textarea readonly rows="8">${escapeHtml(corpo)}</textarea>
+        </div>
+        <div class="cal-form-acoes">
+          <button type="button" class="cal-btn" id="btn-fila-copiar">Copiar texto</button>
+          <a class="cal-btn" href="${gmailUrl}" target="_blank" rel="noopener">Abrir no Gmail</a>
+          <button type="button" class="cal-btn cal-btn-primario" id="btn-fila-marcar-enviada">Marcar como enviada</button>
+        </div>
+      `;
+      document.getElementById('btn-fila-copiar').addEventListener('click', async (e) => {
+        try {
+          await navigator.clipboard.writeText(corpo);
+          e.target.textContent = 'Copiado!';
+          setTimeout(() => { e.target.textContent = 'Copiar texto'; }, 1500);
+        } catch (err) {
+          console.error('Erro ao copiar texto:', err);
+        }
+      });
+      document.getElementById('btn-fila-marcar-enviada').addEventListener('click', () => marcarRascunhoEnviado(atual));
+    }
+
+    async function marcarRascunhoEnviado(destinatario) {
+      const hoje = dataParaISO(new Date());
+      const { error } = await Auth.sb.from('ugc_base_contatos').update({ ultimo_envio_email: hoje }).eq('id', destinatario.id);
+      if (error) {
+        console.error('Erro ao marcar como enviada:', error);
+        alert(tr('erro_salvar_generico'));
+        return;
+      }
+      const contato = ugcBaseContatosCache.find((c) => c.id === destinatario.id);
+      if (contato) contato.ultimo_envio_email = hoje;
+      filaRascunhoIndice++;
+      renderizarFilaRascunho();
+      renderizarCardsEmail();
+    }
+
+    function renderizarHistoricoEmail() {
+      let filtrados = emailEnviosCache;
+      if (buscaHistoricoEmail.trim()) {
+        const termo = buscaHistoricoEmail.trim().toLowerCase();
+        filtrados = filtrados.filter((e) => e.email.toLowerCase().includes(termo));
+      }
+      const ordenados = [...filtrados].sort((a, b) => b.created_at.localeCompare(a.created_at));
+
+      document.getElementById('email-historico-resumo').textContent = !emailTabelasDisponiveis
+        ? 'A tabela de envios ainda não foi criada (rode disparo.sql).'
+        : ordenados.length === 0
+        ? 'Nenhum envio ainda.'
+        : ordenados.length > 300
+        ? `${ordenados.length} envios (mostrando os 300 mais recentes).`
+        : `${ordenados.length} ${ordenados.length === 1 ? 'envio' : 'envios'}.`;
+
+      const lista = document.getElementById('email-historico-lista');
+      lista.innerHTML = '';
+      ordenados.slice(0, 300).forEach((e) => {
+        const linha = document.createElement('div');
+        linha.className = 'cal-todas-linha email-historico-linha';
+        linha.innerHTML = `
+          <span>${escapeHtml(e.email)}</span>
+          <span>${escapeHtml(e.assunto)}</span>
+          <span>${formatarDataCurta(new Date(e.created_at))}</span>
+          <span class="ugc-status-pill ${e.status === 'ok' ? 'ugc-status-pago' : 'ugc-status-cancelado'}">${e.status === 'ok' ? 'Enviado' : 'Erro'}</span>
+        `;
+        if (e.erro) linha.title = e.erro;
+        lista.appendChild(linha);
+      });
+    }
+
+    async function adicionarDescadastroManual() {
+      const input = document.getElementById('email-descadastro-input');
+      const email = input.value.trim().toLowerCase();
+      if (!email || !email.includes('@')) {
+        alert('Digite um e-mail válido.');
+        return;
+      }
+      try {
+        const { error } = await Auth.sb.from('email_optout').insert({ email });
+        if (error) throw error;
+        input.value = '';
+        await carregarEmailProspeccao();
+        alert(`${email} não vai mais receber e-mails de prospecção.`);
+      } catch (err) {
+        console.error('Erro ao adicionar descadastro:', err);
+        alert('Não consegui adicionar agora (talvez esse e-mail já esteja na lista de descadastro).');
       }
     }
 

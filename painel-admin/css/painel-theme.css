@@ -3857,6 +3857,52 @@
   grid-template-columns: 130px 120px 100px 90px 80px 1fr 90px 90px;
 }
 
+/* ---- Base de contatos ---- */
+
+.painel-body .prospeccao-vista-grupo {
+  width: fit-content;
+  margin-bottom: 20px;
+}
+
+.painel-body .cal-todas-cabecalho.contatos-linha,
+.painel-body .cal-todas-linha.contatos-linha {
+  grid-template-columns: 140px 130px 1fr 150px 110px 110px;
+}
+
+.painel-body .contatos-vazio {
+  color: var(--texto-suave);
+}
+
+.painel-body .contatos-link {
+  color: var(--grafite);
+  text-decoration: underline;
+  text-decoration-color: rgba(var(--grafite-rgb), 0.3);
+}
+
+.painel-body .contatos-link:hover {
+  color: var(--coral);
+}
+
+.painel-body .contatos-whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--sucesso);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.painel-body .contatos-whatsapp-btn:hover {
+  text-decoration: underline;
+}
+
+.painel-body .contatos-importar-mapeamento {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px 16px;
+  margin: 16px 0;
+}
+
 .painel-body .cal-todas-cabecalho.ugc-contratos-linha,
 .painel-body .cal-todas-linha.ugc-contratos-linha {
   grid-template-columns: 160px 180px 110px 90px 1fr;

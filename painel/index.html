@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260919h">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script src="../painel-admin/js/auth.js?v=20260901c"></script>
 </head>
 <!-- O body começa invisível e só aparece depois que o guarda de autenticação confirma a sessão -->
@@ -863,60 +864,102 @@
             <div id="ugc-roteiros-grade" class="ugc-roteiros-grade"></div>
           </div>
           <div id="ugc-pagina-prospeccao" class="ugc-pagina" hidden>
-            <div class="cards-numeros cards-numeros-prospeccao">
-              <div class="card-numero">
-                <span class="card-label" data-i18n="ugc_outbound">Outbound</span>
-                <span class="card-valor" id="ugc-prosp-outbound">0</span>
+            <div class="cal-filtro-grupo prospeccao-vista-grupo">
+              <button class="cal-filtro-btn ativo" data-vista-prospeccao="pipeline" type="button">Pipeline</button>
+              <button class="cal-filtro-btn" data-vista-prospeccao="contatos" type="button">Base de contatos</button>
+            </div>
+
+            <div id="prospeccao-vista-pipeline">
+              <div class="cards-numeros cards-numeros-prospeccao">
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="ugc_outbound">Outbound</span>
+                  <span class="card-valor" id="ugc-prosp-outbound">0</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="ugc_inbound">Inbound</span>
+                  <span class="card-valor" id="ugc-prosp-inbound">0</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="ugc_em_negociacao">Em negociação</span>
+                  <span class="card-valor" id="ugc-prosp-negociacao">0</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="ugc_propostas_enviadas">Propostas enviadas</span>
+                  <span class="card-valor" id="ugc-prosp-propostas">0</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="ugc_fechadas">Fechadas</span>
+                  <span class="card-valor" id="ugc-prosp-fechadas">0</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="ugc_sem_resposta">Sem resposta</span>
+                  <span class="card-valor" id="ugc-prosp-semresposta">0</span>
+                </div>
               </div>
-              <div class="card-numero">
-                <span class="card-label" data-i18n="ugc_inbound">Inbound</span>
-                <span class="card-valor" id="ugc-prosp-inbound">0</span>
+
+              <!-- Avisa quando uma prospecção ativa está sem retorno/follow-up
+                   há tempo demais, pra não perder negociação por esquecimento. -->
+              <div id="ugc-prospeccao-esfriando" class="ugc-prospeccao-esfriando" hidden>
+                <h4 data-i18n="ugc_esfriando">Esfriando</h4>
+                <div id="ugc-prospeccao-esfriando-lista"></div>
               </div>
-              <div class="card-numero">
-                <span class="card-label" data-i18n="ugc_em_negociacao">Em negociação</span>
-                <span class="card-valor" id="ugc-prosp-negociacao">0</span>
+
+              <div class="cal-todas-topo">
+                <div>
+                  <h3 class="card-titulo" data-i18n="ugc_prospeccao">Prospecção</h3>
+                  <p class="cal-todas-resumo" id="ugc-prospeccao-resumo" data-i18n="ugc_nenhuma_prospeccao">Nenhuma prospecção ainda.</p>
+                </div>
+                <button id="btn-ugc-nova-prospeccao" class="cal-btn cal-btn-primario" type="button" data-i18n="ugc_nova_prospeccao">+ Nova prospecção</button>
               </div>
-              <div class="card-numero">
-                <span class="card-label" data-i18n="ugc_propostas_enviadas">Propostas enviadas</span>
-                <span class="card-valor" id="ugc-prosp-propostas">0</span>
-              </div>
-              <div class="card-numero">
-                <span class="card-label" data-i18n="ugc_fechadas">Fechadas</span>
-                <span class="card-valor" id="ugc-prosp-fechadas">0</span>
-              </div>
-              <div class="card-numero">
-                <span class="card-label" data-i18n="ugc_sem_resposta">Sem resposta</span>
-                <span class="card-valor" id="ugc-prosp-semresposta">0</span>
+
+              <div class="cal-todas-tabela">
+                <div class="cal-todas-cabecalho ugc-prospeccao-linha">
+                  <span data-i18n="ugc_col_marca">Marca</span>
+                  <span data-i18n="ugc_col_contato">Contato</span>
+                  <span data-i18n="ugc_col_origem">Origem</span>
+                  <span data-i18n="ugc_col_tipo">Tipo</span>
+                  <span data-i18n="ugc_col_data">Data</span>
+                  <span data-i18n="status">Status</span>
+                  <span data-i18n="ugc_col_valor">Valor</span>
+                  <span data-i18n="ugc_col_followup">Follow-up</span>
+                </div>
+                <div id="ugc-prospeccao-lista" class="cal-todas-linhas"></div>
               </div>
             </div>
 
-            <!-- Avisa quando uma prospecção ativa está sem retorno/follow-up
-                 há tempo demais, pra não perder negociação por esquecimento. -->
-            <div id="ugc-prospeccao-esfriando" class="ugc-prospeccao-esfriando" hidden>
-              <h4 data-i18n="ugc_esfriando">Esfriando</h4>
-              <div id="ugc-prospeccao-esfriando-lista"></div>
-            </div>
-
-            <div class="cal-todas-topo">
-              <div>
-                <h3 class="card-titulo" data-i18n="ugc_prospeccao">Prospecção</h3>
-                <p class="cal-todas-resumo" id="ugc-prospeccao-resumo" data-i18n="ugc_nenhuma_prospeccao">Nenhuma prospecção ainda.</p>
+            <div id="prospeccao-vista-contatos" hidden>
+              <div class="cal-todas-topo">
+                <div>
+                  <h3 class="card-titulo">Base de contatos</h3>
+                  <p class="cal-todas-resumo" id="contatos-resumo">Nenhum contato ainda.</p>
+                </div>
+                <div class="ugc-trabalhos-topo-acoes">
+                  <div class="cal-filtro-grupo">
+                    <button class="cal-filtro-btn ativo" data-filtro-situacao="todas" type="button">Todas</button>
+                    <button class="cal-filtro-btn" data-filtro-situacao="Lead" type="button">Lead</button>
+                    <button class="cal-filtro-btn" data-filtro-situacao="Conversando" type="button">Conversando</button>
+                    <button class="cal-filtro-btn" data-filtro-situacao="Cliente" type="button">Cliente</button>
+                    <button class="cal-filtro-btn" data-filtro-situacao="Parada" type="button">Parada</button>
+                  </div>
+                  <input type="text" id="contatos-busca" class="ugc-roteiros-busca" placeholder="Buscar por nome, @ ou e-mail">
+                  <input type="file" id="contatos-importar-input" accept=".csv" hidden>
+                  <button id="btn-contatos-importar" class="cal-btn" type="button">↑ Importar CSV</button>
+                  <button id="btn-contatos-baixar-csv" class="cal-btn" type="button">↓ Baixar CSV</button>
+                  <button id="btn-contatos-novo" class="cal-btn cal-btn-primario" type="button">+ Adicionar contato</button>
+                </div>
               </div>
-              <button id="btn-ugc-nova-prospeccao" class="cal-btn cal-btn-primario" type="button" data-i18n="ugc_nova_prospeccao">+ Nova prospecção</button>
-            </div>
 
-            <div class="cal-todas-tabela">
-              <div class="cal-todas-cabecalho ugc-prospeccao-linha">
-                <span data-i18n="ugc_col_marca">Marca</span>
-                <span data-i18n="ugc_col_contato">Contato</span>
-                <span data-i18n="ugc_col_origem">Origem</span>
-                <span data-i18n="ugc_col_tipo">Tipo</span>
-                <span data-i18n="ugc_col_data">Data</span>
-                <span data-i18n="status">Status</span>
-                <span data-i18n="ugc_col_valor">Valor</span>
-                <span data-i18n="ugc_col_followup">Follow-up</span>
+              <div class="cal-todas-tabela">
+                <div class="cal-todas-cabecalho contatos-linha">
+                  <span>Marca</span>
+                  <span>Instagram</span>
+                  <span>E-mail</span>
+                  <span>Telefone</span>
+                  <span>Situação</span>
+                  <span>Último contato</span>
+                </div>
+                <div id="contatos-lista" class="cal-todas-linhas"></div>
               </div>
-              <div id="ugc-prospeccao-lista" class="cal-todas-linhas"></div>
             </div>
           </div>
           <div id="ugc-pagina-contratos" class="ugc-pagina" hidden>
@@ -2044,6 +2087,79 @@
       </div>
     </div>
 
+    <!-- Modal: contato (base de contatos) -->
+    <div id="contato-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal">
+        <div class="pl-modal-topo">
+          <input type="text" id="contato-marca" class="pl-modal-titulo-input" placeholder="Marca">
+          <button id="contato-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="contato-instagram">Instagram</label>
+            <input type="text" id="contato-instagram" placeholder="@marca">
+          </div>
+          <div class="cal-form-campo">
+            <label for="contato-email">E-mail</label>
+            <input type="text" id="contato-email">
+          </div>
+          <div class="cal-form-campo">
+            <label for="contato-telefone">Telefone</label>
+            <input type="text" id="contato-telefone" placeholder="Com DDD e país, ex: 5585999999999">
+          </div>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="contato-situacao">Situação</label>
+            <select id="contato-situacao">
+              <option value="Lead">Lead</option>
+              <option value="Conversando">Conversando</option>
+              <option value="Cliente">Cliente</option>
+              <option value="Parada">Parada</option>
+            </select>
+          </div>
+          <div class="cal-form-campo">
+            <label for="contato-ultimo-contato">Último contato</label>
+            <input type="date" id="contato-ultimo-contato">
+          </div>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="contato-observacao">Observação</label>
+          <textarea id="contato-observacao"></textarea>
+        </div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="contato-modal-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+          <button type="button" id="contato-modal-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: importar planilha de contatos -->
+    <div id="contatos-importar-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal">
+        <div class="pl-modal-topo">
+          <h3 class="card-titulo">Importar planilha</h3>
+          <button id="contatos-importar-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <p class="cal-todas-resumo" id="contatos-importar-resumo"></p>
+
+        <div id="contatos-importar-mapeamento" class="contatos-importar-mapeamento"></div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="contatos-importar-confirmar" class="cal-btn cal-btn-primario">Importar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: contrato -->
     <div id="ugc-modal-contrato-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal">
@@ -2312,6 +2428,10 @@
     let ugcRoteiroVisualizacoesCache = [];
     let ugcRoteiroComentariosCache = [];
     let ugcProspeccaoCache = [];
+    let ugcBaseContatosCache = [];
+    let vistaProspeccao = 'pipeline'; // 'pipeline' | 'contatos'
+    let filtroSituacaoContato = 'todas';
+    let buscaContatos = '';
     let ugcContratosCache = [];
     let ugcPrecosCache = [];
     let ugcSubAbaAtual = 'visao-geral';
@@ -4790,6 +4910,48 @@
         trocarSubAbaUGC('trabalhos');
         if (trabalho) abrirModalTrabalho(trabalho);
       });
+
+      // Base de contatos
+      document.querySelectorAll('.prospeccao-vista-grupo .cal-filtro-btn').forEach((btn) => {
+        btn.addEventListener('click', () => trocarVistaProspeccao(btn.dataset.vistaProspeccao));
+      });
+      document.querySelectorAll('#prospeccao-vista-contatos [data-filtro-situacao]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          filtroSituacaoContato = btn.dataset.filtroSituacao;
+          document.querySelectorAll('#prospeccao-vista-contatos [data-filtro-situacao]').forEach((b) => b.classList.toggle('ativo', b === btn));
+          renderizarBaseContatos();
+        });
+      });
+      document.getElementById('contatos-busca').addEventListener('input', (e) => {
+        buscaContatos = e.target.value;
+        renderizarBaseContatos();
+      });
+      document.getElementById('btn-contatos-novo').addEventListener('click', () => abrirModalContato(null));
+      document.getElementById('btn-contatos-baixar-csv').addEventListener('click', exportarContatosCSV);
+      document.getElementById('contato-modal-fechar').addEventListener('click', fecharModalContato);
+      document.getElementById('contato-modal-excluir').addEventListener('click', excluirModalContato);
+      document.getElementById('contato-modal-salvar').addEventListener('click', salvarModalContato);
+      document.getElementById('contato-modal-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'contato-modal-overlay') fecharModalContato();
+      });
+      document.getElementById('btn-contatos-importar').addEventListener('click', () => {
+        document.getElementById('contatos-importar-input').click();
+      });
+      document.getElementById('contatos-importar-input').addEventListener('change', (e) => {
+        if (e.target.files[0]) abrirImportarContatos(e.target.files[0]);
+      });
+      document.getElementById('contatos-importar-fechar').addEventListener('click', () => {
+        document.getElementById('contatos-importar-overlay').hidden = true;
+        document.getElementById('contatos-importar-input').value = '';
+      });
+      document.getElementById('contatos-importar-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'contatos-importar-overlay') {
+          document.getElementById('contatos-importar-overlay').hidden = true;
+          document.getElementById('contatos-importar-input').value = '';
+        }
+      });
+      document.getElementById('contatos-importar-confirmar').addEventListener('click', confirmarImportacaoContatos);
+
       document.querySelectorAll('#ugc-pagina-contratos .cal-filtro-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
           filtroContratos = btn.dataset.filtroContrato;
@@ -8912,13 +9074,19 @@
 
     async function carregarUGC() {
       try {
-        const [trabalhos, entregaveis, roteiros, visualizacoes, comentarios, prospeccao, contratos, precos] = await Promise.all([
+        const [trabalhos, entregaveis, roteiros, visualizacoes, comentarios, prospeccao, contatos, contratos, precos] = await Promise.all([
           buscarTudo('ugc_trabalhos'),
           buscarTudo('ugc_trabalho_entregaveis'),
           buscarTudo('ugc_roteiros'),
           buscarTudo('ugc_roteiro_visualizacoes'),
           buscarTudo('ugc_roteiro_comentarios'),
           buscarTudo('ugc_prospeccao'),
+          // .catch: se a tabela ainda não existir (antes de rodar a
+          // migração), não pode travar o carregamento do resto do UGC/Publi.
+          buscarTudo('ugc_base_contatos').catch((err) => {
+            console.error('Base de contatos ainda não disponível:', err);
+            return [];
+          }),
           buscarTudo('ugc_contratos'),
           buscarTudo('ugc_precos'),
         ]);
@@ -8928,6 +9096,7 @@
         ugcRoteiroVisualizacoesCache = visualizacoes;
         ugcRoteiroComentariosCache = comentarios;
         ugcProspeccaoCache = prospeccao;
+        ugcBaseContatosCache = contatos;
         ugcContratosCache = contratos;
         ugcPrecosCache = precos;
         renderizarUGC();
@@ -8941,6 +9110,7 @@
       renderizarTrabalhos();
       renderizarRoteiros();
       renderizarProspeccao();
+      renderizarBaseContatos();
       renderizarContratos();
       renderizarPrecos();
       renderizarResultadosUGC();
@@ -10702,6 +10872,311 @@
         alert(tr('ugc_erro_transformar'));
       } finally {
         btn.disabled = false;
+      }
+    }
+
+    // ---- Base de contatos (dentro de Prospecção) ----
+    const SITUACOES_CONTATO = ['Lead', 'Conversando', 'Cliente', 'Parada'];
+    let contatoAbertoId = null;
+
+    function trocarVistaProspeccao(vista) {
+      vistaProspeccao = vista;
+      document.querySelectorAll('.prospeccao-vista-grupo .cal-filtro-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.vistaProspeccao === vista));
+      document.getElementById('prospeccao-vista-pipeline').hidden = vista !== 'pipeline';
+      document.getElementById('prospeccao-vista-contatos').hidden = vista !== 'contatos';
+    }
+
+    function classeSituacaoContato(situacao) {
+      if (situacao === 'Cliente') return 'ugc-status-pago';
+      if (situacao === 'Parada') return 'ugc-status-cancelado';
+      if (situacao === 'Conversando') return 'ugc-status-producao';
+      return 'ugc-status-inicial'; // Lead
+    }
+
+    function formatarInstagramHandle(handle) {
+      return '@' + handle.trim().replace(/^@/, '');
+    }
+
+    function linkInstagram(handle) {
+      return `https://instagram.com/${encodeURIComponent(handle.trim().replace(/^@/, ''))}`;
+    }
+
+    function linkWhatsApp(telefone) {
+      return `https://wa.me/${telefone.replace(/\D/g, '')}`;
+    }
+
+    function renderizarBaseContatos() {
+      let filtrados = ugcBaseContatosCache;
+      if (filtroSituacaoContato !== 'todas') filtrados = filtrados.filter((c) => c.situacao === filtroSituacaoContato);
+      if (buscaContatos.trim()) {
+        const termo = buscaContatos.trim().toLowerCase().replace(/^@/, '');
+        filtrados = filtrados.filter(
+          (c) =>
+            (c.marca || '').toLowerCase().includes(termo) ||
+            (c.instagram || '').toLowerCase().replace(/^@/, '').includes(termo) ||
+            (c.email || '').toLowerCase().includes(termo)
+        );
+      }
+      const ordenados = [...filtrados].sort((a, b) => a.marca.localeCompare(b.marca));
+
+      document.getElementById('contatos-resumo').textContent =
+        ordenados.length === 0 ? 'Nenhum contato ainda.' : `${ordenados.length} ${ordenados.length === 1 ? 'contato' : 'contatos'}.`;
+
+      const lista = document.getElementById('contatos-lista');
+      lista.innerHTML = '';
+      if (ordenados.length === 0) {
+        lista.innerHTML = `<p class="texto-vazio">${tr('nada_por_aqui')}</p>`;
+        return;
+      }
+      ordenados.forEach((c) => lista.appendChild(criarLinhaContato(c)));
+    }
+
+    function criarLinhaContato(contato) {
+      const linha = document.createElement('div');
+      linha.className = 'cal-todas-linha contatos-linha';
+      const instagramHtml = contato.instagram
+        ? `<a href="${linkInstagram(contato.instagram)}" target="_blank" rel="noopener" class="contatos-link">${escapeHtml(formatarInstagramHandle(contato.instagram))}</a>`
+        : '<span class="contatos-vazio">—</span>';
+      const telefoneHtml = contato.telefone
+        ? `<a href="${linkWhatsApp(contato.telefone)}" target="_blank" rel="noopener" class="contatos-whatsapp-btn" title="Abrir no WhatsApp">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 3a9 9 0 00-7.8 13.5L3 21l4.6-1.2A9 9 0 1012 3z" stroke="currentColor" stroke-width="1.6"/><path d="M8.7 8.3c.2-.5.4-.5.6-.5h.5c.2 0 .4 0 .5.4.2.4.7 1.6.7 1.7.1.1.1.3 0 .4-.1.2-.1.2-.3.4-.1.2-.3.3-.1.6.2.3.7 1.1 1.5 1.8 1 .9 1.8 1.1 2.1 1.3.2.1.4.1.5-.1.2-.2.6-.7.8-.9.2-.2.3-.2.5-.1.2.1 1.4.7 1.7.8.2.1.4.2.4.3.1.1.1.7-.2 1.4-.3.7-1.6 1.3-2.3 1.3-.6 0-1.1 0-2.6-.6-1.9-.8-3.3-2.5-4-3.5-.3-.5-1.1-1.5-1.1-2.8 0-1.3.7-1.9.9-2.2z" fill="currentColor"/></svg>
+            ${escapeHtml(contato.telefone)}
+          </a>`
+        : '<span class="contatos-vazio">—</span>';
+      const ultimoContatoFmt = contato.ultimo_contato ? formatarDataCurta(new Date(contato.ultimo_contato + 'T00:00:00')) : '—';
+      linha.innerHTML = `
+        <span class="ugc-trabalhos-marca">${escapeHtml(contato.marca)}</span>
+        <span>${instagramHtml}</span>
+        <span>${escapeHtml(contato.email || '—')}</span>
+        <span>${telefoneHtml}</span>
+        <span class="ugc-status-pill ${classeSituacaoContato(contato.situacao)}">${escapeHtml(contato.situacao)}</span>
+        <span>${ultimoContatoFmt}</span>
+      `;
+      linha.querySelectorAll('a').forEach((a) => a.addEventListener('click', (e) => e.stopPropagation()));
+      linha.addEventListener('click', () => abrirModalContato(contato));
+      return linha;
+    }
+
+    function abrirModalContato(contato) {
+      contatoAbertoId = contato ? contato.id : null;
+      document.getElementById('contato-marca').value = contato ? contato.marca : '';
+      document.getElementById('contato-instagram').value = contato ? contato.instagram || '' : '';
+      document.getElementById('contato-email').value = contato ? contato.email || '' : '';
+      document.getElementById('contato-telefone').value = contato ? contato.telefone || '' : '';
+      document.getElementById('contato-situacao').value = contato ? contato.situacao : 'Lead';
+      document.getElementById('contato-ultimo-contato').value = contato && contato.ultimo_contato ? contato.ultimo_contato : '';
+      document.getElementById('contato-observacao').value = contato ? contato.observacao || '' : '';
+      document.getElementById('contato-modal-excluir').hidden = !contato;
+      document.getElementById('contato-modal-overlay').hidden = false;
+    }
+
+    function fecharModalContato() {
+      contatoAbertoId = null;
+      document.getElementById('contato-modal-overlay').hidden = true;
+    }
+
+    async function salvarModalContato() {
+      const marca = document.getElementById('contato-marca').value.trim();
+      if (!marca) {
+        alert(tr('ugc_preencha_marca'));
+        return;
+      }
+      const linha = {
+        marca,
+        instagram: document.getElementById('contato-instagram').value.trim() || null,
+        email: document.getElementById('contato-email').value.trim() || null,
+        telefone: document.getElementById('contato-telefone').value.trim() || null,
+        situacao: document.getElementById('contato-situacao').value,
+        ultimo_contato: document.getElementById('contato-ultimo-contato').value || null,
+        observacao: document.getElementById('contato-observacao').value.trim() || null,
+      };
+
+      const btn = document.getElementById('contato-modal-salvar');
+      btn.disabled = true;
+      try {
+        const { error } = contatoAbertoId
+          ? await Auth.sb.from('ugc_base_contatos').update(linha).eq('id', contatoAbertoId)
+          : await Auth.sb.from('ugc_base_contatos').insert(linha);
+        if (error) throw error;
+        fecharModalContato();
+        await carregarUGC();
+      } catch (err) {
+        console.error('Erro ao salvar contato:', err);
+        alert(tr('erro_salvar_generico'));
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function excluirModalContato() {
+      if (!contatoAbertoId) return;
+      if (!(await confirmarAcao('Excluir este contato?'))) return;
+      try {
+        const { error } = await Auth.sb.from('ugc_base_contatos').delete().eq('id', contatoAbertoId);
+        if (error) throw error;
+        fecharModalContato();
+        await carregarUGC();
+      } catch (err) {
+        console.error('Erro ao excluir contato:', err);
+        alert(tr('erro_excluir_generico'));
+      }
+    }
+
+    function exportarContatosCSV() {
+      if (ugcBaseContatosCache.length === 0) return;
+      const cabecalho = ['marca', 'instagram', 'email', 'telefone', 'situacao', 'observacao', 'ultimo_contato'];
+      const linhas = ugcBaseContatosCache.map((c) => [
+        c.marca,
+        c.instagram || '',
+        c.email || '',
+        c.telefone || '',
+        c.situacao,
+        c.observacao || '',
+        c.ultimo_contato || '',
+      ]);
+      const csv = [cabecalho, ...linhas]
+        .map((linha) => linha.map((valor) => `"${String(valor).replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+      const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'base-de-contatos.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // ---- Importar planilha de contatos ----
+    // Datas de planilha vêm em formatos inconsistentes (DD/MM/AAAA, texto,
+    // etc.) — importar errado silenciosamente é pior que não importar, então
+    // "último contato" fica sempre em branco na importação; ela ajusta na mão
+    // se quiser, linha por linha.
+    let contatosImportarLinhas = [];
+    let contatosImportarCamposDetectados = {};
+
+    const CONTATOS_CAMPOS_IMPORT = [
+      { campo: 'marca', label: 'Marca', chaves: ['marca', 'empresa', 'nome', 'brand', 'cliente'] },
+      { campo: 'instagram', label: 'Instagram', chaves: ['instagram', 'insta', 'usuario', 'perfil'] },
+      { campo: 'email', label: 'E-mail', chaves: ['email', 'e-mail', 'mail'] },
+      { campo: 'telefone', label: 'Telefone', chaves: ['telefone', 'celular', 'whatsapp', 'fone', 'phone'] },
+      { campo: 'situacao', label: 'Situação', chaves: ['situacao', 'status', 'estagio', 'etapa'] },
+      { campo: 'observacao', label: 'Observação', chaves: ['observacao', 'obs', 'nota', 'comentario'] },
+    ];
+
+    function normalizarTexto(s) {
+      return String(s)
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .toLowerCase()
+        .trim();
+    }
+
+    function detectarColuna(headers, chaves) {
+      const normalizados = headers.map((h) => normalizarTexto(h));
+      for (const chave of chaves) {
+        const chaveNorm = normalizarTexto(chave);
+        const idx = normalizados.findIndex((h) => h === chaveNorm || h.includes(chaveNorm));
+        if (idx !== -1) return headers[idx];
+      }
+      return '';
+    }
+
+    function abrirImportarContatos(arquivo) {
+      Papa.parse(arquivo, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (resultado) => {
+          contatosImportarLinhas = resultado.data;
+          const headers = resultado.meta.fields || [];
+          if (contatosImportarLinhas.length === 0 || headers.length === 0) {
+            alert('Não encontrei linhas nessa planilha.');
+            return;
+          }
+          contatosImportarCamposDetectados = {};
+          CONTATOS_CAMPOS_IMPORT.forEach((c) => {
+            contatosImportarCamposDetectados[c.campo] = detectarColuna(headers, c.chaves);
+          });
+          renderizarMapeamentoImportacao(headers);
+          document.getElementById('contatos-importar-resumo').textContent =
+            `${contatosImportarLinhas.length} linhas encontradas. Confira se cada coluna foi reconhecida certinho antes de importar.`;
+          document.getElementById('contatos-importar-overlay').hidden = false;
+        },
+        error: (err) => {
+          console.error('Erro ao ler CSV:', err);
+          alert('Não consegui ler esse arquivo. Confira se é um CSV válido.');
+        },
+      });
+    }
+
+    function renderizarMapeamentoImportacao(headers) {
+      const cont = document.getElementById('contatos-importar-mapeamento');
+      cont.innerHTML = CONTATOS_CAMPOS_IMPORT.map(
+        (c) => `
+          <div class="cal-form-campo">
+            <label for="importar-campo-${c.campo}">${c.label}</label>
+            <select id="importar-campo-${c.campo}" data-campo="${c.campo}">
+              <option value="">Não importar</option>
+              ${headers
+                .map((h) => `<option value="${escapeHtml(h)}" ${h === contatosImportarCamposDetectados[c.campo] ? 'selected' : ''}>${escapeHtml(h)}</option>`)
+                .join('')}
+            </select>
+          </div>
+        `
+      ).join('');
+    }
+
+    async function confirmarImportacaoContatos() {
+      const mapeamento = {};
+      document.querySelectorAll('#contatos-importar-mapeamento select').forEach((sel) => {
+        mapeamento[sel.dataset.campo] = sel.value;
+      });
+      if (!mapeamento.marca) {
+        alert('Escolha qual coluna da planilha é a marca antes de importar.');
+        return;
+      }
+
+      const linhas = contatosImportarLinhas
+        .map((linhaCsv) => {
+          const marca = (linhaCsv[mapeamento.marca] || '').trim();
+          if (!marca) return null;
+          const situacaoBruta = mapeamento.situacao ? (linhaCsv[mapeamento.situacao] || '').trim() : '';
+          const situacao = SITUACOES_CONTATO.find((s) => normalizarTexto(s) === normalizarTexto(situacaoBruta)) || 'Lead';
+          return {
+            marca,
+            instagram: mapeamento.instagram ? (linhaCsv[mapeamento.instagram] || '').trim() || null : null,
+            email: mapeamento.email ? (linhaCsv[mapeamento.email] || '').trim() || null : null,
+            telefone: mapeamento.telefone ? (linhaCsv[mapeamento.telefone] || '').trim() || null : null,
+            situacao,
+            observacao: mapeamento.observacao ? (linhaCsv[mapeamento.observacao] || '').trim() || null : null,
+          };
+        })
+        .filter(Boolean);
+
+      if (linhas.length === 0) {
+        alert('Nenhuma linha com marca preenchida pra importar.');
+        return;
+      }
+
+      const btn = document.getElementById('contatos-importar-confirmar');
+      btn.disabled = true;
+      btn.textContent = 'Importando...';
+      try {
+        const TAMANHO_LOTE = 200;
+        for (let i = 0; i < linhas.length; i += TAMANHO_LOTE) {
+          const lote = linhas.slice(i, i + TAMANHO_LOTE);
+          const { error } = await Auth.sb.from('ugc_base_contatos').insert(lote);
+          if (error) throw error;
+        }
+        document.getElementById('contatos-importar-overlay').hidden = true;
+        document.getElementById('contatos-importar-input').value = '';
+        await carregarUGC();
+        alert(`${linhas.length} contatos importados.`);
+      } catch (err) {
+        console.error('Erro ao importar contatos:', err);
+        alert('Deu erro ao importar. Confira a planilha e tente de novo.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Importar';
       }
     }
 

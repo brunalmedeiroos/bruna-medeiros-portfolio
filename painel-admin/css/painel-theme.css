@@ -3025,6 +3025,19 @@
   flex-wrap: wrap;
 }
 
+/* Busca + botões de ação (Campanhas, Base de contatos): agrupados à parte
+   do filtro de status, pra quando faltar espaço e precisar quebrar linha,
+   o botão sobrando cair alinhado embaixo dos outros botões de ação (à
+   direita), nunca embaixo do grupo de filtros (à esquerda). */
+.painel-body .ugc-toolbar-acoes-direita {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+  flex: 1 1 260px;
+}
+
 .painel-body .cal-todas-cabecalho.ugc-trabalhos-linha,
 .painel-body .cal-todas-linha.ugc-trabalhos-linha {
   grid-template-columns: 26px 1fr 120px 96px 152px 46px 90px 148px 100px;

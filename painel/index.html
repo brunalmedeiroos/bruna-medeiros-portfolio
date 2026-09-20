@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260920d">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260920e">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1035,9 +1035,11 @@
                   <button class="cal-filtro-btn ativo" data-filtro-trabalho="ativas" type="button">Ativas</button>
                   <button class="cal-filtro-btn" data-filtro-trabalho="finalizadas" type="button">Finalizadas</button>
                 </div>
-                <input type="text" id="campanhas-busca" class="ugc-roteiros-busca" placeholder="Buscar por cliente ou campanha">
-                <button id="btn-ugc-novo-trabalho" class="cal-btn cal-btn-primario" type="button">+ Nova campanha</button>
-                <button id="btn-campanhas-baixar-csv" class="cal-btn" type="button">↓ Baixar CSV</button>
+                <div class="ugc-toolbar-acoes-direita">
+                  <input type="text" id="campanhas-busca" class="ugc-roteiros-busca" placeholder="Buscar por cliente ou campanha">
+                  <button id="btn-ugc-novo-trabalho" class="cal-btn cal-btn-primario" type="button">+ Nova campanha</button>
+                  <button id="btn-campanhas-baixar-csv" class="cal-btn" type="button">↓ Baixar CSV</button>
+                </div>
               </div>
             </div>
 
@@ -1148,11 +1150,13 @@
                     <button class="cal-filtro-btn" data-filtro-situacao="Cliente" type="button">Cliente</button>
                     <button class="cal-filtro-btn" data-filtro-situacao="Parada" type="button">Parada</button>
                   </div>
-                  <input type="text" id="contatos-busca" class="ugc-roteiros-busca" placeholder="Buscar por nome, @ ou e-mail">
-                  <input type="file" id="contatos-importar-input" accept=".csv" hidden>
-                  <button id="btn-contatos-novo" class="cal-btn cal-btn-primario" type="button">+ Adicionar contato</button>
-                  <button id="btn-contatos-importar" class="cal-btn" type="button">↑ Importar CSV</button>
-                  <button id="btn-contatos-baixar-csv" class="cal-btn" type="button">↓ Baixar CSV</button>
+                  <div class="ugc-toolbar-acoes-direita">
+                    <input type="text" id="contatos-busca" class="ugc-roteiros-busca" placeholder="Buscar por nome, @ ou e-mail">
+                    <input type="file" id="contatos-importar-input" accept=".csv" hidden>
+                    <button id="btn-contatos-novo" class="cal-btn cal-btn-primario" type="button">+ Adicionar contato</button>
+                    <button id="btn-contatos-importar" class="cal-btn" type="button">↑ Importar CSV</button>
+                    <button id="btn-contatos-baixar-csv" class="cal-btn" type="button">↓ Baixar CSV</button>
+                  </div>
                 </div>
               </div>
 

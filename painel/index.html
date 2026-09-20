@@ -922,7 +922,6 @@
             <button class="ugc-subnav-btn" data-ugc-pagina="prospeccao" type="button" data-i18n="ugc_prospeccao">Prospecção</button>
             <button class="ugc-subnav-btn" data-ugc-pagina="contratos" type="button" data-i18n="ugc_contratos">Contratos</button>
             <button class="ugc-subnav-btn" data-ugc-pagina="precos" type="button" data-i18n="ugc_precos">Preços</button>
-            <button class="ugc-subnav-btn" data-ugc-pagina="resultados" type="button" data-i18n="ugc_resultados">Resultados</button>
           </div>
 
           <!-- Visão Geral: só leitura, tudo derivado de ugc_trabalhos -->
@@ -953,6 +952,52 @@
             <div class="card">
               <h3 class="card-titulo" data-i18n="ugc_proximas_entregas">Próximas entregas</h3>
               <div id="ugc-proximas-entregas" class="ugc-proximas-lista"></div>
+            </div>
+
+            <!-- Resultados: também só leitura, derivado de ugc_trabalhos/ugc_contratos -->
+            <div class="ugc-resultados-topo">
+              <div class="card ugc-resultados-card">
+                <span class="ugc-resultados-card-titulo" data-i18n="ugc_ganho_ugc">Ganho em UGC</span>
+                <span class="ugc-resultados-card-valor" id="ugc-num-ganho-ugc">R$ 0</span>
+                <div class="ugc-resultados-chips">
+                  <div class="ugc-resultados-chip">
+                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_trabalhos_finalizados">Campanhas finalizadas</span>
+                    <span class="ugc-resultados-chip-valor" id="ugc-num-fechados-ugc">0</span>
+                  </div>
+                  <div class="ugc-resultados-chip">
+                    <span class="ugc-resultados-chip-label" data-i18n="ugc_contratos_finalizados">Contratos finalizados</span>
+                    <span class="ugc-resultados-chip-valor" id="ugc-num-contratos-finalizados-ugc">0</span>
+                  </div>
+                  <div class="ugc-resultados-chip">
+                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_ticket_medio">Ticket médio</span>
+                    <span class="ugc-resultados-chip-valor" id="ugc-num-ticket-medio-ugc">—</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card ugc-resultados-card">
+                <span class="ugc-resultados-card-titulo" data-i18n="ugc_ganho_publicidade">Ganho em Publicidade</span>
+                <span class="ugc-resultados-card-valor" id="ugc-num-ganho-publicidade">R$ 0</span>
+                <div class="ugc-resultados-chips">
+                  <div class="ugc-resultados-chip">
+                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_trabalhos_finalizados">Campanhas finalizadas</span>
+                    <span class="ugc-resultados-chip-valor" id="ugc-num-fechados-publicidade">0</span>
+                  </div>
+                  <div class="ugc-resultados-chip">
+                    <span class="ugc-resultados-chip-label" data-i18n="ugc_contratos_finalizados">Contratos finalizados</span>
+                    <span class="ugc-resultados-chip-valor" id="ugc-num-contratos-finalizados-publicidade">0</span>
+                  </div>
+                  <div class="ugc-resultados-chip">
+                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_ticket_medio">Ticket médio</span>
+                    <span class="ugc-resultados-chip-valor" id="ugc-num-ticket-medio-publicidade">—</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card ugc-resultados-total-card">
+              <span class="ugc-resultados-total-label" data-i18n="ugc_ganho_total">Ganho total</span>
+              <span class="ugc-resultados-total-valor" id="ugc-num-ganho-total">R$ 0</span>
             </div>
           </div>
 
@@ -991,8 +1036,8 @@
                   <button class="cal-filtro-btn" data-filtro-trabalho="finalizadas" type="button">Finalizadas</button>
                 </div>
                 <input type="text" id="campanhas-busca" class="ugc-roteiros-busca" placeholder="Buscar por cliente ou campanha">
-                <button id="btn-campanhas-baixar-csv" class="cal-btn" type="button">↓ Baixar CSV</button>
                 <button id="btn-ugc-novo-trabalho" class="cal-btn cal-btn-primario" type="button">+ Nova campanha</button>
+                <button id="btn-campanhas-baixar-csv" class="cal-btn" type="button">↓ Baixar CSV</button>
               </div>
             </div>
 
@@ -1105,9 +1150,9 @@
                   </div>
                   <input type="text" id="contatos-busca" class="ugc-roteiros-busca" placeholder="Buscar por nome, @ ou e-mail">
                   <input type="file" id="contatos-importar-input" accept=".csv" hidden>
+                  <button id="btn-contatos-novo" class="cal-btn cal-btn-primario" type="button">+ Adicionar contato</button>
                   <button id="btn-contatos-importar" class="cal-btn" type="button">↑ Importar CSV</button>
                   <button id="btn-contatos-baixar-csv" class="cal-btn" type="button">↓ Baixar CSV</button>
-                  <button id="btn-contatos-novo" class="cal-btn cal-btn-primario" type="button">+ Adicionar contato</button>
                 </div>
               </div>
 
@@ -1200,53 +1245,6 @@
             </div>
           </div>
 
-          <!-- Resultados: também só leitura, derivado de ugc_trabalhos/ugc_contratos -->
-          <div id="ugc-pagina-resultados" class="ugc-pagina" hidden>
-            <div class="ugc-resultados-topo">
-              <div class="card ugc-resultados-card">
-                <span class="ugc-resultados-card-titulo" data-i18n="ugc_ganho_ugc">Ganho em UGC</span>
-                <span class="ugc-resultados-card-valor" id="ugc-num-ganho-ugc">R$ 0</span>
-                <div class="ugc-resultados-chips">
-                  <div class="ugc-resultados-chip">
-                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_trabalhos_finalizados">Campanhas finalizadas</span>
-                    <span class="ugc-resultados-chip-valor" id="ugc-num-fechados-ugc">0</span>
-                  </div>
-                  <div class="ugc-resultados-chip">
-                    <span class="ugc-resultados-chip-label" data-i18n="ugc_contratos_finalizados">Contratos finalizados</span>
-                    <span class="ugc-resultados-chip-valor" id="ugc-num-contratos-finalizados-ugc">0</span>
-                  </div>
-                  <div class="ugc-resultados-chip">
-                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_ticket_medio">Ticket médio</span>
-                    <span class="ugc-resultados-chip-valor" id="ugc-num-ticket-medio-ugc">—</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card ugc-resultados-card">
-                <span class="ugc-resultados-card-titulo" data-i18n="ugc_ganho_publicidade">Ganho em Publicidade</span>
-                <span class="ugc-resultados-card-valor" id="ugc-num-ganho-publicidade">R$ 0</span>
-                <div class="ugc-resultados-chips">
-                  <div class="ugc-resultados-chip">
-                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_trabalhos_finalizados">Campanhas finalizadas</span>
-                    <span class="ugc-resultados-chip-valor" id="ugc-num-fechados-publicidade">0</span>
-                  </div>
-                  <div class="ugc-resultados-chip">
-                    <span class="ugc-resultados-chip-label" data-i18n="ugc_contratos_finalizados">Contratos finalizados</span>
-                    <span class="ugc-resultados-chip-valor" id="ugc-num-contratos-finalizados-publicidade">0</span>
-                  </div>
-                  <div class="ugc-resultados-chip">
-                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_ticket_medio">Ticket médio</span>
-                    <span class="ugc-resultados-chip-valor" id="ugc-num-ticket-medio-publicidade">—</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="card ugc-resultados-total-card">
-              <span class="ugc-resultados-total-label" data-i18n="ugc_ganho_total">Ganho total</span>
-              <span class="ugc-resultados-total-valor" id="ugc-num-ganho-total">R$ 0</span>
-            </div>
-          </div>
         </section>
 
         <!-- ---------- Aba: Clientes ---------- -->

@@ -449,8 +449,10 @@
       <div id="rt-moodboard"></div>
     </div>
 
-    <p class="secao-titulo"><span>Cenas</span><span id="rt-cenas-contagem" class="secao-contagem"></span></p>
-    <div id="rt-cenas"></div>
+    <div id="rt-cenas-secao">
+      <p class="secao-titulo"><span>Cenas</span><span id="rt-cenas-contagem" class="secao-contagem"></span></p>
+      <div id="rt-cenas"></div>
+    </div>
 
 
     <div class="cartao">
@@ -570,10 +572,83 @@
     return '<div class="cena-texto">' + (blocos || '<p class="campo-texto vazio">Sem detalhes ainda.</p>') + '</div>';
   }
 
-  function renderizar(roteiro, cenas) {
+  // ---------- Reconhecimento de cenas dentro do editor novo ----------
+  // O editor do painel (UGC/Publi > Roteiro) virou um único campo de texto
+  // rico, sem campos separados por cena. Pra não perder a apresentação em
+  // cards, reconhece aqui o padrão que a Bruna usa pra escrever:
+  //   Cena 1 — Hook
+  //   Fala: ...
+  //   Detalhes: ...
+  // Se o texto não seguir esse padrão (roteiro antigo, ou ainda sem
+  // nenhuma cena escrita), retorna lista vazia e a página cai de volta pro
+  // documento corrido, sem quebrar nada.
+  function juntarLinhasCampo(linhas) {
+    return linhas
+      .join('\n')
+      .trim()
+      .replace(/\n{3,}/g, '\n\n');
+  }
+
+  function extrairCenasDeTexto(texto) {
+    var linhas = texto.split('\n');
+    var cabecalhoRe = /^cena\s+\d+\s*[-–—]+\s*(.+)$/i;
+    var falaRe = /^(fala|narra[cç][aã]o)\s*:\s*(.*)$/i;
+    var detalhesRe = /^(detalhes|cena)\s*:\s*(.*)$/i;
+
+    var cenasEncontradas = [];
+    var atual = null;
+    var modo = null;
+
+    function finalizar(c) {
+      if (!c) return;
+      c.fala = juntarLinhasCampo(c.falaLinhas);
+      c.descricao_cena = juntarLinhasCampo(c.detalhesLinhas);
+      delete c.falaLinhas;
+      delete c.detalhesLinhas;
+    }
+
+    for (var i = 0; i < linhas.length; i++) {
+      var linhaBruta = linhas[i];
+      var linha = linhaBruta.trim();
+      var mCabecalho = linha.match(cabecalhoRe);
+      if (mCabecalho) {
+        if (atual) finalizar(atual);
+        atual = { funcao_cena: mCabecalho[1].trim(), tipo_cena: 'Cena falada', falaLinhas: [], detalhesLinhas: [] };
+        cenasEncontradas.push(atual);
+        modo = null;
+        continue;
+      }
+      if (!atual) continue;
+
+      var mFala = linha.match(falaRe);
+      if (mFala) {
+        modo = 'fala';
+        if (mFala[2]) atual.falaLinhas.push(mFala[2]);
+        continue;
+      }
+      var mDetalhes = linha.match(detalhesRe);
+      if (mDetalhes) {
+        modo = 'detalhes';
+        if (mDetalhes[2]) atual.detalhesLinhas.push(mDetalhes[2]);
+        continue;
+      }
+      if (modo === 'fala') atual.falaLinhas.push(linhaBruta);
+      else if (modo === 'detalhes') atual.detalhesLinhas.push(linhaBruta);
+    }
+    if (atual) finalizar(atual);
+    return cenasEncontradas;
+  }
+
+  function extrairCenasDoConteudo(html) {
+    if (!html) return [];
+    var aux = document.createElement('div');
+    aux.innerHTML = html.replace(/<\/(p|li|div|h[1-6])>/gi, '\n').replace(/<br\s*\/?>/gi, '\n');
+    return extrairCenasDeTexto(aux.textContent || '');
+  }
+
+  function renderizar(roteiro, cenasBanco) {
     aplicarTemaMarca(roteiro.marca_cor);
     document.getElementById('topo').hidden = true;
-    document.getElementById('rt-conteudo-cartao').hidden = !roteiro.conteudo;
     texto(document.getElementById('rt-marca'), roteiro.marca || 'Roteiro');
     texto(
       document.getElementById('rt-detalhes'),
@@ -586,7 +661,18 @@
       texto(document.getElementById('rt-formato'), formato);
     }
 
-    if (roteiro.conteudo) {
+    // O editor novo (painel > UGC/Publi > Roteiro) escreve tudo num único
+    // campo de texto rico, sem cadastrar cena por cena. Se já não vierem
+    // cenas prontas do banco (roteiro de antes dessa mudança), tenta
+    // reconhecer a estrutura "Cena N — Tipo / Fala: / Detalhes:" dentro do
+    // texto pra manter a apresentação em cards. Sem esse padrão, cai pro
+    // documento corrido (comportamento de antes, sem quebrar nada).
+    var temCenasDeBanco = cenasBanco && cenasBanco.length > 0;
+    var cenas = temCenasDeBanco ? cenasBanco : extrairCenasDoConteudo(roteiro.conteudo);
+
+    var mostrarDocumentoCorrido = !!roteiro.conteudo && cenas.length === 0;
+    document.getElementById('rt-conteudo-cartao').hidden = !mostrarDocumentoCorrido;
+    if (mostrarDocumentoCorrido) {
       // O conteúdo só é escrito pela própria Bru, autenticada, no editor
       // do painel — não é texto vindo de terceiro, então innerHTML aqui é
       // seguro (ao contrário de aceitar HTML de qualquer formulário público).
@@ -599,11 +685,17 @@
       document.getElementById('rt-moodboard').innerHTML = quadroLivre(roteiro.moodboard_imagens, 'moodboard');
     }
 
+    // Sem cena nenhuma reconhecida mas com texto exibido no documento
+    // corrido acima, a seção "Cenas" (vazia) só atrapalharia — some com ela.
+    document.getElementById('rt-cenas-secao').hidden = mostrarDocumentoCorrido;
+
     var cont = document.getElementById('rt-cenas');
     var contagem = document.getElementById('rt-cenas-contagem');
     contagem.textContent = cenas && cenas.length ? '· ' + cenas.length : '';
 
-    if (!cenas || cenas.length === 0) {
+    if (mostrarDocumentoCorrido) {
+      // nada a montar em #rt-cenas — a seção inteira está escondida acima.
+    } else if (!cenas || cenas.length === 0) {
       cont.innerHTML = '<div class="cena"><div class="cena-cabecalho"><span class="campo-texto vazio">Nenhuma cena cadastrada ainda.</span></div></div>';
     } else {
       cont.innerHTML = cenas

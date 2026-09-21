@@ -93,7 +93,7 @@ h1,h2,h3{ font-family:var(--fonte-titulo); margin:0; text-wrap:balance; }
   background:linear-gradient(135deg,var(--coral),var(--coral-claro));
   display:flex; align-items:center; justify-content:center;
 }
-.capa-hero-img img{ width:100%; height:100%; object-fit:cover; display:block; }
+.capa-hero-img img{ width:100%; height:100%; object-fit:cover; display:block; transform:scale(1.7); transform-origin:46% 26%; }
 .capa-hero-img.sem-foto::after{ content:'📸'; font-size:36px; }
 .capa-hero-texto h1{ font-size:22px; font-weight:700; margin-bottom:6px; }
 .capa-hero-texto p{ font-size:13.5px; color:var(--texto-suave); line-height:1.5; margin:0; }

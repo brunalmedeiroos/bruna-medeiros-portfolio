@@ -55,6 +55,11 @@
         db.from('desafio_conclusoes').select('participante_id').gte('feito_em', seteDiasAtras),
       ]);
 
+      // A própria dona também tem uma linha em desafio_perfis (ela participa
+      // do desafio pra documentar a jornada) — não faz sentido aparecer na
+      // fila de "marcar como pago" do próprio desafio dela.
+      const pendentesSemDona = (pendentes || []).filter((p) => p.id !== user.id);
+
       const ativasEssaSemana = new Set((ativasRows || []).map((r) => r.participante_id)).size;
       const ultimoDia = (dias && dias[0]) || null;
       let pctUltimoDia = 0;
@@ -79,7 +84,7 @@
 
       conteudo.innerHTML = `
         ${renderKpiRow({ totalCadastradas, ativasEssaSemana, pctUltimoDia, ultimoDia, videosPendentes, totalPagas })}
-        ${renderPagamentosPendentes(pendentes)}
+        ${renderPagamentosPendentes(pendentesSemDona)}
         ${renderAdminGrid({ rascunhos, ranking, bonusHistorico })}
 
         <div class="secao-titulo">Vídeos pra avaliar</div>

@@ -54,7 +54,11 @@
 
       const { data: perfil } = await db.from('desafio_perfis').select('nome,instagram,foto_url,pago').eq('id', user.id).maybeSingle();
 
-      if (!perfil?.pago) {
+      // A dona nunca fica bloqueada pelo pagamento — ela pode marcar
+      // desafios e subir vídeo pra documentar a própria jornada, mas não
+      // precisa pagar o próprio desafio (o RLS já libera pra ela também,
+      // isso aqui só evita mostrar a tela de Pix indevidamente).
+      if (!perfil?.pago && !DesafioAuth.isOwner(user)) {
         conteudo.innerHTML = `
           <div class="card">
             <h3 style="margin-bottom:10px;">Falta pouco! 🎉</h3>

@@ -74,6 +74,7 @@
     let ideiasVinculoCache = null;
     let diaModalId = null;
     let diaModalRoteiroId = null;
+    let usuarioAtual = null;
 
     const CARREGADORES_ABA = {
       'visao-geral': carregarVisaoGeral,
@@ -155,14 +156,20 @@
 
       const seteDiasAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-      const [{ data: processo }, { count: totalCadastradas }, { data: dias }, { data: rascunhos }, { data: ranking }, { data: ativasRows }] = await Promise.all([
+      const [{ data: processo }, { count: totalCadastradas }, { count: totalPagas }, { data: pendentes }, { data: dias }, { data: rascunhos }, { data: ranking }, { data: ativasRows }] = await Promise.all([
         db.from('desafio_processo').select('data_inicio').eq('id', 1).maybeSingle(),
         db.from('desafio_perfis').select('*', { count: 'exact', head: true }),
+        db.from('desafio_perfis').select('*', { count: 'exact', head: true }).eq('pago', true),
+        db.from('desafio_perfis').select('id,nome,instagram,created_at').eq('pago', false).order('created_at', { ascending: true }),
         db.from('desafio_dias').select('*').eq('publicado', true).order('numero_dia', { ascending: false }),
         db.from('desafio_dias').select('*').eq('publicado', false).order('numero_dia', { ascending: true }),
         db.from('desafio_ranking').select('*').order('pontos', { ascending: false }),
         db.from('desafio_conclusoes').select('participante_id').gte('feito_em', seteDiasAtras),
       ]);
+
+      // A própria dona também tem uma linha em desafio_perfis — não faz
+      // sentido aparecer na fila de "marcar como pago" do próprio desafio.
+      const pendentesSemDona = (pendentes || []).filter((p) => p.id !== usuarioAtual.id);
 
       const ativasEssaSemana = new Set((ativasRows || []).map((r) => r.participante_id)).size;
       const ultimoDia = (dias && dias[0]) || null;
@@ -188,11 +195,13 @@
 
       painel.innerHTML = `
         ${renderCardDia(processo && processo.data_inicio)}
-        ${renderKpiRow({ totalCadastradas, ativasEssaSemana, pctUltimoDia, ultimoDia, videosPendentes })}
+        ${renderKpiRow({ totalCadastradas, ativasEssaSemana, pctUltimoDia, ultimoDia, videosPendentes, totalPagas })}
+        ${renderPagamentosPendentes(pendentesSemDona)}
         ${renderAdminGrid({ rascunhos, ranking, bonusHistorico })}
       `;
 
       wireCardDia();
+      wirePagamentosPendentesHandlers(db, { onChanged: carregarVisaoGeral });
       wireAdminGridHandlers(db, { ranking, rascunhos, onChanged: carregarVisaoGeral });
     }
 
@@ -441,6 +450,7 @@
         window.location.href = '../painel/';
         return;
       }
+      usuarioAtual = user;
       document.querySelectorAll('.processo-subnav-btn').forEach((btn) => {
         btn.addEventListener('click', () => trocarAbaProcesso(btn.dataset.abaProcesso));
       });

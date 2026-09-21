@@ -19,14 +19,19 @@ function renderKpiRow({ totalCadastradas, ativasEssaSemana, pctUltimoDia, ultimo
 }
 
 // Lista de quem se cadastrou mas ainda não foi marcada como paga — pra
-// dar baixa manual depois de conferir o Pix caiu na conta da Bruna.
+// dar baixa manual depois de conferir o Pix caiu na conta da Bruna. Quando
+// a pessoa já anexou o comprovante, mostra um link pra abrir o arquivo
+// (link assinado — o bucket é privado) antes de marcar como pago.
 function renderPagamentosPendentes(pendentes) {
   return `
     <div class="secao-titulo">Pagamentos pendentes</div>
     <div id="pagamentos-lista">
       ${(pendentes && pendentes.length) ? pendentes.map((p) => `
         <div class="hist-item" data-id="${p.id}">
-          <span class="t"><b>${p.nome || 'Sem nome'}</b> ${p.instagram ? `· ${p.instagram}` : ''}</span>
+          <span class="t">
+            <b>${p.nome || 'Sem nome'}</b> ${p.instagram ? `· ${p.instagram}` : ''}
+            ${p.comprovante_path ? `<div><span class="vq-link btn-ver-comprovante" data-path="${p.comprovante_path}">ver comprovante</span></div>` : `<div style="font-size:11.5px;color:var(--texto-suave);">sem comprovante ainda</div>`}
+          </span>
           <button type="button" class="btn-toggle pendente btn-marcar-pago" data-id="${p.id}">Marcar como pago</button>
         </div>
       `).join('') : '<p class="vazio">Ninguém pendente — todo mundo cadastrada já pagou.</p>'}
@@ -49,6 +54,13 @@ function wirePagamentosPendentesHandlers(db, { onChanged }) {
         return;
       }
       onChanged();
+    });
+  });
+
+  document.querySelectorAll('.btn-ver-comprovante').forEach((el) => {
+    el.addEventListener('click', async () => {
+      const { data, error } = await db.storage.from('desafio-comprovantes').createSignedUrl(el.dataset.path, 3600);
+      if (!error && data) window.open(data.signedUrl, '_blank');
     });
   });
 }

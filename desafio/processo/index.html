@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/desafio.css?v=22">
+<link rel="stylesheet" href="../css/desafio.css?v=23">
 <script>
   // Embutido como aba dentro do Creator Center: esconde o cabeçalho
   // próprio da página (o painel já mostra o título e o "Sair").
@@ -64,7 +64,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/auth.js?v=1"></script>
-  <script src="../js/admin-render.js?v=3"></script>
+  <script src="../js/admin-render.js?v=4"></script>
   <script>
     const db = DesafioAuth.sb;
     document.getElementById('btn-sair').addEventListener('click', () => DesafioAuth.logout());
@@ -160,7 +160,7 @@
         db.from('desafio_processo').select('data_inicio').eq('id', 1).maybeSingle(),
         db.from('desafio_perfis').select('*', { count: 'exact', head: true }),
         db.from('desafio_perfis').select('*', { count: 'exact', head: true }).eq('pago', true),
-        db.from('desafio_perfis').select('id,nome,instagram,created_at').eq('pago', false).order('created_at', { ascending: true }),
+        db.from('desafio_perfis').select('id,nome,instagram,created_at,comprovante_path').eq('pago', false).order('created_at', { ascending: true }),
         db.from('desafio_dias').select('*').eq('publicado', true).order('numero_dia', { ascending: false }),
         db.from('desafio_dias').select('*').eq('publicado', false).order('numero_dia', { ascending: true }),
         db.from('desafio_ranking').select('*').order('pontos', { ascending: false }),

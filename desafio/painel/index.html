@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/desafio.css?v=22">
+<link rel="stylesheet" href="../css/desafio.css?v=23">
 <script>
   // Embutido como aba dentro do Creator Center: esconde o cabeçalho
   // próprio da página (o painel já mostra o título).
@@ -52,30 +52,45 @@
       const user = await DesafioAuth.checkAuth();
       if (!user) return;
 
-      const { data: perfil } = await db.from('desafio_perfis').select('nome,instagram,foto_url,pago').eq('id', user.id).maybeSingle();
+      const { data: perfil } = await db.from('desafio_perfis').select('nome,instagram,foto_url,pago,comprovante_path').eq('id', user.id).maybeSingle();
 
       // A dona nunca fica bloqueada pelo pagamento — ela pode marcar
       // desafios e subir vídeo pra documentar a própria jornada, mas não
       // precisa pagar o próprio desafio (o RLS já libera pra ela também,
       // isso aqui só evita mostrar a tela de Pix indevidamente).
       if (!perfil?.pago && !DesafioAuth.isOwner(user)) {
+        const jaEnviouComprovante = !!perfil?.comprovante_path;
         conteudo.innerHTML = `
           <div class="card">
-            <h3 style="margin-bottom:10px;">Falta pouco! 🎉</h3>
+            <h3 style="margin-bottom:4px;">Para finalizar sua inscrição</h3>
+            <p class="pix-preco">R$ 10,00</p>
             <p style="font-size:13.5px;color:var(--texto-suave);line-height:1.6;margin-bottom:18px;">
-              O desafio custa <b>R$10</b> e libera assim que eu confirmar seu Pix (geralmente em algumas horas).
+              Copie a chave Pix abaixo e faça o pagamento. Depois, envie o comprovante pra liberar seu acesso.
             </p>
             <div class="pix-box">
               <span class="pix-label">Chave Pix (aleatória)</span>
               <div class="pix-chave" id="pix-chave-txt">${PIX_CHAVE}</div>
-              <button type="button" id="btn-copiar-pix" class="btn btn-secundario" style="width:auto;padding:8px 16px;font-size:12.5px;margin-bottom:10px;">Copiar chave</button>
-              <span class="pix-hint">Valor: R$10 · coloca seu nome ou @ do Instagram na descrição do Pix, assim eu acho seu cadastro mais rápido.</span>
+              <button type="button" id="btn-copiar-pix" class="btn btn-secundario" style="width:auto;padding:8px 16px;font-size:12.5px;">🔑 Copiar chave Pix</button>
             </div>
-            <button type="button" id="btn-ja-paguei" class="btn btn-primary" style="margin-top:16px;">Já paguei, verificar de novo</button>
+
+            ${jaEnviouComprovante ? `
+              <div class="feedback-box recebido" style="margin-top:16px;">
+                <span class="quem">Comprovante enviado ✅</span>
+                Assim que eu confirmar, seu acesso libera automaticamente aqui.
+              </div>
+              <button type="button" id="btn-verificar" class="btn btn-secundario" style="margin-top:12px;">Verificar de novo</button>
+            ` : `
+              <div class="upload-box" style="margin-top:16px;">
+                <span class="txt"><b>Anexar comprovante do Pix</b></span>
+                <input type="file" id="input-comprovante" accept="image/*,application/pdf">
+                <div id="comprovante-status" style="font-size:12px;color:var(--texto-suave);margin-top:6px;"></div>
+              </div>
+              <button type="button" id="btn-ja-paguei" class="btn btn-primary" style="margin-top:12px;" disabled>Já fiz o pagamento →</button>
+            `}
             <p style="font-size:12px;color:var(--texto-suave);margin-top:14px;text-align:center;">Alguma dúvida? Chama no WhatsApp (ícone verde lá em cima) 💬</p>
           </div>
         `;
-        document.getElementById('btn-ja-paguei').addEventListener('click', carregar);
+
         document.getElementById('btn-copiar-pix').addEventListener('click', async (e) => {
           const btn = e.currentTarget;
           try {
@@ -87,6 +102,34 @@
             /* clipboard indisponível (ex: http sem contexto seguro) — a chave já está visível pra copiar na mão */
           }
         });
+
+        const btnVerificar = document.getElementById('btn-verificar');
+        if (btnVerificar) btnVerificar.addEventListener('click', carregar);
+
+        const inputComprovante = document.getElementById('input-comprovante');
+        const btnJaPaguei = document.getElementById('btn-ja-paguei');
+        if (inputComprovante) {
+          inputComprovante.addEventListener('change', () => {
+            btnJaPaguei.disabled = !inputComprovante.files[0];
+          });
+          btnJaPaguei.addEventListener('click', async () => {
+            const file = inputComprovante.files[0];
+            if (!file) return;
+            const status = document.getElementById('comprovante-status');
+            btnJaPaguei.disabled = true;
+            status.textContent = 'Enviando comprovante...';
+            const ext = file.name.split('.').pop();
+            const path = `${user.id}/comprovante.${ext}`;
+            const { error: erroUpload } = await db.storage.from('desafio-comprovantes').upload(path, file, { upsert: true });
+            if (erroUpload) {
+              status.textContent = 'Não foi possível enviar. Tenta de novo.';
+              btnJaPaguei.disabled = false;
+              return;
+            }
+            await db.from('desafio_perfis').update({ comprovante_path: path }).eq('id', user.id);
+            carregar();
+          });
+        }
         return;
       }
 

@@ -26,12 +26,14 @@
 
     <div class="processo-subnav">
       <button class="processo-subnav-btn ativo" data-aba-processo="visao-geral" type="button">Visão Geral</button>
+      <button class="processo-subnav-btn" data-aba-processo="cadastros" type="button">Cadastros</button>
       <button class="processo-subnav-btn" data-aba-processo="tabela" type="button">Tabela de processo</button>
       <button class="processo-subnav-btn" data-aba-processo="videos" type="button">Vídeos</button>
       <button class="processo-subnav-btn" data-aba-processo="meu-painel" type="button">Meu painel</button>
     </div>
 
     <div id="painel-visao-geral" class="processo-painel carregando">Carregando...</div>
+    <div id="painel-cadastros" class="processo-painel" hidden></div>
     <div id="painel-tabela" class="processo-painel" hidden></div>
     <div id="painel-videos" class="processo-painel" hidden></div>
   </div>
@@ -64,7 +66,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/auth.js?v=1"></script>
-  <script src="../js/admin-render.js?v=4"></script>
+  <script src="../js/admin-render.js?v=5"></script>
   <script>
     const db = DesafioAuth.sb;
     document.getElementById('btn-sair').addEventListener('click', () => DesafioAuth.logout());
@@ -78,6 +80,7 @@
 
     const CARREGADORES_ABA = {
       'visao-geral': carregarVisaoGeral,
+      cadastros: carregarCadastros,
       tabela: carregarTabela,
       videos: carregarVideos,
     };
@@ -203,6 +206,23 @@
       wireCardDia();
       wirePagamentosPendentesHandlers(db, { onChanged: carregarVisaoGeral });
       wireAdminGridHandlers(db, { ranking, rascunhos, onChanged: carregarVisaoGeral });
+    }
+
+    // ---- Aba: Cadastros ----
+
+    async function carregarCadastros() {
+      const painel = document.getElementById('painel-cadastros');
+      painel.innerHTML = '<p class="carregando">Carregando...</p>';
+
+      const { data: perfis } = await db
+        .from('desafio_perfis')
+        .select('id,nome,instagram,pago,created_at')
+        .order('created_at', { ascending: false });
+
+      const semDona = (perfis || []).filter((p) => p.id !== usuarioAtual.id);
+
+      painel.innerHTML = renderCadastros(semDona);
+      wireCadastrosHandlers(db, { onChanged: carregarCadastros });
     }
 
     // ---- Aba 2: Tabela de processo ----

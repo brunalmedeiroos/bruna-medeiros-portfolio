@@ -65,6 +65,46 @@ function wirePagamentosPendentesHandlers(db, { onChanged }) {
   });
 }
 
+// Lista de TODAS as cadastradas (pagas ou não), com opção de apagar o
+// cadastro (ex: quando a pessoa desiste). Apagar aqui não remove o login
+// dela (só a Edge Function com chave de serviço poderia) — só a linha em
+// desafio_perfis e tudo que depende dela (progresso, bônus).
+function renderCadastros(perfis) {
+  return `
+    <div class="secao-titulo">Cadastros</div>
+    <table class="admin-table">
+      <tr><th>Nome</th><th>Instagram</th><th>Pago</th><th>Cadastrou em</th><th></th></tr>
+      ${(perfis && perfis.length) ? perfis.map((p) => `
+        <tr>
+          <td>${p.nome || 'Sem nome'}</td>
+          <td>${p.instagram || ''}</td>
+          <td>${p.pago ? '<span class="status feito">Pago</span>' : '<span class="status pendente">Pendente</span>'}</td>
+          <td>${new Date(p.created_at).toLocaleDateString('pt-BR')}</td>
+          <td><button type="button" class="processo-acoes-btn apagar btn-apagar-cadastro" data-id="${p.id}" data-nome="${(p.nome || 'essa participante').replace(/"/g, '&quot;')}" style="background:none;border:none;color:var(--pendente);font-size:12.5px;font-weight:700;cursor:pointer;font-family:var(--fonte-corpo);">Apagar</button></td>
+        </tr>
+      `).join('') : '<tr><td colspan="5">Ninguém cadastrado ainda.</td></tr>'}
+    </table>
+  `;
+}
+
+function wireCadastrosHandlers(db, { onChanged }) {
+  document.querySelectorAll('.btn-apagar-cadastro').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      if (!confirm(`Apagar o cadastro de ${btn.dataset.nome}? Isso remove o progresso dela no desafio e não pode ser desfeito.`)) return;
+      btn.disabled = true;
+      btn.textContent = 'Apagando...';
+      const { error } = await db.from('desafio_perfis').delete().eq('id', btn.dataset.id);
+      if (error) {
+        btn.disabled = false;
+        btn.textContent = 'Apagar';
+        alert(error.message);
+        return;
+      }
+      onChanged();
+    });
+  });
+}
+
 function renderAdminGrid({ rascunhos, ranking, bonusHistorico }) {
   const opcoesDias = (rascunhos || [])
     .map((d) => `<option value="${d.id}">Dia ${d.numero_dia}${d.titulo ? ' — ' + d.titulo : ' (sem tema ainda)'}</option>`)

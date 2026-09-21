@@ -22,6 +22,13 @@
       <h1 style="font-size:22px;font-weight:700;margin-bottom:4px;">Nos desafiando a viver do UGC</h1>
       <p style="font-size:13.5px;color:var(--texto-suave);margin:0 0 22px;">16 dias, 2 vezes por semana. Entra pra acompanhar sua pontuação e o desafio de cada dia.</p>
 
+      <div class="pix-box" style="margin-bottom:22px;">
+        <span class="pix-label">Participar custa R$10 (Pix)</span>
+        <div class="pix-chave" id="pix-chave-cadastro">c70861de-a91b-4bbc-9735-f02353744105</div>
+        <button type="button" id="btn-copiar-pix-cadastro" class="btn btn-secundario" style="width:auto;padding:8px 16px;font-size:12.5px;margin-bottom:10px;">Copiar chave</button>
+        <span class="pix-hint">Pode pagar antes ou depois de criar sua conta — o acesso libera assim que eu confirmar o Pix (coloca seu nome ou @ do Instagram na descrição, pra eu achar seu cadastro mais rápido).</span>
+      </div>
+
       <div id="msg" class="msg" hidden></div>
       <div id="msg-indicacao" class="msg msg-sucesso" hidden>Você foi indicada por uma amiga que já tá no desafio 🎉</div>
 
@@ -109,6 +116,18 @@
     }
     tabCadastro.addEventListener('click', () => trocarAba(false));
     tabLogin.addEventListener('click', () => trocarAba(true));
+
+    document.getElementById('btn-copiar-pix-cadastro').addEventListener('click', async (e) => {
+      const btn = e.currentTarget;
+      try {
+        await navigator.clipboard.writeText(document.getElementById('pix-chave-cadastro').textContent.trim());
+        const original = btn.textContent;
+        btn.textContent = 'Copiado!';
+        setTimeout(() => { btn.textContent = original; }, 2000);
+      } catch {
+        /* clipboard indisponível — a chave já está visível pra copiar na mão */
+      }
+    });
 
     chips.forEach((chip) => {
       chip.addEventListener('click', () => {

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/desafio.css?v=21">
+<link rel="stylesheet" href="../css/desafio.css?v=22">
 <script>
   // Embutido como aba dentro do Creator Center: esconde o cabeçalho
   // próprio da página (o painel já mostra o título e o "Sair").
@@ -29,7 +29,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/auth.js?v=1"></script>
-  <script src="../js/admin-render.js?v=2"></script>
+  <script src="../js/admin-render.js?v=3"></script>
   <script>
     const db = DesafioAuth.sb;
     const conteudo = document.getElementById('conteudo');
@@ -45,8 +45,10 @@
 
       const seteDiasAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-      const [{ count: totalCadastradas }, { data: dias }, { data: rascunhos }, { data: ranking }, { data: ativasRows }] = await Promise.all([
+      const [{ count: totalCadastradas }, { count: totalPagas }, { data: pendentes }, { data: dias }, { data: rascunhos }, { data: ranking }, { data: ativasRows }] = await Promise.all([
         db.from('desafio_perfis').select('*', { count: 'exact', head: true }),
+        db.from('desafio_perfis').select('*', { count: 'exact', head: true }).eq('pago', true),
+        db.from('desafio_perfis').select('id,nome,instagram,created_at').eq('pago', false).order('created_at', { ascending: true }),
         db.from('desafio_dias').select('*').eq('publicado', true).order('numero_dia', { ascending: false }),
         db.from('desafio_dias').select('*').eq('publicado', false).order('numero_dia', { ascending: true }),
         db.from('desafio_ranking').select('*').order('pontos', { ascending: false }),
@@ -76,13 +78,15 @@
       const videosPendentes = (videos || []).filter((v) => !v.desafio_feedback).length;
 
       conteudo.innerHTML = `
-        ${renderKpiRow({ totalCadastradas, ativasEssaSemana, pctUltimoDia, ultimoDia, videosPendentes })}
+        ${renderKpiRow({ totalCadastradas, ativasEssaSemana, pctUltimoDia, ultimoDia, videosPendentes, totalPagas })}
+        ${renderPagamentosPendentes(pendentes)}
         ${renderAdminGrid({ rascunhos, ranking, bonusHistorico })}
 
         <div class="secao-titulo">Vídeos pra avaliar</div>
         <div id="video-queue">${renderVideoQueue(videos)}</div>
       `;
 
+      wirePagamentosPendentesHandlers(db, { onChanged: carregar });
       wireAdminGridHandlers(db, { ranking, rascunhos, onChanged: carregar });
       wireVideoQueueHandlers(db, { onChanged: carregar });
     }

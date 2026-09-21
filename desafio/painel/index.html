@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/desafio.css?v=21">
+<link rel="stylesheet" href="../css/desafio.css?v=22">
 <script>
   // Embutido como aba dentro do Creator Center: esconde o cabeçalho
   // próprio da página (o painel já mostra o título).
@@ -40,6 +40,8 @@
     const db = DesafioAuth.sb;
     const conteudo = document.getElementById('conteudo');
 
+    const PIX_CHAVE = 'c70861de-a91b-4bbc-9735-f02353744105';
+
     document.getElementById('btn-sair').addEventListener('click', () => DesafioAuth.logout());
 
     function iniciais(nome) {
@@ -50,8 +52,41 @@
       const user = await DesafioAuth.checkAuth();
       if (!user) return;
 
-      const [{ data: perfil }, { data: dias }, { data: conclusoes }, { data: rankingCompleto }, { data: bonus }] = await Promise.all([
-        db.from('desafio_perfis').select('nome,instagram,foto_url').eq('id', user.id).maybeSingle(),
+      const { data: perfil } = await db.from('desafio_perfis').select('nome,instagram,foto_url,pago').eq('id', user.id).maybeSingle();
+
+      if (!perfil?.pago) {
+        conteudo.innerHTML = `
+          <div class="card">
+            <h3 style="margin-bottom:10px;">Falta pouco! 🎉</h3>
+            <p style="font-size:13.5px;color:var(--texto-suave);line-height:1.6;margin-bottom:18px;">
+              O desafio custa <b>R$10</b> e libera assim que eu confirmar seu Pix (geralmente em algumas horas).
+            </p>
+            <div class="pix-box">
+              <span class="pix-label">Chave Pix (aleatória)</span>
+              <div class="pix-chave" id="pix-chave-txt">${PIX_CHAVE}</div>
+              <button type="button" id="btn-copiar-pix" class="btn btn-secundario" style="width:auto;padding:8px 16px;font-size:12.5px;margin-bottom:10px;">Copiar chave</button>
+              <span class="pix-hint">Valor: R$10 · coloca seu nome ou @ do Instagram na descrição do Pix, assim eu acho seu cadastro mais rápido.</span>
+            </div>
+            <button type="button" id="btn-ja-paguei" class="btn btn-primary" style="margin-top:16px;">Já paguei, verificar de novo</button>
+            <p style="font-size:12px;color:var(--texto-suave);margin-top:14px;text-align:center;">Alguma dúvida? Chama no WhatsApp (ícone verde lá em cima) 💬</p>
+          </div>
+        `;
+        document.getElementById('btn-ja-paguei').addEventListener('click', carregar);
+        document.getElementById('btn-copiar-pix').addEventListener('click', async (e) => {
+          const btn = e.currentTarget;
+          try {
+            await navigator.clipboard.writeText(PIX_CHAVE);
+            const original = btn.textContent;
+            btn.textContent = 'Copiado!';
+            setTimeout(() => { btn.textContent = original; }, 2000);
+          } catch {
+            /* clipboard indisponível (ex: http sem contexto seguro) — a chave já está visível pra copiar na mão */
+          }
+        });
+        return;
+      }
+
+      const [{ data: dias }, { data: conclusoes }, { data: rankingCompleto }, { data: bonus }] = await Promise.all([
         db.from('desafio_dias').select('*').eq('publicado', true).order('numero_dia', { ascending: false }),
         db.from('desafio_conclusoes').select('*').eq('participante_id', user.id),
         db.from('desafio_ranking').select('*').order('pontos', { ascending: false }),

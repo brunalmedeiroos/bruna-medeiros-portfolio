@@ -6,15 +6,51 @@
 // essas funções passando o que já buscou — não fazem query nenhuma aqui.
 // ==========================================================================
 
-function renderKpiRow({ totalCadastradas, ativasEssaSemana, pctUltimoDia, ultimoDia, videosPendentes }) {
+function renderKpiRow({ totalCadastradas, ativasEssaSemana, pctUltimoDia, ultimoDia, videosPendentes, totalPagas }) {
   return `
     <div class="kpi-row">
       <div class="kpi"><div class="v">${totalCadastradas || 0}</div><div class="l">cadastradas</div></div>
+      <div class="kpi"><div class="v">${totalPagas || 0}</div><div class="l">pagaram</div></div>
       <div class="kpi"><div class="v">${ativasEssaSemana}</div><div class="l">ativas essa semana</div></div>
       <div class="kpi"><div class="v">${pctUltimoDia}%</div><div class="l">completaram o dia ${ultimoDia ? ultimoDia.numero_dia : ''}</div></div>
       <div class="kpi"><div class="v">${videosPendentes}</div><div class="l">vídeos pra avaliar</div></div>
     </div>
   `;
+}
+
+// Lista de quem se cadastrou mas ainda não foi marcada como paga — pra
+// dar baixa manual depois de conferir o Pix caiu na conta da Bruna.
+function renderPagamentosPendentes(pendentes) {
+  return `
+    <div class="secao-titulo">Pagamentos pendentes</div>
+    <div id="pagamentos-lista">
+      ${(pendentes && pendentes.length) ? pendentes.map((p) => `
+        <div class="hist-item" data-id="${p.id}">
+          <span class="t"><b>${p.nome || 'Sem nome'}</b> ${p.instagram ? `· ${p.instagram}` : ''}</span>
+          <button type="button" class="btn-toggle pendente btn-marcar-pago" data-id="${p.id}">Marcar como pago</button>
+        </div>
+      `).join('') : '<p class="vazio">Ninguém pendente — todo mundo cadastrada já pagou.</p>'}
+    </div>
+  `;
+}
+
+function wirePagamentosPendentesHandlers(db, { onChanged }) {
+  document.querySelectorAll('.btn-marcar-pago').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.textContent = 'Marcando...';
+      const { error } = await db.from('desafio_perfis')
+        .update({ pago: true, pago_em: new Date().toISOString() })
+        .eq('id', btn.dataset.id);
+      if (error) {
+        btn.disabled = false;
+        btn.textContent = 'Marcar como pago';
+        alert(error.message);
+        return;
+      }
+      onChanged();
+    });
+  });
 }
 
 function renderAdminGrid({ rascunhos, ranking, bonusHistorico }) {

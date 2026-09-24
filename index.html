@@ -465,13 +465,11 @@ body.lock-active{ overflow:hidden; height:100vh; }
 .marquee-wrap::before{ left:0; background: linear-gradient(90deg, var(--blue-dark), transparent); }
 .marquee-wrap::after{ right:0; background: linear-gradient(-90deg, var(--blue-dark), transparent); }
 .marquee-track{
-  display:flex; align-items:center; gap:22px; width:max-content; animation: marquee 26s linear infinite;
+  display:flex; align-items:center; gap:22px; width:max-content; animation: marquee 52s linear infinite;
 }
 .brand-tile{
   display:flex; align-items:center; justify-content:center; flex-shrink:0;
-  width:130px; height:68px; border-radius:16px;
-  background: var(--glass-bg); border:1px solid var(--glass-brd);
-  backdrop-filter: blur(10px) saturate(140%); -webkit-backdrop-filter: blur(10px) saturate(140%);
+  width:130px; height:68px;
 }
 .brand-tile img{ max-height:32px; max-width:82px; width:auto; height:auto; opacity:.95; }
 .marquee-track img[alt="Sucré"]{ height: clamp(44px,5.4vw,64px); }

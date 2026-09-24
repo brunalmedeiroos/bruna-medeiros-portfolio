@@ -11030,6 +11030,10 @@
         alert('Preencha o remetente e o e-mail de contato antes de mandar (logo no topo do formulário).');
         return null;
       }
+      if (!/^(.+<[^<>\s@]+@[^<>\s@]+\.[^<>\s@]+>|[^<>\s@]+@[^<>\s@]+\.[^<>\s@]+)$/.test(remetente)) {
+        alert('O remetente precisa ter o e-mail junto do nome, assim: Bruna Medeiros <onboarding@resend.dev>');
+        return null;
+      }
       return { remetente, contato };
     }
 

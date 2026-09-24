@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260924x">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260924y">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -171,39 +171,40 @@
 
         <!-- ---------- Aba: Dashboard ---------- -->
         <section id="panel-overview" class="tab-panel">
-          <div class="dash-cabecalho">
-            <h2 class="saudacao" id="dash-saudacao">Bom dia, Bru!</h2>
-            <p class="dash-data" id="dash-data">Hoje</p>
-          </div>
-
-          <!-- Faturamento: 100% derivado de ugcTrabalhosCache (mesma fonte da
-               Visão Geral e Resultados do UGC), sem cadastro próprio — ver
-               renderizarFaturamentoDashboard(). -->
-          <div class="cards-numeros cards-numeros-dashboard">
-            <div class="card-numero">
-              <span class="card-label" data-i18n="dash_ja_recebido">Já recebido</span>
-              <span class="card-valor" id="dash-num-recebido">R$ 0</span>
+          <div class="pg-capa dash-cabecalho">
+            <div class="pg-capa-linha">
+              <span class="pg-capa-icone"><span class="pg-capa-emoji" aria-hidden="true">🏠</span></span>
+              <h2 class="pg-capa-titulo" data-i18n="titulo_dashboard">Dashboard</h2>
             </div>
-            <div class="card-numero">
-              <span class="card-label" data-i18n="dash_a_receber">A receber</span>
-              <span class="card-valor" id="dash-num-a-receber">R$ 0</span>
+            <div class="dash-capa-texto">
+              <h2 class="saudacao" id="dash-saudacao">Bom dia, Bru!</h2>
+              <p class="dash-data" id="dash-data">Hoje</p>
             </div>
           </div>
 
-          <h3 class="dash-secao-titulo" data-i18n="dash_pergunta">O que eu preciso saber agora?</h3>
+          <h3 class="dash-secao-titulo">☀️ Hoje</h3>
 
-          <div class="dash-secoes">
-            <div class="card card-dash-hoje">
-              <h3 class="card-titulo" data-i18n="dash_hoje">Hoje</h3>
-              <div id="dash-hoje-lista" class="dash-hoje-lista cal-lista-tarefas"></div>
+          <div class="dash-hoje-grade">
+            <!-- Compromissos: eventos do Calendário / Google Agenda, só leitura. -->
+            <div class="card dash-bloco">
+              <h4 class="dash-bloco-titulo">📅 Compromissos</h4>
+              <div id="dash-hoje-lista" class="dash-compromissos-lista"></div>
             </div>
 
-            <div class="card card-dash-atencao">
-              <h3 class="card-titulo" data-i18n="dash_atencao">Precisa da sua atenção</h3>
-              <div id="dash-atencao-lista" class="dash-atencao-lista">
-                <p class="texto-vazio" data-i18n="carregando">Carregando...</p>
-              </div>
+            <!-- Checklist do dia: separado do Calendário, não sincroniza com o Google. -->
+            <div class="card dash-bloco">
+              <h4 class="dash-bloco-titulo">✅ Checklist</h4>
+              <form id="dash-check-form" class="dash-check-form" autocomplete="off">
+                <input type="text" id="dash-check-input" placeholder="O que preciso fazer hoje?" maxlength="200">
+                <button type="submit" class="cal-btn cal-btn-primario">Adicionar</button>
+              </form>
+              <div id="dash-check-lista" class="dash-check-lista"></div>
+              <p class="dash-aviso" id="dash-aviso-tabelas" hidden>Falta rodar o arquivo dashboard.sql no Supabase pra usar o checklist e as notas.</p>
             </div>
+          </div>
+
+          <div class="dash-nota-atalho">
+            <button type="button" id="btn-nota-abrir" class="cal-btn dash-nota-btn">📝 Nota rápida</button>
           </div>
         </section>
 
@@ -1446,6 +1447,25 @@
 
       </div>
     </main>
+
+    <!-- Nota rápida: janela flutuante, salva sozinha enquanto digita -->
+    <div id="nota-rapida" class="nota-rapida" role="dialog" aria-label="Nota rápida" aria-hidden="true">
+      <div class="nota-topo">
+        <button type="button" id="nota-lista-btn" class="nota-titulo-btn" aria-haspopup="true"><span id="nota-titulo-atual">Nota rápida</span> <span aria-hidden="true">▾</span></button>
+        <button type="button" id="nota-nova" class="cal-btn cal-btn-icon" title="Nova nota" aria-label="Nova nota">+</button>
+        <button type="button" id="nota-fechar" class="cal-btn cal-btn-icon" title="Minimizar" aria-label="Minimizar">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div id="nota-menu" class="nota-menu" hidden></div>
+      <textarea id="nota-texto" class="nota-texto" placeholder="Escreva qualquer coisa..." spellcheck="true"></textarea>
+      <p class="nota-aviso" id="nota-aviso" hidden>Falta rodar o arquivo dashboard.sql no Supabase pra usar as notas.</p>
+      <div class="nota-rodape">
+        <span id="nota-status" class="nota-status"></span>
+        <button type="button" id="nota-limpar" class="cal-btn">Limpar nota</button>
+        <button type="button" id="nota-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+      </div>
+    </div>
 
     <!-- Modal: Configurações (idioma, início da semana, perfil) — não é uma
          aba: abre por cima da tela atual. -->
@@ -4650,6 +4670,7 @@
       await carregarConfiguracoes();
       aplicarTraducoesEstaticas();
       renderizarCabecalhoDashboard();
+      atualizarCapaPagina('overview');
       document.getElementById('painel-body').style.visibility = 'visible';
 
       await carregarDados();
@@ -4662,6 +4683,7 @@
       // buscados de novo.
       ugcAbaCarregada = true;
       carregarUGC();
+      dashCarregar();
     })();
 
     // ==========================================================================
@@ -5209,6 +5231,7 @@
       });
       document.getElementById('btn-contatos-novo').addEventListener('click', () => abrirModalContato(null));
       abdLigarEventos();
+      dashLigarEventos();
       document.getElementById('btn-contatos-baixar-csv').addEventListener('click', exportarContatosCSV);
       document.getElementById('btn-contatos-selecionar-todas').addEventListener('click', selecionarTodosContatosFiltrados);
       document.getElementById('btn-contatos-limpar-selecao').addEventListener('click', limparSelecaoContatos);
@@ -5410,9 +5433,11 @@
       capaDevolverMenu();
       const semCapa = CAPA_SEM.includes(aba);
       capa.hidden = semCapa;
-      // Com capa, o nome da página fica só nela e o sino sobe pra cima do card.
-      document.getElementById('titulo-topo').hidden = !semCapa;
-      document.querySelector('.topbar').classList.toggle('topbar-sobre-capa', !semCapa);
+      // Com capa (a global ou a do próprio Dashboard), o nome da página fica só
+      // nela e o sino sobe pra cima do card. Só o E-mail ainda usa o título de cima.
+      const tituloNoTopo = aba === 'email';
+      document.getElementById('titulo-topo').hidden = !tituloNoTopo;
+      document.querySelector('.topbar').classList.toggle('topbar-sobre-capa', !tituloNoTopo);
       if (semCapa) return;
       document.getElementById('pg-capa-titulo').textContent = tr(TITULOS_ABA[aba]);
       const itemMenu = document.querySelector('.nav-item[data-tab="' + aba + '"]');
@@ -5450,7 +5475,11 @@
       // O filtro de período (Tudo/7d/30d/90d) só se aplica aos números do Portfólio.
       document.getElementById('filtros-periodo').hidden = aba !== 'portfolio';
 
-      if (aba === 'overview') renderizarCabecalhoDashboard();
+      if (aba === 'overview') {
+        renderizarCabecalhoDashboard();
+        renderizarHojeDashboard();
+        dashCarregarChecklist();
+      }
 
       // O cofre tranca sempre que sai da aba Ferramentas.
       if (aba !== 'ferramentas') cofreTrancar();
@@ -5591,50 +5620,40 @@
       document.getElementById('dash-data').textContent = dataDashboardPorExtenso(new Date());
     }
 
-    // Tarefas de hoje, reaproveitando a mesma tarefasCache e o mesmo item
-    // (criarItemTarefa) do Calendário — inclusive feitas, pra bater o check aqui
-    // e no Calendário serem sempre a mesma coisa (mesmo dado, mesmo botão).
+    // Compromissos de hoje: só lê a mesma tarefasCache do Calendário (que já
+    // traz o que veio do Google Agenda). São eventos, não tarefas: sem check,
+    // sem editar. Clicar leva pro Calendário.
     function renderizarHojeDashboard() {
       const hojeISO = dataParaISO(new Date());
-      const doDia = tarefasCache.filter((t) => t.data === hojeISO);
+      const doDia = tarefasCache
+        .filter((t) => t.data === hojeISO)
+        .sort((a, b) => (a.hora_inicio || '').localeCompare(b.hora_inicio || ''));
 
       const lista = document.getElementById('dash-hoje-lista');
       lista.innerHTML = '';
 
       if (doDia.length === 0) {
-        lista.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('dash_hoje_vazio'))}</p>`;
+        lista.innerHTML = '<p class="texto-vazio">Nenhum compromisso hoje.</p>';
         return;
       }
 
-      doDia.forEach((tarefa) => lista.appendChild(criarItemTarefa(tarefa, false)));
-    }
-
-    // Monta um bloco de alerta do "Precisa da sua atenção" — mesmo padrão visual
-    // dos alertas que já existem no UGC/Publi (prospecção esfriando, direitos de
-    // uso), só que genérico pra qualquer categoria.
-    function criarGrupoAtencao(titulo, urgente, itens) {
-      const grupo = document.createElement('div');
-      grupo.className = 'dash-atencao-grupo' + (urgente ? ' dash-atencao-grupo-urgente' : '');
-
-      const h4 = document.createElement('h4');
-      h4.textContent = `${titulo} (${itens.length})`;
-      grupo.appendChild(h4);
-
-      itens.forEach((it) => {
-        const item = document.createElement('div');
-        item.className = 'dash-atencao-item';
-        item.innerHTML = `<span>${escapeHtml(it.texto)}</span><span>${escapeHtml(it.detalhe)}</span>`;
-        item.addEventListener('click', it.onClick);
-        grupo.appendChild(item);
+      doDia.forEach((t) => {
+        const horario = [t.hora_inicio, t.hora_fim].filter(Boolean).map((h) => h.slice(0, 5)).join(' – ');
+        const cor = corCategoriaTarefa(t);
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'dash-compromisso' + (t.feito ? ' dash-compromisso-feito' : '');
+        item.innerHTML = `
+          <span class="dash-compromisso-hora">${escapeHtml(horario || 'Dia todo')}</span>
+          <span class="dash-compromisso-titulo">${cor ? `<span class="cal-tarefa-categoria-bolinha" style="background:${cor}"></span>` : ''}${escapeHtml(t.titulo)}</span>`;
+        item.addEventListener('click', () => trocarAba('calendario'));
+        lista.appendChild(item);
       });
-
-      return grupo;
     }
 
-    // Junta, só pra exibição, o que já está calculado em cada área do sistema:
-    // entregas (UGC), pagamento (UGC), direitos de uso (UGC), follow-up de
-    // prospecção (UGC) e contrato (UGC). Nenhuma dessas listas é recalculada
-    // — todas vêm de função já usada em outra aba.
+    // O Dashboard não mostra mais a lista "Precisa da sua atenção"; esta função
+    // só continua alimentando o sino de notificações (entregas atrasadas e
+    // próximas), com as mesmas regras de antes.
     function renderizarAtencaoDashboard() {
       const hojeISO = dataParaISO(new Date());
       const daqui3ISO = dataParaISO(new Date(Date.now() + 3 * 86400000));
@@ -5643,62 +5662,6 @@
       const atrasadas = entregas.filter((t) => t.data_entrega < hojeISO);
       const proximas = entregas.filter((t) => t.data_entrega >= hojeISO && t.data_entrega <= daqui3ISO);
       renderizarSinoNotificacoes(atrasadas, proximas);
-
-      const pagamentos = obterPagamentosPendentes();
-      const direitosUso = obterDireitosUsoVencendo();
-      const contratos = obterContratosPendentes();
-
-      const grupos = [];
-
-      if (atrasadas.length > 0) {
-        grupos.push(criarGrupoAtencao(tr('atencao_entregas_atrasadas'), true, atrasadas.map((t) => ({
-          texto: `${t.marca} — ${traduzirTipoTrabalho(t.tipo_trabalho)}`,
-          detalhe: `${tr('atencao_era')} ${formatarDataCurta(new Date(t.data_entrega + 'T00:00:00'))}`,
-          onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
-        }))));
-      }
-
-      if (pagamentos.length > 0) {
-        grupos.push(criarGrupoAtencao(tr('atencao_pagamentos_pendentes'), true, pagamentos.map((t) => ({
-          texto: `${t.marca} — ${traduzirTipoTrabalho(t.tipo_trabalho)}`,
-          detalhe: t.permuta ? tr('permuta') : formatarMoeda(t.valor),
-          onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
-        }))));
-      }
-
-      if (direitosUso.length > 0) {
-        grupos.push(criarGrupoAtencao(tr('atencao_direitos_uso'), false, direitosUso.map((t) => ({
-          texto: t.marca,
-          detalhe: `${tr(t.direitos_uso_ate < hojeISO ? 'atencao_venceu_em' : 'atencao_vence_em')} ${formatarDataCurta(new Date(t.direitos_uso_ate + 'T00:00:00'))}`,
-          onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
-        }))));
-      }
-
-      if (contratos.length > 0) {
-        grupos.push(criarGrupoAtencao(tr('atencao_contratos'), false, contratos.map((c) => ({
-          texto: c.marca,
-          detalhe: traduzirStatusContrato(c.status),
-          onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('contratos'); abrirModalContrato(c); },
-        }))));
-      }
-
-      if (proximas.length > 0) {
-        grupos.push(criarGrupoAtencao(tr('atencao_entregas_proximas'), false, proximas.map((t) => ({
-          texto: `${t.marca} — ${traduzirTipoTrabalho(t.tipo_trabalho)}`,
-          detalhe: formatarDataCurta(new Date(t.data_entrega + 'T00:00:00')),
-          onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); },
-        }))));
-      }
-
-      const container = document.getElementById('dash-atencao-lista');
-      container.innerHTML = '';
-
-      if (grupos.length === 0) {
-        container.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('dash_atencao_vazio'))}</p>`;
-        return;
-      }
-
-      grupos.forEach((g) => container.appendChild(g));
     }
 
     // Sino de notificações do topbar — visível em qualquer aba. Só cobre
@@ -9330,7 +9293,6 @@
       renderizarContratos();
       renderizarPrecos();
       renderizarResultadosUGC();
-      renderizarFaturamentoDashboard();
       renderizarFinanceiro();
       renderizarRitmoRecebimento();
       renderizarAtencaoDashboard();
@@ -9403,21 +9365,7 @@
       return ugcTrabalhosCache.filter((t) => t.status_pagamento === 'Pendente' && t.status === 'Entregue');
     }
 
-    // Faturamento do Dashboard — mesma fonte/regra da Visão Geral (a receber)
-    // e dos Resultados (recebido) do UGC, só somando os dois tipos juntos.
-    function renderizarFaturamentoDashboard() {
-      const recebido = ugcTrabalhosCache
-        .filter((t) => t.status_pagamento === 'Recebido')
-        .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
-      const aReceber = ugcTrabalhosCache
-        .filter((t) => t.status_pagamento === 'Pendente' && t.status !== 'Cancelado')
-        .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
-
-      document.getElementById('dash-num-recebido').textContent = formatarMoeda(recebido);
-      document.getElementById('dash-num-a-receber').textContent = formatarMoeda(aReceber);
-    }
-
-    // Financeiro — mesma fonte/regras do Dashboard, só que "Recebido este
+    // Financeiro — mesma fonte/regras que o Dashboard já teve, só que "Recebido este
     // mês" também filtra por mês. Usa a data de entrega como referência (o
     // sistema não guarda uma data separada de quando o pagamento realmente
     // caiu), então o valor pode não bater exatamente com o extrato bancário
@@ -14912,6 +14860,348 @@
       document.getElementById('abd-copiar').addEventListener('click', (e) => ferrCopiar(abdTextoFinal(), e.currentTarget));
       document.getElementById('abd-salvar').addEventListener('click', abdSalvar);
       document.getElementById('abd-excluir').addEventListener('click', abdExcluirDoModal);
+    }
+
+
+    // ==========================================================================
+    // Dashboard: checklist do dia (painel_checklist_dia) e Nota rápida
+    // (painel_notas_rapidas). Tabelas em dashboard.sql. O checklist NÃO passa
+    // pelo Calendário nem pelo Google Agenda.
+    // ==========================================================================
+
+    let dashCheckCache = [];
+    let dashTabelasOk = true;
+    let notasCache = [];
+    let notasCarregadas = false;
+    let notaAtualId = null;
+    let notaTimer = null;
+    let notaPendentes = new Set();
+    const NOTA_ULTIMA_KEY = 'painel_nota_ultima';
+    const NOTA_RASCUNHOS_KEY = 'painel_nota_rascunhos';
+
+    async function dashCarregar() {
+      await Promise.all([dashCarregarChecklist(), notasCarregar()]);
+    }
+
+    function dashAtualizarAviso() {
+      document.getElementById('dash-aviso-tabelas').hidden = dashTabelasOk;
+      document.getElementById('dash-check-form').hidden = !dashTabelasOk;
+    }
+
+    async function dashCarregarChecklist() {
+      const hojeISO = dataParaISO(new Date());
+      const { data, error } = await Auth.sb.from('painel_checklist_dia').select('*').eq('data', hojeISO).order('created_at', { ascending: true });
+      if (error) {
+        console.error('Checklist do dia (dashboard.sql) ainda não disponível:', error);
+        dashTabelasOk = false;
+        dashCheckCache = [];
+      } else {
+        dashTabelasOk = true;
+        dashCheckCache = data || [];
+      }
+      dashAtualizarAviso();
+      dashRenderizarChecklist();
+    }
+
+    function dashRenderizarChecklist() {
+      const lista = document.getElementById('dash-check-lista');
+      lista.innerHTML = '';
+      if (!dashTabelasOk) return;
+      if (dashCheckCache.length === 0) {
+        lista.innerHTML = '<p class="texto-vazio">Nada no checklist de hoje ainda.</p>';
+        return;
+      }
+      const ordenados = [...dashCheckCache].sort((a, b) => Number(!!a.feito) - Number(!!b.feito));
+      ordenados.forEach((tarefa) => {
+        const linha = document.createElement('label');
+        linha.className = 'dash-check-item' + (tarefa.feito ? ' dash-check-feito' : '');
+        linha.innerHTML = `
+          <input type="checkbox" ${tarefa.feito ? 'checked' : ''}>
+          <span class="dash-check-texto">${escapeHtml(tarefa.texto)}</span>
+          <button type="button" class="dash-check-excluir" title="Excluir" aria-label="Excluir tarefa">&times;</button>`;
+        linha.querySelector('input').addEventListener('change', (e) => dashAlternarTarefa(tarefa, e.target.checked));
+        linha.querySelector('.dash-check-excluir').addEventListener('click', (e) => {
+          e.preventDefault();
+          dashExcluirTarefa(tarefa);
+        });
+        lista.appendChild(linha);
+      });
+    }
+
+    async function dashAdicionarTarefa(texto) {
+      const { data, error } = await Auth.sb.from('painel_checklist_dia').insert({ data: dataParaISO(new Date()), texto }).select();
+      if (error || !data || !data[0]) {
+        console.error('Erro ao adicionar tarefa do dia:', error);
+        alert(tr('erro_salvar_generico'));
+        return false;
+      }
+      dashCheckCache.push(data[0]);
+      dashRenderizarChecklist();
+      return true;
+    }
+
+    async function dashAlternarTarefa(tarefa, feito) {
+      tarefa.feito = feito;
+      dashRenderizarChecklist();
+      const { error } = await Auth.sb.from('painel_checklist_dia').update({ feito }).eq('id', tarefa.id);
+      if (error) {
+        console.error('Erro ao atualizar tarefa do dia:', error);
+        tarefa.feito = !feito;
+        dashRenderizarChecklist();
+      }
+    }
+
+    async function dashExcluirTarefa(tarefa) {
+      const { error } = await Auth.sb.from('painel_checklist_dia').delete().eq('id', tarefa.id);
+      if (error) {
+        console.error('Erro ao excluir tarefa do dia:', error);
+        alert(tr('erro_excluir_generico'));
+        return;
+      }
+      dashCheckCache = dashCheckCache.filter((t) => t.id !== tarefa.id);
+      dashRenderizarChecklist();
+    }
+
+    // ---- Nota rápida ----
+
+    function notaRascunhos() {
+      try {
+        return JSON.parse(localStorage.getItem(NOTA_RASCUNHOS_KEY) || '{}');
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function notaGuardarRascunho(id, texto) {
+      try {
+        const r = notaRascunhos();
+        if (texto === null) delete r[id];
+        else r[id] = texto;
+        localStorage.setItem(NOTA_RASCUNHOS_KEY, JSON.stringify(r));
+      } catch (e) {
+        /* sem localStorage: segue só com o banco */
+      }
+    }
+
+    function notaTitulo(nota) {
+      const linha = (nota.conteudo || '').split('\n').find((l) => l.trim());
+      return linha ? linha.trim().slice(0, 40) : 'Nova nota';
+    }
+
+    async function notasCarregar() {
+      const { data, error } = await Auth.sb.from('painel_notas_rapidas').select('*').order('updated_at', { ascending: false });
+      if (error) {
+        console.error('Notas rápidas (dashboard.sql) ainda não disponíveis:', error);
+        dashTabelasOk = false;
+        notasCache = [];
+        notasCarregadas = false;
+        dashAtualizarAviso();
+        return;
+      }
+      notasCache = data || [];
+      notasCarregadas = true;
+      // Se a página foi fechada antes do último salvamento, o rascunho local recupera o texto.
+      const rascunhos = notaRascunhos();
+      notasCache.forEach((n) => {
+        if (rascunhos[n.id] !== undefined && rascunhos[n.id] !== n.conteudo) {
+          n.conteudo = rascunhos[n.id];
+          notaPendentes.add(n.id);
+        }
+      });
+      if (notaPendentes.size > 0) notaSalvarPendentes();
+    }
+
+    function notaAtual() {
+      return notasCache.find((n) => n.id === notaAtualId) || null;
+    }
+
+    async function notaAbrir() {
+      const painel = document.getElementById('nota-rapida');
+      painel.classList.add('aberta');
+      painel.setAttribute('aria-hidden', 'false');
+      if (!notasCarregadas) await notasCarregar();
+      const aviso = document.getElementById('nota-aviso');
+      const semTabela = !notasCarregadas;
+      aviso.hidden = !semTabela;
+      document.getElementById('nota-texto').hidden = semTabela;
+      document.querySelector('#nota-rapida .nota-rodape').hidden = semTabela;
+      document.getElementById('nota-nova').disabled = semTabela;
+      if (semTabela) return;
+
+      let ultima = null;
+      try {
+        ultima = localStorage.getItem(NOTA_ULTIMA_KEY);
+      } catch (e) {
+        /* ignora */
+      }
+      if (!notasCache.some((n) => n.id === notaAtualId)) notaAtualId = notasCache.some((n) => n.id === ultima) ? ultima : notasCache[0] ? notasCache[0].id : null;
+      if (!notaAtualId) await notaCriar();
+      else notaMostrar();
+      setTimeout(() => document.getElementById('nota-texto').focus(), 180);
+    }
+
+    async function notaFechar() {
+      const painel = document.getElementById('nota-rapida');
+      painel.classList.remove('aberta');
+      painel.setAttribute('aria-hidden', 'true');
+      document.getElementById('nota-menu').hidden = true;
+      await notaSalvarPendentes();
+    }
+
+    function notaMostrar() {
+      const nota = notaAtual();
+      const area = document.getElementById('nota-texto');
+      area.value = nota ? nota.conteudo || '' : '';
+      document.getElementById('nota-titulo-atual').textContent = nota ? notaTitulo(nota) : 'Nota rápida';
+      document.getElementById('nota-excluir').hidden = notasCache.length <= 1;
+      document.getElementById('nota-status').textContent = '';
+      try {
+        if (notaAtualId) localStorage.setItem(NOTA_ULTIMA_KEY, notaAtualId);
+      } catch (e) {
+        /* ignora */
+      }
+    }
+
+    async function notaCriar() {
+      const { data, error } = await Auth.sb.from('painel_notas_rapidas').insert({ conteudo: '' }).select();
+      if (error || !data || !data[0]) {
+        console.error('Erro ao criar nota:', error);
+        alert(tr('erro_salvar_generico'));
+        return;
+      }
+      notasCache.unshift(data[0]);
+      notaAtualId = data[0].id;
+      notaMostrar();
+      document.getElementById('nota-texto').focus();
+    }
+
+    function notaAoDigitar() {
+      const nota = notaAtual();
+      if (!nota) return;
+      nota.conteudo = document.getElementById('nota-texto').value;
+      notaGuardarRascunho(nota.id, nota.conteudo);
+      notaPendentes.add(nota.id);
+      document.getElementById('nota-titulo-atual').textContent = notaTitulo(nota);
+      document.getElementById('nota-status').textContent = 'Salvando...';
+      clearTimeout(notaTimer);
+      notaTimer = setTimeout(notaSalvarPendentes, 600);
+    }
+
+    async function notaSalvarPendentes() {
+      clearTimeout(notaTimer);
+      const ids = [...notaPendentes];
+      if (ids.length === 0) return;
+      let falhou = false;
+      for (const id of ids) {
+        const nota = notasCache.find((n) => n.id === id);
+        if (!nota) {
+          notaPendentes.delete(id);
+          continue;
+        }
+        const enviado = nota.conteudo || '';
+        const agora = new Date().toISOString();
+        const { error } = await Auth.sb.from('painel_notas_rapidas').update({ conteudo: enviado, updated_at: agora }).eq('id', id);
+        if (error) {
+          console.error('Erro ao salvar nota:', error);
+          falhou = true;
+          continue;
+        }
+        nota.updated_at = agora;
+        if ((nota.conteudo || '') === enviado) {
+          notaPendentes.delete(id);
+          notaGuardarRascunho(id, null);
+        }
+      }
+      const status = document.getElementById('nota-status');
+      if (status) status.textContent = falhou ? 'Não consegui salvar (tentando de novo)' : notaPendentes.size ? 'Salvando...' : 'Salvo';
+      if (falhou) notaTimer = setTimeout(notaSalvarPendentes, 4000);
+    }
+
+    async function notaLimpar() {
+      const nota = notaAtual();
+      if (!nota || !(nota.conteudo || '').trim()) return;
+      if (!(await confirmarAcao('Limpar o texto dessa nota?'))) return;
+      document.getElementById('nota-texto').value = '';
+      notaAoDigitar();
+      document.getElementById('nota-texto').focus();
+    }
+
+    async function notaExcluir() {
+      const nota = notaAtual();
+      if (!nota || notasCache.length <= 1) return;
+      if (!(await confirmarAcao('Excluir essa nota?'))) return;
+      const { error } = await Auth.sb.from('painel_notas_rapidas').delete().eq('id', nota.id);
+      if (error) {
+        console.error('Erro ao excluir nota:', error);
+        alert(tr('erro_excluir_generico'));
+        return;
+      }
+      notaPendentes.delete(nota.id);
+      notaGuardarRascunho(nota.id, null);
+      notasCache = notasCache.filter((n) => n.id !== nota.id);
+      notaAtualId = notasCache[0] ? notasCache[0].id : null;
+      notaMostrar();
+    }
+
+    function notaAlternarMenu() {
+      const menu = document.getElementById('nota-menu');
+      if (!menu.hidden) {
+        menu.hidden = true;
+        return;
+      }
+      menu.innerHTML = '';
+      notasCache.forEach((n) => {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'nota-menu-item' + (n.id === notaAtualId ? ' ativa' : '');
+        const resto = (n.conteudo || '').split('\n').filter((l) => l.trim()).slice(1, 2)[0] || '';
+        item.innerHTML = `<strong>${escapeHtml(notaTitulo(n))}</strong><span>${escapeHtml(resto.trim().slice(0, 50))}</span>`;
+        item.addEventListener('click', async () => {
+          await notaSalvarPendentes();
+          notaAtualId = n.id;
+          menu.hidden = true;
+          notaMostrar();
+          document.getElementById('nota-texto').focus();
+        });
+        menu.appendChild(item);
+      });
+      menu.hidden = false;
+    }
+
+    function dashLigarEventos() {
+      document.getElementById('dash-check-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const campo = document.getElementById('dash-check-input');
+        const texto = campo.value.trim();
+        if (!texto) return;
+        campo.value = '';
+        if (!(await dashAdicionarTarefa(texto))) campo.value = texto;
+        campo.focus();
+      });
+
+      document.getElementById('btn-nota-abrir').addEventListener('click', notaAbrir);
+      document.getElementById('nota-fechar').addEventListener('click', notaFechar);
+      document.getElementById('nota-nova').addEventListener('click', async () => {
+        const atual = notaAtual();
+        if (atual && !(atual.conteudo || '').trim()) {
+          document.getElementById('nota-texto').focus();
+          return;
+        }
+        await notaSalvarPendentes();
+        await notaCriar();
+      });
+      document.getElementById('nota-texto').addEventListener('input', notaAoDigitar);
+      document.getElementById('nota-lista-btn').addEventListener('click', notaAlternarMenu);
+      document.getElementById('nota-limpar').addEventListener('click', notaLimpar);
+      document.getElementById('nota-excluir').addEventListener('click', notaExcluir);
+      document.getElementById('nota-rapida').addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') notaFechar();
+      });
+      // Se a aba for escondida ou fechada, salva o que estiver pendente.
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') notaSalvarPendentes();
+      });
+      window.addEventListener('pagehide', () => notaSalvarPendentes());
     }
 
     function confirmarAcao(mensagem, opcoes = {}) {

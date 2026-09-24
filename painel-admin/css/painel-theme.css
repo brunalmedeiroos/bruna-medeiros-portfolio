@@ -5623,10 +5623,48 @@
   gap: 4px;
 }
 
+/* O título de seção padrão tem margem inferior negativa (pensado pra
+   modais com gap maior), o que colava ele no texto de baixo aqui. */
+.painel-body .email-form-coluna .ugc-modal-secao-titulo {
+  margin: 22px 0 6px;
+}
+
 .painel-body .email-lembrete {
   font-size: 12px;
   color: var(--texto-suave);
-  margin: 0 0 10px;
+  margin: 0 0 12px;
+}
+
+/* Seletor e áreas de texto do formulário no mesmo visual dos campos de
+   texto (o navegador usava o estilo padrão, quadrado e sem borda suave). */
+.painel-body .email-form-coluna select,
+.painel-body .email-form-coluna textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 12px 14px;
+  font-size: 15px;
+  font-family: var(--fonte-corpo);
+  background: var(--creme);
+  color: var(--grafite);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.painel-body .email-form-coluna select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%235B7F8E' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+.painel-body .email-form-coluna select:focus,
+.painel-body .email-form-coluna textarea:focus {
+  border-color: var(--coral);
 }
 
 .painel-body .email-destino-contagem {
@@ -5656,7 +5694,7 @@
   margin: -4px 0 10px;
 }
 
-.painel-body .email-textarea-codigo {
+.painel-body .email-form-coluna textarea.email-textarea-codigo {
   font-family: 'Courier New', monospace;
   font-size: 13px;
 }
@@ -5813,7 +5851,7 @@
 }
 
 .painel-body .email-descadastro-titulo {
-  margin-top: 24px;
+  margin: 28px 0 6px;
 }
 
 .painel-body .email-descadastro-form {

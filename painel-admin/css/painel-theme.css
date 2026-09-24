@@ -8019,3 +8019,25 @@
 .painel-body .dash-nota-icone:focus-visible {
   transform: translateY(-4px) scale(1.06);
 }
+
+/* Ícone da Nota rápida: menor e no canto inferior direito da capa azul. */
+.painel-body .dash-cabecalho {
+  position: relative;
+}
+
+.painel-body .dash-cabecalho .dash-nota-icone {
+  position: absolute;
+  right: 24px;
+  bottom: 22px;
+  width: 42px;
+  height: 42px;
+}
+
+@media (max-width: 700px) {
+  .painel-body .dash-cabecalho .dash-nota-icone {
+    right: 16px;
+    bottom: 16px;
+    width: 38px;
+    height: 38px;
+  }
+}

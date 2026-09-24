@@ -10957,7 +10957,7 @@
       const valor = document.getElementById('email-destino-select').value;
       const contagemEl = document.getElementById('email-destino-contagem');
       if (valor === 'teste') {
-        contagemEl.textContent = 'Vai só pro seu e-mail, o da sua conta de login.';
+        contagemEl.textContent = 'Vai só pro seu e-mail de contato (o campo lá em cima).';
         return;
       }
       const { lista } = resolverDestinatariosFinal();
@@ -11063,10 +11063,11 @@
       }
       if (!(await confirmarSeHtmlSemSair())) return;
 
-      const { data: userData } = await Auth.sb.auth.getUser();
-      const meuEmail = userData.user?.email;
-      if (!meuEmail) {
-        alert('Não consegui identificar o e-mail da sua conta de login.');
+      // O teste vai pro e-mail de contato (o mesmo da conta do Resend): sem
+      // domínio verificado, o Resend só entrega nesse endereço.
+      const meuEmail = config.contato;
+      if (!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(meuEmail)) {
+        alert('Pra testar, o campo "E-mail de contato" precisa ser só o endereço, tipo voce@gmail.com.');
         return;
       }
 

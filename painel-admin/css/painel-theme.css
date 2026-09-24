@@ -7133,3 +7133,55 @@
     flex-shrink: 0;
   }
 }
+
+/* Título de cima some (o nome fica na capa) e o sino sobe pra cima do card. */
+.painel-body .topbar.topbar-sobre-capa {
+  height: 0;
+  margin-bottom: 0;
+  align-items: flex-start;
+  justify-content: flex-end;
+  position: relative;
+  z-index: 20;
+}
+
+.painel-body .topbar.topbar-sobre-capa .topbar-acoes {
+  margin: 20px 22px 0 0;
+}
+
+.painel-body .pg-capa-linha {
+  padding-right: 64px;
+}
+
+.painel-body .pg-capa-nav .desafio-subnav,
+.painel-body .pg-capa-nav #pl-hub {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.painel-body .pg-capa-nav .desafio-subnav-btn,
+.painel-body .pg-capa-nav .pl-hub-card {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--fonte-corpo);
+  color: var(--branco);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.painel-body .pg-capa-nav .desafio-subnav-btn:hover,
+.painel-body .pg-capa-nav .pl-hub-card:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: var(--branco);
+}
+
+.painel-body .pg-capa-nav .desafio-subnav-btn.ativo {
+  background: var(--branco);
+  border-color: var(--branco);
+  color: var(--coral-hover);
+}

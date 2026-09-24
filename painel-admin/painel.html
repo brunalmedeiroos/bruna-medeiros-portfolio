@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260924p">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260924q">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -821,6 +821,13 @@
              — não precisa mais de pills aqui fora escolhendo entre
              admin/painel/processo. -->
         <section id="panel-desafio-ugc" class="tab-panel" hidden>
+          <div class="desafio-subnav">
+            <button class="desafio-subnav-btn ativo" data-desafio-aba="visao-geral" type="button">Visão Geral</button>
+            <button class="desafio-subnav-btn" data-desafio-aba="cadastros" type="button">Cadastros</button>
+            <button class="desafio-subnav-btn" data-desafio-aba="tabela" type="button">Tabela de processo</button>
+            <button class="desafio-subnav-btn" data-desafio-aba="videos" type="button">Vídeos</button>
+            <button class="desafio-subnav-btn" data-desafio-aba="meu-painel" type="button">Meu painel</button>
+          </div>
           <iframe id="desafio-ugc-iframe" class="desafio-ugc-iframe" title="Nosso Desafio UGC"></iframe>
         </section>
 
@@ -5000,6 +5007,9 @@
       document.getElementById('clientes-modal-add-link').addEventListener('click', adicionarLinkModal);
 
       // Instagram: Automações e Leads
+      document.querySelectorAll('.desafio-subnav-btn').forEach((btn) => {
+        btn.addEventListener('click', () => irParaAbaDesafio(btn.dataset.desafioAba));
+      });
       document.querySelectorAll('.instagram-subnav-btn').forEach((btn) => {
         btn.addEventListener('click', () => trocarSubAbaInstagram(btn.dataset.instagramPagina));
       });
@@ -5302,7 +5312,7 @@
     // Capa azul no topo de cada página (menos Dashboard, que tem a saudação, e
     // E-mail, que tem a capa própria). O menu interno da página (UGC, Instagram,
     // Ferramentas) é levado pra dentro da capa e devolvido ao lugar quando sai.
-    const CAPA_MENUS = { ugc: '.ugc-subnav', instagram: '.instagram-subnav', ferramentas: '.ferr-modos' };
+    const CAPA_MENUS = { ugc: '.ugc-subnav', instagram: '.instagram-subnav', ferramentas: '.ferr-modos', planejador: '#pl-hub', 'desafio-ugc': '.desafio-subnav' };
     const CAPA_SEM = ['overview', 'email'];
     let capaMenuMovido = null;
     let capaObservador = null;
@@ -5323,11 +5333,12 @@
       const capa = document.getElementById('pg-capa');
       const slot = document.getElementById('pg-capa-nav');
       capaDevolverMenu();
-      if (CAPA_SEM.includes(aba)) {
-        capa.hidden = true;
-        return;
-      }
-      capa.hidden = false;
+      const semCapa = CAPA_SEM.includes(aba);
+      capa.hidden = semCapa;
+      // Com capa, o nome da página fica só nela e o sino sobe pra cima do card.
+      document.getElementById('titulo-topo').hidden = !semCapa;
+      document.querySelector('.topbar').classList.toggle('topbar-sobre-capa', !semCapa);
+      if (semCapa) return;
       document.getElementById('pg-capa-titulo').textContent = tr(TITULOS_ABA[aba]);
       const icone = document.querySelector('.nav-item[data-tab="' + aba + '"] img');
       document.getElementById('pg-capa-icone-img').src = icone ? icone.getAttribute('src') : '';
@@ -5338,13 +5349,15 @@
         slot.appendChild(no);
       }
       slot.hidden = !no;
-      // Instagram esconde o menu quando a conta não está conectada.
-      if (no && aba === 'instagram') {
-        const layout = document.getElementById('instagram-layout');
-        const sincronizar = () => (slot.hidden = layout.hidden);
+      // Instagram esconde o menu quando a conta não está conectada; o Planejador
+      // esconde o dele enquanto uma página (Banco de ideias, Achados) está aberta.
+      const vigiado = { instagram: 'instagram-layout', planejador: 'pl-hub' }[aba];
+      if (no && vigiado) {
+        const alvo = document.getElementById(vigiado);
+        const sincronizar = () => (slot.hidden = alvo.hidden);
         sincronizar();
         capaObservador = new MutationObserver(sincronizar);
-        capaObservador.observe(layout, { attributes: true, attributeFilter: ['hidden'] });
+        capaObservador.observe(alvo, { attributes: true, attributeFilter: ['hidden'] });
       }
     }
 
@@ -5421,14 +5434,38 @@
     // documento ele carrega, chamada pelo próprio iframe via
     // window.parent.trocarSubAbaDesafio(...) (ex: o botão "Meu painel"
     // dentro de desafio/processo/index.html).
-    function trocarSubAbaDesafio(pagina) {
+    let desafioDocAtual = null;
+
+    function trocarSubAbaDesafio(pagina, abaProcesso) {
       const iframe = document.getElementById('desafio-ugc-iframe');
       const urls = {
         admin: '../desafio/admin/?v=19',
         painel: '../desafio/painel/?v=6',
-        processo: '../desafio/processo/?v=12',
+        processo: '../desafio/processo/?v=13',
       };
-      iframe.src = urls[pagina] || urls.processo;
+      desafioDocAtual = urls[pagina] ? pagina : 'processo';
+      const aba = abaProcesso || 'visao-geral';
+      iframe.src = urls[desafioDocAtual] + (desafioDocAtual === 'processo' ? '#' + aba : '');
+      sincronizarNavDesafio(desafioDocAtual === 'painel' ? 'meu-painel' : desafioDocAtual === 'processo' ? aba : null);
+    }
+
+    // Os botões do menu moram na capa do painel; o conteúdo continua no iframe.
+    function sincronizarNavDesafio(aba) {
+      document.querySelectorAll('.desafio-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.desafioAba === aba));
+    }
+
+    function irParaAbaDesafio(aba) {
+      if (aba === 'meu-painel') {
+        trocarSubAbaDesafio('painel');
+        return;
+      }
+      const janela = document.getElementById('desafio-ugc-iframe').contentWindow;
+      if (desafioDocAtual === 'processo' && janela && typeof janela.trocarAbaProcesso === 'function') {
+        janela.trocarAbaProcesso(aba);
+        sincronizarNavDesafio(aba);
+      } else {
+        trocarSubAbaDesafio('processo', aba);
+      }
     }
 
     function trocarPeriodo(periodo, btn) {

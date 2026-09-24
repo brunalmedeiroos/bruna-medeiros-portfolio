@@ -24,7 +24,7 @@
       <div><a href="../painel/" class="sair oculta-embutido" style="margin-right:16px;color:inherit;">Meu painel</a><span class="sair" id="btn-sair">Sair</span></div>
     </div>
 
-    <div class="processo-subnav">
+    <div class="processo-subnav oculta-embutido">
       <button class="processo-subnav-btn ativo" data-aba-processo="visao-geral" type="button">Visão Geral</button>
       <button class="processo-subnav-btn" data-aba-processo="cadastros" type="button">Cadastros</button>
       <button class="processo-subnav-btn" data-aba-processo="tabela" type="button">Tabela de processo</button>
@@ -91,6 +91,8 @@
         return;
       }
       abaProcessoAtual = aba;
+      // O menu fica na capa do painel; avisa qual aba está aberta.
+      if (window.parent !== window && typeof window.parent.sincronizarNavDesafio === 'function') window.parent.sincronizarNavDesafio(aba);
       document.querySelectorAll('.processo-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.abaProcesso === aba));
       document.querySelectorAll('.processo-painel').forEach((p) => (p.hidden = p.id !== 'painel-' + aba));
       CARREGADORES_ABA[aba]();
@@ -467,7 +469,8 @@
       document.querySelectorAll('.processo-subnav-btn').forEach((btn) => {
         btn.addEventListener('click', () => trocarAbaProcesso(btn.dataset.abaProcesso));
       });
-      trocarAbaProcesso('visao-geral');
+      const abaInicial = (location.hash || '').slice(1);
+      trocarAbaProcesso(CARREGADORES_ABA[abaInicial] ? abaInicial : 'visao-geral');
     }
 
     iniciar();

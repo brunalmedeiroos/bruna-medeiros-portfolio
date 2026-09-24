@@ -560,6 +560,8 @@ create table if not exists public.ugc_base_contatos (
   situacao text not null default 'Lead' check (situacao in ('Lead', 'Conversando', 'Cliente', 'Parada')),
   observacao text,
   ultimo_contato date,
+  -- Segmento da marca (Tech, Beleza, Casa e Decoração...), escolhido no painel.
+  nicho text,
   -- Usados pelo disparo de e-mail em massa (aba E-mail): "selecionada"
   -- guarda a seleção manual pra um disparo (fica salva entre sessões);
   -- "ultimo_envio_email" guarda quando essa marca recebeu o último e-mail

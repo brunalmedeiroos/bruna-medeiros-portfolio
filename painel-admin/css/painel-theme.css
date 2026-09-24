@@ -3868,7 +3868,7 @@
 
 .painel-body .cal-todas-cabecalho.contatos-linha,
 .painel-body .cal-todas-linha.contatos-linha {
-  grid-template-columns: 28px 140px 130px 1fr 150px 110px 110px;
+  grid-template-columns: 28px 140px 130px 1fr 150px 110px 150px 110px;
 }
 
 .painel-body .contatos-checkbox-cel {

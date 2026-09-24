@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260924b">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260924c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1104,6 +1104,7 @@
                   <span>E-mail</span>
                   <span>Telefone</span>
                   <span>Situação</span>
+                  <span>Nicho</span>
                   <span>Último contato</span>
                 </div>
                 <div id="contatos-lista" class="cal-todas-linhas"></div>
@@ -2154,6 +2155,13 @@
               <option value="Parada">Parada</option>
             </select>
           </div>
+          <div class="cal-form-campo">
+            <label for="contato-nicho">Nicho</label>
+            <select id="contato-nicho"></select>
+          </div>
+        </div>
+
+        <div class="pl-modal-linha">
           <div class="cal-form-campo">
             <label for="contato-ultimo-contato">Último contato</label>
             <input type="date" id="contato-ultimo-contato">
@@ -10431,6 +10439,25 @@
 
     // ---- Base de contatos (dentro de Prospecção) ----
     const SITUACOES_CONTATO = ['Lead', 'Conversando', 'Cliente', 'Parada'];
+    // Os 4 primeiros são os mesmos nichos do portfólio público; o resto são
+    // segmentos comuns de marcas que contratam UGC.
+    const NICHOS_CONTATO = [
+      'Tech',
+      'Beleza',
+      'Entretenimento',
+      'Experiência',
+      'Casa e Decoração',
+      'Moda',
+      'Saúde e Bem-estar',
+      'Alimentos e Bebidas',
+      'Pets',
+      'Infantil',
+      'Fitness e Esporte',
+      'Viagem e Turismo',
+      'Educação',
+      'Finanças',
+      'Outros',
+    ];
     let contatoAbertoId = null;
 
     function classeSituacaoContato(situacao) {
@@ -10461,7 +10488,8 @@
           (c) =>
             (c.marca || '').toLowerCase().includes(termo) ||
             (c.instagram || '').toLowerCase().replace(/^@/, '').includes(termo) ||
-            (c.email || '').toLowerCase().includes(termo)
+            (c.email || '').toLowerCase().includes(termo) ||
+            (c.nicho || '').toLowerCase().includes(termo)
         );
       }
       return [...filtrados].sort((a, b) => a.marca.localeCompare(b.marca));
@@ -10552,6 +10580,7 @@
         <span>${escapeHtml(contato.email || '—')}</span>
         <span>${telefoneHtml}</span>
         <span class="ugc-status-pill ${classeSituacaoContato(contato.situacao)}">${escapeHtml(contato.situacao)}</span>
+        <span>${contato.nicho ? escapeHtml(contato.nicho) : '<span class="contatos-vazio">—</span>'}</span>
         <span>${ultimoContatoFmt}</span>
       `;
       linha.querySelectorAll('a').forEach((a) => a.addEventListener('click', (e) => e.stopPropagation()));
@@ -10569,6 +10598,14 @@
       document.getElementById('contato-email').value = contato ? contato.email || '' : '';
       document.getElementById('contato-telefone').value = contato ? contato.telefone || '' : '';
       document.getElementById('contato-situacao').value = contato ? contato.situacao : 'Lead';
+      // Se o contato tem um nicho fora da lista (ex: veio de uma planilha),
+      // ele entra como opção extra pra não sumir ao salvar.
+      const nichoAtual = contato && contato.nicho ? contato.nicho : '';
+      const nichosDisponiveis = nichoAtual && !NICHOS_CONTATO.includes(nichoAtual) ? [...NICHOS_CONTATO, nichoAtual] : NICHOS_CONTATO;
+      const selNicho = document.getElementById('contato-nicho');
+      selNicho.innerHTML =
+        '<option value="">Sem nicho</option>' + nichosDisponiveis.map((n) => `<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+      selNicho.value = nichoAtual;
       document.getElementById('contato-ultimo-contato').value = contato && contato.ultimo_contato ? contato.ultimo_contato : '';
       document.getElementById('contato-observacao').value = contato ? contato.observacao || '' : '';
       document.getElementById('contato-modal-excluir').hidden = !contato;
@@ -10595,6 +10632,13 @@
         ultimo_contato: document.getElementById('contato-ultimo-contato').value || null,
         observacao: document.getElementById('contato-observacao').value.trim() || null,
       };
+      // A coluna "nicho" precisa existir no banco (rodar o SQL do nicho).
+      // Só manda o campo quando há nicho escolhido, ou quando o contato já
+      // veio do banco com a coluna (aí dá pra limpar), pra não travar o
+      // salvar de quem ainda não rodou o SQL.
+      const nichoEscolhido = document.getElementById('contato-nicho').value;
+      const contatoAtual = contatoAbertoId ? ugcBaseContatosCache.find((c) => c.id === contatoAbertoId) : null;
+      if (nichoEscolhido || (contatoAtual && 'nicho' in contatoAtual)) linha.nicho = nichoEscolhido || null;
 
       const btn = document.getElementById('contato-modal-salvar');
       btn.disabled = true;
@@ -10629,13 +10673,14 @@
 
     function exportarContatosCSV() {
       if (ugcBaseContatosCache.length === 0) return;
-      const cabecalho = ['marca', 'instagram', 'email', 'telefone', 'situacao', 'observacao', 'ultimo_contato'];
+      const cabecalho = ['marca', 'instagram', 'email', 'telefone', 'situacao', 'nicho', 'observacao', 'ultimo_contato'];
       const linhas = ugcBaseContatosCache.map((c) => [
         c.marca,
         c.instagram || '',
         c.email || '',
         c.telefone || '',
         c.situacao,
+        c.nicho || '',
         c.observacao || '',
         c.ultimo_contato || '',
       ]);
@@ -10665,6 +10710,7 @@
       { campo: 'email', label: 'E-mail', chaves: ['email', 'e-mail', 'mail'] },
       { campo: 'telefone', label: 'Telefone', chaves: ['telefone', 'celular', 'whatsapp', 'fone', 'phone'] },
       { campo: 'situacao', label: 'Situação', chaves: ['situacao', 'status', 'estagio', 'etapa'] },
+      { campo: 'nicho', label: 'Nicho', chaves: ['nicho', 'segmento', 'setor'] },
       { campo: 'observacao', label: 'Observação', chaves: ['observacao', 'obs', 'nota', 'comentario'] },
     ];
 
@@ -10746,7 +10792,9 @@
           if (!marca) return null;
           const situacaoBruta = mapeamento.situacao ? (linhaCsv[mapeamento.situacao] || '').trim() : '';
           const situacao = SITUACOES_CONTATO.find((s) => normalizarTexto(s) === normalizarTexto(situacaoBruta)) || 'Lead';
-          return {
+          const nichoBruto = mapeamento.nicho ? (linhaCsv[mapeamento.nicho] || '').trim() : '';
+          const nicho = NICHOS_CONTATO.find((n) => normalizarTexto(n) === normalizarTexto(nichoBruto)) || nichoBruto || null;
+          const linhaNova = {
             marca,
             instagram: mapeamento.instagram ? (linhaCsv[mapeamento.instagram] || '').trim() || null : null,
             email: mapeamento.email ? (linhaCsv[mapeamento.email] || '').trim() || null : null,
@@ -10754,6 +10802,8 @@
             situacao,
             observacao: mapeamento.observacao ? (linhaCsv[mapeamento.observacao] || '').trim() || null : null,
           };
+          if (mapeamento.nicho) linhaNova.nicho = nicho;
+          return linhaNova;
         })
         .filter(Boolean);
 

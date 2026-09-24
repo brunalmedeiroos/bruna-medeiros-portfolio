@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260924z">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260924za">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -176,9 +176,14 @@
               <span class="pg-capa-icone"><span class="pg-capa-emoji" aria-hidden="true">🏠</span></span>
               <h2 class="pg-capa-titulo" data-i18n="titulo_dashboard">Dashboard</h2>
             </div>
-            <div class="dash-capa-texto">
-              <h2 class="saudacao" id="dash-saudacao">Bom dia, Bru!</h2>
-              <p class="dash-data" id="dash-data">Hoje</p>
+            <div class="dash-capa-rodape">
+              <button type="button" id="btn-nota-abrir" class="dash-nota-icone" title="Nota rápida" aria-label="Nota rápida">
+                <img src="../painel-admin/img/notas.jpg" alt="">
+              </button>
+              <div class="dash-capa-texto">
+                <h2 class="saudacao" id="dash-saudacao">Bom dia, Bru!</h2>
+                <p class="dash-data" id="dash-data">Hoje</p>
+              </div>
             </div>
           </div>
 
@@ -193,16 +198,6 @@
               <input type="text" id="dash-check-input" placeholder="+ Adicionar tarefa de hoje" maxlength="200">
             </form>
             <p class="dash-aviso" id="dash-aviso-tabelas" hidden>Falta rodar o arquivo dashboard.sql no Supabase pra usar o checklist e as notas.</p>
-          </div>
-
-          <div class="dash-nota-atalho">
-            <button type="button" id="btn-nota-abrir" class="dash-nota-icone" title="Nota rápida" aria-label="Nota rápida">
-              <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-                <rect x="3" y="2" width="26" height="28" rx="7" fill="#FFFFFF" stroke="currentColor" stroke-opacity="0.25"/>
-                <path d="M3 9a7 7 0 0 1 7-7h12a7 7 0 0 1 7 7v2H3V9z" fill="#FFF7C5"/>
-                <path d="M9 17h14M9 22h14M9 27h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.55"/>
-              </svg>
-            </button>
           </div>
         </section>
 

@@ -7985,3 +7985,37 @@
     height: min(580px, calc(100vh - 24px));
   }
 }
+
+/* Ícone da Nota rápida: a mesma imagem do app Notas do portfólio, no canto
+   inferior esquerdo da capa azul do Dashboard. */
+.painel-body .dash-capa-rodape {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.painel-body .dash-nota-icone {
+  flex-shrink: 0;
+  width: 62px;
+  height: 62px;
+  padding: 0;
+  border: none;
+  border-radius: 24%;
+  overflow: hidden;
+  background: transparent;
+  box-shadow: 0 4px 10px rgba(var(--grafite-rgb), 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.painel-body .dash-nota-icone img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.painel-body .dash-nota-icone:hover,
+.painel-body .dash-nota-icone:focus-visible {
+  transform: translateY(-4px) scale(1.06);
+}

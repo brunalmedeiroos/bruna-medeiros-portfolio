@@ -13129,20 +13129,6 @@
       }
     }
 
-    // Abre o prompt direto no Claude (claude.ai/new?q=...). Se o prompt for
-    // grande demais pra caber no link, copia e abre o Claude vazio.
-    function ferrAbrirNoClaude(item, botao) {
-      const texto = item.conteudo || '';
-      const url = 'https://claude.ai/new?q=' + encodeURIComponent(texto);
-      if (url.length <= 7000) {
-        window.open(url, '_blank', 'noopener');
-      } else {
-        ferrCopiar(texto, botao);
-        window.open('https://claude.ai/new', '_blank', 'noopener');
-        alert('Esse prompt é grande demais pra ir direto no link, então eu copiei. É só colar no Claude.');
-      }
-    }
-
     // Cartão de uma ferramenta na grade dentro da pasta. Clicar no cartão
     // abre a ferramenta; os botões de baixo agem direto, sem abrir.
     function ferrCriarCartaoItem(item) {
@@ -13156,7 +13142,6 @@
       const botoes = [];
       if (item.tipo === 'prompt') {
         botoes.push('<button type="button" class="cal-btn" data-acao="copiar">Copiar</button>');
-        botoes.push('<button type="button" class="cal-btn" data-acao="claude">Abrir no Claude</button>');
       } else if (item.tipo === 'texto' || item.tipo === 'nota' || (item.tipo === 'outro' && item.conteudo)) {
         botoes.push('<button type="button" class="cal-btn" data-acao="copiar">Copiar</button>');
       } else if (item.tipo === 'prompt_campos') {
@@ -13207,7 +13192,6 @@
           const acao = btn.dataset.acao;
           if (acao === 'favorito') ferrAlternarFavorito(item);
           else if (acao === 'copiar') ferrCopiar(item.conteudo || '', btn);
-          else if (acao === 'claude') ferrAbrirNoClaude(item, btn);
           else if (acao === 'link') window.open(ferrUrlSegura(item.url), '_blank', 'noopener');
           else if (acao === 'abrir') ferrAbrirItem(item);
           else if (acao === 'antes') ferrMoverItem(item, -1);

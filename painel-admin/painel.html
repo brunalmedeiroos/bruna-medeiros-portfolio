@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260924h">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260924i">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -13483,6 +13483,29 @@
       return `<div class="cal-form-campo"><label for="${id}">${rotulo}</label><textarea id="${id}" rows="${opcoes.linhas || 8}" ${opcoes.placeholder ? `placeholder="${escapeHtml(opcoes.placeholder)}"` : ''}>${escapeHtml(valor || '')}</textarea></div>`;
     }
 
+    // Mockup de celular com a prévia da mensagem final (só visualiza, não gera texto).
+    function ferrHtmlCelular() {
+      return `
+        <aside class="ferr-celular-area" aria-label="Prévia da mensagem no celular">
+          <div class="ferr-celular">
+            <div class="ferr-celular-notch"></div>
+            <div class="ferr-celular-barra"><span class="ferr-celular-avatar"></span><span class="ferr-celular-titulo">Prévia da mensagem</span></div>
+            <div class="ferr-celular-conversa"><div class="ferr-balao" id="ferr-celular-texto"></div></div>
+            <div class="ferr-celular-entrada"><span>Mensagem</span><span class="ferr-celular-enviar">&#10148;</span></div>
+          </div>
+        </aside>`;
+    }
+
+    // Mostra no celular exatamente o texto que o botão "Copiar prompt preenchido" copia.
+    function ferrAtualizarPrevia() {
+      const el = document.getElementById('ferr-celular-texto');
+      if (!el) return;
+      const texto = ferrPreencher(ferrValor('ferr-f-conteudo'), ferrValoresVars);
+      const vazio = !texto.trim();
+      el.classList.toggle('vazio', vazio);
+      el.textContent = vazio ? 'O texto do prompt aparece aqui.' : texto;
+    }
+
     function ferrHtmlCamposItem(tipo, item) {
       const v = item || {};
       const descricao = ferrCampoTexto('ferr-f-descricao', 'Descrição (opcional)', v.descricao);
@@ -13494,11 +13517,15 @@
           return descricao + plataforma + ferrCampoArea('ferr-f-conteudo', 'Prompt', v.conteudo, { linhas: 10 }) + botaoCopiar;
         case 'prompt_campos':
           return (
+            '<div class="ferr-preencher-grade"><div class="ferr-preencher-esq">' +
             descricao +
             plataforma +
             ferrCampoArea('ferr-f-conteudo', 'Prompt (escreva as variáveis assim: {{nome_da_variavel}})', v.conteudo, { linhas: 9 }) +
             '<div class="ferr-vars-caixa"><div class="ferr-vars-titulo">Campos</div><div id="ferr-vars-campos"></div>' +
-            '<div class="ferr-linha-acao"><button type="button" class="cal-btn cal-btn-primario" id="btn-ferr-copiar-preenchido">Copiar prompt preenchido</button></div></div>'
+            '<div class="ferr-linha-acao"><button type="button" class="cal-btn cal-btn-primario" id="btn-ferr-copiar-preenchido">Copiar prompt preenchido</button></div></div>' +
+            '</div>' +
+            ferrHtmlCelular() +
+            '</div>'
           );
         case 'texto':
           return descricao + ferrCampoArea('ferr-f-conteudo', 'Texto', v.conteudo, { linhas: 10 }) + botaoCopiar;
@@ -13570,6 +13597,7 @@
       sel.innerHTML = ferrOrdenar(ferrPastas).map((p) => `<option value="${p.id}">${escapeHtml(p.nome)}</option>`).join('');
       sel.value = item ? item.pasta_id : pastaNova;
 
+      document.querySelector('#ferr-item-modal-overlay .pl-modal').classList.toggle('ferr-item-modal-largo', tipo === 'prompt_campos');
       document.getElementById('ferr-item-campos').innerHTML = ferrHtmlCamposItem(tipo, item);
       document.getElementById('ferr-item-excluir').hidden = !item;
       document.getElementById('ferr-item-duplicar').hidden = !item;
@@ -13650,6 +13678,7 @@
       const cont = document.getElementById('ferr-vars-campos');
       if (vars.length === 0) {
         cont.innerHTML = '<p class="ferr-vars-vazio">Nenhum campo ainda. Escreva {{algo}} no prompt pra criar um campo aqui.</p>';
+        ferrAtualizarPrevia();
         return;
       }
       cont.innerHTML = vars
@@ -13664,8 +13693,10 @@
       cont.querySelectorAll('textarea[data-var]').forEach((ta) =>
         ta.addEventListener('input', () => {
           ferrValoresVars[ta.dataset.var] = ta.value;
+          ferrAtualizarPrevia();
         })
       );
+      ferrAtualizarPrevia();
     }
 
     function ferrRenderizarChecklist() {

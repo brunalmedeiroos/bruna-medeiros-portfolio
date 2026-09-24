@@ -3038,6 +3038,36 @@
   flex: 1 1 260px;
 }
 
+/* Barra de Campanhas e Base de contatos: fica numa linha própria embaixo do
+   título, com os filtros à esquerda e busca + botões alinhados à direita,
+   tudo na mesma linha. Só quebra em telas estreitas. */
+.painel-body .ugc-toolbar-linha {
+  flex: 1 1 100%;
+  justify-content: space-between;
+}
+
+.painel-body .ugc-toolbar-linha .ugc-toolbar-acoes-direita {
+  flex: 1 1 660px;
+  flex-wrap: nowrap;
+}
+
+.painel-body .ugc-toolbar-linha .ugc-roteiros-busca {
+  flex: 1 1 140px;
+  min-width: 140px;
+  max-width: 340px;
+}
+
+.painel-body .ugc-toolbar-linha .cal-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .painel-body .ugc-toolbar-linha .ugc-toolbar-acoes-direita {
+    flex-wrap: wrap;
+  }
+}
+
 .painel-body .cal-todas-cabecalho.ugc-trabalhos-linha,
 .painel-body .cal-todas-linha.ugc-trabalhos-linha {
   grid-template-columns: 26px 1fr 120px 96px 152px 46px 90px 148px 100px;

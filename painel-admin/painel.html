@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260920e">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260924a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1022,11 +1022,11 @@
                 <h3 class="card-titulo" data-i18n="ugc_trabalhos">Campanhas</h3>
                 <p class="cal-todas-resumo" id="ugc-trabalhos-resumo">Nenhuma campanha ainda.</p>
               </div>
-              <div class="ugc-trabalhos-topo-acoes">
+              <div class="ugc-trabalhos-topo-acoes ugc-toolbar-linha">
                 <div class="cal-filtro-grupo">
-                  <button class="cal-filtro-btn" data-filtro-trabalho="todas" type="button">Todas</button>
                   <button class="cal-filtro-btn ativo" data-filtro-trabalho="ativas" type="button">Ativas</button>
                   <button class="cal-filtro-btn" data-filtro-trabalho="finalizadas" type="button">Finalizadas</button>
+                  <button class="cal-filtro-btn" data-filtro-trabalho="todas" type="button">Todas</button>
                 </div>
                 <div class="ugc-toolbar-acoes-direita">
                   <input type="text" id="campanhas-busca" class="ugc-roteiros-busca" placeholder="Buscar por cliente ou campanha">
@@ -1066,76 +1066,13 @@
             <div id="ugc-roteiros-grade" class="ugc-roteiros-grade"></div>
           </div>
           <div id="ugc-pagina-prospeccao" class="ugc-pagina" hidden>
-            <div class="cal-filtro-grupo prospeccao-vista-grupo">
-              <button class="cal-filtro-btn ativo" data-vista-prospeccao="pipeline" type="button">Pipeline</button>
-              <button class="cal-filtro-btn" data-vista-prospeccao="contatos" type="button">Base de contatos</button>
-            </div>
-
-            <div id="prospeccao-vista-pipeline">
-              <div class="cards-numeros cards-numeros-prospeccao">
-                <div class="card-numero">
-                  <span class="card-label" data-i18n="ugc_outbound">Outbound</span>
-                  <span class="card-valor" id="ugc-prosp-outbound">0</span>
-                </div>
-                <div class="card-numero">
-                  <span class="card-label" data-i18n="ugc_inbound">Inbound</span>
-                  <span class="card-valor" id="ugc-prosp-inbound">0</span>
-                </div>
-                <div class="card-numero">
-                  <span class="card-label" data-i18n="ugc_em_negociacao">Em negociação</span>
-                  <span class="card-valor" id="ugc-prosp-negociacao">0</span>
-                </div>
-                <div class="card-numero">
-                  <span class="card-label" data-i18n="ugc_propostas_enviadas">Propostas enviadas</span>
-                  <span class="card-valor" id="ugc-prosp-propostas">0</span>
-                </div>
-                <div class="card-numero">
-                  <span class="card-label" data-i18n="ugc_fechadas">Fechadas</span>
-                  <span class="card-valor" id="ugc-prosp-fechadas">0</span>
-                </div>
-                <div class="card-numero">
-                  <span class="card-label" data-i18n="ugc_sem_resposta">Sem resposta</span>
-                  <span class="card-valor" id="ugc-prosp-semresposta">0</span>
-                </div>
-              </div>
-
-              <!-- Avisa quando uma prospecção ativa está sem retorno/follow-up
-                   há tempo demais, pra não perder negociação por esquecimento. -->
-              <div id="ugc-prospeccao-esfriando" class="ugc-prospeccao-esfriando" hidden>
-                <h4 data-i18n="ugc_esfriando">Esfriando</h4>
-                <div id="ugc-prospeccao-esfriando-lista"></div>
-              </div>
-
-              <div class="cal-todas-topo">
-                <div>
-                  <h3 class="card-titulo" data-i18n="ugc_prospeccao">Prospecção</h3>
-                  <p class="cal-todas-resumo" id="ugc-prospeccao-resumo" data-i18n="ugc_nenhuma_prospeccao">Nenhuma prospecção ainda.</p>
-                </div>
-                <button id="btn-ugc-nova-prospeccao" class="cal-btn cal-btn-primario" type="button" data-i18n="ugc_nova_prospeccao">+ Nova prospecção</button>
-              </div>
-
-              <div class="cal-todas-tabela">
-                <div class="cal-todas-cabecalho ugc-prospeccao-linha">
-                  <span data-i18n="ugc_col_marca">Marca</span>
-                  <span data-i18n="ugc_col_contato">Contato</span>
-                  <span data-i18n="ugc_col_origem">Origem</span>
-                  <span data-i18n="ugc_col_tipo">Tipo</span>
-                  <span data-i18n="ugc_col_data">Data</span>
-                  <span data-i18n="status">Status</span>
-                  <span data-i18n="ugc_col_valor">Valor</span>
-                  <span data-i18n="ugc_col_followup">Follow-up</span>
-                </div>
-                <div id="ugc-prospeccao-lista" class="cal-todas-linhas"></div>
-              </div>
-            </div>
-
-            <div id="prospeccao-vista-contatos" hidden>
+            <div id="prospeccao-vista-contatos">
               <div class="cal-todas-topo">
                 <div>
                   <h3 class="card-titulo">Base de contatos</h3>
                   <p class="cal-todas-resumo" id="contatos-resumo">Nenhum contato ainda.</p>
                 </div>
-                <div class="ugc-trabalhos-topo-acoes">
+                <div class="ugc-trabalhos-topo-acoes ugc-toolbar-linha">
                   <div class="cal-filtro-grupo">
                     <button class="cal-filtro-btn ativo" data-filtro-situacao="todas" type="button">Todas</button>
                     <button class="cal-filtro-btn" data-filtro-situacao="Lead" type="button">Lead</button>
@@ -2182,75 +2119,6 @@
       </div>
     </div>
 
-    <!-- Modal: prospecção -->
-    <div id="ugc-modal-prospeccao-overlay" class="pl-modal-overlay" hidden>
-      <div class="pl-modal">
-        <div class="pl-modal-topo">
-          <input type="text" id="ugc-prosp-marca" class="pl-modal-titulo-input" data-i18n-placeholder="ugc_col_marca" placeholder="Marca">
-          <button id="ugc-modal-prospeccao-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </button>
-        </div>
-
-        <div class="pl-modal-linha">
-          <div class="cal-form-campo">
-            <label for="ugc-prosp-contato" data-i18n="ugc_col_contato">Contato</label>
-            <input type="text" id="ugc-prosp-contato">
-          </div>
-          <div class="cal-form-campo">
-            <label for="ugc-prosp-origem" data-i18n="ugc_col_origem">Origem</label>
-            <select id="ugc-prosp-origem"></select>
-          </div>
-        </div>
-
-        <div class="pl-modal-linha">
-          <div class="cal-form-campo">
-            <label for="ugc-prosp-tipo" data-i18n="ugc_tipo_trabalho">Tipo de trabalho</label>
-            <select id="ugc-prosp-tipo">
-              <option value="" data-i18n="ugc_nao_definido">Não definido</option>
-              <option value="UGC">UGC</option>
-              <option value="Publicidade" data-i18n="ugc_publicidade">Publicidade</option>
-            </select>
-          </div>
-          <div class="cal-form-campo">
-            <label for="ugc-prosp-data-contato" data-i18n="ugc_data_contato">Data do contato</label>
-            <input type="date" id="ugc-prosp-data-contato">
-          </div>
-        </div>
-
-        <div class="pl-modal-linha">
-          <div class="cal-form-campo">
-            <label for="ugc-prosp-status" data-i18n="status">Status</label>
-            <select id="ugc-prosp-status"></select>
-          </div>
-          <div class="cal-form-campo">
-            <label for="ugc-prosp-valor" data-i18n="ugc_valor_proposto">Valor proposto (R$)</label>
-            <input type="number" step="0.01" min="0" id="ugc-prosp-valor">
-          </div>
-          <div class="cal-form-campo">
-            <label for="ugc-prosp-followup" data-i18n="ugc_proximo_followup">Próximo follow-up</label>
-            <input type="date" id="ugc-prosp-followup">
-          </div>
-        </div>
-
-        <div class="cal-form-campo">
-          <label for="ugc-prosp-observacoes" data-i18n="ugc_observacoes">Observações</label>
-          <textarea id="ugc-prosp-observacoes"></textarea>
-        </div>
-
-        <div id="ugc-prosp-transformar-aviso" class="ugc-transformar-aviso" hidden>
-          <span data-i18n="ugc_prospeccao_ja_transformada">Essa prospecção já foi transformada em trabalho.</span>
-          <button type="button" id="ugc-prosp-ver-trabalho" class="cal-btn" data-i18n="ugc_ver_trabalho">Ver trabalho</button>
-        </div>
-
-        <div class="cal-form-acoes">
-          <button type="button" id="ugc-modal-prospeccao-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
-          <button type="button" id="ugc-prosp-transformar" class="cal-btn" hidden data-i18n="ugc_transformar_trabalho">Transformar em trabalho</button>
-          <button type="button" id="ugc-modal-prospeccao-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
-        </div>
-      </div>
-    </div>
-
     <!-- Modal: contato (base de contatos) -->
     <div id="contato-modal-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal">
@@ -2588,9 +2456,7 @@
     let ugcRoteirosCache = [];
     let ugcRoteiroVisualizacoesCache = [];
     let ugcRoteiroComentariosCache = [];
-    let ugcProspeccaoCache = [];
     let ugcBaseContatosCache = [];
-    let vistaProspeccao = 'pipeline'; // 'pipeline' | 'contatos'
     let filtroSituacaoContato = 'todas';
     let buscaContatos = '';
     let emailProspAbaCarregada = false;
@@ -2630,7 +2496,6 @@
       return chave ? tr(chave) : status;
     }
     const UGC_ORIGENS = ['Inbound', 'Outbound', 'Indicação', 'Direto com a marca', 'Agência', 'Plataforma', 'Outro'];
-    const UGC_ORIGENS_PROSPECCAO = ['Inbound', 'Outbound'];
     const UGC_ORIGENS_CHAVE = {
       'Inbound': 'ugc_origem_inbound',
       'Outbound': 'ugc_origem_outbound',
@@ -2688,24 +2553,6 @@
     let ugcModalEntregaveis = [];
     let ugcRoteiroAbertoId = null;
     let ugcModalMoodboard = [];
-    let ugcProspeccaoAbertaId = null;
-    const UGC_STATUS_PROSPECCAO = ['Para abordar', 'Contato enviado', 'Aguardando resposta', 'Respondeu', 'Negociação', 'Proposta enviada', 'Fechado', 'Recusado', 'Sem resposta', 'Follow-up'];
-    const UGC_STATUS_PROSPECCAO_CHAVE = {
-      'Para abordar': 'ugc_prosp_status_para_abordar',
-      'Contato enviado': 'ugc_prosp_status_contato_enviado',
-      'Aguardando resposta': 'ugc_prosp_status_aguardando_resposta',
-      'Respondeu': 'ugc_prosp_status_respondeu',
-      'Negociação': 'ugc_prosp_status_negociacao',
-      'Proposta enviada': 'ugc_prosp_status_proposta_enviada',
-      'Fechado': 'ugc_prosp_status_fechado',
-      'Recusado': 'ugc_prosp_status_recusado',
-      'Sem resposta': 'ugc_prosp_status_sem_resposta',
-      'Follow-up': 'ugc_prosp_status_followup',
-    };
-    function traduzirStatusProspeccao(status) {
-      const chave = UGC_STATUS_PROSPECCAO_CHAVE[status];
-      return chave ? tr(chave) : status;
-    }
     let ugcContratoAbertoId = null;
     let ugcModalContratoArquivoPath = null;
     let ugcModalContratoArquivoNome = null;
@@ -5018,26 +4865,7 @@
       });
       document.getElementById('ugc-copiar-roteiro').addEventListener('click', copiarRoteiroCompleto);
       configurarBarraFormatacaoRoteiro();
-      document.getElementById('btn-ugc-nova-prospeccao').addEventListener('click', () => abrirModalProspeccao(null));
-      document.getElementById('ugc-modal-prospeccao-fechar').addEventListener('click', fecharModalProspeccao);
-      document.getElementById('ugc-modal-prospeccao-excluir').addEventListener('click', excluirModalProspeccao);
-      document.getElementById('ugc-modal-prospeccao-salvar').addEventListener('click', salvarModalProspeccao);
-      document.getElementById('ugc-modal-prospeccao-overlay').addEventListener('click', (e) => {
-        if (e.target.id === 'ugc-modal-prospeccao-overlay') fecharModalProspeccao();
-      });
-      document.getElementById('ugc-prosp-transformar').addEventListener('click', transformarProspeccaoEmTrabalho);
-      document.getElementById('ugc-prosp-ver-trabalho').addEventListener('click', () => {
-        const p = ugcProspeccaoCache.find((x) => x.id === ugcProspeccaoAbertaId);
-        const trabalho = p && p.trabalho_id ? ugcTrabalhosCache.find((t) => t.id === p.trabalho_id) : null;
-        fecharModalProspeccao();
-        trocarSubAbaUGC('trabalhos');
-        if (trabalho) abrirModalTrabalho(trabalho);
-      });
-
       // Base de contatos
-      document.querySelectorAll('.prospeccao-vista-grupo .cal-filtro-btn').forEach((btn) => {
-        btn.addEventListener('click', () => trocarVistaProspeccao(btn.dataset.vistaProspeccao));
-      });
       document.querySelectorAll('#prospeccao-vista-contatos [data-filtro-situacao]').forEach((btn) => {
         btn.addEventListener('click', () => {
           filtroSituacaoContato = btn.dataset.filtroSituacao;
@@ -5299,7 +5127,7 @@
     // ==========================================================================
     // Aba: Dashboard ("O que eu preciso saber agora?") — só leitura, junta o que
     // já existe em Calendário (painel_tarefas) e UGC/Publi (ugcTrabalhosCache,
-    // ugcProspeccaoCache, ugcContratosCache), sem cadastro nem tabela própria
+    // ugcContratosCache), sem cadastro nem tabela própria
     // e sem recalcular nenhuma regra que já exista em outra aba.
     // ==========================================================================
 
@@ -9011,13 +8839,12 @@
 
     async function carregarUGC() {
       try {
-        const [trabalhos, entregaveis, roteiros, visualizacoes, comentarios, prospeccao, contatos, contratos, precos] = await Promise.all([
+        const [trabalhos, entregaveis, roteiros, visualizacoes, comentarios, contatos, contratos, precos] = await Promise.all([
           buscarTudo('ugc_trabalhos'),
           buscarTudo('ugc_trabalho_entregaveis'),
           buscarTudo('ugc_roteiros'),
           buscarTudo('ugc_roteiro_visualizacoes'),
           buscarTudo('ugc_roteiro_comentarios'),
-          buscarTudo('ugc_prospeccao'),
           // .catch: se a tabela ainda não existir (antes de rodar a
           // migração), não pode travar o carregamento do resto do UGC/Publi.
           buscarTudo('ugc_base_contatos').catch((err) => {
@@ -9032,7 +8859,6 @@
         ugcRoteirosCache = roteiros;
         ugcRoteiroVisualizacoesCache = visualizacoes;
         ugcRoteiroComentariosCache = comentarios;
-        ugcProspeccaoCache = prospeccao;
         ugcBaseContatosCache = contatos;
         ugcContratosCache = contratos;
         ugcPrecosCache = precos;
@@ -9046,7 +8872,6 @@
       renderizarVisaoGeralUGC();
       renderizarTrabalhos();
       renderizarRoteiros();
-      renderizarProspeccao();
       renderizarBaseContatos();
       renderizarContratos();
       renderizarPrecos();
@@ -10601,227 +10426,9 @@
       }
     }
 
-    // ---- Prospecção ----
-    // Uma prospecção ativa "esfria" quando o follow-up marcado já venceu, ou
-    // quando nunca teve follow-up agendado e já passou mais de 7 dias do
-    // primeiro contato — nos dois casos, é fácil ela ficar esquecida.
-    function prospeccaoEstaEsfriando(p, hojeISO) {
-      if (p.status === 'Fechado' || p.status === 'Recusado') return false;
-      if (p.proximo_followup) return p.proximo_followup < hojeISO;
-      const dias = Math.floor((new Date(hojeISO + 'T00:00:00') - new Date(p.created_at)) / 86400000);
-      return dias > 7;
-    }
-
-    function obterProspeccaoEsfriando() {
-      const hojeISO = dataParaISO(new Date());
-      return ugcProspeccaoCache
-        .filter((p) => prospeccaoEstaEsfriando(p, hojeISO))
-        .sort((a, b) => (a.proximo_followup || a.created_at.slice(0, 10)).localeCompare(b.proximo_followup || b.created_at.slice(0, 10)));
-    }
-
-    function renderizarProspeccaoEsfriando() {
-      const esfriando = obterProspeccaoEsfriando();
-
-      const bloco = document.getElementById('ugc-prospeccao-esfriando');
-      if (esfriando.length === 0) {
-        bloco.hidden = true;
-        return;
-      }
-      bloco.hidden = false;
-      const lista = document.getElementById('ugc-prospeccao-esfriando-lista');
-      lista.innerHTML = esfriando
-        .map((p) => {
-          const item = document.createElement('div');
-          item.className = 'ugc-prospeccao-esfriando-item';
-          const situacao = p.proximo_followup ? `${tr('ugc_followup_era_prefixo')}${formatarDataCurta(new Date(p.proximo_followup + 'T00:00:00'))}` : tr('ugc_sem_followup_marcado');
-          item.innerHTML = `<span>${escapeHtml(p.marca)}</span><span>${situacao}</span>`;
-          return item.outerHTML;
-        })
-        .join('');
-      lista.querySelectorAll('.ugc-prospeccao-esfriando-item').forEach((el, i) => {
-        el.addEventListener('click', () => abrirModalProspeccao(esfriando[i]));
-      });
-    }
-
-    function renderizarProspeccao() {
-      renderizarProspeccaoEsfriando();
-      const outbound = ugcProspeccaoCache.filter((p) => p.origem === 'Outbound').length;
-      const inbound = ugcProspeccaoCache.filter((p) => p.origem === 'Inbound').length;
-      const negociacao = ugcProspeccaoCache.filter((p) => p.status === 'Negociação').length;
-      const propostas = ugcProspeccaoCache.filter((p) => p.status === 'Proposta enviada').length;
-      const fechadas = ugcProspeccaoCache.filter((p) => p.status === 'Fechado').length;
-      const semResposta = ugcProspeccaoCache.filter((p) => p.status === 'Sem resposta').length;
-
-      document.getElementById('ugc-prosp-outbound').textContent = formatarNumero(outbound);
-      document.getElementById('ugc-prosp-inbound').textContent = formatarNumero(inbound);
-      document.getElementById('ugc-prosp-negociacao').textContent = formatarNumero(negociacao);
-      document.getElementById('ugc-prosp-propostas').textContent = formatarNumero(propostas);
-      document.getElementById('ugc-prosp-fechadas').textContent = formatarNumero(fechadas);
-      document.getElementById('ugc-prosp-semresposta').textContent = formatarNumero(semResposta);
-
-      const ordenadas = [...ugcProspeccaoCache].sort((a, b) => b.created_at.localeCompare(a.created_at));
-      document.getElementById('ugc-prospeccao-resumo').textContent =
-        ordenadas.length === 0
-          ? tr('ugc_nenhuma_prospeccao')
-          : `${ordenadas.length} ${tr(ordenadas.length === 1 ? 'ugc_registro_singular' : 'ugc_registro_plural')}.`;
-
-      const lista = document.getElementById('ugc-prospeccao-lista');
-      lista.innerHTML = '';
-      if (ordenadas.length === 0) {
-        lista.innerHTML = `<p class="texto-vazio">${tr('nada_por_aqui')}</p>`;
-        return;
-      }
-      ordenadas.forEach((p) => lista.appendChild(criarLinhaProspeccao(p)));
-    }
-
-    function criarLinhaProspeccao(prospeccao) {
-      const linha = document.createElement('div');
-      linha.className = 'cal-todas-linha ugc-prospeccao-linha';
-      const dataFmt = prospeccao.data_contato ? formatarDataCurta(new Date(prospeccao.data_contato + 'T00:00:00')) : '—';
-      const followupFmt = prospeccao.proximo_followup ? formatarDataCurta(new Date(prospeccao.proximo_followup + 'T00:00:00')) : '—';
-      const valorFmt = prospeccao.valor_proposto != null ? formatarMoeda(prospeccao.valor_proposto) : '—';
-      linha.innerHTML = `
-        <span class="ugc-trabalhos-marca">${escapeHtml(prospeccao.marca)}</span>
-        <span>${escapeHtml(prospeccao.contato || '—')}</span>
-        <span>${escapeHtml(prospeccao.origem ? traduzirOrigem(prospeccao.origem) : '—')}</span>
-        <span>${escapeHtml(prospeccao.tipo_trabalho ? traduzirTipoTrabalho(prospeccao.tipo_trabalho) : '—')}</span>
-        <span>${dataFmt}</span>
-        <span class="ugc-status-pill">${escapeHtml(traduzirStatusProspeccao(prospeccao.status))}</span>
-        <span>${valorFmt}</span>
-        <span>${followupFmt}</span>
-      `;
-      linha.addEventListener('click', () => abrirModalProspeccao(prospeccao));
-      return linha;
-    }
-
-    function abrirModalProspeccao(prospeccao) {
-      ugcProspeccaoAbertaId = prospeccao ? prospeccao.id : null;
-      document.getElementById('ugc-prosp-marca').value = prospeccao ? prospeccao.marca : '';
-      document.getElementById('ugc-prosp-contato').value = prospeccao ? prospeccao.contato || '' : '';
-
-      const selOrigem = document.getElementById('ugc-prosp-origem');
-      selOrigem.innerHTML = `<option value="">${tr('selecione')}</option>` + UGC_ORIGENS_PROSPECCAO.map((o) => `<option value="${o}">${escapeHtml(traduzirOrigem(o))}</option>`).join('');
-      selOrigem.value = prospeccao && prospeccao.origem ? prospeccao.origem : '';
-
-      document.getElementById('ugc-prosp-tipo').value = prospeccao && prospeccao.tipo_trabalho ? prospeccao.tipo_trabalho : '';
-      document.getElementById('ugc-prosp-data-contato').value = prospeccao && prospeccao.data_contato ? prospeccao.data_contato : '';
-
-      const selStatus = document.getElementById('ugc-prosp-status');
-      selStatus.innerHTML = UGC_STATUS_PROSPECCAO.map((s) => `<option value="${s}">${escapeHtml(traduzirStatusProspeccao(s))}</option>`).join('');
-      selStatus.value = prospeccao ? prospeccao.status : 'Para abordar';
-
-      document.getElementById('ugc-prosp-valor').value = prospeccao && prospeccao.valor_proposto != null ? prospeccao.valor_proposto : '';
-      document.getElementById('ugc-prosp-followup').value = prospeccao && prospeccao.proximo_followup ? prospeccao.proximo_followup : '';
-      document.getElementById('ugc-prosp-observacoes').value = prospeccao ? prospeccao.observacoes || '' : '';
-
-      const jaConvertida = !!(prospeccao && prospeccao.trabalho_id);
-      document.getElementById('ugc-prosp-transformar-aviso').hidden = !jaConvertida;
-      document.getElementById('ugc-prosp-transformar').hidden = !(prospeccao && prospeccao.status === 'Fechado' && !prospeccao.trabalho_id);
-      document.getElementById('ugc-modal-prospeccao-excluir').hidden = !prospeccao;
-      document.getElementById('ugc-modal-prospeccao-overlay').hidden = false;
-    }
-
-    function fecharModalProspeccao() {
-      ugcProspeccaoAbertaId = null;
-      document.getElementById('ugc-modal-prospeccao-overlay').hidden = true;
-    }
-
-    async function salvarModalProspeccao() {
-      const marca = document.getElementById('ugc-prosp-marca').value.trim();
-      if (!marca) {
-        alert(tr('ugc_preencha_marca'));
-        return;
-      }
-
-      const linha = {
-        marca,
-        contato: document.getElementById('ugc-prosp-contato').value.trim() || null,
-        origem: document.getElementById('ugc-prosp-origem').value || null,
-        tipo_trabalho: document.getElementById('ugc-prosp-tipo').value || null,
-        data_contato: document.getElementById('ugc-prosp-data-contato').value || null,
-        status: document.getElementById('ugc-prosp-status').value,
-        valor_proposto: document.getElementById('ugc-prosp-valor').value ? Number(document.getElementById('ugc-prosp-valor').value) : null,
-        proximo_followup: document.getElementById('ugc-prosp-followup').value || null,
-        observacoes: document.getElementById('ugc-prosp-observacoes').value.trim() || null,
-      };
-
-      const btn = document.getElementById('ugc-modal-prospeccao-salvar');
-      btn.disabled = true;
-      try {
-        const { error } = ugcProspeccaoAbertaId
-          ? await Auth.sb.from('ugc_prospeccao').update(linha).eq('id', ugcProspeccaoAbertaId)
-          : await Auth.sb.from('ugc_prospeccao').insert(linha);
-        if (error) throw error;
-        fecharModalProspeccao();
-        await carregarUGC();
-      } catch (err) {
-        console.error('Erro ao salvar prospecção:', err);
-        alert(tr('erro_salvar_generico'));
-      } finally {
-        btn.disabled = false;
-      }
-    }
-
-    async function excluirModalProspeccao() {
-      if (!ugcProspeccaoAbertaId) return;
-      if (!(await confirmarAcao(tr('ugc_excluir_prospeccao_confirmar')))) return;
-      try {
-        const { error } = await Auth.sb.from('ugc_prospeccao').delete().eq('id', ugcProspeccaoAbertaId);
-        if (error) throw error;
-        fecharModalProspeccao();
-        await carregarUGC();
-      } catch (err) {
-        console.error('Erro ao excluir prospecção:', err);
-        alert(tr('erro_excluir_generico'));
-      }
-    }
-
-    async function transformarProspeccaoEmTrabalho() {
-      if (!ugcProspeccaoAbertaId) return;
-      const prospeccao = ugcProspeccaoCache.find((p) => p.id === ugcProspeccaoAbertaId);
-      if (!prospeccao) return;
-      if (!(await confirmarAcao(`${tr('ugc_criar_trabalho_confirmar_prefixo')}"${prospeccao.marca}"${tr('ugc_criar_trabalho_confirmar_sufixo')}`, { perigo: false, textoConfirmar: tr('criar') }))) return;
-
-      const btn = document.getElementById('ugc-prosp-transformar');
-      btn.disabled = true;
-      try {
-        const { data, error } = await Auth.sb
-          .from('ugc_trabalhos')
-          .insert({
-            marca: prospeccao.marca,
-            tipo_trabalho: prospeccao.tipo_trabalho || 'UGC',
-            origem: prospeccao.origem,
-            valor: prospeccao.valor_proposto,
-          })
-          .select();
-        if (error) throw error;
-        const novoTrabalho = data[0];
-
-        const { error: erroVinculo } = await Auth.sb.from('ugc_prospeccao').update({ trabalho_id: novoTrabalho.id }).eq('id', ugcProspeccaoAbertaId);
-        if (erroVinculo) throw erroVinculo;
-
-        fecharModalProspeccao();
-        await carregarUGC();
-        trocarSubAbaUGC('trabalhos');
-        abrirModalTrabalho(novoTrabalho);
-      } catch (err) {
-        console.error('Erro ao transformar prospecção em trabalho:', err);
-        alert(tr('ugc_erro_transformar'));
-      } finally {
-        btn.disabled = false;
-      }
-    }
-
     // ---- Base de contatos (dentro de Prospecção) ----
     const SITUACOES_CONTATO = ['Lead', 'Conversando', 'Cliente', 'Parada'];
     let contatoAbertoId = null;
-
-    function trocarVistaProspeccao(vista) {
-      vistaProspeccao = vista;
-      document.querySelectorAll('.prospeccao-vista-grupo .cal-filtro-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.vistaProspeccao === vista));
-      document.getElementById('prospeccao-vista-pipeline').hidden = vista !== 'pipeline';
-      document.getElementById('prospeccao-vista-contatos').hidden = vista !== 'contatos';
-    }
 
     function classeSituacaoContato(situacao) {
       if (situacao === 'Cliente') return 'ugc-status-pago';
@@ -11414,7 +11021,6 @@
     function irParaBaseDeContatos() {
       trocarAba('ugc');
       trocarSubAbaUGC('prospeccao');
-      trocarVistaProspeccao('contatos');
     }
 
     function validarConfigEnvio() {

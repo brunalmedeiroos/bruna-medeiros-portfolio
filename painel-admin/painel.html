@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260924q">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260924t">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1142,6 +1142,7 @@
                   <span>Situação</span>
                   <span>Nicho</span>
                   <span>Último contato</span>
+                  <span title="Abordagem">💌</span>
                 </div>
                 <div id="contatos-lista" class="cal-todas-linhas"></div>
               </div>
@@ -2423,9 +2424,70 @@
           <textarea id="contato-observacao"></textarea>
         </div>
 
+        <div class="cal-form-campo abd-secao">
+          <label>💌 Abordagem</label>
+          <div id="contato-abordagens-lista" class="abd-lista"></div>
+          <div class="ferr-linha-acao"><button type="button" id="btn-abd-criar" class="cal-btn">+ Criar abordagem</button></div>
+        </div>
+
         <div class="cal-form-acoes">
           <button type="button" id="contato-modal-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
           <button type="button" id="contato-modal-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Modal: abordagem de uma marca (usa os modelos de Ferramentas > Abordagem) -->
+    <div id="abd-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal ferr-item-modal ferr-item-modal-largo abd-modal">
+        <div class="pl-modal-topo">
+          <input type="text" id="abd-titulo" class="pl-modal-titulo-input" placeholder="Nome da abordagem" maxlength="120" autocomplete="off">
+          <button id="abd-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="ferr-item-meta abd-meta">
+          <div class="cal-form-campo">
+            <label>Marca</label>
+            <span class="abd-marca" id="abd-marca"></span>
+          </div>
+          <div class="cal-form-campo">
+            <label>Canal</label>
+            <div class="cal-filtro-grupo" id="abd-canais">
+              <button type="button" class="cal-filtro-btn" data-canal="email">E-mail</button>
+              <button type="button" class="cal-filtro-btn" data-canal="whatsapp">WhatsApp</button>
+              <button type="button" class="cal-filtro-btn" data-canal="instagram">Instagram</button>
+            </div>
+          </div>
+          <div class="cal-form-campo">
+            <label for="abd-modelo">Modelo de abordagem</label>
+            <select id="abd-modelo"></select>
+          </div>
+        </div>
+        <div class="ferr-item-campos">
+          <div class="ferr-preencher-grade">
+            <div class="ferr-preencher-esq">
+              <p class="abd-aviso" id="abd-aviso" hidden></p>
+              <div class="ferr-vars-caixa">
+                <div class="ferr-vars-titulo">Campos</div>
+                <div id="abd-campos"></div>
+                <div class="ferr-linha-acao"><button type="button" class="cal-btn cal-btn-primario" id="abd-copiar">Copiar abordagem</button></div>
+              </div>
+            </div>
+            <aside class="ferr-celular-area" aria-label="Prévia da mensagem no celular">
+              <div class="ferr-celular">
+                <div class="ferr-celular-notch"></div>
+                <div class="ferr-celular-barra"><span class="ferr-celular-avatar"></span><span class="ferr-celular-titulo">Prévia da mensagem</span></div>
+                <div class="ferr-celular-conversa"><div class="ferr-balao" id="abd-celular-texto"></div></div>
+                <div class="ferr-celular-entrada"><span>Mensagem</span><span class="ferr-celular-enviar">&#10148;</span></div>
+              </div>
+            </aside>
+          </div>
+        </div>
+        <div class="cal-form-acoes">
+          <button type="button" id="abd-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+          <button type="button" id="abd-salvar" class="cal-btn cal-btn-primario">Salvar</button>
         </div>
       </div>
     </div>
@@ -5147,6 +5209,7 @@
         renderizarBaseContatos();
       });
       document.getElementById('btn-contatos-novo').addEventListener('click', () => abrirModalContato(null));
+      abdLigarEventos();
       document.getElementById('btn-contatos-baixar-csv').addEventListener('click', exportarContatosCSV);
       document.getElementById('btn-contatos-selecionar-todas').addEventListener('click', selecionarTodosContatosFiltrados);
       document.getElementById('btn-contatos-limpar-selecao').addEventListener('click', limparSelecaoContatos);
@@ -9211,7 +9274,7 @@
 
     async function carregarUGC() {
       try {
-        const [trabalhos, entregaveis, roteiros, visualizacoes, comentarios, contatos, contratos, precos] = await Promise.all([
+        const [trabalhos, entregaveis, roteiros, visualizacoes, comentarios, contatos, contratos, precos, abordagens] = await Promise.all([
           buscarTudo('ugc_trabalhos'),
           buscarTudo('ugc_trabalho_entregaveis'),
           buscarTudo('ugc_roteiros'),
@@ -9225,7 +9288,19 @@
           }),
           buscarTudo('ugc_contratos'),
           buscarTudo('ugc_precos'),
+          // Abordagens por marca (abordagens.sql): sem a tabela, só some o indicador.
+          buscarTudo('ugc_contato_abordagens')
+            .then((lista) => {
+              abdTabelaOk = true;
+              return lista;
+            })
+            .catch((err) => {
+              console.error('Abordagens ainda não disponíveis (abordagens.sql):', err);
+              abdTabelaOk = false;
+              return [];
+            }),
         ]);
+        abdIndexar(abordagens);
         ugcTrabalhosCache = trabalhos;
         ugcTrabalhoEntregaveisCache = entregaveis;
         ugcRoteirosCache = roteiros;
@@ -11032,6 +11107,7 @@
         <span class="ugc-status-pill ${classeSituacaoContato(contato.situacao)}">${escapeHtml(contato.situacao)}</span>
         <span>${contato.nicho ? escapeHtml(contato.nicho) : '<span class="contatos-vazio">—</span>'}</span>
         <span>${ultimoContatoFmt}</span>
+        <span class="contatos-abd" title="${abdDoContato(contato.id).length ? 'Abordagem criada' : 'Nenhuma abordagem'}">${abdDoContato(contato.id).length ? '🟢' : '⚪'}</span>
       `;
       linha.querySelectorAll('a').forEach((a) => a.addEventListener('click', (e) => e.stopPropagation()));
       const checkbox = linha.querySelector('.contatos-checkbox');
@@ -11067,6 +11143,7 @@
       document.getElementById('contato-ultimo-contato').value = contato && contato.ultimo_contato ? contato.ultimo_contato : '';
       document.getElementById('contato-observacao').value = contato ? contato.observacao || '' : '';
       document.getElementById('contato-modal-excluir').hidden = !contato;
+      abdRenderizarLista();
       document.getElementById('contato-modal-overlay').hidden = false;
     }
 
@@ -13580,13 +13657,13 @@
     }
 
     // Mockup de celular com a prévia da mensagem final (só visualiza, não gera texto).
-    function ferrHtmlCelular() {
+    function ferrHtmlCelular(idTexto = 'ferr-celular-texto') {
       return `
         <aside class="ferr-celular-area" aria-label="Prévia da mensagem no celular">
           <div class="ferr-celular">
             <div class="ferr-celular-notch"></div>
             <div class="ferr-celular-barra"><span class="ferr-celular-avatar"></span><span class="ferr-celular-titulo">Prévia da mensagem</span></div>
-            <div class="ferr-celular-conversa"><div class="ferr-balao" id="ferr-celular-texto"></div></div>
+            <div class="ferr-celular-conversa"><div class="ferr-balao" id="${idTexto}"></div></div>
             <div class="ferr-celular-entrada"><span>Mensagem</span><span class="ferr-celular-enviar">&#10148;</span></div>
           </div>
         </aside>`;
@@ -13600,6 +13677,15 @@
       const vazio = !texto.trim();
       el.classList.toggle('vazio', vazio);
       el.textContent = vazio ? 'O texto do prompt aparece aqui.' : texto;
+    }
+
+    // Canais em que um modelo de abordagem vale (usado pela Base de contatos).
+    function ferrHtmlCanaisModelo(item) {
+      const marcados = (item && item.dados && item.dados.canais) || [];
+      const opcoes = Object.entries(ABD_CANAIS)
+        .map(([chave, c]) => `<label class="ferr-canal-opcao"><input type="checkbox" data-canal-modelo="${chave}" ${marcados.includes(chave) ? 'checked' : ''}> ${escapeHtml(c.rotulo)}</label>`)
+        .join('');
+      return `<div class="cal-form-campo"><label>Canais em que esse modelo serve (opcional)</label><div class="ferr-canais">${opcoes}</div><p class="ferr-canais-dica">Serve pra Base de contatos. Sem nenhum marcado, o modelo aparece em todos os canais.</p></div>`;
     }
 
     function ferrHtmlCamposItem(tipo, item) {
@@ -13617,6 +13703,7 @@
             '<div class="ferr-edicao-prompt">' +
             descricao +
             plataforma +
+            ferrHtmlCanaisModelo(v) +
             ferrCampoArea('ferr-f-conteudo', 'Prompt (escreva as variáveis assim: {{nome_da_variavel}})', v.conteudo, { linhas: 9 }) +
             '</div>' +
             '<div class="ferr-vars-caixa"><div class="ferr-vars-titulo">Campos</div><div id="ferr-vars-campos"></div>' +
@@ -13953,6 +14040,11 @@
       const existente = ferrItemAbertoId ? ferrItens.find((i) => i.id === ferrItemAbertoId) : null;
       if (!existente || existente.pasta_id !== pastaId) {
         linha.ordem = ferrItens.filter((i) => i.pasta_id === pastaId).reduce((max, i) => Math.max(max, i.ordem || 0), -1) + 1;
+      }
+
+      if (tipo === 'prompt_campos') {
+        const canais = [...document.querySelectorAll('[data-canal-modelo]:checked')].map((x) => x.dataset.canalModelo);
+        linha.dados = { ...((existente && existente.dados) || {}), canais };
       }
 
       const btn = document.getElementById('ferr-item-salvar');
@@ -14462,6 +14554,357 @@
       });
       ['click', 'keydown', 'input'].forEach((ev) => document.getElementById('ferr-vista-cofre').addEventListener(ev, cofreReiniciarTimer));
       ['click', 'keydown', 'input'].forEach((ev) => document.getElementById('cofre-item-modal-overlay').addEventListener(ev, cofreReiniciarTimer));
+    }
+
+
+    // ==========================================================================
+    // Abordagem por marca (Base de contatos): usa os modelos "Prompt com campos"
+    // da pasta Ferramentas > Abordagem, sem copiá-los. O texto preenchido é
+    // salvo na tabela ugc_contato_abordagens, ligado à marca.
+    // ==========================================================================
+
+    const ABD_CANAIS = {
+      email: { rotulo: 'E-mail', emoji: '✉️' },
+      whatsapp: { rotulo: 'WhatsApp', emoji: '💬' },
+      instagram: { rotulo: 'Instagram', emoji: '📸' },
+    };
+    // Nomes de campo (sem acento, maiúscula ou separador) que recebem a marca sozinhos.
+    const ABD_CAMPOS_MARCA = ['nomedamarca', 'marca', 'nomemarca', 'nomedaempresa', 'empresa', 'nomedaloja'];
+
+    let abdPorContato = new Map();
+    let abdTabelaOk = true;
+    let abdModelos = [];
+    let abdModelosErro = '';
+    let abdEstado = null;
+
+    function abdIndexar(lista) {
+      abdPorContato = new Map();
+      lista.forEach((a) => {
+        if (!abdPorContato.has(a.contato_id)) abdPorContato.set(a.contato_id, []);
+        abdPorContato.get(a.contato_id).push(a);
+      });
+      abdPorContato.forEach((arr) => arr.sort((x, y) => (x.created_at || '').localeCompare(y.created_at || '')));
+    }
+
+    function abdDoContato(contatoId) {
+      return abdPorContato.get(contatoId) || [];
+    }
+
+    function abdNormalizar(texto) {
+      return (texto || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '');
+    }
+
+    async function abdCarregarModelos() {
+      try {
+        const [pastas, itens] = await Promise.all([buscarTudo('ferramentas_pastas'), buscarTudo('ferramentas_itens')]);
+        const ids = pastas.filter((p) => abdNormalizar(p.nome) === 'abordagem' || abdNormalizar(p.nome) === 'abordagens').map((p) => p.id);
+        abdModelos = itens.filter((i) => i.tipo === 'prompt_campos' && ids.includes(i.pasta_id)).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+        abdModelosErro = ids.length === 0 ? 'Não achei a pasta "Abordagem" em Ferramentas.' : '';
+      } catch (err) {
+        console.error('Modelos de abordagem indisponíveis:', err);
+        abdModelos = [];
+        abdModelosErro = 'Não consegui carregar as Ferramentas.';
+      }
+    }
+
+    function abdModelosDoCanal(canal) {
+      return abdModelos.filter((m) => {
+        const canais = (m.dados && m.dados.canais) || [];
+        return canais.length === 0 || canais.includes(canal);
+      });
+    }
+
+    function abdContatoAberto() {
+      return contatoAbertoId ? ugcBaseContatosCache.find((c) => c.id === contatoAbertoId) : null;
+    }
+
+    function abdNomeMarcaAtual() {
+      const c = abdContatoAberto();
+      return (document.getElementById('contato-marca').value || '').trim() || (c ? c.marca : '');
+    }
+
+    // ---- seção "Abordagem" dentro do detalhe da marca ----
+
+    function abdRenderizarLista() {
+      const lista = document.getElementById('contato-abordagens-lista');
+      const botao = document.getElementById('btn-abd-criar');
+      if (!lista) return;
+      if (!contatoAbertoId) {
+        lista.innerHTML = '<p class="abd-vazio">Salve a marca primeiro pra criar abordagens.</p>';
+        botao.hidden = true;
+        return;
+      }
+      if (!abdTabelaOk) {
+        lista.innerHTML = '<p class="abd-vazio">Falta rodar o arquivo abordagens.sql no Supabase pra usar as abordagens.</p>';
+        botao.hidden = true;
+        return;
+      }
+      botao.hidden = false;
+      const itens = abdDoContato(contatoAbertoId);
+      if (itens.length === 0) {
+        lista.innerHTML = '<p class="abd-vazio">Nenhuma abordagem criada para esta marca.</p>';
+        return;
+      }
+      lista.innerHTML = '';
+      itens.forEach((a) => {
+        const canal = ABD_CANAIS[a.canal] || { rotulo: a.canal, emoji: '💌' };
+        const card = document.createElement('div');
+        card.className = 'abd-item';
+        card.innerHTML = `
+          <div class="abd-item-topo">
+            <span class="abd-canal">${canal.emoji} ${escapeHtml(canal.rotulo)}</span>
+            <span class="abd-item-titulo">${escapeHtml(a.titulo)}</span>
+          </div>
+          <p class="abd-item-texto">${escapeHtml(a.conteudo || '')}</p>
+          <div class="abd-item-acoes">
+            <button type="button" class="cal-btn" data-acao="abrir">Ver / editar</button>
+            <button type="button" class="cal-btn" data-acao="copiar">Copiar</button>
+            <button type="button" class="cal-btn pl-btn-excluir" data-acao="excluir">Excluir</button>
+          </div>`;
+        card.querySelector('[data-acao="abrir"]').addEventListener('click', () => abdAbrirModal(a));
+        card.querySelector('[data-acao="copiar"]').addEventListener('click', (e) => ferrCopiar(a.conteudo || '', e.currentTarget));
+        card.querySelector('[data-acao="excluir"]').addEventListener('click', () => abdExcluir(a));
+        lista.appendChild(card);
+      });
+    }
+
+    async function abdExcluir(abordagem) {
+      if (!(await confirmarAcao('Excluir esta abordagem?'))) return;
+      const { error } = await Auth.sb.from('ugc_contato_abordagens').delete().eq('id', abordagem.id);
+      if (error) {
+        console.error('Erro ao excluir abordagem:', error);
+        alert(tr('erro_excluir_generico'));
+        return;
+      }
+      abdIndexar([...abdPorContato.values()].flat().filter((a) => a.id !== abordagem.id));
+      abdRenderizarLista();
+      renderizarBaseContatos();
+    }
+
+    // ---- modal de criar / ver / editar ----
+
+    async function abdAbrirModal(abordagem) {
+      if (!contatoAbertoId) return;
+      const modelos = abdCarregarModelos();
+      abdEstado = {
+        id: abordagem ? abordagem.id : null,
+        canal: abordagem ? abordagem.canal : 'email',
+        modeloId: abordagem ? abordagem.modelo_id : null,
+        valores: abordagem && abordagem.valores ? { ...abordagem.valores } : {},
+        textoSalvo: abordagem ? abordagem.conteudo || '' : '',
+        tituloAuto: !abordagem,
+        semModelo: false,
+      };
+      document.getElementById('abd-titulo').value = abordagem ? abordagem.titulo : '';
+      document.getElementById('abd-marca').textContent = abdNomeMarcaAtual();
+      document.getElementById('abd-excluir').hidden = !abordagem;
+      document.getElementById('abd-modal-overlay').hidden = false;
+      await modelos;
+      const disponiveis = abdModelosDoCanal(abdEstado.canal);
+      if (abordagem && !abdModelos.some((m) => m.id === abordagem.modelo_id)) abdEstado.semModelo = true;
+      else if (!abordagem && disponiveis.length === 1) {
+        abdEstado.modeloId = disponiveis[0].id;
+        abdSugerirTitulo();
+      }
+      abdRenderizarModal();
+    }
+
+    function abdModeloAtual() {
+      return abdModelos.find((m) => m.id === abdEstado.modeloId) || null;
+    }
+
+    function abdTextoFinal() {
+      const modelo = abdModeloAtual();
+      if (modelo) return ferrPreencher(modelo.conteudo || '', abdEstado.valores);
+      return abdEstado.textoSalvo;
+    }
+
+    function abdRenderizarModal() {
+      const estado = abdEstado;
+      document.querySelectorAll('#abd-canais .cal-filtro-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.canal === estado.canal));
+
+      const compat = abdModelosDoCanal(estado.canal);
+      const modeloAtual = abdModeloAtual();
+      const opcoes = compat.slice();
+      // Ao editar, o modelo já usado continua na lista mesmo se o canal não bater mais.
+      if (modeloAtual && !opcoes.includes(modeloAtual)) opcoes.push(modeloAtual);
+      const sel = document.getElementById('abd-modelo');
+      sel.innerHTML =
+        '<option value="">Escolha um modelo</option>' + opcoes.map((m) => `<option value="${escapeHtml(m.id)}">${escapeHtml(m.nome)}</option>`).join('');
+      sel.value = modeloAtual ? modeloAtual.id : '';
+
+      const aviso = document.getElementById('abd-aviso');
+      let msg = '';
+      if (abdModelosErro) msg = abdModelosErro + ' Crie os modelos em Ferramentas, numa pasta chamada Abordagem.';
+      else if (estado.semModelo) msg = 'O modelo usado nessa abordagem não existe mais. Você pode editar o texto salvo abaixo.';
+      else if (compat.length === 0) msg = 'Nenhum modelo de abordagem serve pra esse canal. Crie em Ferramentas > Abordagem (Prompt com campos).';
+      aviso.textContent = msg;
+      aviso.hidden = !msg;
+
+      abdRenderizarCampos();
+      abdAtualizarPrevia();
+    }
+
+    function abdRenderizarCampos() {
+      const cont = document.getElementById('abd-campos');
+      const modelo = abdModeloAtual();
+      if (!modelo) {
+        if (abdEstado.semModelo) {
+          cont.innerHTML = '<div class="cal-form-campo"><label for="abd-texto-livre">Texto salvo</label><textarea id="abd-texto-livre" rows="8"></textarea></div>';
+          const ta = document.getElementById('abd-texto-livre');
+          ta.value = abdEstado.textoSalvo;
+          ta.addEventListener('input', () => {
+            abdEstado.textoSalvo = ta.value;
+            abdAtualizarPrevia();
+          });
+        } else {
+          cont.innerHTML = '<p class="ferr-vars-vazio">Escolha um modelo pra ver os campos.</p>';
+        }
+        return;
+      }
+      const vars = ferrVariaveis(modelo.conteudo);
+      const marca = abdNomeMarcaAtual();
+      vars.forEach((nome) => {
+        if (ABD_CAMPOS_MARCA.includes(abdNormalizar(nome)) && !abdEstado.valores[nome] && marca) abdEstado.valores[nome] = marca;
+      });
+      if (vars.length === 0) {
+        cont.innerHTML = '<p class="ferr-vars-vazio">Esse modelo não tem campos pra preencher.</p>';
+        return;
+      }
+      cont.innerHTML = vars
+        .map(
+          (nome, i) => `
+          <div class="cal-form-campo">
+            <label for="abd-var-${i}">${escapeHtml(ferrNomeVariavel(nome))}</label>
+            <textarea id="abd-var-${i}" data-var="${escapeHtml(nome)}" rows="1"></textarea>
+          </div>`
+        )
+        .join('');
+      cont.querySelectorAll('textarea[data-var]').forEach((ta) => {
+        ta.value = abdEstado.valores[ta.dataset.var] || '';
+        ta.addEventListener('input', () => {
+          abdEstado.valores[ta.dataset.var] = ta.value;
+          abdAtualizarPrevia();
+        });
+      });
+    }
+
+    function abdAtualizarPrevia() {
+      const el = document.getElementById('abd-celular-texto');
+      if (!el) return;
+      const texto = abdTextoFinal();
+      const vazio = !texto.trim();
+      el.classList.toggle('vazio', vazio);
+      el.textContent = vazio ? 'A abordagem aparece aqui.' : texto;
+    }
+
+    function abdEscolherCanal(canal) {
+      abdEstado.canal = canal;
+      // Se o modelo escolhido não vale pro novo canal, volta pra "Escolha um modelo".
+      const modelo = abdModeloAtual();
+      if (modelo && !abdModelosDoCanal(canal).includes(modelo)) abdEstado.modeloId = null;
+      if (!abdEstado.modeloId) {
+        const compat = abdModelosDoCanal(canal);
+        if (compat.length === 1 && !abdEstado.id) abdEstado.modeloId = compat[0].id;
+      }
+      abdSugerirTitulo();
+      abdRenderizarModal();
+    }
+
+    function abdEscolherModelo(id) {
+      abdEstado.modeloId = id || null;
+      abdEstado.semModelo = false;
+      abdSugerirTitulo();
+      abdRenderizarModal();
+    }
+
+    // Enquanto o nome ainda não foi mexido na mão, ele acompanha canal + modelo.
+    function abdSugerirTitulo() {
+      if (!abdEstado.tituloAuto) return;
+      const modelo = abdModeloAtual();
+      document.getElementById('abd-titulo').value = modelo ? `${ABD_CANAIS[abdEstado.canal].rotulo} · ${modelo.nome}` : '';
+    }
+
+    function abdFecharModal() {
+      abdEstado = null;
+      document.getElementById('abd-modal-overlay').hidden = true;
+    }
+
+    async function abdSalvar() {
+      const estado = abdEstado;
+      const modelo = abdModeloAtual();
+      if (!modelo && !estado.semModelo) {
+        alert('Escolha um modelo de abordagem.');
+        return;
+      }
+      const texto = abdTextoFinal();
+      if (!texto.trim()) {
+        alert('A abordagem está vazia.');
+        return;
+      }
+      const titulo = document.getElementById('abd-titulo').value.trim() || `${ABD_CANAIS[estado.canal].rotulo}${modelo ? ' · ' + modelo.nome : ''}`;
+      if (/\{\{\s*[^}]+\}\}/.test(texto) && !(await confirmarAcao('Ainda tem campo sem preencher (aparece entre {{ }}). Salvar assim mesmo?'))) return;
+
+      const linha = {
+        contato_id: contatoAbertoId,
+        canal: estado.canal,
+        titulo,
+        modelo_id: modelo ? modelo.id : estado.modeloId,
+        modelo_nome: modelo ? modelo.nome : null,
+        valores: estado.valores,
+        conteudo: texto,
+        updated_at: new Date().toISOString(),
+      };
+      if (!linha.modelo_nome && estado.id) {
+        const anterior = abdDoContato(contatoAbertoId).find((a) => a.id === estado.id);
+        if (anterior) linha.modelo_nome = anterior.modelo_nome;
+      }
+      const btn = document.getElementById('abd-salvar');
+      btn.disabled = true;
+      try {
+        const tabela = Auth.sb.from('ugc_contato_abordagens');
+        const { data, error } = estado.id ? await tabela.update(linha).eq('id', estado.id).select() : await tabela.insert(linha).select();
+        if (error) throw error;
+        const todas = [...abdPorContato.values()].flat().filter((a) => a.id !== (data[0] && data[0].id));
+        if (data[0]) todas.push(data[0]);
+        abdIndexar(todas);
+        abdFecharModal();
+        abdRenderizarLista();
+        renderizarBaseContatos();
+      } catch (err) {
+        console.error('Erro ao salvar abordagem:', err);
+        alert(tr('erro_salvar_generico'));
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function abdExcluirDoModal() {
+      if (!abdEstado || !abdEstado.id) return;
+      const alvo = abdDoContato(contatoAbertoId).find((a) => a.id === abdEstado.id);
+      if (!alvo) return;
+      abdFecharModal();
+      await abdExcluir(alvo);
+    }
+
+    function abdLigarEventos() {
+      document.getElementById('btn-abd-criar').addEventListener('click', () => abdAbrirModal(null));
+      document.getElementById('abd-modal-fechar').addEventListener('click', abdFecharModal);
+      document.getElementById('abd-modal-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'abd-modal-overlay') abdFecharModal();
+      });
+      document.querySelectorAll('#abd-canais .cal-filtro-btn').forEach((b) => b.addEventListener('click', () => abdEscolherCanal(b.dataset.canal)));
+      document.getElementById('abd-modelo').addEventListener('change', (e) => abdEscolherModelo(e.target.value));
+      document.getElementById('abd-titulo').addEventListener('input', () => {
+        if (abdEstado) abdEstado.tituloAuto = false;
+      });
+      document.getElementById('abd-copiar').addEventListener('click', (e) => ferrCopiar(abdTextoFinal(), e.currentTarget));
+      document.getElementById('abd-salvar').addEventListener('click', abdSalvar);
+      document.getElementById('abd-excluir').addEventListener('click', abdExcluirDoModal);
     }
 
     function confirmarAcao(mensagem, opcoes = {}) {

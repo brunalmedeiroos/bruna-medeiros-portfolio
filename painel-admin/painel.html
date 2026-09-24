@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260924n">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260924o">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -13518,11 +13518,13 @@
         case 'prompt_campos':
           return (
             '<div class="ferr-preencher-grade"><div class="ferr-preencher-esq">' +
+            '<div class="ferr-edicao-prompt">' +
             descricao +
             plataforma +
             ferrCampoArea('ferr-f-conteudo', 'Prompt (escreva as variáveis assim: {{nome_da_variavel}})', v.conteudo, { linhas: 9 }) +
+            '</div>' +
             '<div class="ferr-vars-caixa"><div class="ferr-vars-titulo">Campos</div><div id="ferr-vars-campos"></div>' +
-            '<div class="ferr-linha-acao"><button type="button" class="cal-btn cal-btn-primario" id="btn-ferr-copiar-preenchido">Copiar prompt preenchido</button></div></div>' +
+            '<div class="ferr-linha-acao"><button type="button" class="cal-btn cal-btn-primario" id="btn-ferr-copiar-preenchido">Copiar prompt preenchido</button><button type="button" class="cal-btn" id="btn-ferr-editar-prompt">Editar prompt</button></div></div>' +
             '</div>' +
             ferrHtmlCelular() +
             '</div>'
@@ -13597,7 +13599,11 @@
       sel.innerHTML = ferrOrdenar(ferrPastas).map((p) => `<option value="${p.id}">${escapeHtml(p.nome)}</option>`).join('');
       sel.value = item ? item.pasta_id : pastaNova;
 
-      document.querySelector('#ferr-item-modal-overlay .pl-modal').classList.toggle('ferr-item-modal-largo', tipo === 'prompt_campos');
+      const modalItem = document.querySelector('#ferr-item-modal-overlay .pl-modal');
+      modalItem.classList.toggle('ferr-item-modal-largo', tipo === 'prompt_campos');
+      // Ferramenta já criada abre só com os campos (modo preencher); "Editar prompt" mostra o resto.
+      modalItem.classList.remove('ferr-editando-prompt');
+      modalItem.classList.toggle('ferr-modo-preencher', tipo === 'prompt_campos' && !!item);
       document.getElementById('ferr-item-campos').innerHTML = ferrHtmlCamposItem(tipo, item);
       document.getElementById('ferr-item-excluir').hidden = !item;
       document.getElementById('ferr-item-duplicar').hidden = !item;
@@ -13636,6 +13642,11 @@
         ferrRenderizarVariaveis();
         on('ferr-f-conteudo', 'input', ferrRenderizarVariaveis);
         on('btn-ferr-copiar-preenchido', 'click', (e) => ferrCopiar(ferrPreencher(ferrValor('ferr-f-conteudo'), ferrValoresVars), e.currentTarget));
+        on('btn-ferr-editar-prompt', 'click', (e) => {
+          const modal = document.querySelector('#ferr-item-modal-overlay .pl-modal');
+          const editando = modal.classList.toggle('ferr-editando-prompt');
+          e.currentTarget.textContent = editando ? 'Voltar a preencher' : 'Editar prompt';
+        });
       }
 
       if (tipo === 'checklist') {

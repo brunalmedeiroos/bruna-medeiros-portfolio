@@ -7004,3 +7004,19 @@
     max-width: 340px;
   }
 }
+
+/* Prompt com campos, ferramenta já criada: abre só com os campos. */
+.painel-body .ferr-item-modal-largo.ferr-modo-preencher:not(.ferr-editando-prompt) .ferr-item-meta,
+.painel-body .ferr-item-modal-largo.ferr-modo-preencher:not(.ferr-editando-prompt) .ferr-edicao-prompt {
+  display: none;
+}
+
+.painel-body .ferr-edicao-prompt {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.painel-body .ferr-item-modal:not(.ferr-modo-preencher) #btn-ferr-editar-prompt {
+  display: none;
+}

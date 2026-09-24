@@ -3897,6 +3897,54 @@
   color: var(--texto-suave);
 }
 
+.painel-body .contatos-selecao-barra[hidden],
+.painel-body .contatos-nicho-lote[hidden],
+.painel-body .contatos-nicho-barra .cal-btn[hidden] {
+  display: none;
+}
+
+.painel-body .contatos-nicho-barra {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.painel-body .contatos-nicho-barra label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.painel-body .contatos-nicho-lote {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border: 1px dashed var(--coral);
+  border-radius: var(--raio-sm);
+  background: rgba(125, 183, 206, 0.08);
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.painel-body .contatos-nicho-barra select,
+.painel-body .contatos-nicho-lote select {
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: var(--fonte-corpo);
+  background: var(--creme);
+  color: var(--grafite);
+}
+
 .painel-body .contatos-vazio {
   color: var(--texto-suave);
 }

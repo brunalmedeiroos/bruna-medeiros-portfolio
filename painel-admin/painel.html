@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260924c">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260924d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1090,10 +1090,25 @@
                 </div>
               </div>
 
-              <div class="contatos-selecao-barra">
+              <div class="contatos-selecao-barra" id="contatos-selecao-barra">
                 <span id="contatos-selecao-resumo">0 marcas selecionadas</span>
                 <button type="button" id="btn-contatos-selecionar-todas" class="cal-btn">Selecionar todas (0)</button>
                 <button type="button" id="btn-contatos-limpar-selecao" class="cal-btn">Limpar seleção</button>
+              </div>
+
+              <div class="contatos-nicho-barra">
+                <label for="contatos-filtro-nicho">Nicho</label>
+                <select id="contatos-filtro-nicho"></select>
+                <button type="button" id="btn-contatos-nicho-lote" class="cal-btn">Definir nicho em lote</button>
+              </div>
+
+              <div class="contatos-nicho-lote" id="contatos-nicho-lote" hidden>
+                <span id="contatos-nicho-lote-resumo">0 marcas marcadas</span>
+                <button type="button" id="btn-nicho-lote-todas" class="cal-btn">Marcar todas as exibidas (0)</button>
+                <button type="button" id="btn-nicho-lote-limpar" class="cal-btn">Limpar</button>
+                <select id="contatos-nicho-lote-select"></select>
+                <button type="button" id="btn-nicho-lote-aplicar" class="cal-btn cal-btn-primario">Aplicar nas marcadas</button>
+                <button type="button" id="btn-nicho-lote-sair" class="cal-btn">Sair do modo em lote</button>
               </div>
 
               <div class="cal-todas-tabela">
@@ -2467,6 +2482,9 @@
     let ugcBaseContatosCache = [];
     let filtroSituacaoContato = 'todas';
     let buscaContatos = '';
+    let filtroNichoContato = ''; // '' = todos, '__sem__' = sem nicho, ou o nome do nicho
+    let modoNichoLote = false;
+    const nichoLoteIds = new Set();
     let emailProspAbaCarregada = false;
     let emailEnviosCache = [];
     let emailOptoutCache = [];
@@ -4889,6 +4907,21 @@
       document.getElementById('btn-contatos-baixar-csv').addEventListener('click', exportarContatosCSV);
       document.getElementById('btn-contatos-selecionar-todas').addEventListener('click', selecionarTodosContatosFiltrados);
       document.getElementById('btn-contatos-limpar-selecao').addEventListener('click', limparSelecaoContatos);
+      document.getElementById('contatos-filtro-nicho').addEventListener('change', (e) => {
+        filtroNichoContato = e.target.value;
+        renderizarBaseContatos();
+      });
+      document.getElementById('btn-contatos-nicho-lote').addEventListener('click', () => alternarModoNichoLote(true));
+      document.getElementById('btn-nicho-lote-sair').addEventListener('click', () => alternarModoNichoLote(false));
+      document.getElementById('btn-nicho-lote-todas').addEventListener('click', () => {
+        obterContatosFiltrados().forEach((c) => nichoLoteIds.add(c.id));
+        renderizarBaseContatos();
+      });
+      document.getElementById('btn-nicho-lote-limpar').addEventListener('click', () => {
+        nichoLoteIds.clear();
+        renderizarBaseContatos();
+      });
+      document.getElementById('btn-nicho-lote-aplicar').addEventListener('click', aplicarNichoLote);
       document.getElementById('contato-modal-fechar').addEventListener('click', fecharModalContato);
       document.getElementById('contato-modal-excluir').addEventListener('click', excluirModalContato);
       document.getElementById('contato-modal-salvar').addEventListener('click', salvarModalContato);
@@ -10482,6 +10515,8 @@
     function obterContatosFiltrados() {
       let filtrados = ugcBaseContatosCache;
       if (filtroSituacaoContato !== 'todas') filtrados = filtrados.filter((c) => c.situacao === filtroSituacaoContato);
+      if (filtroNichoContato === '__sem__') filtrados = filtrados.filter((c) => !c.nicho);
+      else if (filtroNichoContato) filtrados = filtrados.filter((c) => c.nicho === filtroNichoContato);
       if (buscaContatos.trim()) {
         const termo = buscaContatos.trim().toLowerCase().replace(/^@/, '');
         filtrados = filtrados.filter(
@@ -10495,8 +10530,88 @@
       return [...filtrados].sort((a, b) => a.marca.localeCompare(b.marca));
     }
 
+    // Nichos da lista fixa + qualquer nicho diferente que já esteja salvo
+    // (ex: veio de uma planilha), sem repetir.
+    function obterNichosEmUso() {
+      const extras = [...new Set(ugcBaseContatosCache.map((c) => c.nicho).filter((n) => n && !NICHOS_CONTATO.includes(n)))];
+      return [...NICHOS_CONTATO, ...extras];
+    }
+
+    function popularSelectsNicho() {
+      const nichos = obterNichosEmUso();
+      const opcao = (valor, rotulo) => `<option value="${escapeHtml(valor)}">${escapeHtml(rotulo)}</option>`;
+
+      const selFiltro = document.getElementById('contatos-filtro-nicho');
+      const valorFiltro = filtroNichoContato;
+      selFiltro.innerHTML =
+        opcao('', 'Todos os nichos') + opcao('__sem__', 'Sem nicho') + nichos.map((n) => opcao(n, n)).join('');
+      selFiltro.value = valorFiltro;
+      if (selFiltro.value !== valorFiltro) filtroNichoContato = '';
+
+      const selLote = document.getElementById('contatos-nicho-lote-select');
+      const valorLote = selLote.value;
+      selLote.innerHTML = opcao('', 'Escolha o nicho...') + nichos.map((n) => opcao(n, n)).join('') + opcao('__limpar__', 'Sem nicho (limpar)');
+      selLote.value = valorLote;
+    }
+
+    function atualizarBarraNichoLote(exibidas) {
+      const marcadas = nichoLoteIds.size;
+      document.getElementById('contatos-nicho-lote-resumo').textContent = `${marcadas} ${marcadas === 1 ? 'marca marcada' : 'marcas marcadas'}`;
+      document.getElementById('btn-nicho-lote-todas').textContent = `Marcar todas as exibidas (${exibidas.length})`;
+    }
+
+    function alternarModoNichoLote(ligado) {
+      modoNichoLote = ligado;
+      nichoLoteIds.clear();
+      renderizarBaseContatos();
+    }
+
+    async function aplicarNichoLote() {
+      const escolhido = document.getElementById('contatos-nicho-lote-select').value;
+      if (!escolhido) {
+        alert('Escolha o nicho que você quer aplicar.');
+        return;
+      }
+      const ids = [...nichoLoteIds];
+      if (ids.length === 0) {
+        alert('Marque pelo menos uma marca na tabela.');
+        return;
+      }
+      const nicho = escolhido === '__limpar__' ? null : escolhido;
+      const texto = nicho
+        ? `Definir o nicho "${nicho}" para ${ids.length} ${ids.length === 1 ? 'marca' : 'marcas'}?`
+        : `Tirar o nicho de ${ids.length} ${ids.length === 1 ? 'marca' : 'marcas'}?`;
+      if (!(await confirmarAcao(texto, { perigo: false, textoConfirmar: 'Aplicar' }))) return;
+
+      const btn = document.getElementById('btn-nicho-lote-aplicar');
+      btn.disabled = true;
+      try {
+        const TAMANHO_LOTE = 100;
+        for (let i = 0; i < ids.length; i += TAMANHO_LOTE) {
+          const { error } = await Auth.sb.from('ugc_base_contatos').update({ nicho }).in('id', ids.slice(i, i + TAMANHO_LOTE));
+          if (error) throw error;
+        }
+        ugcBaseContatosCache.forEach((c) => {
+          if (nichoLoteIds.has(c.id)) c.nicho = nicho;
+        });
+        nichoLoteIds.clear();
+        renderizarBaseContatos();
+      } catch (err) {
+        console.error('Erro ao aplicar nicho em lote:', err);
+        alert('Não consegui salvar o nicho. Se a coluna ainda não existe no banco, rode o SQL do nicho no Supabase e tente de novo.');
+        await carregarUGC();
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
     function renderizarBaseContatos() {
+      popularSelectsNicho();
+      document.getElementById('contatos-selecao-barra').hidden = modoNichoLote;
+      document.getElementById('contatos-nicho-lote').hidden = !modoNichoLote;
+      document.getElementById('btn-contatos-nicho-lote').hidden = modoNichoLote;
       const ordenados = obterContatosFiltrados();
+      atualizarBarraNichoLote(ordenados);
 
       document.getElementById('contatos-resumo').textContent =
         ordenados.length === 0 ? 'Nenhum contato ainda.' : `${ordenados.length} ${ordenados.length === 1 ? 'contato' : 'contatos'}.`;
@@ -10573,7 +10688,11 @@
       const ultimoContatoFmt = contato.ultimo_contato ? formatarDataCurta(new Date(contato.ultimo_contato + 'T00:00:00')) : '—';
       linha.innerHTML = `
         <span class="contatos-checkbox-cel">
-          <input type="checkbox" class="contatos-checkbox" ${contato.selecionada ? 'checked' : ''} ${contato.email ? '' : 'disabled'} title="${contato.email ? 'Selecionar pra e-mail' : 'Sem e-mail cadastrado'}">
+          ${
+            modoNichoLote
+              ? `<input type="checkbox" class="contatos-checkbox" ${nichoLoteIds.has(contato.id) ? 'checked' : ''} title="Marcar pra definir nicho">`
+              : `<input type="checkbox" class="contatos-checkbox" ${contato.selecionada ? 'checked' : ''} ${contato.email ? '' : 'disabled'} title="${contato.email ? 'Selecionar pra e-mail' : 'Sem e-mail cadastrado'}">`
+          }
         </span>
         <span class="ugc-trabalhos-marca">${escapeHtml(contato.marca)}</span>
         <span>${instagramHtml}</span>
@@ -10586,7 +10705,15 @@
       linha.querySelectorAll('a').forEach((a) => a.addEventListener('click', (e) => e.stopPropagation()));
       const checkbox = linha.querySelector('.contatos-checkbox');
       checkbox.addEventListener('click', (e) => e.stopPropagation());
-      checkbox.addEventListener('change', (e) => alternarSelecaoContato(contato, e.target.checked));
+      checkbox.addEventListener('change', (e) => {
+        if (modoNichoLote) {
+          if (e.target.checked) nichoLoteIds.add(contato.id);
+          else nichoLoteIds.delete(contato.id);
+          atualizarBarraNichoLote(obterContatosFiltrados());
+        } else {
+          alternarSelecaoContato(contato, e.target.checked);
+        }
+      });
       linha.addEventListener('click', () => abrirModalContato(contato));
       return linha;
     }

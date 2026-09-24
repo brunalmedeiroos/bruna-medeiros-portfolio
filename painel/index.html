@@ -8885,6 +8885,9 @@
       // carregar (ambos disparam no boot), atualiza de novo aqui pra
       // pegar as entregas assim que ugcTrabalhosCache chega.
       renderizarCalendario();
+      // A aba E-mail lê a Base de contatos daqui; se ela abriu (ou foi
+      // restaurada ao recarregar) antes dos contatos chegarem, mostrava 0.
+      if (emailProspAbaCarregada) renderizarEmailProspeccao();
     }
 
     function trocarSubAbaUGC(pagina) {

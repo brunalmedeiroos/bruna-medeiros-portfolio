@@ -66,7 +66,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/auth.js?v=1"></script>
-  <script src="../js/admin-render.js?v=5"></script>
+  <script src="../js/admin-render.js?v=6"></script>
   <script>
     const db = DesafioAuth.sb;
     document.getElementById('btn-sair').addEventListener('click', () => DesafioAuth.logout());
@@ -159,20 +159,15 @@
 
       const seteDiasAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-      const [{ data: processo }, { count: totalCadastradas }, { count: totalPagas }, { data: pendentes }, { data: dias }, { data: rascunhos }, { data: ranking }, { data: ativasRows }] = await Promise.all([
+      const [{ data: processo }, { count: totalCadastradas }, { count: totalPagas }, { data: dias }, { data: rascunhos }, { data: ranking }, { data: ativasRows }] = await Promise.all([
         db.from('desafio_processo').select('data_inicio').eq('id', 1).maybeSingle(),
         db.from('desafio_perfis').select('*', { count: 'exact', head: true }),
         db.from('desafio_perfis').select('*', { count: 'exact', head: true }).eq('pago', true),
-        db.from('desafio_perfis').select('id,nome,instagram,created_at,comprovante_path').eq('pago', false).order('created_at', { ascending: true }),
         db.from('desafio_dias').select('*').eq('publicado', true).order('numero_dia', { ascending: false }),
         db.from('desafio_dias').select('*').eq('publicado', false).order('numero_dia', { ascending: true }),
         db.from('desafio_ranking').select('*').order('pontos', { ascending: false }),
         db.from('desafio_conclusoes').select('participante_id').gte('feito_em', seteDiasAtras),
       ]);
-
-      // A própria dona também tem uma linha em desafio_perfis — não faz
-      // sentido aparecer na fila de "marcar como pago" do próprio desafio.
-      const pendentesSemDona = (pendentes || []).filter((p) => p.id !== usuarioAtual.id);
 
       const ativasEssaSemana = new Set((ativasRows || []).map((r) => r.participante_id)).size;
       const ultimoDia = (dias && dias[0]) || null;
@@ -199,12 +194,10 @@
       painel.innerHTML = `
         ${renderCardDia(processo && processo.data_inicio)}
         ${renderKpiRow({ totalCadastradas, ativasEssaSemana, pctUltimoDia, ultimoDia, videosPendentes, totalPagas })}
-        ${renderPagamentosPendentes(pendentesSemDona)}
         ${renderAdminGrid({ rascunhos, ranking, bonusHistorico })}
       `;
 
       wireCardDia();
-      wirePagamentosPendentesHandlers(db, { onChanged: carregarVisaoGeral });
       wireAdminGridHandlers(db, { ranking, rascunhos, onChanged: carregarVisaoGeral });
     }
 
@@ -216,7 +209,7 @@
 
       const { data: perfis } = await db
         .from('desafio_perfis')
-        .select('id,nome,instagram,pago,created_at')
+        .select('id,nome,instagram,pago,created_at,comprovante_path')
         .order('created_at', { ascending: false });
 
       const semDona = (perfis || []).filter((p) => p.id !== usuarioAtual.id);

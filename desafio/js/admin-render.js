@@ -18,28 +18,38 @@ function renderKpiRow({ totalCadastradas, ativasEssaSemana, pctUltimoDia, ultimo
   `;
 }
 
-// Lista de quem se cadastrou mas ainda não foi marcada como paga — pra
-// dar baixa manual depois de conferir o Pix caiu na conta da Bruna. Quando
-// a pessoa já anexou o comprovante, mostra um link pra abrir o arquivo
-// (link assinado — o bucket é privado) antes de marcar como pago.
-function renderPagamentosPendentes(pendentes) {
+// Lista de TODAS as cadastradas (pagas ou não). Quem ainda não pagou ganha
+// o link "ver comprovante" (se já enviou um — link assinado, bucket
+// privado) e o botão "Marcar como pago" pra dar baixa depois de conferir o
+// Pix. "Apagar" tira o cadastro (ex: quando a pessoa desiste) — remove a
+// linha em desafio_perfis e tudo que depende dela (progresso, bônus) pelas
+// FKs em cascata, mas não apaga o login dela (só uma Edge Function com
+// chave de serviço poderia).
+function renderCadastros(perfis) {
   return `
-    <div class="secao-titulo">Pagamentos pendentes</div>
-    <div id="pagamentos-lista">
-      ${(pendentes && pendentes.length) ? pendentes.map((p) => `
-        <div class="hist-item" data-id="${p.id}">
-          <span class="t">
-            <b>${p.nome || 'Sem nome'}</b> ${p.instagram ? `· ${p.instagram}` : ''}
-            ${p.comprovante_path ? `<div><span class="vq-link btn-ver-comprovante" data-path="${p.comprovante_path}">ver comprovante</span></div>` : `<div style="font-size:11.5px;color:var(--texto-suave);">sem comprovante ainda</div>`}
-          </span>
-          <button type="button" class="btn-toggle pendente btn-marcar-pago" data-id="${p.id}">Marcar como pago</button>
-        </div>
-      `).join('') : '<p class="vazio">Ninguém pendente — todo mundo cadastrada já pagou.</p>'}
-    </div>
+    <div class="secao-titulo">Cadastros</div>
+    <table class="admin-table">
+      <tr><th>Nome</th><th>Instagram</th><th>Pago</th><th>Cadastrou em</th><th></th><th></th></tr>
+      ${(perfis && perfis.length) ? perfis.map((p) => `
+        <tr>
+          <td>${p.nome || 'Sem nome'}</td>
+          <td>${p.instagram || ''}</td>
+          <td>
+            ${p.pago ? '<span class="status feito">Pago</span>' : '<span class="status pendente">Pendente</span>'}
+            ${!p.pago ? (p.comprovante_path
+              ? `<div><span class="vq-link btn-ver-comprovante" data-path="${p.comprovante_path}">ver comprovante</span></div>`
+              : `<div style="font-size:11px;color:var(--texto-suave);">sem comprovante</div>`) : ''}
+          </td>
+          <td>${new Date(p.created_at).toLocaleDateString('pt-BR')}</td>
+          <td>${!p.pago ? `<button type="button" class="btn-toggle pendente btn-marcar-pago" data-id="${p.id}">Marcar como pago</button>` : ''}</td>
+          <td><button type="button" class="btn-apagar-cadastro" data-id="${p.id}" data-nome="${(p.nome || 'essa participante').replace(/"/g, '&quot;')}" style="background:none;border:none;color:var(--pendente);font-size:12.5px;font-weight:700;cursor:pointer;font-family:var(--fonte-corpo);white-space:nowrap;">Apagar</button></td>
+        </tr>
+      `).join('') : '<tr><td colspan="6">Ninguém cadastrado ainda.</td></tr>'}
+    </table>
   `;
 }
 
-function wirePagamentosPendentesHandlers(db, { onChanged }) {
+function wireCadastrosHandlers(db, { onChanged }) {
   document.querySelectorAll('.btn-marcar-pago').forEach((btn) => {
     btn.addEventListener('click', async () => {
       btn.disabled = true;
@@ -63,31 +73,7 @@ function wirePagamentosPendentesHandlers(db, { onChanged }) {
       if (!error && data) window.open(data.signedUrl, '_blank');
     });
   });
-}
 
-// Lista de TODAS as cadastradas (pagas ou não), com opção de apagar o
-// cadastro (ex: quando a pessoa desiste). Apagar aqui não remove o login
-// dela (só a Edge Function com chave de serviço poderia) — só a linha em
-// desafio_perfis e tudo que depende dela (progresso, bônus).
-function renderCadastros(perfis) {
-  return `
-    <div class="secao-titulo">Cadastros</div>
-    <table class="admin-table">
-      <tr><th>Nome</th><th>Instagram</th><th>Pago</th><th>Cadastrou em</th><th></th></tr>
-      ${(perfis && perfis.length) ? perfis.map((p) => `
-        <tr>
-          <td>${p.nome || 'Sem nome'}</td>
-          <td>${p.instagram || ''}</td>
-          <td>${p.pago ? '<span class="status feito">Pago</span>' : '<span class="status pendente">Pendente</span>'}</td>
-          <td>${new Date(p.created_at).toLocaleDateString('pt-BR')}</td>
-          <td><button type="button" class="processo-acoes-btn apagar btn-apagar-cadastro" data-id="${p.id}" data-nome="${(p.nome || 'essa participante').replace(/"/g, '&quot;')}" style="background:none;border:none;color:var(--pendente);font-size:12.5px;font-weight:700;cursor:pointer;font-family:var(--fonte-corpo);">Apagar</button></td>
-        </tr>
-      `).join('') : '<tr><td colspan="5">Ninguém cadastrado ainda.</td></tr>'}
-    </table>
-  `;
-}
-
-function wireCadastrosHandlers(db, { onChanged }) {
   document.querySelectorAll('.btn-apagar-cadastro').forEach((btn) => {
     btn.addEventListener('click', async () => {
       if (!confirm(`Apagar o cadastro de ${btn.dataset.nome}? Isso remove o progresso dela no desafio e não pode ser desfeito.`)) return;
@@ -95,9 +81,9 @@ function wireCadastrosHandlers(db, { onChanged }) {
       btn.textContent = 'Apagando...';
       const { error } = await db.from('desafio_perfis').delete().eq('id', btn.dataset.id);
       if (error) {
+        alert(error.message);
         btn.disabled = false;
         btn.textContent = 'Apagar';
-        alert(error.message);
         return;
       }
       onChanged();

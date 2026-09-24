@@ -29,7 +29,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/auth.js?v=1"></script>
-  <script src="../js/admin-render.js?v=5"></script>
+  <script src="../js/admin-render.js?v=6"></script>
   <script>
     const db = DesafioAuth.sb;
     const conteudo = document.getElementById('conteudo');
@@ -45,11 +45,10 @@
 
       const seteDiasAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
-      const [{ count: totalCadastradas }, { count: totalPagas }, { data: pendentes }, { data: todosPerfis }, { data: dias }, { data: rascunhos }, { data: ranking }, { data: ativasRows }] = await Promise.all([
+      const [{ count: totalCadastradas }, { count: totalPagas }, { data: todosPerfis }, { data: dias }, { data: rascunhos }, { data: ranking }, { data: ativasRows }] = await Promise.all([
         db.from('desafio_perfis').select('*', { count: 'exact', head: true }),
         db.from('desafio_perfis').select('*', { count: 'exact', head: true }).eq('pago', true),
-        db.from('desafio_perfis').select('id,nome,instagram,created_at,comprovante_path').eq('pago', false).order('created_at', { ascending: true }),
-        db.from('desafio_perfis').select('id,nome,instagram,pago,created_at').order('created_at', { ascending: false }),
+        db.from('desafio_perfis').select('id,nome,instagram,pago,created_at,comprovante_path').order('created_at', { ascending: false }),
         db.from('desafio_dias').select('*').eq('publicado', true).order('numero_dia', { ascending: false }),
         db.from('desafio_dias').select('*').eq('publicado', false).order('numero_dia', { ascending: true }),
         db.from('desafio_ranking').select('*').order('pontos', { ascending: false }),
@@ -58,9 +57,7 @@
 
       // A própria dona também tem uma linha em desafio_perfis (ela participa
       // do desafio pra documentar a jornada) — não faz sentido aparecer na
-      // fila de "marcar como pago" nem na lista de cadastros do próprio
-      // desafio dela.
-      const pendentesSemDona = (pendentes || []).filter((p) => p.id !== user.id);
+      // lista de cadastros do próprio desafio dela.
       const perfisSemDona = (todosPerfis || []).filter((p) => p.id !== user.id);
 
       const ativasEssaSemana = new Set((ativasRows || []).map((r) => r.participante_id)).size;
@@ -87,7 +84,6 @@
 
       conteudo.innerHTML = `
         ${renderKpiRow({ totalCadastradas, ativasEssaSemana, pctUltimoDia, ultimoDia, videosPendentes, totalPagas })}
-        ${renderPagamentosPendentes(pendentesSemDona)}
         ${renderCadastros(perfisSemDona)}
         ${renderAdminGrid({ rascunhos, ranking, bonusHistorico })}
 
@@ -95,7 +91,6 @@
         <div id="video-queue">${renderVideoQueue(videos)}</div>
       `;
 
-      wirePagamentosPendentesHandlers(db, { onChanged: carregar });
       wireCadastrosHandlers(db, { onChanged: carregar });
       wireAdminGridHandlers(db, { ranking, rascunhos, onChanged: carregar });
       wireVideoQueueHandlers(db, { onChanged: carregar });

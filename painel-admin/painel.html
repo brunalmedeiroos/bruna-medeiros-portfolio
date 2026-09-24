@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260924t">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260924u">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -40,12 +40,12 @@
 
       <nav class="sidebar-nav">
         <button class="nav-item active" data-tab="overview" type="button">
-          <img class="nav-icon-img" src="img/nav-icones/dashboard.png?v=3" alt="">
+          <i class="nav-icon-emoji" aria-hidden="true">🏠</i>
           <span data-i18n="nav_dashboard">Dashboard</span>
         </button>
 
         <button class="nav-item" data-tab="calendario" type="button">
-          <img class="nav-icon-img" src="img/nav-icones/calendario.png?v=3" alt="">
+          <i class="nav-icon-emoji" aria-hidden="true">🗓️</i>
           <span data-i18n="nav_calendario">Calendário</span>
         </button>
 
@@ -60,19 +60,19 @@
           </div>
           <div class="nav-group-itens">
             <button class="nav-item" data-tab="ugc" type="button">
-              <img class="nav-icon-img" src="img/nav-icones/ugc.png?v=3" alt="">
+              <i class="nav-icon-emoji" aria-hidden="true">📢</i>
               <span data-i18n="nav_ugc">UGC/Publicidade</span>
             </button>
             <button class="nav-item" data-tab="afiliacao" type="button">
-              <img class="nav-icon-img" src="img/nav-icones/afiliacao.png?v=2" alt="">
+              <i class="nav-icon-emoji" aria-hidden="true">🔗</i>
               <span data-i18n="nav_afiliacao">Afiliação</span>
             </button>
             <button class="nav-item" data-tab="clientes" type="button">
-              <img class="nav-icon-img" src="img/nav-icones/clientes.png?v=4" alt="">
+              <i class="nav-icon-emoji" aria-hidden="true">👥</i>
               <span data-i18n="nav_clientes">Clientes</span>
             </button>
             <button class="nav-item" data-tab="produtos-digitais" type="button">
-              <img class="nav-icon-img" src="img/nav-icones/produtos-digitais.png?v=2" alt="">
+              <i class="nav-icon-emoji" aria-hidden="true">💻</i>
               <span data-i18n="nav_produtos_digitais">Produtos Digitais</span>
             </button>
           </div>
@@ -84,23 +84,23 @@
           </div>
           <div class="nav-group-itens">
             <button class="nav-item" data-tab="planejador" type="button">
-              <img class="nav-icon-img" src="img/nav-icones/planejador.png?v=3" alt="">
+              <i class="nav-icon-emoji" aria-hidden="true">✨</i>
               <span data-i18n="nav_planejador">Planejador</span>
             </button>
             <button class="nav-item" data-tab="radar" type="button">
-              <img class="nav-icon-img" src="img/nav-icones/radar.png?v=3" alt="">
+              <i class="nav-icon-emoji" aria-hidden="true">🗞️</i>
               <span data-i18n="nav_radar">Radar de Notícias</span>
             </button>
             <button class="nav-item" data-tab="portfolio" type="button">
-              <img class="nav-icon-img" src="img/nav-icones/portfolio.png?v=4" alt="">
+              <i class="nav-icon-emoji" aria-hidden="true">📈</i>
               <span data-i18n="nav_portfolio">Portfólio</span>
             </button>
             <button class="nav-item" data-tab="instagram" type="button">
-              <img class="nav-icon-img" src="img/nav-icones/instagram.png?v=3" alt="">
+              <i class="nav-icon-emoji" aria-hidden="true">📸</i>
               <span data-i18n="nav_instagram">Instagram</span>
             </button>
             <button class="nav-item" data-tab="desafio-ugc" type="button">
-              <img class="nav-icon-img" src="img/nav-icones/desafio-ugc.png?v=1" alt="">
+              <i class="nav-icon-emoji" aria-hidden="true">🏆</i>
               <span>Nosso Desafio UGC</span>
             </button>
           </div>
@@ -112,15 +112,15 @@
           </div>
           <div class="nav-group-itens">
             <button class="nav-item" data-tab="financeiro" type="button">
-              <img class="nav-icon-img" src="img/nav-icones/financeiro.png?v=2" alt="">
+              <i class="nav-icon-emoji" aria-hidden="true">💳</i>
               <span data-i18n="nav_financeiro">Financeiro</span>
             </button>
             <button class="nav-item" data-tab="metas" type="button">
-              <img class="nav-icon-img" src="img/nav-icones/metas.png?v=2" alt="">
+              <i class="nav-icon-emoji" aria-hidden="true">🎯</i>
               <span data-i18n="nav_metas">Metas</span>
             </button>
             <button class="nav-item" data-tab="email" type="button">
-              <img class="nav-icon-img" src="img/nav-icones/email.png?v=3" alt="">
+              <i class="nav-icon-emoji" aria-hidden="true">📥</i>
               <span data-i18n="nav_email">E-mail</span>
             </button>
           </div>
@@ -167,7 +167,7 @@
         <!-- Capa azul das páginas: nome da página + menu interno (montada por atualizarCapaPagina) -->
         <div id="pg-capa" class="pg-capa" hidden>
           <div class="pg-capa-linha">
-            <span class="pg-capa-icone"><img id="pg-capa-icone-img" src="" alt=""></span>
+            <span class="pg-capa-icone"><span id="pg-capa-icone-emoji" class="pg-capa-emoji" aria-hidden="true"></span><img id="pg-capa-icone-img" src="" alt="" hidden></span>
             <h2 class="pg-capa-titulo" id="pg-capa-titulo"></h2>
           </div>
           <div class="pg-capa-nav" id="pg-capa-nav" hidden></div>
@@ -5403,8 +5403,13 @@
       document.querySelector('.topbar').classList.toggle('topbar-sobre-capa', !semCapa);
       if (semCapa) return;
       document.getElementById('pg-capa-titulo').textContent = tr(TITULOS_ABA[aba]);
-      const icone = document.querySelector('.nav-item[data-tab="' + aba + '"] img');
-      document.getElementById('pg-capa-icone-img').src = icone ? icone.getAttribute('src') : '';
+      const itemMenu = document.querySelector('.nav-item[data-tab="' + aba + '"]');
+      const emojiMenu = itemMenu && itemMenu.querySelector('.nav-icon-emoji');
+      const imgMenu = itemMenu && itemMenu.querySelector('img');
+      document.getElementById('pg-capa-icone-emoji').textContent = emojiMenu ? emojiMenu.textContent : '';
+      const imgCapa = document.getElementById('pg-capa-icone-img');
+      imgCapa.hidden = !!emojiMenu || !imgMenu;
+      imgCapa.src = !emojiMenu && imgMenu ? imgMenu.getAttribute('src') : '';
 
       const no = CAPA_MENUS[aba] ? document.querySelector('#panel-' + aba + ' ' + CAPA_MENUS[aba]) : null;
       if (no) {

@@ -7346,3 +7346,22 @@
     grid-template-rows: none;
   }
 }
+
+/* Ícones do menu lateral: emojis (Ferramentas ainda usa a imagem). */
+.painel-body .sidebar .nav-icon-emoji {
+  flex-shrink: 0;
+  width: 22px;
+  font-style: normal;
+  font-size: 18px;
+  line-height: 1;
+  text-align: center;
+}
+
+.painel-body .pg-capa-emoji {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.painel-body .pg-capa-icone img[hidden] {
+  display: none;
+}

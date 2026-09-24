@@ -7020,3 +7020,116 @@
 .painel-body .ferr-item-modal:not(.ferr-modo-preencher) #btn-ferr-editar-prompt {
   display: none;
 }
+
+/* ==========================================================================
+   Capa azul das páginas (mesmo visual da capa da aba E-mail): ícone + nome
+   da página, com o menu interno da página dentro do próprio card.
+   ========================================================================== */
+.painel-body .pg-capa {
+  background: linear-gradient(135deg, var(--coral) 0%, var(--coral-hover) 100%);
+  border-radius: var(--raio-lg);
+  padding: 22px 28px;
+  color: var(--branco);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.painel-body .pg-capa[hidden],
+.painel-body .pg-capa-nav[hidden] {
+  display: none;
+}
+
+.painel-body .pg-capa-linha {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.painel-body .pg-capa-icone {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.painel-body .pg-capa-icone img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+.painel-body .pg-capa-titulo {
+  font-family: var(--fonte-titulo);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0;
+  color: var(--branco);
+}
+
+.painel-body .pg-capa-nav .ugc-subnav,
+.painel-body .pg-capa-nav .instagram-subnav,
+.painel-body .pg-capa-nav .ferr-modos {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.painel-body .pg-capa-nav .cal-filtro-grupo {
+  background: transparent;
+  border: none;
+  padding: 0;
+  gap: 8px;
+}
+
+.painel-body .pg-capa-nav .ugc-subnav-btn,
+.painel-body .pg-capa-nav .instagram-subnav-btn,
+.painel-body .pg-capa-nav .cal-filtro-btn {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--branco);
+}
+
+.painel-body .pg-capa-nav .ugc-subnav-btn:hover,
+.painel-body .pg-capa-nav .instagram-subnav-btn:hover,
+.painel-body .pg-capa-nav .cal-filtro-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: var(--branco);
+}
+
+.painel-body .pg-capa-nav .ugc-subnav-btn.ativo,
+.painel-body .pg-capa-nav .instagram-subnav-btn.ativo,
+.painel-body .pg-capa-nav .cal-filtro-btn.ativo {
+  background: var(--branco);
+  border-color: var(--branco);
+  color: var(--coral-hover);
+}
+
+@media (max-width: 700px) {
+  .painel-body .pg-capa {
+    padding: 18px 18px;
+  }
+
+  .painel-body .pg-capa-titulo {
+    font-size: 22px;
+  }
+
+  .painel-body .pg-capa-nav .ugc-subnav {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .painel-body .pg-capa-nav .ugc-subnav-btn {
+    flex-shrink: 0;
+  }
+}

@@ -9,9 +9,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260917a">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260924o">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260924p">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -163,6 +163,15 @@
       </header>
 
       <div class="conteudo">
+
+        <!-- Capa azul das páginas: nome da página + menu interno (montada por atualizarCapaPagina) -->
+        <div id="pg-capa" class="pg-capa" hidden>
+          <div class="pg-capa-linha">
+            <span class="pg-capa-icone"><img id="pg-capa-icone-img" src="" alt=""></span>
+            <h2 class="pg-capa-titulo" id="pg-capa-titulo"></h2>
+          </div>
+          <div class="pg-capa-nav" id="pg-capa-nav" hidden></div>
+        </div>
 
         <!-- ---------- Aba: Dashboard ---------- -->
         <section id="panel-overview" class="tab-panel">
@@ -4991,7 +5000,7 @@
       document.getElementById('clientes-modal-add-link').addEventListener('click', adicionarLinkModal);
 
       // Instagram: Automações e Leads
-      document.querySelectorAll('#instagram-layout .instagram-subnav-btn').forEach((btn) => {
+      document.querySelectorAll('.instagram-subnav-btn').forEach((btn) => {
         btn.addEventListener('click', () => trocarSubAbaInstagram(btn.dataset.instagramPagina));
       });
       document.getElementById('btn-instagram-nova-automacao').addEventListener('click', () => abrirModalAutomacao(null));
@@ -5290,11 +5299,61 @@
       renderizarCronogramaCalendario();
     }
 
+    // Capa azul no topo de cada página (menos Dashboard, que tem a saudação, e
+    // E-mail, que tem a capa própria). O menu interno da página (UGC, Instagram,
+    // Ferramentas) é levado pra dentro da capa e devolvido ao lugar quando sai.
+    const CAPA_MENUS = { ugc: '.ugc-subnav', instagram: '.instagram-subnav', ferramentas: '.ferr-modos' };
+    const CAPA_SEM = ['overview', 'email'];
+    let capaMenuMovido = null;
+    let capaObservador = null;
+
+    function capaDevolverMenu() {
+      if (capaObservador) {
+        capaObservador.disconnect();
+        capaObservador = null;
+      }
+      if (!capaMenuMovido) return;
+      const { no, pai, prox } = capaMenuMovido;
+      if (prox && prox.parentNode === pai) pai.insertBefore(no, prox);
+      else pai.appendChild(no);
+      capaMenuMovido = null;
+    }
+
+    function atualizarCapaPagina(aba) {
+      const capa = document.getElementById('pg-capa');
+      const slot = document.getElementById('pg-capa-nav');
+      capaDevolverMenu();
+      if (CAPA_SEM.includes(aba)) {
+        capa.hidden = true;
+        return;
+      }
+      capa.hidden = false;
+      document.getElementById('pg-capa-titulo').textContent = tr(TITULOS_ABA[aba]);
+      const icone = document.querySelector('.nav-item[data-tab="' + aba + '"] img');
+      document.getElementById('pg-capa-icone-img').src = icone ? icone.getAttribute('src') : '';
+
+      const no = CAPA_MENUS[aba] ? document.querySelector('#panel-' + aba + ' ' + CAPA_MENUS[aba]) : null;
+      if (no) {
+        capaMenuMovido = { no, pai: no.parentNode, prox: no.nextSibling };
+        slot.appendChild(no);
+      }
+      slot.hidden = !no;
+      // Instagram esconde o menu quando a conta não está conectada.
+      if (no && aba === 'instagram') {
+        const layout = document.getElementById('instagram-layout');
+        const sincronizar = () => (slot.hidden = layout.hidden);
+        sincronizar();
+        capaObservador = new MutationObserver(sincronizar);
+        capaObservador.observe(layout, { attributes: true, attributeFilter: ['hidden'] });
+      }
+    }
+
     function trocarAba(aba) {
       document.querySelectorAll('.nav-item').forEach((b) => b.classList.toggle('active', b.dataset.tab === aba));
       document.querySelectorAll('.tab-panel').forEach((p) => (p.hidden = true));
       document.getElementById('panel-' + aba).hidden = false;
       document.getElementById('titulo-topo').textContent = tr(TITULOS_ABA[aba]);
+      atualizarCapaPagina(aba);
       // O filtro de período (Tudo/7d/30d/90d) só se aplica aos números do Portfólio.
       document.getElementById('filtros-periodo').hidden = aba !== 'portfolio';
 
@@ -7223,7 +7282,7 @@
     // ---- Sub-abas (Visão Geral / Automações / Leads) ----
     function trocarSubAbaInstagram(pagina) {
       instagramSubAbaAtual = pagina;
-      document.querySelectorAll('#instagram-layout .instagram-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.instagramPagina === pagina));
+      document.querySelectorAll('.instagram-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.instagramPagina === pagina));
       document.querySelectorAll('#instagram-layout .instagram-pagina').forEach((p) => (p.hidden = p.id !== 'instagram-pagina-' + pagina));
       if ((pagina === 'automacoes' || pagina === 'leads') && !instagramAutomacoesCarregadas) {
         instagramAutomacoesCarregadas = true;

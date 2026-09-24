@@ -474,7 +474,7 @@ input:focus {
 .desafio-ugc-iframe {
   display: block;
   width: 100%;
-  height: calc(100vh - 150px);
+  height: calc(100vh - 250px);
   min-height: 640px;
   border: none;
   background: transparent;

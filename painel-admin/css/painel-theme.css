@@ -7687,3 +7687,301 @@
   font-size: 12px;
   color: var(--texto-suave);
 }
+
+/* ==========================================================================
+   Dashboard: "Hoje" num card só + Nota rápida no estilo do app Notas.
+   ========================================================================== */
+.painel-body .dash-card-hoje {
+  max-width: 560px;
+  margin-bottom: 0;
+  padding: 24px 26px;
+}
+
+.painel-body .dash-hoje-titulo {
+  margin: 0 0 14px;
+  font-family: var(--fonte-titulo);
+  font-size: 22px;
+  color: var(--grafite);
+}
+
+.painel-body .dash-hoje-linhas {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.painel-body .dash-hoje-linhas:empty {
+  display: none;
+}
+
+.painel-body .dash-hoje-linhas + .dash-hoje-linhas {
+  margin-top: 6px;
+}
+
+.painel-body .dash-card-hoje .dash-compromisso {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 6px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font-family: var(--fonte-corpo);
+  color: var(--grafite);
+  text-align: left;
+  cursor: pointer;
+}
+
+.painel-body .dash-card-hoje .dash-compromisso:hover {
+  background: rgba(var(--coral-rgb), 0.12);
+}
+
+.painel-body .dash-compromisso-marca {
+  flex: 0 0 8px;
+  width: 8px;
+  height: 8px;
+  margin: 0 5px;
+  border-radius: 50%;
+  background: var(--coral);
+}
+
+.painel-body .dash-card-hoje .dash-compromisso-hora {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texto-suave);
+  white-space: nowrap;
+}
+
+.painel-body .dash-card-hoje .dash-compromisso-titulo {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.painel-body .dash-card-hoje .dash-check-item {
+  padding: 8px 6px;
+  background: transparent;
+  border-radius: 8px;
+}
+
+.painel-body .dash-card-hoje .dash-check-item:hover {
+  background: rgba(var(--coral-rgb), 0.08);
+}
+
+.painel-body .dash-card-hoje .dash-check-form {
+  margin: 12px 0 0;
+}
+
+.painel-body .dash-card-hoje .dash-check-form input {
+  width: 100%;
+  border: none;
+  border-top: 1px solid var(--borda);
+  border-radius: 0;
+  background: transparent;
+  padding: 12px 6px 4px;
+}
+
+.painel-body .dash-card-hoje .dash-check-form input:focus {
+  outline: none;
+}
+
+.painel-body .dash-hoje-vazio[hidden],
+.painel-body #dash-hoje-vazio[hidden] {
+  display: none;
+}
+
+.painel-body .dash-nota-icone {
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  background: var(--branco);
+  color: var(--grafite);
+  box-shadow: var(--sombra);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.painel-body .dash-nota-icone:hover {
+  transform: translateY(-2px);
+}
+
+/* Nota rápida: fundo branco, tipografia limpa e ícones azuis, como o app Notas. */
+.painel-body .nota-rapida {
+  width: 460px;
+  height: 580px;
+  padding: 18px 22px 16px;
+  gap: 8px;
+  border-radius: 24px;
+  --nota-cor: var(--coral-hover);
+}
+
+.painel-body .nota-topo {
+  justify-content: space-between;
+  min-height: 36px;
+}
+
+.painel-body .nota-voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  padding: 4px 2px;
+  font-family: var(--fonte-corpo);
+  font-size: 17px;
+  color: var(--nota-cor);
+  cursor: pointer;
+}
+
+.painel-body .nota-topo-acoes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.painel-body .nota-icone-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--nota-cor);
+  cursor: pointer;
+}
+
+.painel-body .nota-icone-btn:hover:not(:disabled),
+.painel-body .nota-voltar:hover {
+  opacity: 0.7;
+}
+
+.painel-body .nota-icone-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.painel-body .nota-topo button[hidden] {
+  display: none;
+}
+
+.painel-body .nota-opcoes {
+  position: absolute;
+  top: 60px;
+  right: 22px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  min-width: 170px;
+  padding: 6px;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  box-shadow: var(--sombra);
+}
+
+.painel-body .nota-opcoes[hidden] {
+  display: none;
+}
+
+.painel-body .nota-opcoes button {
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-family: var(--fonte-corpo);
+  font-size: 14px;
+  color: var(--grafite);
+  cursor: pointer;
+}
+
+.painel-body .nota-opcoes button:hover {
+  background: rgba(var(--coral-rgb), 0.14);
+}
+
+.painel-body .nota-opcoes .nota-opcao-perigo {
+  color: var(--erro, #c4453c);
+}
+
+.painel-body .nota-texto {
+  background: transparent;
+  border-radius: 0;
+  padding: 10px 2px;
+  font-size: 17px;
+  line-height: 1.55;
+  caret-color: var(--nota-cor);
+}
+
+.painel-body .nota-vista-lista {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.painel-body .nota-vista-lista[hidden] {
+  display: none;
+}
+
+.painel-body .nota-lista-titulo {
+  margin: 4px 2px 12px;
+  font-family: var(--fonte-titulo);
+  font-size: 28px;
+  color: var(--grafite);
+}
+
+.painel-body .nota-menu {
+  position: static;
+  max-height: none;
+  overflow: visible;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.painel-body .nota-menu-item {
+  border-radius: 0;
+  border-bottom: 1px solid var(--borda);
+  padding: 12px 4px;
+}
+
+.painel-body .nota-menu-item:hover,
+.painel-body .nota-menu-item.ativa {
+  background: transparent;
+}
+
+.painel-body .nota-menu-item.ativa strong {
+  color: var(--nota-cor);
+}
+
+.painel-body .nota-menu-item strong {
+  font-size: 15px;
+}
+
+.painel-body .nota-rodape {
+  justify-content: space-between;
+  min-height: 34px;
+}
+
+@media (max-width: 560px) {
+  .painel-body .nota-rapida {
+    right: 12px;
+    bottom: 12px;
+    height: min(580px, calc(100vh - 24px));
+  }
+}

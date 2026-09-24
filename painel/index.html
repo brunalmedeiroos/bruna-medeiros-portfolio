@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260924y">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260924z">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -182,29 +182,27 @@
             </div>
           </div>
 
-          <h3 class="dash-secao-titulo">☀️ Hoje</h3>
-
-          <div class="dash-hoje-grade">
-            <!-- Compromissos: eventos do Calendário / Google Agenda, só leitura. -->
-            <div class="card dash-bloco">
-              <h4 class="dash-bloco-titulo">📅 Compromissos</h4>
-              <div id="dash-hoje-lista" class="dash-compromissos-lista"></div>
-            </div>
-
-            <!-- Checklist do dia: separado do Calendário, não sincroniza com o Google. -->
-            <div class="card dash-bloco">
-              <h4 class="dash-bloco-titulo">✅ Checklist</h4>
-              <form id="dash-check-form" class="dash-check-form" autocomplete="off">
-                <input type="text" id="dash-check-input" placeholder="O que preciso fazer hoje?" maxlength="200">
-                <button type="submit" class="cal-btn cal-btn-primario">Adicionar</button>
-              </form>
-              <div id="dash-check-lista" class="dash-check-lista"></div>
-              <p class="dash-aviso" id="dash-aviso-tabelas" hidden>Falta rodar o arquivo dashboard.sql no Supabase pra usar o checklist e as notas.</p>
-            </div>
+          <!-- Hoje: compromissos do Calendário (só leitura) e checklist do dia (separado
+               do Calendário, não sincroniza com o Google) no mesmo card. -->
+          <div class="card dash-card-hoje">
+            <h3 class="dash-hoje-titulo">☀️ Hoje</h3>
+            <div id="dash-hoje-lista" class="dash-hoje-linhas"></div>
+            <div id="dash-check-lista" class="dash-hoje-linhas"></div>
+            <p class="texto-vazio" id="dash-hoje-vazio" hidden>Nada marcado para hoje ainda.</p>
+            <form id="dash-check-form" class="dash-check-form" autocomplete="off">
+              <input type="text" id="dash-check-input" placeholder="+ Adicionar tarefa de hoje" maxlength="200">
+            </form>
+            <p class="dash-aviso" id="dash-aviso-tabelas" hidden>Falta rodar o arquivo dashboard.sql no Supabase pra usar o checklist e as notas.</p>
           </div>
 
           <div class="dash-nota-atalho">
-            <button type="button" id="btn-nota-abrir" class="cal-btn dash-nota-btn">📝 Nota rápida</button>
+            <button type="button" id="btn-nota-abrir" class="dash-nota-icone" title="Nota rápida" aria-label="Nota rápida">
+              <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+                <rect x="3" y="2" width="26" height="28" rx="7" fill="#FFFFFF" stroke="currentColor" stroke-opacity="0.25"/>
+                <path d="M3 9a7 7 0 0 1 7-7h12a7 7 0 0 1 7 7v2H3V9z" fill="#FFF7C5"/>
+                <path d="M9 17h14M9 22h14M9 27h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.55"/>
+              </svg>
+            </button>
           </div>
         </section>
 
@@ -1448,22 +1446,37 @@
       </div>
     </main>
 
-    <!-- Nota rápida: janela flutuante, salva sozinha enquanto digita -->
+    <!-- Nota rápida: janela flutuante no estilo do app Notas, salva sozinha enquanto digita -->
     <div id="nota-rapida" class="nota-rapida" role="dialog" aria-label="Nota rápida" aria-hidden="true">
       <div class="nota-topo">
-        <button type="button" id="nota-lista-btn" class="nota-titulo-btn" aria-haspopup="true"><span id="nota-titulo-atual">Nota rápida</span> <span aria-hidden="true">▾</span></button>
-        <button type="button" id="nota-nova" class="cal-btn cal-btn-icon" title="Nova nota" aria-label="Nova nota">+</button>
-        <button type="button" id="nota-fechar" class="cal-btn cal-btn-icon" title="Minimizar" aria-label="Minimizar">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <button type="button" id="nota-lista-btn" class="nota-voltar" aria-label="Todas as notas">
+          <svg width="12" height="20" viewBox="0 0 12 20" fill="none" aria-hidden="true"><path d="M10 2L2 10l8 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Notas</span>
         </button>
+        <div class="nota-topo-acoes">
+          <button type="button" id="nota-mais" class="nota-icone-btn" aria-label="Mais opções" aria-haspopup="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.6"/><circle cx="7.5" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="16.5" cy="12" r="1.3" fill="currentColor"/></svg>
+          </button>
+          <button type="button" id="nota-fechar" class="nota-icone-btn" aria-label="Minimizar" title="Minimizar">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.6"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </button>
+        </div>
       </div>
-      <div id="nota-menu" class="nota-menu" hidden></div>
-      <textarea id="nota-texto" class="nota-texto" placeholder="Escreva qualquer coisa..." spellcheck="true"></textarea>
+      <div id="nota-opcoes" class="nota-opcoes" hidden>
+        <button type="button" id="nota-limpar">Limpar nota</button>
+        <button type="button" id="nota-excluir" class="nota-opcao-perigo">Excluir nota</button>
+      </div>
+      <textarea id="nota-texto" class="nota-texto" aria-label="Texto da nota" spellcheck="true"></textarea>
+      <div id="nota-vista-lista" class="nota-vista-lista" hidden>
+        <h4 class="nota-lista-titulo">Notas</h4>
+        <div id="nota-menu" class="nota-menu"></div>
+      </div>
       <p class="nota-aviso" id="nota-aviso" hidden>Falta rodar o arquivo dashboard.sql no Supabase pra usar as notas.</p>
       <div class="nota-rodape">
         <span id="nota-status" class="nota-status"></span>
-        <button type="button" id="nota-limpar" class="cal-btn">Limpar nota</button>
-        <button type="button" id="nota-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+        <button type="button" id="nota-nova" class="nota-icone-btn" title="Nova nota" aria-label="Nova nota">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17v3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" transform="translate(-1 1)"/><path d="M13 20h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
       </div>
     </div>
 
@@ -5633,7 +5646,7 @@
       lista.innerHTML = '';
 
       if (doDia.length === 0) {
-        lista.innerHTML = '<p class="texto-vazio">Nenhum compromisso hoje.</p>';
+        dashAtualizarVazio();
         return;
       }
 
@@ -5644,11 +5657,13 @@
         item.type = 'button';
         item.className = 'dash-compromisso' + (t.feito ? ' dash-compromisso-feito' : '');
         item.innerHTML = `
+          <span class="dash-compromisso-marca" style="${cor ? 'background:' + cor : ''}"></span>
           <span class="dash-compromisso-hora">${escapeHtml(horario || 'Dia todo')}</span>
-          <span class="dash-compromisso-titulo">${cor ? `<span class="cal-tarefa-categoria-bolinha" style="background:${cor}"></span>` : ''}${escapeHtml(t.titulo)}</span>`;
+          <span class="dash-compromisso-titulo">${escapeHtml(t.titulo)}</span>`;
         item.addEventListener('click', () => trocarAba('calendario'));
         lista.appendChild(item);
       });
+      dashAtualizarVazio();
     }
 
     // O Dashboard não mostra mais a lista "Precisa da sua atenção"; esta função
@@ -14883,6 +14898,12 @@
       await Promise.all([dashCarregarChecklist(), notasCarregar()]);
     }
 
+    // Só mostra "Nada marcado" quando não há compromisso nem tarefa hoje.
+    function dashAtualizarVazio() {
+      const semCompromisso = document.getElementById('dash-hoje-lista').children.length === 0;
+      document.getElementById('dash-hoje-vazio').hidden = !(dashTabelasOk && semCompromisso && dashCheckCache.length === 0);
+    }
+
     function dashAtualizarAviso() {
       document.getElementById('dash-aviso-tabelas').hidden = dashTabelasOk;
       document.getElementById('dash-check-form').hidden = !dashTabelasOk;
@@ -14906,11 +14927,12 @@
     function dashRenderizarChecklist() {
       const lista = document.getElementById('dash-check-lista');
       lista.innerHTML = '';
-      if (!dashTabelasOk) return;
-      if (dashCheckCache.length === 0) {
-        lista.innerHTML = '<p class="texto-vazio">Nada no checklist de hoje ainda.</p>';
+      if (!dashTabelasOk) {
+        dashAtualizarVazio();
         return;
       }
+      dashAtualizarVazio();
+      if (dashCheckCache.length === 0) return;
       const ordenados = [...dashCheckCache].sort((a, b) => Number(!!a.feito) - Number(!!b.feito));
       ordenados.forEach((tarefa) => {
         const linha = document.createElement('label');
@@ -15026,6 +15048,8 @@
       document.getElementById('nota-texto').hidden = semTabela;
       document.querySelector('#nota-rapida .nota-rodape').hidden = semTabela;
       document.getElementById('nota-nova').disabled = semTabela;
+      document.getElementById('nota-mais').hidden = semTabela;
+      document.getElementById('nota-lista-btn').hidden = semTabela;
       if (semTabela) return;
 
       let ultima = null;
@@ -15044,7 +15068,8 @@
       const painel = document.getElementById('nota-rapida');
       painel.classList.remove('aberta');
       painel.setAttribute('aria-hidden', 'true');
-      document.getElementById('nota-menu').hidden = true;
+      document.getElementById('nota-opcoes').hidden = true;
+      notaVerLista(false);
       await notaSalvarPendentes();
     }
 
@@ -15052,7 +15077,7 @@
       const nota = notaAtual();
       const area = document.getElementById('nota-texto');
       area.value = nota ? nota.conteudo || '' : '';
-      document.getElementById('nota-titulo-atual').textContent = nota ? notaTitulo(nota) : 'Nota rápida';
+      notaVerLista(false);
       document.getElementById('nota-excluir').hidden = notasCache.length <= 1;
       document.getElementById('nota-status').textContent = '';
       try {
@@ -15081,7 +15106,6 @@
       nota.conteudo = document.getElementById('nota-texto').value;
       notaGuardarRascunho(nota.id, nota.conteudo);
       notaPendentes.add(nota.id);
-      document.getElementById('nota-titulo-atual').textContent = notaTitulo(nota);
       document.getElementById('nota-status').textContent = 'Salvando...';
       clearTimeout(notaTimer);
       notaTimer = setTimeout(notaSalvarPendentes, 600);
@@ -15143,29 +15167,35 @@
       notaMostrar();
     }
 
-    function notaAlternarMenu() {
+    // "‹ Notas": alterna entre a nota aberta e a lista de todas as notas.
+    function notaVerLista(mostrar) {
+      const lista = document.getElementById('nota-vista-lista');
+      document.getElementById('nota-texto').hidden = mostrar;
+      lista.hidden = !mostrar;
+      document.getElementById('nota-opcoes').hidden = true;
+      if (!mostrar) return;
       const menu = document.getElementById('nota-menu');
-      if (!menu.hidden) {
-        menu.hidden = true;
-        return;
-      }
       menu.innerHTML = '';
       notasCache.forEach((n) => {
         const item = document.createElement('button');
         item.type = 'button';
         item.className = 'nota-menu-item' + (n.id === notaAtualId ? ' ativa' : '');
         const resto = (n.conteudo || '').split('\n').filter((l) => l.trim()).slice(1, 2)[0] || '';
-        item.innerHTML = `<strong>${escapeHtml(notaTitulo(n))}</strong><span>${escapeHtml(resto.trim().slice(0, 50))}</span>`;
+        item.innerHTML = `<strong>${escapeHtml(notaTitulo(n))}</strong><span>${escapeHtml(resto.trim().slice(0, 60))}</span>`;
         item.addEventListener('click', async () => {
           await notaSalvarPendentes();
           notaAtualId = n.id;
-          menu.hidden = true;
           notaMostrar();
           document.getElementById('nota-texto').focus();
         });
         menu.appendChild(item);
       });
-      menu.hidden = false;
+    }
+
+    async function notaAlternarLista() {
+      const abrindo = document.getElementById('nota-vista-lista').hidden;
+      if (abrindo) await notaSalvarPendentes();
+      notaVerLista(abrindo);
     }
 
     function dashLigarEventos() {
@@ -15191,9 +15221,19 @@
         await notaCriar();
       });
       document.getElementById('nota-texto').addEventListener('input', notaAoDigitar);
-      document.getElementById('nota-lista-btn').addEventListener('click', notaAlternarMenu);
-      document.getElementById('nota-limpar').addEventListener('click', notaLimpar);
-      document.getElementById('nota-excluir').addEventListener('click', notaExcluir);
+      document.getElementById('nota-lista-btn').addEventListener('click', notaAlternarLista);
+      document.getElementById('nota-mais').addEventListener('click', () => {
+        const op = document.getElementById('nota-opcoes');
+        op.hidden = !op.hidden;
+      });
+      document.getElementById('nota-limpar').addEventListener('click', () => {
+        document.getElementById('nota-opcoes').hidden = true;
+        notaLimpar();
+      });
+      document.getElementById('nota-excluir').addEventListener('click', () => {
+        document.getElementById('nota-opcoes').hidden = true;
+        notaExcluir();
+      });
       document.getElementById('nota-rapida').addEventListener('keydown', (e) => {
         if (e.key === 'Escape') notaFechar();
       });

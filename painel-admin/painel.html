@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260924d">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260924g">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -47,6 +47,11 @@
         <button class="nav-item" data-tab="calendario" type="button">
           <img class="nav-icon-img" src="img/nav-icones/calendario.png?v=3" alt="">
           <span data-i18n="nav_calendario">Calendário</span>
+        </button>
+
+        <button class="nav-item" data-tab="ferramentas" type="button">
+          <img class="nav-icon-img" src="img/nav-icones/ferramentas.png?v=1" alt="">
+          <span data-i18n="nav_ferramentas">Ferramentas</span>
         </button>
 
         <div class="nav-grupo" data-grupo="fontes-renda">
@@ -1197,6 +1202,110 @@
 
         </section>
 
+        <!-- ---------- Aba: Ferramentas ---------- -->
+        <section id="panel-ferramentas" class="tab-panel" hidden>
+          <div class="ferr-modos">
+            <div class="cal-filtro-grupo" id="ferr-modos-grupo">
+              <button type="button" class="cal-filtro-btn ativo" data-ferr-modo="pastas">Ferramentas</button>
+              <button type="button" class="cal-filtro-btn" data-ferr-modo="cofre">🔒 Cofre privado</button>
+            </div>
+          </div>
+
+          <div id="ferr-vista-pastas">
+            <div class="ferr-barra">
+              <input type="text" id="ferr-busca" class="ferr-busca" placeholder="Buscar pastas e ferramentas" autocomplete="off">
+              <button type="button" id="btn-ferr-nova-pasta" class="cal-btn cal-btn-primario">+ Nova pasta</button>
+            </div>
+
+            <div class="card email-vazio" id="ferr-aviso-tabelas" hidden>
+              <h3 class="card-titulo">A área Ferramentas ainda não está pronta no banco</h3>
+              <p class="cal-todas-resumo">Falta rodar o arquivo ferramentas.sql no SQL Editor do Supabase. O resto do painel continua funcionando normal.</p>
+            </div>
+
+            <div id="ferr-conteudo">
+              <div id="ferr-favoritas" class="ferr-secao" hidden>
+                <h3 class="ferr-secao-titulo">★ Favoritas</h3>
+                <div id="ferr-favoritas-lista" class="ferr-favoritas-grade"></div>
+              </div>
+
+              <div id="ferr-home">
+                <div id="ferr-pastas-grade" class="ferr-pastas-grade"></div>
+                <div id="ferr-vazio" class="ferr-vazio" hidden>
+                  <p>Você ainda não criou nenhuma pasta.</p>
+                  <button type="button" id="btn-ferr-primeira-pasta" class="cal-btn cal-btn-primario">Criar a primeira pasta</button>
+                </div>
+              </div>
+
+              <div id="ferr-pasta-aberta" hidden>
+                <div class="ferr-pasta-topo">
+                  <button type="button" id="btn-ferr-voltar" class="cal-btn">← Pastas</button>
+                  <div class="ferr-pasta-titulo-bloco">
+                    <h3 class="card-titulo" id="ferr-pasta-nome"></h3>
+                    <p class="cal-todas-resumo" id="ferr-pasta-resumo"></p>
+                  </div>
+                  <div class="ferr-pasta-acoes">
+                    <button type="button" id="btn-ferr-editar-pasta" class="cal-btn">Editar pasta</button>
+                    <button type="button" id="btn-ferr-nova-ferramenta" class="cal-btn cal-btn-primario">+ Nova ferramenta</button>
+                  </div>
+                </div>
+                <div id="ferr-itens-lista" class="ferr-itens-lista"></div>
+              </div>
+
+              <div id="ferr-resultados" hidden>
+                <p class="cal-todas-resumo" id="ferr-resultados-resumo"></p>
+                <div id="ferr-resultados-pastas" class="ferr-pastas-grade ferr-pastas-grade-busca"></div>
+                <div id="ferr-resultados-itens" class="ferr-itens-lista"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="ferr-vista-cofre" class="ferr-cofre" hidden>
+            <div class="card email-vazio" id="cofre-aviso-tabelas" hidden>
+              <h3 class="card-titulo">O Cofre privado ainda não está pronto no banco</h3>
+              <p class="cal-todas-resumo">Falta rodar o arquivo ferramentas.sql no SQL Editor do Supabase.</p>
+            </div>
+
+            <div class="ferr-cofre-caixa" id="cofre-tela-carregando">
+              <p class="cal-todas-resumo">Carregando...</p>
+            </div>
+
+            <div class="ferr-cofre-caixa" id="cofre-tela-criar" hidden>
+              <div class="ferr-cofre-cadeado">🔒</div>
+              <h3 class="ferr-cofre-titulo">Crie a senha mestra do cofre</h3>
+              <p class="ferr-cofre-texto">Ela protege tudo o que você guardar aqui. Só você sabe qual é: ela não fica salva em lugar nenhum, e se for esquecida não existe como recuperar o que está no cofre. Use uma frase longa que você não usa em nenhum outro lugar.</p>
+              <input type="password" id="cofre-mestra-nova" class="ferr-cofre-input" placeholder="Senha mestra (mínimo 10 caracteres)" autocomplete="new-password">
+              <input type="password" id="cofre-mestra-confirma" class="ferr-cofre-input" placeholder="Repita a senha mestra" autocomplete="new-password">
+              <label class="ferr-cofre-check">
+                <input type="checkbox" id="cofre-entendi">
+                <span>Entendi que, se eu esquecer essa senha, não dá pra recuperar o cofre.</span>
+              </label>
+              <button type="button" id="btn-cofre-criar" class="cal-btn cal-btn-primario">Criar cofre</button>
+              <p class="ferr-cofre-erro" id="cofre-criar-erro" hidden></p>
+            </div>
+
+            <div class="ferr-cofre-caixa" id="cofre-tela-trancado" hidden>
+              <div class="ferr-cofre-cadeado">🔒</div>
+              <h3 class="ferr-cofre-titulo">Cofre trancado</h3>
+              <p class="ferr-cofre-texto">Digite a senha mestra pra abrir.</p>
+              <input type="password" id="cofre-mestra" class="ferr-cofre-input" placeholder="Senha mestra" autocomplete="current-password">
+              <button type="button" id="btn-cofre-destrancar" class="cal-btn cal-btn-primario">Destrancar</button>
+              <p class="ferr-cofre-erro" id="cofre-destrancar-erro" hidden></p>
+            </div>
+
+            <div id="cofre-tela-aberto" hidden>
+              <div class="ferr-cofre-faixa">
+                <span class="ferr-cofre-faixa-texto">🔓 Cofre aberto. Ele tranca sozinho depois de 5 minutos sem uso.</span>
+                <button type="button" id="btn-cofre-trancar" class="cal-btn">Trancar agora</button>
+              </div>
+              <div class="ferr-barra">
+                <input type="text" id="cofre-busca" class="ferr-busca" placeholder="Buscar no cofre" autocomplete="off">
+                <button type="button" id="btn-cofre-novo" class="cal-btn cal-btn-primario">+ Nova credencial</button>
+              </div>
+              <div id="cofre-lista" class="ferr-cofre-lista"></div>
+            </div>
+          </div>
+        </section>
+
         <!-- ---------- Aba: Clientes ---------- -->
         <section id="panel-clientes" class="tab-panel" hidden>
           <div class="cal-todas-topo">
@@ -2135,6 +2244,115 @@
       </div>
     </div>
 
+    <!-- Modal: pasta de ferramentas -->
+    <div id="ferr-pasta-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal">
+        <div class="pl-modal-topo">
+          <input type="text" id="ferr-pasta-nome-input" class="pl-modal-titulo-input" placeholder="Nome da pasta" maxlength="80">
+          <button id="ferr-pasta-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="cal-form-campo">
+          <label>Cor da pasta</label>
+          <div id="ferr-pasta-cores" class="ferr-cores"></div>
+        </div>
+        <div class="cal-form-campo" id="ferr-pasta-posicao-campo">
+          <label>Posição</label>
+          <div class="ferr-pasta-mover">
+            <button type="button" id="btn-ferr-pasta-antes" class="cal-btn">← Mover pra trás</button>
+            <button type="button" id="btn-ferr-pasta-depois" class="cal-btn">Mover pra frente →</button>
+          </div>
+        </div>
+        <div class="cal-form-acoes">
+          <button type="button" id="ferr-pasta-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+          <button type="button" id="ferr-pasta-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: escolher o tipo da nova ferramenta -->
+    <div id="ferr-tipo-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo">Que tipo de ferramenta?</span>
+          <button id="ferr-tipo-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div id="ferr-tipo-grade" class="ferr-tipo-grade"></div>
+      </div>
+    </div>
+
+    <!-- Modal: ferramenta (criar, usar e editar) -->
+    <div id="ferr-item-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal ferr-item-modal">
+        <div class="pl-modal-topo">
+          <input type="text" id="ferr-item-nome" class="pl-modal-titulo-input" placeholder="Nome da ferramenta" maxlength="120">
+          <button type="button" id="btn-ferr-item-favorito" class="cal-btn cal-btn-icon ferr-estrela" aria-label="Favoritar" title="Favoritar">☆</button>
+          <button id="ferr-item-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="ferr-item-meta">
+          <span class="ferr-tipo-badge" id="ferr-item-tipo-badge"></span>
+          <div class="cal-form-campo">
+            <label for="ferr-item-pasta">Pasta</label>
+            <select id="ferr-item-pasta"></select>
+          </div>
+        </div>
+        <div id="ferr-item-campos" class="ferr-item-campos"></div>
+        <div class="cal-form-acoes">
+          <button type="button" id="ferr-item-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+          <button type="button" id="ferr-item-duplicar" class="cal-btn">Duplicar</button>
+          <button type="button" id="ferr-item-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: credencial do Cofre privado -->
+    <div id="cofre-item-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal">
+        <div class="pl-modal-topo">
+          <input type="text" id="cofre-f-servico" class="pl-modal-titulo-input" placeholder="Nome do serviço" maxlength="120" autocomplete="off">
+          <button id="cofre-item-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="cofre-f-categoria">Categoria</label>
+            <input type="text" id="cofre-f-categoria" list="cofre-categorias-lista" maxlength="60" autocomplete="off">
+            <datalist id="cofre-categorias-lista"></datalist>
+          </div>
+          <div class="cal-form-campo">
+            <label for="cofre-f-url">URL</label>
+            <input type="text" id="cofre-f-url" placeholder="https://" autocomplete="off">
+          </div>
+        </div>
+        <div class="cal-form-campo">
+          <label for="cofre-f-usuario">Usuário ou e-mail</label>
+          <input type="text" id="cofre-f-usuario" autocomplete="off">
+        </div>
+        <div class="cal-form-campo">
+          <label for="cofre-f-senha">Senha</label>
+          <div class="ferr-cofre-senha-campo">
+            <input type="password" id="cofre-f-senha" autocomplete="new-password">
+            <button type="button" id="btn-cofre-f-mostrar" class="cal-btn">Mostrar</button>
+            <button type="button" id="btn-cofre-f-gerar" class="cal-btn">Gerar</button>
+          </div>
+        </div>
+        <div class="cal-form-campo">
+          <label for="cofre-f-obs">Observação</label>
+          <textarea id="cofre-f-obs" rows="3"></textarea>
+        </div>
+        <div class="cal-form-acoes">
+          <button type="button" id="cofre-item-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+          <button type="button" id="cofre-item-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: contato (base de contatos) -->
     <div id="contato-modal-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal">
@@ -2636,6 +2854,7 @@
       portfolio: 'titulo_portfolio',
       calendario: 'titulo_calendario',
       email: 'titulo_email',
+      ferramentas: 'titulo_ferramentas',
       instagram: 'titulo_instagram',
       'desafio-ugc': 'Nosso Desafio UGC',
       planejador: 'titulo_planejador',
@@ -2667,6 +2886,7 @@
         titulo_portfolio: 'Portfólio',
         titulo_calendario: 'Calendário',
         titulo_email: 'E-mail',
+        titulo_ferramentas: 'Ferramentas',
         titulo_instagram: 'Instagram',
         titulo_planejador: 'Planejador de Conteúdo',
         titulo_radar: 'Radar de Notícias',
@@ -2698,6 +2918,7 @@
         nav_portfolio: 'Portfólio',
         nav_calendario: 'Calendário',
         nav_email: 'E-mail',
+        nav_ferramentas: 'Ferramentas',
         nav_instagram: 'Instagram',
         nav_planejador: 'Planejador',
         nav_radar: 'Radar de Notícias',
@@ -3481,6 +3702,7 @@
         titulo_portfolio: 'Portfolio',
         titulo_calendario: 'Calendar',
         titulo_email: 'Email',
+        titulo_ferramentas: 'Tools',
         titulo_instagram: 'Instagram',
         titulo_planejador: 'Content Planner',
         titulo_radar: 'News Radar',
@@ -3512,6 +3734,7 @@
         nav_portfolio: 'Portfolio',
         nav_calendario: 'Calendar',
         nav_email: 'Email',
+        nav_ferramentas: 'Tools',
         nav_instagram: 'Instagram',
         nav_planejador: 'Planner',
         nav_radar: 'News Radar',
@@ -5075,6 +5298,17 @@
       document.getElementById('filtros-periodo').hidden = aba !== 'portfolio';
 
       if (aba === 'overview') renderizarCabecalhoDashboard();
+
+      // O cofre tranca sempre que sai da aba Ferramentas.
+      if (aba !== 'ferramentas') cofreTrancar();
+      if (aba === 'ferramentas') {
+        if (!ferrIniciado) {
+          ferrIniciado = true;
+          ferrLigarEventos();
+          ferrCarregar();
+        }
+        ferrMudarModo(ferrModo);
+      }
 
       if (aba === 'email' && !emailProspAbaCarregada) {
         emailProspAbaCarregada = true;
@@ -12635,6 +12869,1369 @@
     // painel. Uso: if (!(await confirmarAcao('Excluir isto?'))) return;
     // Passe { perigo: false, textoConfirmar: 'Criar' } pra ações que não são
     // exclusão (ex: converter Prospecção em Trabalho).
+    // ==========================================================================
+    // Aba Ferramentas: pastas + ferramentas (prompts, textos, links, checklists,
+    // processos, notas) e Cofre privado. Nada vem pronto: as pastas e o
+    // conteúdo são todos cadastrados por ela. Tabelas: ferramentas_pastas,
+    // ferramentas_itens, cofre_config, cofre_itens (ver ferramentas.sql).
+    // ==========================================================================
+
+    // Cores de pasta: só tons que já existem na paleta do painel/site.
+    const FERR_CORES = ['#7DB7CE', '#04465D', '#FFF7C5', '#4a90d9', '#2D7A4F', '#c98a1c', '#C4453C'];
+    const FERR_COR_PADRAO = '#7DB7CE';
+
+    const FERR_TIPOS = {
+      prompt: { rotulo: 'Prompt', emoji: '✨', cor: '#4a90d9', desc: 'Um prompt pronto pra copiar' },
+      prompt_campos: { rotulo: 'Prompt com campos', emoji: '🧩', cor: '#04465D', desc: 'Prompt com variáveis {{assim}} que viram campos' },
+      texto: { rotulo: 'Texto para copiar', emoji: '📋', cor: '#2D7A4F', desc: 'Um texto pronto, com um botão de copiar' },
+      link: { rotulo: 'Link', emoji: '🔗', cor: '#c98a1c', desc: 'Um endereço pra abrir com um clique' },
+      checklist: { rotulo: 'Checklist', emoji: '☑️', cor: '#7DB7CE', desc: 'Uma lista de itens pra marcar' },
+      processo: { rotulo: 'Processo', emoji: '🧭', cor: '#C4453C', desc: 'Um passo a passo, em etapas ou texto livre' },
+      nota: { rotulo: 'Nota', emoji: '📝', cor: '#8a7a2e', desc: 'Uma anotação simples' },
+      outro: { rotulo: 'Outro', emoji: '📦', cor: '#6b7f88', desc: 'Qualquer outra coisa' },
+    };
+
+    let ferrIniciado = false;
+    let ferrTabelasOk = true;
+    let ferrPastas = [];
+    let ferrItens = [];
+    let ferrModo = 'pastas';
+    let ferrPastaAbertaId = null;
+    let ferrBusca = '';
+
+    let ferrPastaEditandoId = null;
+    let ferrPastaCorEscolhida = FERR_COR_PADRAO;
+
+    let ferrItemAbertoId = null;
+    let ferrItemEstado = null; // { tipo, pastaId, favorito, checklist: [], etapas: [] }
+    let ferrValoresVars = {};
+
+    // ---------- utilidades ----------
+
+    function ferrOrdenar(lista) {
+      return [...lista].sort((a, b) => (a.ordem || 0) - (b.ordem || 0) || String(a.created_at).localeCompare(String(b.created_at)));
+    }
+
+    function ferrItensDaPasta(pastaId) {
+      return ferrOrdenar(ferrItens.filter((i) => i.pasta_id === pastaId));
+    }
+
+    function ferrCorEscura(hex) {
+      const n = parseInt(hex.replace('#', ''), 16);
+      const f = 0.78;
+      const r = Math.round(((n >> 16) & 255) * f);
+      const g = Math.round(((n >> 8) & 255) * f);
+      const b = Math.round((n & 255) * f);
+      return '#' + [r, g, b].map((x) => x.toString(16).padStart(2, '0')).join('');
+    }
+
+    function ferrTextoSobre(hex) {
+      const n = parseInt(hex.replace('#', ''), 16);
+      const lum = (0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+      return lum > 0.6 ? '#04465D' : '#FFFFFF';
+    }
+
+    async function ferrCopiar(texto, botao) {
+      try {
+        await navigator.clipboard.writeText(texto);
+      } catch (err) {
+        const aux = document.createElement('textarea');
+        aux.value = texto;
+        document.body.appendChild(aux);
+        aux.select();
+        try {
+          document.execCommand('copy');
+        } catch (e) {
+          console.error('Erro ao copiar:', e);
+          alert('Não consegui copiar. Selecione o texto e copie na mão.');
+        }
+        aux.remove();
+      }
+      if (botao) {
+        const original = botao.dataset.rotuloOriginal || botao.textContent;
+        botao.dataset.rotuloOriginal = original;
+        botao.textContent = 'Copiado!';
+        clearTimeout(botao._copiadoTimer);
+        botao._copiadoTimer = setTimeout(() => (botao.textContent = original), 1500);
+      }
+    }
+
+    // Só abre endereços http(s) (nunca javascript: e afins).
+    function ferrUrlSegura(bruto) {
+      const texto = (bruto || '').trim();
+      if (!texto) return null;
+      const comEsquema = /^[a-z][a-z0-9+.-]*:/i.test(texto) ? texto : 'https://' + texto;
+      try {
+        const u = new URL(comEsquema);
+        return u.protocol === 'http:' || u.protocol === 'https:' ? u.href : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function ferrVariaveis(texto) {
+      const achados = [];
+      const re = /\{\{\s*([A-Za-zÀ-ÿ0-9_.\-]+)\s*\}\}/g;
+      let m;
+      while ((m = re.exec(texto || '')) !== null) {
+        if (!achados.includes(m[1])) achados.push(m[1]);
+      }
+      return achados;
+    }
+
+    function ferrPreencher(texto, valores) {
+      return (texto || '').replace(/\{\{\s*([A-Za-zÀ-ÿ0-9_.\-]+)\s*\}\}/g, (todo, nome) => {
+        const v = valores[nome];
+        return v !== undefined && v !== '' ? v : todo;
+      });
+    }
+
+    function ferrNomeVariavel(nome) {
+      return nome.replace(/[_\-.]+/g, ' ');
+    }
+
+    function ferrTextoBusca(item) {
+      const dados = item.dados || {};
+      const partes = [item.nome, item.descricao, item.plataforma, item.conteudo, item.url];
+      (dados.itens || []).forEach((i) => partes.push(i.texto));
+      (dados.etapas || []).forEach((e) => partes.push(e.titulo, e.texto));
+      return normalizarTexto(partes.filter(Boolean).join(' '));
+    }
+
+    // ---------- carregar e renderizar ----------
+
+    async function ferrCarregar() {
+      try {
+        const [pastas, itens] = await Promise.all([buscarTudo('ferramentas_pastas'), buscarTudo('ferramentas_itens')]);
+        ferrPastas = pastas;
+        ferrItens = itens;
+        ferrTabelasOk = true;
+      } catch (err) {
+        console.error('Tabelas de ferramentas (ferramentas.sql) ainda não disponíveis:', err);
+        ferrPastas = [];
+        ferrItens = [];
+        ferrTabelasOk = false;
+      }
+      ferrRenderizar();
+    }
+
+    function ferrRenderizar() {
+      document.getElementById('ferr-aviso-tabelas').hidden = ferrTabelasOk;
+      document.getElementById('ferr-conteudo').hidden = !ferrTabelasOk;
+      document.getElementById('btn-ferr-nova-pasta').disabled = !ferrTabelasOk;
+      if (!ferrTabelasOk) return;
+
+      if (ferrPastaAbertaId && !ferrPastas.some((p) => p.id === ferrPastaAbertaId)) ferrPastaAbertaId = null;
+      const emBusca = ferrBusca.trim().length > 0;
+
+      document.getElementById('ferr-resultados').hidden = !emBusca;
+      document.getElementById('ferr-home').hidden = emBusca || !!ferrPastaAbertaId;
+      document.getElementById('ferr-pasta-aberta').hidden = emBusca || !ferrPastaAbertaId;
+      document.getElementById('ferr-favoritas').hidden = true;
+
+      if (emBusca) {
+        ferrRenderizarResultados();
+      } else if (ferrPastaAbertaId) {
+        ferrRenderizarPastaAberta();
+      } else {
+        ferrRenderizarFavoritas();
+        ferrRenderizarPastas();
+      }
+    }
+
+    function ferrHtmlPasta(pasta) {
+      const cor = pasta.cor || FERR_COR_PADRAO;
+      const qtd = ferrItens.filter((i) => i.pasta_id === pasta.id).length;
+      return `
+        <article class="ferr-pasta" data-id="${pasta.id}" style="--pc:${cor};--pd:${ferrCorEscura(cor)};--pt:${ferrTextoSobre(cor)}">
+          <div class="ferr-pasta-fundo"></div>
+          <div class="ferr-pasta-folha"></div>
+          <div class="ferr-pasta-frente">
+            <span class="ferr-pasta-nome">${escapeHtml(pasta.nome)}</span>
+            <span class="ferr-pasta-qtd">${qtd} ${qtd === 1 ? 'item' : 'itens'}</span>
+          </div>
+          <button type="button" class="ferr-pasta-editar" data-acao="editar" title="Editar pasta" aria-label="Editar pasta">⋯</button>
+        </article>`;
+    }
+
+    function ferrLigarCartoesPasta(cont, arrastavel) {
+      cont.querySelectorAll('.ferr-pasta').forEach((el) => {
+        const pasta = ferrPastas.find((p) => p.id === el.dataset.id);
+        el.addEventListener('click', () => {
+          ferrBusca = '';
+          document.getElementById('ferr-busca').value = '';
+          ferrPastaAbertaId = pasta.id;
+          ferrRenderizar();
+        });
+        el.querySelector('[data-acao="editar"]').addEventListener('click', (e) => {
+          e.stopPropagation();
+          ferrAbrirModalPasta(pasta);
+        });
+      });
+      if (arrastavel) {
+        ferrLigarArrasto(cont, '.ferr-pasta', (origem, destino) => {
+          const lista = ferrReordenarLista(ferrOrdenar(ferrPastas), origem, destino);
+          ferrPersistirOrdem(lista, 'ferramentas_pastas');
+        });
+      }
+    }
+
+    function ferrRenderizarPastas() {
+      const pastas = ferrOrdenar(ferrPastas);
+      const grade = document.getElementById('ferr-pastas-grade');
+      document.getElementById('ferr-vazio').hidden = pastas.length > 0;
+      grade.hidden = pastas.length === 0;
+      grade.innerHTML = pastas.map(ferrHtmlPasta).join('');
+      ferrLigarCartoesPasta(grade, true);
+    }
+
+    function ferrRenderizarFavoritas() {
+      const favoritas = ferrItens.filter((i) => i.favorito);
+      const bloco = document.getElementById('ferr-favoritas');
+      bloco.hidden = favoritas.length === 0;
+      const lista = document.getElementById('ferr-favoritas-lista');
+      lista.innerHTML = '';
+      ferrOrdenar(favoritas).forEach((item) => lista.appendChild(ferrCriarLinhaItem(item, { mostrarPasta: true, compacto: true })));
+    }
+
+    function ferrRenderizarPastaAberta() {
+      const pasta = ferrPastas.find((p) => p.id === ferrPastaAbertaId);
+      const itens = ferrItensDaPasta(pasta.id);
+      document.getElementById('ferr-pasta-nome').textContent = pasta.nome;
+      document.getElementById('ferr-pasta-resumo').textContent = itens.length === 0 ? 'Nenhuma ferramenta ainda.' : `${itens.length} ${itens.length === 1 ? 'ferramenta' : 'ferramentas'}.`;
+      const lista = document.getElementById('ferr-itens-lista');
+      lista.innerHTML = '';
+      if (itens.length === 0) {
+        lista.innerHTML = '<p class="texto-vazio">Essa pasta está vazia. Clique em "+ Nova ferramenta" pra começar.</p>';
+        return;
+      }
+      itens.forEach((item) => lista.appendChild(ferrCriarLinhaItem(item, { arrastavel: true })));
+      ferrLigarArrasto(lista, '.ferr-item', (origem, destino) => {
+        ferrPersistirOrdem(ferrReordenarLista(ferrItensDaPasta(pasta.id), origem, destino), 'ferramentas_itens');
+      });
+    }
+
+    function ferrRenderizarResultados() {
+      const termo = normalizarTexto(ferrBusca);
+      const pastas = ferrOrdenar(ferrPastas).filter((p) => normalizarTexto(p.nome).includes(termo));
+      const itens = ferrOrdenar(ferrItens).filter((i) => ferrTextoBusca(i).includes(termo));
+
+      const total = pastas.length + itens.length;
+      document.getElementById('ferr-resultados-resumo').textContent =
+        total === 0 ? 'Nada encontrado.' : `${pastas.length} ${pastas.length === 1 ? 'pasta' : 'pastas'} e ${itens.length} ${itens.length === 1 ? 'ferramenta' : 'ferramentas'}.`;
+
+      const gradePastas = document.getElementById('ferr-resultados-pastas');
+      gradePastas.hidden = pastas.length === 0;
+      gradePastas.innerHTML = pastas.map(ferrHtmlPasta).join('');
+      ferrLigarCartoesPasta(gradePastas, false);
+
+      const lista = document.getElementById('ferr-resultados-itens');
+      lista.innerHTML = '';
+      itens.forEach((item) => lista.appendChild(ferrCriarLinhaItem(item, { mostrarPasta: true })));
+    }
+
+    // Uma ferramenta na lista (dentro da pasta, nos favoritos e na busca).
+    function ferrCriarLinhaItem(item, opcoes = {}) {
+      const tipo = FERR_TIPOS[item.tipo] || FERR_TIPOS.outro;
+      const pasta = ferrPastas.find((p) => p.id === item.pasta_id);
+      const linha = document.createElement('div');
+      linha.className = 'ferr-item' + (opcoes.compacto ? ' ferr-item-compacto' : '');
+      linha.dataset.id = item.id;
+
+      let rapida = '';
+      if (item.tipo === 'prompt' || item.tipo === 'texto') rapida = '<button type="button" class="cal-btn ferr-acao-rapida" data-acao="copiar">Copiar</button>';
+      else if (item.tipo === 'link' && ferrUrlSegura(item.url)) rapida = '<button type="button" class="cal-btn ferr-acao-rapida" data-acao="abrir">Abrir link</button>';
+
+      const setas = opcoes.arrastavel
+        ? '<button type="button" class="ferr-mini" data-acao="subir" title="Subir" aria-label="Subir">↑</button><button type="button" class="ferr-mini" data-acao="descer" title="Descer" aria-label="Descer">↓</button>'
+        : '';
+
+      linha.innerHTML = `
+        ${opcoes.arrastavel ? '<span class="ferr-arrastar" title="Arraste pra reordenar">⋮⋮</span>' : ''}
+        <span class="ferr-tipo-badge" style="--tc:${tipo.cor}">${escapeHtml(tipo.rotulo)}</span>
+        <div class="ferr-item-info">
+          <span class="ferr-item-nome">${escapeHtml(item.nome)}</span>
+          ${item.descricao ? `<span class="ferr-item-desc">${escapeHtml(item.descricao)}</span>` : ''}
+        </div>
+        ${item.plataforma ? `<span class="ferr-plataforma">${escapeHtml(item.plataforma)}</span>` : ''}
+        ${opcoes.mostrarPasta && pasta ? `<span class="ferr-item-pasta">📁 ${escapeHtml(pasta.nome)}</span>` : ''}
+        <div class="ferr-item-acoes">
+          ${setas}
+          <button type="button" class="ferr-mini ferr-mini-estrela${item.favorito ? ' ativa' : ''}" data-acao="favorito" title="${item.favorito ? 'Tirar dos favoritos' : 'Favoritar'}" aria-label="Favoritar">${item.favorito ? '★' : '☆'}</button>
+          ${rapida}
+        </div>`;
+
+      linha.addEventListener('click', () => ferrAbrirItem(item));
+      linha.querySelectorAll('[data-acao]').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const acao = btn.dataset.acao;
+          if (acao === 'favorito') ferrAlternarFavorito(item);
+          else if (acao === 'copiar') ferrCopiar(item.conteudo || '', btn);
+          else if (acao === 'abrir') window.open(ferrUrlSegura(item.url), '_blank', 'noopener');
+          else if (acao === 'subir') ferrMoverItem(item, -1);
+          else if (acao === 'descer') ferrMoverItem(item, 1);
+        });
+      });
+      return linha;
+    }
+
+    // ---------- reordenar ----------
+
+    function ferrReordenarLista(lista, idOrigem, idDestino) {
+      const de = lista.findIndex((x) => x.id === idOrigem);
+      const para = lista.findIndex((x) => x.id === idDestino);
+      if (de < 0 || para < 0) return lista;
+      const [movido] = lista.splice(de, 1);
+      lista.splice(para, 0, movido);
+      return lista;
+    }
+
+    async function ferrPersistirOrdem(lista, tabela) {
+      const mudancas = [];
+      lista.forEach((x, i) => {
+        if (x.ordem !== i) {
+          x.ordem = i;
+          mudancas.push({ id: x.id, ordem: i });
+        }
+      });
+      ferrRenderizar();
+      if (mudancas.length === 0) return;
+      const resultados = await Promise.all(mudancas.map((m) => Auth.sb.from(tabela).update({ ordem: m.ordem }).eq('id', m.id)));
+      if (resultados.some((r) => r.error)) {
+        console.error('Erro ao salvar a ordem:', resultados.find((r) => r.error).error);
+        alert('Não consegui salvar a nova ordem. Vou recarregar.');
+        await ferrCarregar();
+      }
+    }
+
+    function ferrMoverItem(item, delta) {
+      const lista = ferrItensDaPasta(item.pasta_id);
+      const i = lista.findIndex((x) => x.id === item.id);
+      const j = i + delta;
+      if (j < 0 || j >= lista.length) return;
+      lista.splice(j, 0, lista.splice(i, 1)[0]);
+      ferrPersistirOrdem(lista, 'ferramentas_itens');
+    }
+
+    // Arrastar e soltar (mouse). No celular, as setas ↑ ↓ e os botões de
+    // "mover" do modal da pasta fazem o mesmo.
+    function ferrLigarArrasto(cont, seletor, aoReordenar) {
+      let arrastandoId = null;
+      cont.querySelectorAll(seletor).forEach((el) => {
+        el.draggable = true;
+        el.addEventListener('dragstart', (e) => {
+          arrastandoId = el.dataset.id;
+          el.classList.add('ferr-arrastando');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', arrastandoId);
+        });
+        el.addEventListener('dragend', () => {
+          arrastandoId = null;
+          el.classList.remove('ferr-arrastando');
+          cont.querySelectorAll('.ferr-alvo').forEach((x) => x.classList.remove('ferr-alvo'));
+        });
+        el.addEventListener('dragover', (e) => {
+          if (!arrastandoId || arrastandoId === el.dataset.id) return;
+          e.preventDefault();
+          el.classList.add('ferr-alvo');
+        });
+        el.addEventListener('dragleave', () => el.classList.remove('ferr-alvo'));
+        el.addEventListener('drop', (e) => {
+          e.preventDefault();
+          const origem = arrastandoId;
+          arrastandoId = null;
+          if (origem && origem !== el.dataset.id) aoReordenar(origem, el.dataset.id);
+        });
+      });
+    }
+
+    // ---------- favoritos ----------
+
+    async function ferrAlternarFavorito(item) {
+      const novo = !item.favorito;
+      item.favorito = novo;
+      if (ferrItemAbertoId === item.id && ferrItemEstado) {
+        ferrItemEstado.favorito = novo;
+        ferrAtualizarEstrelaModal();
+      }
+      ferrRenderizar();
+      const { error } = await Auth.sb.from('ferramentas_itens').update({ favorito: novo }).eq('id', item.id);
+      if (error) {
+        console.error('Erro ao favoritar:', error);
+        item.favorito = !novo;
+        if (ferrItemAbertoId === item.id && ferrItemEstado) {
+          ferrItemEstado.favorito = !novo;
+          ferrAtualizarEstrelaModal();
+        }
+        ferrRenderizar();
+        alert('Não consegui salvar o favorito. Tente de novo.');
+      }
+    }
+
+    // ---------- pastas: criar, editar, excluir ----------
+
+    function ferrRenderizarCoresPasta() {
+      document.getElementById('ferr-pasta-cores').innerHTML = FERR_CORES.map(
+        (c) => `<button type="button" class="ferr-cor${c === ferrPastaCorEscolhida ? ' ativa' : ''}" data-cor="${c}" style="background:${c}" aria-label="Cor ${c}"></button>`
+      ).join('');
+      document.querySelectorAll('#ferr-pasta-cores .ferr-cor').forEach((b) =>
+        b.addEventListener('click', () => {
+          ferrPastaCorEscolhida = b.dataset.cor;
+          ferrRenderizarCoresPasta();
+        })
+      );
+    }
+
+    function ferrAbrirModalPasta(pasta) {
+      ferrPastaEditandoId = pasta ? pasta.id : null;
+      ferrPastaCorEscolhida = pasta && pasta.cor ? pasta.cor : FERR_COR_PADRAO;
+      document.getElementById('ferr-pasta-nome-input').value = pasta ? pasta.nome : '';
+      document.getElementById('ferr-pasta-excluir').hidden = !pasta;
+      document.getElementById('ferr-pasta-posicao-campo').hidden = !pasta;
+      ferrRenderizarCoresPasta();
+      document.getElementById('ferr-pasta-modal-overlay').hidden = false;
+      document.getElementById('ferr-pasta-nome-input').focus();
+    }
+
+    function ferrFecharModalPasta() {
+      ferrPastaEditandoId = null;
+      document.getElementById('ferr-pasta-modal-overlay').hidden = true;
+    }
+
+    async function ferrSalvarPasta() {
+      const nome = document.getElementById('ferr-pasta-nome-input').value.trim();
+      if (!nome) {
+        alert('Dê um nome pra pasta.');
+        return;
+      }
+      const btn = document.getElementById('ferr-pasta-salvar');
+      btn.disabled = true;
+      try {
+        if (ferrPastaEditandoId) {
+          const { data, error } = await Auth.sb.from('ferramentas_pastas').update({ nome, cor: ferrPastaCorEscolhida }).eq('id', ferrPastaEditandoId).select();
+          if (error) throw error;
+          const idx = ferrPastas.findIndex((p) => p.id === ferrPastaEditandoId);
+          if (idx >= 0 && data[0]) ferrPastas[idx] = data[0];
+        } else {
+          const proxima = ferrPastas.reduce((max, p) => Math.max(max, p.ordem || 0), -1) + 1;
+          const { data, error } = await Auth.sb.from('ferramentas_pastas').insert({ nome, cor: ferrPastaCorEscolhida, ordem: proxima }).select();
+          if (error) throw error;
+          ferrPastas.push(data[0]);
+        }
+        ferrFecharModalPasta();
+        ferrRenderizar();
+      } catch (err) {
+        console.error('Erro ao salvar pasta:', err);
+        alert('Não consegui salvar a pasta. Tente de novo.');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function ferrExcluirPasta() {
+      const pasta = ferrPastas.find((p) => p.id === ferrPastaEditandoId);
+      if (!pasta) return;
+      const qtd = ferrItens.filter((i) => i.pasta_id === pasta.id).length;
+      const aviso = qtd > 0
+        ? `Excluir a pasta "${pasta.nome}" e as ${qtd} ${qtd === 1 ? 'ferramenta' : 'ferramentas'} que estão dentro dela? Não dá pra desfazer.`
+        : `Excluir a pasta "${pasta.nome}"?`;
+      if (!(await confirmarAcao(aviso))) return;
+      const { error } = await Auth.sb.from('ferramentas_pastas').delete().eq('id', pasta.id);
+      if (error) {
+        console.error('Erro ao excluir pasta:', error);
+        alert('Não consegui excluir a pasta.');
+        return;
+      }
+      ferrPastas = ferrPastas.filter((p) => p.id !== pasta.id);
+      ferrItens = ferrItens.filter((i) => i.pasta_id !== pasta.id);
+      if (ferrPastaAbertaId === pasta.id) ferrPastaAbertaId = null;
+      ferrFecharModalPasta();
+      ferrRenderizar();
+    }
+
+    function ferrMoverPasta(delta) {
+      const lista = ferrOrdenar(ferrPastas);
+      const i = lista.findIndex((p) => p.id === ferrPastaEditandoId);
+      const j = i + delta;
+      if (i < 0 || j < 0 || j >= lista.length) return;
+      lista.splice(j, 0, lista.splice(i, 1)[0]);
+      ferrPersistirOrdem(lista, 'ferramentas_pastas');
+    }
+
+    // ---------- ferramentas: escolher tipo ----------
+
+    function ferrAbrirEscolhaTipo() {
+      if (!ferrPastaAbertaId) return;
+      const grade = document.getElementById('ferr-tipo-grade');
+      grade.innerHTML = Object.entries(FERR_TIPOS)
+        .map(
+          ([chave, t]) => `
+          <button type="button" class="ferr-tipo-opcao" data-tipo="${chave}">
+            <span class="ferr-tipo-emoji">${t.emoji}</span>
+            <span class="ferr-tipo-nome">${escapeHtml(t.rotulo)}</span>
+            <span class="ferr-tipo-desc">${escapeHtml(t.desc)}</span>
+          </button>`
+        )
+        .join('');
+      grade.querySelectorAll('.ferr-tipo-opcao').forEach((b) =>
+        b.addEventListener('click', () => {
+          document.getElementById('ferr-tipo-modal-overlay').hidden = true;
+          ferrAbrirItem(null, b.dataset.tipo, ferrPastaAbertaId);
+        })
+      );
+      document.getElementById('ferr-tipo-modal-overlay').hidden = false;
+    }
+
+    // ---------- ferramentas: modal (criar, usar, editar) ----------
+
+    function ferrCampoTexto(id, rotulo, valor, opcoes = {}) {
+      return `<div class="cal-form-campo"><label for="${id}">${rotulo}</label><input type="text" id="${id}" value="${escapeHtml(valor || '')}" ${opcoes.placeholder ? `placeholder="${escapeHtml(opcoes.placeholder)}"` : ''} maxlength="${opcoes.max || 300}" autocomplete="off"></div>`;
+    }
+
+    function ferrCampoArea(id, rotulo, valor, opcoes = {}) {
+      return `<div class="cal-form-campo"><label for="${id}">${rotulo}</label><textarea id="${id}" rows="${opcoes.linhas || 8}" ${opcoes.placeholder ? `placeholder="${escapeHtml(opcoes.placeholder)}"` : ''}>${escapeHtml(valor || '')}</textarea></div>`;
+    }
+
+    function ferrHtmlCamposItem(tipo, item) {
+      const v = item || {};
+      const descricao = ferrCampoTexto('ferr-f-descricao', 'Descrição (opcional)', v.descricao);
+      const plataforma = ferrCampoTexto('ferr-f-plataforma', 'Ferramenta ou plataforma onde usa', v.plataforma, { placeholder: 'Ex: o nome da ferramenta', max: 80 });
+      const botaoCopiar = '<div class="ferr-linha-acao"><button type="button" class="cal-btn cal-btn-primario" id="btn-ferr-copiar">Copiar</button></div>';
+
+      switch (tipo) {
+        case 'prompt':
+          return descricao + plataforma + ferrCampoArea('ferr-f-conteudo', 'Prompt', v.conteudo, { linhas: 10 }) + botaoCopiar;
+        case 'prompt_campos':
+          return (
+            descricao +
+            plataforma +
+            ferrCampoArea('ferr-f-conteudo', 'Prompt (escreva as variáveis assim: {{nome_da_variavel}})', v.conteudo, { linhas: 9 }) +
+            '<div class="ferr-vars-caixa"><div class="ferr-vars-titulo">Campos</div><div id="ferr-vars-campos"></div>' +
+            '<div class="ferr-linha-acao"><button type="button" class="cal-btn cal-btn-primario" id="btn-ferr-copiar-preenchido">Copiar prompt preenchido</button></div></div>'
+          );
+        case 'texto':
+          return descricao + ferrCampoArea('ferr-f-conteudo', 'Texto', v.conteudo, { linhas: 10 }) + botaoCopiar;
+        case 'link':
+          return (
+            descricao +
+            ferrCampoTexto('ferr-f-url', 'URL', v.url, { placeholder: 'https://', max: 1000 }) +
+            '<div class="ferr-linha-acao"><button type="button" class="cal-btn cal-btn-primario" id="btn-ferr-abrir">Abrir link</button></div>'
+          );
+        case 'checklist':
+          return (
+            descricao +
+            '<div class="cal-form-campo"><label>Itens</label><div id="ferr-check-lista" class="ferr-check-lista"></div>' +
+            '<div class="ferr-check-novo"><input type="text" id="ferr-check-novo-texto" placeholder="Novo item (Enter pra adicionar)" maxlength="300" autocomplete="off"><button type="button" class="cal-btn" id="btn-ferr-check-add">Adicionar</button></div>' +
+            '<div class="ferr-linha-acao"><button type="button" class="cal-btn" id="btn-ferr-check-limpar">Desmarcar todos</button></div></div>'
+          );
+        case 'processo':
+          return (
+            descricao +
+            '<div class="cal-form-campo"><label>Etapas (opcional)</label><div id="ferr-etapas-lista" class="ferr-etapas-lista"></div>' +
+            '<div class="ferr-linha-acao"><button type="button" class="cal-btn" id="btn-ferr-etapa-add">+ Adicionar etapa</button></div></div>' +
+            ferrCampoArea('ferr-f-conteudo', 'Texto livre (opcional)', v.conteudo, { linhas: 6 }) +
+            botaoCopiar
+          );
+        case 'nota':
+          return ferrCampoArea('ferr-f-conteudo', 'Nota', v.conteudo, { linhas: 12 });
+        default:
+          return (
+            descricao +
+            ferrCampoTexto('ferr-f-url', 'URL (opcional)', v.url, { placeholder: 'https://', max: 1000 }) +
+            ferrCampoArea('ferr-f-conteudo', 'Conteúdo', v.conteudo, { linhas: 8 }) +
+            '<div class="ferr-linha-acao"><button type="button" class="cal-btn" id="btn-ferr-abrir">Abrir link</button><button type="button" class="cal-btn" id="btn-ferr-copiar">Copiar</button></div>'
+          );
+      }
+    }
+
+    function ferrAtualizarEstrelaModal() {
+      const btn = document.getElementById('btn-ferr-item-favorito');
+      const ativa = !!(ferrItemEstado && ferrItemEstado.favorito);
+      btn.textContent = ativa ? '★' : '☆';
+      btn.classList.toggle('ativa', ativa);
+      btn.title = ativa ? 'Tirar dos favoritos' : 'Favoritar';
+    }
+
+    function ferrValor(id) {
+      const el = document.getElementById(id);
+      return el ? el.value : '';
+    }
+
+    function ferrAbrirItem(item, tipoNovo, pastaNova) {
+      const tipo = item ? item.tipo : tipoNovo;
+      const dados = (item && item.dados) || {};
+      ferrItemAbertoId = item ? item.id : null;
+      ferrValoresVars = {};
+      ferrItemEstado = {
+        tipo,
+        favorito: item ? !!item.favorito : false,
+        checklist: (dados.itens || []).map((i) => ({ ...i })),
+        etapas: (dados.etapas || []).map((e) => ({ ...e })),
+      };
+
+      document.getElementById('ferr-item-nome').value = item ? item.nome : '';
+      const t = FERR_TIPOS[tipo] || FERR_TIPOS.outro;
+      const badge = document.getElementById('ferr-item-tipo-badge');
+      badge.textContent = t.rotulo;
+      badge.style.setProperty('--tc', t.cor);
+
+      const sel = document.getElementById('ferr-item-pasta');
+      sel.innerHTML = ferrOrdenar(ferrPastas).map((p) => `<option value="${p.id}">${escapeHtml(p.nome)}</option>`).join('');
+      sel.value = item ? item.pasta_id : pastaNova;
+
+      document.getElementById('ferr-item-campos').innerHTML = ferrHtmlCamposItem(tipo, item);
+      document.getElementById('ferr-item-excluir').hidden = !item;
+      document.getElementById('ferr-item-duplicar').hidden = !item;
+      ferrAtualizarEstrelaModal();
+      ferrLigarCamposItem(tipo);
+      document.getElementById('ferr-item-modal-overlay').hidden = false;
+      if (!item) document.getElementById('ferr-item-nome').focus();
+    }
+
+    function ferrFecharModalItem() {
+      ferrItemAbertoId = null;
+      ferrItemEstado = null;
+      document.getElementById('ferr-item-modal-overlay').hidden = true;
+    }
+
+    function ferrLigarCamposItem(tipo) {
+      const on = (id, evento, fn) => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener(evento, fn);
+      };
+      on('btn-ferr-copiar', 'click', (e) => {
+        let texto = ferrValor('ferr-f-conteudo');
+        if (tipo === 'processo') texto = ferrTextoProcesso();
+        ferrCopiar(texto, e.currentTarget);
+      });
+      on('btn-ferr-abrir', 'click', () => {
+        const href = ferrUrlSegura(ferrValor('ferr-f-url'));
+        if (!href) {
+          alert('Escreva um endereço válido (começando com http:// ou https://).');
+          return;
+        }
+        window.open(href, '_blank', 'noopener');
+      });
+
+      if (tipo === 'prompt_campos') {
+        ferrRenderizarVariaveis();
+        on('ferr-f-conteudo', 'input', ferrRenderizarVariaveis);
+        on('btn-ferr-copiar-preenchido', 'click', (e) => ferrCopiar(ferrPreencher(ferrValor('ferr-f-conteudo'), ferrValoresVars), e.currentTarget));
+      }
+
+      if (tipo === 'checklist') {
+        ferrRenderizarChecklist();
+        const adicionar = () => {
+          const campo = document.getElementById('ferr-check-novo-texto');
+          const texto = campo.value.trim();
+          if (!texto) return;
+          ferrItemEstado.checklist.push({ id: crypto.randomUUID(), texto, feito: false });
+          campo.value = '';
+          ferrRenderizarChecklist();
+          ferrSalvarDadosSilencioso();
+          campo.focus();
+        };
+        on('btn-ferr-check-add', 'click', adicionar);
+        on('ferr-check-novo-texto', 'keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            adicionar();
+          }
+        });
+        on('btn-ferr-check-limpar', 'click', () => {
+          ferrItemEstado.checklist.forEach((i) => (i.feito = false));
+          ferrRenderizarChecklist();
+          ferrSalvarDadosSilencioso();
+        });
+      }
+
+      if (tipo === 'processo') {
+        ferrRenderizarEtapas();
+        on('btn-ferr-etapa-add', 'click', () => {
+          ferrItemEstado.etapas.push({ id: crypto.randomUUID(), titulo: '', texto: '' });
+          ferrRenderizarEtapas();
+        });
+      }
+    }
+
+    function ferrRenderizarVariaveis() {
+      const vars = ferrVariaveis(ferrValor('ferr-f-conteudo'));
+      const cont = document.getElementById('ferr-vars-campos');
+      if (vars.length === 0) {
+        cont.innerHTML = '<p class="ferr-vars-vazio">Nenhum campo ainda. Escreva {{algo}} no prompt pra criar um campo aqui.</p>';
+        return;
+      }
+      cont.innerHTML = vars
+        .map(
+          (nome) => `
+          <div class="cal-form-campo">
+            <label for="ferr-var-${escapeHtml(nome)}">${escapeHtml(ferrNomeVariavel(nome))}</label>
+            <textarea id="ferr-var-${escapeHtml(nome)}" data-var="${escapeHtml(nome)}" rows="1">${escapeHtml(ferrValoresVars[nome] || '')}</textarea>
+          </div>`
+        )
+        .join('');
+      cont.querySelectorAll('textarea[data-var]').forEach((ta) =>
+        ta.addEventListener('input', () => {
+          ferrValoresVars[ta.dataset.var] = ta.value;
+        })
+      );
+    }
+
+    function ferrRenderizarChecklist() {
+      const cont = document.getElementById('ferr-check-lista');
+      if (ferrItemEstado.checklist.length === 0) {
+        cont.innerHTML = '<p class="ferr-vars-vazio">Nenhum item ainda.</p>';
+        return;
+      }
+      cont.innerHTML = ferrItemEstado.checklist
+        .map(
+          (i) => `
+          <div class="ferr-check-linha${i.feito ? ' feito' : ''}" data-id="${i.id}">
+            <input type="checkbox" ${i.feito ? 'checked' : ''} aria-label="Marcar item">
+            <input type="text" class="ferr-check-texto" value="${escapeHtml(i.texto)}" maxlength="300" autocomplete="off">
+            <button type="button" class="ferr-mini" data-acao="remover" title="Remover item" aria-label="Remover item">✕</button>
+          </div>`
+        )
+        .join('');
+      cont.querySelectorAll('.ferr-check-linha').forEach((linha) => {
+        const estado = ferrItemEstado.checklist.find((x) => x.id === linha.dataset.id);
+        linha.querySelector('input[type="checkbox"]').addEventListener('change', (e) => {
+          estado.feito = e.target.checked;
+          linha.classList.toggle('feito', estado.feito);
+          ferrSalvarDadosSilencioso();
+        });
+        const texto = linha.querySelector('.ferr-check-texto');
+        texto.addEventListener('input', () => (estado.texto = texto.value));
+        texto.addEventListener('change', ferrSalvarDadosSilencioso);
+        linha.querySelector('[data-acao="remover"]').addEventListener('click', () => {
+          ferrItemEstado.checklist = ferrItemEstado.checklist.filter((x) => x.id !== estado.id);
+          ferrRenderizarChecklist();
+          ferrSalvarDadosSilencioso();
+        });
+      });
+    }
+
+    // Marcar/desmarcar itens de um checklist já salvo grava na hora (é uso,
+    // não edição). Em ferramenta nova, só grava quando clicar em Salvar.
+    async function ferrSalvarDadosSilencioso() {
+      if (!ferrItemAbertoId || !ferrItemEstado || ferrItemEstado.tipo !== 'checklist') return;
+      const item = ferrItens.find((i) => i.id === ferrItemAbertoId);
+      if (!item) return;
+      const dados = { ...(item.dados || {}), itens: ferrItemEstado.checklist.filter((i) => i.texto.trim()).map((i) => ({ ...i, texto: i.texto.trim() })) };
+      const { error } = await Auth.sb.from('ferramentas_itens').update({ dados, updated_at: new Date().toISOString() }).eq('id', item.id);
+      if (error) {
+        console.error('Erro ao salvar checklist:', error);
+        return;
+      }
+      item.dados = dados;
+    }
+
+    function ferrRenderizarEtapas() {
+      const cont = document.getElementById('ferr-etapas-lista');
+      if (ferrItemEstado.etapas.length === 0) {
+        cont.innerHTML = '<p class="ferr-vars-vazio">Nenhuma etapa. Você pode usar só o texto livre, se preferir.</p>';
+        return;
+      }
+      cont.innerHTML = ferrItemEstado.etapas
+        .map(
+          (e, i) => `
+          <div class="ferr-etapa" data-id="${e.id}">
+            <span class="ferr-etapa-num">${i + 1}</span>
+            <div class="ferr-etapa-campos">
+              <input type="text" class="ferr-etapa-titulo" value="${escapeHtml(e.titulo)}" placeholder="Título da etapa" maxlength="200" autocomplete="off">
+              <textarea class="ferr-etapa-texto" rows="2" placeholder="O que fazer nessa etapa">${escapeHtml(e.texto)}</textarea>
+            </div>
+            <div class="ferr-etapa-acoes">
+              <button type="button" class="ferr-mini" data-acao="subir" aria-label="Subir etapa">↑</button>
+              <button type="button" class="ferr-mini" data-acao="descer" aria-label="Descer etapa">↓</button>
+              <button type="button" class="ferr-mini" data-acao="remover" aria-label="Remover etapa">✕</button>
+            </div>
+          </div>`
+        )
+        .join('');
+      cont.querySelectorAll('.ferr-etapa').forEach((el) => {
+        const estado = ferrItemEstado.etapas.find((x) => x.id === el.dataset.id);
+        el.querySelector('.ferr-etapa-titulo').addEventListener('input', (ev) => (estado.titulo = ev.target.value));
+        el.querySelector('.ferr-etapa-texto').addEventListener('input', (ev) => (estado.texto = ev.target.value));
+        el.querySelectorAll('[data-acao]').forEach((b) =>
+          b.addEventListener('click', () => {
+            const lista = ferrItemEstado.etapas;
+            const i = lista.findIndex((x) => x.id === estado.id);
+            if (b.dataset.acao === 'remover') lista.splice(i, 1);
+            else {
+              const j = i + (b.dataset.acao === 'subir' ? -1 : 1);
+              if (j < 0 || j >= lista.length) return;
+              lista.splice(j, 0, lista.splice(i, 1)[0]);
+            }
+            ferrRenderizarEtapas();
+          })
+        );
+      });
+    }
+
+    function ferrTextoProcesso() {
+      const partes = [];
+      const conteudo = ferrValor('ferr-f-conteudo').trim();
+      const nome = ferrValor('ferr-item-nome').trim();
+      if (nome) partes.push(nome);
+      ferrItemEstado.etapas
+        .filter((e) => e.titulo.trim() || e.texto.trim())
+        .forEach((e, i) => partes.push(`${i + 1}. ${e.titulo.trim()}${e.texto.trim() ? '\n' + e.texto.trim() : ''}`));
+      if (conteudo) partes.push(conteudo);
+      return partes.join('\n\n');
+    }
+
+    async function ferrSalvarItem() {
+      const nome = ferrValor('ferr-item-nome').trim();
+      if (!nome) {
+        alert('Dê um nome pra ferramenta.');
+        return;
+      }
+      const tipo = ferrItemEstado.tipo;
+      const pastaId = ferrValor('ferr-item-pasta');
+      if (!pastaId) {
+        alert('Escolha a pasta.');
+        return;
+      }
+
+      const linha = { nome, tipo, pasta_id: pastaId, favorito: ferrItemEstado.favorito, updated_at: new Date().toISOString() };
+      if (document.getElementById('ferr-f-descricao')) linha.descricao = ferrValor('ferr-f-descricao').trim() || null;
+      if (document.getElementById('ferr-f-plataforma')) linha.plataforma = ferrValor('ferr-f-plataforma').trim() || null;
+      if (document.getElementById('ferr-f-conteudo')) linha.conteudo = ferrValor('ferr-f-conteudo').trim() ? ferrValor('ferr-f-conteudo') : null;
+      if (document.getElementById('ferr-f-url')) {
+        const bruto = ferrValor('ferr-f-url').trim();
+        if (bruto) {
+          const href = ferrUrlSegura(bruto);
+          if (!href) {
+            alert('Esse endereço não parece válido. Use algo como https://exemplo.com');
+            return;
+          }
+          linha.url = href;
+        } else {
+          if (tipo === 'link') {
+            alert('Escreva a URL do link.');
+            return;
+          }
+          linha.url = null;
+        }
+      }
+      if (tipo === 'checklist') {
+        linha.dados = { itens: ferrItemEstado.checklist.filter((i) => i.texto.trim()).map((i) => ({ ...i, texto: i.texto.trim() })) };
+      } else if (tipo === 'processo') {
+        linha.dados = { etapas: ferrItemEstado.etapas.filter((e) => e.titulo.trim() || e.texto.trim()).map((e) => ({ ...e, titulo: e.titulo.trim(), texto: e.texto.trim() })) };
+      }
+
+      const existente = ferrItemAbertoId ? ferrItens.find((i) => i.id === ferrItemAbertoId) : null;
+      if (!existente || existente.pasta_id !== pastaId) {
+        linha.ordem = ferrItens.filter((i) => i.pasta_id === pastaId).reduce((max, i) => Math.max(max, i.ordem || 0), -1) + 1;
+      }
+
+      const btn = document.getElementById('ferr-item-salvar');
+      btn.disabled = true;
+      try {
+        if (existente) {
+          const { data, error } = await Auth.sb.from('ferramentas_itens').update(linha).eq('id', existente.id).select();
+          if (error) throw error;
+          const idx = ferrItens.findIndex((i) => i.id === existente.id);
+          if (idx >= 0 && data[0]) ferrItens[idx] = data[0];
+        } else {
+          const { data, error } = await Auth.sb.from('ferramentas_itens').insert(linha).select();
+          if (error) throw error;
+          ferrItens.push(data[0]);
+        }
+        ferrFecharModalItem();
+        ferrRenderizar();
+      } catch (err) {
+        console.error('Erro ao salvar ferramenta:', err);
+        alert('Não consegui salvar a ferramenta. Tente de novo.');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function ferrDuplicarItem() {
+      const item = ferrItens.find((i) => i.id === ferrItemAbertoId);
+      if (!item) return;
+      const copia = {
+        pasta_id: item.pasta_id,
+        tipo: item.tipo,
+        nome: `${item.nome} (cópia)`,
+        descricao: item.descricao,
+        plataforma: item.plataforma,
+        conteudo: item.conteudo,
+        url: item.url,
+        dados: item.dados || {},
+        favorito: false,
+        ordem: ferrItens.filter((i) => i.pasta_id === item.pasta_id).reduce((max, i) => Math.max(max, i.ordem || 0), -1) + 1,
+      };
+      const { data, error } = await Auth.sb.from('ferramentas_itens').insert(copia).select();
+      if (error) {
+        console.error('Erro ao duplicar:', error);
+        alert('Não consegui duplicar a ferramenta.');
+        return;
+      }
+      ferrItens.push(data[0]);
+      ferrFecharModalItem();
+      ferrRenderizar();
+    }
+
+    async function ferrExcluirItem() {
+      const item = ferrItens.find((i) => i.id === ferrItemAbertoId);
+      if (!item) return;
+      if (!(await confirmarAcao(`Excluir "${item.nome}"?`))) return;
+      const { error } = await Auth.sb.from('ferramentas_itens').delete().eq('id', item.id);
+      if (error) {
+        console.error('Erro ao excluir ferramenta:', error);
+        alert('Não consegui excluir a ferramenta.');
+        return;
+      }
+      ferrItens = ferrItens.filter((i) => i.id !== item.id);
+      ferrFecharModalItem();
+      ferrRenderizar();
+    }
+
+    // ---------- navegação da aba ----------
+
+    function ferrMudarModo(modo) {
+      ferrModo = modo;
+      document.querySelectorAll('#ferr-modos-grupo .cal-filtro-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.ferrModo === modo));
+      document.getElementById('ferr-vista-pastas').hidden = modo !== 'pastas';
+      document.getElementById('ferr-vista-cofre').hidden = modo !== 'cofre';
+      if (modo === 'cofre') cofreAbrirVista();
+      else cofreTrancar();
+    }
+
+    function ferrLigarEventos() {
+      const on = (id, evento, fn) => document.getElementById(id).addEventListener(evento, fn);
+
+      document.querySelectorAll('#ferr-modos-grupo .cal-filtro-btn').forEach((b) => b.addEventListener('click', () => ferrMudarModo(b.dataset.ferrModo)));
+      on('ferr-busca', 'input', (e) => {
+        ferrBusca = e.target.value;
+        ferrRenderizar();
+      });
+      on('btn-ferr-nova-pasta', 'click', () => ferrAbrirModalPasta(null));
+      on('btn-ferr-primeira-pasta', 'click', () => ferrAbrirModalPasta(null));
+      on('btn-ferr-voltar', 'click', () => {
+        ferrPastaAbertaId = null;
+        ferrRenderizar();
+      });
+      on('btn-ferr-editar-pasta', 'click', () => ferrAbrirModalPasta(ferrPastas.find((p) => p.id === ferrPastaAbertaId)));
+      on('btn-ferr-nova-ferramenta', 'click', ferrAbrirEscolhaTipo);
+
+      on('ferr-pasta-modal-fechar', 'click', ferrFecharModalPasta);
+      on('ferr-pasta-modal-overlay', 'click', (e) => {
+        if (e.target.id === 'ferr-pasta-modal-overlay') ferrFecharModalPasta();
+      });
+      on('ferr-pasta-salvar', 'click', ferrSalvarPasta);
+      on('ferr-pasta-excluir', 'click', ferrExcluirPasta);
+      on('btn-ferr-pasta-antes', 'click', () => ferrMoverPasta(-1));
+      on('btn-ferr-pasta-depois', 'click', () => ferrMoverPasta(1));
+      on('ferr-pasta-nome-input', 'keydown', (e) => {
+        if (e.key === 'Enter') ferrSalvarPasta();
+      });
+
+      on('ferr-tipo-modal-fechar', 'click', () => (document.getElementById('ferr-tipo-modal-overlay').hidden = true));
+      on('ferr-tipo-modal-overlay', 'click', (e) => {
+        if (e.target.id === 'ferr-tipo-modal-overlay') e.target.hidden = true;
+      });
+
+      on('ferr-item-modal-fechar', 'click', ferrFecharModalItem);
+      on('ferr-item-modal-overlay', 'click', (e) => {
+        if (e.target.id === 'ferr-item-modal-overlay') ferrFecharModalItem();
+      });
+      on('ferr-item-salvar', 'click', ferrSalvarItem);
+      on('ferr-item-excluir', 'click', ferrExcluirItem);
+      on('ferr-item-duplicar', 'click', ferrDuplicarItem);
+      on('btn-ferr-item-favorito', 'click', () => {
+        const item = ferrItemAbertoId ? ferrItens.find((i) => i.id === ferrItemAbertoId) : null;
+        if (item) ferrAlternarFavorito(item);
+        else {
+          ferrItemEstado.favorito = !ferrItemEstado.favorito;
+          ferrAtualizarEstrelaModal();
+        }
+      });
+
+      cofreLigarEventos();
+    }
+
+    // ==========================================================================
+    // Cofre privado. As credenciais são cifradas AQUI, no navegador (AES-256-GCM,
+    // chave derivada da senha mestra por PBKDF2), antes de irem pro Supabase:
+    // o banco só guarda texto cifrado. A senha mestra e a chave ficam só na
+    // memória desta aba e somem quando o cofre tranca. Sem a senha mestra, não
+    // existe como ler nem recuperar o conteúdo.
+    // ==========================================================================
+
+    const COFRE_ITERACOES = 600000;
+    const COFRE_TEMPO_OCIOSO_MS = 5 * 60 * 1000;
+    const COFRE_TEMPO_SENHA_VISIVEL_MS = 10 * 1000;
+
+    let cofreChave = null;
+    let cofreConfig = null;
+    let cofreCarregadoConfig = false;
+    let cofreTabelasOk = true;
+    let cofreItens = []; // já decifrados: { id, servico, categoria, url, usuario, senha, observacao, ilegivel }
+    let cofreItemAbertoId = null;
+    let cofreTimerOcioso = null;
+    const cofreTimersSenha = new Map();
+
+    function cofreParaB64(bytes) {
+      let s = '';
+      bytes.forEach((b) => (s += String.fromCharCode(b)));
+      return btoa(s);
+    }
+
+    function cofreDeB64(b64) {
+      const s = atob(b64);
+      const bytes = new Uint8Array(s.length);
+      for (let i = 0; i < s.length; i++) bytes[i] = s.charCodeAt(i);
+      return bytes;
+    }
+
+    async function cofreDerivarChave(senha, salt, iteracoes) {
+      const material = await crypto.subtle.importKey('raw', new TextEncoder().encode(senha), 'PBKDF2', false, ['deriveKey']);
+      return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: iteracoes, hash: 'SHA-256' }, material, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    }
+
+    async function cofreCifrar(chave, objeto) {
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const cifrado = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, chave, new TextEncoder().encode(JSON.stringify(objeto)));
+      return { iv: cofreParaB64(iv), dados: cofreParaB64(new Uint8Array(cifrado)) };
+    }
+
+    async function cofreDecifrar(chave, ivB64, dadosB64) {
+      const claro = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: cofreDeB64(ivB64) }, chave, cofreDeB64(dadosB64));
+      return JSON.parse(new TextDecoder().decode(claro));
+    }
+
+    function cofreMostrarTela(qual) {
+      ['carregando', 'criar', 'trancado', 'aberto'].forEach((t) => (document.getElementById('cofre-tela-' + t).hidden = t !== qual));
+    }
+
+    function cofreReiniciarTimer() {
+      clearTimeout(cofreTimerOcioso);
+      if (cofreChave) cofreTimerOcioso = setTimeout(cofreTrancar, COFRE_TEMPO_OCIOSO_MS);
+    }
+
+    function cofreTrancar() {
+      clearTimeout(cofreTimerOcioso);
+      cofreTimersSenha.forEach((t) => clearTimeout(t));
+      cofreTimersSenha.clear();
+      const estavaAberto = !!cofreChave;
+      cofreChave = null;
+      cofreItens = [];
+      cofreItemAbertoId = null;
+      document.getElementById('cofre-lista').innerHTML = '';
+      document.getElementById('cofre-busca').value = '';
+      document.getElementById('cofre-item-modal-overlay').hidden = true;
+      ['cofre-f-servico', 'cofre-f-categoria', 'cofre-f-url', 'cofre-f-usuario', 'cofre-f-senha', 'cofre-f-obs', 'cofre-mestra', 'cofre-mestra-nova', 'cofre-mestra-confirma'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      if (estavaAberto && ferrModo === 'cofre' && cofreCarregadoConfig && cofreConfig) cofreMostrarTela('trancado');
+    }
+
+    async function cofreAbrirVista() {
+      document.getElementById('cofre-aviso-tabelas').hidden = true;
+      if (cofreChave) {
+        cofreMostrarTela('aberto');
+        cofreReiniciarTimer();
+        return;
+      }
+      if (!cofreCarregadoConfig) {
+        cofreMostrarTela('carregando');
+        try {
+          const { data, error } = await Auth.sb.from('cofre_config').select('*').maybeSingle();
+          if (error) throw error;
+          cofreConfig = data;
+          cofreTabelasOk = true;
+          cofreCarregadoConfig = true;
+        } catch (err) {
+          console.error('Tabelas do cofre (ferramentas.sql) ainda não disponíveis:', err);
+          cofreTabelasOk = false;
+        }
+      }
+      if (!cofreTabelasOk) {
+        document.getElementById('cofre-aviso-tabelas').hidden = false;
+        ['carregando', 'criar', 'trancado', 'aberto'].forEach((t) => (document.getElementById('cofre-tela-' + t).hidden = true));
+        return;
+      }
+      cofreMostrarTela(cofreConfig ? 'trancado' : 'criar');
+    }
+
+    function cofreErro(id, mensagem) {
+      const el = document.getElementById(id);
+      el.textContent = mensagem;
+      el.hidden = !mensagem;
+    }
+
+    async function cofreCriar() {
+      const senha = document.getElementById('cofre-mestra-nova').value;
+      const confirma = document.getElementById('cofre-mestra-confirma').value;
+      cofreErro('cofre-criar-erro', '');
+      if (senha.length < 10) return cofreErro('cofre-criar-erro', 'A senha mestra precisa ter pelo menos 10 caracteres.');
+      if (senha !== confirma) return cofreErro('cofre-criar-erro', 'As duas senhas não são iguais.');
+      if (!document.getElementById('cofre-entendi').checked) return cofreErro('cofre-criar-erro', 'Marque a caixinha pra confirmar que entendeu o aviso.');
+
+      const btn = document.getElementById('btn-cofre-criar');
+      btn.disabled = true;
+      btn.textContent = 'Criando...';
+      try {
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        const chave = await cofreDerivarChave(senha, salt, COFRE_ITERACOES);
+        const verificador = await cofreCifrar(chave, { v: 'cofre-ok' });
+        const linha = { id: 1, salt: cofreParaB64(salt), iteracoes: COFRE_ITERACOES, verificador_iv: verificador.iv, verificador: verificador.dados };
+        const { data, error } = await Auth.sb.from('cofre_config').insert(linha).select();
+        if (error) throw error;
+        cofreConfig = data[0];
+        cofreCarregadoConfig = true;
+        cofreChave = chave;
+        cofreItens = [];
+        document.getElementById('cofre-mestra-nova').value = '';
+        document.getElementById('cofre-mestra-confirma').value = '';
+        document.getElementById('cofre-entendi').checked = false;
+        cofreRenderizarLista();
+        cofreMostrarTela('aberto');
+        cofreReiniciarTimer();
+      } catch (err) {
+        console.error('Erro ao criar o cofre:', err);
+        cofreErro('cofre-criar-erro', 'Não consegui criar o cofre. Tente de novo.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Criar cofre';
+      }
+    }
+
+    async function cofreDestrancar() {
+      const senha = document.getElementById('cofre-mestra').value;
+      cofreErro('cofre-destrancar-erro', '');
+      if (!senha) return cofreErro('cofre-destrancar-erro', 'Digite a senha mestra.');
+
+      const btn = document.getElementById('btn-cofre-destrancar');
+      btn.disabled = true;
+      btn.textContent = 'Destrancando...';
+      try {
+        const chave = await cofreDerivarChave(senha, cofreDeB64(cofreConfig.salt), cofreConfig.iteracoes);
+        let ok = false;
+        try {
+          const teste = await cofreDecifrar(chave, cofreConfig.verificador_iv, cofreConfig.verificador);
+          ok = teste && teste.v === 'cofre-ok';
+        } catch (e) {
+          ok = false;
+        }
+        if (!ok) {
+          cofreErro('cofre-destrancar-erro', 'Senha mestra incorreta.');
+          return;
+        }
+        const { data, error } = await Auth.sb.from('cofre_itens').select('*');
+        if (error) throw error;
+        const itens = [];
+        for (const linha of data) {
+          try {
+            itens.push({ id: linha.id, ...(await cofreDecifrar(chave, linha.iv, linha.dados)) });
+          } catch (e) {
+            itens.push({ id: linha.id, servico: '(não consegui ler esta credencial)', ilegivel: true });
+          }
+        }
+        cofreChave = chave;
+        cofreItens = itens;
+        document.getElementById('cofre-mestra').value = '';
+        cofreRenderizarLista();
+        cofreMostrarTela('aberto');
+        cofreReiniciarTimer();
+      } catch (err) {
+        console.error('Erro ao destrancar o cofre:', err);
+        cofreErro('cofre-destrancar-erro', 'Não consegui abrir o cofre. Tente de novo.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Destrancar';
+      }
+    }
+
+    function cofreRenderizarLista() {
+      const termo = normalizarTexto(document.getElementById('cofre-busca').value || '');
+      const lista = cofreItens
+        .filter((i) => !termo || normalizarTexto([i.servico, i.categoria, i.url, i.usuario, i.observacao].filter(Boolean).join(' ')).includes(termo))
+        .sort((a, b) => (a.servico || '').localeCompare(b.servico || ''));
+
+      const cont = document.getElementById('cofre-lista');
+      if (lista.length === 0) {
+        cont.innerHTML = `<p class="texto-vazio">${cofreItens.length === 0 ? 'Nenhuma credencial guardada ainda.' : 'Nada encontrado.'}</p>`;
+        return;
+      }
+      cont.innerHTML = lista
+        .map((i) => {
+          const href = ferrUrlSegura(i.url);
+          return `
+          <article class="cofre-cartao" data-id="${i.id}">
+            <div class="cofre-cartao-topo">
+              <strong class="cofre-servico">${escapeHtml(i.servico || '')}</strong>
+              ${i.categoria ? `<span class="cofre-categoria">${escapeHtml(i.categoria)}</span>` : ''}
+              ${i.ilegivel ? '' : '<button type="button" class="cal-btn" data-acao="editar">Editar</button>'}
+            </div>
+            ${href ? `<div class="cofre-linha"><span class="cofre-rotulo">URL</span><a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" class="cofre-valor">${escapeHtml(i.url)}</a></div>` : ''}
+            ${i.usuario ? `<div class="cofre-linha"><span class="cofre-rotulo">Usuário</span><span class="cofre-valor">${escapeHtml(i.usuario)}</span><button type="button" class="cal-btn" data-acao="copiar-usuario">Copiar</button></div>` : ''}
+            ${i.senha ? `<div class="cofre-linha"><span class="cofre-rotulo">Senha</span><span class="cofre-valor cofre-senha" data-senha>••••••••••</span><button type="button" class="cal-btn" data-acao="mostrar">Mostrar</button><button type="button" class="cal-btn" data-acao="copiar-senha">Copiar</button></div>` : ''}
+            ${i.observacao ? `<p class="cofre-obs">${escapeHtml(i.observacao)}</p>` : ''}
+          </article>`;
+        })
+        .join('');
+
+      cont.querySelectorAll('.cofre-cartao').forEach((el) => {
+        const item = cofreItens.find((x) => x.id === el.dataset.id);
+        const botao = (acao) => el.querySelector(`[data-acao="${acao}"]`);
+        if (botao('editar')) botao('editar').addEventListener('click', () => cofreAbrirItem(item));
+        if (botao('copiar-usuario')) botao('copiar-usuario').addEventListener('click', (e) => ferrCopiar(item.usuario, e.currentTarget));
+        if (botao('copiar-senha')) botao('copiar-senha').addEventListener('click', (e) => ferrCopiar(item.senha, e.currentTarget));
+        if (botao('mostrar')) {
+          botao('mostrar').addEventListener('click', (e) => {
+            const campo = el.querySelector('[data-senha]');
+            const btn = e.currentTarget;
+            const visivel = btn.dataset.visivel === '1';
+            clearTimeout(cofreTimersSenha.get(item.id));
+            if (visivel) {
+              campo.textContent = '••••••••••';
+              btn.textContent = 'Mostrar';
+              btn.dataset.visivel = '0';
+            } else {
+              campo.textContent = item.senha;
+              btn.textContent = 'Ocultar';
+              btn.dataset.visivel = '1';
+              cofreTimersSenha.set(
+                item.id,
+                setTimeout(() => {
+                  campo.textContent = '••••••••••';
+                  btn.textContent = 'Mostrar';
+                  btn.dataset.visivel = '0';
+                }, COFRE_TEMPO_SENHA_VISIVEL_MS)
+              );
+            }
+          });
+        }
+      });
+    }
+
+    function cofreAbrirItem(item) {
+      cofreItemAbertoId = item ? item.id : null;
+      document.getElementById('cofre-f-servico').value = item ? item.servico || '' : '';
+      document.getElementById('cofre-f-categoria').value = item ? item.categoria || '' : '';
+      document.getElementById('cofre-f-url').value = item ? item.url || '' : '';
+      document.getElementById('cofre-f-usuario').value = item ? item.usuario || '' : '';
+      document.getElementById('cofre-f-senha').value = item ? item.senha || '' : '';
+      document.getElementById('cofre-f-senha').type = 'password';
+      document.getElementById('btn-cofre-f-mostrar').textContent = 'Mostrar';
+      document.getElementById('cofre-f-obs').value = item ? item.observacao || '' : '';
+      document.getElementById('cofre-item-excluir').hidden = !item;
+      const categorias = [...new Set(cofreItens.map((i) => i.categoria).filter(Boolean))];
+      document.getElementById('cofre-categorias-lista').innerHTML = categorias.map((c) => `<option value="${escapeHtml(c)}"></option>`).join('');
+      document.getElementById('cofre-item-modal-overlay').hidden = false;
+      if (!item) document.getElementById('cofre-f-servico').focus();
+    }
+
+    function cofreFecharItem() {
+      cofreItemAbertoId = null;
+      document.getElementById('cofre-item-modal-overlay').hidden = true;
+      document.getElementById('cofre-f-senha').value = '';
+    }
+
+    function cofreGerarSenha() {
+      const letras = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789!@#$%&*?-_';
+      const alea = crypto.getRandomValues(new Uint32Array(20));
+      return Array.from(alea, (n) => letras[n % letras.length]).join('');
+    }
+
+    async function cofreSalvarItem() {
+      if (!cofreChave) return;
+      const servico = document.getElementById('cofre-f-servico').value.trim();
+      if (!servico) {
+        alert('Dê um nome pro serviço.');
+        return;
+      }
+      const conteudo = {
+        servico,
+        categoria: document.getElementById('cofre-f-categoria').value.trim(),
+        url: document.getElementById('cofre-f-url').value.trim(),
+        usuario: document.getElementById('cofre-f-usuario').value.trim(),
+        senha: document.getElementById('cofre-f-senha').value,
+        observacao: document.getElementById('cofre-f-obs').value.trim(),
+      };
+      const btn = document.getElementById('cofre-item-salvar');
+      btn.disabled = true;
+      try {
+        const cifrado = await cofreCifrar(cofreChave, conteudo);
+        const linha = { iv: cifrado.iv, dados: cifrado.dados, updated_at: new Date().toISOString() };
+        if (cofreItemAbertoId) {
+          const { error } = await Auth.sb.from('cofre_itens').update(linha).eq('id', cofreItemAbertoId);
+          if (error) throw error;
+          const idx = cofreItens.findIndex((i) => i.id === cofreItemAbertoId);
+          if (idx >= 0) cofreItens[idx] = { id: cofreItemAbertoId, ...conteudo };
+        } else {
+          const { data, error } = await Auth.sb.from('cofre_itens').insert(linha).select();
+          if (error) throw error;
+          cofreItens.push({ id: data[0].id, ...conteudo });
+        }
+        cofreFecharItem();
+        cofreRenderizarLista();
+        cofreReiniciarTimer();
+      } catch (err) {
+        console.error('Erro ao salvar credencial:', err);
+        alert('Não consegui salvar a credencial. Tente de novo.');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function cofreExcluirItem() {
+      const item = cofreItens.find((i) => i.id === cofreItemAbertoId);
+      if (!item) return;
+      if (!(await confirmarAcao(`Excluir a credencial "${item.servico}"? Não dá pra desfazer.`))) return;
+      const { error } = await Auth.sb.from('cofre_itens').delete().eq('id', item.id);
+      if (error) {
+        console.error('Erro ao excluir credencial:', error);
+        alert('Não consegui excluir a credencial.');
+        return;
+      }
+      cofreItens = cofreItens.filter((i) => i.id !== item.id);
+      cofreFecharItem();
+      cofreRenderizarLista();
+    }
+
+    function cofreLigarEventos() {
+      const on = (id, evento, fn) => document.getElementById(id).addEventListener(evento, fn);
+      on('btn-cofre-criar', 'click', cofreCriar);
+      on('cofre-mestra-confirma', 'keydown', (e) => {
+        if (e.key === 'Enter') cofreCriar();
+      });
+      on('btn-cofre-destrancar', 'click', cofreDestrancar);
+      on('cofre-mestra', 'keydown', (e) => {
+        if (e.key === 'Enter') cofreDestrancar();
+      });
+      on('btn-cofre-trancar', 'click', cofreTrancar);
+      on('btn-cofre-novo', 'click', () => cofreAbrirItem(null));
+      on('cofre-busca', 'input', cofreRenderizarLista);
+      on('cofre-item-modal-fechar', 'click', cofreFecharItem);
+      on('cofre-item-modal-overlay', 'click', (e) => {
+        if (e.target.id === 'cofre-item-modal-overlay') cofreFecharItem();
+      });
+      on('cofre-item-salvar', 'click', cofreSalvarItem);
+      on('cofre-item-excluir', 'click', cofreExcluirItem);
+      on('btn-cofre-f-mostrar', 'click', (e) => {
+        const campo = document.getElementById('cofre-f-senha');
+        const mostrar = campo.type === 'password';
+        campo.type = mostrar ? 'text' : 'password';
+        e.currentTarget.textContent = mostrar ? 'Ocultar' : 'Mostrar';
+      });
+      on('btn-cofre-f-gerar', 'click', () => {
+        const campo = document.getElementById('cofre-f-senha');
+        campo.value = cofreGerarSenha();
+        campo.type = 'text';
+        document.getElementById('btn-cofre-f-mostrar').textContent = 'Ocultar';
+      });
+      ['click', 'keydown', 'input'].forEach((ev) => document.getElementById('ferr-vista-cofre').addEventListener(ev, cofreReiniciarTimer));
+      ['click', 'keydown', 'input'].forEach((ev) => document.getElementById('cofre-item-modal-overlay').addEventListener(ev, cofreReiniciarTimer));
+    }
+
     function confirmarAcao(mensagem, opcoes = {}) {
       const { titulo = tr('confirm_titulo_padrao'), textoConfirmar = tr('confirm_excluir_padrao'), perigo = true } = opcoes;
       const overlay = document.getElementById('confirmar-modal-overlay');

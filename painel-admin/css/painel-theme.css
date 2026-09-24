@@ -5941,3 +5941,778 @@
     text-align: left;
   }
 }
+
+/* ==========================================================================
+   Aba Ferramentas (pastas, ferramentas e Cofre privado)
+   ========================================================================== */
+
+.painel-body #panel-ferramentas [hidden],
+.painel-body .ferr-item-modal [hidden],
+.painel-body #cofre-item-modal-overlay [hidden] {
+  display: none !important;
+}
+
+.painel-body .ferr-modos {
+  margin-bottom: 20px;
+}
+
+.painel-body .ferr-barra {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 26px;
+}
+
+.painel-body .ferr-busca {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: var(--fonte-corpo);
+  background: var(--branco);
+  color: var(--grafite);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.painel-body .ferr-busca:focus {
+  border-color: var(--coral);
+}
+
+.painel-body .ferr-secao {
+  margin-bottom: 30px;
+}
+
+.painel-body .ferr-secao-titulo {
+  font-family: var(--fonte-titulo);
+  font-size: 18px;
+  color: var(--grafite);
+  margin: 0 0 14px;
+}
+
+.painel-body .ferr-favoritas-grade {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ---- Pastas (desenhadas em CSS: aba, folha de papel e frente colorida) ---- */
+
+.painel-body .ferr-pastas-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 30px 22px;
+  padding-top: 8px;
+}
+
+.painel-body .ferr-pastas-grade-busca {
+  margin-bottom: 22px;
+}
+
+.painel-body .ferr-pasta {
+  position: relative;
+  height: 138px;
+  cursor: pointer;
+  transition: transform 0.18s ease;
+}
+
+.painel-body .ferr-pasta:hover {
+  transform: translateY(-4px);
+}
+
+.painel-body .ferr-pasta-fundo {
+  position: absolute;
+  inset: 14px 0 0 0;
+  background: var(--pd);
+  border-radius: 6px 16px 16px 16px;
+}
+
+.painel-body .ferr-pasta-fundo::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  left: 0;
+  width: 46%;
+  height: 16px;
+  background: var(--pd);
+  border-radius: 10px 0 0 0;
+  clip-path: polygon(0 0, 84% 0, 100% 100%, 0 100%);
+}
+
+.painel-body .ferr-pasta-folha {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 22px;
+  height: 66%;
+  background: var(--branco);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(var(--grafite-rgb), 0.18);
+  transform: rotate(-1.2deg);
+  transition: transform 0.18s ease;
+}
+
+.painel-body .ferr-pasta:hover .ferr-pasta-folha {
+  transform: rotate(-1.2deg) translateY(-8px);
+}
+
+.painel-body .ferr-pasta-frente {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 74%;
+  background: var(--pc);
+  color: var(--pt);
+  border-radius: 12px 16px 16px 16px;
+  border: 1px solid rgba(var(--grafite-rgb), 0.12);
+  box-shadow: var(--sombra);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 3px;
+  overflow: hidden;
+}
+
+.painel-body .ferr-pasta-nome {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.painel-body .ferr-pasta-qtd {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.painel-body .ferr-pasta-editar {
+  position: absolute;
+  top: 26px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--grafite);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.painel-body .ferr-pasta:hover .ferr-pasta-editar,
+.painel-body .ferr-pasta-editar:focus {
+  opacity: 1;
+}
+
+.painel-body .ferr-vazio {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--texto-suave);
+}
+
+.painel-body .ferr-vazio p {
+  margin-bottom: 16px;
+}
+
+/* ---- Dentro de uma pasta ---- */
+
+.painel-body .ferr-pasta-topo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.painel-body .ferr-pasta-titulo-bloco {
+  flex: 1;
+  min-width: 180px;
+}
+
+.painel-body .ferr-pasta-acoes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.painel-body .ferr-itens-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.painel-body .ferr-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.painel-body .ferr-item:hover {
+  box-shadow: var(--sombra);
+  border-color: rgba(var(--grafite-rgb), 0.28);
+}
+
+.painel-body .ferr-item-compacto {
+  padding: 10px 12px;
+}
+
+.painel-body .ferr-arrastar {
+  color: var(--texto-suave);
+  cursor: grab;
+  letter-spacing: -2px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.painel-body .ferr-arrastando {
+  opacity: 0.45;
+}
+
+.painel-body .ferr-alvo {
+  border-color: var(--coral);
+  box-shadow: 0 0 0 2px rgba(var(--coral-rgb), 0.35);
+}
+
+.painel-body .ferr-tipo-badge {
+  display: inline-block;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: var(--tc);
+  background: color-mix(in srgb, var(--tc) 14%, white);
+  white-space: nowrap;
+}
+
+.painel-body .ferr-item-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.painel-body .ferr-item-nome {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--grafite);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.painel-body .ferr-item-desc {
+  font-size: 12px;
+  color: var(--texto-suave);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.painel-body .ferr-plataforma,
+.painel-body .ferr-item-pasta {
+  font-size: 12px;
+  color: var(--texto-suave);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.painel-body .ferr-plataforma {
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.painel-body .ferr-item-acoes {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.painel-body .ferr-mini {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--texto-suave);
+  font-size: 15px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.painel-body .ferr-mini:hover {
+  background: rgba(var(--grafite-rgb), 0.08);
+  color: var(--grafite);
+}
+
+.painel-body .ferr-mini-estrela.ativa,
+.painel-body .ferr-estrela.ativa {
+  color: #c98a1c;
+}
+
+.painel-body .ferr-acao-rapida {
+  white-space: nowrap;
+}
+
+/* ---- Modais ---- */
+
+.painel-body .ferr-cores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.painel-body .ferr-cor {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(var(--grafite-rgb), 0.15);
+  cursor: pointer;
+}
+
+.painel-body .ferr-cor.ativa {
+  border-color: var(--grafite);
+  box-shadow: 0 0 0 2px var(--branco), 0 0 0 4px var(--grafite);
+}
+
+.painel-body .ferr-pasta-mover {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.painel-body .ferr-tipo-grade {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.painel-body .ferr-tipo-opcao {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 14px;
+  cursor: pointer;
+  font-family: var(--fonte-corpo);
+  color: var(--grafite);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.painel-body .ferr-tipo-opcao:hover {
+  border-color: var(--coral);
+  box-shadow: var(--sombra);
+}
+
+.painel-body .ferr-tipo-emoji {
+  font-size: 22px;
+}
+
+.painel-body .ferr-tipo-nome {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.painel-body .ferr-tipo-desc {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.painel-body .ferr-item-modal {
+  max-width: 680px;
+}
+
+.painel-body #ferr-item-modal-overlay .pl-modal {
+  background: var(--branco);
+}
+
+.painel-body .ferr-item-meta {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.painel-body .ferr-item-meta .cal-form-campo {
+  max-width: 260px;
+}
+
+.painel-body .ferr-item-campos {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.painel-body .ferr-item-campos input[type="text"],
+.painel-body .ferr-item-campos textarea,
+.painel-body .ferr-item-meta select,
+.painel-body #cofre-item-modal-overlay input[type="text"],
+.painel-body #cofre-item-modal-overlay input[type="password"],
+.painel-body #cofre-item-modal-overlay textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: var(--fonte-corpo);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--grafite);
+}
+
+.painel-body .ferr-item-campos textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.painel-body .ferr-linha-acao {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.painel-body .ferr-vars-caixa {
+  border: 1px dashed var(--coral);
+  border-radius: var(--raio-sm);
+  background: rgba(var(--coral-rgb), 0.08);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.painel-body .ferr-vars-titulo {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.painel-body .ferr-vars-vazio {
+  font-size: 13px;
+  color: var(--texto-suave);
+  margin: 0;
+}
+
+.painel-body #ferr-vars-campos {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.painel-body .ferr-check-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.painel-body .ferr-check-linha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.painel-body .ferr-check-linha input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--coral);
+  flex-shrink: 0;
+}
+
+.painel-body .ferr-check-linha.feito .ferr-check-texto {
+  text-decoration: line-through;
+  opacity: 0.55;
+}
+
+.painel-body .ferr-check-novo {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.painel-body .ferr-etapas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.painel-body .ferr-etapa {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.painel-body .ferr-etapa-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--coral);
+  color: var(--branco);
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.painel-body .ferr-etapa-campos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.painel-body .ferr-etapa-acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* ---- Cofre privado (visual à parte, azul-escuro) ---- */
+
+.painel-body .ferr-cofre-caixa {
+  max-width: 460px;
+  margin: 10px auto 0;
+  background: linear-gradient(160deg, #04465D, #06607f);
+  color: #FFF7C5;
+  border-radius: var(--raio-lg);
+  padding: 34px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  text-align: center;
+  box-shadow: var(--sombra);
+}
+
+.painel-body .ferr-cofre-caixa .cal-todas-resumo {
+  color: rgba(255, 247, 197, 0.8);
+}
+
+.painel-body .ferr-cofre-cadeado {
+  font-size: 40px;
+  line-height: 1;
+}
+
+.painel-body .ferr-cofre-caixa .ferr-cofre-titulo {
+  font-family: var(--fonte-titulo);
+  font-size: 22px;
+  margin: 0;
+  color: #FFF7C5;
+}
+
+.painel-body .ferr-cofre-caixa .cal-btn {
+  align-self: center;
+  min-width: 170px;
+  padding: 11px 24px;
+}
+
+.painel-body .ferr-cofre-texto {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+  color: rgba(255, 247, 197, 0.85);
+}
+
+.painel-body .ferr-cofre-input {
+  border: 1px solid rgba(255, 247, 197, 0.35);
+  border-radius: var(--raio-sm);
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--grafite);
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: var(--fonte-corpo);
+  outline: none;
+}
+
+.painel-body .ferr-cofre-input:focus {
+  border-color: #FFF7C5;
+  box-shadow: 0 0 0 2px rgba(255, 247, 197, 0.4);
+}
+
+.painel-body .ferr-cofre-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.painel-body .ferr-cofre-caixa .ferr-cofre-check,
+.painel-body .ferr-cofre-caixa .ferr-cofre-check span {
+  color: #FFF7C5;
+}
+
+.painel-body .ferr-cofre-check input {
+  margin-top: 2px;
+  accent-color: #FFF7C5;
+}
+
+.painel-body .ferr-cofre-caixa .cal-btn-primario {
+  background: #FFF7C5;
+  color: #04465D;
+}
+
+.painel-body .ferr-cofre-erro {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffb4ac;
+}
+
+.painel-body .ferr-cofre-faixa {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: linear-gradient(160deg, #04465D, #06607f);
+  color: #FFF7C5;
+  border-radius: var(--raio-sm);
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  font-size: 13px;
+}
+
+.painel-body .ferr-cofre-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.painel-body .cofre-cartao {
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-left: 4px solid #04465D;
+  border-radius: var(--raio-sm);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.painel-body .cofre-cartao-topo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.painel-body .cofre-servico {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  color: var(--grafite);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.painel-body .cofre-categoria {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--texto-suave);
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+.painel-body .cofre-linha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.painel-body .cofre-rotulo {
+  width: 58px;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--texto-suave);
+}
+
+.painel-body .cofre-valor {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--grafite);
+}
+
+.painel-body .cofre-senha {
+  font-family: 'Courier New', monospace;
+}
+
+.painel-body .cofre-obs {
+  margin: 0;
+  font-size: 12px;
+  color: var(--texto-suave);
+  white-space: pre-wrap;
+}
+
+.painel-body .ferr-cofre-senha-campo {
+  display: flex;
+  gap: 8px;
+}
+
+.painel-body .ferr-cofre-senha-campo input {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .painel-body .ferr-item {
+    flex-wrap: wrap;
+  }
+  .painel-body .ferr-item-info {
+    flex-basis: 100%;
+    order: 3;
+  }
+  .painel-body .ferr-tipo-grade {
+    grid-template-columns: 1fr;
+  }
+  .painel-body .ferr-pastas-grade {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  .painel-body .ferr-barra {
+    flex-wrap: wrap;
+  }
+}

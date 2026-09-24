@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260924v">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260924x">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -85,11 +85,7 @@
           <div class="nav-group-itens">
             <button class="nav-item" data-tab="planejador" type="button">
               <i class="nav-icon-emoji" aria-hidden="true">✨</i>
-              <span data-i18n="nav_planejador">Planejador</span>
-            </button>
-            <button class="nav-item" data-tab="radar" type="button">
-              <i class="nav-icon-emoji" aria-hidden="true">🗞️</i>
-              <span data-i18n="nav_radar">Radar de Notícias</span>
+              <span data-i18n="nav_planejador">Meus conteúdos</span>
             </button>
             <button class="nav-item" data-tab="portfolio" type="button">
               <i class="nav-icon-emoji" aria-hidden="true">📈</i>
@@ -836,6 +832,7 @@
           <div id="pl-hub" class="pl-hub">
             <button class="pl-hub-card" data-pagina="banco" type="button" data-i18n="pl_banco_ideias">Banco de ideias</button>
             <button class="pl-hub-card" data-pagina="achados" type="button" data-i18n="pl_achados">Achados</button>
+            <button class="pl-hub-card" data-pagina="radar" type="button" data-i18n="pl_radar">Radar de Notícias</button>
           </div>
 
           <div id="pl-pagina-banco" class="pl-pagina" hidden>
@@ -860,39 +857,9 @@
             </div>
           </div>
 
-          <div id="pl-cronograma" class="pl-cronograma-secao">
-            <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_cronograma">Cronograma de postagem</h3>
-
-            <div class="card pl-cronograma-calendario-card">
-              <div class="cal-topo">
-                <button id="pl-cron-mes-anterior" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_anterior" aria-label="Mês anterior">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-                <span class="cal-mes-label" id="pl-cron-mes-label">Mês</span>
-                <button id="pl-cron-mes-proximo" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_proximo" aria-label="Próximo mês">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-              </div>
-              <div class="cal-semana">
-                <span data-i18n="cal_seg">Seg</span><span data-i18n="cal_ter">Ter</span><span data-i18n="cal_qua">Qua</span><span data-i18n="cal_qui">Qui</span><span data-i18n="cal_sex">Sex</span><span data-i18n="cal_sab">Sáb</span><span data-i18n="cal_dom">Dom</span>
-              </div>
-              <div class="pl-cron-grade" id="pl-cron-grade"></div>
-            </div>
-
-            <div class="card pl-cronograma-tabela-card">
-              <div class="pl-cronograma-cabecalho">
-                <span data-i18n="pl_pilar">Pilar</span>
-                <span data-i18n="pl_dia_semana">Dia da semana</span>
-                <span></span>
-              </div>
-              <div id="pl-cronograma-linhas" class="pl-cronograma-linhas"></div>
-              <button id="pl-cronograma-add" class="pl-coluna-add" type="button" data-i18n="pl_novo_pilar">+ Novo pilar do cronograma</button>
-            </div>
-          </div>
-        </section>
-
-        <!-- ---------- Aba: Radar de Notícias ---------- -->
-        <section id="panel-radar" class="tab-panel" hidden>
+          <div id="pl-pagina-radar" class="pl-pagina" hidden>
+            <button class="pl-voltar" type="button" data-i18n="voltar">← Voltar</button>
+            <h3 class="card-titulo pl-pagina-titulo" data-i18n="nav_radar">Radar de Notícias</h3>
           <div class="radar-topo">
             <button id="btn-radar-atualizar" class="cal-btn cal-btn-primario" type="button" data-i18n="radar_atualizar">Atualizar notícias</button>
           </div>
@@ -925,6 +892,37 @@
           </div>
 
           <div id="radar-lista" class="radar-lista"></div>
+          </div>
+
+          <div id="pl-cronograma" class="pl-cronograma-secao">
+            <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_cronograma">Cronograma de postagem</h3>
+
+            <div class="card pl-cronograma-calendario-card">
+              <div class="cal-topo">
+                <button id="pl-cron-mes-anterior" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_anterior" aria-label="Mês anterior">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <span class="cal-mes-label" id="pl-cron-mes-label">Mês</span>
+                <button id="pl-cron-mes-proximo" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_proximo" aria-label="Próximo mês">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+              <div class="cal-semana">
+                <span data-i18n="cal_seg">Seg</span><span data-i18n="cal_ter">Ter</span><span data-i18n="cal_qua">Qua</span><span data-i18n="cal_qui">Qui</span><span data-i18n="cal_sex">Sex</span><span data-i18n="cal_sab">Sáb</span><span data-i18n="cal_dom">Dom</span>
+              </div>
+              <div class="pl-cron-grade" id="pl-cron-grade"></div>
+            </div>
+
+            <div class="card pl-cronograma-tabela-card">
+              <div class="pl-cronograma-cabecalho">
+                <span data-i18n="pl_pilar">Pilar</span>
+                <span data-i18n="pl_dia_semana">Dia da semana</span>
+                <span></span>
+              </div>
+              <div id="pl-cronograma-linhas" class="pl-cronograma-linhas"></div>
+              <button id="pl-cronograma-add" class="pl-coluna-add" type="button" data-i18n="pl_novo_pilar">+ Novo pilar do cronograma</button>
+            </div>
+          </div>
         </section>
 
         <!-- ---------- Aba: UGC / Publi ---------- -->
@@ -2937,7 +2935,6 @@
       instagram: 'titulo_instagram',
       'desafio-ugc': 'Nosso Desafio UGC',
       planejador: 'titulo_planejador',
-      radar: 'titulo_radar',
       ugc: 'titulo_ugc',
       clientes: 'titulo_clientes',
       afiliacao: 'titulo_afiliacao',
@@ -2967,7 +2964,7 @@
         titulo_email: 'E-mail',
         titulo_ferramentas: 'Ferramentas',
         titulo_instagram: 'Instagram',
-        titulo_planejador: 'Planejador de Conteúdo',
+        titulo_planejador: 'Meus conteúdos',
         titulo_radar: 'Radar de Notícias',
         titulo_ugc: 'UGC/Publicidade',
         titulo_clientes: 'Clientes',
@@ -2999,7 +2996,7 @@
         nav_email: 'E-mail',
         nav_ferramentas: 'Ferramentas',
         nav_instagram: 'Instagram',
-        nav_planejador: 'Planejador',
+        nav_planejador: 'Meus conteúdos',
         nav_radar: 'Radar de Notícias',
         nav_ugc: 'UGC/Publicidade',
         nav_clientes: 'Clientes',
@@ -3313,6 +3310,7 @@
         pl_banco_ideias: '💡 Banco de ideias',
         pl_banco_desc: 'Minhas ideias organizadas por pilar de conteúdo, com espaço pro roteiro.',
         pl_achados: '🔍 Achados',
+        pl_radar: '🗞️ Radar de Notícias',
         pl_achados_desc: 'Ganchos, frases, formatos, músicas e CTAs pra virarem ideia depois.',
         pl_cronograma: '📅 Cronograma de postagem',
         pl_pilar: 'Pilar',
@@ -3783,7 +3781,7 @@
         titulo_email: 'Email',
         titulo_ferramentas: 'Tools',
         titulo_instagram: 'Instagram',
-        titulo_planejador: 'Content Planner',
+        titulo_planejador: 'My content',
         titulo_radar: 'News Radar',
         titulo_ugc: 'UGC/Advertising',
         titulo_clientes: 'Clients',
@@ -3815,7 +3813,7 @@
         nav_email: 'Email',
         nav_ferramentas: 'Tools',
         nav_instagram: 'Instagram',
-        nav_planejador: 'Planner',
+        nav_planejador: 'My content',
         nav_radar: 'News Radar',
         nav_ugc: 'UGC/Advertising',
         nav_clientes: 'Clients',
@@ -4129,6 +4127,7 @@
         pl_banco_ideias: '💡 Idea bank',
         pl_banco_desc: 'My ideas organized by content pillar, with room for the script.',
         pl_achados: '🔍 Finds',
+        pl_radar: '🗞️ News Radar',
         pl_achados_desc: 'Hooks, phrases, formats, music, and CTAs to turn into an idea later.',
         pl_cronograma: '📅 Posting schedule',
         pl_pilar: 'Pillar',
@@ -5359,6 +5358,19 @@
         pilarSelecionadoId = null;
         renderizarBancoIdeias();
       }
+      if (pagina === 'radar') abrirRadarNoPlanejador();
+    }
+
+    // O Radar de Notícias agora é uma página do Meus conteúdos (antes era uma aba).
+    function abrirRadarNoPlanejador() {
+      filtroPeriodoRadar = null;
+      document.querySelectorAll('.radar-filtro-periodo .radar-filtro-btn').forEach((b) => b.classList.remove('ativo'));
+      if (!radarAbaCarregada) {
+        radarAbaCarregada = true;
+        carregarRadar();
+      } else {
+        renderizarRadar();
+      }
     }
 
     function fecharPaginaPlanejador() {
@@ -5465,16 +5477,6 @@
       if (aba === 'planejador' && !planejadorAbaCarregada) {
         planejadorAbaCarregada = true;
         carregarPlanejador();
-      }
-      if (aba === 'radar') {
-        filtroPeriodoRadar = null;
-        document.querySelectorAll('.radar-filtro-periodo .radar-filtro-btn').forEach((b) => b.classList.remove('ativo'));
-        if (!radarAbaCarregada) {
-          radarAbaCarregada = true;
-          carregarRadar();
-        } else {
-          renderizarRadar();
-        }
       }
       if (aba === 'ugc') {
         trocarSubAbaUGC('visao-geral');

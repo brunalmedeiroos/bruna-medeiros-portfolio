@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260917a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260924g">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260924h">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1244,11 +1244,12 @@
                     <p class="cal-todas-resumo" id="ferr-pasta-resumo"></p>
                   </div>
                   <div class="ferr-pasta-acoes">
+                    <button type="button" id="btn-ferr-reorganizar" class="cal-btn">Reorganizar</button>
                     <button type="button" id="btn-ferr-editar-pasta" class="cal-btn">Editar pasta</button>
                     <button type="button" id="btn-ferr-nova-ferramenta" class="cal-btn cal-btn-primario">+ Nova ferramenta</button>
                   </div>
                 </div>
-                <div id="ferr-itens-lista" class="ferr-itens-lista"></div>
+                <div id="ferr-itens-lista" class="ferr-itens-grade"></div>
               </div>
 
               <div id="ferr-resultados" hidden>
@@ -12898,6 +12899,8 @@
     let ferrModo = 'pastas';
     let ferrPastaAbertaId = null;
     let ferrBusca = '';
+    let ferrModoEdicao = false; // "Reorganizar" dentro de uma pasta
+    let ferrPastaUltimaRender = null;
 
     let ferrPastaEditandoId = null;
     let ferrPastaCorEscolhida = FERR_COR_PADRAO;
@@ -13029,6 +13032,8 @@
       document.getElementById('ferr-pasta-aberta').hidden = emBusca || !ferrPastaAbertaId;
       document.getElementById('ferr-favoritas').hidden = true;
 
+      if (!ferrPastaAbertaId) ferrPastaUltimaRender = null;
+
       if (emBusca) {
         ferrRenderizarResultados();
       } else if (ferrPastaAbertaId) {
@@ -13099,16 +13104,117 @@
       const itens = ferrItensDaPasta(pasta.id);
       document.getElementById('ferr-pasta-nome').textContent = pasta.nome;
       document.getElementById('ferr-pasta-resumo').textContent = itens.length === 0 ? 'Nenhuma ferramenta ainda.' : `${itens.length} ${itens.length === 1 ? 'ferramenta' : 'ferramentas'}.`;
+      // Ao entrar em outra pasta, o modo "Reorganizar" volta desligado.
+      if (ferrPastaUltimaRender !== pasta.id) {
+        ferrModoEdicao = false;
+        ferrPastaUltimaRender = pasta.id;
+      }
+      const btnReorganizar = document.getElementById('btn-ferr-reorganizar');
+      btnReorganizar.textContent = ferrModoEdicao ? 'Concluir' : 'Reorganizar';
+      btnReorganizar.classList.toggle('cal-btn-primario', ferrModoEdicao);
+      btnReorganizar.disabled = itens.length < 2 && !ferrModoEdicao;
+
       const lista = document.getElementById('ferr-itens-lista');
+      lista.classList.toggle('ferr-modo-reorganizar', ferrModoEdicao);
       lista.innerHTML = '';
       if (itens.length === 0) {
         lista.innerHTML = '<p class="texto-vazio">Essa pasta está vazia. Clique em "+ Nova ferramenta" pra começar.</p>';
         return;
       }
-      itens.forEach((item) => lista.appendChild(ferrCriarLinhaItem(item, { arrastavel: true })));
-      ferrLigarArrasto(lista, '.ferr-item', (origem, destino) => {
-        ferrPersistirOrdem(ferrReordenarLista(ferrItensDaPasta(pasta.id), origem, destino), 'ferramentas_itens');
+      itens.forEach((item) => lista.appendChild(ferrCriarCartaoItem(item)));
+      if (ferrModoEdicao) {
+        ferrLigarArrasto(lista, '.ferr-cartao', (origem, destino) => {
+          ferrPersistirOrdem(ferrReordenarLista(ferrItensDaPasta(pasta.id), origem, destino), 'ferramentas_itens');
+        });
+      }
+    }
+
+    // Abre o prompt direto no Claude (claude.ai/new?q=...). Se o prompt for
+    // grande demais pra caber no link, copia e abre o Claude vazio.
+    function ferrAbrirNoClaude(item, botao) {
+      const texto = item.conteudo || '';
+      const url = 'https://claude.ai/new?q=' + encodeURIComponent(texto);
+      if (url.length <= 7000) {
+        window.open(url, '_blank', 'noopener');
+      } else {
+        ferrCopiar(texto, botao);
+        window.open('https://claude.ai/new', '_blank', 'noopener');
+        alert('Esse prompt é grande demais pra ir direto no link, então eu copiei. É só colar no Claude.');
+      }
+    }
+
+    // Cartão de uma ferramenta na grade dentro da pasta. Clicar no cartão
+    // abre a ferramenta; os botões de baixo agem direto, sem abrir.
+    function ferrCriarCartaoItem(item) {
+      const tipo = FERR_TIPOS[item.tipo] || FERR_TIPOS.outro;
+      const dados = item.dados || {};
+      const cartao = document.createElement('article');
+      cartao.className = 'ferr-cartao';
+      cartao.dataset.id = item.id;
+      cartao.style.setProperty('--tc', tipo.cor);
+
+      const botoes = [];
+      if (item.tipo === 'prompt') {
+        botoes.push('<button type="button" class="cal-btn" data-acao="copiar">Copiar</button>');
+        botoes.push('<button type="button" class="cal-btn" data-acao="claude">Abrir no Claude</button>');
+      } else if (item.tipo === 'texto' || item.tipo === 'nota' || (item.tipo === 'outro' && item.conteudo)) {
+        botoes.push('<button type="button" class="cal-btn" data-acao="copiar">Copiar</button>');
+      } else if (item.tipo === 'prompt_campos') {
+        botoes.push('<button type="button" class="cal-btn" data-acao="abrir">Preencher</button>');
+      } else if (item.tipo === 'processo' && (item.conteudo || (dados.etapas || []).length)) {
+        botoes.push('<button type="button" class="cal-btn" data-acao="abrir">Abrir</button>');
+      } else if (item.tipo === 'checklist') {
+        botoes.push('<button type="button" class="cal-btn" data-acao="abrir">Abrir</button>');
+      }
+      if ((item.tipo === 'link' || item.tipo === 'outro') && ferrUrlSegura(item.url)) {
+        botoes.unshift('<button type="button" class="cal-btn" data-acao="link">Abrir link</button>');
+      }
+
+      const meta = [];
+      if (item.plataforma) meta.push(`<span class="ferr-plataforma">${escapeHtml(item.plataforma)}</span>`);
+      if (item.tipo === 'checklist') {
+        const itens = dados.itens || [];
+        if (itens.length) meta.push(`<span class="ferr-cartao-info">${itens.filter((i) => i.feito).length}/${itens.length} feitos</span>`);
+      }
+      if (item.tipo === 'processo') {
+        const etapas = (dados.etapas || []).length;
+        if (etapas) meta.push(`<span class="ferr-cartao-info">${etapas} ${etapas === 1 ? 'etapa' : 'etapas'}</span>`);
+      }
+
+      cartao.innerHTML = `
+        <div class="ferr-cartao-topo">
+          <span class="ferr-cartao-icone" aria-hidden="true">${tipo.emoji}</span>
+          <span class="ferr-tipo-badge">${escapeHtml(tipo.rotulo)}</span>
+          <button type="button" class="ferr-mini ferr-mini-estrela${item.favorito ? ' ativa' : ''}" data-acao="favorito" title="${item.favorito ? 'Tirar dos favoritos' : 'Favoritar'}" aria-label="Favoritar">${item.favorito ? '★' : '☆'}</button>
+        </div>
+        <h4 class="ferr-cartao-nome">${escapeHtml(item.nome)}</h4>
+        ${item.descricao ? `<p class="ferr-cartao-desc">${escapeHtml(item.descricao)}</p>` : ''}
+        ${meta.length ? `<div class="ferr-cartao-meta">${meta.join('')}</div>` : ''}
+        ${
+          ferrModoEdicao
+            ? `<div class="ferr-cartao-mover"><span class="ferr-arrastar" title="Arraste pra reordenar">⋮⋮</span><button type="button" class="ferr-mini" data-acao="antes" title="Mover pra trás" aria-label="Mover pra trás">←</button><button type="button" class="ferr-mini" data-acao="depois" title="Mover pra frente" aria-label="Mover pra frente">→</button></div>`
+            : botoes.length
+            ? `<div class="ferr-cartao-acoes">${botoes.join('')}</div>`
+            : ''
+        }`;
+
+      cartao.addEventListener('click', () => {
+        if (!ferrModoEdicao) ferrAbrirItem(item);
       });
+      cartao.querySelectorAll('[data-acao]').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const acao = btn.dataset.acao;
+          if (acao === 'favorito') ferrAlternarFavorito(item);
+          else if (acao === 'copiar') ferrCopiar(item.conteudo || '', btn);
+          else if (acao === 'claude') ferrAbrirNoClaude(item, btn);
+          else if (acao === 'link') window.open(ferrUrlSegura(item.url), '_blank', 'noopener');
+          else if (acao === 'abrir') ferrAbrirItem(item);
+          else if (acao === 'antes') ferrMoverItem(item, -1);
+          else if (acao === 'depois') ferrMoverItem(item, 1);
+        });
+      });
+      return cartao;
     }
 
     function ferrRenderizarResultados() {
@@ -13814,6 +13920,10 @@
       on('btn-ferr-primeira-pasta', 'click', () => ferrAbrirModalPasta(null));
       on('btn-ferr-voltar', 'click', () => {
         ferrPastaAbertaId = null;
+        ferrRenderizar();
+      });
+      on('btn-ferr-reorganizar', 'click', () => {
+        ferrModoEdicao = !ferrModoEdicao;
         ferrRenderizar();
       });
       on('btn-ferr-editar-pasta', 'click', () => ferrAbrirModalPasta(ferrPastas.find((p) => p.id === ferrPastaAbertaId)));

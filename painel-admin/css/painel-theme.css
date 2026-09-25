@@ -8041,3 +8041,238 @@
     height: 38px;
   }
 }
+
+/* ==========================================================================
+   Ferramentas > Abordagem: central de modelos (cada modelo com seus campos).
+   ========================================================================== */
+.painel-body .abd-central[hidden],
+.painel-body #panel-ferramentas .abd-central[hidden] {
+  display: none;
+}
+
+.painel-body .abd-central-topo {
+  margin-bottom: 18px;
+}
+
+.painel-body .abd-central-titulo {
+  margin: 0 0 6px;
+  font-family: var(--fonte-titulo);
+  font-size: 26px;
+  color: var(--grafite);
+}
+
+.painel-body .abd-central-resumo {
+  margin: 0;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+
+.painel-body .abd-abas {
+  width: fit-content;
+  max-width: 100%;
+  margin-bottom: 22px;
+}
+
+.painel-body .abd-construtor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 28px;
+  align-items: start;
+}
+
+.painel-body .abd-coluna-campos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.painel-body .abd-modelo-titulo {
+  margin: 0 0 6px;
+  font-family: var(--fonte-titulo);
+  font-size: 22px;
+  color: var(--grafite);
+}
+
+.painel-body .abd-modelo-resumo {
+  margin: 0 0 4px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--texto-suave);
+}
+
+.painel-body .abd-bloco {
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-lg);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: var(--sombra);
+}
+
+.painel-body .abd-bloco-titulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: 18px;
+  color: var(--grafite);
+}
+
+.painel-body .abd-bloco-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--coral);
+  color: var(--branco);
+  font-family: var(--fonte-corpo);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.painel-body .abd-bloco-dica {
+  margin: -6px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--texto-suave);
+}
+
+.painel-body .abd-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.painel-body .abd-campo label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.painel-body .abd-leadin {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--texto-suave);
+}
+
+.painel-body .abd-campo input,
+.painel-body .abd-campo textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: var(--fonte-corpo);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--grafite);
+  resize: vertical;
+}
+
+.painel-body .abd-coluna-resultado {
+  position: sticky;
+  top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.painel-body .abd-coluna-resultado .ferr-celular {
+  width: 340px;
+  max-width: 100%;
+  height: min(600px, calc(100vh - 210px));
+  min-height: 420px;
+  max-height: none;
+}
+
+.painel-body .abd-conversa {
+  gap: 10px;
+}
+
+.painel-body .abd-assunto {
+  align-self: stretch;
+  padding: 0 4px 8px;
+  border-bottom: 1px solid var(--borda);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--texto-suave);
+  overflow-wrap: anywhere;
+}
+
+.painel-body .abd-assunto[hidden] {
+  display: none;
+}
+
+.painel-body .abd-conversa .ferr-balao {
+  align-self: stretch;
+  max-width: none;
+  border-radius: 14px;
+}
+
+.painel-body .abd-resultado-info {
+  font-size: 12px;
+  color: var(--texto-suave);
+  text-align: center;
+}
+
+.painel-body .abd-resultado-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.painel-body .abd-em-construcao {
+  max-width: 520px;
+}
+
+.painel-body .abd-em-construcao h4 {
+  margin: 0 0 8px;
+  font-family: var(--fonte-titulo);
+  font-size: 20px;
+  color: var(--grafite);
+}
+
+.painel-body .abd-em-construcao p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--texto-suave);
+}
+
+.painel-body .abd-central-rodape {
+  margin-top: 26px;
+}
+
+.painel-body .abd-link-discreto {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-family: var(--fonte-corpo);
+  font-size: 13px;
+  color: var(--texto-suave);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .painel-body .abd-construtor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .painel-body .abd-coluna-resultado {
+    position: static;
+  }
+
+  .painel-body .abd-coluna-resultado .ferr-celular {
+    height: 520px;
+  }
+}

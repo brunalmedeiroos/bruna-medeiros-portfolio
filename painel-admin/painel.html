@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260924zb">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260925a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1253,10 +1253,21 @@
                     <p class="cal-todas-resumo" id="ferr-pasta-resumo"></p>
                   </div>
                   <div class="ferr-pasta-acoes">
+                    <button type="button" id="btn-abd-voltar-modelos" class="cal-btn" hidden>💌 Modelos</button>
                     <button type="button" id="btn-ferr-reorganizar" class="cal-btn">Reorganizar</button>
                     <button type="button" id="btn-ferr-editar-pasta" class="cal-btn">Editar pasta</button>
                     <button type="button" id="btn-ferr-nova-ferramenta" class="cal-btn cal-btn-primario">+ Nova ferramenta</button>
                   </div>
+                </div>
+                <!-- Central de modelos: só aparece na pasta "Abordagem" -->
+                <div id="abd-central" class="abd-central" hidden>
+                  <div class="abd-central-topo">
+                    <h3 class="abd-central-titulo">💌 Modelos de abordagem</h3>
+                    <p class="abd-central-resumo">Escolha um modelo, responda os campos e copie a abordagem pronta.</p>
+                  </div>
+                  <div class="cal-filtro-grupo abd-abas" id="abd-abas"></div>
+                  <div id="abd-modelo-area"></div>
+                  <div class="abd-central-rodape"><button type="button" id="btn-abd-ver-itens" class="abd-link-discreto">Ver os itens da pasta</button></div>
                 </div>
                 <div id="ferr-itens-lista" class="ferr-itens-grade"></div>
               </div>
@@ -5239,6 +5250,7 @@
       });
       document.getElementById('btn-contatos-novo').addEventListener('click', () => abrirModalContato(null));
       abdLigarEventos();
+      abdCentralLigarEventos();
       dashLigarEventos();
       document.getElementById('btn-contatos-baixar-csv').addEventListener('click', exportarContatosCSV);
       document.getElementById('btn-contatos-selecionar-todas').addEventListener('click', selecionarTodosContatosFiltrados);
@@ -13252,6 +13264,22 @@
       btnReorganizar.classList.toggle('cal-btn-primario', ferrModoEdicao);
       btnReorganizar.disabled = itens.length < 2 && !ferrModoEdicao;
 
+      // A pasta "Abordagem" abre na central de modelos (o resto continua igual).
+      const ehAbordagem = abdNormalizar(pasta.nome) === 'abordagem';
+      if (!ehAbordagem || abdPastaUltima !== pasta.id) abdMostrarItens = false;
+      abdPastaUltima = pasta.id;
+      const emCentral = ehAbordagem && !abdMostrarItens;
+      document.getElementById('abd-central').hidden = !emCentral;
+      document.getElementById('ferr-itens-lista').hidden = emCentral;
+      btnReorganizar.hidden = emCentral;
+      document.getElementById('btn-ferr-nova-ferramenta').hidden = emCentral;
+      document.getElementById('btn-abd-voltar-modelos').hidden = !(ehAbordagem && abdMostrarItens);
+      if (emCentral) {
+        document.getElementById('ferr-pasta-resumo').textContent = 'Modelos reutilizáveis de abordagem.';
+        abdCentralRenderizar(pasta);
+        return;
+      }
+
       const lista = document.getElementById('ferr-itens-lista');
       lista.classList.toggle('ferr-modo-reorganizar', ferrModoEdicao);
       lista.innerHTML = '';
@@ -15237,6 +15265,416 @@
         if (document.visibilityState === 'hidden') notaSalvarPendentes();
       });
       window.addEventListener('pagehide', () => notaSalvarPendentes());
+    }
+
+
+    // ==========================================================================
+    // Ferramentas > Abordagem: central de "Modelos de abordagem". Cada modelo tem
+    // os próprios campos e gera o próprio resultado (com prévia em celular).
+    // - E-mail: modelo embutido (campos e versões definidos abaixo).
+    // - Seu Influencer: continua sendo a ferramenta "Prompt com campos" que já
+    //   existe na pasta; aqui só ganha uma apresentação nova.
+    // - Versão de DM e Segundo e-mail: reservados, ainda sem estrutura.
+    // Para adicionar um modelo novo, é só incluir uma entrada em ABD_MODELOS.
+    // ==========================================================================
+
+    const ABD_MODELOS = [
+      { id: 'email', rotulo: 'E-mail', tipo: 'embutido' },
+      { id: 'dm', rotulo: 'Versão de DM', tipo: 'emBreve' },
+      { id: 'segundo-email', rotulo: 'Segundo e-mail', tipo: 'emBreve' },
+      { id: 'seu-influencer', rotulo: 'Seu Influencer', tipo: 'ferramenta', nomeFerramenta: 'si', plataforma: 'seuinfluencer' },
+    ];
+    const ABD_RESPOSTAS_KEY = 'painel_abordagem_respostas';
+
+    const ABD_EMAIL = {
+      resumo: 'Um e-mail em quatro parágrafos: quem sou e como cheguei até a marca, a conexão entre a gente, a ideia de conteúdo e o convite final. Responda os campos e o e-mail se monta ao lado.',
+      grupos: [
+        {
+          n: 1,
+          titulo: 'Quem sou + como cheguei até a marca',
+          dica: 'Apresenta você e conta, de forma natural, como a marca apareceu no seu caminho.',
+          campos: [
+            { k: 'contato', rotulo: 'Nome da pessoa ou da equipe', ph: 'Ex: Marina, ou equipe Solar', req: true },
+            { k: 'marca', rotulo: 'Nome da marca', ph: 'Ex: Solar', req: true },
+            { k: 'como', rotulo: 'Como você conheceu a marca', leadin: 'Cheguei até a marca…', ph: 'Ex: pesquisando produtos de skincare e caí no perfil de vocês', req: true, area: true },
+            { k: 'atencao', rotulo: 'O que chamou sua atenção', leadin: 'O que mais chamou minha atenção foi…', ph: 'Ex: o cuidado com os ingredientes', req: true, area: true },
+          ],
+        },
+        {
+          n: 2,
+          titulo: 'Conexão',
+          dica: 'Por que vocês fazem sentido juntas. Preencha só o que for verdade e útil, o que ficar vazio some do texto.',
+          campos: [
+            { k: 'rotina', rotulo: 'Minha rotina', leadin: 'Na minha rotina…', ph: 'Ex: uso esse tipo de produto todos os dias', area: true },
+            { k: 'estilo', rotulo: 'Meu estilo de conteúdo', leadin: 'Meu conteúdo é…', ph: 'Ex: leve, do dia a dia, mostrando o uso real', area: true },
+            { k: 'publico', rotulo: 'Meu público', leadin: 'Meu público é…', ph: 'Ex: formado por pessoas que gostam de descobrir marcas novas', area: true },
+            { k: 'conexao', rotulo: 'O que me conecta à marca ou ao produto', leadin: 'O que me conecta à marca é…', ph: 'Ex: o mesmo cuidado com o que a gente consome', area: true },
+          ],
+        },
+        {
+          n: 3,
+          titulo: 'Ideia de conteúdo',
+          dica: 'A ideia que você pensou para a marca, clara e interessante, sem tom de proposta formal.',
+          campos: [
+            { k: 'produto', rotulo: 'Produto', ph: 'Ex: o sérum, a linha de cuidados, o kit', req: true },
+            { k: 'ideia', rotulo: 'Ideia ou conceito', leadin: 'A ideia é…', ph: 'Ex: mostrar a rotina da manhã com o produto do início ao fim', req: true, area: true },
+            { k: 'gancho', rotulo: 'Gancho', leadin: 'A primeira frase ou cena do vídeo', ph: 'Ex: Achei que esse produto era só mais um…', req: true, area: true },
+            { k: 'formato', rotulo: 'Formato (opcional)', leadin: 'O formato seria…', ph: 'Ex: um Reels vertical de 30 a 40 segundos', area: true },
+            { k: 'desenvolvimento', rotulo: 'Como o conteúdo seria desenvolvido (opcional)', leadin: 'Na prática…', ph: 'Ex: começo mostrando o problema, depois o uso e termino com o resultado', area: true },
+            { k: 'detalhe', rotulo: 'Detalhe importante da execução (opcional)', ph: 'Ex: Gravo em casa com luz natural.', area: true },
+          ],
+        },
+        {
+          n: 4,
+          titulo: 'Convite e portfólio',
+          dica: 'Convite para conversar e, logo depois, o link do seu portfólio.',
+          campos: [
+            { k: 'convite', rotulo: 'Convite final (opcional)', ph: 'Deixe vazio para usar o convite padrão de cada versão', area: true },
+            { k: 'portfolio', rotulo: 'Link do portfólio', padrao: 'brunamedeiros.com', req: true },
+          ],
+        },
+        {
+          n: 0,
+          titulo: 'Assunto do e-mail',
+          dica: 'Deixe vazio para usar o assunto sugerido em cada versão.',
+          campos: [{ k: 'assunto', rotulo: 'Assunto (opcional)', ph: 'Ex: Ideia de conteúdo para a Solar' }],
+        },
+      ],
+      versoes: 3,
+    };
+
+    // Gera assunto e corpo do e-mail de acordo com as respostas e a versão (0 = original).
+    function abdEmailGerar(vals, versao) {
+      const faltando = new Set();
+      const rotulos = {};
+      ABD_EMAIL.grupos.forEach((g) => g.campos.forEach((c) => { rotulos[c.k] = c.rotulo.replace(/\s*\(opcional\)/, ''); }));
+      const limpo = (t) => (t || '').trim().replace(/[\s.!?]+$/, '');
+      const obrig = (k) => {
+        const t = limpo(vals[k]);
+        if (t) return t;
+        faltando.add(rotulos[k]);
+        return '[' + rotulos[k].toLowerCase() + ']';
+      };
+      const opc = (k) => limpo(vals[k]);
+      const V = versao;
+
+      // Parágrafo 1
+      const contato = obrig('contato');
+      const marca = obrig('marca');
+      const como = obrig('como');
+      const atencao = obrig('atencao');
+      const abertura = [
+        `Oi, ${contato}! Tudo bem? ✨`,
+        `Olá, ${contato}! Tudo bem por aí?`,
+        `Oi, ${contato}! Espero que sua semana esteja ótima :)`,
+      ][V];
+      const apresentacao = [
+        `Aqui é a Bruna, criadora de conteúdo UGC (@brunalmedeiroos). Cheguei até a marca ${marca} ${como}. Olhando com calma, o que mais chamou minha atenção foi ${atencao}.`,
+        `Me chamo Bruna, sou criadora de conteúdo UGC (@brunalmedeiroos) e queria contar como a marca ${marca} apareceu no meu caminho: ${como}. Desde então, o que mais ficou na minha cabeça foi ${atencao}.`,
+        `Sou a Bruna, criadora de conteúdo UGC (@brunalmedeiroos), e a marca ${marca} cruzou meu caminho ${como}. Fiquei especialmente encantada com ${atencao}.`,
+      ][V];
+      const p1 = abertura + '\n\n' + apresentacao;
+
+      // Parágrafo 2
+      const rotina = opc('rotina');
+      const estilo = opc('estilo');
+      const publico = opc('publico');
+      const conexao = opc('conexao');
+      const R = rotina ? `Na minha rotina, ${rotina}.` : '';
+      let E = '';
+      if (estilo && publico) E = `Meu conteúdo é ${estilo}, e meu público é ${publico}.`;
+      else if (estilo) E = `Meu conteúdo é ${estilo}.`;
+      else if (publico) E = `Meu público é ${publico}.`;
+      const C = conexao ? `O que me conecta à marca é ${conexao}.` : '';
+      const intro2 = ['Acho que a gente faz muito sentido junto.', 'Por que acho que temos tudo a ver?', 'Sinto que existe uma conexão real entre a gente.'][V];
+      const ordem = [[R, E, C], [C, R, E], [E, R, C]][V].filter(Boolean);
+      let miolo2 = ordem.join(' ');
+      if (!miolo2) {
+        faltando.add('Conexão com a marca');
+        miolo2 = '[conexão com a marca]';
+      }
+      const p2 = intro2 + ' ' + miolo2;
+
+      // Parágrafo 3
+      const produto = obrig('produto');
+      const ideia = obrig('ideia');
+      const gancho = obrig('gancho').replace(/^[“”"']+|[“”"']+$/g, '');
+      const formato = opc('formato');
+      const desenv = opc('desenvolvimento');
+      let detalhe = opc('detalhe');
+      if (detalhe) detalhe = detalhe.charAt(0).toUpperCase() + detalhe.slice(1) + '.';
+      const p3partes = [
+        [
+          `Pensei em um conteúdo com ${produto}, e a ideia é ${ideia}. O vídeo começaria com o gancho: “${gancho}”.`,
+          formato && `O formato seria ${formato}.`,
+          desenv && `Na prática, ${desenv}.`,
+          detalhe,
+        ],
+        [
+          `A ideia de conteúdo que pensei envolve ${produto}: ${ideia}. Para abrir o vídeo, eu usaria este gancho: “${gancho}”.`,
+          formato && `Seria ${formato}.`,
+          desenv && `Ao longo do vídeo, ${desenv}.`,
+          detalhe,
+        ],
+        [
+          `Minha ideia é criar um conteúdo com ${produto}: ${ideia}. Ele começaria assim: “${gancho}”.`,
+          formato && `Pensei em ${formato}.`,
+          desenv && `O desenvolvimento seria simples: ${desenv}.`,
+          detalhe,
+        ],
+      ][V];
+      const p3 = p3partes.filter(Boolean).join(' ');
+
+      // Parágrafo 4
+      const conviteBruto = (vals.convite || '').trim();
+      const convite =
+        conviteBruto ||
+        [
+          'Se fizer sentido para vocês, vou adorar conversar melhor sobre essa ideia. :)',
+          'O que acham de conversarmos mais sobre essa ideia? Vou adorar construir isso junto com vocês. :)',
+          'Se essa ideia fizer sentido para vocês, me contam o que acham? Vou adorar conversar mais sobre ela. :)',
+        ][V];
+      const portfolio = (vals.portfolio || '').trim() || (faltando.add(rotulos.portfolio), '[' + rotulos.portfolio.toLowerCase() + ']');
+      const p4 = convite + '\n\nPortfólio: ' + portfolio;
+
+      const assuntoManual = (vals.assunto || '').trim();
+      const marcaAssunto = (vals.marca || '').trim() || '[nome da marca]';
+      const assunto =
+        assuntoManual ||
+        [`Ideia de conteúdo para ${marcaAssunto}`, `Uma ideia de conteúdo pensada para ${marcaAssunto}`, `Parceria de conteúdo com ${marcaAssunto}`][V];
+
+      const corpo = [p1, p2, p3, p4].join('\n\n');
+      return { assunto, corpo, faltando: [...faltando], palavras: corpo.trim().split(/\s+/).length };
+    }
+
+    let abdCentral = { aba: 'email', versao: 0, valores: null };
+    let abdMostrarItens = false;
+    let abdPastaUltima = null;
+
+    function abdRespostasCarregar() {
+      if (abdCentral.valores) return abdCentral.valores;
+      let salvo = {};
+      try {
+        salvo = JSON.parse(localStorage.getItem(ABD_RESPOSTAS_KEY) || '{}');
+      } catch (e) {
+        salvo = {};
+      }
+      abdCentral.valores = salvo;
+      return salvo;
+    }
+
+    function abdRespostasGuardar() {
+      try {
+        localStorage.setItem(ABD_RESPOSTAS_KEY, JSON.stringify(abdCentral.valores || {}));
+      } catch (e) {
+        /* sem localStorage: as respostas valem só nesta visita */
+      }
+    }
+
+    function abdValoresDoModelo(id) {
+      const todos = abdRespostasCarregar();
+      if (!todos[id]) todos[id] = {};
+      return todos[id];
+    }
+
+    function abdModeloAtualDef() {
+      return ABD_MODELOS.find((m) => m.id === abdCentral.aba) || ABD_MODELOS[0];
+    }
+
+    function abdCentralRenderizar(pasta) {
+      const abas = document.getElementById('abd-abas');
+      abas.innerHTML = ABD_MODELOS.map(
+        (m) => `<button type="button" class="cal-filtro-btn${m.id === abdCentral.aba ? ' ativo' : ''}" data-modelo="${m.id}">${escapeHtml(m.rotulo)}</button>`
+      ).join('');
+      abas.querySelectorAll('.cal-filtro-btn').forEach((b) =>
+        b.addEventListener('click', () => {
+          abdCentral.aba = b.dataset.modelo;
+          abdCentral.versao = 0;
+          abdCentralRenderizar(pasta);
+        })
+      );
+
+      const area = document.getElementById('abd-modelo-area');
+      const modelo = abdModeloAtualDef();
+      if (modelo.tipo === 'embutido') abdRenderizarConstrutor(area, modelo, ABD_EMAIL.resumo, ABD_EMAIL.grupos, true);
+      else if (modelo.tipo === 'ferramenta') abdRenderizarFerramenta(area, modelo, pasta);
+      else {
+        area.innerHTML = `
+          <div class="card abd-em-construcao">
+            <h4>${escapeHtml(modelo.rotulo)}</h4>
+            <p>Este modelo ainda está em construção. Quando a estrutura dele estiver pronta, ela aparece aqui.</p>
+          </div>`;
+      }
+    }
+
+    // Monta a tela de um modelo: campos à esquerda, resultado (celular) à direita.
+    function abdRenderizarConstrutor(area, modelo, resumo, grupos, comVersoes, extraTopo) {
+      const valores = abdValoresDoModelo(modelo.id);
+      grupos.forEach((g) =>
+        g.campos.forEach((c) => {
+          if (c.padrao !== undefined && valores[c.k] === undefined) valores[c.k] = c.padrao;
+        })
+      );
+      const campoHtml = (c) => {
+        const id = `abd-c-${modelo.id}-${c.k}`;
+        const entrada = c.area
+          ? `<textarea id="${id}" data-k="${escapeHtml(c.k)}" rows="2" placeholder="${escapeHtml(c.ph || '')}"></textarea>`
+          : `<input type="text" id="${id}" data-k="${escapeHtml(c.k)}" placeholder="${escapeHtml(c.ph || '')}" autocomplete="off">`;
+        return `
+          <div class="abd-campo">
+            <label for="${id}">${escapeHtml(c.rotulo)}</label>
+            ${c.leadin ? `<span class="abd-leadin">${escapeHtml(c.leadin)}</span>` : ''}
+            ${entrada}
+          </div>`;
+      };
+      const blocos = grupos
+        .map(
+          (g) => `
+          <section class="abd-bloco">
+            <h5 class="abd-bloco-titulo">${g.n ? `<span class="abd-bloco-num">${g.n}</span>` : ''}${escapeHtml(g.titulo)}</h5>
+            <p class="abd-bloco-dica">${escapeHtml(g.dica)}</p>
+            ${g.campos.map(campoHtml).join('')}
+          </section>`
+        )
+        .join('');
+
+      area.innerHTML = `
+        <div class="abd-construtor">
+          <div class="abd-coluna-campos">
+            <div class="abd-modelo-cab">
+              <h4 class="abd-modelo-titulo">${escapeHtml(modelo.rotulo)}</h4>
+              <p class="abd-modelo-resumo">${escapeHtml(resumo)}</p>
+              ${extraTopo || ''}
+            </div>
+            ${blocos}
+            <div class="ferr-linha-acao"><button type="button" class="cal-btn" id="abd-limpar-respostas">Limpar minhas respostas</button></div>
+          </div>
+          <aside class="abd-coluna-resultado" aria-label="Resultado">
+            <div class="ferr-celular">
+              <div class="ferr-celular-notch"></div>
+              <div class="ferr-celular-barra"><span class="ferr-celular-avatar"></span><span class="ferr-celular-titulo">Prévia da abordagem</span></div>
+              <div class="ferr-celular-conversa abd-conversa">
+                <div class="abd-assunto" id="abd-assunto" hidden></div>
+                <div class="ferr-balao" id="abd-resultado"></div>
+              </div>
+              <div class="ferr-celular-entrada"><span>Mensagem</span><span class="ferr-celular-enviar">&#10148;</span></div>
+            </div>
+            <div class="abd-resultado-info" id="abd-info"></div>
+            <div class="abd-resultado-acoes">
+              ${comVersoes ? '<button type="button" class="cal-btn" id="abd-outra-versao">Outra versão</button><button type="button" class="cal-btn" id="abd-original">Voltar ao original</button>' : ''}
+              ${comVersoes ? '<button type="button" class="cal-btn" id="abd-copiar-assunto">Copiar assunto</button>' : ''}
+              <button type="button" class="cal-btn cal-btn-primario" id="abd-copiar">${comVersoes ? 'Copiar e-mail' : 'Copiar abordagem'}</button>
+            </div>
+          </aside>
+        </div>`;
+
+      area.querySelectorAll('[data-k]').forEach((el) => {
+        el.value = valores[el.dataset.k] || '';
+        el.addEventListener('input', () => {
+          valores[el.dataset.k] = el.value;
+          abdRespostasGuardar();
+          abdAtualizarResultado(modelo);
+        });
+      });
+      const on = (id, fn) => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('click', fn);
+      };
+      on('abd-outra-versao', () => {
+        abdCentral.versao = (abdCentral.versao + 1) % ABD_EMAIL.versoes;
+        abdAtualizarResultado(modelo);
+      });
+      on('abd-original', () => {
+        abdCentral.versao = 0;
+        abdAtualizarResultado(modelo);
+      });
+      on('abd-limpar-respostas', async () => {
+        if (!(await confirmarAcao('Limpar todas as respostas desse modelo?'))) return;
+        Object.keys(valores).forEach((k) => delete valores[k]);
+        abdRespostasGuardar();
+        abdCentralRenderizar(ferrPastas.find((p) => p.id === ferrPastaAbertaId));
+      });
+      on('abd-copiar-assunto', (e) => ferrCopiar(abdResultadoAtual(modelo).assunto || '', e.currentTarget));
+      on('abd-copiar', async (e) => {
+        const res = abdResultadoAtual(modelo);
+        const btn = e.currentTarget;
+        if (res.faltando.length && !(await confirmarAcao(`Ainda tem campo sem preencher (${res.faltando.join(', ')}). Copiar assim mesmo?`))) return;
+        ferrCopiar(res.corpo, btn);
+      });
+      abdAtualizarResultado(modelo);
+    }
+
+    // Resultado atual do modelo aberto (e-mail embutido ou ferramenta existente).
+    function abdResultadoAtual(modelo) {
+      const valores = abdValoresDoModelo(modelo.id);
+      if (modelo.tipo === 'embutido') return abdEmailGerar(valores, abdCentral.versao);
+      const item = abdAcharFerramenta(modelo);
+      const texto = item ? ferrPreencher(item.conteudo || '', valores) : '';
+      const faltando = item ? ferrVariaveis(texto).map((n) => ferrNomeVariavel(n)) : [];
+      return { assunto: '', corpo: texto, faltando, palavras: texto.trim() ? texto.trim().split(/\s+/).length : 0 };
+    }
+
+    function abdAtualizarResultado(modelo) {
+      const res = abdResultadoAtual(modelo);
+      const balao = document.getElementById('abd-resultado');
+      if (!balao) return;
+      const vazio = !res.corpo.trim();
+      balao.classList.toggle('vazio', vazio);
+      balao.textContent = vazio ? 'A abordagem aparece aqui.' : res.corpo;
+      const assunto = document.getElementById('abd-assunto');
+      assunto.hidden = !res.assunto;
+      assunto.textContent = res.assunto ? 'Assunto: ' + res.assunto : '';
+      const info = [];
+      if (modelo.tipo === 'embutido') info.push(`Versão ${abdCentral.versao + 1} de ${ABD_EMAIL.versoes}${abdCentral.versao === 0 ? ' (original)' : ''}`);
+      if (res.palavras) info.push(`${res.palavras} palavras`);
+      info.push(res.faltando.length ? `${res.faltando.length} ${res.faltando.length === 1 ? 'campo' : 'campos'} por preencher` : 'Tudo preenchido');
+      document.getElementById('abd-info').textContent = info.join(' · ');
+      const original = document.getElementById('abd-original');
+      if (original) original.disabled = abdCentral.versao === 0;
+    }
+
+    // ---- Seu Influencer: a ferramenta "Prompt com campos" que já existe ----
+
+    function abdAcharFerramenta(modelo) {
+      const pasta = ferrPastas.find((p) => p.id === ferrPastaAbertaId);
+      if (!pasta) return null;
+      return (
+        ferrItensDaPasta(pasta.id).find(
+          (i) => i.tipo === 'prompt_campos' && (abdNormalizar(i.nome) === modelo.nomeFerramenta || abdNormalizar(i.plataforma) === modelo.plataforma)
+        ) || null
+      );
+    }
+
+    function abdRenderizarFerramenta(area, modelo, pasta) {
+      const item = abdAcharFerramenta(modelo);
+      if (!item) {
+        area.innerHTML = `<div class="card abd-em-construcao"><h4>${escapeHtml(modelo.rotulo)}</h4><p>Não achei o modelo "Seu Influencer" nesta pasta.</p></div>`;
+        return;
+      }
+      // Os campos vêm das variáveis {{...}} do próprio modelo; nada é copiado ou alterado.
+      const vars = ferrVariaveis(item.conteudo);
+      const grupos = [
+        {
+          n: 0,
+          titulo: 'Campos do modelo',
+          dica: 'Responda os campos e a abordagem se monta ao lado, do jeito que já funcionava.',
+          campos: vars.map((nome) => ({ k: nome, rotulo: ferrNomeVariavel(nome), area: true })),
+        },
+      ];
+      const editar = '<div class="ferr-linha-acao"><button type="button" class="cal-btn" id="abd-editar-modelo">Editar modelo</button></div>';
+      abdRenderizarConstrutor(area, { id: modelo.id, rotulo: modelo.rotulo, tipo: 'ferramenta', nomeFerramenta: modelo.nomeFerramenta, plataforma: modelo.plataforma }, item.descricao || 'Modelo de abordagem do Seu Influencer.', grupos, false, editar);
+      document.getElementById('abd-editar-modelo').addEventListener('click', () => ferrAbrirItem(item));
+    }
+
+    function abdCentralLigarEventos() {
+      document.getElementById('btn-abd-ver-itens').addEventListener('click', () => {
+        abdMostrarItens = true;
+        ferrRenderizar();
+      });
+      document.getElementById('btn-abd-voltar-modelos').addEventListener('click', () => {
+        abdMostrarItens = false;
+        ferrRenderizar();
+      });
     }
 
     function confirmarAcao(mensagem, opcoes = {}) {

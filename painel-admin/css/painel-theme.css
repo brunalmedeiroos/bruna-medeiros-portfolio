@@ -8463,3 +8463,39 @@
     max-height: none;
   }
 }
+
+/* Base de contatos > Criar abordagem com o modelo E-mail. */
+.painel-body .abd-versoes-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.painel-body .abd-versoes-linha[hidden] {
+  display: none;
+}
+
+.painel-body .abd-versoes-linha .abd-doc-versao {
+  flex-basis: 100%;
+}
+
+.painel-body #abd-campos .abd-mini-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--borda);
+}
+
+.painel-body #abd-campos .abd-mini-grupo:first-child {
+  padding-top: 0;
+  border-top: none;
+}
+
+.painel-body #abd-campos .abd-mini-titulo {
+  font-family: var(--fonte-titulo);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grafite);
+}

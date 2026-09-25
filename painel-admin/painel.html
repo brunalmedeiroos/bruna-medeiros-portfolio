@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260925c">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260925e">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -2508,6 +2508,12 @@
               <p class="abd-aviso" id="abd-aviso" hidden></p>
               <div class="ferr-vars-caixa">
                 <div class="ferr-vars-titulo">Campos</div>
+                <div class="abd-versoes-linha" id="abdm-versoes" hidden>
+                  <span class="abd-doc-versao" id="abdm-versao-rotulo"></span>
+                  <button type="button" class="cal-btn" id="abdm-outra-versao">Outra versão</button>
+                  <button type="button" class="cal-btn" id="abdm-original">Voltar ao original</button>
+                  <button type="button" class="cal-btn" id="abdm-copiar-assunto">Copiar assunto</button>
+                </div>
                 <div id="abd-campos"></div>
                 <div class="ferr-linha-acao"><button type="button" class="cal-btn cal-btn-primario" id="abd-copiar">Copiar abordagem</button></div>
               </div>
@@ -14595,14 +14601,19 @@
       try {
         const [pastas, itens] = await Promise.all([buscarTudo('ferramentas_pastas'), buscarTudo('ferramentas_itens')]);
         const ids = pastas.filter((p) => abdNormalizar(p.nome) === 'abordagem' || abdNormalizar(p.nome) === 'abordagens').map((p) => p.id);
-        abdModelos = itens.filter((i) => i.tipo === 'prompt_campos' && ids.includes(i.pasta_id)).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+        const daPasta = itens.filter((i) => i.tipo === 'prompt_campos' && ids.includes(i.pasta_id)).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+        // O modelo E-mail da central de Ferramentas > Abordagem entra junto, sem cópia.
+        abdModelos = [ABD_MODELO_EMAIL, ...daPasta];
         abdModelosErro = ids.length === 0 ? 'Não achei a pasta "Abordagem" em Ferramentas.' : '';
       } catch (err) {
         console.error('Modelos de abordagem indisponíveis:', err);
-        abdModelos = [];
+        abdModelos = [ABD_MODELO_EMAIL];
         abdModelosErro = 'Não consegui carregar as Ferramentas.';
       }
     }
+
+    // Modelo E-mail (definido em ABD_EMAIL): mesma estrutura usada na central de modelos.
+    const ABD_MODELO_EMAIL = { id: 'embutido:email', nome: 'E-mail', embutido: 'email', conteudo: '', dados: { canais: ['email'] } };
 
     function abdModelosDoCanal(canal) {
       return abdModelos.filter((m) => {
@@ -14686,7 +14697,8 @@
       abdEstado = {
         id: abordagem ? abordagem.id : null,
         canal: abordagem ? abordagem.canal : 'email',
-        modeloId: abordagem ? abordagem.modelo_id : null,
+        modeloId: abordagem ? (abordagem.valores && abordagem.valores._modelo === 'email' ? ABD_MODELO_EMAIL.id : abordagem.modelo_id) : null,
+        versao: abordagem && abordagem.valores && Number.isInteger(abordagem.valores._versao) ? abordagem.valores._versao : 0,
         valores: abordagem && abordagem.valores ? { ...abordagem.valores } : {},
         textoSalvo: abordagem ? abordagem.conteudo || '' : '',
         tituloAuto: !abordagem,
@@ -14698,7 +14710,7 @@
       document.getElementById('abd-modal-overlay').hidden = false;
       await modelos;
       const disponiveis = abdModelosDoCanal(abdEstado.canal);
-      if (abordagem && !abdModelos.some((m) => m.id === abordagem.modelo_id)) abdEstado.semModelo = true;
+      if (abordagem && !abdModelos.some((m) => m.id === abdEstado.modeloId)) abdEstado.semModelo = true;
       else if (!abordagem && disponiveis.length === 1) {
         abdEstado.modeloId = disponiveis[0].id;
         abdSugerirTitulo();
@@ -14712,6 +14724,7 @@
 
     function abdTextoFinal() {
       const modelo = abdModeloAtual();
+      if (modelo && modelo.embutido) return abdEmailGerar(abdEstado.valores, abdEstado.versao).corpo;
       if (modelo) return ferrPreencher(modelo.conteudo || '', abdEstado.valores);
       return abdEstado.textoSalvo;
     }
@@ -14732,11 +14745,12 @@
 
       const aviso = document.getElementById('abd-aviso');
       let msg = '';
-      if (abdModelosErro) msg = abdModelosErro + ' Crie os modelos em Ferramentas, numa pasta chamada Abordagem.';
+      if (abdModelosErro && compat.length <= 1) msg = abdModelosErro + ' Crie os modelos em Ferramentas, numa pasta chamada Abordagem.';
       else if (estado.semModelo) msg = 'O modelo usado nessa abordagem não existe mais. Você pode editar o texto salvo abaixo.';
       else if (compat.length === 0) msg = 'Nenhum modelo de abordagem serve pra esse canal. Crie em Ferramentas > Abordagem (Prompt com campos).';
       aviso.textContent = msg;
       aviso.hidden = !msg;
+      document.getElementById('abdm-versoes').hidden = !(modeloAtual && modeloAtual.embutido);
 
       abdRenderizarCampos();
       abdAtualizarPrevia();
@@ -14757,6 +14771,10 @@
         } else {
           cont.innerHTML = '<p class="ferr-vars-vazio">Escolha um modelo pra ver os campos.</p>';
         }
+        return;
+      }
+      if (modelo.embutido) {
+        abdRenderizarCamposEmail(cont);
         return;
       }
       const vars = ferrVariaveis(modelo.conteudo);
@@ -14786,10 +14804,54 @@
       });
     }
 
+    // Campos do modelo E-mail (os mesmos da central), agrupados por parágrafo.
+    function abdRenderizarCamposEmail(cont) {
+      const valores = abdEstado.valores;
+      const marca = abdNomeMarcaAtual();
+      if (!valores.marca && marca) valores.marca = marca;
+      ABD_EMAIL.grupos.forEach((g) =>
+        g.campos.forEach((c) => {
+          if (c.padrao !== undefined && valores[c.k] === undefined) valores[c.k] = c.padrao;
+        })
+      );
+      cont.innerHTML = ABD_EMAIL.grupos
+        .map(
+          (g) => `
+          <div class="abd-mini-grupo">
+            <div class="abd-mini-titulo">${g.n ? g.n + '. ' : ''}${escapeHtml(g.titulo)}</div>
+            ${g.campos
+              .map(
+                (c) => `
+              <div class="abd-campo">
+                <label>${escapeHtml(c.rotulo)}</label>
+                ${c.leadin ? `<span class="abd-leadin">${escapeHtml(c.leadin)}</span>` : ''}
+                ${c.area ? `<textarea data-k="${escapeHtml(c.k)}" rows="2" placeholder="${escapeHtml(c.ph || '')}"></textarea>` : `<input type="text" data-k="${escapeHtml(c.k)}" placeholder="${escapeHtml(c.ph || '')}" autocomplete="off">`}
+              </div>`
+              )
+              .join('')}
+          </div>`
+        )
+        .join('');
+      cont.querySelectorAll('[data-k]').forEach((el) => {
+        el.value = valores[el.dataset.k] || '';
+        el.addEventListener('input', () => {
+          valores[el.dataset.k] = el.value;
+          abdAtualizarPrevia();
+        });
+      });
+    }
+
     function abdAtualizarPrevia() {
       const el = document.getElementById('abd-celular-texto');
       if (!el) return;
-      const texto = abdTextoFinal();
+      const modelo = abdModeloAtual();
+      let texto = abdTextoFinal();
+      if (modelo && modelo.embutido) {
+        const res = abdEmailGerar(abdEstado.valores, abdEstado.versao);
+        texto = 'Assunto: ' + res.assunto + '\n\n' + res.corpo;
+        document.getElementById('abdm-versao-rotulo').textContent = `Versão ${abdEstado.versao + 1} de ${ABD_EMAIL.versoes}${abdEstado.versao === 0 ? ' (original)' : ''}`;
+        document.getElementById('abdm-original').disabled = abdEstado.versao === 0;
+      }
       const vazio = !texto.trim();
       el.classList.toggle('vazio', vazio);
       el.textContent = vazio ? 'A abordagem aparece aqui.' : texto;
@@ -14819,7 +14881,7 @@
     function abdSugerirTitulo() {
       if (!abdEstado.tituloAuto) return;
       const modelo = abdModeloAtual();
-      document.getElementById('abd-titulo').value = modelo ? `${ABD_CANAIS[abdEstado.canal].rotulo} · ${modelo.nome}` : '';
+      document.getElementById('abd-titulo').value = modelo ? (modelo.embutido ? ABD_CANAIS[abdEstado.canal].rotulo : `${ABD_CANAIS[abdEstado.canal].rotulo} · ${modelo.nome}`) : '';
     }
 
     function abdFecharModal() {
@@ -14839,16 +14901,31 @@
         alert('A abordagem está vazia.');
         return;
       }
-      const titulo = document.getElementById('abd-titulo').value.trim() || `${ABD_CANAIS[estado.canal].rotulo}${modelo ? ' · ' + modelo.nome : ''}`;
-      if (/\{\{\s*[^}]+\}\}/.test(texto) && !(await confirmarAcao('Ainda tem campo sem preencher (aparece entre {{ }}). Salvar assim mesmo?'))) return;
+      const embutido = !!(modelo && modelo.embutido);
+      const titulo = document.getElementById('abd-titulo').value.trim() || `${ABD_CANAIS[estado.canal].rotulo}${modelo && !embutido ? ' · ' + modelo.nome : ''}`;
+      if (embutido) {
+        const faltando = abdEmailGerar(estado.valores, estado.versao).faltando;
+        if (faltando.length && !(await confirmarAcao(`Ainda tem campo sem preencher (${faltando.join(', ')}). Salvar assim mesmo?`, { perigo: false, textoConfirmar: 'Salvar assim' }))) return;
+      } else if (/\{\{\s*[^}]+\}\}/.test(texto) && !(await confirmarAcao('Ainda tem campo sem preencher (aparece entre {{ }}). Salvar assim mesmo?', { perigo: false, textoConfirmar: 'Salvar assim' }))) return;
+
+      // O modelo E-mail não é uma linha de Ferramentas: guardo só a marca dele nos valores.
+      const valoresSalvos = { ...estado.valores };
+      delete valoresSalvos._modelo;
+      delete valoresSalvos._versao;
+      delete valoresSalvos._assunto;
+      if (embutido) {
+        valoresSalvos._modelo = 'email';
+        valoresSalvos._versao = estado.versao;
+        valoresSalvos._assunto = abdEmailGerar(estado.valores, estado.versao).assunto;
+      }
 
       const linha = {
         contato_id: contatoAbertoId,
         canal: estado.canal,
         titulo,
-        modelo_id: modelo ? modelo.id : estado.modeloId,
+        modelo_id: modelo && !embutido ? modelo.id : embutido ? null : estado.modeloId,
         modelo_nome: modelo ? modelo.nome : null,
-        valores: estado.valores,
+        valores: valoresSalvos,
         conteudo: texto,
         updated_at: new Date().toISOString(),
       };
@@ -14896,6 +14973,19 @@
         if (abdEstado) abdEstado.tituloAuto = false;
       });
       document.getElementById('abd-copiar').addEventListener('click', (e) => ferrCopiar(abdTextoFinal(), e.currentTarget));
+      document.getElementById('abdm-outra-versao').addEventListener('click', () => {
+        if (!abdEstado) return;
+        abdEstado.versao = (abdEstado.versao + 1) % ABD_EMAIL.versoes;
+        abdAtualizarPrevia();
+      });
+      document.getElementById('abdm-original').addEventListener('click', () => {
+        if (!abdEstado) return;
+        abdEstado.versao = 0;
+        abdAtualizarPrevia();
+      });
+      document.getElementById('abdm-copiar-assunto').addEventListener('click', (e) => {
+        if (abdEstado) ferrCopiar(abdEmailGerar(abdEstado.valores, abdEstado.versao).assunto, e.currentTarget);
+      });
       document.getElementById('abd-salvar').addEventListener('click', abdSalvar);
       document.getElementById('abd-excluir').addEventListener('click', abdExcluirDoModal);
     }
@@ -15167,7 +15257,7 @@
     async function notaLimpar() {
       const nota = notaAtual();
       if (!nota || !(nota.conteudo || '').trim()) return;
-      if (!(await confirmarAcao('Limpar o texto dessa nota?'))) return;
+      if (!(await confirmarAcao('Limpar o texto dessa nota?', { textoConfirmar: 'Limpar' }))) return;
       document.getElementById('nota-texto').value = '';
       notaAoDigitar();
       document.getElementById('nota-texto').focus();
@@ -15586,7 +15676,7 @@
         abdAtualizarResultado(modelo);
       });
       on('abd-limpar-respostas', async () => {
-        if (!(await confirmarAcao('Limpar todas as respostas desse modelo?'))) return;
+        if (!(await confirmarAcao('Limpar todas as respostas desse modelo?', { textoConfirmar: 'Limpar' }))) return;
         Object.keys(valores).forEach((k) => delete valores[k]);
         abdRespostasGuardar();
         abdCentralRenderizar(ferrPastas.find((p) => p.id === ferrPastaAbertaId));
@@ -15595,7 +15685,7 @@
       on('abd-copiar', async (e) => {
         const res = abdResultadoAtual(modelo);
         const btn = e.currentTarget;
-        if (res.faltando.length && !(await confirmarAcao(`Ainda tem campo sem preencher (${res.faltando.join(', ')}). Copiar assim mesmo?`))) return;
+        if (res.faltando.length && !(await confirmarAcao(`Ainda tem campo sem preencher (${res.faltando.join(', ')}). Copiar assim mesmo?`, { perigo: false, textoConfirmar: 'Copiar assim' }))) return;
         ferrCopiar(res.corpo, btn);
       });
       abdAtualizarResultado(modelo);

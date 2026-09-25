@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260925e">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260925g">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -14603,17 +14603,19 @@
         const ids = pastas.filter((p) => abdNormalizar(p.nome) === 'abordagem' || abdNormalizar(p.nome) === 'abordagens').map((p) => p.id);
         const daPasta = itens.filter((i) => i.tipo === 'prompt_campos' && ids.includes(i.pasta_id)).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
         // O modelo E-mail da central de Ferramentas > Abordagem entra junto, sem cópia.
-        abdModelos = [ABD_MODELO_EMAIL, ...daPasta];
+        abdModelos = [...abdModelosEmbutidos(), ...daPasta];
         abdModelosErro = ids.length === 0 ? 'Não achei a pasta "Abordagem" em Ferramentas.' : '';
       } catch (err) {
         console.error('Modelos de abordagem indisponíveis:', err);
-        abdModelos = [ABD_MODELO_EMAIL];
+        abdModelos = abdModelosEmbutidos();
         abdModelosErro = 'Não consegui carregar as Ferramentas.';
       }
     }
 
-    // Modelo E-mail (definido em ABD_EMAIL): mesma estrutura usada na central de modelos.
-    const ABD_MODELO_EMAIL = { id: 'embutido:email', nome: 'E-mail', embutido: 'email', conteudo: '', dados: { canais: ['email'] } };
+    // Modelos embutidos (E-mail, Versão de DM, Segundo e-mail): as mesmas definições da central de modelos, sem cópia.
+    function abdModelosEmbutidos() {
+      return Object.entries(ABD_EMBUTIDOS).map(([chave, d]) => ({ id: 'embutido:' + chave, nome: d.nome, embutido: chave, conteudo: '', dados: { canais: d.canais } }));
+    }
 
     function abdModelosDoCanal(canal) {
       return abdModelos.filter((m) => {
@@ -14697,7 +14699,7 @@
       abdEstado = {
         id: abordagem ? abordagem.id : null,
         canal: abordagem ? abordagem.canal : 'email',
-        modeloId: abordagem ? (abordagem.valores && abordagem.valores._modelo === 'email' ? ABD_MODELO_EMAIL.id : abordagem.modelo_id) : null,
+        modeloId: abordagem ? (abordagem.valores && ABD_EMBUTIDOS[abordagem.valores._modelo] ? 'embutido:' + abordagem.valores._modelo : abordagem.modelo_id) : null,
         versao: abordagem && abordagem.valores && Number.isInteger(abordagem.valores._versao) ? abordagem.valores._versao : 0,
         valores: abordagem && abordagem.valores ? { ...abordagem.valores } : {},
         textoSalvo: abordagem ? abordagem.conteudo || '' : '',
@@ -14724,7 +14726,7 @@
 
     function abdTextoFinal() {
       const modelo = abdModeloAtual();
-      if (modelo && modelo.embutido) return abdEmailGerar(abdEstado.valores, abdEstado.versao).corpo;
+      if (modelo && modelo.embutido) return ABD_EMBUTIDOS[modelo.embutido].gerar(abdEstado.valores, abdEstado.versao).corpo;
       if (modelo) return ferrPreencher(modelo.conteudo || '', abdEstado.valores);
       return abdEstado.textoSalvo;
     }
@@ -14751,6 +14753,7 @@
       aviso.textContent = msg;
       aviso.hidden = !msg;
       document.getElementById('abdm-versoes').hidden = !(modeloAtual && modeloAtual.embutido);
+      document.getElementById('abdm-copiar-assunto').hidden = !(modeloAtual && modeloAtual.embutido && ABD_EMBUTIDOS[modeloAtual.embutido].temAssunto);
 
       abdRenderizarCampos();
       abdAtualizarPrevia();
@@ -14774,7 +14777,7 @@
         return;
       }
       if (modelo.embutido) {
-        abdRenderizarCamposEmail(cont);
+        abdRenderizarCamposEmail(cont, ABD_EMBUTIDOS[modelo.embutido]);
         return;
       }
       const vars = ferrVariaveis(modelo.conteudo);
@@ -14805,16 +14808,16 @@
     }
 
     // Campos do modelo E-mail (os mesmos da central), agrupados por parágrafo.
-    function abdRenderizarCamposEmail(cont) {
+    function abdRenderizarCamposEmail(cont, def) {
       const valores = abdEstado.valores;
       const marca = abdNomeMarcaAtual();
       if (!valores.marca && marca) valores.marca = marca;
-      ABD_EMAIL.grupos.forEach((g) =>
+      def.grupos.forEach((g) =>
         g.campos.forEach((c) => {
           if (c.padrao !== undefined && valores[c.k] === undefined) valores[c.k] = c.padrao;
         })
       );
-      cont.innerHTML = ABD_EMAIL.grupos
+      cont.innerHTML = def.grupos
         .map(
           (g) => `
           <div class="abd-mini-grupo">
@@ -14847,9 +14850,10 @@
       const modelo = abdModeloAtual();
       let texto = abdTextoFinal();
       if (modelo && modelo.embutido) {
-        const res = abdEmailGerar(abdEstado.valores, abdEstado.versao);
-        texto = 'Assunto: ' + res.assunto + '\n\n' + res.corpo;
-        document.getElementById('abdm-versao-rotulo').textContent = `Versão ${abdEstado.versao + 1} de ${ABD_EMAIL.versoes}${abdEstado.versao === 0 ? ' (original)' : ''}`;
+        const def = ABD_EMBUTIDOS[modelo.embutido];
+        const res = def.gerar(abdEstado.valores, abdEstado.versao);
+        texto = (res.assunto ? 'Assunto: ' + res.assunto + '\n\n' : '') + res.corpo;
+        document.getElementById('abdm-versao-rotulo').textContent = abdRotuloVersao(def, abdEstado.versao);
         document.getElementById('abdm-original').disabled = abdEstado.versao === 0;
       }
       const vazio = !texto.trim();
@@ -14881,7 +14885,7 @@
     function abdSugerirTitulo() {
       if (!abdEstado.tituloAuto) return;
       const modelo = abdModeloAtual();
-      document.getElementById('abd-titulo').value = modelo ? (modelo.embutido ? ABD_CANAIS[abdEstado.canal].rotulo : `${ABD_CANAIS[abdEstado.canal].rotulo} · ${modelo.nome}`) : '';
+      document.getElementById('abd-titulo').value = modelo ? (modelo.nome === ABD_CANAIS[abdEstado.canal].rotulo ? modelo.nome : `${ABD_CANAIS[abdEstado.canal].rotulo} · ${modelo.nome}`) : '';
     }
 
     function abdFecharModal() {
@@ -14902,9 +14906,9 @@
         return;
       }
       const embutido = !!(modelo && modelo.embutido);
-      const titulo = document.getElementById('abd-titulo').value.trim() || `${ABD_CANAIS[estado.canal].rotulo}${modelo && !embutido ? ' · ' + modelo.nome : ''}`;
+      const titulo = document.getElementById('abd-titulo').value.trim() || `${ABD_CANAIS[estado.canal].rotulo}${modelo && modelo.nome !== ABD_CANAIS[estado.canal].rotulo ? ' · ' + modelo.nome : ''}`;
       if (embutido) {
-        const faltando = abdEmailGerar(estado.valores, estado.versao).faltando;
+        const faltando = ABD_EMBUTIDOS[modelo.embutido].gerar(estado.valores, estado.versao).faltando;
         if (faltando.length && !(await confirmarAcao(`Ainda tem campo sem preencher (${faltando.join(', ')}). Salvar assim mesmo?`, { perigo: false, textoConfirmar: 'Salvar assim' }))) return;
       } else if (/\{\{\s*[^}]+\}\}/.test(texto) && !(await confirmarAcao('Ainda tem campo sem preencher (aparece entre {{ }}). Salvar assim mesmo?', { perigo: false, textoConfirmar: 'Salvar assim' }))) return;
 
@@ -14914,9 +14918,9 @@
       delete valoresSalvos._versao;
       delete valoresSalvos._assunto;
       if (embutido) {
-        valoresSalvos._modelo = 'email';
+        valoresSalvos._modelo = modelo.embutido;
         valoresSalvos._versao = estado.versao;
-        valoresSalvos._assunto = abdEmailGerar(estado.valores, estado.versao).assunto;
+        valoresSalvos._assunto = ABD_EMBUTIDOS[modelo.embutido].gerar(estado.valores, estado.versao).assunto;
       }
 
       const linha = {
@@ -14975,7 +14979,8 @@
       document.getElementById('abd-copiar').addEventListener('click', (e) => ferrCopiar(abdTextoFinal(), e.currentTarget));
       document.getElementById('abdm-outra-versao').addEventListener('click', () => {
         if (!abdEstado) return;
-        abdEstado.versao = (abdEstado.versao + 1) % ABD_EMAIL.versoes;
+        const m = abdModeloAtual();
+        abdEstado.versao = (abdEstado.versao + 1) % (m && m.embutido ? ABD_EMBUTIDOS[m.embutido].versoes.length : 1);
         abdAtualizarPrevia();
       });
       document.getElementById('abdm-original').addEventListener('click', () => {
@@ -14984,7 +14989,8 @@
         abdAtualizarPrevia();
       });
       document.getElementById('abdm-copiar-assunto').addEventListener('click', (e) => {
-        if (abdEstado) ferrCopiar(abdEmailGerar(abdEstado.valores, abdEstado.versao).assunto, e.currentTarget);
+        const m = abdEstado && abdModeloAtual();
+        if (m && m.embutido) ferrCopiar(ABD_EMBUTIDOS[m.embutido].gerar(abdEstado.valores, abdEstado.versao).assunto, e.currentTarget);
       });
       document.getElementById('abd-salvar').addEventListener('click', abdSalvar);
       document.getElementById('abd-excluir').addEventListener('click', abdExcluirDoModal);
@@ -15370,8 +15376,8 @@
 
     const ABD_MODELOS = [
       { id: 'email', rotulo: 'E-mail', tipo: 'embutido' },
-      { id: 'dm', rotulo: 'Versão de DM', tipo: 'emBreve' },
-      { id: 'segundo-email', rotulo: 'Segundo e-mail', tipo: 'emBreve' },
+      { id: 'dm', rotulo: 'Versão de DM', tipo: 'embutido' },
+      { id: 'segundo-email', rotulo: 'Segundo e-mail', tipo: 'embutido' },
       { id: 'seu-influencer', rotulo: 'Seu Influencer', tipo: 'ferramenta', nomeFerramenta: 'si', plataforma: 'seuinfluencer' },
     ];
     const ABD_RESPOSTAS_KEY = 'painel_abordagem_respostas';
@@ -15537,6 +15543,160 @@
       return { assunto, corpo, faltando: [...faltando], palavras: corpo.trim().split(/\s+/).length };
     }
 
+    // ---- Versão de DM e Segundo e-mail: cada um com os próprios campos e versões ----
+
+    // Auxiliares dos geradores: obrigatório (vira [campo] destacado quando vazio) e opcional.
+    function abdAuxGerador(grupos, vals) {
+      const faltando = new Set();
+      const rotulos = {};
+      grupos.forEach((g) =>
+        g.campos.forEach((c) => {
+          rotulos[c.k] = c.rotulo.replace(/\s*\(opcional\)/, '');
+        })
+      );
+      const limpo = (t) => (t || '').trim().replace(/[\s.!?]+$/, '');
+      return {
+        faltando,
+        limpo,
+        obrig: (k) => {
+          const t = limpo(vals[k]);
+          if (t) return t;
+          faltando.add(rotulos[k]);
+          return '[' + rotulos[k].toLowerCase() + ']';
+        },
+        opc: (k) => limpo(vals[k]),
+      };
+    }
+
+    function abdMontarResultado(assunto, corpo, faltando) {
+      return { assunto, corpo, faltando: [...faltando], palavras: corpo.trim().split(/\s+/).length };
+    }
+
+    function abdRotuloVersao(def, i) {
+      const nome = def.versoes[i];
+      return `Versão ${i + 1} de ${def.versoes.length}${nome ? ' · ' + nome : i === 0 ? ' · original' : ''}`;
+    }
+
+    const ABD_DM_GRUPOS = [
+      {
+        n: 1,
+        titulo: 'Quem sou e para quem escrevo',
+        dica: 'A DM é curta: só diz quem você é.',
+        campos: [
+          { k: 'marca', rotulo: 'Nome da marca', ph: 'Ex: Solar', req: true },
+          { k: 'quem', rotulo: 'Quem você é, em uma linha', leadin: 'Sou a Bruna…', padrao: 'criadora de conteúdo UGC', ph: 'Ex: criadora de conteúdo UGC' },
+        ],
+      },
+      {
+        n: 2,
+        titulo: 'O que quero pedir',
+        dica: 'A DM não vende: ela pede o canal certo para enviar a proposta. Vazio usa o pedido padrão.',
+        campos: [{ k: 'pedido', rotulo: 'O que você quer pedir (opcional)', leadin: 'Poderiam me passar…', ph: 'Ex: o e-mail da equipe de parcerias', area: true }],
+      },
+      {
+        n: 3,
+        titulo: 'Só para algumas versões',
+        dica: 'Cada campo entra só na versão que usa ele; nas outras, é ignorado.',
+        campos: [
+          { k: 'perfil', rotulo: 'O que você viu no perfil deles (opcional)', leadin: 'Estive olhando o perfil e vi…', ph: 'Ex: como vocês mostram o produto no dia a dia', area: true },
+          { k: 'cliente', rotulo: 'Você já é cliente ou fã? (opcional)', leadin: 'Sobre a minha relação com a marca…', ph: 'Ex: uso os produtos de vocês há um bom tempo', area: true },
+        ],
+      },
+    ];
+
+    function abdDmGerar(vals, V) {
+      const { faltando, obrig, opc } = abdAuxGerador(ABD_DM_GRUPOS, vals);
+      const marca = obrig('marca');
+      const quem = opc('quem') || 'criadora de conteúdo UGC';
+      const pedido = opc('pedido') || 'um e-mail ou contato específico';
+      const corpo = [
+        () => `Oi, equipe ${marca}! Tudo bem?\n\nSou a Bruna, ${quem}. Tenho uma proposta de conteúdo que gostaria de enviar para vocês. Poderiam me passar ${pedido} para esse tipo de proposta?\n\nAgradeço desde já! 💙`,
+        () => `Oi, equipe ${marca}! Tudo bem?\n\nSou a Bruna, ${quem}. Estive olhando o perfil de vocês e vi ${obrig('perfil')}.\n\nTenho uma ideia de conteúdo pensada para a marca e queria saber se vocês poderiam me passar ${pedido} para enviar minha proposta. Obrigada! 💙`,
+        () => `Oi, equipe ${marca}! Sou a Bruna, ${quem}.\nPoderiam me passar ${pedido} para eu enviar uma proposta?`,
+        () => `Oi, equipe ${marca}! Tudo bem?\n\nSou a Bruna, ${quem}, e ${obrig('cliente')}. Por isso, queria muito enviar uma proposta de conteúdo pensada para vocês.\n\nPoderiam me passar ${pedido} para enviar essa proposta? Obrigada! 💙`,
+      ][V]();
+      return abdMontarResultado('', corpo, faltando);
+    }
+
+    const ABD_SEGUNDO_GRUPOS = [
+      {
+        n: 1,
+        titulo: 'Quem recebe',
+        dica: 'Para quem você está escrevendo de novo.',
+        campos: [
+          { k: 'contato', rotulo: 'Nome da pessoa ou da equipe', ph: 'Ex: Marina, ou equipe Solar', req: true },
+          { k: 'marca', rotulo: 'Nome da marca (opcional)', ph: 'Ex: Solar' },
+        ],
+      },
+      {
+        n: 2,
+        titulo: 'O primeiro e-mail',
+        dica: 'Uma linha para a pessoa lembrar de você.',
+        campos: [
+          { k: 'primeiro', rotulo: 'Sobre o que era o primeiro e-mail', leadin: 'No primeiro e-mail, eu falei sobre…', ph: 'Ex: uma ideia de vídeo para o sérum', req: true, area: true },
+          { k: 'quando', rotulo: 'Quando você mandou o primeiro (opcional)', leadin: 'Mandei o primeiro e-mail…', ph: 'Ex: na semana passada' },
+        ],
+      },
+      {
+        n: 3,
+        titulo: 'O que quero pedir',
+        dica: 'Esse e-mail não insiste na proposta: reabre a conversa e pede outro canal.',
+        campos: [
+          { k: 'outro', rotulo: 'Qual segundo contato você quer pedir (opcional)', leadin: 'Posso falar com vocês por…', ph: 'Ex: WhatsApp ou Instagram' },
+          { k: 'assunto', rotulo: 'Assunto (opcional)', ph: 'Deixe vazio para usar o assunto sugerido' },
+        ],
+      },
+    ];
+
+    function abdSegundoEmailGerar(vals, V) {
+      const { faltando, obrig, opc } = abdAuxGerador(ABD_SEGUNDO_GRUPOS, vals);
+      const contato = obrig('contato');
+      const primeiro = obrig('primeiro');
+      const quando = opc('quando');
+      const outro = opc('outro') || 'outro canal';
+      const corpo = [
+        `Oi, ${contato}! Tudo bem?\n\nPassando para saber se vocês conseguiram dar uma olhada no meu último e-mail${quando ? ', que enviei ' + quando : ''}, sobre ${primeiro}.\n\nSem pressa! Se for melhor, fico à disposição para conversarmos e entender o momento de vocês.\n\nVocês teriam um segundo contato para eu falar com vocês? Se preferirem, posso chamar por ${outro}.\n\nObrigada, fico no aguardo!\nBruna Medeiros`,
+        `Oi, ${contato}! Tudo bem?\n\nPassando para saber se vocês viram meu último e-mail sobre ${primeiro}. Se preferirem, posso falar com vocês por ${outro}.\n\nObrigada!\nBruna Medeiros`,
+      ][V];
+      const marca = opc('marca');
+      const assunto = (vals.assunto || '').trim() || (marca ? `Sobre a ideia de conteúdo para ${marca}` : 'Sobre a minha ideia de conteúdo');
+      return abdMontarResultado(assunto, corpo, faltando);
+    }
+
+    // Modelos que vivem no código (cada um com campos, versões e gerador próprios).
+    const ABD_EMBUTIDOS = {
+      email: {
+        nome: 'E-mail',
+        resumo: ABD_EMAIL.resumo,
+        grupos: ABD_EMAIL.grupos,
+        versoes: [null, null, null],
+        gerar: abdEmailGerar,
+        temAssunto: true,
+        botao: 'Copiar e-mail',
+        canais: ['email'],
+      },
+      dm: {
+        nome: 'Versão de DM',
+        resumo: 'A DM não vende: ela pede o canal certo para você enviar a proposta. Poucos campos, quatro versões de tom.',
+        grupos: ABD_DM_GRUPOS,
+        versoes: ['Educada', 'Com elogio ao perfil', 'Curta, em duas linhas', 'De cliente para a marca'],
+        gerar: abdDmGerar,
+        temAssunto: false,
+        botao: 'Copiar DM',
+        canais: ['instagram', 'whatsapp'],
+      },
+      'segundo-email': {
+        nome: 'Segundo e-mail',
+        resumo: 'Para quando o primeiro e-mail ficou sem resposta: ele não insiste na proposta, só reabre a conversa e pede outro canal.',
+        grupos: ABD_SEGUNDO_GRUPOS,
+        versoes: ['Padrão', 'Bem curto'],
+        gerar: abdSegundoEmailGerar,
+        temAssunto: true,
+        botao: 'Copiar e-mail',
+        canais: ['email'],
+      },
+    };
+
     let abdCentral = { aba: 'email', versao: 0, valores: null };
     let abdMostrarItens = false;
     let abdPastaUltima = null;
@@ -15586,7 +15746,7 @@
 
       const area = document.getElementById('abd-modelo-area');
       const modelo = abdModeloAtualDef();
-      if (modelo.tipo === 'embutido') abdRenderizarConstrutor(area, modelo, ABD_EMAIL.resumo, ABD_EMAIL.grupos, true);
+      if (modelo.tipo === 'embutido') abdRenderizarConstrutor(area, modelo, ABD_EMBUTIDOS[modelo.id].resumo, ABD_EMBUTIDOS[modelo.id].grupos, true);
       else if (modelo.tipo === 'ferramenta') abdRenderizarFerramenta(area, modelo, pasta);
       else {
         area.innerHTML = `
@@ -15600,6 +15760,7 @@
     // Monta a tela de um modelo: campos à esquerda, resultado (celular) à direita.
     function abdRenderizarConstrutor(area, modelo, resumo, grupos, comVersoes, extraTopo) {
       const valores = abdValoresDoModelo(modelo.id);
+      const def = modelo.tipo === 'embutido' ? ABD_EMBUTIDOS[modelo.id] : null;
       grupos.forEach((g) =>
         g.campos.forEach((c) => {
           if (c.padrao !== undefined && valores[c.k] === undefined) valores[c.k] = c.padrao;
@@ -15636,7 +15797,7 @@
               <span class="abd-doc-versao" id="abd-versao"></span>
               <div class="abd-doc-acoes">
                 ${comVersoes ? '<button type="button" class="cal-btn" id="abd-outra-versao">Outra versão</button><button type="button" class="cal-btn" id="abd-original">Voltar ao original</button>' : ''}
-                ${comVersoes ? '<button type="button" class="cal-btn" id="abd-copiar-assunto">Copiar assunto</button>' : ''}
+                ${comVersoes && def && def.temAssunto ? '<button type="button" class="cal-btn" id="abd-copiar-assunto">Copiar assunto</button>' : ''}
               </div>
             </header>
             <div class="abd-doc-corpo">
@@ -15645,7 +15806,7 @@
             </div>
             <footer class="abd-doc-rodape">
               <span class="abd-doc-info" id="abd-info"></span>
-              <button type="button" class="cal-btn cal-btn-primario" id="abd-copiar">${comVersoes ? 'Copiar e-mail' : 'Copiar abordagem'}</button>
+              <button type="button" class="cal-btn cal-btn-primario" id="abd-copiar">${def ? def.botao : 'Copiar abordagem'}</button>
             </footer>
           </article>
           <div class="abd-coluna-campos">
@@ -15668,7 +15829,7 @@
         if (el) el.addEventListener('click', fn);
       };
       on('abd-outra-versao', () => {
-        abdCentral.versao = (abdCentral.versao + 1) % ABD_EMAIL.versoes;
+        abdCentral.versao = (abdCentral.versao + 1) % ABD_EMBUTIDOS[modelo.id].versoes.length;
         abdAtualizarResultado(modelo);
       });
       on('abd-original', () => {
@@ -15694,7 +15855,7 @@
     // Resultado atual do modelo aberto (e-mail embutido ou ferramenta existente).
     function abdResultadoAtual(modelo) {
       const valores = abdValoresDoModelo(modelo.id);
-      if (modelo.tipo === 'embutido') return abdEmailGerar(valores, abdCentral.versao);
+      if (modelo.tipo === 'embutido') return ABD_EMBUTIDOS[modelo.id].gerar(valores, abdCentral.versao);
       const item = abdAcharFerramenta(modelo);
       const texto = item ? ferrPreencher(item.conteudo || '', valores) : '';
       const faltando = item ? ferrVariaveis(texto).map((n) => ferrNomeVariavel(n)) : [];
@@ -15717,7 +15878,7 @@
 
       const versao =
         modelo.tipo === 'embutido'
-          ? `Versão ${abdCentral.versao + 1} de ${ABD_EMAIL.versoes}${abdCentral.versao === 0 ? ' · original' : ''}`
+          ? abdRotuloVersao(ABD_EMBUTIDOS[modelo.id], abdCentral.versao)
           : modelo.rotulo;
       document.getElementById('abd-versao').textContent = versao;
       const info = [];

@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260925g">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260925h">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -2477,7 +2477,7 @@
 
     <!-- Modal: abordagem de uma marca (usa os modelos de Ferramentas > Abordagem) -->
     <div id="abd-modal-overlay" class="pl-modal-overlay" hidden>
-      <div class="pl-modal ferr-item-modal ferr-item-modal-largo abd-modal">
+      <div class="pl-modal ferr-item-modal abd-modal-largo">
         <div class="pl-modal-topo">
           <input type="text" id="abd-titulo" class="pl-modal-titulo-input" placeholder="Nome da abordagem" maxlength="120" autocomplete="off">
           <button id="abd-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
@@ -2502,30 +2502,30 @@
             <select id="abd-modelo"></select>
           </div>
         </div>
-        <div class="ferr-item-campos">
-          <div class="ferr-preencher-grade">
-            <div class="ferr-preencher-esq">
-              <p class="abd-aviso" id="abd-aviso" hidden></p>
-              <div class="ferr-vars-caixa">
-                <div class="ferr-vars-titulo">Campos</div>
-                <div class="abd-versoes-linha" id="abdm-versoes" hidden>
-                  <span class="abd-doc-versao" id="abdm-versao-rotulo"></span>
-                  <button type="button" class="cal-btn" id="abdm-outra-versao">Outra versão</button>
-                  <button type="button" class="cal-btn" id="abdm-original">Voltar ao original</button>
-                  <button type="button" class="cal-btn" id="abdm-copiar-assunto">Copiar assunto</button>
-                </div>
-                <div id="abd-campos"></div>
-                <div class="ferr-linha-acao"><button type="button" class="cal-btn cal-btn-primario" id="abd-copiar">Copiar abordagem</button></div>
+        <div class="abd-construtor">
+          <article class="abd-doc" aria-label="Resultado">
+            <header class="abd-doc-topo">
+              <span class="abd-doc-versao" id="abdm-versao-rotulo"></span>
+              <div class="abd-doc-acoes" id="abdm-acoes-versao" hidden>
+                <button type="button" class="cal-btn" id="abdm-outra-versao">Outra versão</button>
+                <button type="button" class="cal-btn" id="abdm-original">Voltar ao original</button>
+                <button type="button" class="cal-btn" id="abdm-copiar-assunto">Copiar assunto</button>
               </div>
+            </header>
+            <div class="abd-doc-corpo">
+              <div class="abd-doc-assunto" id="abdm-assunto" hidden></div>
+              <div class="abd-doc-texto" id="abdm-resultado"></div>
             </div>
-            <aside class="ferr-celular-area" aria-label="Prévia da mensagem no celular">
-              <div class="ferr-celular">
-                <div class="ferr-celular-notch"></div>
-                <div class="ferr-celular-barra"><span class="ferr-celular-avatar"></span><span class="ferr-celular-titulo">Prévia da mensagem</span></div>
-                <div class="ferr-celular-conversa"><div class="ferr-balao" id="abd-celular-texto"></div></div>
-                <div class="ferr-celular-entrada"><span>Mensagem</span><span class="ferr-celular-enviar">&#10148;</span></div>
-              </div>
-            </aside>
+            <footer class="abd-doc-rodape">
+              <span class="abd-doc-info" id="abdm-info"></span>
+              <button type="button" class="cal-btn cal-btn-primario" id="abdm-copiar">Copiar abordagem</button>
+            </footer>
+          </article>
+          <div class="abd-coluna-campos">
+            <p class="abd-aviso" id="abd-aviso" hidden></p>
+            <div class="abd-bloco abd-bloco-campos">
+              <div id="abd-campos"></div>
+            </div>
           </div>
         </div>
         <div class="cal-form-acoes">
@@ -14752,7 +14752,7 @@
       else if (compat.length === 0) msg = 'Nenhum modelo de abordagem serve pra esse canal. Crie em Ferramentas > Abordagem (Prompt com campos).';
       aviso.textContent = msg;
       aviso.hidden = !msg;
-      document.getElementById('abdm-versoes').hidden = !(modeloAtual && modeloAtual.embutido);
+      document.getElementById('abdm-acoes-versao').hidden = !(modeloAtual && modeloAtual.embutido);
       document.getElementById('abdm-copiar-assunto').hidden = !(modeloAtual && modeloAtual.embutido && ABD_EMBUTIDOS[modeloAtual.embutido].temAssunto);
 
       abdRenderizarCampos();
@@ -14764,7 +14764,7 @@
       const modelo = abdModeloAtual();
       if (!modelo) {
         if (abdEstado.semModelo) {
-          cont.innerHTML = '<div class="cal-form-campo"><label for="abd-texto-livre">Texto salvo</label><textarea id="abd-texto-livre" rows="8"></textarea></div>';
+          cont.innerHTML = '<div class="abd-campo"><label for="abd-texto-livre">Texto salvo</label><textarea id="abd-texto-livre" rows="8" style="height:220px"></textarea></div>';
           const ta = document.getElementById('abd-texto-livre');
           ta.value = abdEstado.textoSalvo;
           ta.addEventListener('input', () => {
@@ -14792,7 +14792,7 @@
       cont.innerHTML = vars
         .map(
           (nome, i) => `
-          <div class="cal-form-campo">
+          <div class="abd-campo">
             <label for="abd-var-${i}">${escapeHtml(ferrNomeVariavel(nome))}</label>
             <textarea id="abd-var-${i}" data-var="${escapeHtml(nome)}" rows="1"></textarea>
           </div>`
@@ -14844,21 +14844,44 @@
       });
     }
 
+    // Resultado da abordagem no modal: mesmo "documento" da central de modelos.
     function abdAtualizarPrevia() {
-      const el = document.getElementById('abd-celular-texto');
-      if (!el) return;
+      const corpoEl = document.getElementById('abdm-resultado');
+      if (!corpoEl || !abdEstado) return;
       const modelo = abdModeloAtual();
-      let texto = abdTextoFinal();
+      let assunto = '';
+      let corpo = '';
+      let faltando = [];
+      let rotulo = 'Abordagem';
       if (modelo && modelo.embutido) {
         const def = ABD_EMBUTIDOS[modelo.embutido];
         const res = def.gerar(abdEstado.valores, abdEstado.versao);
-        texto = (res.assunto ? 'Assunto: ' + res.assunto + '\n\n' : '') + res.corpo;
-        document.getElementById('abdm-versao-rotulo').textContent = abdRotuloVersao(def, abdEstado.versao);
-        document.getElementById('abdm-original').disabled = abdEstado.versao === 0;
+        assunto = res.assunto;
+        corpo = res.corpo;
+        faltando = res.faltando;
+        rotulo = abdRotuloVersao(def, abdEstado.versao);
+      } else {
+        corpo = abdTextoFinal();
+        faltando = [...new Set((corpo.match(/\{\{\s*[^}]+\}\}/g) || []).map((t) => t.replace(/[{}\s]/g, '')))].map((n) => ferrNomeVariavel(n));
+        rotulo = modelo ? modelo.nome : 'Abordagem';
       }
-      const vazio = !texto.trim();
-      el.classList.toggle('vazio', vazio);
-      el.textContent = vazio ? 'A abordagem aparece aqui.' : texto;
+      const vazio = !corpo.trim();
+      corpoEl.classList.toggle('vazio', vazio);
+      corpoEl.innerHTML = vazio
+        ? 'A abordagem aparece aqui.'
+        : escapeHtml(corpo).replace(/(\[[^\]\n]+\]|\{\{[^}\n]+\}\})/g, '<mark class="abd-falta">$1</mark>');
+      const assuntoEl = document.getElementById('abdm-assunto');
+      assuntoEl.hidden = !assunto;
+      assuntoEl.innerHTML = assunto ? '<span class="abd-doc-rotulo">Assunto</span>' + escapeHtml(assunto).replace(/(\[[^\]\n]+\])/g, '<mark class="abd-falta">$1</mark>') : '';
+      document.getElementById('abdm-versao-rotulo').textContent = rotulo;
+      const palavras = vazio ? 0 : corpo.trim().split(/\s+/).length;
+      const info = [];
+      if (palavras) info.push(`${palavras} palavras`);
+      info.push(faltando.length ? `${faltando.length} ${faltando.length === 1 ? 'campo' : 'campos'} por preencher` : 'Tudo preenchido');
+      const infoEl = document.getElementById('abdm-info');
+      infoEl.textContent = info.join(' · ');
+      infoEl.classList.toggle('abd-tudo-ok', faltando.length === 0 && palavras > 0);
+      document.getElementById('abdm-original').disabled = abdEstado.versao === 0;
     }
 
     function abdEscolherCanal(canal) {
@@ -14876,6 +14899,7 @@
 
     function abdEscolherModelo(id) {
       abdEstado.modeloId = id || null;
+      abdEstado.versao = 0;
       abdEstado.semModelo = false;
       abdSugerirTitulo();
       abdRenderizarModal();
@@ -14976,7 +15000,7 @@
       document.getElementById('abd-titulo').addEventListener('input', () => {
         if (abdEstado) abdEstado.tituloAuto = false;
       });
-      document.getElementById('abd-copiar').addEventListener('click', (e) => ferrCopiar(abdTextoFinal(), e.currentTarget));
+      document.getElementById('abdm-copiar').addEventListener('click', (e) => ferrCopiar(abdTextoFinal(), e.currentTarget));
       document.getElementById('abdm-outra-versao').addEventListener('click', () => {
         if (!abdEstado) return;
         const m = abdModeloAtual();

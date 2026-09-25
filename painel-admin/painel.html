@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20260925a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20260925c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -15539,33 +15539,30 @@
         .join('');
 
       area.innerHTML = `
+        <p class="abd-modelo-resumo">${escapeHtml(resumo)}</p>
         <div class="abd-construtor">
-          <div class="abd-coluna-campos">
-            <div class="abd-modelo-cab">
-              <h4 class="abd-modelo-titulo">${escapeHtml(modelo.rotulo)}</h4>
-              <p class="abd-modelo-resumo">${escapeHtml(resumo)}</p>
-              ${extraTopo || ''}
+          <article class="abd-doc" aria-label="Resultado">
+            <header class="abd-doc-topo">
+              <span class="abd-doc-versao" id="abd-versao"></span>
+              <div class="abd-doc-acoes">
+                ${comVersoes ? '<button type="button" class="cal-btn" id="abd-outra-versao">Outra versão</button><button type="button" class="cal-btn" id="abd-original">Voltar ao original</button>' : ''}
+                ${comVersoes ? '<button type="button" class="cal-btn" id="abd-copiar-assunto">Copiar assunto</button>' : ''}
+              </div>
+            </header>
+            <div class="abd-doc-corpo">
+              <div class="abd-doc-assunto" id="abd-assunto" hidden></div>
+              <div class="abd-doc-texto" id="abd-resultado"></div>
             </div>
+            <footer class="abd-doc-rodape">
+              <span class="abd-doc-info" id="abd-info"></span>
+              <button type="button" class="cal-btn cal-btn-primario" id="abd-copiar">${comVersoes ? 'Copiar e-mail' : 'Copiar abordagem'}</button>
+            </footer>
+          </article>
+          <div class="abd-coluna-campos">
+            ${extraTopo || ''}
             ${blocos}
             <div class="ferr-linha-acao"><button type="button" class="cal-btn" id="abd-limpar-respostas">Limpar minhas respostas</button></div>
           </div>
-          <aside class="abd-coluna-resultado" aria-label="Resultado">
-            <div class="ferr-celular">
-              <div class="ferr-celular-notch"></div>
-              <div class="ferr-celular-barra"><span class="ferr-celular-avatar"></span><span class="ferr-celular-titulo">Prévia da abordagem</span></div>
-              <div class="ferr-celular-conversa abd-conversa">
-                <div class="abd-assunto" id="abd-assunto" hidden></div>
-                <div class="ferr-balao" id="abd-resultado"></div>
-              </div>
-              <div class="ferr-celular-entrada"><span>Mensagem</span><span class="ferr-celular-enviar">&#10148;</span></div>
-            </div>
-            <div class="abd-resultado-info" id="abd-info"></div>
-            <div class="abd-resultado-acoes">
-              ${comVersoes ? '<button type="button" class="cal-btn" id="abd-outra-versao">Outra versão</button><button type="button" class="cal-btn" id="abd-original">Voltar ao original</button>' : ''}
-              ${comVersoes ? '<button type="button" class="cal-btn" id="abd-copiar-assunto">Copiar assunto</button>' : ''}
-              <button type="button" class="cal-btn cal-btn-primario" id="abd-copiar">${comVersoes ? 'Copiar e-mail' : 'Copiar abordagem'}</button>
-            </div>
-          </aside>
         </div>`;
 
       area.querySelectorAll('[data-k]').forEach((el) => {
@@ -15616,19 +15613,29 @@
 
     function abdAtualizarResultado(modelo) {
       const res = abdResultadoAtual(modelo);
-      const balao = document.getElementById('abd-resultado');
-      if (!balao) return;
+      const corpo = document.getElementById('abd-resultado');
+      if (!corpo) return;
       const vazio = !res.corpo.trim();
-      balao.classList.toggle('vazio', vazio);
-      balao.textContent = vazio ? 'A abordagem aparece aqui.' : res.corpo;
+      corpo.classList.toggle('vazio', vazio);
+      // Campos ainda sem resposta aparecem destacados: [assim] ou {{ASSIM}}.
+      corpo.innerHTML = vazio
+        ? 'A abordagem aparece aqui.'
+        : escapeHtml(res.corpo).replace(/(\[[^\]\n]+\]|\{\{[^}\n]+\}\})/g, '<mark class="abd-falta">$1</mark>');
       const assunto = document.getElementById('abd-assunto');
       assunto.hidden = !res.assunto;
-      assunto.textContent = res.assunto ? 'Assunto: ' + res.assunto : '';
+      assunto.innerHTML = res.assunto ? '<span class="abd-doc-rotulo">Assunto</span>' + escapeHtml(res.assunto).replace(/(\[[^\]\n]+\])/g, '<mark class="abd-falta">$1</mark>') : '';
+
+      const versao =
+        modelo.tipo === 'embutido'
+          ? `Versão ${abdCentral.versao + 1} de ${ABD_EMAIL.versoes}${abdCentral.versao === 0 ? ' · original' : ''}`
+          : modelo.rotulo;
+      document.getElementById('abd-versao').textContent = versao;
       const info = [];
-      if (modelo.tipo === 'embutido') info.push(`Versão ${abdCentral.versao + 1} de ${ABD_EMAIL.versoes}${abdCentral.versao === 0 ? ' (original)' : ''}`);
       if (res.palavras) info.push(`${res.palavras} palavras`);
       info.push(res.faltando.length ? `${res.faltando.length} ${res.faltando.length === 1 ? 'campo' : 'campos'} por preencher` : 'Tudo preenchido');
-      document.getElementById('abd-info').textContent = info.join(' · ');
+      const infoEl = document.getElementById('abd-info');
+      infoEl.textContent = info.join(' · ');
+      infoEl.classList.toggle('abd-tudo-ok', res.faltando.length === 0 && res.palavras > 0);
       const original = document.getElementById('abd-original');
       if (original) original.disabled = abdCentral.versao === 0;
     }

@@ -8276,3 +8276,190 @@
     height: 520px;
   }
 }
+
+/* Central de modelos: resultado em "documento" à esquerda, campos compactos à direita. */
+.painel-body .abd-construtor {
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 22px;
+}
+
+.painel-body .abd-modelo-resumo {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--texto-suave);
+  max-width: 760px;
+}
+
+.painel-body .abd-doc {
+  position: sticky;
+  top: 12px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 24px);
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-lg);
+  box-shadow: var(--sombra);
+  overflow: hidden;
+}
+
+.painel-body .abd-doc-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 22px;
+  background: rgba(var(--coral-rgb), 0.12);
+  border-bottom: 1px solid var(--borda);
+}
+
+.painel-body .abd-doc-versao {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--grafite);
+}
+
+.painel-body .abd-doc-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.painel-body .abd-doc-corpo {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px 28px;
+}
+
+.painel-body .abd-doc-assunto {
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--borda);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grafite);
+  overflow-wrap: anywhere;
+}
+
+.painel-body .abd-doc-assunto[hidden] {
+  display: none;
+}
+
+.painel-body .abd-doc-rotulo {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.painel-body .abd-doc-texto {
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--grafite);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.painel-body .abd-doc-texto.vazio {
+  font-style: italic;
+  color: var(--texto-suave);
+}
+
+.painel-body .abd-falta {
+  background: #FFF7C5;
+  color: var(--grafite);
+  border-radius: 4px;
+  padding: 1px 4px;
+}
+
+.painel-body .abd-doc-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 22px;
+  border-top: 1px solid var(--borda);
+}
+
+.painel-body .abd-doc-info {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
+.painel-body .abd-doc-info.abd-tudo-ok {
+  color: var(--grafite);
+}
+
+/* Campos: bem mais compactos. */
+.painel-body .abd-coluna-campos {
+  gap: 10px;
+}
+
+.painel-body .abd-bloco {
+  padding: 14px 16px;
+  gap: 8px;
+  border-radius: 18px;
+  box-shadow: none;
+}
+
+.painel-body .abd-bloco-titulo {
+  gap: 8px;
+  font-size: 15px;
+}
+
+.painel-body .abd-bloco-num {
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+}
+
+.painel-body .abd-bloco-dica {
+  margin: -2px 0 2px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.painel-body .abd-campo {
+  gap: 3px;
+}
+
+.painel-body .abd-campo label {
+  font-size: 10.5px;
+}
+
+.painel-body .abd-leadin {
+  font-size: 12px;
+}
+
+.painel-body .abd-campo input,
+.painel-body .abd-campo textarea {
+  padding: 7px 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  border-radius: 8px;
+}
+
+.painel-body .abd-campo textarea {
+  min-height: 0;
+  height: 48px;
+}
+
+@media (max-width: 1100px) {
+  .painel-body .abd-construtor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .painel-body .abd-doc {
+    position: static;
+    max-height: none;
+  }
+}

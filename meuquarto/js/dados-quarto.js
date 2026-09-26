@@ -91,7 +91,7 @@ const QUARTO_DATA = {
       numero: "01",
       categoria: "Produto",
       nome: "Uma participação pontual.",
-      paragrafo: "Sua marca entra com um produto específico que fará parte do quarto, através de uma entrega, sendo um vídeo UGC ou uma participação pontual na minha reforma.",
+      paragrafo: "Sua marca entra com um produto específico que fará parte do quarto, através de uma entrega, sendo um vídeo UGC ou uma participação pontual na minha reforma. Produto e cachê de produção.",
       inclui: [
         "1 vídeo, sendo UGC para a marca ou participação em um conteúdo da reforma",
         "Produto integrado ao quarto",
@@ -105,16 +105,15 @@ const QUARTO_DATA = {
       numero: "02",
       categoria: "Ambiente",
       nome: "Uma área inteira do quarto.",
-      paragrafo: "Sua marca participa da transformação de um espaço específico, tornando-se parte da construção daquele ambiente e aparecendo ao longo desse projeto.",
+      paragrafo: "Sua marca participa da transformação de um espaço específico, tornando-se parte da construção daquele ambiente e aparecendo ao longo desse projeto. Produto e cachê de produção.",
       inclui: [
         "Produtos necessários para o ambiente",
         "2 a 3 conteúdos dedicados ao ambiente",
-        "Story da chegada e instalação",
+        "Story da chegada dos produtos",
         "Conteúdo mostrando a transformação",
         "Presença da marca nos conteúdos relacionados ao ambiente",
         "Fotos do ambiente finalizado em alta resolução",
-        "Direito de uso por 3 meses",
-        "Produto e cachê de produção"
+        "Direito de uso por 3 meses"
       ],
       cta: "Quero esse formato"
     },
@@ -122,7 +121,7 @@ const QUARTO_DATA = {
       numero: "03",
       categoria: "Projeto",
       nome: "Uma parceria contínua durante a reforma.",
-      paragrafo: "Sua marca se torna uma das parceiras da transformação e acompanha diferentes momentos da reforma, desde a escolha até o resultado final.",
+      paragrafo: "Sua marca se torna uma das parceiras da transformação e acompanha diferentes momentos da reforma, desde a escolha até o resultado final. Produto e cachê de produção.",
       inclui: [
         "4 a 6 conteúdos dedicados",
         "Presença em diferentes momentos da reforma",
@@ -131,8 +130,7 @@ const QUARTO_DATA = {
         "Presença natural da marca nos conteúdos da reforma",
         "Fotos do ambiente finalizado em alta resolução",
         "Direito de uso e posicionamento por 6 meses",
-        "Exclusividade na categoria durante a reforma",
-        "Produto e cachê de produção"
+        "Exclusividade na categoria durante a reforma"
       ],
       cta: "Quero esse formato"
     }

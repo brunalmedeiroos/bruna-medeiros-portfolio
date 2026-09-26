@@ -62,12 +62,26 @@
       texto:"Gaveteiro e organizadores pra manter produtos de beleza à mão.", status:"aberto" }
   ];
 
+  const HOTSPOT_CATEGORY_LABELS = {
+    "roupa-de-cama": "Roupa de cama",
+    "iluminacao":    "Iluminação",
+    "moveis":        "Móveis",
+    "home-office":   "Home office",
+    "eletronicos":   "Eletrônicos",
+    "beleza":        "Beleza",
+    "organizacao":   "Organização"
+  };
+
+  /* Todas as câmeras ficam dentro do quarto, olhando para a respectiva
+     parede (ou, na visão geral, para o cômodo inteiro a partir da
+     entrada). Como as paredes agora têm textura dos dois lados, nenhuma
+     view depende de uma parede "sumir" pra funcionar. */
   const CAM_PRESETS = {
-    geral:       { pos:[W+3.4, 4.8, PD+3.3],  target:[CX, 0.9, 1.5] },
-    cama:        { pos:[CX, 3.6, PD+2.9],     target:[CX, 1.1, 0.3] },
-    janela:      { pos:[W+3.9, 3.6, JD*0.5],  target:[0.3, 1.1, JD*0.5] },
-    tv:          { pos:[TVW/2, 3.6, -3.1],    target:[TVW/2, 1.1, JD-0.4] },
-    penteadeira: { pos:[-3.5, 3.6, PD*0.5],   target:[W-0.3, 1.1, PD*0.5] }
+    geral:       { pos:[3.75, 1.75, 2.85],    target:[1.0, 1.0, 0.8] },
+    cama:        { pos:[3.4, 1.75, 2.5],      target:[CX, 1.0, 0.15] },
+    janela:      { pos:[3.6, 1.75, 1.0],      target:[0.15, 1.0, JD*0.5] },
+    tv:          { pos:[0.6, 1.75, 0.3],      target:[TVW*0.5, 1.0, JD-0.15] },
+    penteadeira: { pos:[0.6, 1.75, 2.4],      target:[W-0.15, 1.0, PD*0.5] }
   };
 
   /* ---------------------------------------------------------------
@@ -141,9 +155,9 @@
   controls.target.set(...CAM_PRESETS.geral.target);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.minDistance = 3;
-  controls.maxDistance = 12;
-  controls.minPolarAngle = Math.PI * 0.12;
+  controls.minDistance = 1.4;
+  controls.maxDistance = 7;
+  controls.minPolarAngle = Math.PI * 0.24;
   controls.maxPolarAngle = Math.PI * 0.47;
   controls.update();
 
@@ -208,7 +222,7 @@
 
   // parede cama (Z=0, largura W), pintura listrada
   {
-    const wall = new THREE.Mesh(new THREE.PlaneGeometry(W, H), new THREE.MeshStandardMaterial({ map: stripeTex, roughness:0.92 }));
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(W, H), new THREE.MeshStandardMaterial({ map: stripeTex, roughness:0.92, side: THREE.DoubleSide }));
     wall.position.set(CX, H/2, 0);
     wallGroups.cama.add(wall);
     const shelf = new THREE.Mesh(new THREE.BoxGeometry(W*0.7, 0.06, 0.22), new THREE.MeshStandardMaterial({ color:0xC9A16B, roughness:0.6 }));
@@ -218,7 +232,7 @@
 
   // parede janela (X=0, largura JD), pintura + vidro
   {
-    const wall = new THREE.Mesh(new THREE.PlaneGeometry(JD, H), new THREE.MeshStandardMaterial({ map: pinturaTex, roughness:0.95 }));
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(JD, H), new THREE.MeshStandardMaterial({ map: pinturaTex, roughness:0.95, side: THREE.DoubleSide }));
     wall.rotation.y = Math.PI/2;
     wall.position.set(0, H/2, JD/2);
     wallGroups.janela.add(wall);
@@ -230,7 +244,7 @@
 
   // parede tv (Z=JD, largura TVW), cerâmica
   {
-    const wall = new THREE.Mesh(new THREE.PlaneGeometry(TVW, H), new THREE.MeshStandardMaterial({ map: ceramicaTex, roughness:0.55 }));
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(TVW, H), new THREE.MeshStandardMaterial({ map: ceramicaTex, roughness:0.55, side: THREE.DoubleSide }));
     wall.rotation.y = Math.PI;
     wall.position.set(TVW/2, H/2, JD);
     wallGroups.tv.add(wall);
@@ -238,7 +252,7 @@
 
   // parede penteadeira (X=W, largura PD), cerâmica
   {
-    const wall = new THREE.Mesh(new THREE.PlaneGeometry(PD, H), new THREE.MeshStandardMaterial({ map: ceramicaTexSide, roughness:0.55 }));
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(PD, H), new THREE.MeshStandardMaterial({ map: ceramicaTexSide, roughness:0.55, side: THREE.DoubleSide }));
     wall.rotation.y = -Math.PI/2;
     wall.position.set(W, H/2, PD/2);
     wallGroups.penteadeira.add(wall);
@@ -262,10 +276,10 @@
   // --- cama (centrada na parede cama) ---
   wallGroups.cama.add(box(1.95, 0.55, 1.85, 0xEDE6D8, CX, 0.275, 0.98));
   wallGroups.cama.add(box(1.9, 0.28, 0.5, 0xAFC8DA, CX, 0.68, 1.68));
-  wallGroups.cama.add(box(0.5, 0.48, 0.42, 0xFFFFFF, CX-1.05, 0.5, 0.5));
-  wallGroups.cama.add(box(0.5, 0.48, 0.42, 0xFFFFFF, CX+1.05, 0.5, 0.5));
-  wallGroups.cama.add(cyl(0.1, 0.3, 0xF5E6B8, CX-1.05, 0.9, 0.5));
-  wallGroups.cama.add(cyl(0.1, 0.3, 0xF5E6B8, CX+1.05, 0.9, 0.5));
+  wallGroups.cama.add(box(0.5, 0.48, 0.42, 0xFFFFFF, CX-1.05, 0.24, 0.5));
+  wallGroups.cama.add(box(0.5, 0.48, 0.42, 0xFFFFFF, CX+1.05, 0.24, 0.5));
+  wallGroups.cama.add(cyl(0.1, 0.3, 0xF5E6B8, CX-1.05, 0.63, 0.5));
+  wallGroups.cama.add(cyl(0.1, 0.3, 0xF5E6B8, CX+1.05, 0.63, 0.5));
 
   // --- janela (poltrona no canto cama/janela) ---
   wallGroups.janela.add(box(0.72, 0.72, 0.72, 0xE8B84B, 0.55, 0.36, 0.55));
@@ -293,7 +307,7 @@
     wallGroups.penteadeira.add(bulb);
   }
   wallGroups.penteadeira.add(cyl(0.2, 0.3, 0xE8E4D8, W-0.5, 0.15, 1.15));
-  wallGroups.penteadeira.add(box(0.3, 0.5, 0.55, 0xD8C9A9, W-0.4, 0.3, 1.75)); // gaveteiro simples
+  wallGroups.penteadeira.add(box(0.3, 0.5, 0.55, 0xD8C9A9, W-0.4, 0.25, 1.75)); // gaveteiro simples
 
   /* ---------------------------------------------------------------
      HOTSPOTS
@@ -362,7 +376,7 @@
 
   function showPanel(h){
     if (!panel) return;
-    const cat = (window.QUARTO_DATA.categorias.find(c=>c.id===h.categoria) || {}).nome || h.categoria;
+    const cat = HOTSPOT_CATEGORY_LABELS[h.categoria] || h.categoria;
     panel.querySelector(".mq-tag").textContent = cat;
     panel.querySelector(".mq-status").textContent = h.status === "procurando" ? "Procurando parceira" : "Aberto a co-branding";
     panel.querySelector("h4").textContent = h.titulo;

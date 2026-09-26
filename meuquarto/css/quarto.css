@@ -1,22 +1,19 @@
 /* =====================================================================
    MEUQUARTO / brunamedeiros.com/meuquarto
    Folha de estilos isolada. Não referencia nem altera o CSS do site
-   principal. Identidade própria: azul claro (a cor real da marca,
-   7DB7CE) como cor de texto/acento dominante, azul escuro reservado
-   para destaque de palavras/títulos, e dourado/madeira como
-   complemento inspirado no quarto real.
+   principal. Paleta fiel à identidade real da marca: azul claro,
+   azul escuro, cinza claro e amarelo manteiga.
 ===================================================================== */
 
 :root{
-  --mq-blue:        #7DB7CE;   /* azul claro da marca: texto, ícones, acentos, botões */
+  --mq-blue:        #7DB7CE;   /* azul claro da marca */
   --mq-blue-pale:    #EAF3F6;   /* fundo suave azul claro */
   --mq-blue-pale-2:  #D6E8EE;   /* fundo levemente mais forte, bordas e cards */
-  --mq-navy:        #04465D;   /* azul escuro: destaque pontual de palavras/títulos e fundos fortes */
+  --mq-navy:        #04465D;   /* azul escuro da marca */
   --mq-navy-70:     rgba(4,70,93,0.85);
-  --mq-wood:        #C9A16B;   /* dourado/madeira: cor complementar */
-  --mq-wood-dark:   #8B6B44;
+  --mq-butter:      #FFF7C5;   /* amarelo manteiga da marca: acentos e detalhes */
   --mq-white:       #FFFFFF;
-  --mq-offwhite:    #FBFBF8;
+  --mq-offwhite:    #F1F1F1;   /* cinza claro da marca */
   --mq-ink:         #29323A;                 /* texto neutro (não azul) */
   --mq-ink-65:      rgba(41,50,58,0.66);
   --mq-ink-40:      rgba(41,50,58,0.42);
@@ -61,13 +58,14 @@ button{ font-family:inherit; cursor:pointer; }
   font-weight:700;
   letter-spacing:.14em;
   text-transform:uppercase;
-  color: var(--mq-wood-dark);
+  color: var(--mq-navy);
 }
 .mq-eyebrow::before{
   content:"";
-  width:18px; height:2px;
-  background: var(--mq-wood-dark);
+  width:18px; height:3px;
+  background: var(--mq-butter);
   display:inline-block;
+  border-radius:2px;
 }
 
 .mq-title{
@@ -92,8 +90,8 @@ button{ font-family:inherit; cursor:pointer; }
 .mq-section--dark .mq-title{ color: var(--mq-white); }
 .mq-section--dark .mq-title .accent{ color: var(--mq-blue); }
 .mq-section--dark .mq-lede{ color: rgba(255,255,255,0.75); }
-.mq-section--dark .mq-eyebrow{ color: var(--mq-wood); }
-.mq-section--dark .mq-eyebrow::before{ background: var(--mq-wood); }
+.mq-section--dark .mq-eyebrow{ color: var(--mq-butter); }
+.mq-section--dark .mq-eyebrow::before{ background: var(--mq-butter); }
 
 .mq-section-head{
   display:flex;
@@ -109,7 +107,7 @@ button{ font-family:inherit; cursor:pointer; }
   position: sticky;
   top: 0;
   z-index: 200;
-  background: rgba(251,251,248,0.88);
+  background: rgba(241,241,241,0.9);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--mq-ink-08);
@@ -178,21 +176,23 @@ button{ font-family:inherit; cursor:pointer; }
 .mq-nav-cta:hover{ background: #032f40; }
 
 /* ---------------------------------------------------------------
-   HERO
+   HERO (centralizado, sem foto)
 --------------------------------------------------------------- */
 .mq-hero{
   position:relative;
-  padding: 84px 0 64px;
+  padding: 96px 0 72px;
   background:
-    radial-gradient(1100px 480px at 88% -12%, rgba(125,183,206,0.30), transparent 60%),
-    radial-gradient(900px 420px at -10% 15%, rgba(201,161,107,0.16), transparent 55%),
+    radial-gradient(1100px 480px at 50% -20%, rgba(125,183,206,0.32), transparent 62%),
+    radial-gradient(900px 420px at 50% 100%, rgba(255,247,197,0.35), transparent 55%),
     var(--mq-offwhite);
   overflow:hidden;
+  text-align:center;
 }
-.mq-hero-grid{
-  display:grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 52px;
+.mq-hero-inner{
+  max-width: 760px;
+  margin: 0 auto;
+  display:flex;
+  flex-direction:column;
   align-items:center;
 }
 .mq-hero-badge{
@@ -205,13 +205,13 @@ button{ font-family:inherit; cursor:pointer; }
   border-radius:999px;
   font-size:12.5px;
   font-weight:700;
-  color: var(--mq-blue);
+  color: var(--mq-navy);
   margin-bottom:22px;
   box-shadow: var(--mq-shadow-sm);
 }
 .mq-hero-badge .dot{
   width:7px; height:7px; border-radius:50%;
-  background: var(--mq-wood-dark);
+  background: var(--mq-navy);
   animation: mq-pulse 1.8s ease-in-out infinite;
 }
 @keyframes mq-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.35; } }
@@ -219,14 +219,16 @@ button{ font-family:inherit; cursor:pointer; }
 .mq-hero h1{
   font-size: clamp(32px, 4.8vw, 54px);
   margin-bottom: 22px;
+  color: var(--mq-blue);
 }
 .mq-hero h1 .accent{
-  color: var(--mq-blue);
+  color: var(--mq-navy);
   font-style: italic;
 }
 .mq-hero-actions{
   display:flex;
   flex-wrap:wrap;
+  justify-content:center;
   gap:14px;
   margin-top:32px;
 }
@@ -249,7 +251,7 @@ button{ font-family:inherit; cursor:pointer; }
 .mq-btn-primary:hover{ background: #032f40; box-shadow: var(--mq-shadow); }
 .mq-btn-ghost{
   background: transparent;
-  color: var(--mq-blue);
+  color: var(--mq-navy);
   border: 1.5px solid var(--mq-blue-pale-2);
 }
 .mq-btn-ghost:hover{ border-color: var(--mq-blue); background: var(--mq-blue-pale); }
@@ -257,13 +259,8 @@ button{ font-family:inherit; cursor:pointer; }
 .mq-section--dark .mq-btn-ghost:hover{ background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
 .mq-btn-lg{ padding: 17px 32px; font-size: 15px; }
 
-.mq-hero-visual{
-  position:relative;
-  border-radius: var(--mq-radius);
-  overflow:hidden;
-  aspect-ratio: 4/3.1;
-}
-.mq-hero-photo-slot{
+/* moldura de foto reservada (reutilizada no Hero antigo e na seção Sobre) */
+.mq-photo-slot{
   width:100%; height:100%;
   border-radius: var(--mq-radius);
   border: 2px dashed var(--mq-blue-pale-2);
@@ -277,42 +274,53 @@ button{ font-family:inherit; cursor:pointer; }
   padding: 32px;
   color: var(--mq-blue);
 }
-.mq-hero-photo-slot svg{ width:38px; height:38px; opacity:.8; }
-.mq-hero-photo-slot strong{ font-family: var(--mq-font-display); font-size:18px; color: var(--mq-navy); }
-.mq-hero-photo-slot span{ font-size:12.5px; color: var(--mq-ink-65); max-width:260px; }
+.mq-photo-slot svg{ width:38px; height:38px; opacity:.8; }
+.mq-photo-slot strong{ font-family: var(--mq-font-display); font-size:18px; color: var(--mq-navy); }
+.mq-photo-slot span{ font-size:12.5px; color: var(--mq-ink-65); max-width:260px; }
 
-.mq-hero-stats{
+/* ---------------------------------------------------------------
+   SOBRE MIM
+--------------------------------------------------------------- */
+.mq-sobre-grid{
   display:grid;
-  grid-template-columns: repeat(3,1fr);
-  gap:14px;
-  margin-top:42px;
-  max-width: 640px;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 48px;
+  align-items:center;
 }
-.mq-stat{
-  background: var(--mq-white);
-  border:1px solid var(--mq-blue-pale-2);
-  border-radius: var(--mq-radius-sm);
-  padding: 16px 14px;
-  text-align:left;
+.mq-sobre-photo{
+  position:relative;
+  border-radius: var(--mq-radius);
+  overflow:hidden;
+  aspect-ratio: 4/4.6;
 }
-.mq-stat b{
-  display:block;
+.mq-sobre-greeting{
   font-family: var(--mq-font-display);
-  font-size: 20px;
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight:700;
   color: var(--mq-navy);
+  margin-bottom: 6px;
 }
-.mq-stat span{
-  font-size: 11.5px;
-  color: var(--mq-ink-40);
-  font-weight:600;
+.mq-sobre-local{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:12.5px; font-weight:700; color: var(--mq-ink-65);
+  margin-bottom: 20px;
 }
+.mq-sobre-local svg{ width:14px; height:14px; color: var(--mq-blue); }
+.mq-sobre-text p{
+  font-size: 15px;
+  line-height:1.7;
+  color: var(--mq-ink-65);
+  margin-bottom: 14px;
+  max-width: 560px;
+}
+.mq-sobre-text p:last-of-type{ margin-bottom: 26px; }
 
 /* ---------------------------------------------------------------
    GALERIA DE PAREDES (carrossel)
 --------------------------------------------------------------- */
 .mq-carousel{
   position:relative;
-  max-width: 880px;
+  max-width: 1000px;
   margin: 0 auto;
 }
 .mq-carousel-track{
@@ -322,9 +330,13 @@ button{ font-family:inherit; cursor:pointer; }
   box-shadow: var(--mq-shadow);
   border: 1px solid var(--mq-blue-pale-2);
 }
+.mq-carousel-fade{
+  transition: opacity .3s ease;
+}
+.mq-carousel-fade.is-fading{ opacity: 0; }
 .mq-carousel-photo{
   position:relative;
-  aspect-ratio: 4/3;
+  aspect-ratio: 16/10;
   overflow:hidden;
   cursor: zoom-in;
 }
@@ -339,10 +351,10 @@ button{ font-family:inherit; cursor:pointer; }
   padding: 6px 12px;
   border-radius: 999px;
 }
-.mq-carousel-body{ padding: 26px 30px 30px; }
+.mq-carousel-body{ padding: 28px 32px 32px; }
 .mq-carousel-body h3{
   font-family: var(--mq-font-display);
-  font-size: 24px;
+  font-size: 26px;
   margin-bottom: 10px;
 }
 .mq-carousel-body p{
@@ -365,34 +377,40 @@ button{ font-family:inherit; cursor:pointer; }
 .mq-carousel-nav{
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  margin-top: 22px;
+  justify-content:flex-end;
+  margin-top: 20px;
   gap: 14px;
 }
+.mq-carousel-count{
+  font-size:13px;
+  font-weight:700;
+  color: var(--mq-ink-40);
+  letter-spacing:.03em;
+}
+.mq-carousel-arrows{ display:flex; align-items:center; gap:8px; }
 .mq-carousel-arrow{
-  width:48px; height:48px;
+  width:46px; height:46px;
   border-radius:50%;
   background: var(--mq-white);
   border: 1.5px solid var(--mq-blue-pale-2);
-  color: var(--mq-blue);
+  color: var(--mq-navy);
   display:flex; align-items:center; justify-content:center;
   flex-shrink:0;
   transition: background .2s, color .2s, border-color .2s;
 }
 .mq-carousel-arrow:hover{ background: var(--mq-navy); color:#fff; border-color: var(--mq-navy); }
 .mq-carousel-arrow svg{ width:20px; height:20px; }
-.mq-carousel-dots{ display:flex; gap:8px; }
-.mq-carousel-dot{
-  width:8px; height:8px; border-radius:50%;
-  background: var(--mq-blue-pale-2);
-  border:none;
-  transition: background .2s, transform .2s;
-}
-.mq-carousel-dot.is-active{ background: var(--mq-blue); transform: scale(1.3); }
 
 /* ---------------------------------------------------------------
-   TOUR 3D
+   TOUR 3D (texto de um lado, modelo do outro)
 --------------------------------------------------------------- */
+.mq-tour-grid{
+  display:grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 44px;
+  align-items:start;
+}
+.mq-tour-intro .mq-section-head{ margin-bottom: 28px; }
 .mq-tour-shell{
   background: var(--mq-white);
   border-radius: var(--mq-radius);
@@ -505,7 +523,7 @@ button{ font-family:inherit; cursor:pointer; }
 .mq-hotspot-panel .mq-tag{ background: var(--mq-blue-pale); color: var(--mq-navy); margin-bottom:10px; display:inline-block; }
 .mq-hotspot-panel h4{ font-family: var(--mq-font-display); font-size:17px; margin-bottom:6px; color: var(--mq-navy); }
 .mq-hotspot-panel p{ font-size:12.5px; line-height:1.55; color: var(--mq-ink-65); margin-bottom:12px; }
-.mq-hotspot-panel .mq-status{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color: var(--mq-wood-dark); margin-bottom:10px; display:block; }
+.mq-hotspot-panel .mq-status{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color: var(--mq-navy); margin-bottom:10px; display:block; }
 .mq-hotspot-close{
   position:absolute; top:12px; right:12px;
   width:22px; height:22px; border-radius:50%;
@@ -523,72 +541,52 @@ button{ font-family:inherit; cursor:pointer; }
 }
 
 /* ---------------------------------------------------------------
-   MAPA DE OPORTUNIDADES (categorias + itens, hover/toque revela)
+   CASA E DECORAÇÃO (vídeos)
 --------------------------------------------------------------- */
-.mq-opp-grid{
+.mq-videos-grid{
   display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
 }
-.mq-opp-card{
+.mq-video-slot{
+  aspect-ratio: 9/14;
+  border-radius: var(--mq-radius-sm);
+  border: 2px dashed var(--mq-blue-pale-2);
   background: var(--mq-white);
-  border: 1.5px solid var(--mq-blue-pale-2);
-  border-radius: var(--mq-radius);
-  padding: 28px 26px;
-  cursor: pointer;
-  transition: background .2s ease, border-color .2s ease;
-}
-.mq-opp-card:hover, .mq-opp-card.is-open{ background: var(--mq-blue); border-color: var(--mq-blue); }
-.mq-opp-head{
-  display:flex;
-  align-items:center;
-  gap:16px;
-}
-.mq-opp-icon{
-  width:52px; height:52px;
-  flex-shrink:0;
-  border-radius:50%;
-  background: var(--mq-blue-pale);
-  display:flex; align-items:center; justify-content:center;
-  color: var(--mq-navy);
-  transition: background .2s ease, color .2s ease;
-}
-.mq-opp-card:hover .mq-opp-icon, .mq-opp-card.is-open .mq-opp-icon{ background: rgba(255,255,255,0.25); color: var(--mq-white); }
-.mq-opp-icon svg{ width:24px; height:24px; }
-.mq-opp-head span{ font-size:17px; font-weight:700; color: var(--mq-navy); transition: color .2s ease; }
-.mq-opp-card:hover .mq-opp-head span, .mq-opp-card.is-open .mq-opp-head span{ color: var(--mq-white); }
-
-.mq-opp-reveal{
-  max-height:0;
-  opacity:0;
-  overflow:hidden;
-  transition: max-height .3s ease, opacity .3s ease, margin-top .3s ease;
-}
-.mq-opp-card:hover .mq-opp-reveal, .mq-opp-card.is-open .mq-opp-reveal, .mq-opp-card:focus-within .mq-opp-reveal{
-  max-height: 220px;
-  opacity:1;
-  margin-top: 16px;
-}
-.mq-opp-reveal ul{
-  list-style:none;
   display:flex;
   flex-direction:column;
-  gap:8px;
-  border-top: 1px solid rgba(255,255,255,0.3);
-  padding-top: 14px;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  color: var(--mq-blue);
+  text-align:center;
+  padding: 20px;
 }
-.mq-opp-reveal li{
-  font-size:13.5px;
-  color: rgba(255,255,255,0.95);
-  font-weight:600;
-  padding-left:14px;
-  position:relative;
+.mq-video-slot svg{ width:30px; height:30px; }
+.mq-video-slot span{ font-size:12px; font-weight:700; color: var(--mq-ink-40); }
+
+/* ---------------------------------------------------------------
+   MAPA DE OPORTUNIDADES (lista sempre visível)
+--------------------------------------------------------------- */
+.mq-opp-list{
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 56px;
 }
-.mq-opp-reveal li::before{
-  content:"•";
-  position:absolute;
-  left:0;
-  color: rgba(255,255,255,0.75);
+.mq-opp-row{
+  padding: 24px 0;
+  border-bottom: 1px solid var(--mq-ink-08);
+}
+.mq-opp-row h4{
+  font-family: var(--mq-font-display);
+  font-size: 19px;
+  color: var(--mq-navy);
+  margin-bottom: 6px;
+}
+.mq-opp-row p{
+  font-size: 13.5px;
+  color: var(--mq-ink-65);
+  line-height:1.5;
 }
 
 /* ---------------------------------------------------------------
@@ -617,7 +615,7 @@ button{ font-family:inherit; cursor:pointer; }
 }
 .mq-plano-tag{
   font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
-  color: var(--mq-wood-dark); margin-bottom:8px; padding-right:30px;
+  color: var(--mq-navy); margin-bottom:8px; padding-right:30px;
 }
 .mq-plano-card h3{ font-size:23px; line-height:1.25; margin-bottom:16px; padding-right:30px; }
 .mq-plano-para{ font-size:13.8px; color: var(--mq-ink-65); line-height:1.6; margin-bottom:20px; }
@@ -738,10 +736,11 @@ button{ font-family:inherit; cursor:pointer; }
    RESPONSIVE
 --------------------------------------------------------------- */
 @media (max-width: 980px){
-  .mq-hero-grid{ grid-template-columns: 1fr; }
-  .mq-hero-visual{ order:-1; }
+  .mq-sobre-grid{ grid-template-columns: 1fr; }
+  .mq-sobre-photo{ aspect-ratio: 4/3; }
+  .mq-tour-grid{ grid-template-columns: 1fr; }
+  .mq-videos-grid{ grid-template-columns: repeat(2,1fr); }
   .mq-frentes-grid{ grid-template-columns: 1fr; }
-  .mq-hero-stats{ grid-template-columns: repeat(3,1fr); max-width:none; }
   .mq-planos-grid{ grid-template-columns: 1fr; }
   .mq-contato-panel{ padding: 52px 26px; }
 }
@@ -753,12 +752,13 @@ button{ font-family:inherit; cursor:pointer; }
   .mq-nav-brand{ flex: 1; }
   .mq-nav-links{ order:3; flex-basis:100%; justify-content:flex-start; }
   .mq-nav-cta{ padding:9px 14px; font-size:12px; }
-  .mq-hero{ padding: 52px 0 44px; }
+  .mq-hero{ padding: 64px 0 52px; }
   .mq-tour-toolbar{ flex-direction:column; align-items:stretch; }
   .mq-tour-actions{ justify-content:flex-end; }
   .mq-hotspot-panel{ left:16px; right:16px; width:auto; }
-  .mq-opp-grid{ grid-template-columns: 1fr; }
-  .mq-carousel-body{ padding: 20px 20px 24px; }
+  .mq-opp-list{ grid-template-columns: 1fr; }
+  .mq-videos-grid{ grid-template-columns: repeat(2,1fr); gap:10px; }
+  .mq-carousel-body{ padding: 22px 20px 26px; }
   .mq-carousel-nav{ gap:10px; }
   .mq-carousel-arrow{ width:42px; height:42px; }
   .mq-contato-panel{ padding: 40px 20px; }

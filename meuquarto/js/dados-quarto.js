@@ -107,11 +107,8 @@ const QUARTO_DATA = {
       nome: "Uma área inteira do quarto.",
       paragrafo: "Sua marca participa da transformação de um espaço específico, tornando-se parte da construção daquele ambiente e aparecendo ao longo desse projeto. Produto e cachê de produção.",
       inclui: [
-        "Produtos necessários para o ambiente",
         "2 a 3 conteúdos dedicados ao ambiente",
         "Story da chegada dos produtos",
-        "Conteúdo mostrando a transformação",
-        "Presença da marca nos conteúdos relacionados ao ambiente",
         "Fotos do ambiente finalizado em alta resolução",
         "Direito de uso por 3 meses"
       ],
@@ -123,14 +120,11 @@ const QUARTO_DATA = {
       nome: "Uma parceria contínua durante a reforma.",
       paragrafo: "Sua marca se torna uma das parceiras da transformação e acompanha diferentes momentos da reforma, desde a escolha até o resultado final. Produto e cachê de produção.",
       inclui: [
-        "4 a 6 conteúdos dedicados",
-        "Presença em diferentes momentos da reforma",
-        "Presença nas três fases: escolha, transformação e resultado",
-        "Série de Stories acompanhando a parceria",
-        "Presença natural da marca nos conteúdos da reforma",
-        "Fotos do ambiente finalizado em alta resolução",
-        "Direito de uso e posicionamento por 6 meses",
-        "Exclusividade na categoria durante a reforma"
+        "Exclusividade na sua categoria durante toda a reforma",
+        "Série de 4 a 6 conteúdos dedicados",
+        "Presença nas 3 fases: escolha, reforma e resultado",
+        "Fotos do ambiente pronto em alta resolução",
+        "Direitos de uso e impulsionamento por 6 meses"
       ],
       cta: "Quero esse formato"
     }

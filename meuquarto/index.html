@@ -32,6 +32,7 @@
       <small>/meuquarto, projeto de reforma</small>
     </span>
     <nav class="mq-nav-links" aria-label="Seções do projeto">
+      <a href="#sobre" class="mq-nav-link">Sobre</a>
       <a href="#projeto" class="mq-nav-link">O projeto</a>
       <a href="#tour-3d" class="mq-nav-link">Tour 3D</a>
       <a href="#oportunidades" class="mq-nav-link">Marcas</a>
@@ -43,57 +44,73 @@
 </header>
 
 <!-- =========================================================
-     01, HERO
+     01, HERO (centralizado, sem foto)
 ========================================================== -->
 <section class="mq-hero" id="hero">
-  <div class="mq-wrap mq-hero-grid">
-    <div>
-      <span class="mq-hero-badge"><span class="dot"></span> Projeto em andamento, reforma real</span>
-      <h1 class="mq-title">Sua marca dentro da reforma do meu <span class="accent">quarto</span> e meu novo estúdio de gravação.</h1>
-      <p class="mq-lede">Vou reformar meu quarto do zero, boa parte com as minhas próprias mãos, e transformar esse espaço no meu novo estúdio de gravação.</p>
-      <div class="mq-hero-actions">
-        <a href="#parceria" class="mq-btn mq-btn-primary">Ver planos de parceria</a>
-        <a href="#tour-3d" class="mq-btn mq-btn-ghost">Explorar o quarto em 3D →</a>
-      </div>
-      <div class="mq-hero-stats">
-        <div class="mq-stat"><b>4</b><span>Espaços do quarto</span></div>
-        <div class="mq-stat"><b>3</b><span>Formatos de parceria</span></div>
-        <div class="mq-stat"><b>7</b><span>Categorias abertas</span></div>
-      </div>
-    </div>
-    <div class="mq-hero-visual">
-      <div class="mq-hero-photo-slot">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M8 6 9.5 3.5h5L16 6"/><circle cx="12" cy="13" r="3.6"/></svg>
-        <strong>Foto da reforma em breve</strong>
-        <span>Essa capa está reservada para uma fotografia real minha durante a transformação do quarto.</span>
-      </div>
+  <div class="mq-wrap mq-hero-inner">
+    <span class="mq-hero-badge"><span class="dot"></span> Projeto em andamento, reforma real. 2026</span>
+    <h1 class="mq-title">Sua marca dentro da reforma do meu <span class="accent">quarto</span> e meu novo estúdio de gravação.</h1>
+    <p class="mq-lede">Vou reformar meu quarto do zero, boa parte com as minhas próprias mãos, e transformar esse espaço no meu novo estúdio de gravação.</p>
+    <div class="mq-hero-actions">
+      <a href="#parceria" class="mq-btn mq-btn-primary">Ver planos de parceria</a>
+      <a href="#tour-3d" class="mq-btn mq-btn-ghost">Explorar o quarto em 3D →</a>
     </div>
   </div>
 </section>
 
 <!-- =========================================================
-     02, O PROJETO (galeria em carrossel)
+     02, SOBRE MIM
+========================================================== -->
+<section class="mq-section" id="sobre">
+  <div class="mq-wrap mq-sobre-grid">
+    <div class="mq-sobre-photo">
+      <div class="mq-photo-slot">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M8 6 9.5 3.5h5L16 6"/><circle cx="12" cy="13" r="3.6"/></svg>
+        <strong>Foto em breve</strong>
+        <span>Espaço reservado para uma foto minha.</span>
+      </div>
+    </div>
+    <div class="mq-sobre-text">
+      <span class="mq-eyebrow">Sobre mim</span>
+      <h2 class="mq-sobre-greeting">Oii, eu sou a Bruna, UGC creator.</h2>
+      <span class="mq-sobre-local">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        Eusébio, CE
+      </span>
+      <p>A reforma será do ambiente onde eu vivo e gravo: meu quarto.</p>
+      <p>Então tudo que entrar agora vai continuar aparecendo depois que a reforma terminar, porque eu vou usar de verdade. Quem vem junto nessa não aparece num vídeo solto, vem pra história inteira.</p>
+      <a class="mq-btn mq-btn-ghost" target="_blank" rel="noopener" href="https://instagram.com/brunalmedeiroos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg>
+        Ver meu Instagram
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     03, O PROJETO (galeria em carrossel)
 ========================================================== -->
 <section class="mq-section" id="projeto">
   <div class="mq-wrap">
     <div class="mq-section-head">
       <span class="mq-eyebrow">A visão</span>
-      <h2 class="mq-title" style="font-size:clamp(26px,3.4vw,38px)">Os quatro espaços do <span class="accent">quarto</span></h2>
-      <p class="mq-lede">O quarto tem quatro áreas principais, cada uma com uma função diferente na minha rotina: dormir, gravar, trabalhar e me arrumar. Navegue pelas setas para ver cada parede, no formato e na disposição reais do ambiente.</p>
+      <h2 class="mq-title" style="font-size:clamp(26px,3.4vw,38px)">Os quatro espaços do meu <span class="accent">quarto</span></h2>
     </div>
     <div class="mq-carousel" id="mqCarousel"></div>
   </div>
 </section>
 
 <!-- =========================================================
-     03, TOUR 3D
+     04, TOUR 3D
 ========================================================== -->
-<section class="mq-section mq-section--tint" id="tour-3d">
-  <div class="mq-wrap">
-    <div class="mq-section-head">
-      <span class="mq-eyebrow">Visualização interativa</span>
-      <h2 class="mq-title" style="font-size:clamp(26px,3.4vw,38px)">Explore o quarto em <span class="accent">3D</span></h2>
-      <p class="mq-lede">Gire, aproxime e navegue pelo ambiente para entender como os móveis e a decoração vão se distribuir. Os pontos marcados mostram onde cada categoria de produto pode entrar no projeto. O modelo segue o formato da planta e as medidas reais de cada parede.</p>
+<section class="mq-section" id="tour-3d">
+  <div class="mq-wrap mq-tour-grid">
+    <div class="mq-tour-intro">
+      <div class="mq-section-head">
+        <span class="mq-eyebrow">Tour 3D</span>
+        <h2 class="mq-title" style="font-size:clamp(26px,3.4vw,38px)">Seja bem-vindo ao meu <span class="accent">quarto</span>.</h2>
+        <p class="mq-lede">Gire, aproxime e navegue pelo ambiente para entender como os móveis e a decoração vão se distribuir. O modelo segue o formato da planta e as medidas reais de cada parede.</p>
+      </div>
     </div>
 
     <div class="mq-tour-shell">
@@ -130,27 +147,46 @@
         <div class="mq-tour-hint">arraste para girar, role para aproximar, toque nos pontos para ver detalhes</div>
       </div>
 
-      <div class="mq-tour-legend">Modelo 3D construído a partir da planta de referência e das medidas reais do quarto (pé-direito de 2,70 m e a largura própria de cada parede). A abertura para o corredor, na medida em que não foi informada com exatidão, foi estimada a partir da diferença entre as paredes da cama e da TV, e está sinalizada como aproximada.</div>
+      <div class="mq-tour-legend">Modelo 3D construído a partir da planta de referência e das medidas reais do quarto. A abertura para o corredor foi estimada a partir da diferença entre as paredes da cama e da TV, e está sinalizada como aproximada.</div>
     </div>
   </div>
 </section>
 
 <!-- =========================================================
-     04, MAPA DE OPORTUNIDADES (fundido com "o que procuro")
+     05, CASA E DECORAÇÃO (vídeos)
+========================================================== -->
+<section class="mq-section mq-section--tint" id="videos">
+  <div class="mq-wrap">
+    <div class="mq-section-head">
+      <span class="mq-eyebrow">Conteúdo</span>
+      <h2 class="mq-title" style="font-size:clamp(26px,3.4vw,38px)">Casa e <span class="accent">decoração</span></h2>
+      <p class="mq-lede">Alguns dos vídeos que já produzi para esse nicho.</p>
+    </div>
+    <div class="mq-videos-grid">
+      <div class="mq-video-slot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M10 9v6l5-3-5-3Z" fill="currentColor" stroke="none"/></svg><span>Vídeo em breve</span></div>
+      <div class="mq-video-slot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M10 9v6l5-3-5-3Z" fill="currentColor" stroke="none"/></svg><span>Vídeo em breve</span></div>
+      <div class="mq-video-slot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M10 9v6l5-3-5-3Z" fill="currentColor" stroke="none"/></svg><span>Vídeo em breve</span></div>
+      <div class="mq-video-slot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M10 9v6l5-3-5-3Z" fill="currentColor" stroke="none"/></svg><span>Vídeo em breve</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     06, MAPA DE OPORTUNIDADES
 ========================================================== -->
 <section class="mq-section" id="oportunidades">
   <div class="mq-wrap">
     <div class="mq-section-head">
       <span class="mq-eyebrow">Onde sua marca entra</span>
       <h2 class="mq-title" style="font-size:clamp(26px,3.4vw,38px)">Mapa de <span class="accent">oportunidades</span></h2>
-      <p class="mq-lede">Passe o mouse (ou toque, no celular) em cada categoria para ver exatamente o que estou procurando ali. Se algo combina com a sua marca, esse é o momento certo para conversarmos.</p>
+      <p class="mq-lede">Se algo combina com a sua marca, esse é o momento certo para conversarmos.</p>
     </div>
-    <div class="mq-opp-grid" id="mqOppGrid"></div>
+    <div class="mq-opp-list" id="mqOppList"></div>
   </div>
 </section>
 
 <!-- =========================================================
-     05, PLANOS DE PARCERIA
+     07, PLANOS DE PARCERIA
 ========================================================== -->
 <section class="mq-section mq-section--dark" id="parceria">
   <div class="mq-wrap">
@@ -174,7 +210,7 @@
 </section>
 
 <!-- =========================================================
-     06, FAQ
+     08, FAQ
 ========================================================== -->
 <section class="mq-section" id="faq">
   <div class="mq-wrap">
@@ -187,7 +223,7 @@
 </section>
 
 <!-- =========================================================
-     07, CONTATO
+     09, CONTATO
 ========================================================== -->
 <section class="mq-section mq-section--dark mq-contato" id="contato">
   <div class="mq-wrap">

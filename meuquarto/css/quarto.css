@@ -166,7 +166,7 @@ button{ font-family:inherit; cursor:pointer; }
 .mq-hero-inner{
   position:relative;
   z-index:1;
-  max-width: 760px;
+  max-width: 1060px;
   margin: 0 auto;
   display:flex;
   flex-direction:column;
@@ -222,10 +222,16 @@ button{ font-family:inherit; cursor:pointer; }
   font-size: clamp(32px, 4.8vw, 54px);
   margin-bottom: 22px;
   color: var(--mq-navy);
+  line-height: 1.35;
 }
 .mq-hero h1 .accent{
-  color: var(--mq-blue);
-  font-style: italic;
+  color: var(--mq-navy);
+  font-style: normal;
+  background: var(--mq-blue);
+  padding: 4px 16px;
+  border-radius: 10px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 .mq-hero-actions{
   display:flex;

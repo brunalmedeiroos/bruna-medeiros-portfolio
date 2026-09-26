@@ -1,17 +1,15 @@
 /* =====================================================================
-   DADOS DO PROJETO — brunamedeiros.com/meuquarto
-   Fonte única de verdade usada pelo tour 3D, pela seção de oportunidades
-   e pela seção "o que estou procurando". Editar aqui reflete no site
-   inteiro — não precisa mexer no HTML pra atualizar status de um item,
-   trocar uma categoria ou ajustar o cronograma.
+   DADOS DO PROJETO / brunamedeiros.com/meuquarto
+   Fonte única de verdade usada pelo tour 3D, pela galeria de paredes,
+   pela seção de oportunidades e pela seção "o que estou procurando".
+   Editar aqui reflete no site inteiro, sem precisar mexer no HTML.
 ===================================================================== */
 
 const QUARTO_DATA = {
 
   /* ---------------------------------------------------------------
-     PAREDES / ESPAÇOS DO QUARTO
-     A ordem abaixo segue a disposição real do ambiente (uma parede
-     leva à outra, em sequência, fechando o quarto).
+     PAREDES / ESPAÇOS DO QUARTO (galeria em carrossel)
+     A ordem segue a disposição real do ambiente.
   --------------------------------------------------------------- */
   paredes: [
     {
@@ -20,7 +18,6 @@ const QUARTO_DATA = {
       nome: "Parede Cama",
       imagem: "img/projeto/parede-cama.jpg",
       resumo: "O coração do quarto: cama de casal, cabeceira ripada em madeira, mesas de cabeceira e prateleira contínua com iluminação embutida.",
-      detalhes: "Painel ripado em madeira do chão até a prateleira, faixa de LED embutida, mesas de cabeceira com luminárias, e a parede listrada azul e branco que dá o tom pro quarto inteiro.",
       categorias: ["roupa-de-cama", "iluminacao", "decoracao", "moveis"]
     },
     {
@@ -28,8 +25,7 @@ const QUARTO_DATA = {
       numero: "02",
       nome: "Parede Janela",
       imagem: "img/projeto/parede-janela.jpg",
-      resumo: "Cantinho de descanso: poltrona amarela, puff, luminária de piso e a janela com persiana, ao lado do ar-condicionado.",
-      detalhes: "Um respiro de luz natural entre a cama e o home office, com poltrona de leitura, puff e persiana romana pra controlar a luz durante as gravações.",
+      resumo: "Cantinho de descanso: poltrona, puff e luminária de piso, ao lado da janela que ilumina o quarto durante as gravações.",
       categorias: ["moveis", "iluminacao", "tecnologia", "organizacao"]
     },
     {
@@ -38,7 +34,6 @@ const QUARTO_DATA = {
       nome: "Parede TV",
       imagem: "img/projeto/parede-tv.jpg",
       resumo: "Meu estúdio dentro do quarto: TV, home office em L, cadeira ergonômica e prateleiras com decoração.",
-      detalhes: "Painel ripado, TV com soundbar, bancada de trabalho que vira setup de gravação, cadeira confortável pra rotina de criação de conteúdo e prateleiras pra deixar tudo organizado à vista.",
       categorias: ["tecnologia", "eletronicos", "home-office", "moveis"]
     },
     {
@@ -46,34 +41,53 @@ const QUARTO_DATA = {
       numero: "04",
       nome: "Parede Penteadeira",
       imagem: "img/projeto/parede-penteadeira.jpg",
-      resumo: "Espaço de beleza e rotina: penteadeira com espelho iluminado, gaveteiro, puff e quadros decorativos ao lado do closet.",
-      detalhes: "Espelho com luzes tipo camarim pra maquiagem e gravações de GRWM, gaveteiro pra organização de produtos de beleza, e um mural de quadros que fecha a parede ao lado do closet.",
+      resumo: "Espaço de beleza e rotina: penteadeira com espelho iluminado, gaveteiro e quadros decorativos ao lado do closet.",
       categorias: ["beleza", "organizacao", "decoracao", "iluminacao"]
     }
   ],
 
   /* ---------------------------------------------------------------
+     PLANTA BAIXA E MEDIDAS REAIS
+     Fonte: medição pessoal. Prevalecem sobre a planta de referência.
+     Não inventar portas, nichos, móveis ou medidas além destas.
+  --------------------------------------------------------------- */
+  planta: {
+    imagem: "img/projeto/planta-baixa.webp",
+    pedDireito: 2.70,
+    paredes: [
+      { id: "penteadeira", nome: "Parede da Penteadeira", largura: 3.00, altura: 2.70, area: 8.10, acabamento: "Cerâmica" },
+      { id: "tv",          nome: "Parede da TV",          largura: 3.31, altura: 2.70, area: 8.94, acabamento: "Cerâmica" },
+      { id: "janela",      nome: "Parede da Janela",      largura: 2.94, altura: 2.70, area: 7.94, acabamento: "Pintura" },
+      { id: "cama",        nome: "Parede da Cama",        largura: 4.29, altura: 2.70, area: 11.58, acabamento: "Pintura" }
+    ],
+    totais: [
+      { acabamento: "Cerâmica", area: 17.04, referenciaCompra: 20 },
+      { acabamento: "Pintura",  area: 19.52, referenciaCompra: 23 }
+    ]
+  },
+
+  /* ---------------------------------------------------------------
      CATEGORIAS DE OPORTUNIDADE PARA MARCAS
+     principal: true = aparece nos 6 itens iniciais do mapa
   --------------------------------------------------------------- */
   categorias: [
-    { id: "moveis",       nome: "Móveis",        icone: "sofa" },
-    { id: "decoracao",    nome: "Decoração",     icone: "frame" },
-    { id: "iluminacao",   nome: "Iluminação",    icone: "bulb" },
+    { id: "moveis",       nome: "Móveis",        icone: "sofa",   principal: true },
+    { id: "iluminacao",   nome: "Iluminação",    icone: "bulb",   principal: true },
+    { id: "roupa-de-cama",nome: "Roupa de cama", icone: "bed",    principal: true },
+    { id: "home-office",  nome: "Home office",   icone: "desk",   principal: true },
+    { id: "beleza",       nome: "Beleza",        icone: "mirror", principal: true },
+    { id: "decoracao",    nome: "Decoração",     icone: "frame",  principal: true },
     { id: "organizacao",  nome: "Organização",   icone: "box" },
-    { id: "roupa-de-cama",nome: "Roupa de cama", icone: "bed" },
     { id: "tecnologia",   nome: "Tecnologia",    icone: "wifi" },
     { id: "eletronicos",  nome: "Eletrônicos",   icone: "tv" },
-    { id: "home-office",  nome: "Home office",   icone: "desk" },
-    { id: "beleza",       nome: "Beleza",        icone: "mirror" },
     { id: "aromatizacao", nome: "Aromatização",  icone: "spray" },
-    { id: "plantas",      nome: "Plantas & paisagismo", icone: "plant" },
-    { id: "tintas",       nome: "Tintas & acabamento", icone: "roller" }
+    { id: "plantas",      nome: "Plantas e paisagismo", icone: "plant" },
+    { id: "tintas",       nome: "Tintas e acabamento", icone: "roller" }
   ],
 
   /* ---------------------------------------------------------------
      O QUE ESTOU PROCURANDO
      status: "procurando" (aberto) | "conversando" (em negociação) | "fechado"
-     Editar esse status conforme as parcerias forem fechando.
   --------------------------------------------------------------- */
   procurando: [
     { item: "Escrivaninha em L",  categoria: "home-office",   parede: "tv",         status: "procurando" },
@@ -94,13 +108,12 @@ const QUARTO_DATA = {
       numero: "01",
       nome: "Produto",
       subtitulo: "A porta de entrada pra fazer parte da reforma",
-      paraQuem: "Marcas que querem participar com um produto específico que faça sentido pro quarto.",
-      exemplos: ["Luminária", "Cadeira", "Espelho", "Roupa de cama", "Decoração", "Organização", "Eletrônico", "Acessório"],
+      paraQuem: "Para marcas que querem inserir um produto específico no quarto.",
+      exemplos: ["Luminária", "Cadeira", "Espelho", "Roupa de cama", "Decoração", "Organização", "Tecnologia", "Acessórios"],
       inclui: [
         "Produto integrado ao projeto",
         "1 conteúdo relacionado ao produto",
         "Fotos do produto no ambiente",
-        "Presença do produto nos conteúdos da reforma",
         "Menção da marca no projeto"
       ],
       nota: "O conteúdo pode ser produzido para o meu perfil e/ou para a marca, de acordo com a negociação.",
@@ -110,16 +123,13 @@ const QUARTO_DATA = {
       numero: "02",
       nome: "Ambiente",
       subtitulo: "Fazer parte da construção de um espaço inteiro do quarto",
-      paraQuem: "Marcas que querem participar de uma área específica — não só de um produto isolado.",
+      paraQuem: "Para marcas que querem participar de uma área específica do quarto.",
       exemplos: ["Home office", "Penteadeira", "Cama", "Iluminação", "Organização", "Decoração"],
       inclui: [
         "Produtos necessários para aquele ambiente",
-        "2 a 3 conteúdos relacionados à transformação",
+        "Conteúdos relacionados à transformação",
         "Fotos do ambiente finalizado",
-        "Conteúdo mostrando a transformação",
         "Presença durante diferentes etapas da reforma",
-        "Conteúdo no meu perfil",
-        "Possibilidade de conteúdos produzidos para a marca",
         "Destaque da marca dentro do projeto"
       ],
       narrativa: ["Escolha", "Recebimento", "Montagem", "Transformação", "Resultado final", "Uso no dia a dia"],
@@ -129,116 +139,79 @@ const QUARTO_DATA = {
     {
       numero: "03",
       nome: "Projeto",
-      subtitulo: "O nível mais completo de participação na reforma",
-      paraQuem: "Marcas que querem se tornar uma das principais parceiras da reforma, acompanhando diferentes momentos da transformação.",
-      exemplos: ["Participação em várias etapas", "Presença no antes, durante e depois", "Presença no tour 3D"],
+      subtitulo: "Participação em uma parte maior da transformação",
+      paraQuem: "Para marcas que querem se tornar uma das principais parceiras da reforma.",
+      exemplos: ["Planejamento", "Produto", "Chegada", "Montagem e instalação", "Conteúdo", "Transformação", "Resultado final"],
       inclui: [
         "Participação em uma parte relevante da reforma",
         "Conteúdos durante diferentes etapas",
-        "Série de conteúdos",
-        "Conteúdos produzidos para a marca",
-        "Conteúdos publicados no meu perfil",
+        "Presença ao longo de toda a reforma",
         "Fotos dos produtos no ambiente",
         "Presença no projeto 3D",
         "Destaque especial dentro do projeto",
-        "Presença no antes, durante e depois",
-        "Possibilidade de exclusividade dentro da categoria",
-        "Conteúdos mostrando os produtos no uso real depois da reforma"
+        "Possibilidade de exclusividade dentro da categoria"
       ],
-      narrativa: ["Antes", "Planejamento", "Escolha", "Recebimento", "Montagem", "Transformação", "Revelação", "Vida real"],
-      nota: "Sem ranking entre os planos — esse é só o nível de participação mais completo.",
+      narrativa: ["Planejamento", "Produto", "Chegada", "Montagem", "Conteúdo", "Transformação", "Resultado final"],
+      nota: "Sem hierarquia entre os planos: esse é só o nível de participação mais completo.",
       cta: "Quero esse formato"
     }
   ],
 
-  /* Comparativo visual entre os planos (não é tabela de preço) */
-  comparativo: {
-    colunas: ["Produto", "Ambiente", "Projeto"],
-    linhas: [
-      { label: "Produto integrado ao projeto",   valores: [true, true, true] },
-      { label: "Conteúdo",                        valores: [true, true, true] },
-      { label: "Fotos",                           valores: [true, true, true] },
-      { label: "Conteúdo no meu perfil",          valores: [true, true, true] },
-      { label: "Transformação do espaço",         valores: [false, true, true] },
-      { label: "Antes / durante / depois",        valores: [false, true, true] },
-      { label: "Série de conteúdos",              valores: [false, true, true] },
-      { label: "Tour 3D",                         valores: ["parcial", true, true] },
-      { label: "Destaque no projeto",             valores: [false, true, true] },
-      { label: "Exclusividade",                   valores: [false, false, "opcional"] },
-      { label: "Proposta personalizada",          valores: [true, true, true] }
-    ],
-    nota: "* A presença no tour 3D depende de como o produto estiver integrado ao projeto."
-  },
+  /* ---------------------------------------------------------------
+     TRÊS FRENTES DE CONTEÚDO
+  --------------------------------------------------------------- */
+  frentes: [
+    {
+      titulo: "Conteúdo para a marca",
+      itens: ["UGC", "Vídeos de produto", "Fotos", "Vídeos para anúncios", "Conteúdo para site", "Outros formatos combinados"]
+    },
+    {
+      titulo: "Conteúdo no meu perfil",
+      itens: ["TikTok", "Reels", "Stories", "Vídeos da reforma", "Bastidores", "Rotina usando os produtos"]
+    },
+    {
+      titulo: "Presença no projeto",
+      itens: ["Produto dentro do quarto", "Tour 3D", "Fotos do ambiente", "Antes e depois", "Destaque dentro do projeto"]
+    }
+  ],
 
   /* ---------------------------------------------------------------
-     TIPOS DE CONTEÚDO DA REFORMA
+     MOMENTOS DE CONTEÚDO DA REFORMA
   --------------------------------------------------------------- */
   momentosConteudo: [
-    "Antes e depois", "Chegada do produto", "Montagem", "Organização",
+    "Planejamento", "Chegada do produto", "Montagem", "Organização",
     "Decoração", "Transformação do ambiente", "Resultado final",
     "Rotina utilizando o produto depois da reforma"
   ],
 
-  ondeUsar: [
-    "Instagram", "TikTok", "Stories", "Anúncios",
-    "Site da marca", "Página de produto", "Redes sociais da marca"
-  ],
-
   /* ---------------------------------------------------------------
-     CRONOGRAMA — editar as datas conforme a reforma andar
+     ETAPAS DO PROCESSO (sem datas, sem prazos)
+     A única data confirmada é o início da reforma, em outubro.
   --------------------------------------------------------------- */
-  cronograma: [
-    { periodo: "[DATA/PERÍODO]", etapa: "Planejamento", descricao: "Definição do projeto, referências e parcerias em conversa." },
-    { periodo: "[DATA/PERÍODO]", etapa: "Início da reforma", descricao: "Pintura, preparação das paredes e primeiras mudanças estruturais." },
-    { periodo: "[DATA/PERÍODO]", etapa: "Recebimento dos produtos", descricao: "Chegada dos móveis, decoração e produtos parceiros." },
-    { periodo: "[DATA/PERÍODO]", etapa: "Montagem e decoração", descricao: "Montagem dos móveis, organização dos ambientes e finalização visual." },
-    { periodo: "[DATA/PERÍODO]", etapa: "Resultado final", descricao: "Quarto pronto, tour 3D atualizado e conteúdos de revelação." }
+  etapas: [
+    { nome: "Planejamento", descricao: "Definição do projeto, referências e parcerias em conversa." },
+    { nome: "Reforma",      descricao: "Pintura, cerâmica e preparação estrutural das quatro paredes." },
+    { nome: "Montagem",     descricao: "Chegada e montagem dos móveis, iluminação e decoração." },
+    { nome: "Produção",     descricao: "Gravação dos conteúdos de cada etapa da transformação." },
+    { nome: "Resultado",    descricao: "Quarto e estúdio prontos, com o tour 3D atualizado." }
   ],
+  inicioReforma: "A reforma começa em outubro.",
 
   /* ---------------------------------------------------------------
      FAQ
   --------------------------------------------------------------- */
   faq: [
     {
-      pergunta: "Como funciona a parceria?",
-      resposta: "A marca escolhe um dos três formatos de participação (Produto, Ambiente ou Projeto) de acordo com o quanto quer fazer parte da reforma. A partir disso, montamos juntas os detalhes: quais produtos entram, em qual espaço do quarto e quais conteúdos fazem sentido."
-    },
-    {
       pergunta: "Posso participar com apenas um produto?",
-      resposta: "Sim! Esse é o Plano 01 — Produto. A marca entra com um item específico (uma luminária, uma roupa de cama, um espelho, por exemplo) e ele é integrado naturalmente ao projeto e à história da reforma."
+      resposta: "Sim. Esse é o Plano 01, Produto: a marca entra com um item específico (uma luminária, uma roupa de cama, um espelho, por exemplo) e ele é integrado naturalmente ao projeto e à história da reforma."
     },
     {
-      pergunta: "Como o produto será apresentado?",
-      resposta: "De forma natural, dentro do contexto real do quarto — nas fotos do ambiente, nos conteúdos de transformação e, dependendo do plano, também no tour 3D do projeto."
-    },
-    {
-      pergunta: "Quais conteúdos podem ser produzidos?",
-      resposta: "Depende do plano e da negociação: pode incluir conteúdo para o meu perfil (TikTok, Reels, Stories), conteúdo produzido especificamente para a marca (UGC, vídeos de produto, fotos) e presença visual no próprio projeto (fotos do ambiente, antes e depois, tour 3D)."
-    },
-    {
-      pergunta: "Posso solicitar uma proposta personalizada?",
-      resposta: "Sim. Os três planos servem como estrutura inicial pra entender as possibilidades — mas toda parceria pode ser ajustada de acordo com o produto, o orçamento e os objetivos da marca."
+      pergunta: "Como funciona o pagamento?",
+      resposta: "São duas partes. A marca entra com o produto, que é enviado ou instalado aqui e vira parte da obra, e com o cachê da produção do conteúdo. O produto é o material do projeto e o conteúdo é o meu trabalho, então cada um tem o seu valor. Fecho tudo em contrato antes de começar, com volume de entregas e prazos combinados."
     },
     {
       pergunta: "Como funcionam os direitos de uso?",
-      resposta: "Os direitos de uso e as condições específicas de cada conteúdo são definidos individualmente em cada parceria, de acordo com onde e por quanto tempo o conteúdo será utilizado."
-    },
-    {
-      pergunta: "Qual é o prazo para produção?",
-      resposta: "Os prazos variam de acordo com o cronograma da reforma e com o formato de parceria escolhido. Isso é combinado na proposta comercial, junto com as etapas em que a marca vai aparecer."
+      resposta: "Os direitos de uso são definidos em contrato, de acordo com o uso combinado pela marca: redes sociais, site, anúncios, mídia paga e o período de utilização, por exemplo. Não trabalho com valores ou períodos fixos: cada proposta é ajustada conforme a necessidade da marca."
     }
-  ],
-
-  /* ---------------------------------------------------------------
-     FOTOS DO ANTES
-     Pasta: img/antes/
-     Pra adicionar uma foto real do quarto hoje:
-     1) Coloque o arquivo dentro de meuquarto/img/antes/
-     2) Adicione um objeto aqui embaixo com o nome do arquivo
-     Enquanto essa lista estiver vazia, o site mostra um aviso de
-     "fotos em breve" no lugar da galeria.
-  --------------------------------------------------------------- */
-  antesFotos: [
-    // { arquivo: "quarto-antes-01.jpg", legenda: "Parede da cama, como está hoje" },
   ]
 };

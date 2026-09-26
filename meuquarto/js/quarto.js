@@ -1,5 +1,5 @@
 /* =====================================================================
-   MEUQUARTO — interações gerais da página (fora do tour 3D)
+   MEUQUARTO / interações gerais da página (fora do tour 3D)
    Lê os dados de QUARTO_DATA (js/dados-quarto.js) e monta as seções
    dinamicamente, então atualizar o cronograma, o status de um item
    procurado ou uma pergunta do FAQ é só editar o arquivo de dados.
@@ -33,37 +33,122 @@
     const c = QUARTO_DATA.categorias.find(c=>c.id===id);
     return c ? c.nome : id;
   }
-  /* ---------------- PAREDES / PROJETO ---------------- */
-  function renderParedes(){
-    const el = document.getElementById("mqParedesGrid");
+
+  /* ---------------- CARROSSEL DE PAREDES ---------------- */
+  function renderCarousel(){
+    const el = document.getElementById("mqCarousel");
     if (!el) return;
-    el.innerHTML = QUARTO_DATA.paredes.map(p => `
-      <article class="mq-parede-card">
-        <div class="mq-parede-photo" data-lightbox="${p.imagem}" data-caption="${p.nome}">
-          <span class="mq-parede-num">${p.numero}</span>
-          <img src="${p.imagem}" alt="Referência visual — ${p.nome}" loading="lazy">
+    const paredes = QUARTO_DATA.paredes;
+    let idx = 0;
+
+    el.innerHTML = `
+      <div class="mq-carousel-track">
+        <div class="mq-carousel-photo" id="mqCarPhoto" data-lightbox="" data-caption="">
+          <span class="mq-carousel-num" id="mqCarNum"></span>
+          <img id="mqCarImg" src="" alt="">
         </div>
-        <div class="mq-parede-body">
-          <h3>${p.nome}</h3>
-          <p>${p.resumo}</p>
-          <div class="mq-tag-row">
-            ${p.categorias.map(c => `<span class="mq-tag">${catName(c)}</span>`).join("")}
-          </div>
+        <div class="mq-carousel-body">
+          <h3 id="mqCarTitle"></h3>
+          <p id="mqCarDesc"></p>
+          <div class="mq-tag-row" id="mqCarTags"></div>
         </div>
-      </article>
-    `).join("");
+      </div>
+      <div class="mq-carousel-nav">
+        <button class="mq-carousel-arrow" id="mqCarPrev" type="button" aria-label="Parede anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+        </button>
+        <div class="mq-carousel-dots" id="mqCarDots"></div>
+        <button class="mq-carousel-arrow" id="mqCarNext" type="button" aria-label="Próxima parede">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    `;
+
+    const dotsEl = document.getElementById("mqCarDots");
+    dotsEl.innerHTML = paredes.map((_,i)=>`<button class="mq-carousel-dot" data-idx="${i}" aria-label="Ir para parede ${i+1}"></button>`).join("");
+
+    function paint(){
+      const p = paredes[idx];
+      document.getElementById("mqCarNum").textContent = p.numero;
+      const img = document.getElementById("mqCarImg");
+      img.src = p.imagem;
+      img.alt = `Referência visual, ${p.nome}`;
+      document.getElementById("mqCarPhoto").setAttribute("data-lightbox", p.imagem);
+      document.getElementById("mqCarPhoto").setAttribute("data-caption", p.nome);
+      document.getElementById("mqCarTitle").textContent = p.nome;
+      document.getElementById("mqCarDesc").textContent = p.resumo;
+      document.getElementById("mqCarTags").innerHTML = p.categorias.map(c=>`<span class="mq-tag">${catName(c)}</span>`).join("");
+      dotsEl.querySelectorAll(".mq-carousel-dot").forEach((d,i)=> d.classList.toggle("is-active", i===idx));
+    }
+
+    document.getElementById("mqCarPrev").addEventListener("click", ()=>{ idx = (idx - 1 + paredes.length) % paredes.length; paint(); });
+    document.getElementById("mqCarNext").addEventListener("click", ()=>{ idx = (idx + 1) % paredes.length; paint(); });
+    dotsEl.addEventListener("click", (ev)=>{
+      const btn = ev.target.closest("[data-idx]");
+      if (!btn) return;
+      idx = Number(btn.getAttribute("data-idx"));
+      paint();
+    });
+
+    paint();
   }
 
-  /* ---------------- CATEGORIAS ---------------- */
+  /* ---------------- PLANTA BAIXA E MEDIDAS ---------------- */
+  function renderPlanta(){
+    const planta = QUARTO_DATA.planta;
+    const pedEl = document.getElementById("mqPedireito");
+    if (pedEl) pedEl.textContent = `${planta.pedDireito.toFixed(2).replace(".", ",")} m`;
+
+    const body = document.getElementById("mqMedidasBody");
+    if (body){
+      body.innerHTML = planta.paredes.map(p => `
+        <tr>
+          <td>${p.nome}</td>
+          <td>${p.largura.toFixed(2).replace(".", ",")} m</td>
+          <td>${p.area.toFixed(2).replace(".", ",")} m²</td>
+          <td><span class="mq-acabamento-tag ${p.acabamento === "Cerâmica" ? "ceramica" : "pintura"}">${p.acabamento}</span></td>
+        </tr>
+      `).join("");
+    }
+
+    const totaisEl = document.getElementById("mqPlantaTotais");
+    if (totaisEl){
+      totaisEl.innerHTML = planta.totais.map(t => `
+        <div class="mq-planta-total">
+          <b>${t.area.toFixed(2).replace(".", ",")} m²</b>
+          <span>${t.acabamento}, referência de compra: ${t.referenciaCompra} m²</span>
+        </div>
+      `).join("");
+    }
+  }
+
+  /* ---------------- OPORTUNIDADES (6 + ver todos) ---------------- */
   function renderCategorias(){
-    const el = document.getElementById("mqCatGrid");
-    if (!el) return;
-    el.innerHTML = QUARTO_DATA.categorias.map(c => `
+    const main = document.getElementById("mqCatGrid");
+    const extra = document.getElementById("mqCatGridExtra");
+    const btn = document.getElementById("mqCatMoreBtn");
+    if (!main || !extra) return;
+
+    const principais = QUARTO_DATA.categorias.filter(c => c.principal);
+    const resto = QUARTO_DATA.categorias.filter(c => !c.principal);
+
+    const card = c => `
       <div class="mq-cat-card">
         <div class="mq-cat-icon">${catIcon(c.icone)}</div>
         <span>${c.nome}</span>
       </div>
-    `).join("");
+    `;
+
+    main.innerHTML = principais.map(card).join("");
+    extra.innerHTML = resto.map(card).join("");
+
+    if (btn){
+      btn.addEventListener("click", ()=>{
+        const expanded = !extra.classList.contains("mq-cat-hidden");
+        extra.classList.toggle("mq-cat-hidden", expanded);
+        btn.textContent = expanded ? "Ver todos" : "Ver menos";
+      });
+    }
   }
 
   /* ---------------- O QUE ESTOU PROCURANDO ---------------- */
@@ -77,75 +162,78 @@
       <div class="mq-procurando-item">
         <div class="mq-pi-main">
           <h4>${i.item}</h4>
-          <p>${catName(i.categoria)} · ${paredeLabel}</p>
+          <p>${catName(i.categoria)}, ${paredeLabel}</p>
         </div>
         <span class="mq-status-badge mq-status-${i.status}">${statusLabel[i.status] || i.status}</span>
       </div>
     `;}).join("");
   }
 
-  /* ---------------- PLANOS DE PARCERIA ---------------- */
+  /* ---------------- PLANOS DE PARCERIA (editorial) ---------------- */
   function renderPlanos(){
-    const el = document.getElementById("mqPlanosGrid");
+    const el = document.getElementById("mqPlanosRow");
     if (!el) return;
     el.innerHTML = QUARTO_DATA.planos.map(p => `
-      <div class="mq-plano-card ${p.numero === '02' ? 'is-highlight' : ''}">
-        <span class="mq-plano-num">${p.numero}</span>
-        <h3>${p.nome}</h3>
-        <div class="mq-plano-sub">${p.subtitulo}</div>
-
-        <p class="mq-plano-para">${p.paraQuem}</p>
-
-        <div class="mq-plano-label">Exemplos</div>
-        <div class="mq-plano-exemplos">${p.exemplos.map(e=>`<span>${e}</span>`).join("")}</div>
-
-        <div class="mq-plano-label">O que inclui</div>
-        <ul class="mq-plano-inclui">${p.inclui.map(i=>`<li>${i}</li>`).join("")}</ul>
-
-        ${p.narrativa ? `
-          <div class="mq-plano-label">Como a história pode ser contada</div>
-          <div class="mq-plano-narrativa">${p.narrativa.map((n,idx)=>`<span>${n}</span>${idx<p.narrativa.length-1?'<span class="arrow">→</span>':''}`).join("")}</div>
-        ` : ""}
-
-        <a class="mq-btn mq-btn-primary mq-btn-block" target="_blank" rel="noopener"
-           href="${waLink(`Oi, Bruna! Vi o projeto do seu quarto e quero participar no formato "${p.numero} — ${p.nome}".`)}">
-          ${p.cta}
-        </a>
+      <div class="mq-plano-row">
+        <div class="mq-plano-num">${p.numero}</div>
+        <div class="mq-plano-heading">
+          <h3>${p.nome}</h3>
+          <div class="mq-plano-sub">${p.subtitulo}</div>
+          <p class="mq-plano-para">${p.paraQuem}</p>
+          <div class="mq-plano-exemplos">${p.exemplos.map(e=>`<span>${e}</span>`).join("")}</div>
+        </div>
+        <div class="mq-plano-body">
+          <div>
+            <div class="mq-plano-label">O que inclui</div>
+            <ul class="mq-plano-inclui">${p.inclui.map(i=>`<li>${i}</li>`).join("")}</ul>
+          </div>
+          ${p.narrativa ? `
+            <div>
+              <div class="mq-plano-label">Como a história pode ser contada</div>
+              <div class="mq-plano-narrativa" style="margin-top:8px;">${p.narrativa.map((n,idx)=>`<span>${n}</span>${idx<p.narrativa.length-1?'<span class="arrow">→</span>':''}`).join("")}</div>
+            </div>
+          ` : ""}
+          <p class="mq-plano-note">${p.nota}</p>
+          <a class="mq-btn mq-btn-primary mq-plano-cta" target="_blank" rel="noopener"
+             href="${waLink(`Oi, Bruna! Vi o projeto do seu quarto e quero participar no formato "${p.numero}, ${p.nome}".`)}">
+            ${p.cta}
+          </a>
+        </div>
       </div>
     `).join("");
   }
 
-  /* ---------------- COMPARATIVO ---------------- */
-  function renderComparativo(){
-    const el = document.getElementById("mqCompareTable");
+  /* ---------------- TRÊS FRENTES ---------------- */
+  function renderFrentes(){
+    const el = document.getElementById("mqFrentesGrid");
     if (!el) return;
-    const { colunas, linhas, nota } = QUARTO_DATA.comparativo;
-    function cell(v){
-      if (v === true) return '<td class="yes">✓</td>';
-      if (v === false) return '<td class="no">—</td>';
-      return `<td class="partial">${v}${v==='parcial' ? '*' : ''}</td>`;
-    }
-    el.innerHTML = `
-      <table class="mq-compare">
-        <thead><tr><th></th>${colunas.map(c=>`<th>${c}</th>`).join("")}</tr></thead>
-        <tbody>
-          ${linhas.map(l => `<tr><td>${l.label}</td>${l.valores.map(cell).join("")}</tr>`).join("")}
-        </tbody>
-      </table>
-      <p class="mq-compare-note">${nota}</p>
-    `;
+    el.innerHTML = QUARTO_DATA.frentes.map(f => `
+      <div class="mq-frente-card">
+        <h4>${f.titulo}</h4>
+        <ul>${f.itens.map(i=>`<li>${i}</li>`).join("")}</ul>
+      </div>
+    `).join("");
   }
 
-  /* ---------------- CRONOGRAMA ---------------- */
-  function renderCronograma(){
-    const el = document.getElementById("mqTimeline");
+  /* ---------------- MOMENTOS DE CONTEÚDO ---------------- */
+  function renderMomentos(){
+    const el = document.getElementById("mqMomentos");
+    if (el) el.innerHTML = QUARTO_DATA.momentosConteudo.map(m=>`<span class="mq-chip">${m}</span>`).join("");
+  }
+
+  /* ---------------- ETAPAS DO PROCESSO ---------------- */
+  function renderEtapas(){
+    const note = document.getElementById("mqInicioReforma");
+    if (note) note.textContent = QUARTO_DATA.inicioReforma;
+
+    const el = document.getElementById("mqEtapas");
     if (!el) return;
-    el.innerHTML = QUARTO_DATA.cronograma.map((c,idx) => `
-      <div class="mq-timeline-item">
-        <span class="mq-timeline-dot"></span>
-        <div class="mq-timeline-period">${c.periodo}</div>
-        <h4>${c.etapa}</h4>
-        <p>${c.descricao}</p>
+    el.innerHTML = QUARTO_DATA.etapas.map((e,idx) => `
+      ${idx > 0 ? `<div class="mq-etapa-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>` : ""}
+      <div class="mq-etapa">
+        <span class="mq-etapa-num">${idx+1}</span>
+        <h4>${e.nome}</h4>
+        <p>${e.descricao}</p>
       </div>
     `).join("");
   }
@@ -181,33 +269,13 @@
         }
       });
     });
-  }
 
-  /* ---------------- MOMENTOS DE CONTEÚDO / ONDE USAR ---------------- */
-  function renderChips(){
-    const momentos = document.getElementById("mqMomentos");
-    if (momentos) momentos.innerHTML = QUARTO_DATA.momentosConteudo.map(m=>`<span class="mq-chip">${m}</span>`).join("");
-    const onde = document.getElementById("mqOndeUsar");
-    if (onde) onde.innerHTML = QUARTO_DATA.ondeUsar.map(m=>`<span class="mq-chip">${m}</span>`).join("");
-  }
-
-  /* ---------------- QUARTO ATUAL (fotos do antes) ---------------- */
-  function renderAntes(){
-    const grid = document.getElementById("mqAntesGrid");
-    const empty = document.getElementById("mqAntesEmpty");
-    if (!grid || !empty) return;
-    if (!QUARTO_DATA.antesFotos.length){
-      grid.style.display = "none";
-      empty.style.display = "block";
-      return;
+    if (el.firstElementChild){
+      el.firstElementChild.classList.add("is-open");
+      const ans = el.firstElementChild.querySelector(".mq-faq-a");
+      ans.style.maxHeight = ans.scrollHeight + "px";
+      el.firstElementChild.querySelector(".mq-faq-q").setAttribute("aria-expanded","true");
     }
-    empty.style.display = "none";
-    grid.style.display = "grid";
-    grid.innerHTML = QUARTO_DATA.antesFotos.map(f => `
-      <div class="mq-antes-card" data-lightbox="img/antes/${f.arquivo}" data-caption="${f.legenda || ''}">
-        <img src="img/antes/${f.arquivo}" alt="${f.legenda || 'Quarto antes da reforma'}" loading="lazy">
-      </div>
-    `).join("");
   }
 
   /* ---------------- LIGHTBOX ---------------- */
@@ -218,7 +286,7 @@
     const caption = lb.querySelector(".mq-lightbox-caption");
     document.body.addEventListener("click", (ev)=>{
       const trigger = ev.target.closest("[data-lightbox]");
-      if (trigger){
+      if (trigger && trigger.getAttribute("data-lightbox")){
         img.src = trigger.getAttribute("data-lightbox");
         caption.textContent = trigger.getAttribute("data-caption") || "";
         lb.classList.add("is-open");
@@ -230,7 +298,7 @@
     window.addEventListener("keydown", ev=>{ if (ev.key === "Escape") lb.classList.remove("is-open"); });
   }
 
-  /* ---------------- NAV: menu mobile + scrollspy ---------------- */
+  /* ---------------- NAV: scrollspy ---------------- */
   function initNav(){
     const links = document.querySelectorAll(".mq-nav-link");
     const sections = [...links].map(l => document.querySelector(l.getAttribute("href"))).filter(Boolean);
@@ -246,15 +314,15 @@
 
   /* ---------------- INIT ---------------- */
   document.addEventListener("DOMContentLoaded", ()=>{
-    renderParedes();
+    renderCarousel();
+    renderPlanta();
     renderCategorias();
     renderProcurando();
     renderPlanos();
-    renderComparativo();
-    renderCronograma();
+    renderFrentes();
+    renderMomentos();
+    renderEtapas();
     renderFaq();
-    renderChips();
-    renderAntes();
     initLightbox();
     initNav();
 

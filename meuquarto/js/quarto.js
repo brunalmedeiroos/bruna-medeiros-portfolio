@@ -179,18 +179,15 @@
     window.addEventListener("keydown", ev=>{ if (ev.key === "Escape") lb.classList.remove("is-open"); });
   }
 
-  /* ---------------- NAV: scrollspy ---------------- */
+  /* ---------------- NAV: destaque só ao clicar ---------------- */
   function initNav(){
     const links = document.querySelectorAll(".mq-nav-link");
-    const sections = [...links].map(l => document.querySelector(l.getAttribute("href"))).filter(Boolean);
-    function onScroll(){
-      const y = window.scrollY + 130;
-      let current = sections[0];
-      sections.forEach(s => { if (s.offsetTop <= y) current = s; });
-      links.forEach(l => l.classList.toggle("is-active", l.getAttribute("href") === "#" + current?.id));
-    }
-    window.addEventListener("scroll", onScroll, { passive:true });
-    onScroll();
+    links.forEach(link=>{
+      link.addEventListener("click", ()=>{
+        links.forEach(l => l.classList.remove("is-active"));
+        link.classList.add("is-active");
+      });
+    });
   }
 
   /* ---------------- INIT ---------------- */

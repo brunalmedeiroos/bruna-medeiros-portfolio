@@ -558,6 +558,7 @@ button{ font-family:inherit; cursor:pointer; }
   padding: 72px 40px;
 }
 .mq-contato .mq-title{ margin: 0 auto 18px; }
+.mq-contato .mq-title .accent{ color: var(--mq-butter); }
 .mq-contato .mq-lede{ margin: 0 auto 36px; color: rgba(255,255,255,0.78); }
 .mq-contato-channels{
   display:flex; flex-wrap:wrap; justify-content:center; gap:14px;

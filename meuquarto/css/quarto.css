@@ -114,7 +114,7 @@ button{ font-family:inherit; cursor:pointer; }
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:2px;
+  gap:0;
   overflow-x:auto;
   scrollbar-width:none;
 }
@@ -123,7 +123,7 @@ button{ font-family:inherit; cursor:pointer; }
   font-size:13.5px;
   font-weight:600;
   color: var(--mq-ink-65);
-  padding:8px 9px;
+  padding:8px 6px;
   border-radius:999px;
   white-space:nowrap;
   transition: background .2s, color .2s;
@@ -291,7 +291,7 @@ button{ font-family:inherit; cursor:pointer; }
 }
 .mq-sobre-greeting{
   font-family: var(--mq-font-display);
-  font-size: clamp(27px, 3.6vw, 37px);
+  font-size: clamp(29px, 3.9vw, 40px);
   font-weight:700;
   color: var(--mq-navy);
   margin-bottom: 8px;
@@ -303,11 +303,10 @@ button{ font-family:inherit; cursor:pointer; }
 }
 .mq-sobre-dot{ color: var(--mq-blue); font-size:8px; }
 .mq-sobre-text p{
-  font-size: 16.5px;
+  font-size: 17.5px;
   line-height:1.7;
   color: var(--mq-ink-65);
   margin-bottom: 16px;
-  max-width: 600px;
 }
 .mq-sobre-text p:last-of-type{ margin-bottom: 26px; }
 

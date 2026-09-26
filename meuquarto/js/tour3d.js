@@ -1,14 +1,24 @@
 /* =====================================================================
-   TOUR 3D — brunamedeiros.com/meuquarto
-   Visualização esquemática/conceitual do quarto, construída em Three.js
-   a partir da disposição real dos ambientes (moodboard enviado pela
-   Bruna). Não é uma planta arquitetônica exata — é uma representação
-   estilo "casa de bonecas" pra dar noção de espaço, proporção e onde
-   cada categoria de produto entraria.
+   TOUR 3D / brunamedeiros.com/meuquarto
+   Reconstrução fiel à planta de referência e às medidas reais medidas
+   pessoalmente (não à planta antiga). O quarto tem o formato de um
+   retângulo com o canto entre a parede da TV e a parede da penteadeira
+   aberto, formando a passagem para o corredor de entrada, exatamente
+   como no desenho de referência.
+
+   Medidas (QUARTO_DATA.planta):
+   pé-direito 2,70 m
+   parede cama       4,29 m de largura, pintura
+   parede janela     2,94 m de largura, pintura
+   parede tv         3,31 m de largura, cerâmica
+   parede penteadeira 3,00 m de largura, cerâmica
+
+   A abertura para o corredor não teve medida exata informada: é a
+   diferença entre a largura da parede da cama e da parede da tv, e
+   está sinalizada como aproximada na legenda do tour.
 
    Depende de QUARTO_DATA (js/dados-quarto.js), carregado antes deste
-   arquivo, e das bibliotecas globais THREE / THREE.OrbitControls
-   (carregadas via CDN no index.html).
+   arquivo, e das bibliotecas globais THREE / THREE.OrbitControls.
 ===================================================================== */
 
 (function(){
@@ -16,51 +26,52 @@
   const mount = document.getElementById("mqTourCanvas");
   if (!mount || typeof THREE === "undefined") return;
 
-  /* ---------------------------------------------------------------
-     DIMENSÕES ESQUEMÁTICAS DO CÔMODO
-     Ordem das paredes segue a sequência real informada:
-     cama -> janela -> tv -> penteadeira -> (volta pra cama)
-  --------------------------------------------------------------- */
-  const W = 6.4;   // largura (eixo X)
-  const D = 5.6;   // profundidade (eixo Z)
-  const H = 2.9;   // pé-direito
+  const M = QUARTO_DATA.planta.paredes.reduce((acc,p)=>{ acc[p.id] = p; return acc; }, {});
 
-  const HX = W / 2;
-  const HZ = D / 2;
+  /* ---------------------------------------------------------------
+     DIMENSÕES REAIS (metros). Origem no canto cama/janela.
+     Eixo X: da parede da janela (0) até a parede da penteadeira (W).
+     Eixo Z: da parede da cama (0) até a frente do quarto.
+  --------------------------------------------------------------- */
+  const H  = QUARTO_DATA.planta.pedDireito;   // 2.70
+  const W  = M.cama.largura;                  // 4.29 (parede cama)
+  const JD = M.janela.largura;                // 2.94 (parede janela = profundidade do lado esquerdo)
+  const PD = M.penteadeira.largura;           // 3.00 (parede penteadeira = profundidade do lado direito)
+  const TVW = M.tv.largura;                   // 3.31 (parede tv)
+
+  const CX = W / 2;
 
   const HOTSPOTS = [
-    { id:"roupa-cama",      wall:"cama",        pos:[0, 0.62, -HZ+0.18],    categoria:"roupa-de-cama", titulo:"Roupa de cama",
-      texto:"Jogo de cama e mantas que combinam com o azul da parede listrada e dão o tom do quarto.", status:"procurando" },
-    { id:"iluminacao-cama", wall:"cama",        pos:[0, 1.85, -HZ+0.22],    categoria:"iluminacao", titulo:"Iluminação da cabeceira",
-      texto:"Fita de LED embutida na prateleira acima da cama — o clima aconchegante das referências.", status:"procurando" },
-    { id:"mesa-cabeceira",  wall:"cama",        pos:[-1.55, 0.58, -HZ+0.5], categoria:"moveis", titulo:"Mesa de cabeceira",
+    { id:"roupa-cama",      wall:"cama",        pos:[CX, 0.62, 0.32],        categoria:"roupa-de-cama", titulo:"Roupa de cama",
+      texto:"Jogo de cama e mantas que combinam com a parede pintada e dão o tom do quarto.", status:"procurando" },
+    { id:"iluminacao-cama", wall:"cama",        pos:[CX, 1.95, 0.15],        categoria:"iluminacao", titulo:"Iluminação da cabeceira",
+      texto:"Prateleira com LED embutido acima da cama, criando o clima aconchegante das referências.", status:"procurando" },
+    { id:"mesa-cabeceira",  wall:"cama",        pos:[CX-1.05, 0.58, 0.45],   categoria:"moveis", titulo:"Mesa de cabeceira",
       texto:"Par de mesinhas ao lado da cama, com espaço pra luminária e objetos pessoais.", status:"procurando" },
-    { id:"poltrona",        wall:"janela",      pos:[HX-0.55, 0.5, -1.55],  categoria:"moveis", titulo:"Poltrona de leitura",
-      texto:"Cantinho de descanso entre a cama e o home office, com poltrona e puff.", status:"procurando" },
-    { id:"janela-persiana", wall:"janela",      pos:[HX-0.15, 1.9, 0.3],    categoria:"iluminacao", titulo:"Janela & persiana",
-      texto:"Controle de luz natural pra quando o quarto também vira set de gravação.", status:"aberto" },
-    { id:"escrivaninha",    wall:"tv",          pos:[1.35, 0.62, HZ-0.2],   categoria:"home-office", titulo:"Escrivaninha em L",
-      texto:"Bancada de trabalho que também funciona como setup de gravação de conteúdo.", status:"procurando" },
-    { id:"tv-eletronicos",  wall:"tv",          pos:[-1.3, 1.55, HZ-0.22],  categoria:"eletronicos", titulo:"TV & som",
-      texto:"Painel com TV e soundbar — o cantinho de entretenimento dentro do quarto.", status:"aberto" },
-    { id:"espelho",         wall:"penteadeira", pos:[-HX+0.18, 1.25, 0.5],  categoria:"beleza", titulo:"Espelho de camarim",
-      texto:"Espelho com luzes tipo camarim — perfeito pra maquiagem e GRWM.", status:"procurando" },
-    { id:"organizacao",     wall:"penteadeira", pos:[-HX+0.5, 0.55, -0.9],  categoria:"organizacao", titulo:"Organização",
+    { id:"poltrona",        wall:"janela",      pos:[0.62, 0.5, 0.58],       categoria:"moveis", titulo:"Poltrona de leitura",
+      texto:"Cantinho de descanso perto da janela, entre a cama e o home office.", status:"procurando" },
+    { id:"janela-luz",      wall:"janela",      pos:[0.12, 1.75, JD*0.55],   categoria:"iluminacao", titulo:"Janela",
+      texto:"Fonte de luz natural do quarto, importante pra rotina de gravação de conteúdo.", status:"aberto" },
+    { id:"escrivaninha",    wall:"tv",          pos:[0.7, 0.62, JD-0.25],    categoria:"home-office", titulo:"Escrivaninha em L",
+      texto:"Bancada de trabalho no canto entre a janela e a TV, que também funciona como setup de gravação.", status:"procurando" },
+    { id:"tv-eletronicos",  wall:"tv",          pos:[TVW-0.9, 1.45, JD-0.18],categoria:"eletronicos", titulo:"TV e som",
+      texto:"Painel com TV e som, o cantinho de entretenimento dentro do quarto.", status:"aberto" },
+    { id:"espelho",         wall:"penteadeira", pos:[W-0.18, 1.25, 0.55],    categoria:"beleza", titulo:"Espelho de camarim",
+      texto:"Espelho com luzes tipo camarim, perfeito pra maquiagem e conteúdos de GRWM.", status:"procurando" },
+    { id:"organizacao",     wall:"penteadeira", pos:[W-0.5, 0.55, 1.35],     categoria:"organizacao", titulo:"Organização",
       texto:"Gaveteiro e organizadores pra manter produtos de beleza à mão.", status:"aberto" }
   ];
 
-  const WALL_LABEL = { cama:"Parede Cama", janela:"Parede Janela", tv:"Parede TV", penteadeira:"Parede Penteadeira" };
-
   const CAM_PRESETS = {
-    geral:       { pos:[5.6, 4.9, 6.4],  target:[0, 0.9, 0] },
-    cama:        { pos:[0, 3.7, 5.9],    target:[0, 1.1, -HZ+0.4] },
-    janela:      { pos:[-5.9, 3.7, 0.35],target:[HX-0.4, 1.1, 0] },
-    tv:          { pos:[0, 3.7, -5.9],   target:[0, 1.1, HZ-0.4] },
-    penteadeira: { pos:[5.9, 3.7, -0.35],target:[-HX+0.4, 1.1, 0] }
+    geral:       { pos:[W+3.4, 4.8, PD+3.3],  target:[CX, 0.9, 1.5] },
+    cama:        { pos:[CX, 3.6, PD+2.9],     target:[CX, 1.1, 0.3] },
+    janela:      { pos:[W+3.9, 3.6, JD*0.5],  target:[0.3, 1.1, JD*0.5] },
+    tv:          { pos:[TVW/2, 3.6, -3.1],    target:[TVW/2, 1.1, JD-0.4] },
+    penteadeira: { pos:[-3.5, 3.6, PD*0.5],   target:[W-0.3, 1.1, PD*0.5] }
   };
 
   /* ---------------------------------------------------------------
-     TEXTURAS PROCEDURAIS (canvas) — sem depender de imagens externas
+     TEXTURAS PROCEDURAIS (canvas)
   --------------------------------------------------------------- */
   function makeCanvas(w, h, draw){
     const c = document.createElement("canvas");
@@ -79,31 +90,36 @@
   });
   stripeTex.repeat.set(W/1.3, H/2.2);
 
-  const woodSlatTex = makeCanvas(64,64,(ctx,w,h)=>{
-    ctx.fillStyle = "#B98A57"; ctx.fillRect(0,0,w,h);
-    ctx.fillStyle = "rgba(0,0,0,0.14)";
-    for(let i=0;i<w;i+=8) ctx.fillRect(i,0,2,h);
-    ctx.fillStyle="rgba(255,255,255,0.08)";
-    for(let i=3;i<w;i+=8) ctx.fillRect(i,0,1,h);
-  });
-  woodSlatTex.repeat.set(W/0.9, 1);
-
-  const plainWallTex = makeCanvas(8,8,(ctx,w,h)=>{
+  const pinturaTex = makeCanvas(8,8,(ctx,w,h)=>{
     ctx.fillStyle = "#EFECE2"; ctx.fillRect(0,0,w,h);
   });
+
+  const ceramicaTex = makeCanvas(64,64,(ctx,w,h)=>{
+    ctx.fillStyle = "#E7E2D6"; ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle = "rgba(120,110,90,0.28)"; ctx.lineWidth = 2;
+    ctx.strokeRect(0,0,w,h);
+  });
+  ceramicaTex.repeat.set(TVW/0.6, H/0.6);
+  const ceramicaTexSide = makeCanvas(64,64,(ctx,w,h)=>{
+    ctx.fillStyle = "#E7E2D6"; ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle = "rgba(120,110,90,0.28)"; ctx.lineWidth = 2;
+    ctx.strokeRect(0,0,w,h);
+  });
+  ceramicaTexSide.wrapS = ceramicaTexSide.wrapT = THREE.RepeatWrapping;
+  ceramicaTexSide.repeat.set(PD/0.6, H/0.6);
 
   const floorTex = makeCanvas(128,128,(ctx,w,h)=>{
     ctx.fillStyle = "#B98F5C"; ctx.fillRect(0,0,w,h);
     ctx.strokeStyle = "rgba(70,45,15,0.22)"; ctx.lineWidth = 2;
     for(let i=0;i<=w;i+=16){ ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,h); ctx.stroke(); }
-    ctx.strokeStyle = "rgba(90,60,25,0.10)";
+    ctx.strokeStyle = "rgba(70,45,15,0.12)";
     for(let i=0;i<=h;i+=64){ ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i); ctx.stroke(); }
   });
-  floorTex.repeat.set(W*1.6, D*1.6);
+  floorTex.repeat.set(W*1.6, (JD+PD)*0.8);
 
   const rugTex = makeCanvas(32,32,(ctx,w,h)=>{
     ctx.fillStyle = "#F4EFE3"; ctx.fillRect(0,0,w,h);
-    ctx.strokeStyle="rgba(4,70,93,0.12)"; ctx.lineWidth=3;
+    ctx.strokeStyle="rgba(27,144,189,0.18)"; ctx.lineWidth=3;
     ctx.strokeRect(3,3,w-6,h-6);
   });
 
@@ -111,8 +127,8 @@
      SCENE / CAMERA / RENDERER
   --------------------------------------------------------------- */
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x073446);
-  scene.fog = new THREE.Fog(0x073446, 14, 26);
+  scene.background = new THREE.Color(0xDCEEF5);
+  scene.fog = new THREE.Fog(0xDCEEF5, 13, 24);
 
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
   camera.position.set(...CAM_PRESETS.geral.pos);
@@ -125,98 +141,111 @@
   controls.target.set(...CAM_PRESETS.geral.target);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
-  controls.minDistance = 3.5;
-  controls.maxDistance = 13;
+  controls.minDistance = 3;
+  controls.maxDistance = 12;
   controls.minPolarAngle = Math.PI * 0.12;
   controls.maxPolarAngle = Math.PI * 0.47;
   controls.update();
 
   /* lights */
-  scene.add(new THREE.HemisphereLight(0xfff3d6, 0x0a2733, 0.48));
-  const sun = new THREE.DirectionalLight(0xfff0d0, 0.62);
+  scene.add(new THREE.HemisphereLight(0xfff3d6, 0x8fb9c8, 0.55));
+  const sun = new THREE.DirectionalLight(0xfff0d0, 0.65);
   sun.position.set(6, 9, 4);
   scene.add(sun);
   const warmFill = new THREE.PointLight(0xffd9a0, 0.32, 12);
-  warmFill.position.set(0, 2.2, -1.5);
+  warmFill.position.set(CX, 2.2, 0.6);
   scene.add(warmFill);
   const warmFill2 = new THREE.PointLight(0xffd9a0, 0.24, 12);
-  warmFill2.position.set(-2.2, 2, 1);
+  warmFill2.position.set(W-1, 2, 1.2);
   scene.add(warmFill2);
 
   /* ---------------------------------------------------------------
      GEOMETRIA DO CÔMODO
+     Contorno (sentido horário, vista de cima):
+     A(0,0) parede cama / janela
+     B(W,0) parede cama / penteadeira
+     C(W,PD) fim da parede penteadeira
+     E(TVW,JD) fim da parede tv (abertura pro corredor entre C e E)
+     D(0,JD) fim da parede janela
   --------------------------------------------------------------- */
   const room = new THREE.Group();
   scene.add(room);
 
-  // piso
-  const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(W, D),
-    new THREE.MeshStandardMaterial({ map: floorTex, roughness:0.85 })
-  );
-  floor.rotation.x = -Math.PI/2;
-  room.add(floor);
+  const A = [0,0], B = [W,0], C = [W,PD], E = [TVW,JD], D = [0,JD];
+
+  function floorTriangleGeo(p1,p2,p3){
+    const geo = new THREE.BufferGeometry();
+    const verts = new Float32Array([
+      p1[0],0,p1[1],  p2[0],0,p2[1],  p3[0],0,p3[1]
+    ]);
+    const uvs = new Float32Array([
+      p1[0],p1[1], p2[0],p2[1], p3[0],p3[1]
+    ]);
+    geo.setAttribute("position", new THREE.BufferAttribute(verts,3));
+    geo.setAttribute("uv", new THREE.BufferAttribute(uvs,2));
+    geo.setIndex([0,1,2]);
+    geo.computeVertexNormals();
+    return geo;
+  }
+
+  const floorMat = new THREE.MeshStandardMaterial({ map: floorTex, roughness:0.85, side: THREE.DoubleSide });
+  [[A,B,C],[A,C,E],[A,E,D]].forEach(tri=>{
+    const mesh = new THREE.Mesh(floorTriangleGeo(tri[0],tri[1],tri[2]), floorMat);
+    room.add(mesh);
+  });
 
   // tapete
   const rug = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.6, 1.8),
+    new THREE.PlaneGeometry(2.3, 1.6),
     new THREE.MeshStandardMaterial({ map: rugTex, roughness:0.95 })
   );
   rug.rotation.x = -Math.PI/2;
-  rug.position.set(0, 0.005, -0.6);
+  rug.position.set(CX, 0.005, 0.85);
   room.add(rug);
-
-  function wallMaterial(kind){
-    if (kind === "stripe") return new THREE.MeshStandardMaterial({ map: stripeTex, roughness:0.92 });
-    if (kind === "wood")   return new THREE.MeshStandardMaterial({ map: woodSlatTex, roughness:0.7 });
-    return new THREE.MeshStandardMaterial({ map: plainWallTex, roughness:0.95 });
-  }
 
   const wallGroups = { cama:new THREE.Group(), janela:new THREE.Group(), tv:new THREE.Group(), penteadeira:new THREE.Group() };
   Object.values(wallGroups).forEach(g => room.add(g));
 
-  // parede cama (fundo, -Z): parte superior listrada + faixa inferior ripada
+  // parede cama (Z=0, largura W), pintura listrada
   {
-    const upper = new THREE.Mesh(new THREE.PlaneGeometry(W, H*0.62), wallMaterial("stripe"));
-    upper.position.set(0, H*0.69, -HZ);
-    wallGroups.cama.add(upper);
-    const lower = new THREE.Mesh(new THREE.BoxGeometry(W, H*0.42, 0.08), wallMaterial("wood"));
-    lower.position.set(0, H*0.21, -HZ+0.02);
-    wallGroups.cama.add(lower);
-    const shelf = new THREE.Mesh(new THREE.BoxGeometry(W*0.94, 0.06, 0.22), new THREE.MeshStandardMaterial({ color:0xC9A16B, roughness:0.6 }));
-    shelf.position.set(0, H*0.42, -HZ+0.2);
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(W, H), new THREE.MeshStandardMaterial({ map: stripeTex, roughness:0.92 }));
+    wall.position.set(CX, H/2, 0);
+    wallGroups.cama.add(wall);
+    const shelf = new THREE.Mesh(new THREE.BoxGeometry(W*0.7, 0.06, 0.22), new THREE.MeshStandardMaterial({ color:0xC9A16B, roughness:0.6 }));
+    shelf.position.set(CX, H*0.72, 0.16);
     wallGroups.cama.add(shelf);
   }
 
-  // parede tv (frente, +Z)
+  // parede janela (X=0, largura JD), pintura + vidro
   {
-    const upper = new THREE.Mesh(new THREE.PlaneGeometry(W, H*0.62), wallMaterial("plain"));
-    upper.rotation.y = Math.PI;
-    upper.position.set(0, H*0.69, HZ);
-    wallGroups.tv.add(upper);
-    const lower = new THREE.Mesh(new THREE.BoxGeometry(W, H*0.42, 0.08), wallMaterial("wood"));
-    lower.position.set(0, H*0.21, HZ-0.02);
-    wallGroups.tv.add(lower);
-  }
-
-  // parede janela (direita, +X)
-  {
-    const wall = new THREE.Mesh(new THREE.PlaneGeometry(D, H), wallMaterial("plain"));
-    wall.rotation.y = -Math.PI/2;
-    wall.position.set(HX, H/2, 0);
-    wallGroups.janela.add(wall);
-  }
-
-  // parede penteadeira (esquerda, -X)
-  {
-    const wall = new THREE.Mesh(new THREE.PlaneGeometry(D, H), wallMaterial("plain"));
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(JD, H), new THREE.MeshStandardMaterial({ map: pinturaTex, roughness:0.95 }));
     wall.rotation.y = Math.PI/2;
-    wall.position.set(-HX, H/2, 0);
+    wall.position.set(0, H/2, JD/2);
+    wallGroups.janela.add(wall);
+    const glass = new THREE.Mesh(new THREE.PlaneGeometry(JD*0.42, 1.35), new THREE.MeshStandardMaterial({ color:0xBFE0EC, emissive:0x224455, emissiveIntensity:0.22, roughness:0.3 }));
+    glass.rotation.y = Math.PI/2;
+    glass.position.set(0.03, 1.55, JD*0.55);
+    wallGroups.janela.add(glass);
+  }
+
+  // parede tv (Z=JD, largura TVW), cerâmica
+  {
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(TVW, H), new THREE.MeshStandardMaterial({ map: ceramicaTex, roughness:0.55 }));
+    wall.rotation.y = Math.PI;
+    wall.position.set(TVW/2, H/2, JD);
+    wallGroups.tv.add(wall);
+  }
+
+  // parede penteadeira (X=W, largura PD), cerâmica
+  {
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(PD, H), new THREE.MeshStandardMaterial({ map: ceramicaTexSide, roughness:0.55 }));
+    wall.rotation.y = -Math.PI/2;
+    wall.position.set(W, H/2, PD/2);
     wallGroups.penteadeira.add(wall);
   }
 
   /* ---------------------------------------------------------------
-     MOBILIÁRIO ESQUEMÁTICO (formas simples, sem detalhe fotorreal)
+     MOBILIÁRIO ESQUEMÁTICO, posicionado conforme a planta
   --------------------------------------------------------------- */
   function box(w,h,d,color,x,y,z,ry){
     const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), new THREE.MeshStandardMaterial({ color, roughness:0.75 }));
@@ -230,53 +259,41 @@
     return m;
   }
 
-  // --- cama ---
-  wallGroups.cama.add(box(2.1, 0.55, 1.9, 0xEDE6D8, 0, 0.275, -HZ+1.1));
-  wallGroups.cama.add(box(2.05, 0.28, 0.55, 0xAFC8DA, 0, 0.68, -HZ+1.85));
-  wallGroups.cama.add(box(0.5, 0.48, 0.42, 0xFFFFFF, -1.55, 0.5, -HZ+0.55));
-  wallGroups.cama.add(box(0.5, 0.48, 0.42, 0xFFFFFF, 1.55, 0.5, -HZ+0.55));
-  wallGroups.cama.add(cyl(0.1, 0.3, 0xF5E6B8, -1.55, 0.9, -HZ+0.55));
-  wallGroups.cama.add(cyl(0.1, 0.3, 0xF5E6B8, 1.55, 0.9, -HZ+0.55));
+  // --- cama (centrada na parede cama) ---
+  wallGroups.cama.add(box(1.95, 0.55, 1.85, 0xEDE6D8, CX, 0.275, 0.98));
+  wallGroups.cama.add(box(1.9, 0.28, 0.5, 0xAFC8DA, CX, 0.68, 1.68));
+  wallGroups.cama.add(box(0.5, 0.48, 0.42, 0xFFFFFF, CX-1.05, 0.5, 0.5));
+  wallGroups.cama.add(box(0.5, 0.48, 0.42, 0xFFFFFF, CX+1.05, 0.5, 0.5));
+  wallGroups.cama.add(cyl(0.1, 0.3, 0xF5E6B8, CX-1.05, 0.9, 0.5));
+  wallGroups.cama.add(cyl(0.1, 0.3, 0xF5E6B8, CX+1.05, 0.9, 0.5));
 
-  // --- janela ---
-  {
-    const glass = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 1.5), new THREE.MeshStandardMaterial({ color:0xBFE0EC, emissive:0x224455, emissiveIntensity:0.25, roughness:0.3 }));
-    glass.rotation.y = -Math.PI/2;
-    glass.position.set(HX-0.03, 1.55, 0.2);
-    wallGroups.janela.add(glass);
-    const ac = box(0.7,0.22,0.22,0xF4F4F4, HX-0.15, 2.55, -1.4, -Math.PI/2);
-    wallGroups.janela.add(ac);
-    wallGroups.janela.add(box(0.75, 0.75, 0.75, 0xE8B84B, HX-0.6, 0.375, -1.6)); // poltrona
-    wallGroups.janela.add(box(0.4, 0.35, 0.4, 0xF2EFE8, HX-0.6, 0.175, -0.85)); // puff
-    wallGroups.janela.add(cyl(0.04, 1.5, 0x2E2E2E, HX-1.1, 0.75, -2.1));
-    wallGroups.janela.add(cyl(0.22, 0.16, 0xFFF7C5, HX-1.1, 1.55, -2.1));
-  }
+  // --- janela (poltrona no canto cama/janela) ---
+  wallGroups.janela.add(box(0.72, 0.72, 0.72, 0xE8B84B, 0.55, 0.36, 0.55));
+  wallGroups.janela.add(box(0.38, 0.34, 0.38, 0xF2EFE8, 0.5, 0.17, 1.15));
+  wallGroups.janela.add(cyl(0.04, 1.5, 0x2E2E2E, 0.9, 0.75, 1.55));
+  wallGroups.janela.add(cyl(0.22, 0.16, 0xFFF7C5, 0.9, 1.55, 1.55));
 
-  // --- tv ---
-  {
-    wallGroups.tv.add(box(2.0, 0.42, 0.4, 0xF2F0EA, -1.3, 0.21, HZ-0.22));
-    wallGroups.tv.add(box(1.5, 0.85, 0.06, 0x14181C, -1.3, 0.95, HZ-0.15));
-    wallGroups.tv.add(box(1.6, 0.7, 0.62, 0xE7DFCC, 1.35, 0.35, HZ-0.32));   // bancada
-    wallGroups.tv.add(box(0.6, 0.7, 1.4, 0xE7DFCC, 2.35, 0.35, HZ-1.3, Math.PI/2)); // extensão em L
-    wallGroups.tv.add(box(0.5, 0.75, 0.5, 0xCFCFCF, 1.35, 0.375, HZ-0.9));   // cadeira (base)
-    wallGroups.tv.add(box(0.5, 0.55, 0.08, 0xB9B9B9, 1.35, 0.95, HZ-1.12));  // encosto cadeira
-  }
+  // --- escrivaninha em L no canto janela/tv ---
+  wallGroups.tv.add(box(1.35, 0.7, 0.55, 0xE7DFCC, 0.68, 0.35, JD-0.28));
+  wallGroups.tv.add(box(0.55, 0.7, 1.05, 0xE7DFCC, 0.28, 0.35, JD-1.05));
+  wallGroups.tv.add(box(0.46, 0.75, 0.46, 0xCFCFCF, 0.9, 0.375, JD-0.85));
+  wallGroups.tv.add(box(0.46, 0.5, 0.07, 0xB9B9B9, 0.9, 0.95, JD-1.06));
 
-  // --- penteadeira ---
-  {
-    wallGroups.penteadeira.add(box(0.5, 0.02, 1.2, 0xFFFFFF, -HX+0.28, 0.7, 0.5));
-    wallGroups.penteadeira.add(box(0.5, 0.7, 1.1, 0xFFFFFF, -HX+0.28, 0.35, 0.5));
-    const mirror = box(0.05, 1.1, 0.85, 0x9FC3D6, -HX+0.06, 1.3, 0.55);
-    wallGroups.penteadeira.add(mirror);
-    for(let i=-1;i<=1;i++){
-      const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.025,10,10), new THREE.MeshStandardMaterial({ color:0xFFF3C4, emissive:0xFFE9A6, emissiveIntensity:0.9 }));
-      bulb.position.set(-HX+0.09, 1.75, 0.55 + i*0.32);
-      wallGroups.penteadeira.add(bulb);
-    }
-    wallGroups.penteadeira.add(cyl(0.22, 0.32, 0xE8E4D8, -HX+0.5, 0.16, 1.3));
-    wallGroups.penteadeira.add(box(0.35, 0.45, 0.03, 0xD8C9A9, -HX+0.06, 1.3, -0.9));
-    wallGroups.penteadeira.add(box(0.35, 0.45, 0.03, 0xB9C9D6, -HX+0.06, 1.3, -1.35));
+  // --- tv + móvel, à direita da escrivaninha ---
+  wallGroups.tv.add(box(1.7, 0.42, 0.38, 0xF2F0EA, TVW-1.1, 0.21, JD-0.2));
+  wallGroups.tv.add(box(1.3, 0.75, 0.06, 0x14181C, TVW-1.1, 0.92, JD-0.14));
+
+  // --- penteadeira, perto do canto cama/penteadeira ---
+  wallGroups.penteadeira.add(box(0.5, 0.02, 1.05, 0xFFFFFF, W-0.28, 0.7, 0.55));
+  wallGroups.penteadeira.add(box(0.5, 0.7, 0.95, 0xFFFFFF, W-0.28, 0.35, 0.55));
+  wallGroups.penteadeira.add(box(0.05, 1.05, 0.75, 0x9FC3D6, W-0.06, 1.28, 0.55));
+  for(let i=-1;i<=1;i++){
+    const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.025,10,10), new THREE.MeshStandardMaterial({ color:0xFFF3C4, emissive:0xFFE9A6, emissiveIntensity:0.9 }));
+    bulb.position.set(W-0.09, 1.72, 0.55 + i*0.28);
+    wallGroups.penteadeira.add(bulb);
   }
+  wallGroups.penteadeira.add(cyl(0.2, 0.3, 0xE8E4D8, W-0.5, 0.15, 1.15));
+  wallGroups.penteadeira.add(box(0.3, 0.5, 0.55, 0xD8C9A9, W-0.4, 0.3, 1.75)); // gaveteiro simples
 
   /* ---------------------------------------------------------------
      HOTSPOTS
@@ -286,15 +303,15 @@
     c.width = 96; c.height = 96;
     const ctx = c.getContext("2d");
     ctx.beginPath(); ctx.arc(48,48,30,0,Math.PI*2);
-    ctx.fillStyle = "rgba(4,70,93,0.55)"; ctx.fill();
+    ctx.fillStyle = "rgba(27,144,189,0.55)"; ctx.fill();
     ctx.beginPath(); ctx.arc(48,48,20,0,Math.PI*2);
-    ctx.fillStyle = "#FFF7C5"; ctx.fill();
+    ctx.fillStyle = "#FFFFFF"; ctx.fill();
     ctx.beginPath(); ctx.arc(48,48,8,0,Math.PI*2);
-    ctx.fillStyle = "#04465D"; ctx.fill();
+    ctx.fillStyle = "#1B90BD"; ctx.fill();
     const tex = new THREE.CanvasTexture(c);
     const mat = new THREE.SpriteMaterial({ map:tex, depthTest:false, transparent:true });
     const spr = new THREE.Sprite(mat);
-    spr.scale.set(0.34,0.34,0.34);
+    spr.scale.set(0.3,0.3,0.3);
     spr.renderOrder = 999;
     return spr;
   }

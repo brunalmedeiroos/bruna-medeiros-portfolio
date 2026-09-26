@@ -421,145 +421,6 @@ button{ font-family:inherit; cursor:pointer; }
 .mq-carousel-arrow svg{ width:20px; height:20px; }
 
 /* ---------------------------------------------------------------
-   TOUR 3D (texto de um lado, modelo do outro)
---------------------------------------------------------------- */
-.mq-tour-grid{
-  display:grid;
-  grid-template-columns: 0.8fr 1.2fr;
-  gap: 44px;
-  align-items:start;
-}
-.mq-tour-intro .mq-section-head{ margin-bottom: 28px; }
-.mq-tour-shell{
-  background: var(--mq-white);
-  border-radius: var(--mq-radius);
-  overflow:hidden;
-  box-shadow: var(--mq-shadow);
-  border: 1px solid var(--mq-blue-pale-2);
-  position:relative;
-}
-.mq-tour-toolbar{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  justify-content:space-between;
-  align-items:center;
-  padding: 16px 18px;
-  background: var(--mq-blue-pale);
-  border-bottom: 1px solid var(--mq-blue-pale-2);
-}
-.mq-tour-walls{ display:flex; flex-wrap:wrap; gap:8px; }
-.mq-wall-btn{
-  background: var(--mq-white);
-  color: var(--mq-navy);
-  border:1px solid var(--mq-blue-pale-2);
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-size: 12.5px;
-  font-weight:700;
-  transition: background .2s, color .2s;
-}
-.mq-wall-btn:hover{ background: var(--mq-blue-pale-2); }
-.mq-wall-btn.is-active{
-  background: var(--mq-navy);
-  color: var(--mq-white);
-  border-color: var(--mq-navy);
-}
-.mq-tour-actions{ display:flex; gap:8px; }
-.mq-icon-btn{
-  width:36px; height:36px;
-  border-radius:50%;
-  background: var(--mq-white);
-  color: var(--mq-navy);
-  border:1px solid var(--mq-blue-pale-2);
-  display:flex; align-items:center; justify-content:center;
-}
-.mq-icon-btn:hover{ background: var(--mq-blue-pale-2); }
-.mq-icon-btn svg{ width:16px; height:16px; }
-
-.mq-tour-canvas-wrap{
-  position:relative;
-  width:100%;
-  aspect-ratio: 16/9.5;
-  background: linear-gradient(180deg, #EAF6FB, #DCEEF5);
-}
-.mq-tour-canvas-wrap canvas{ width:100% !important; height:100% !important; display:block; }
-
-.mq-tour-hint{
-  position:absolute;
-  left:16px; bottom:16px;
-  color: var(--mq-navy);
-  font-size: 11.5px;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  pointer-events:none;
-  background: rgba(255,255,255,0.85);
-  padding: 6px 12px;
-  border-radius:999px;
-  border: 1px solid var(--mq-blue-pale-2);
-}
-.mq-tour-loading{
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:center;
-  flex-direction:column; gap:12px;
-  color: var(--mq-navy);
-  font-size:13px;
-  transition: opacity .4s ease;
-}
-.mq-tour-loading.is-hidden{ opacity:0; pointer-events:none; }
-.mq-spinner{
-  width:26px; height:26px;
-  border-radius:50%;
-  border: 2.5px solid var(--mq-blue-pale-2);
-  border-top-color: var(--mq-navy);
-  animation: mq-spin 0.9s linear infinite;
-}
-@keyframes mq-spin{ to{ transform: rotate(360deg); } }
-
-.mq-hotspot-panel{
-  position:absolute;
-  right:16px; top:16px;
-  width: 260px;
-  max-width: calc(100% - 32px);
-  background: rgba(255,255,255,0.96);
-  backdrop-filter: blur(8px);
-  border:1px solid var(--mq-blue-pale-2);
-  border-radius: 16px;
-  padding: 18px;
-  color: var(--mq-ink);
-  box-shadow: var(--mq-shadow);
-  transform: translateX(120%);
-  opacity:0;
-  transition: transform .3s ease, opacity .3s ease;
-  pointer-events:none;
-}
-.mq-hotspot-panel.is-open{
-  transform: translateX(0);
-  opacity:1;
-  pointer-events:auto;
-}
-.mq-hotspot-panel .mq-tag{ background: var(--mq-blue-pale); color: var(--mq-navy); margin-bottom:10px; display:inline-block; }
-.mq-hotspot-panel h4{ font-family: var(--mq-font-display); font-size:17px; margin-bottom:6px; color: var(--mq-navy); }
-.mq-hotspot-panel p{ font-size:12.5px; line-height:1.55; color: var(--mq-ink-65); margin-bottom:12px; }
-.mq-hotspot-panel .mq-status{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color: var(--mq-navy); margin-bottom:10px; display:block; }
-.mq-hotspot-close{
-  position:absolute; top:12px; right:12px;
-  width:22px; height:22px; border-radius:50%;
-  background: var(--mq-blue-pale); color: var(--mq-navy);
-  display:flex; align-items:center; justify-content:center;
-  font-size:14px; line-height:1; border:none;
-}
-
-.mq-tour-legend{
-  padding: 16px 18px;
-  background: var(--mq-white);
-  color: var(--mq-ink-40);
-  font-size: 12px;
-  border-top: 1px solid var(--mq-ink-08);
-}
-
-/* ---------------------------------------------------------------
    CASA E DECORAÇÃO (vídeos)
 --------------------------------------------------------------- */
 .mq-videos-grid{
@@ -757,7 +618,6 @@ button{ font-family:inherit; cursor:pointer; }
 @media (max-width: 980px){
   .mq-sobre-grid{ grid-template-columns: 1fr; }
   .mq-sobre-photo{ aspect-ratio: 4/4.6; }
-  .mq-tour-grid{ grid-template-columns: 1fr; }
   .mq-videos-grid{ grid-template-columns: repeat(2,1fr); }
   .mq-frentes-grid{ grid-template-columns: 1fr; }
   .mq-planos-grid{ grid-template-columns: 1fr; }
@@ -773,9 +633,6 @@ button{ font-family:inherit; cursor:pointer; }
   .mq-nav-cta{ padding:9px 14px; font-size:12px; }
   .mq-hero{ padding: 64px 0 52px; }
   .mq-hero-deco{ display:none; }
-  .mq-tour-toolbar{ flex-direction:column; align-items:stretch; }
-  .mq-tour-actions{ justify-content:flex-end; }
-  .mq-hotspot-panel{ left:16px; right:16px; width:auto; }
   .mq-opp-list{ grid-template-columns: 1fr; }
   .mq-videos-grid{ grid-template-columns: repeat(2,1fr); gap:10px; }
   .mq-carousel-body{ padding: 22px 20px 26px; }

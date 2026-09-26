@@ -1,8 +1,8 @@
 /* =====================================================================
    DADOS DO PROJETO / brunamedeiros.com/meuquarto
-   Fonte única de verdade usada pelo tour 3D, pela galeria de paredes
-   e pelo mapa de oportunidades. Editar aqui reflete no site inteiro,
-   sem precisar mexer no HTML.
+   Fonte única de verdade usada pela galeria de paredes e pelo mapa de
+   oportunidades. Editar aqui reflete no site inteiro, sem precisar
+   mexer no HTML.
 ===================================================================== */
 
 const QUARTO_DATA = {
@@ -45,27 +45,6 @@ const QUARTO_DATA = {
       categorias: ["decoracao", "moveis"]
     }
   ],
-
-  /* ---------------------------------------------------------------
-     PLANTA BAIXA E MEDIDAS REAIS
-     Não exibidas como seção no site, mas usadas para dimensionar
-     o tour 3D. Fonte: medição pessoal. Não inventar portas, nichos,
-     móveis ou medidas além destas.
-  --------------------------------------------------------------- */
-  planta: {
-    imagem: "img/projeto/planta-baixa.webp",
-    pedDireito: 2.70,
-    paredes: [
-      { id: "penteadeira", nome: "Parede da Penteadeira", largura: 3.00, altura: 2.70, area: 8.10, acabamento: "Cerâmica" },
-      { id: "tv",          nome: "Parede da TV",          largura: 3.31, altura: 2.70, area: 8.94, acabamento: "Cerâmica" },
-      { id: "janela",      nome: "Parede da Janela",      largura: 2.94, altura: 2.70, area: 7.94, acabamento: "Pintura" },
-      { id: "cama",        nome: "Parede da Cama",        largura: 4.29, altura: 2.70, area: 11.58, acabamento: "Pintura" }
-    ],
-    totais: [
-      { acabamento: "Cerâmica", area: 17.04, referenciaCompra: 20 },
-      { acabamento: "Pintura",  area: 19.52, referenciaCompra: 23 }
-    ]
-  },
 
   /* ---------------------------------------------------------------
      MAPA DE OPORTUNIDADES

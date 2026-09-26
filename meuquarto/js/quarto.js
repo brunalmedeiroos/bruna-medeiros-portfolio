@@ -1,5 +1,5 @@
 /* =====================================================================
-   MEUQUARTO / interações gerais da página (fora do tour 3D)
+   MEUQUARTO / interações gerais da página
    Lê os dados de QUARTO_DATA (js/dados-quarto.js) e monta as seções
    dinamicamente, então atualizar um plano ou uma pergunta do FAQ é
    só editar o arquivo de dados.

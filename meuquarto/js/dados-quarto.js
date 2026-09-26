@@ -98,7 +98,6 @@ const QUARTO_DATA = {
         "2 fotos do produto no ambiente",
         "Sequência de 3 Stories com link para o produto"
       ],
-      nota: "Ideal para marcas que querem inserir um produto no projeto e testar uma primeira parceria.",
       cta: "Quero esse formato"
     },
     {

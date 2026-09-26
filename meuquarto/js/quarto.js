@@ -133,12 +133,13 @@
     el.innerHTML = QUARTO_DATA.planos.map(p => `
       <div class="mq-plano-card">
         <span class="mq-plano-num">${p.numero}</span>
+        <div class="mq-plano-tag">${p.categoria}</div>
         <h3>${p.nome}</h3>
-        <div class="mq-plano-tag">${p.tag}</div>
         <p class="mq-plano-para">${p.paragrafo}</p>
         <ul class="mq-plano-inclui">${p.inclui.map(i=>`<li>${i}</li>`).join("")}</ul>
+        ${p.nota ? `<p class="mq-plano-nota">${p.nota}</p>` : ""}
         <a class="mq-plano-cta" target="_blank" rel="noopener"
-           href="${waLink(`Oi, Bruna! Vi o projeto do seu quarto e quero participar no formato "${p.numero}, ${p.nome}".`)}">
+           href="${waLink(`Oi, Bruna! Vi o projeto do seu quarto e quero participar no formato "${p.categoria}".`)}">
           ${p.cta} <span aria-hidden="true">↗</span>
         </a>
       </div>
@@ -152,7 +153,7 @@
     el.innerHTML = QUARTO_DATA.frentes.map(f => `
       <div class="mq-frente-card">
         <h4>${f.titulo}</h4>
-        <ul>${f.itens.map(i=>`<li>${i}</li>`).join("")}</ul>
+        <p>${f.texto}</p>
       </div>
     `).join("");
   }

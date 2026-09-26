@@ -89,60 +89,66 @@ const QUARTO_DATA = {
   planos: [
     {
       numero: "01",
-      nome: "Produto",
-      tag: "Item a item",
-      paragrafo: "A marca entra com um produto específico, que é integrado naturalmente ao quarto e à história da reforma.",
+      categoria: "Produto",
+      nome: "Uma participação pontual.",
+      paragrafo: "Sua marca entra com um produto específico que fará parte do quarto, através de uma entrega, sendo um vídeo UGC ou uma participação pontual na minha reforma.",
       inclui: [
-        "Produto integrado ao projeto",
-        "1 conteúdo relacionado ao produto",
-        "Fotos do produto no ambiente",
-        "Menção da marca no projeto"
+        "1 vídeo, sendo UGC para a marca ou participação em um conteúdo da reforma",
+        "Produto integrado ao quarto",
+        "2 fotos do produto no ambiente",
+        "Sequência de 3 Stories com link para o produto"
       ],
+      nota: "Ideal para marcas que querem inserir um produto no projeto e testar uma primeira parceria.",
       cta: "Quero esse formato"
     },
     {
       numero: "02",
-      nome: "Ambiente",
-      tag: "Um espaço inteiro",
-      paragrafo: "A marca participa da construção de uma área específica do quarto, como a penteadeira ou o home office.",
+      categoria: "Ambiente",
+      nome: "Uma área inteira do quarto.",
+      paragrafo: "Sua marca participa da transformação de um espaço específico, tornando-se parte da construção daquele ambiente e aparecendo ao longo desse projeto.",
       inclui: [
-        "Produtos necessários para aquele ambiente",
-        "Conteúdos da transformação",
-        "Fotos do ambiente finalizado",
-        "Destaque da marca dentro do projeto"
+        "Produtos necessários para o ambiente",
+        "2 a 3 conteúdos dedicados ao ambiente",
+        "Story da chegada e instalação",
+        "Conteúdo mostrando a transformação",
+        "Presença da marca nos conteúdos relacionados ao ambiente",
+        "Fotos do ambiente finalizado em alta resolução",
+        "Direito de uso por 3 meses",
+        "Produto e cachê de produção"
       ],
       cta: "Quero esse formato"
     },
     {
       numero: "03",
-      nome: "Projeto",
-      tag: "Ao longo de toda a reforma",
-      paragrafo: "A marca se torna uma das principais parceiras da reforma, presente em diferentes momentos da transformação.",
+      categoria: "Projeto",
+      nome: "Uma parceria contínua durante a reforma.",
+      paragrafo: "Sua marca se torna uma das parceiras da transformação e acompanha diferentes momentos da reforma, desde a escolha até o resultado final.",
       inclui: [
-        "Participação em uma parte relevante da reforma",
-        "Conteúdos durante diferentes etapas",
-        "Presença no projeto 3D",
-        "Possibilidade de exclusividade na categoria"
+        "4 a 6 conteúdos dedicados",
+        "Presença em diferentes momentos da reforma",
+        "Presença nas três fases: escolha, transformação e resultado",
+        "Série de Stories acompanhando a parceria",
+        "Presença natural da marca nos conteúdos da reforma",
+        "Fotos do ambiente finalizado em alta resolução",
+        "Direito de uso e posicionamento por 6 meses",
+        "Exclusividade na categoria durante a reforma",
+        "Produto e cachê de produção"
       ],
       cta: "Quero esse formato"
     }
   ],
 
   /* ---------------------------------------------------------------
-     TRÊS FRENTES DE CONTEÚDO
+     DUAS FRENTES DE CONTEÚDO
   --------------------------------------------------------------- */
   frentes: [
     {
       titulo: "Conteúdo para a marca",
-      itens: ["UGC", "Vídeos de produto", "Fotos", "Vídeos para anúncios", "Conteúdo para site", "Outros formatos combinados"]
+      texto: "Conteúdos produzidos para a sua marca utilizar em seus próprios canais, como vídeos UGC, fotos, anúncios, site e outros formatos combinados."
     },
     {
       titulo: "Conteúdo no meu perfil",
-      itens: ["TikTok", "Reels", "Stories", "Vídeos da reforma", "Bastidores", "Rotina usando os produtos"]
-    },
-    {
-      titulo: "Presença no projeto",
-      itens: ["Produto dentro do quarto", "Tour 3D", "Fotos do ambiente", "Antes e depois", "Destaque dentro do projeto"]
+      texto: "A marca entra na narrativa da minha reforma através dos conteúdos publicados no meu TikTok, Instagram e Stories, fazendo parte do diário de transformação do quarto."
     }
   ],
 

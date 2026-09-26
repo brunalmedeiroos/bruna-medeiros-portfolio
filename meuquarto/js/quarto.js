@@ -1,8 +1,8 @@
 /* =====================================================================
    MEUQUARTO / interações gerais da página (fora do tour 3D)
    Lê os dados de QUARTO_DATA (js/dados-quarto.js) e monta as seções
-   dinamicamente, então atualizar o cronograma, o status de um item
-   procurado ou uma pergunta do FAQ é só editar o arquivo de dados.
+   dinamicamente, então atualizar um plano, um item procurado ou uma
+   pergunta do FAQ é só editar o arquivo de dados.
 ===================================================================== */
 
 (function(){
@@ -30,7 +30,7 @@
   const catIcon = id => `<svg viewBox="0 0 24 24" fill="none">${ICONS[id] || ICONS.box}</svg>`;
 
   function catName(id){
-    const c = QUARTO_DATA.categorias.find(c=>c.id===id);
+    const c = QUARTO_DATA.oportunidades.find(c=>c.id===id);
     return c ? c.nome : id;
   }
 
@@ -93,112 +93,54 @@
     paint();
   }
 
-  /* ---------------- PLANTA BAIXA E MEDIDAS ---------------- */
-  function renderPlanta(){
-    const planta = QUARTO_DATA.planta;
-    const pedEl = document.getElementById("mqPedireito");
-    if (pedEl) pedEl.textContent = `${planta.pedDireito.toFixed(2).replace(".", ",")} m`;
-
-    const body = document.getElementById("mqMedidasBody");
-    if (body){
-      body.innerHTML = planta.paredes.map(p => `
-        <tr>
-          <td>${p.nome}</td>
-          <td>${p.largura.toFixed(2).replace(".", ",")} m</td>
-          <td>${p.area.toFixed(2).replace(".", ",")} m²</td>
-          <td><span class="mq-acabamento-tag ${p.acabamento === "Cerâmica" ? "ceramica" : "pintura"}">${p.acabamento}</span></td>
-        </tr>
-      `).join("");
-    }
-
-    const totaisEl = document.getElementById("mqPlantaTotais");
-    if (totaisEl){
-      totaisEl.innerHTML = planta.totais.map(t => `
-        <div class="mq-planta-total">
-          <b>${t.area.toFixed(2).replace(".", ",")} m²</b>
-          <span>${t.acabamento}, referência de compra: ${t.referenciaCompra} m²</span>
-        </div>
-      `).join("");
-    }
-  }
-
-  /* ---------------- OPORTUNIDADES (6 + ver todos) ---------------- */
-  function renderCategorias(){
-    const main = document.getElementById("mqCatGrid");
-    const extra = document.getElementById("mqCatGridExtra");
-    const btn = document.getElementById("mqCatMoreBtn");
-    if (!main || !extra) return;
-
-    const principais = QUARTO_DATA.categorias.filter(c => c.principal);
-    const resto = QUARTO_DATA.categorias.filter(c => !c.principal);
-
-    const card = c => `
-      <div class="mq-cat-card">
-        <div class="mq-cat-icon">${catIcon(c.icone)}</div>
-        <span>${c.nome}</span>
-      </div>
-    `;
-
-    main.innerHTML = principais.map(card).join("");
-    extra.innerHTML = resto.map(card).join("");
-
-    if (btn){
-      btn.addEventListener("click", ()=>{
-        const expanded = !extra.classList.contains("mq-cat-hidden");
-        extra.classList.toggle("mq-cat-hidden", expanded);
-        btn.textContent = expanded ? "Ver todos" : "Ver menos";
-      });
-    }
-  }
-
-  /* ---------------- O QUE ESTOU PROCURANDO ---------------- */
-  function renderProcurando(){
-    const el = document.getElementById("mqProcurandoList");
+  /* ---------------- MAPA DE OPORTUNIDADES (hover/toque revela itens) ---------------- */
+  function renderOportunidades(){
+    const el = document.getElementById("mqOppGrid");
     if (!el) return;
-    const statusLabel = { procurando:"Procurando", conversando:"Em conversa", fechado:"Fechado" };
-    el.innerHTML = QUARTO_DATA.procurando.map(i => {
-      const paredeLabel = i.paredeLabel || (QUARTO_DATA.paredes.find(p=>p.id===i.parede)||{}).nome || "";
-      return `
-      <div class="mq-procurando-item">
-        <div class="mq-pi-main">
-          <h4>${i.item}</h4>
-          <p>${catName(i.categoria)}, ${paredeLabel}</p>
+
+    el.innerHTML = QUARTO_DATA.oportunidades.map(c => `
+      <div class="mq-opp-card" tabindex="0" data-id="${c.id}">
+        <div class="mq-opp-head">
+          <div class="mq-opp-icon">${catIcon(c.icone)}</div>
+          <span>${c.nome}</span>
         </div>
-        <span class="mq-status-badge mq-status-${i.status}">${statusLabel[i.status] || i.status}</span>
+        <div class="mq-opp-reveal">
+          <ul>${c.itens.map(i=>`<li>${i}</li>`).join("")}</ul>
+        </div>
       </div>
-    `;}).join("");
+    `).join("");
+
+    const cards = el.querySelectorAll(".mq-opp-card");
+    cards.forEach(card=>{
+      card.addEventListener("click", ()=>{
+        const willOpen = !card.classList.contains("is-open");
+        cards.forEach(c=> c.classList.remove("is-open"));
+        if (willOpen) card.classList.add("is-open");
+      });
+    });
+
+    document.addEventListener("click", (ev)=>{
+      if (!ev.target.closest(".mq-opp-card")){
+        cards.forEach(c=> c.classList.remove("is-open"));
+      }
+    });
   }
 
-  /* ---------------- PLANOS DE PARCERIA (editorial) ---------------- */
+  /* ---------------- PLANOS DE PARCERIA ---------------- */
   function renderPlanos(){
-    const el = document.getElementById("mqPlanosRow");
+    const el = document.getElementById("mqPlanosGrid");
     if (!el) return;
     el.innerHTML = QUARTO_DATA.planos.map(p => `
-      <div class="mq-plano-row">
-        <div class="mq-plano-num">${p.numero}</div>
-        <div class="mq-plano-heading">
-          <h3>${p.nome}</h3>
-          <div class="mq-plano-sub">${p.subtitulo}</div>
-          <p class="mq-plano-para">${p.paraQuem}</p>
-          <div class="mq-plano-exemplos">${p.exemplos.map(e=>`<span>${e}</span>`).join("")}</div>
-        </div>
-        <div class="mq-plano-body">
-          <div>
-            <div class="mq-plano-label">O que inclui</div>
-            <ul class="mq-plano-inclui">${p.inclui.map(i=>`<li>${i}</li>`).join("")}</ul>
-          </div>
-          ${p.narrativa ? `
-            <div>
-              <div class="mq-plano-label">Como a história pode ser contada</div>
-              <div class="mq-plano-narrativa" style="margin-top:8px;">${p.narrativa.map((n,idx)=>`<span>${n}</span>${idx<p.narrativa.length-1?'<span class="arrow">→</span>':''}`).join("")}</div>
-            </div>
-          ` : ""}
-          <p class="mq-plano-note">${p.nota}</p>
-          <a class="mq-btn mq-btn-primary mq-plano-cta" target="_blank" rel="noopener"
-             href="${waLink(`Oi, Bruna! Vi o projeto do seu quarto e quero participar no formato "${p.numero}, ${p.nome}".`)}">
-            ${p.cta}
-          </a>
-        </div>
+      <div class="mq-plano-card">
+        <span class="mq-plano-num">${p.numero}</span>
+        <h3>${p.nome}</h3>
+        <div class="mq-plano-tag">${p.tag}</div>
+        <p class="mq-plano-para">${p.paragrafo}</p>
+        <ul class="mq-plano-inclui">${p.inclui.map(i=>`<li>${i}</li>`).join("")}</ul>
+        <a class="mq-plano-cta" target="_blank" rel="noopener"
+           href="${waLink(`Oi, Bruna! Vi o projeto do seu quarto e quero participar no formato "${p.numero}, ${p.nome}".`)}">
+          ${p.cta} <span aria-hidden="true">↗</span>
+        </a>
       </div>
     `).join("");
   }
@@ -211,29 +153,6 @@
       <div class="mq-frente-card">
         <h4>${f.titulo}</h4>
         <ul>${f.itens.map(i=>`<li>${i}</li>`).join("")}</ul>
-      </div>
-    `).join("");
-  }
-
-  /* ---------------- MOMENTOS DE CONTEÚDO ---------------- */
-  function renderMomentos(){
-    const el = document.getElementById("mqMomentos");
-    if (el) el.innerHTML = QUARTO_DATA.momentosConteudo.map(m=>`<span class="mq-chip">${m}</span>`).join("");
-  }
-
-  /* ---------------- ETAPAS DO PROCESSO ---------------- */
-  function renderEtapas(){
-    const note = document.getElementById("mqInicioReforma");
-    if (note) note.textContent = QUARTO_DATA.inicioReforma;
-
-    const el = document.getElementById("mqEtapas");
-    if (!el) return;
-    el.innerHTML = QUARTO_DATA.etapas.map((e,idx) => `
-      ${idx > 0 ? `<div class="mq-etapa-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></div>` : ""}
-      <div class="mq-etapa">
-        <span class="mq-etapa-num">${idx+1}</span>
-        <h4>${e.nome}</h4>
-        <p>${e.descricao}</p>
       </div>
     `).join("");
   }
@@ -315,13 +234,9 @@
   /* ---------------- INIT ---------------- */
   document.addEventListener("DOMContentLoaded", ()=>{
     renderCarousel();
-    renderPlanta();
-    renderCategorias();
-    renderProcurando();
+    renderOportunidades();
     renderPlanos();
     renderFrentes();
-    renderMomentos();
-    renderEtapas();
     renderFaq();
     initLightbox();
     initNav();

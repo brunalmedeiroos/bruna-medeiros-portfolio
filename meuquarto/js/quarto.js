@@ -157,13 +157,6 @@
         }
       });
     });
-
-    if (el.firstElementChild){
-      el.firstElementChild.classList.add("is-open");
-      const ans = el.firstElementChild.querySelector(".mq-faq-a");
-      ans.style.maxHeight = ans.scrollHeight + "px";
-      el.firstElementChild.querySelector(".mq-faq-q").setAttribute("aria-expanded","true");
-    }
   }
 
   /* ---------------- LIGHTBOX ---------------- */

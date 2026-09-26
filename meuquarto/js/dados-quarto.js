@@ -58,7 +58,6 @@ const QUARTO_DATA = {
     { id: "conforto",     nome: "Conforto",     icone: "bed",   itens: ["Roupa de cama", "Poltrona", "Tapete"] },
     { id: "reforma",      nome: "Reforma",      icone: "roller",itens: ["Tinta", "Ferramentas"] },
     { id: "eletronicos",  nome: "Eletrônicos",  icone: "tv",    itens: ["Televisão"] },
-    { id: "aromatizacao", nome: "Aromatização", icone: "spray", itens: ["Vela aromática", "Aromatizadores de ambiente"] },
     { id: "tecnologia",   nome: "Tecnologia",   icone: "wifi",  itens: ["Interruptor inteligente", "Alexa"] }
   ],
 

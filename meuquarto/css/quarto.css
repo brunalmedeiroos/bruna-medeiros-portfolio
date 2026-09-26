@@ -77,7 +77,7 @@ button{ font-family:inherit; cursor:pointer; }
   letter-spacing: -0.01em;
   color: var(--mq-ink);
 }
-.mq-title .accent{ font-style: italic; color: var(--mq-navy); }
+.mq-title .accent{ font-style: italic; color: var(--mq-blue); }
 
 .mq-lede{
   font-size: clamp(15px, 1.6vw, 17.5px);
@@ -221,7 +221,7 @@ button{ font-family:inherit; cursor:pointer; }
   margin-bottom: 22px;
 }
 .mq-hero h1 .accent{
-  color: var(--mq-navy);
+  color: var(--mq-blue);
   font-style: italic;
 }
 .mq-hero-actions{
@@ -581,6 +581,14 @@ button{ font-family:inherit; cursor:pointer; }
   font-size:13.5px;
   color: rgba(255,255,255,0.95);
   font-weight:600;
+  padding-left:14px;
+  position:relative;
+}
+.mq-opp-reveal li::before{
+  content:"•";
+  position:absolute;
+  left:0;
+  color: rgba(255,255,255,0.75);
 }
 
 /* ---------------------------------------------------------------
@@ -607,15 +615,16 @@ button{ font-family:inherit; cursor:pointer; }
   font-weight:700;
   color: var(--mq-ink-40);
 }
-.mq-plano-card h3{ font-size:24px; margin-bottom:6px; padding-right:30px; }
 .mq-plano-tag{
   font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
-  color: var(--mq-wood-dark); margin-bottom:16px;
+  color: var(--mq-wood-dark); margin-bottom:8px; padding-right:30px;
 }
+.mq-plano-card h3{ font-size:23px; line-height:1.25; margin-bottom:16px; padding-right:30px; }
 .mq-plano-para{ font-size:13.8px; color: var(--mq-ink-65); line-height:1.6; margin-bottom:20px; }
-.mq-plano-inclui{ list-style:none; display:flex; flex-direction:column; gap:10px; margin-bottom:26px; flex:1; }
+.mq-plano-inclui{ list-style:none; display:flex; flex-direction:column; gap:10px; margin-bottom:16px; flex:1; }
 .mq-plano-inclui li{ font-size:13.5px; color: var(--mq-ink); display:flex; gap:9px; line-height:1.4; }
 .mq-plano-inclui li::before{ content:"✓"; color: var(--mq-blue); font-weight:700; flex-shrink:0; }
+.mq-plano-nota{ font-size:12.5px; color: var(--mq-ink-40); font-style:italic; line-height:1.5; margin-bottom:20px; }
 .mq-plano-cta{
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
   background: var(--mq-navy); color: var(--mq-white);
@@ -628,13 +637,11 @@ button{ font-family:inherit; cursor:pointer; }
 
 .mq-planos-outro{ text-align:center; margin-top:36px; color: rgba(255,255,255,0.7); font-size:13.5px; }
 
-/* frentes de conteúdo */
-.mq-frentes-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap:18px; margin-top:36px; }
-.mq-frente-card{ background: var(--mq-white); border-radius: var(--mq-radius-sm); padding:24px; }
-.mq-frente-card h4{ font-size:15.5px; margin-bottom:12px; color: var(--mq-navy); }
-.mq-frente-card ul{ list-style:none; display:flex; flex-direction:column; gap:7px; }
-.mq-frente-card li{ font-size:13px; color: var(--mq-ink-65); padding-left:16px; position:relative; }
-.mq-frente-card li::before{ content:"+"; position:absolute; left:0; color: var(--mq-blue); font-weight:700; }
+/* duas frentes de conteúdo */
+.mq-frentes-grid{ display:grid; grid-template-columns: repeat(2,1fr); gap:18px; margin-top:36px; }
+.mq-frente-card{ background: var(--mq-white); border-radius: var(--mq-radius-sm); padding:28px; }
+.mq-frente-card h4{ font-size:16.5px; margin-bottom:12px; color: var(--mq-navy); }
+.mq-frente-card p{ font-size:13.8px; color: var(--mq-ink-65); line-height:1.65; }
 
 /* ---------------------------------------------------------------
    FAQ

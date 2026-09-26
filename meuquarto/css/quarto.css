@@ -756,7 +756,7 @@ button{ font-family:inherit; cursor:pointer; }
 --------------------------------------------------------------- */
 @media (max-width: 980px){
   .mq-sobre-grid{ grid-template-columns: 1fr; }
-  .mq-sobre-photo{ aspect-ratio: 4/3; }
+  .mq-sobre-photo{ aspect-ratio: 4/4.6; }
   .mq-tour-grid{ grid-template-columns: 1fr; }
   .mq-videos-grid{ grid-template-columns: repeat(2,1fr); }
   .mq-frentes-grid{ grid-template-columns: 1fr; }

@@ -282,6 +282,11 @@ button{ font-family:inherit; cursor:pointer; }
   height:100%;
   box-shadow: var(--mq-shadow);
 }
+.mq-sobre-text{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
 .mq-sobre-photo img{
   width:100%;
   height:100%;

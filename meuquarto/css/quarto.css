@@ -132,6 +132,12 @@ button{ font-family:inherit; cursor:pointer; }
   background: var(--mq-navy);
   color: var(--mq-white);
 }
+.mq-nav-ctas{
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
 .mq-nav-cta{
   flex-shrink:0;
   display:inline-flex;
@@ -148,6 +154,13 @@ button{ font-family:inherit; cursor:pointer; }
   transition: background .2s;
 }
 .mq-nav-cta:hover{ background: #032f40; }
+.mq-nav-cta-ghost{
+  background: transparent;
+  color: var(--mq-navy);
+  border: 1.5px solid var(--mq-blue-pale-2);
+  box-shadow: none;
+}
+.mq-nav-cta-ghost:hover{ background: var(--mq-blue-pale); border-color: var(--mq-blue); }
 
 /* ---------------------------------------------------------------
    HERO (centralizado, sem foto)

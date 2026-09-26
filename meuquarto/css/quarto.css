@@ -449,6 +449,7 @@ button{ font-family:inherit; cursor:pointer; }
 .mq-opp-row{
   padding: 24px 0;
   border-bottom: 1px solid var(--mq-ink-08);
+  text-align:center;
 }
 .mq-opp-row h4{
   font-family: var(--mq-font-display);

@@ -288,25 +288,6 @@ button{ font-family:inherit; cursor:pointer; }
 .mq-section--dark .mq-btn-ghost:hover{ background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
 .mq-btn-lg{ padding: 17px 32px; font-size: 15px; }
 
-/* moldura de foto reservada (reutilizada no Hero antigo e na seção Sobre) */
-.mq-photo-slot{
-  width:100%; height:100%;
-  border-radius: var(--mq-radius);
-  border: 2px dashed var(--mq-blue-pale-2);
-  background: var(--mq-blue-pale);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:14px;
-  text-align:center;
-  padding: 32px;
-  color: var(--mq-blue);
-}
-.mq-photo-slot svg{ width:38px; height:38px; opacity:.8; }
-.mq-photo-slot strong{ font-family: var(--mq-font-display); font-size:18px; color: var(--mq-navy); }
-.mq-photo-slot span{ font-size:12.5px; color: var(--mq-ink-65); max-width:260px; }
-
 /* ---------------------------------------------------------------
    SOBRE MIM
 --------------------------------------------------------------- */
@@ -321,6 +302,14 @@ button{ font-family:inherit; cursor:pointer; }
   border-radius: var(--mq-radius);
   overflow:hidden;
   aspect-ratio: 4/4.6;
+  box-shadow: var(--mq-shadow);
+}
+.mq-sobre-photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position: 50% 18%;
+  display:block;
 }
 .mq-sobre-greeting{
   font-family: var(--mq-font-display);

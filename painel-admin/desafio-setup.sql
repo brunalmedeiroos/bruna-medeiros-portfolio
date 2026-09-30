@@ -22,6 +22,7 @@ create or replace function public.is_owner()
 returns boolean
 language sql
 stable
+set search_path = public
 as $$
   select coalesce(auth.jwt() ->> 'email', '') = 'medeirosbru6@gmail.com';
 $$;
@@ -105,6 +106,11 @@ drop trigger if exists on_auth_user_created_desafio on auth.users;
 create trigger on_auth_user_created_desafio
   after insert on auth.users
   for each row execute function public.desafio_criar_perfil();
+
+-- function de trigger não deveria ser chamável direto via API por
+-- ninguém — revogar o EXECUTE não afeta o trigger em si (o Postgres
+-- invoca triggers internamente, sem checar EXECUTE).
+revoke execute on function public.desafio_criar_perfil() from public, anon, authenticated;
 
 -- ---------------------------------------------------------------------
 -- Tabela: desafio_dias

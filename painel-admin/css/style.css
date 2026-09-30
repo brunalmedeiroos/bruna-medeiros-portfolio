@@ -471,15 +471,6 @@ input:focus {
   gap: 24px;
 }
 
-.desafio-ugc-iframe {
-  display: block;
-  width: 100%;
-  height: calc(100vh - 250px);
-  min-height: 640px;
-  border: none;
-  background: transparent;
-}
-
 /* O atributo hidden precisa vencer o display:flex acima (mesma especificidade,
    mas a regra do autor venceria a do agente de usuário sem isto). */
 .tab-panel[hidden] {

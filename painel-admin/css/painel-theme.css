@@ -7152,7 +7152,6 @@
   padding-right: 64px;
 }
 
-.painel-body .pg-capa-nav .desafio-subnav,
 .painel-body .pg-capa-nav #pl-hub {
   margin: 0;
   display: flex;
@@ -7160,7 +7159,6 @@
   gap: 8px;
 }
 
-.painel-body .pg-capa-nav .desafio-subnav-btn,
 .painel-body .pg-capa-nav .pl-hub-card {
   background: rgba(255, 255, 255, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -7174,16 +7172,9 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.painel-body .pg-capa-nav .desafio-subnav-btn:hover,
 .painel-body .pg-capa-nav .pl-hub-card:hover {
   background: rgba(255, 255, 255, 0.3);
   color: var(--branco);
-}
-
-.painel-body .pg-capa-nav .desafio-subnav-btn.ativo {
-  background: var(--branco);
-  border-color: var(--branco);
-  color: var(--coral-hover);
 }
 
 /* ---- Abordagem por marca (Base de contatos) ---- */

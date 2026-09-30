@@ -235,6 +235,23 @@ create policy "bonus - escrita so dona" on public.desafio_bonus
 -- subir vídeo igual uma participante, pra documentar sua própria
 -- jornada, mas não entra no ranking — quem pontua são as alunas.
 -- ---------------------------------------------------------------------
+-- security definer pq auth.users não pode ser referenciada direto
+-- dentro da view (o linter de segurança do Supabase sinaliza qualquer
+-- view pública que toque em auth.users, mesmo só numa subquery de
+-- filtro) — então a checagem de "quem é a dona" fica isolada aqui.
+create or replace function public.desafio_owner_id()
+returns uuid
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select id from auth.users where email = 'medeirosbru6@gmail.com' limit 1;
+$$;
+
+revoke all on function public.desafio_owner_id() from public;
+grant execute on function public.desafio_owner_id() to authenticated;
+
 create or replace view public.desafio_ranking as
 select
   p.id as participante_id,
@@ -251,10 +268,7 @@ select
 from public.desafio_perfis p
 left join public.desafio_conclusoes c on c.participante_id = p.id
 left join public.desafio_dias d on d.id = c.dia_id
-where not exists (
-  select 1 from auth.users u
-  where u.id = p.id and u.email = 'medeirosbru6@gmail.com'
-)
+where p.id <> public.desafio_owner_id()
 group by p.id, p.nome, p.instagram;
 
 grant select on public.desafio_ranking to authenticated;

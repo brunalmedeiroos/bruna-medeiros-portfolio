@@ -8228,11 +8228,6 @@
     function renderizarFileiraPilares() {
       const strip = document.getElementById('pl-pilar-strip');
       strip.innerHTML = '';
-      if (pilarSelecionadoId) {
-        const pilar = pilaresCache.find((p) => p.id === pilarSelecionadoId);
-        if (pilar) strip.appendChild(criarCardPilar(pilar));
-        return;
-      }
       pilaresCache.forEach((pilar) => strip.appendChild(criarCardPilar(pilar)));
       strip.appendChild(criarBotaoNovoPilar());
     }

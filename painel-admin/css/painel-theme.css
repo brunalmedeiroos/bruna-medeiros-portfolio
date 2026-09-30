@@ -2333,6 +2333,7 @@
 }
 
 .painel-body .pl-pilar-card {
+  position: relative;
   background: var(--branco);
   border: 1px solid var(--borda);
   border-radius: var(--raio-sm);
@@ -2342,7 +2343,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 
@@ -2379,13 +2379,24 @@
 }
 
 .painel-body .pl-pilar-card-acoes {
+  position: absolute;
+  top: -9px;
+  right: -6px;
   display: flex;
-  gap: 2px;
-  flex-shrink: 0;
+  gap: 4px;
 }
 
-.painel-body .pl-pilar-card.is-selecionado .pl-pilar-card-acoes {
-  color: var(--branco);
+.painel-body .pl-pilar-card-acoes .cal-btn-icon {
+  width: 22px;
+  height: 22px;
+  background: var(--branco);
+  color: var(--coral);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+.painel-body .pl-pilar-card-acoes .cal-btn-icon svg {
+  width: 10px;
+  height: 10px;
 }
 
 .painel-body .pl-pilar-card-novo {

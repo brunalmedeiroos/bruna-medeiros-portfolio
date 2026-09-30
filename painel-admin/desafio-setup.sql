@@ -249,7 +249,10 @@ as $$
   select id from auth.users where email = 'medeirosbru6@gmail.com' limit 1;
 $$;
 
-revoke all on function public.desafio_owner_id() from public;
+-- "from public" sozinho não basta: no Supabase, anon e authenticated
+-- recebem EXECUTE por uma default privilege própria (não herdada de
+-- public), então precisam ser revogados explicitamente também.
+revoke execute on function public.desafio_owner_id() from public, anon, authenticated;
 grant execute on function public.desafio_owner_id() to authenticated;
 
 create or replace view public.desafio_ranking as

@@ -19,7 +19,9 @@ create table if not exists public.financeiro_transacoes (
   data date not null,
   categoria_pluggy text,
   -- null = ainda não classificada; a Bruna marca na interface.
-  classificacao text check (classificacao in ('negocio', 'pessoal'))
+  -- 'ignorado' = ela escolheu não classificar (ex: não lembra o que foi) —
+  -- some de todas as listas, sem entrar em negócio nem pessoal.
+  classificacao text check (classificacao in ('negocio', 'pessoal', 'ignorado'))
 );
 
 create index if not exists financeiro_transacoes_data_idx on public.financeiro_transacoes (data desc);

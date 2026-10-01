@@ -1148,7 +1148,7 @@ create table if not exists public.financeiro_transacoes (
   tipo text not null check (tipo in ('DEBIT', 'CREDIT')),
   data date not null,
   categoria_pluggy text,
-  classificacao text check (classificacao in ('negocio', 'pessoal'))
+  classificacao text check (classificacao in ('negocio', 'pessoal', 'ignorado'))
 );
 
 create index if not exists financeiro_transacoes_data_idx on public.financeiro_transacoes (data desc);

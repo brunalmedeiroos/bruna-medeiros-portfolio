@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261001e">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261001f">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1495,8 +1495,56 @@
         </section>
 
         <section id="panel-metas" class="tab-panel" hidden>
-          <div class="card">
-            <p class="texto-vazio" data-i18n="placeholder_em_breve">Em breve — essa área ainda está sendo construída.</p>
+          <div class="metas-subnav">
+            <button class="metas-subnav-btn ativo" data-metas-pagina="visao-geral" type="button">Visão Geral</button>
+            <button class="metas-subnav-btn" data-metas-pagina="metas" type="button">Metas</button>
+            <button class="metas-subnav-btn" data-metas-pagina="habitos" type="button">Hábitos</button>
+          </div>
+
+          <!-- Visão Geral: resumo enxuto — ver renderizarMetasVisaoGeral(). -->
+          <div id="metas-pagina-visao-geral" class="metas-pagina">
+            <div class="cards-numeros cards-numeros-visao-geral-metas">
+              <div class="card-numero">
+                <span class="card-label">Metas</span>
+                <span class="card-valor" id="metas-vg-quantidade">0</span>
+              </div>
+              <div class="card-numero">
+                <span class="card-label">Concluídas</span>
+                <span class="card-valor" id="metas-vg-concluidas">0</span>
+              </div>
+              <div class="card-numero">
+                <span class="card-label">Progresso geral</span>
+                <span class="card-valor" id="metas-vg-progresso">0%</span>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="card-titulo">Principais metas</h3>
+              <div id="metas-vg-principais" class="metas-vg-lista"></div>
+            </div>
+
+            <div class="card">
+              <h3 class="card-titulo">Resumo dos hábitos</h3>
+              <div id="metas-vg-habitos" class="habitos-vg-lista"></div>
+            </div>
+          </div>
+
+          <!-- Metas: cards com progresso — ver renderizarMetasLista(). -->
+          <div id="metas-pagina-metas" class="metas-pagina" hidden>
+            <div class="metas-topo-acoes">
+              <h3 class="card-titulo">Metas</h3>
+              <button id="btn-meta-nova" class="cal-btn cal-btn-primario" type="button">+ Nova meta</button>
+            </div>
+            <div id="metas-lista" class="metas-grid"></div>
+          </div>
+
+          <!-- Hábitos: contagem semanal/mensal — ver renderizarHabitos(). -->
+          <div id="metas-pagina-habitos" class="metas-pagina" hidden>
+            <div class="metas-topo-acoes">
+              <h3 class="card-titulo">Hábitos</h3>
+              <button id="btn-habito-novo" class="cal-btn cal-btn-primario" type="button">+ Novo hábito</button>
+            </div>
+            <div id="habitos-lista" class="habitos-lista"></div>
           </div>
         </section>
 
@@ -2693,6 +2741,76 @@
       </div>
     </div>
 
+    <!-- Modal: meta (aba Metas) -->
+    <div id="meta-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pl-modal-pequeno">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo" id="meta-modal-titulo">Nova meta</span>
+          <button id="meta-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="meta-nome">Nome</label>
+          <input type="text" id="meta-nome" placeholder="Ex: Reserva de emergência">
+        </div>
+        <div class="cal-form-campo">
+          <label for="meta-categoria">Categoria</label>
+          <select id="meta-categoria">
+            <option value="trabalho">Trabalho</option>
+            <option value="dinheiro">Dinheiro</option>
+            <option value="pessoal">Pessoal</option>
+          </select>
+        </div>
+        <div class="cal-form-linha">
+          <div class="cal-form-campo">
+            <label for="meta-valor-atual">Atual</label>
+            <input type="number" step="0.01" id="meta-valor-atual" value="0">
+          </div>
+          <div class="cal-form-campo">
+            <label for="meta-valor-objetivo">Objetivo</label>
+            <input type="number" step="0.01" id="meta-valor-objetivo">
+          </div>
+        </div>
+        <div class="cal-form-campo">
+          <label for="meta-unidade">Unidade (opcional)</label>
+          <input type="text" id="meta-unidade" placeholder="Ex: R$, kg, vídeos">
+        </div>
+        <div class="cal-form-campo">
+          <label for="meta-prazo">Prazo (opcional)</label>
+          <input type="date" id="meta-prazo">
+        </div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="meta-modal-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+          <button type="button" id="meta-modal-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: hábito (aba Hábitos) -->
+    <div id="habito-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pl-modal-pequeno">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo" id="habito-modal-titulo">Novo hábito</span>
+          <button id="habito-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="habito-nome">Nome</label>
+          <input type="text" id="habito-nome" placeholder="Ex: Beber água, Treinar">
+        </div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="habito-modal-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+          <button type="button" id="habito-modal-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: proposta personalizada (calculadora, não é salva no banco) -->
     <div id="ugc-modal-proposta-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal pl-modal-grande">
@@ -3000,6 +3118,15 @@
     let financeiroAbaCarregada = false;
     let financeiroTransacoesCache = [];
     let financeiroSubAbaAtual = 'visao-geral'; // 'visao-geral' | 'negocio' | 'pessoal'
+
+    let metasAbaCarregada = false;
+    let metasCache = [];
+    let habitosCache = [];
+    let habitoRegistrosCache = [];
+    let metaAbertaId = null;
+    let metaSnapshotInicial = '';
+    let habitoAbertoId = null;
+    let habitoSnapshotInicial = '';
 
     let afiliacaoAbaCarregada = false;
     let afiliacaoLinksCache = [];
@@ -5211,6 +5338,25 @@
 
       document.getElementById('financeiro-extrato-sincronizar').addEventListener('click', sincronizarPluggy);
 
+      // Metas — Visão Geral / Metas / Hábitos
+      document.querySelectorAll('.metas-subnav-btn').forEach((btn) => {
+        btn.addEventListener('click', () => trocarSubAbaMetas(btn.dataset.metasPagina));
+      });
+      document.getElementById('btn-meta-nova').addEventListener('click', () => abrirModalMeta(null));
+      document.getElementById('meta-modal-fechar').addEventListener('click', fecharModalMeta);
+      document.getElementById('meta-modal-excluir').addEventListener('click', excluirModalMeta);
+      document.getElementById('meta-modal-salvar').addEventListener('click', salvarModalMeta);
+      document.getElementById('meta-modal-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'meta-modal-overlay') fecharModalMeta();
+      });
+      document.getElementById('btn-habito-novo').addEventListener('click', () => abrirModalHabito(null));
+      document.getElementById('habito-modal-fechar').addEventListener('click', fecharModalHabito);
+      document.getElementById('habito-modal-excluir').addEventListener('click', excluirModalHabito);
+      document.getElementById('habito-modal-salvar').addEventListener('click', salvarModalHabito);
+      document.getElementById('habito-modal-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'habito-modal-overlay') fecharModalHabito();
+      });
+
       // Instagram: Automações e Leads
       document.querySelectorAll('.instagram-subnav-btn').forEach((btn) => {
         btn.addEventListener('click', () => trocarSubAbaInstagram(btn.dataset.instagramPagina));
@@ -5530,7 +5676,7 @@
     // Capa azul no topo de cada página (menos Dashboard, que tem a saudação, e
     // E-mail, que tem a capa própria). O menu interno da página (UGC, Instagram,
     // Ferramentas) é levado pra dentro da capa e devolvido ao lugar quando sai.
-    const CAPA_MENUS = { ugc: '.ugc-subnav', instagram: '.instagram-subnav', ferramentas: '.ferr-modos', planejador: '#pl-hub', financeiro: '.financeiro-subnav' };
+    const CAPA_MENUS = { ugc: '.ugc-subnav', instagram: '.instagram-subnav', ferramentas: '.ferr-modos', planejador: '#pl-hub', financeiro: '.financeiro-subnav', metas: '.metas-subnav' };
     const CAPA_SEM = ['overview', 'email'];
     let capaMenuMovido = null;
     let capaObservador = null;
@@ -5645,6 +5791,13 @@
       if (aba === 'financeiro' && !financeiroAbaCarregada) {
         financeiroAbaCarregada = true;
         carregarFinanceiroTransacoes();
+      }
+      if (aba === 'metas') {
+        trocarSubAbaMetas('visao-geral');
+        if (!metasAbaCarregada) {
+          metasAbaCarregada = true;
+          carregarMetas();
+        }
       }
     }
 
@@ -9413,6 +9566,11 @@
       document.querySelectorAll('.financeiro-pagina').forEach((p) => (p.hidden = p.id !== 'financeiro-pagina-' + pagina));
     }
 
+    function trocarSubAbaMetas(pagina) {
+      document.querySelectorAll('.metas-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.metasPagina === pagina));
+      document.querySelectorAll('.metas-pagina').forEach((p) => (p.hidden = p.id !== 'metas-pagina-' + pagina));
+    }
+
     // Avisa quando o direito de uso pago por uma marca (campo opcional do
     // Trabalho) está vencido ou vence nos próximos 14 dias — pra ela não
     // deixar uma marca usando o conteúdo além do combinado sem perceber.
@@ -9753,6 +9911,385 @@
         }
       });
       document.getElementById('fin-pessoal-maior-categoria').textContent = maiorCategoria || '—';
+    }
+
+    // ==========================================================================
+    // Metas e Hábitos — ferramenta leve: metas com progresso atual/objetivo e
+    // prazo, hábitos com contagem semanal/mensal a partir de um check-in por
+    // dia. "Concluída" não é campo salvo — é calculado (valor_atual >=
+    // valor_objetivo), pra nunca ficar dessincronizado.
+    // ==========================================================================
+
+    const CATEGORIA_META_LABEL = { trabalho: 'Trabalho', dinheiro: 'Dinheiro', pessoal: 'Pessoal' };
+
+    async function carregarMetas() {
+      try {
+        const [metas, habitos, registros] = await Promise.all([
+          buscarTudo('painel_metas'),
+          buscarTudo('painel_habitos'),
+          buscarTudo('painel_habito_registros'),
+        ]);
+        metasCache = metas;
+        habitosCache = habitos;
+        habitoRegistrosCache = registros;
+      } catch (err) {
+        console.error('Erro ao carregar metas/hábitos:', err);
+        metasCache = [];
+        habitosCache = [];
+        habitoRegistrosCache = [];
+      }
+      renderizarMetasLista();
+      renderizarHabitos();
+      renderizarMetasVisaoGeral();
+    }
+
+    function progressoMeta(meta) {
+      if (!meta.valor_objetivo) return 0;
+      return Math.min(Number(meta.valor_atual) / Number(meta.valor_objetivo), 1);
+    }
+
+    function formatarValorMeta(valor, unidade) {
+      const numero = Number(valor) || 0;
+      if (unidade === 'R$') return formatarMoeda(numero);
+      return numero.toLocaleString('pt-BR') + (unidade ? ' ' + unidade : '');
+    }
+
+    function ordenarPorPrazo(lista) {
+      return [...lista].sort((a, b) => {
+        if (a.prazo && b.prazo) return a.prazo.localeCompare(b.prazo);
+        if (a.prazo) return -1;
+        if (b.prazo) return 1;
+        return 0;
+      });
+    }
+
+    function metaPrazoHtml(meta, completa) {
+      if (completa) return '<span class="meta-card-prazo">✓ Concluída</span>';
+      if (!meta.prazo) return '';
+      const hojeISO = dataParaISO(new Date());
+      const vencido = meta.prazo < hojeISO;
+      const dataFormatada = formatarDataCurta(new Date(meta.prazo + 'T00:00:00'));
+      return `<span class="meta-card-prazo ${vencido ? 'meta-card-prazo-vencido' : ''}">${vencido ? 'Venceu em' : 'Prazo:'} ${dataFormatada}</span>`;
+    }
+
+    function metaCardHtml(meta) {
+      const pct = Math.round(progressoMeta(meta) * 100);
+      const completa = pct >= 100;
+      return `
+        <div class="meta-card" data-id="${meta.id}">
+          <div class="meta-card-topo">
+            <h4 class="meta-card-nome">${escapeHtml(meta.nome)}</h4>
+            <span class="meta-categoria-pill meta-categoria-${meta.categoria}">${CATEGORIA_META_LABEL[meta.categoria] || meta.categoria}</span>
+          </div>
+          <div class="meta-card-numeros">
+            <span><strong>${formatarValorMeta(meta.valor_atual, meta.unidade)}</strong> / ${formatarValorMeta(meta.valor_objetivo, meta.unidade)}</span>
+            <span>${pct}%</span>
+          </div>
+          <div class="meta-progresso-barra">
+            <div class="meta-progresso-preenchido ${completa ? 'meta-progresso-completa' : ''}" style="width:${Math.min(pct, 100)}%"></div>
+          </div>
+          ${metaPrazoHtml(meta, completa)}
+        </div>
+      `;
+    }
+
+    function renderizarMetasLista() {
+      const lista = document.getElementById('metas-lista');
+      if (!lista) return;
+      if (metasCache.length === 0) {
+        lista.innerHTML = '<p class="texto-vazio">Nenhuma meta ainda. Clique em "+ Nova meta" pra criar a primeira.</p>';
+        return;
+      }
+      lista.innerHTML = ordenarPorPrazo(metasCache).map(metaCardHtml).join('');
+      lista.querySelectorAll('.meta-card').forEach((card) => {
+        card.addEventListener('click', () => abrirModalMeta(metasCache.find((m) => m.id === card.dataset.id)));
+      });
+    }
+
+    // Semana começando na segunda-feira.
+    function inicioSemana(data) {
+      const d = new Date(data);
+      const dia = d.getDay();
+      d.setDate(d.getDate() - (dia === 0 ? 6 : dia - 1));
+      d.setHours(0, 0, 0, 0);
+      return d;
+    }
+
+    function contagemHabito(habitoId) {
+      const hoje = new Date();
+      const inicioSemanaISO = dataParaISO(inicioSemana(hoje));
+      const anoMes = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0');
+      const hojeISO = dataParaISO(hoje);
+      const registros = habitoRegistrosCache.filter((r) => r.habito_id === habitoId);
+      return {
+        semana: registros.filter((r) => r.data >= inicioSemanaISO).length,
+        mes: registros.filter((r) => r.data.startsWith(anoMes)).length,
+        feitoHoje: registros.some((r) => r.data === hojeISO),
+      };
+    }
+
+    function renderizarHabitos() {
+      const lista = document.getElementById('habitos-lista');
+      if (!lista) return;
+      if (habitosCache.length === 0) {
+        lista.innerHTML = '<p class="texto-vazio">Nenhum hábito ainda. Clique em "+ Novo hábito" pra criar o primeiro.</p>';
+        return;
+      }
+      lista.innerHTML = habitosCache
+        .map((h) => {
+          const { semana, mes, feitoHoje } = contagemHabito(h.id);
+          return `
+            <div class="habito-card">
+              <div>
+                <h4 class="habito-card-nome" data-id="${h.id}">${escapeHtml(h.nome)}</h4>
+                <span class="habito-card-contagem">${semana}x essa semana · ${mes}x esse mês</span>
+              </div>
+              <button type="button" class="habito-card-toggle ${feitoHoje ? 'ativo' : ''}" data-id="${h.id}">${feitoHoje ? '✓ Feito hoje' : 'Marcar hoje'}</button>
+            </div>
+          `;
+        })
+        .join('');
+      lista.querySelectorAll('.habito-card-nome').forEach((el) => {
+        el.addEventListener('click', () => abrirModalHabito(habitosCache.find((h) => h.id === el.dataset.id)));
+      });
+      lista.querySelectorAll('.habito-card-toggle').forEach((btn) => {
+        btn.addEventListener('click', () => alternarHabitoHoje(btn.dataset.id));
+      });
+    }
+
+    async function alternarHabitoHoje(habitoId) {
+      const hojeISO = dataParaISO(new Date());
+      const existente = habitoRegistrosCache.find((r) => r.habito_id === habitoId && r.data === hojeISO);
+      try {
+        if (existente) {
+          const { error } = await Auth.sb.from('painel_habito_registros').delete().eq('id', existente.id);
+          if (error) throw error;
+          habitoRegistrosCache = habitoRegistrosCache.filter((r) => r.id !== existente.id);
+        } else {
+          const { data, error } = await Auth.sb
+            .from('painel_habito_registros')
+            .insert({ habito_id: habitoId, data: hojeISO })
+            .select()
+            .single();
+          if (error) throw error;
+          habitoRegistrosCache.push(data);
+        }
+        renderizarHabitos();
+        renderizarMetasVisaoGeral();
+      } catch (err) {
+        console.error('Erro ao marcar hábito:', err);
+        alert(tr('erro_salvar_generico'));
+      }
+    }
+
+    function renderizarMetasVisaoGeral() {
+      const campoQtd = document.getElementById('metas-vg-quantidade');
+      if (!campoQtd) return;
+
+      const total = metasCache.length;
+      const concluidas = metasCache.filter((m) => progressoMeta(m) >= 1).length;
+      const progressoGeral = total > 0
+        ? Math.round((metasCache.reduce((soma, m) => soma + progressoMeta(m), 0) / total) * 100)
+        : 0;
+
+      campoQtd.textContent = total;
+      document.getElementById('metas-vg-concluidas').textContent = concluidas;
+      document.getElementById('metas-vg-progresso').textContent = progressoGeral + '%';
+
+      const principais = ordenarPorPrazo(metasCache.filter((m) => progressoMeta(m) < 1)).slice(0, 3);
+      const contPrincipais = document.getElementById('metas-vg-principais');
+      contPrincipais.innerHTML = principais.length
+        ? principais
+            .map((m) => {
+              const pct = Math.round(progressoMeta(m) * 100);
+              return `
+                <div class="metas-vg-item">
+                  <div class="metas-vg-item-topo"><span>${escapeHtml(m.nome)}</span><span>${pct}%</span></div>
+                  <div class="meta-progresso-barra"><div class="meta-progresso-preenchido" style="width:${pct}%"></div></div>
+                </div>
+              `;
+            })
+            .join('')
+        : '<p class="texto-vazio">Nenhuma meta em andamento ainda.</p>';
+
+      const contHabitos = document.getElementById('metas-vg-habitos');
+      contHabitos.innerHTML = habitosCache.length
+        ? habitosCache
+            .map((h) => `<div class="habitos-vg-item"><span>${escapeHtml(h.nome)}</span><span>${contagemHabito(h.id).semana}x essa semana</span></div>`)
+            .join('')
+        : '<p class="texto-vazio">Nenhum hábito ainda.</p>';
+    }
+
+    // ---- Modal: Meta ----
+
+    function abrirModalMeta(meta) {
+      metaAbertaId = meta ? meta.id : null;
+      document.getElementById('meta-modal-titulo').textContent = meta ? 'Editar meta' : 'Nova meta';
+      document.getElementById('meta-nome').value = meta ? meta.nome : '';
+      document.getElementById('meta-categoria').value = meta ? meta.categoria : 'trabalho';
+      document.getElementById('meta-valor-atual').value = meta ? meta.valor_atual : 0;
+      document.getElementById('meta-valor-objetivo').value = meta ? meta.valor_objetivo : '';
+      document.getElementById('meta-unidade').value = meta ? meta.unidade || '' : '';
+      document.getElementById('meta-prazo').value = meta ? meta.prazo || '' : '';
+      document.getElementById('meta-modal-excluir').hidden = !meta;
+      document.getElementById('meta-modal-overlay').hidden = false;
+      metaSnapshotInicial = capturarEstadoMeta();
+    }
+
+    function capturarEstadoMeta() {
+      return JSON.stringify({
+        nome: document.getElementById('meta-nome').value,
+        categoria: document.getElementById('meta-categoria').value,
+        valorAtual: document.getElementById('meta-valor-atual').value,
+        valorObjetivo: document.getElementById('meta-valor-objetivo').value,
+        unidade: document.getElementById('meta-unidade').value,
+        prazo: document.getElementById('meta-prazo').value,
+      });
+    }
+
+    function metaTemAlteracoes() {
+      return capturarEstadoMeta() !== metaSnapshotInicial;
+    }
+
+    async function fecharModalMeta() {
+      if (metaTemAlteracoes()) {
+        const sair = await confirmarAcao('Você tem alterações não salvas nessa meta. Sair sem salvar?', { textoConfirmar: 'Sair sem salvar', perigo: true });
+        if (!sair) return;
+      }
+      fecharModalMetaForcado();
+    }
+
+    function fecharModalMetaForcado() {
+      metaAbertaId = null;
+      document.getElementById('meta-modal-overlay').hidden = true;
+    }
+
+    async function salvarModalMeta() {
+      const nome = document.getElementById('meta-nome').value.trim();
+      const valorObjetivo = document.getElementById('meta-valor-objetivo').value;
+      if (!nome) {
+        alert('Preencha o nome da meta.');
+        return;
+      }
+      if (!valorObjetivo) {
+        alert('Preencha o objetivo da meta.');
+        return;
+      }
+
+      const linha = {
+        nome,
+        categoria: document.getElementById('meta-categoria').value,
+        valor_atual: Number(document.getElementById('meta-valor-atual').value) || 0,
+        valor_objetivo: Number(valorObjetivo),
+        unidade: document.getElementById('meta-unidade').value.trim() || null,
+        prazo: document.getElementById('meta-prazo').value || null,
+      };
+
+      const btn = document.getElementById('meta-modal-salvar');
+      btn.disabled = true;
+      try {
+        let error;
+        if (metaAbertaId) {
+          ({ error } = await Auth.sb.from('painel_metas').update(linha).eq('id', metaAbertaId));
+        } else {
+          ({ error } = await Auth.sb.from('painel_metas').insert(linha));
+        }
+        if (error) throw error;
+        fecharModalMetaForcado();
+        await carregarMetas();
+      } catch (err) {
+        console.error('Erro ao salvar meta:', err);
+        alert(tr('erro_salvar_generico'));
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function excluirModalMeta() {
+      if (!metaAbertaId) return;
+      if (!(await confirmarAcao('Excluir essa meta?'))) return;
+      try {
+        const { error } = await Auth.sb.from('painel_metas').delete().eq('id', metaAbertaId);
+        if (error) throw error;
+        fecharModalMetaForcado();
+        await carregarMetas();
+      } catch (err) {
+        console.error('Erro ao excluir meta:', err);
+        alert(tr('erro_excluir_generico'));
+      }
+    }
+
+    // ---- Modal: Hábito ----
+
+    function abrirModalHabito(habito) {
+      habitoAbertoId = habito ? habito.id : null;
+      document.getElementById('habito-modal-titulo').textContent = habito ? 'Editar hábito' : 'Novo hábito';
+      document.getElementById('habito-nome').value = habito ? habito.nome : '';
+      document.getElementById('habito-modal-excluir').hidden = !habito;
+      document.getElementById('habito-modal-overlay').hidden = false;
+      habitoSnapshotInicial = capturarEstadoHabito();
+    }
+
+    function capturarEstadoHabito() {
+      return document.getElementById('habito-nome').value;
+    }
+
+    function habitoTemAlteracoes() {
+      return capturarEstadoHabito() !== habitoSnapshotInicial;
+    }
+
+    async function fecharModalHabito() {
+      if (habitoTemAlteracoes()) {
+        const sair = await confirmarAcao('Você tem alterações não salvas nesse hábito. Sair sem salvar?', { textoConfirmar: 'Sair sem salvar', perigo: true });
+        if (!sair) return;
+      }
+      fecharModalHabitoForcado();
+    }
+
+    function fecharModalHabitoForcado() {
+      habitoAbertoId = null;
+      document.getElementById('habito-modal-overlay').hidden = true;
+    }
+
+    async function salvarModalHabito() {
+      const nome = document.getElementById('habito-nome').value.trim();
+      if (!nome) {
+        alert('Preencha o nome do hábito.');
+        return;
+      }
+
+      const btn = document.getElementById('habito-modal-salvar');
+      btn.disabled = true;
+      try {
+        let error;
+        if (habitoAbertoId) {
+          ({ error } = await Auth.sb.from('painel_habitos').update({ nome }).eq('id', habitoAbertoId));
+        } else {
+          ({ error } = await Auth.sb.from('painel_habitos').insert({ nome }));
+        }
+        if (error) throw error;
+        fecharModalHabitoForcado();
+        await carregarMetas();
+      } catch (err) {
+        console.error('Erro ao salvar hábito:', err);
+        alert(tr('erro_salvar_generico'));
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function excluirModalHabito() {
+      if (!habitoAbertoId) return;
+      if (!(await confirmarAcao('Excluir esse hábito? Os registros dele também serão apagados.'))) return;
+      try {
+        const { error } = await Auth.sb.from('painel_habitos').delete().eq('id', habitoAbertoId);
+        if (error) throw error;
+        fecharModalHabitoForcado();
+        await carregarMetas();
+      } catch (err) {
+        console.error('Erro ao excluir hábito:', err);
+        alert(tr('erro_excluir_generico'));
+      }
     }
 
     function renderizarRitmoRecebimento() {

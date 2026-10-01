@@ -2952,7 +2952,8 @@
 
 .painel-body .ugc-subnav,
 .painel-body .instagram-subnav,
-.painel-body .financeiro-subnav {
+.painel-body .financeiro-subnav,
+.painel-body .metas-subnav {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -2961,7 +2962,8 @@
 
 .painel-body .ugc-subnav-btn,
 .painel-body .instagram-subnav-btn,
-.painel-body .financeiro-subnav-btn {
+.painel-body .financeiro-subnav-btn,
+.painel-body .metas-subnav-btn {
   background: transparent;
   border: 1px solid rgba(var(--grafite-rgb), 0.14);
   border-radius: 999px;
@@ -2976,13 +2978,15 @@
 
 .painel-body .ugc-subnav-btn:hover,
 .painel-body .instagram-subnav-btn:hover,
-.painel-body .financeiro-subnav-btn:hover {
+.painel-body .financeiro-subnav-btn:hover,
+.painel-body .metas-subnav-btn:hover {
   color: var(--grafite);
 }
 
 .painel-body .ugc-subnav-btn.ativo,
 .painel-body .instagram-subnav-btn.ativo,
-.painel-body .financeiro-subnav-btn.ativo {
+.painel-body .financeiro-subnav-btn.ativo,
+.painel-body .metas-subnav-btn.ativo {
   background: var(--coral);
   border-color: var(--coral);
   color: var(--branco);
@@ -4195,7 +4199,8 @@
    tabelas, "Próximas entregas" etc. — sem isto ficavam grudados). */
 .painel-body .ugc-pagina,
 .painel-body .instagram-pagina,
-.painel-body .financeiro-pagina {
+.painel-body .financeiro-pagina,
+.painel-body .metas-pagina {
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -4205,11 +4210,13 @@
    mas a regra do autor venceria a do agente de usuário sem isto). */
 .painel-body .ugc-pagina[hidden],
 .painel-body .instagram-pagina[hidden],
-.painel-body .financeiro-pagina[hidden] {
+.painel-body .financeiro-pagina[hidden],
+.painel-body .metas-pagina[hidden] {
   display: none;
 }
 
-.painel-body .cards-numeros-visao-geral-ugc {
+.painel-body .cards-numeros-visao-geral-ugc,
+.painel-body .cards-numeros-visao-geral-metas {
   grid-template-columns: repeat(3, 1fr);
 }
 
@@ -7210,6 +7217,7 @@
 .painel-body .pg-capa-nav .ugc-subnav,
 .painel-body .pg-capa-nav .instagram-subnav,
 .painel-body .pg-capa-nav .financeiro-subnav,
+.painel-body .pg-capa-nav .metas-subnav,
 .painel-body .pg-capa-nav .ferr-modos {
   margin: 0;
   display: flex;
@@ -7227,6 +7235,7 @@
 .painel-body .pg-capa-nav .ugc-subnav-btn,
 .painel-body .pg-capa-nav .instagram-subnav-btn,
 .painel-body .pg-capa-nav .financeiro-subnav-btn,
+.painel-body .pg-capa-nav .metas-subnav-btn,
 .painel-body .pg-capa-nav .cal-filtro-btn {
   background: rgba(255, 255, 255, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -7240,6 +7249,7 @@
 .painel-body .pg-capa-nav .ugc-subnav-btn:hover,
 .painel-body .pg-capa-nav .instagram-subnav-btn:hover,
 .painel-body .pg-capa-nav .financeiro-subnav-btn:hover,
+.painel-body .pg-capa-nav .metas-subnav-btn:hover,
 .painel-body .pg-capa-nav .cal-filtro-btn:hover {
   background: rgba(255, 255, 255, 0.3);
   color: var(--branco);
@@ -7248,6 +7258,7 @@
 .painel-body .pg-capa-nav .ugc-subnav-btn.ativo,
 .painel-body .pg-capa-nav .instagram-subnav-btn.ativo,
 .painel-body .pg-capa-nav .financeiro-subnav-btn.ativo,
+.painel-body .pg-capa-nav .metas-subnav-btn.ativo,
 .painel-body .pg-capa-nav .cal-filtro-btn.ativo {
   background: var(--branco);
   border-color: var(--branco);
@@ -8667,5 +8678,221 @@
   .painel-body .abd-modal-largo .abd-doc {
     position: static;
     max-height: none;
+  }
+}
+
+/* ==========================================================================
+   Metas e Hábitos
+   ========================================================================== */
+
+.painel-body .metas-topo-acoes {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.painel-body .metas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.painel-body .meta-card {
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.painel-body .meta-card:hover {
+  border-color: var(--coral);
+}
+
+.painel-body .meta-card-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.painel-body .meta-card-nome {
+  font-family: var(--fonte-titulo);
+  font-size: 16px;
+  color: var(--grafite);
+  margin: 0;
+}
+
+.painel-body .meta-categoria-pill {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  width: fit-content;
+  flex-shrink: 0;
+}
+
+.painel-body .meta-categoria-trabalho {
+  background: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .meta-categoria-dinheiro {
+  background: var(--sucesso);
+  color: var(--branco);
+}
+
+.painel-body .meta-categoria-pessoal {
+  background: rgba(var(--grafite-rgb), 0.1);
+  color: var(--grafite);
+}
+
+.painel-body .meta-card-numeros {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.painel-body .meta-card-numeros strong {
+  color: var(--grafite);
+  font-size: 15px;
+}
+
+.painel-body .meta-progresso-barra {
+  height: 8px;
+  border-radius: 20px;
+  background: rgba(var(--grafite-rgb), 0.08);
+  overflow: hidden;
+}
+
+.painel-body .meta-progresso-preenchido {
+  height: 100%;
+  background: var(--coral);
+  border-radius: 20px;
+  width: 0%;
+  transition: width 0.2s ease;
+}
+
+.painel-body .meta-progresso-preenchido.meta-progresso-completa {
+  background: var(--sucesso);
+}
+
+.painel-body .meta-card-prazo {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.painel-body .meta-card-prazo-vencido {
+  color: var(--erro);
+  font-weight: 600;
+}
+
+/* ---- Visão Geral de Metas: principais metas + resumo de hábitos ---- */
+
+.painel-body .metas-vg-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.painel-body .metas-vg-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.painel-body .metas-vg-item-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--grafite);
+}
+
+.painel-body .habitos-vg-lista {
+  display: flex;
+  flex-direction: column;
+}
+
+.painel-body .habitos-vg-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--grafite);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--borda);
+}
+
+.painel-body .habitos-vg-item:last-child {
+  border-bottom: none;
+}
+
+/* ---- Hábitos ---- */
+
+.painel-body .habitos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.painel-body .habito-card {
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.painel-body .habito-card-nome {
+  font-family: var(--fonte-titulo);
+  font-size: 15px;
+  color: var(--grafite);
+  cursor: pointer;
+  margin: 0;
+}
+
+.painel-body .habito-card-contagem {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.painel-body .habito-card-toggle {
+  background: transparent;
+  border: 1px solid rgba(var(--grafite-rgb), 0.14);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto-suave);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.painel-body .habito-card-toggle.ativo {
+  background: var(--sucesso);
+  border-color: var(--sucesso);
+  color: var(--branco);
+}
+
+@media (max-width: 600px) {
+  .painel-body .habito-card {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

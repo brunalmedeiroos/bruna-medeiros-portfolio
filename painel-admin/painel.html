@@ -2749,6 +2749,7 @@
     let ideiaAbertaId = null;
     let ideiaSnapshotInicial = '';
     let achadoAbertoId = null;
+    let achadoSnapshotInicial = '';
     let dataAgendarAtual = null; // data (ISO) do dia clicado no "+" do calendário do cronograma
     const ACHADOS_COLUNAS = ['Gancho', 'Frase', 'Formato', 'Música', 'CTA'];
     // Nome da coluna é gravado em achados.coluna em português (é o "código");
@@ -2821,6 +2822,7 @@
     let filtroRoteirosTexto = '';
     let filtroRoteirosStatus = '';
     let ugcTrabalhoAbertoId = null;
+    let ugcTrabalhoSnapshotInicial = '';
     let filtroTrabalhos = 'ativas'; // 'todas' | 'ativas' | 'finalizadas'
     let buscaCampanhas = '';
     let ordenacaoCampanhas = { coluna: 'prazo', direcao: 'asc' };
@@ -2902,6 +2904,7 @@
     let ugcModalMoodboard = [];
     let ugcRoteiroSnapshotInicial = '';
     let ugcContratoAbertoId = null;
+    let ugcContratoSnapshotInicial = '';
     let ugcModalContratoArquivoPath = null;
     let ugcModalContratoArquivoNome = null;
     let filtroContratos = 'ativos'; // 'ativos' | 'encerrados'
@@ -2917,6 +2920,7 @@
       return chave ? tr(chave) : status;
     }
     let ugcPrecoAbertoId = null;
+    let ugcPrecoSnapshotInicial = '';
     let ugcPrecoModalCategoria = null;
     let ugcPropostaItens = [];
     let ugcPropostaDescontoManual = false; // true assim que ela mexe no desconto na mão, pra parar de sobrescrever com a sugestão
@@ -2924,12 +2928,14 @@
     let afiliacaoAbaCarregada = false;
     let afiliacaoLinksCache = [];
     let afiliacaoLinkAbertoId = null;
+    let afiliacaoSnapshotInicial = '';
     let afiliacaoLinhaArrastada = null;
 
     let clientesAbaCarregada = false;
     let clientesCache = [];
     let clientesLinksCache = [];
     let clienteAbertoId = null;
+    let clienteSnapshotInicial = '';
     let clientesModalLinks = [];
     let filtroClientes = 'ativos'; // 'ativos' | 'finalizados'
     const CLIENTES_STATUS = ['Negociando', 'Fechado', 'Em produção', 'Entregue', 'Cancelado'];
@@ -8671,9 +8677,29 @@
       document.getElementById('pl-modal-achado-texto').value = achado.conteudo || '';
       document.getElementById('pl-modal-achado-observacoes').value = achado.observacoes || '';
       document.getElementById('pl-modal-achado-overlay').hidden = false;
+      achadoSnapshotInicial = capturarEstadoAchado();
     }
 
-    function fecharModalAchado() {
+    function capturarEstadoAchado() {
+      return JSON.stringify({
+        texto: document.getElementById('pl-modal-achado-texto').value,
+        observacoes: document.getElementById('pl-modal-achado-observacoes').value,
+      });
+    }
+
+    function achadoTemAlteracoes() {
+      return capturarEstadoAchado() !== achadoSnapshotInicial;
+    }
+
+    async function fecharModalAchado() {
+      if (achadoTemAlteracoes()) {
+        const sair = await confirmarAcao('Você tem alterações não salvas nesse achado. Sair sem salvar?', { textoConfirmar: 'Sair sem salvar', perigo: true });
+        if (!sair) return;
+      }
+      fecharModalAchadoForcado();
+    }
+
+    function fecharModalAchadoForcado() {
       achadoAbertoId = null;
       document.getElementById('pl-modal-achado-overlay').hidden = true;
     }
@@ -8689,7 +8715,7 @@
           .update({ conteudo, observacoes: observacoes || null })
           .eq('id', achadoAbertoId);
         if (error) throw error;
-        fecharModalAchado();
+        fecharModalAchadoForcado();
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao salvar achado:', err);
@@ -8703,7 +8729,7 @@
       try {
         const { error } = await Auth.sb.from('planejador_achados').delete().eq('id', achadoAbertoId);
         if (error) throw error;
-        fecharModalAchado();
+        fecharModalAchadoForcado();
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao excluir achado:', err);
@@ -9916,9 +9942,50 @@
 
       document.getElementById('ugc-modal-trabalho-excluir').hidden = !trabalho;
       document.getElementById('ugc-modal-trabalho-overlay').hidden = false;
+      ugcTrabalhoSnapshotInicial = capturarEstadoTrabalho();
     }
 
-    function fecharModalTrabalho() {
+    function capturarEstadoTrabalho() {
+      return JSON.stringify({
+        marca: document.getElementById('ugc-modal-marca').value,
+        campanha: document.getElementById('ugc-modal-campanha').value,
+        produto: document.getElementById('ugc-modal-produto').value,
+        tipo: document.getElementById('ugc-modal-tipo').value,
+        entregaveis: ugcModalEntregaveis,
+        email: document.getElementById('ugc-modal-contato-email').value,
+        whats: document.getElementById('ugc-modal-contato-whats').value,
+        origem: document.getElementById('ugc-modal-origem').value,
+        plataforma: document.getElementById('ugc-modal-plataforma').value,
+        status: document.getElementById('ugc-modal-status').value,
+        valor: document.getElementById('ugc-modal-valor').value,
+        permuta: document.getElementById('ugc-modal-permuta').checked,
+        entrega: document.getElementById('ugc-modal-entrega').value,
+        briefingLink: document.getElementById('ugc-modal-briefing-link').value,
+        briefingArquivo: ugcModalBriefingArquivoPath,
+        checklist: ugcModalChecklistEstado,
+        statusPagamento: document.getElementById('ugc-modal-status-pagamento').value,
+        formaPagamento: document.getElementById('ugc-modal-forma-pagamento').value,
+        dataPagamento: document.getElementById('ugc-modal-data-pagamento').value,
+        direitosUsoAte: document.getElementById('ugc-modal-direitos-uso-ate').value,
+        publicavel: document.getElementById('ugc-modal-publicavel').checked,
+        portfolioYoutube: document.getElementById('ugc-modal-portfolio-youtube').value,
+        portfolioCategoria: document.getElementById('ugc-modal-portfolio-categoria').value,
+      });
+    }
+
+    function trabalhoTemAlteracoes() {
+      return capturarEstadoTrabalho() !== ugcTrabalhoSnapshotInicial;
+    }
+
+    async function fecharModalTrabalho() {
+      if (trabalhoTemAlteracoes()) {
+        const sair = await confirmarAcao('Você tem alterações não salvas nesse trabalho. Sair sem salvar?', { textoConfirmar: 'Sair sem salvar', perigo: true });
+        if (!sair) return;
+      }
+      fecharModalTrabalhoForcado();
+    }
+
+    function fecharModalTrabalhoForcado() {
       ugcTrabalhoAbertoId = null;
       document.getElementById('ugc-modal-trabalho-overlay').hidden = true;
     }
@@ -10059,7 +10126,7 @@
         });
         if (erroEntregaveis) throw erroEntregaveis;
 
-        fecharModalTrabalho();
+        fecharModalTrabalhoForcado();
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao salvar trabalho:', err);
@@ -10082,7 +10149,7 @@
         }
         const { error } = await Auth.sb.from('ugc_trabalhos').delete().eq('id', ugcTrabalhoAbertoId);
         if (error) throw error;
-        fecharModalTrabalho();
+        fecharModalTrabalhoForcado();
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao excluir trabalho:', err);
@@ -10844,6 +10911,7 @@
       'Outros',
     ];
     let contatoAbertoId = null;
+    let contatoSnapshotInicial = '';
 
     function classeSituacaoContato(situacao) {
       if (situacao === 'Cliente') return 'ugc-status-pago';
@@ -11091,9 +11159,35 @@
       document.getElementById('contato-modal-excluir').hidden = !contato;
       abdRenderizarLista();
       document.getElementById('contato-modal-overlay').hidden = false;
+      contatoSnapshotInicial = capturarEstadoContato();
     }
 
-    function fecharModalContato() {
+    function capturarEstadoContato() {
+      return JSON.stringify({
+        marca: document.getElementById('contato-marca').value,
+        instagram: document.getElementById('contato-instagram').value,
+        email: document.getElementById('contato-email').value,
+        telefone: document.getElementById('contato-telefone').value,
+        situacao: document.getElementById('contato-situacao').value,
+        nicho: document.getElementById('contato-nicho').value,
+        ultimoContato: document.getElementById('contato-ultimo-contato').value,
+        observacao: document.getElementById('contato-observacao').value,
+      });
+    }
+
+    function contatoTemAlteracoes() {
+      return capturarEstadoContato() !== contatoSnapshotInicial;
+    }
+
+    async function fecharModalContato() {
+      if (contatoTemAlteracoes()) {
+        const sair = await confirmarAcao('Você tem alterações não salvas nesse contato. Sair sem salvar?', { textoConfirmar: 'Sair sem salvar', perigo: true });
+        if (!sair) return;
+      }
+      fecharModalContatoForcado();
+    }
+
+    function fecharModalContatoForcado() {
       contatoAbertoId = null;
       document.getElementById('contato-modal-overlay').hidden = true;
     }
@@ -11128,7 +11222,7 @@
           ? await Auth.sb.from('ugc_base_contatos').update(linha).eq('id', contatoAbertoId)
           : await Auth.sb.from('ugc_base_contatos').insert(linha);
         if (error) throw error;
-        fecharModalContato();
+        fecharModalContatoForcado();
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao salvar contato:', err);
@@ -11144,7 +11238,7 @@
       try {
         const { error } = await Auth.sb.from('ugc_base_contatos').delete().eq('id', contatoAbertoId);
         if (error) throw error;
-        fecharModalContato();
+        fecharModalContatoForcado();
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao excluir contato:', err);
@@ -12032,9 +12126,35 @@
 
       document.getElementById('ugc-modal-contrato-excluir').hidden = !contrato;
       document.getElementById('ugc-modal-contrato-overlay').hidden = false;
+      ugcContratoSnapshotInicial = capturarEstadoContrato();
     }
 
-    function fecharModalContrato() {
+    function capturarEstadoContrato() {
+      return JSON.stringify({
+        marca: document.getElementById('ugc-contrato-marca').value,
+        campanha: document.getElementById('ugc-contrato-campanha').value,
+        tipo: document.getElementById('ugc-contrato-tipo').value,
+        data: document.getElementById('ugc-contrato-data').value,
+        status: document.getElementById('ugc-contrato-status').value,
+        trabalho: document.getElementById('ugc-contrato-trabalho').value,
+        link: document.getElementById('ugc-contrato-link').value,
+        arquivo: ugcModalContratoArquivoPath,
+      });
+    }
+
+    function contratoTemAlteracoes() {
+      return capturarEstadoContrato() !== ugcContratoSnapshotInicial;
+    }
+
+    async function fecharModalContrato() {
+      if (contratoTemAlteracoes()) {
+        const sair = await confirmarAcao('Você tem alterações não salvas nesse contrato. Sair sem salvar?', { textoConfirmar: 'Sair sem salvar', perigo: true });
+        if (!sair) return;
+      }
+      fecharModalContratoForcado();
+    }
+
+    function fecharModalContratoForcado() {
       ugcContratoAbertoId = null;
       document.getElementById('ugc-modal-contrato-overlay').hidden = true;
     }
@@ -12064,7 +12184,7 @@
           ? await Auth.sb.from('ugc_contratos').update(linha).eq('id', ugcContratoAbertoId)
           : await Auth.sb.from('ugc_contratos').insert(linha);
         if (error) throw error;
-        fecharModalContrato();
+        fecharModalContratoForcado();
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao salvar contrato:', err);
@@ -12085,7 +12205,7 @@
         }
         const { error } = await Auth.sb.from('ugc_contratos').delete().eq('id', ugcContratoAbertoId);
         if (error) throw error;
-        fecharModalContrato();
+        fecharModalContratoForcado();
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao excluir contrato:', err);
@@ -12201,9 +12321,30 @@
       document.getElementById('ugc-preco-observacoes').value = preco ? preco.observacoes || '' : '';
       document.getElementById('ugc-modal-preco-excluir').hidden = !preco;
       document.getElementById('ugc-modal-preco-overlay').hidden = false;
+      ugcPrecoSnapshotInicial = capturarEstadoPreco();
     }
 
-    function fecharModalPreco() {
+    function capturarEstadoPreco() {
+      return JSON.stringify({
+        servico: document.getElementById('ugc-preco-servico').value,
+        valor: document.getElementById('ugc-preco-valor').value,
+        observacoes: document.getElementById('ugc-preco-observacoes').value,
+      });
+    }
+
+    function precoTemAlteracoes() {
+      return capturarEstadoPreco() !== ugcPrecoSnapshotInicial;
+    }
+
+    async function fecharModalPreco() {
+      if (precoTemAlteracoes()) {
+        const sair = await confirmarAcao('Você tem alterações não salvas nesse serviço. Sair sem salvar?', { textoConfirmar: 'Sair sem salvar', perigo: true });
+        if (!sair) return;
+      }
+      fecharModalPrecoForcado();
+    }
+
+    function fecharModalPrecoForcado() {
       ugcPrecoAbertoId = null;
       document.getElementById('ugc-modal-preco-overlay').hidden = true;
     }
@@ -12232,7 +12373,7 @@
           ({ error } = await Auth.sb.from('ugc_precos').insert({ ...linha, categoria: ugcPrecoModalCategoria, ordem }));
         }
         if (error) throw error;
-        fecharModalPreco();
+        fecharModalPrecoForcado();
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao salvar preço:', err);
@@ -12248,7 +12389,7 @@
       try {
         const { error } = await Auth.sb.from('ugc_precos').delete().eq('id', ugcPrecoAbertoId);
         if (error) throw error;
-        fecharModalPreco();
+        fecharModalPrecoForcado();
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao excluir preço:', err);
@@ -12684,9 +12825,31 @@
       document.getElementById('afiliacao-observacoes').value = link ? (link.observacoes || '') : '';
       document.getElementById('afiliacao-modal-excluir').hidden = !link;
       document.getElementById('afiliacao-modal-overlay').hidden = false;
+      afiliacaoSnapshotInicial = capturarEstadoAfiliacao();
     }
 
-    function fecharModalAfiliacao() {
+    function capturarEstadoAfiliacao() {
+      return JSON.stringify({
+        plataforma: document.getElementById('afiliacao-plataforma').value,
+        nome: document.getElementById('afiliacao-nome').value,
+        url: document.getElementById('afiliacao-url').value,
+        observacoes: document.getElementById('afiliacao-observacoes').value,
+      });
+    }
+
+    function afiliacaoTemAlteracoes() {
+      return capturarEstadoAfiliacao() !== afiliacaoSnapshotInicial;
+    }
+
+    async function fecharModalAfiliacao() {
+      if (afiliacaoTemAlteracoes()) {
+        const sair = await confirmarAcao('Você tem alterações não salvas nesse link. Sair sem salvar?', { textoConfirmar: 'Sair sem salvar', perigo: true });
+        if (!sair) return;
+      }
+      fecharModalAfiliacaoForcado();
+    }
+
+    function fecharModalAfiliacaoForcado() {
       afiliacaoLinkAbertoId = null;
       document.getElementById('afiliacao-modal-overlay').hidden = true;
     }
@@ -12715,7 +12878,7 @@
           ({ error } = await Auth.sb.from('afiliacao_links').insert({ ...linha, ordem }));
         }
         if (error) throw error;
-        fecharModalAfiliacao();
+        fecharModalAfiliacaoForcado();
         await carregarAfiliacao();
       } catch (err) {
         console.error('Erro ao salvar link de afiliação:', err);
@@ -12743,7 +12906,7 @@
       try {
         const { error } = await Auth.sb.from('afiliacao_links').delete().eq('id', afiliacaoLinkAbertoId);
         if (error) throw error;
-        fecharModalAfiliacao();
+        fecharModalAfiliacaoForcado();
         await carregarAfiliacao();
       } catch (err) {
         console.error('Erro ao excluir link de afiliação:', err);
@@ -12888,9 +13051,37 @@
 
       document.getElementById('clientes-modal-excluir').hidden = !cliente;
       document.getElementById('clientes-modal-overlay').hidden = false;
+      clienteSnapshotInicial = capturarEstadoCliente();
     }
 
-    function fecharModalCliente() {
+    function capturarEstadoCliente() {
+      return JSON.stringify({
+        nome: document.getElementById('clientes-modal-nome').value,
+        status: document.getElementById('clientes-modal-status').value,
+        template: document.getElementById('clientes-modal-template').value,
+        email: document.getElementById('clientes-modal-email').value,
+        whats: document.getElementById('clientes-modal-whats').value,
+        valor: document.getElementById('clientes-modal-valor').value,
+        fechamento: document.getElementById('clientes-modal-fechamento').value,
+        entrega: document.getElementById('clientes-modal-entrega').value,
+        observacoes: document.getElementById('clientes-modal-observacoes').value,
+        links: clientesModalLinks,
+      });
+    }
+
+    function clienteTemAlteracoes() {
+      return capturarEstadoCliente() !== clienteSnapshotInicial;
+    }
+
+    async function fecharModalCliente() {
+      if (clienteTemAlteracoes()) {
+        const sair = await confirmarAcao('Você tem alterações não salvas nesse cliente. Sair sem salvar?', { textoConfirmar: 'Sair sem salvar', perigo: true });
+        if (!sair) return;
+      }
+      fecharModalClienteForcado();
+    }
+
+    function fecharModalClienteForcado() {
       clienteAbertoId = null;
       document.getElementById('clientes-modal-overlay').hidden = true;
     }
@@ -12940,7 +13131,7 @@
         });
         if (erroLinks) throw erroLinks;
 
-        fecharModalCliente();
+        fecharModalClienteForcado();
         await carregarClientes();
       } catch (err) {
         console.error('Erro ao salvar cliente:', err);
@@ -12956,7 +13147,7 @@
       try {
         const { error } = await Auth.sb.from('clientes').delete().eq('id', clienteAbertoId);
         if (error) throw error;
-        fecharModalCliente();
+        fecharModalClienteForcado();
         await carregarClientes();
       } catch (err) {
         console.error('Erro ao excluir cliente:', err);

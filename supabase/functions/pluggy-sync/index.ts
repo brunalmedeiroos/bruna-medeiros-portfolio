@@ -69,7 +69,7 @@ export default {
     try {
       const apiKey = await obterApiKey();
 
-      const respostaItens = await chamarPluggy(apiKey, "/items");
+      const respostaItens = await chamarPluggy(apiKey, "/v2/items?pageSize=100");
       // deno-lint-ignore no-explicit-any
       const itens: any[] = Array.isArray(respostaItens) ? respostaItens : respostaItens.results || [];
 

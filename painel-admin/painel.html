@@ -9546,7 +9546,7 @@
         status.textContent = `Sincronizado agora · ${resultado.processados} lançamento(s) de ${resultado.itens} conexão(ões)`;
       } catch (err) {
         console.error('Erro ao sincronizar extrato bancário:', err);
-        status.textContent = 'Não consegui sincronizar agora. Tente de novo em instantes.';
+        status.textContent = `Não consegui sincronizar: ${err.message || err}`;
       } finally {
         btn.disabled = false;
       }

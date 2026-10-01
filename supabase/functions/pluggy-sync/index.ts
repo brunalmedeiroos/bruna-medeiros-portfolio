@@ -51,7 +51,10 @@ async function chamarPluggy(apiKey: string, caminho: string): Promise<any> {
   const resp = await fetch(`${PLUGGY_API}${caminho}`, {
     headers: { "X-API-KEY": apiKey },
   });
-  if (!resp.ok) throw new Error(`pluggy_${resp.status}_${caminho}`);
+  if (!resp.ok) {
+    const corpo = await resp.text().catch(() => "");
+    throw new Error(`pluggy_${resp.status}_${caminho}: ${corpo.slice(0, 300)}`);
+  }
   return resp.json();
 }
 
@@ -69,7 +72,7 @@ export default {
     try {
       const apiKey = await obterApiKey();
 
-      const respostaItens = await chamarPluggy(apiKey, "/v2/items?pageSize=100");
+      const respostaItens = await chamarPluggy(apiKey, "/v2/items");
       // deno-lint-ignore no-explicit-any
       const itens: any[] = Array.isArray(respostaItens) ? respostaItens : respostaItens.results || [];
 

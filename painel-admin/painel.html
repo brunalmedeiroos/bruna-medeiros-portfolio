@@ -2899,6 +2899,7 @@
     let ugcModalEntregaveis = [];
     let ugcRoteiroAbertoId = null;
     let ugcModalMoodboard = [];
+    let ugcRoteiroSnapshotInicial = '';
     let ugcContratoAbertoId = null;
     let ugcModalContratoArquivoPath = null;
     let ugcModalContratoArquivoNome = null;
@@ -3639,6 +3640,8 @@
         ugc_remover_referencia_aria: 'Remover imagem de referência',
         nenhum: 'Nenhum',
         ugc_excluir_roteiro_confirmar: 'Excluir este roteiro? As cenas também serão apagadas.',
+        ugc_fechar_roteiro_sem_salvar: 'Você tem alterações não salvas nesse roteiro. Sair sem salvar?',
+        ugc_fechar_roteiro_sem_salvar_botao: 'Sair sem salvar',
         ugc_compartilhar_roteiro: 'Link para aprovação',
         ugc_link_roteiro_copiado: 'Link copiado! É só mandar pra marca aprovar o roteiro.',
         ugc_roteiro_status_label: 'Status',
@@ -4460,6 +4463,8 @@
         ugc_remover_referencia_aria: 'Remove reference image',
         nenhum: 'None',
         ugc_excluir_roteiro_confirmar: 'Delete this script? The scenes will also be deleted.',
+        ugc_fechar_roteiro_sem_salvar: 'You have unsaved changes in this script. Leave without saving?',
+        ugc_fechar_roteiro_sem_salvar_botao: 'Leave without saving',
         ugc_compartilhar_roteiro: 'Link for approval',
         ugc_link_roteiro_copiado: 'Link copied! Send it to the brand to approve the script.',
         ugc_roteiro_status_label: 'Status',
@@ -10572,6 +10577,28 @@
       document.getElementById('ugc-modal-roteiro-compartilhar').hidden = !roteiro;
       document.getElementById('ugc-modal-roteiro-revogar-link').hidden = !roteiro;
       document.getElementById('ugc-modal-roteiro-overlay').hidden = false;
+      ugcRoteiroSnapshotInicial = capturarEstadoRoteiro();
+    }
+
+    // Serializa os campos do modal de roteiro pra saber se algo mudou desde
+    // que ele foi aberto — usado só pra avisar antes de fechar sem salvar.
+    function capturarEstadoRoteiro() {
+      return JSON.stringify({
+        marca: document.getElementById('ugc-roteiro-marca').value,
+        status: document.getElementById('ugc-roteiro-status').value,
+        produto: document.getElementById('ugc-roteiro-produto').value,
+        trabalho: document.getElementById('ugc-roteiro-trabalho').value,
+        duracao: document.getElementById('ugc-roteiro-duracao').value,
+        categoria: document.getElementById('ugc-roteiro-categoria').value,
+        conteudo: document.getElementById('ugc-roteiro-conteudo').innerHTML,
+        corAtiva: document.getElementById('ugc-roteiro-marca-cor-ativa').checked,
+        cor: document.getElementById('ugc-roteiro-marca-cor').value,
+        moodboard: ugcModalMoodboard,
+      });
+    }
+
+    function ugcRoteiroTemAlteracoes() {
+      return capturarEstadoRoteiro() !== ugcRoteiroSnapshotInicial;
     }
 
     function renderizarComentariosRoteiro(roteiroId) {
@@ -10616,7 +10643,15 @@
       }
     }
 
-    function fecharModalRoteiro() {
+    async function fecharModalRoteiro() {
+      if (ugcRoteiroTemAlteracoes()) {
+        const sair = await confirmarAcao(tr('ugc_fechar_roteiro_sem_salvar'), { textoConfirmar: tr('ugc_fechar_roteiro_sem_salvar_botao'), perigo: true });
+        if (!sair) return;
+      }
+      fecharModalRoteiroForcado();
+    }
+
+    function fecharModalRoteiroForcado() {
       ugcRoteiroAbertoId = null;
       document.getElementById('ugc-modal-roteiro-overlay').hidden = true;
     }
@@ -10665,7 +10700,7 @@
           }
         }
 
-        fecharModalRoteiro();
+        fecharModalRoteiroForcado();
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao salvar roteiro:', err);
@@ -10681,7 +10716,7 @@
       try {
         const { error } = await Auth.sb.from('ugc_roteiros').delete().eq('id', ugcRoteiroAbertoId);
         if (error) throw error;
-        fecharModalRoteiro();
+        fecharModalRoteiroForcado();
         await carregarUGC();
       } catch (err) {
         console.error('Erro ao excluir roteiro:', err);

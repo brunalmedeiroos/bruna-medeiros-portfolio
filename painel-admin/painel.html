@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261001c">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261001d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -9644,7 +9644,7 @@
           const positivo = t.tipo === 'CREDIT';
           return `
             <div class="financeiro-extrato-linha" data-id="${t.id}">
-              <span class="financeiro-extrato-data">${formatarDataCurta(new Date(t.data + 'T00:00:00'))}</span>
+              <span class="financeiro-extrato-data">${formatarDataExtrato(new Date(t.data + 'T00:00:00'))}</span>
               <span class="financeiro-extrato-descricao">
                 ${escapeHtml(t.descricao)}
                 ${t.categoria_pluggy ? `<span class="financeiro-extrato-categoria">${escapeHtml(t.categoria_pluggy)}</span>` : ''}
@@ -12963,6 +12963,14 @@
 
     function formatarDataCurta(data) {
       return data.toLocaleDateString(localeAtual(), { day: '2-digit', month: '2-digit' });
+    }
+
+    // O extrato bancário (Pluggy) traz até 12 meses de histórico, então pode
+    // atravessar a virada do ano — sem o ano, "01/10" fica ambíguo (esse
+    // outubro ou o passado?). Só esta lista mostra o ano (2 dígitos, pra
+    // caber na coluna estreita).
+    function formatarDataExtrato(data) {
+      return data.toLocaleDateString(localeAtual(), { day: '2-digit', month: '2-digit', year: '2-digit' });
     }
 
     function formatarDataHora(data) {

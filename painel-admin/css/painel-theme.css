@@ -2951,7 +2951,8 @@
 /* ---- UGC / Publi ---- */
 
 .painel-body .ugc-subnav,
-.painel-body .instagram-subnav {
+.painel-body .instagram-subnav,
+.painel-body .financeiro-subnav {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -2959,7 +2960,8 @@
 }
 
 .painel-body .ugc-subnav-btn,
-.painel-body .instagram-subnav-btn {
+.painel-body .instagram-subnav-btn,
+.painel-body .financeiro-subnav-btn {
   background: transparent;
   border: 1px solid rgba(var(--grafite-rgb), 0.14);
   border-radius: 999px;
@@ -2973,12 +2975,14 @@
 }
 
 .painel-body .ugc-subnav-btn:hover,
-.painel-body .instagram-subnav-btn:hover {
+.painel-body .instagram-subnav-btn:hover,
+.painel-body .financeiro-subnav-btn:hover {
   color: var(--grafite);
 }
 
 .painel-body .ugc-subnav-btn.ativo,
-.painel-body .instagram-subnav-btn.ativo {
+.painel-body .instagram-subnav-btn.ativo,
+.painel-body .financeiro-subnav-btn.ativo {
   background: var(--coral);
   border-color: var(--coral);
   color: var(--branco);
@@ -4190,7 +4194,8 @@
 /* Espaçamento entre os blocos de cada sub-aba de UGC/Publi (cards de número,
    tabelas, "Próximas entregas" etc. — sem isto ficavam grudados). */
 .painel-body .ugc-pagina,
-.painel-body .instagram-pagina {
+.painel-body .instagram-pagina,
+.painel-body .financeiro-pagina {
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -4199,7 +4204,8 @@
 /* O atributo hidden precisa vencer o display:flex acima (mesma especificidade,
    mas a regra do autor venceria a do agente de usuário sem isto). */
 .painel-body .ugc-pagina[hidden],
-.painel-body .instagram-pagina[hidden] {
+.painel-body .instagram-pagina[hidden],
+.painel-body .financeiro-pagina[hidden] {
   display: none;
 }
 
@@ -4210,6 +4216,16 @@
 .painel-body .cards-numeros-dashboard {
   grid-template-columns: repeat(2, 1fr);
   max-width: 560px;
+}
+
+.painel-body .cards-numeros-financeiro-visao-geral {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 900px) {
+  .painel-body .cards-numeros-financeiro-visao-geral {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* ---- UGC/Publicidade: Resultados (mesmo padrão visual do card de insight
@@ -4493,39 +4509,38 @@
 
 /* ---- Extrato bancário (Pluggy/MeuPluggy), dentro da aba Financeiro ---- */
 
-.painel-body .financeiro-extrato-card {
-  margin-top: 24px;
-}
-
-.painel-body .financeiro-extrato-topo {
+/* Barra de sincronização, no topo da aba (fora das sub-páginas Visão
+   Geral/Negócio/Pessoal — a sincronização afeta o extrato inteiro). */
+.painel-body .financeiro-sync-topo {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 16px;
+}
+
+/* Aviso de lançamentos ainda não classificados, na Visão Geral — mesmo
+   tratamento visual do aviso de prospecção esfriando. */
+.painel-body .financeiro-nao-classificados-card {
+  background: rgba(196, 69, 60, 0.08);
+  border: 1px solid rgba(196, 69, 60, 0.3);
+}
+
+.painel-body .financeiro-extrato-card {
+  margin-top: 24px;
 }
 
 .painel-body .financeiro-extrato-titulo {
   font-family: var(--fonte-titulo);
   font-size: 20px;
   color: var(--grafite);
-  margin: 0;
-}
-
-.painel-body .financeiro-extrato-acoes {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  margin: 0 0 16px;
 }
 
 .painel-body .financeiro-extrato-status {
   font-size: 13px;
   color: var(--texto-suave);
-}
-
-.painel-body .financeiro-extrato-filtros {
-  margin-bottom: 16px;
 }
 
 .painel-body .financeiro-extrato-lista {

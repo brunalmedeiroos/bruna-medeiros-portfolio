@@ -1130,3 +1130,53 @@ create policy "Painel: atualização autenticada de notas rápidas"
 drop policy if exists "Painel: exclusão autenticada de notas rápidas" on public.painel_notas_rapidas;
 create policy "Painel: exclusão autenticada de notas rápidas"
   on public.painel_notas_rapidas for delete to authenticated using (public.is_owner());
+
+-- ==========================================================================
+-- Financeiro > Extrato bancário (Pluggy / MeuPluggy). Mesmo conteúdo de
+-- financeiro-pluggy-tabela.sql, que pode ser rodado sozinho num projeto já
+-- existente.
+-- ==========================================================================
+create table if not exists public.financeiro_transacoes (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  pluggy_transaction_id text not null unique,
+  pluggy_item_id text not null,
+  pluggy_account_id text not null,
+  descricao text not null,
+  valor numeric not null,
+  tipo text not null check (tipo in ('DEBIT', 'CREDIT')),
+  data date not null,
+  categoria_pluggy text,
+  classificacao text check (classificacao in ('negocio', 'pessoal'))
+);
+
+create index if not exists financeiro_transacoes_data_idx on public.financeiro_transacoes (data desc);
+create index if not exists financeiro_transacoes_classificacao_idx on public.financeiro_transacoes (classificacao);
+
+alter table public.financeiro_transacoes enable row level security;
+
+drop policy if exists "Painel: leitura autenticada de transações financeiras" on public.financeiro_transacoes;
+create policy "Painel: leitura autenticada de transações financeiras"
+  on public.financeiro_transacoes for select to authenticated using (public.is_owner());
+drop policy if exists "Painel: atualização autenticada de transações financeiras (classificação)" on public.financeiro_transacoes;
+create policy "Painel: atualização autenticada de transações financeiras (classificação)"
+  on public.financeiro_transacoes for update to authenticated using (public.is_owner()) with check (public.is_owner());
+
+-- Agendamento diário (07h Brasília) — segredo já configurado pelo Claude
+-- (secret da função + Vault). Troque <PROJECT_REF> pela referência do
+-- projeto (trfoymytrvdbslwizfqs).
+select cron.schedule(
+  'pluggy-sync-diario',
+  '0 10 * * *',
+  $$
+  select net.http_post(
+    url := 'https://<PROJECT_REF>.supabase.co/functions/v1/pluggy-sync',
+    headers := jsonb_build_object(
+      'Authorization', 'Bearer ' || (select decrypted_secret from vault.decrypted_secrets where name = 'pluggy_cron_secret'),
+      'Content-Type', 'application/json'
+    ),
+    body := '{}'::jsonb
+  );
+  $$
+);

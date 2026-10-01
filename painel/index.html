@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20260925i">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1420,6 +1420,27 @@
               <span class="card-label" data-i18n="financeiro_recebido_total">Recebido no total</span>
               <span class="card-valor" id="financeiro-num-recebido-total">R$ 0</span>
             </div>
+          </div>
+
+          <!-- Extrato bancário (Pluggy/MeuPluggy) — ver carregarFinanceiroTransacoes()
+               e sincronizarPluggy(). Independente do bloco de cima (que continua
+               baseado nos trabalhos de UGC); não cruza os dois por enquanto. -->
+          <div class="card financeiro-extrato-card">
+            <div class="financeiro-extrato-topo">
+              <h3 class="financeiro-extrato-titulo">💳 Extrato bancário</h3>
+              <div class="financeiro-extrato-acoes">
+                <span class="financeiro-extrato-status" id="financeiro-extrato-status"></span>
+                <button type="button" class="cal-btn cal-btn-primario" id="financeiro-extrato-sincronizar">Sincronizar agora</button>
+              </div>
+            </div>
+
+            <div class="cal-filtro-grupo financeiro-extrato-filtros">
+              <button type="button" class="cal-filtro-btn financeiro-extrato-filtro-btn ativo" data-filtro="todos">Todos</button>
+              <button type="button" class="cal-filtro-btn financeiro-extrato-filtro-btn" data-filtro="negocio">Negócio</button>
+              <button type="button" class="cal-filtro-btn financeiro-extrato-filtro-btn" data-filtro="pessoal">Pessoal</button>
+            </div>
+
+            <div id="financeiro-extrato-lista" class="financeiro-extrato-lista"></div>
           </div>
         </section>
 
@@ -2925,6 +2946,10 @@
     let ugcPropostaItens = [];
     let ugcPropostaDescontoManual = false; // true assim que ela mexe no desconto na mão, pra parar de sobrescrever com a sugestão
     let ugcPropostaSnapshotInicial = '';
+
+    let financeiroAbaCarregada = false;
+    let financeiroTransacoesCache = [];
+    let financeiroExtratoFiltro = 'todos'; // 'todos' | 'negocio' | 'pessoal'
 
     let afiliacaoAbaCarregada = false;
     let afiliacaoLinksCache = [];
@@ -5129,6 +5154,11 @@
       });
       document.getElementById('clientes-modal-add-link').addEventListener('click', adicionarLinkModal);
 
+      document.getElementById('financeiro-extrato-sincronizar').addEventListener('click', sincronizarPluggy);
+      document.querySelectorAll('.financeiro-extrato-filtro-btn').forEach((btn) => {
+        btn.addEventListener('click', () => filtrarExtratoPluggy(btn.dataset.filtro));
+      });
+
       // Instagram: Automações e Leads
       document.querySelectorAll('.instagram-subnav-btn').forEach((btn) => {
         btn.addEventListener('click', () => trocarSubAbaInstagram(btn.dataset.instagramPagina));
@@ -5559,6 +5589,10 @@
       if (aba === 'clientes' && !clientesAbaCarregada) {
         clientesAbaCarregada = true;
         carregarClientes();
+      }
+      if (aba === 'financeiro' && !financeiroAbaCarregada) {
+        financeiroAbaCarregada = true;
+        carregarFinanceiroTransacoes();
       }
     }
 
@@ -9478,6 +9512,105 @@
         return 'R$ ' + (Number.isInteger(milhares) ? milhares : milhares.toFixed(1).replace('.', ',')) + 'k';
       }
       return 'R$ ' + Math.round(valor);
+    }
+
+    // ---- Extrato bancário (Pluggy / MeuPluggy) ----
+    // Lançamentos puxados do Open Finance pela Edge Function pluggy-sync
+    // (agendada todo dia, mais o botão "Sincronizar agora" aqui). A
+    // classificação negócio/pessoal é só local, edição direta no Supabase —
+    // nunca é sobrescrita por uma sincronização nova (ver pluggy-sync).
+    async function carregarFinanceiroTransacoes() {
+      try {
+        const { data, error } = await Auth.sb
+          .from('financeiro_transacoes')
+          .select('*')
+          .order('data', { ascending: false });
+        if (error) throw error;
+        financeiroTransacoesCache = data || [];
+      } catch (err) {
+        console.error('Erro ao carregar extrato bancário:', err);
+        financeiroTransacoesCache = [];
+      }
+      renderizarExtratoPluggy();
+    }
+
+    async function sincronizarPluggy() {
+      const btn = document.getElementById('financeiro-extrato-sincronizar');
+      const status = document.getElementById('financeiro-extrato-status');
+      btn.disabled = true;
+      status.textContent = 'Sincronizando...';
+      try {
+        const resultado = await chamarFuncao('pluggy-sync', { method: 'POST' });
+        if (!resultado.ok) throw new Error(resultado.error || 'erro_desconhecido');
+        await carregarFinanceiroTransacoes();
+        status.textContent = `Sincronizado agora · ${resultado.processados} lançamento(s) de ${resultado.itens} conexão(ões)`;
+      } catch (err) {
+        console.error('Erro ao sincronizar extrato bancário:', err);
+        status.textContent = 'Não consegui sincronizar agora. Tente de novo em instantes.';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function filtrarExtratoPluggy(filtro) {
+      financeiroExtratoFiltro = filtro;
+      document.querySelectorAll('.financeiro-extrato-filtro-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.filtro === filtro));
+      renderizarExtratoPluggy();
+    }
+
+    async function definirClassificacaoTransacao(id, classificacao) {
+      const linha = financeiroTransacoesCache.find((t) => t.id === id);
+      if (!linha) return;
+      linha.classificacao = classificacao;
+      renderizarExtratoPluggy();
+      try {
+        const { error } = await Auth.sb.from('financeiro_transacoes').update({ classificacao }).eq('id', id);
+        if (error) throw error;
+      } catch (err) {
+        console.error('Erro ao classificar lançamento:', err);
+      }
+    }
+
+    function renderizarExtratoPluggy() {
+      const lista = document.getElementById('financeiro-extrato-lista');
+      if (!lista) return;
+
+      const transacoes = financeiroTransacoesCache.filter((t) => {
+        if (financeiroExtratoFiltro === 'todos') return true;
+        return t.classificacao === financeiroExtratoFiltro;
+      });
+
+      if (transacoes.length === 0) {
+        lista.innerHTML = `<p class="texto-vazio">${financeiroTransacoesCache.length === 0 ? 'Nenhum lançamento ainda. Clique em "Sincronizar agora" pra puxar seu extrato.' : 'Nenhum lançamento nesse filtro.'}</p>`;
+        return;
+      }
+
+      lista.innerHTML = transacoes
+        .map((t) => {
+          const positivo = t.tipo === 'CREDIT';
+          return `
+            <div class="financeiro-extrato-linha" data-id="${t.id}">
+              <span class="financeiro-extrato-data">${formatarDataCurta(new Date(t.data + 'T00:00:00'))}</span>
+              <span class="financeiro-extrato-descricao">
+                ${escapeHtml(t.descricao)}
+                ${t.categoria_pluggy ? `<span class="financeiro-extrato-categoria">${escapeHtml(t.categoria_pluggy)}</span>` : ''}
+              </span>
+              <span class="financeiro-extrato-valor ${positivo ? 'financeiro-extrato-valor-positivo' : 'financeiro-extrato-valor-negativo'}">
+                ${positivo ? '+' : '-'} ${formatarMoeda(Math.abs(t.valor))}
+              </span>
+              <select class="financeiro-extrato-classificacao" data-id="${t.id}">
+                <option value="" ${!t.classificacao ? 'selected' : ''}>Classificar...</option>
+                <option value="negocio" ${t.classificacao === 'negocio' ? 'selected' : ''}>Negócio</option>
+                <option value="pessoal" ${t.classificacao === 'pessoal' ? 'selected' : ''}>Pessoal</option>
+              </select>
+            </div>
+          `;
+        })
+        .join('');
+
+      lista.querySelectorAll('.financeiro-extrato-classificacao').forEach((sel) => {
+        sel.addEventListener('change', (e) => definirClassificacaoTransacao(sel.dataset.id, e.target.value || null));
+      });
     }
 
     function renderizarRitmoRecebimento() {

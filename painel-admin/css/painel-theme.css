@@ -8839,45 +8839,44 @@
   border-bottom: none;
 }
 
-/* ---- Hábitos ---- */
+/* ---- Hábitos: cards igual Metas (.meta-card), só que menores ---- */
 
 .painel-body .habitos-lista {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
 }
 
 .painel-body .habito-card {
   background: var(--branco);
   border: 1px solid var(--borda);
   border-radius: var(--raio-sm);
-  padding: 14px 18px;
+  padding: 12px 14px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .painel-body .habito-card-nome {
   font-family: var(--fonte-titulo);
-  font-size: 15px;
+  font-size: 14px;
   color: var(--grafite);
   cursor: pointer;
   margin: 0;
 }
 
 .painel-body .habito-card-contagem {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--texto-suave);
 }
 
 .painel-body .habito-card-toggle {
+  align-self: flex-start;
   background: transparent;
   border: 1px solid rgba(var(--grafite-rgb), 0.14);
   border-radius: 999px;
-  padding: 7px 14px;
-  font-size: 13px;
+  padding: 5px 12px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--texto-suave);
   cursor: pointer;
@@ -8888,11 +8887,4 @@
   background: var(--sucesso);
   border-color: var(--sucesso);
   color: var(--branco);
-}
-
-@media (max-width: 600px) {
-  .painel-body .habito-card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
 }

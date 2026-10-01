@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261001f">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261001g">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -2766,11 +2766,11 @@
         <div class="cal-form-linha">
           <div class="cal-form-campo">
             <label for="meta-valor-atual">Atual</label>
-            <input type="number" step="0.01" id="meta-valor-atual" value="0">
+            <input type="text" inputmode="decimal" id="meta-valor-atual" placeholder="0">
           </div>
           <div class="cal-form-campo">
             <label for="meta-valor-objetivo">Objetivo</label>
-            <input type="number" step="0.01" id="meta-valor-objetivo">
+            <input type="text" inputmode="decimal" id="meta-valor-objetivo" placeholder="Ex: 10000 ou 1438,27">
           </div>
         </div>
         <div class="cal-form-campo">
@@ -10040,10 +10040,8 @@
           const { semana, mes, feitoHoje } = contagemHabito(h.id);
           return `
             <div class="habito-card">
-              <div>
-                <h4 class="habito-card-nome" data-id="${h.id}">${escapeHtml(h.nome)}</h4>
-                <span class="habito-card-contagem">${semana}x essa semana · ${mes}x esse mês</span>
-              </div>
+              <h4 class="habito-card-nome" data-id="${h.id}">${escapeHtml(h.nome)}</h4>
+              <span class="habito-card-contagem">${semana}x essa semana · ${mes}x esse mês</span>
               <button type="button" class="habito-card-toggle ${feitoHoje ? 'ativo' : ''}" data-id="${h.id}">${feitoHoje ? '✓ Feito hoje' : 'Marcar hoje'}</button>
             </div>
           `;
@@ -10122,13 +10120,30 @@
 
     // ---- Modal: Meta ----
 
+    // Os campos de valor aceitam o jeito que ela digitar (1438,27 ou 1.438,27
+    // ou 1438.27) — input nativo type=number não aceita vírgula decimal, o
+    // que bagunçava o número digitado. Se tem vírgula, ela é o separador
+    // decimal e pontos viram só agrupamento de milhar; sem vírgula, o ponto
+    // (se houver) é tratado como decimal normal.
+    function parseNumeroBR(texto) {
+      const str = String(texto ?? '').trim();
+      if (str === '') return NaN;
+      if (str.includes(',')) return Number(str.replace(/\./g, '').replace(',', '.'));
+      return Number(str);
+    }
+
+    function formatarNumeroParaInput(numero) {
+      if (numero === null || numero === undefined) return '';
+      return String(numero).replace('.', ',');
+    }
+
     function abrirModalMeta(meta) {
       metaAbertaId = meta ? meta.id : null;
       document.getElementById('meta-modal-titulo').textContent = meta ? 'Editar meta' : 'Nova meta';
       document.getElementById('meta-nome').value = meta ? meta.nome : '';
       document.getElementById('meta-categoria').value = meta ? meta.categoria : 'trabalho';
-      document.getElementById('meta-valor-atual').value = meta ? meta.valor_atual : 0;
-      document.getElementById('meta-valor-objetivo').value = meta ? meta.valor_objetivo : '';
+      document.getElementById('meta-valor-atual').value = meta ? formatarNumeroParaInput(meta.valor_atual) : '0';
+      document.getElementById('meta-valor-objetivo').value = meta ? formatarNumeroParaInput(meta.valor_objetivo) : '';
       document.getElementById('meta-unidade').value = meta ? meta.unidade || '' : '';
       document.getElementById('meta-prazo').value = meta ? meta.prazo || '' : '';
       document.getElementById('meta-modal-excluir').hidden = !meta;
@@ -10166,12 +10181,12 @@
 
     async function salvarModalMeta() {
       const nome = document.getElementById('meta-nome').value.trim();
-      const valorObjetivo = document.getElementById('meta-valor-objetivo').value;
+      const valorObjetivo = parseNumeroBR(document.getElementById('meta-valor-objetivo').value);
       if (!nome) {
         alert('Preencha o nome da meta.');
         return;
       }
-      if (!valorObjetivo) {
+      if (!valorObjetivo || isNaN(valorObjetivo)) {
         alert('Preencha o objetivo da meta.');
         return;
       }
@@ -10179,8 +10194,8 @@
       const linha = {
         nome,
         categoria: document.getElementById('meta-categoria').value,
-        valor_atual: Number(document.getElementById('meta-valor-atual').value) || 0,
-        valor_objetivo: Number(valorObjetivo),
+        valor_atual: parseNumeroBR(document.getElementById('meta-valor-atual').value) || 0,
+        valor_objetivo: valorObjetivo,
         unidade: document.getElementById('meta-unidade').value.trim() || null,
         prazo: document.getElementById('meta-prazo').value || null,
       };

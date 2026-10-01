@@ -11,6 +11,12 @@
 // A classificação (negócio/pessoal) é só da Bruna: o upsert abaixo nunca
 // inclui a coluna "classificacao", então uma sincronização nova nunca
 // apaga o que ela já marcou num lançamento existente.
+//
+// Os bancos sincronizados vêm do secret PLUGGY_ITEM_IDS (IDs separados por
+// vírgula), não de "listar items" — essa aplicação não tem a permissão
+// LIST_ITEMS_FEATURE_NOT_ENABLED (só libera com acesso de produção na
+// Pluggy). Pra conectar um banco novo no MeuPluggy, o ID do item dele
+// precisa ser adicionado nesse secret.
 
 import "@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "@supabase/server";
@@ -72,9 +78,19 @@ export default {
     try {
       const apiKey = await obterApiKey();
 
-      const respostaItens = await chamarPluggy(apiKey, "/v2/items");
-      // deno-lint-ignore no-explicit-any
-      const itens: any[] = Array.isArray(respostaItens) ? respostaItens : respostaItens.results || [];
+      // A aplicação não tem permissão pra "listar" items (GET /v2/items dá
+      // 403 LIST_ITEMS_FEATURE_NOT_ENABLED — esse recurso só libera com
+      // acesso de produção). Em vez disso, busca cada item individualmente
+      // pelo ID — isso funciona sem precisar de acesso de produção. Os IDs
+      // vêm do secret PLUGGY_ITEM_IDS (separados por vírgula); cada banco
+      // novo conectado via MeuPluggy precisa ter o ID dele adicionado ali.
+      const idsConfigurados = (Deno.env.get("PLUGGY_ITEM_IDS") || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (idsConfigurados.length === 0) throw new Error("pluggy_sem_item_ids_configurados");
+
+      const itens: { id: string }[] = idsConfigurados.map((id) => ({ id }));
 
       let processados = 0;
       const errosPorItem: string[] = [];

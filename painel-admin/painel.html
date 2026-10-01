@@ -2924,6 +2924,7 @@
     let ugcPrecoModalCategoria = null;
     let ugcPropostaItens = [];
     let ugcPropostaDescontoManual = false; // true assim que ela mexe no desconto na mão, pra parar de sobrescrever com a sugestão
+    let ugcPropostaSnapshotInicial = '';
 
     let afiliacaoAbaCarregada = false;
     let afiliacaoLinksCache = [];
@@ -2977,6 +2978,7 @@
 
     let configCache = null;
     let configSalvoTimeout = null;
+    let configNomeSnapshotInicial = '';
 
     // ==========================================================================
     // Tradução (Configurações > Geral > Idioma). Troca de idioma recarrega a
@@ -4801,9 +4803,28 @@
     function abrirModalConfiguracoes(pagina) {
       document.getElementById('config-modal-overlay').hidden = false;
       trocarSubPaginaConfig(pagina || 'geral');
+      configNomeSnapshotInicial = document.getElementById('config-nome').value;
     }
 
-    function fecharModalConfiguracoes() {
+    // O início da semana salva sozinho ao mudar (não precisa checar); nome e
+    // senha têm botão próprio, então só avisam se foram digitados e não
+    // confirmados com aquele botão.
+    function configModalTemAlteracoes() {
+      const nomeAtual = document.getElementById('config-nome').value;
+      const novaSenha = document.getElementById('config-nova-senha').value;
+      const confirmarSenha = document.getElementById('config-confirmar-senha').value;
+      return nomeAtual !== configNomeSnapshotInicial || !!novaSenha || !!confirmarSenha;
+    }
+
+    async function fecharModalConfiguracoes() {
+      if (configModalTemAlteracoes()) {
+        const sair = await confirmarAcao('Você tem alterações não salvas nas configurações. Sair sem salvar?', { textoConfirmar: 'Sair sem salvar', perigo: true });
+        if (!sair) return;
+      }
+      fecharModalConfiguracoesForcado();
+    }
+
+    function fecharModalConfiguracoesForcado() {
       document.getElementById('config-modal-overlay').hidden = true;
     }
 
@@ -4844,6 +4865,7 @@
       await salvarConfiguracao('nome', nome || null);
       renderizarCabecalhoDashboard();
       renderizarPerfil();
+      configNomeSnapshotInicial = document.getElementById('config-nome').value;
     }
 
     async function salvarSenhaPerfil() {
@@ -12420,9 +12442,34 @@
       ugcPropostaItens = [{ precoId: '', quantidade: 1 }];
       renderizarPropostaItens();
       document.getElementById('ugc-modal-proposta-overlay').hidden = false;
+      ugcPropostaSnapshotInicial = capturarEstadoProposta();
     }
 
-    function fecharModalProposta() {
+    function capturarEstadoProposta() {
+      return JSON.stringify({
+        marca: document.getElementById('ugc-proposta-marca').value,
+        desconto: document.getElementById('ugc-proposta-desconto').value,
+        urgencia: document.getElementById('ugc-proposta-urgencia-ativa').checked,
+        itens: ugcPropostaItens,
+      });
+    }
+
+    function propostaTemAlteracoes() {
+      return capturarEstadoProposta() !== ugcPropostaSnapshotInicial;
+    }
+
+    // Essa proposta não fica salva em lugar nenhum: o "salvar" dela é copiar o
+    // resumo. Por isso avisa se mudou algo e ainda não copiou, em vez de
+    // comparar com um registro do banco como nos outros modais.
+    async function fecharModalProposta() {
+      if (propostaTemAlteracoes()) {
+        const sair = await confirmarAcao('Você montou uma proposta e ainda não copiou o resumo. Sair mesmo assim?', { textoConfirmar: 'Sair sem copiar', perigo: true });
+        if (!sair) return;
+      }
+      fecharModalPropostaForcado();
+    }
+
+    function fecharModalPropostaForcado() {
       document.getElementById('ugc-modal-proposta-overlay').hidden = true;
     }
 
@@ -12616,6 +12663,7 @@
       try {
         await navigator.clipboard.writeText(texto);
         alert(tr('ugc_resumo_copiado'));
+        ugcPropostaSnapshotInicial = capturarEstadoProposta();
       } catch (err) {
         console.error('Erro ao copiar resumo da proposta:', err);
         alert(tr('ugc_erro_copiar'));

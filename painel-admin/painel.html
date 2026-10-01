@@ -2747,6 +2747,7 @@
     let dataPilarDiaAtual = null;
     let cronMesAtual = new Date(); // mês exibido no calendário do cronograma
     let ideiaAbertaId = null;
+    let ideiaSnapshotInicial = '';
     let achadoAbertoId = null;
     let dataAgendarAtual = null; // data (ISO) do dia clicado no "+" do calendário do cronograma
     const ACHADOS_COLUNAS = ['Gancho', 'Frase', 'Formato', 'Música', 'CTA'];
@@ -3398,6 +3399,7 @@
         pl_excluir_pilar_confirmar_prefixo: 'Excluir o pilar ',
         pl_excluir_pilar_confirmar_sufixo: '? As ideias dentro dele também serão excluídas.',
         pl_excluir_ideia_confirmar: 'Excluir esta ideia?',
+        pl_fechar_ideia_sem_salvar: 'Você tem alterações não salvas nessa ideia. Sair sem salvar?',
         pl_novo_achado: '+ Novo achado',
         pl_achado_novo_placeholder: 'Escreva o achado...',
         adicionar: 'Adicionar',
@@ -4217,6 +4219,7 @@
         pl_excluir_pilar_confirmar_prefixo: 'Delete the pillar ',
         pl_excluir_pilar_confirmar_sufixo: '? The ideas inside it will also be deleted.',
         pl_excluir_ideia_confirmar: 'Delete this idea?',
+        pl_fechar_ideia_sem_salvar: 'You have unsaved changes in this idea. Leave without saving?',
         pl_novo_achado: '+ New find',
         pl_achado_novo_placeholder: 'Write the find...',
         adicionar: 'Add',
@@ -8510,9 +8513,36 @@
         .join('');
 
       document.getElementById('pl-modal-overlay').hidden = false;
+      ideiaSnapshotInicial = capturarEstadoIdeia();
     }
 
-    function fecharModalIdeia() {
+    // Mesma lógica do roteiro de UGC: serializa os campos pra saber se algo
+    // mudou desde que o modal foi aberto, e avisa antes de fechar sem salvar.
+    function capturarEstadoIdeia() {
+      return JSON.stringify({
+        titulo: document.getElementById('pl-modal-titulo').value,
+        formato: document.getElementById('pl-modal-formato').value,
+        status: document.getElementById('pl-modal-status').value,
+        pilar: document.getElementById('pl-modal-pilar').value,
+        gravado: document.getElementById('pl-modal-gravado').checked,
+        roteiroBreve: document.getElementById('pl-modal-roteiro-breve').value,
+        roteiroCompleto: document.getElementById('pl-modal-roteiro-completo').innerHTML,
+      });
+    }
+
+    function ideiaTemAlteracoes() {
+      return capturarEstadoIdeia() !== ideiaSnapshotInicial;
+    }
+
+    async function fecharModalIdeia() {
+      if (ideiaTemAlteracoes()) {
+        const sair = await confirmarAcao(tr('pl_fechar_ideia_sem_salvar'), { textoConfirmar: tr('ugc_fechar_roteiro_sem_salvar_botao'), perigo: true });
+        if (!sair) return;
+      }
+      fecharModalIdeiaForcado();
+    }
+
+    function fecharModalIdeiaForcado() {
       ideiaAbertaId = null;
       document.getElementById('pl-modal-overlay').hidden = true;
     }
@@ -8537,7 +8567,7 @@
       try {
         const { error } = await Auth.sb.from('planejador_ideias').update(linha).eq('id', ideiaAbertaId);
         if (error) throw error;
-        fecharModalIdeia();
+        fecharModalIdeiaForcado();
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao salvar ideia:', err);
@@ -8551,7 +8581,7 @@
       try {
         const { error } = await Auth.sb.from('planejador_ideias').delete().eq('id', ideiaAbertaId);
         if (error) throw error;
-        fecharModalIdeia();
+        fecharModalIdeiaForcado();
         await carregarPlanejador();
       } catch (err) {
         console.error('Erro ao excluir ideia:', err);
@@ -12997,6 +13027,7 @@
     let ferrItemAbertoId = null;
     let ferrItemEstado = null; // { tipo, pastaId, favorito, checklist: [], etapas: [] }
     let ferrValoresVars = {};
+    let ferrItemSnapshotInicial = '';
 
     // ---------- utilidades ----------
 
@@ -13726,9 +13757,43 @@
       ferrLigarCamposItem(tipo);
       document.getElementById('ferr-item-modal-overlay').hidden = false;
       if (!item) document.getElementById('ferr-item-nome').focus();
+      ferrItemSnapshotInicial = ferrCapturarEstadoModal();
     }
 
-    function ferrFecharModalItem() {
+    // Mesma lógica do roteiro de UGC e da ideia do Banco de Ideias: serializa
+    // os campos visíveis (eles mudam de tipo pra tipo) pra saber se algo
+    // mudou desde que o modal foi aberto, e avisa antes de fechar sem salvar.
+    function ferrCapturarEstadoModal() {
+      const estado = {
+        nome: ferrValor('ferr-item-nome'),
+        pasta: ferrValor('ferr-item-pasta'),
+        favorito: ferrItemEstado ? ferrItemEstado.favorito : false,
+        checklist: ferrItemEstado ? ferrItemEstado.checklist : [],
+        etapas: ferrItemEstado ? ferrItemEstado.etapas : [],
+      };
+      if (document.getElementById('ferr-f-descricao')) estado.descricao = ferrValor('ferr-f-descricao');
+      if (document.getElementById('ferr-f-plataforma')) estado.plataforma = ferrValor('ferr-f-plataforma');
+      if (document.getElementById('ferr-f-conteudo')) estado.conteudo = ferrValor('ferr-f-conteudo');
+      if (document.getElementById('ferr-f-url')) estado.url = ferrValor('ferr-f-url');
+      if (document.querySelector('[data-canal-modelo]')) {
+        estado.canais = [...document.querySelectorAll('[data-canal-modelo]:checked')].map((x) => x.dataset.canalModelo);
+      }
+      return JSON.stringify(estado);
+    }
+
+    function ferrModalItemTemAlteracoes() {
+      return ferrCapturarEstadoModal() !== ferrItemSnapshotInicial;
+    }
+
+    async function ferrFecharModalItem() {
+      if (ferrModalItemTemAlteracoes()) {
+        const sair = await confirmarAcao('Você tem alterações não salvas nessa ferramenta. Sair sem salvar?', { textoConfirmar: 'Sair sem salvar', perigo: true });
+        if (!sair) return;
+      }
+      ferrFecharModalItemForcado();
+    }
+
+    function ferrFecharModalItemForcado() {
       ferrItemAbertoId = null;
       ferrItemEstado = null;
       document.getElementById('ferr-item-modal-overlay').hidden = true;
@@ -13992,7 +14057,7 @@
           if (error) throw error;
           ferrItens.push(data[0]);
         }
-        ferrFecharModalItem();
+        ferrFecharModalItemForcado();
         ferrRenderizar();
       } catch (err) {
         console.error('Erro ao salvar ferramenta:', err);
@@ -14024,7 +14089,7 @@
         return;
       }
       ferrItens.push(data[0]);
-      ferrFecharModalItem();
+      ferrFecharModalItemForcado();
       ferrRenderizar();
     }
 
@@ -14039,7 +14104,7 @@
         return;
       }
       ferrItens = ferrItens.filter((i) => i.id !== item.id);
-      ferrFecharModalItem();
+      ferrFecharModalItemForcado();
       ferrRenderizar();
     }
 
@@ -14508,6 +14573,7 @@
     let abdModelos = [];
     let abdModelosErro = '';
     let abdEstado = null;
+    let abdSnapshotInicial = '';
 
     function abdIndexar(lista) {
       abdPorContato = new Map();
@@ -14651,6 +14717,26 @@
         abdSugerirTitulo();
       }
       abdRenderizarModal();
+      abdSnapshotInicial = abdCapturarEstadoModal();
+    }
+
+    // Mesma lógica do roteiro de UGC, da ideia do Banco de Ideias e do item de
+    // Ferramentas: serializa os campos pra saber se algo mudou desde que o
+    // modal foi aberto, e avisa antes de fechar sem salvar.
+    function abdCapturarEstadoModal() {
+      if (!abdEstado) return '';
+      return JSON.stringify({
+        titulo: document.getElementById('abd-titulo').value,
+        canal: abdEstado.canal,
+        modeloId: abdEstado.modeloId,
+        versao: abdEstado.versao,
+        valores: abdEstado.valores,
+        textoSalvo: abdEstado.textoSalvo,
+      });
+    }
+
+    function abdModalTemAlteracoes() {
+      return abdCapturarEstadoModal() !== abdSnapshotInicial;
     }
 
     function abdModeloAtual() {
@@ -14845,7 +14931,15 @@
       document.getElementById('abd-titulo').value = modelo ? (modelo.nome === ABD_CANAIS[abdEstado.canal].rotulo ? modelo.nome : `${ABD_CANAIS[abdEstado.canal].rotulo} · ${modelo.nome}`) : '';
     }
 
-    function abdFecharModal() {
+    async function abdFecharModal() {
+      if (abdModalTemAlteracoes()) {
+        const sair = await confirmarAcao('Você tem alterações não salvas nessa abordagem. Sair sem salvar?', { textoConfirmar: 'Sair sem salvar', perigo: true });
+        if (!sair) return;
+      }
+      abdFecharModalForcado();
+    }
+
+    function abdFecharModalForcado() {
       abdEstado = null;
       document.getElementById('abd-modal-overlay').hidden = true;
     }
@@ -14903,7 +14997,7 @@
         const todas = [...abdPorContato.values()].flat().filter((a) => a.id !== (data[0] && data[0].id));
         if (data[0]) todas.push(data[0]);
         abdIndexar(todas);
-        abdFecharModal();
+        abdFecharModalForcado();
         abdRenderizarLista();
         renderizarBaseContatos();
       } catch (err) {
@@ -14918,7 +15012,7 @@
       if (!abdEstado || !abdEstado.id) return;
       const alvo = abdDoContato(contatoAbertoId).find((a) => a.id === abdEstado.id);
       if (!alvo) return;
-      abdFecharModal();
+      abdFecharModalForcado();
       await abdExcluir(alvo);
     }
 

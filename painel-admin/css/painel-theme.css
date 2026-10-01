@@ -4596,7 +4596,7 @@
 }
 
 .painel-body .financeiro-extrato-valor-negativo {
-  color: var(--coral);
+  color: var(--erro);
 }
 
 .painel-body .financeiro-extrato-classificacao {

@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001g">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001h">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -2763,6 +2763,22 @@
             <option value="pessoal">Pessoal</option>
           </select>
         </div>
+        <div class="cal-form-campo">
+          <label for="meta-icone">Ícone (opcional)</label>
+          <input type="text" id="meta-icone" placeholder="🎯" maxlength="4">
+          <div class="meta-icone-presets">
+            <button type="button" class="meta-icone-preset" data-icone="🎯">🎯</button>
+            <button type="button" class="meta-icone-preset" data-icone="💰">💰</button>
+            <button type="button" class="meta-icone-preset" data-icone="📈">📈</button>
+            <button type="button" class="meta-icone-preset" data-icone="📚">📚</button>
+            <button type="button" class="meta-icone-preset" data-icone="💪">💪</button>
+            <button type="button" class="meta-icone-preset" data-icone="🏠">🏠</button>
+            <button type="button" class="meta-icone-preset" data-icone="✈️">✈️</button>
+            <button type="button" class="meta-icone-preset" data-icone="📷">📷</button>
+            <button type="button" class="meta-icone-preset" data-icone="🎨">🎨</button>
+            <button type="button" class="meta-icone-preset" data-icone="🧘">🧘</button>
+          </div>
+        </div>
         <div class="cal-form-linha">
           <div class="cal-form-campo">
             <label for="meta-valor-atual">Atual</label>
@@ -5352,6 +5368,11 @@
       document.getElementById('meta-modal-salvar').addEventListener('click', salvarModalMeta);
       document.getElementById('meta-modal-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'meta-modal-overlay') fecharModalMeta();
+      });
+      document.querySelectorAll('.meta-icone-preset').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.getElementById('meta-icone').value = btn.dataset.icone;
+        });
       });
       document.getElementById('btn-habito-novo').addEventListener('click', () => abrirModalHabito(null));
       document.getElementById('habito-modal-fechar').addEventListener('click', fecharModalHabito);
@@ -9982,8 +10003,11 @@
       return `
         <div class="meta-card" data-id="${meta.id}">
           <div class="meta-card-topo">
-            <h4 class="meta-card-nome">${meta.principal ? '⭐ ' : ''}${escapeHtml(meta.nome)}</h4>
-            <span class="meta-categoria-pill meta-categoria-${meta.categoria}">${CATEGORIA_META_LABEL[meta.categoria] || meta.categoria}</span>
+            <span class="meta-card-icone">${meta.icone || '🎯'}</span>
+            <div class="meta-card-titulos">
+              <h4 class="meta-card-nome">${meta.principal ? '⭐ ' : ''}${escapeHtml(meta.nome)}</h4>
+              <span class="meta-categoria-pill meta-categoria-${meta.categoria}">${CATEGORIA_META_LABEL[meta.categoria] || meta.categoria}</span>
+            </div>
           </div>
           <div class="meta-card-numeros">
             <span><strong>${formatarValorMeta(meta.valor_atual, meta.unidade)}</strong> / ${formatarValorMeta(meta.valor_objetivo, meta.unidade)}</span>
@@ -10146,6 +10170,7 @@
       document.getElementById('meta-modal-titulo').textContent = meta ? 'Editar meta' : 'Nova meta';
       document.getElementById('meta-nome').value = meta ? meta.nome : '';
       document.getElementById('meta-categoria').value = meta ? meta.categoria : 'trabalho';
+      document.getElementById('meta-icone').value = meta ? meta.icone || '' : '';
       document.getElementById('meta-valor-atual').value = meta ? formatarNumeroParaInput(meta.valor_atual) : '0';
       document.getElementById('meta-valor-objetivo').value = meta ? formatarNumeroParaInput(meta.valor_objetivo) : '';
       document.getElementById('meta-unidade').value = meta ? meta.unidade || '' : '';
@@ -10160,6 +10185,7 @@
       return JSON.stringify({
         nome: document.getElementById('meta-nome').value,
         categoria: document.getElementById('meta-categoria').value,
+        icone: document.getElementById('meta-icone').value,
         valorAtual: document.getElementById('meta-valor-atual').value,
         valorObjetivo: document.getElementById('meta-valor-objetivo').value,
         unidade: document.getElementById('meta-unidade').value,
@@ -10200,6 +10226,7 @@
       const linha = {
         nome,
         categoria: document.getElementById('meta-categoria').value,
+        icone: document.getElementById('meta-icone').value.trim() || null,
         valor_atual: parseNumeroBR(document.getElementById('meta-valor-atual').value) || 0,
         valor_objetivo: valorObjetivo,
         unidade: document.getElementById('meta-unidade').value.trim() || null,

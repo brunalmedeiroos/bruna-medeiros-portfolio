@@ -1195,7 +1195,8 @@ create table if not exists public.painel_metas (
   valor_objetivo numeric not null,
   unidade text,
   prazo date,
-  principal boolean not null default false
+  principal boolean not null default false,
+  icone text
 );
 
 create index if not exists painel_metas_categoria_idx on public.painel_metas (categoria);

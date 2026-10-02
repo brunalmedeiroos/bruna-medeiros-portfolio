@@ -18,7 +18,8 @@ create table if not exists public.painel_metas (
   unidade text,
   prazo date,
   -- só metas marcadas como principal aparecem no bloco "Principais metas" da Visão Geral.
-  principal boolean not null default false
+  principal boolean not null default false,
+  icone text
 );
 
 create index if not exists painel_metas_categoria_idx on public.painel_metas (categoria);

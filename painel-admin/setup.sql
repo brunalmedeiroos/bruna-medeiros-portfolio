@@ -1219,7 +1219,8 @@ create policy "Painel: exclusão autenticada de metas"
 create table if not exists public.painel_habitos (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
-  nome text not null
+  nome text not null,
+  meta_semanal integer
 );
 
 alter table public.painel_habitos enable row level security;

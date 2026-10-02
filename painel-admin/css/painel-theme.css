@@ -8841,26 +8841,20 @@
   font-weight: 600;
 }
 
-/* ---- Visão Geral de Metas: principais metas + resumo de hábitos ---- */
+/* ---- Visão Geral de Metas: principais metas (cards de .meta-card, ver
+   metas-grid), hábitos de hoje (grade semanal) e calendário de hábitos ---- */
 
-.painel-body .metas-vg-lista {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+.painel-body .metas-vg-habitos-topo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
 }
 
-.painel-body .metas-vg-item {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.painel-body .metas-vg-item-topo {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 13px;
-  color: var(--grafite);
+@media (max-width: 900px) {
+  .painel-body .metas-vg-habitos-topo {
+    grid-template-columns: 1fr;
+  }
 }
 
 .painel-body .habitos-vg-lista {
@@ -8868,18 +8862,171 @@
   flex-direction: column;
 }
 
-.painel-body .habitos-vg-item {
+.painel-body .habito-vg-linha {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 13px;
-  color: var(--grafite);
-  padding: 8px 0;
+  gap: 12px;
+  padding: 10px 0;
   border-bottom: 1px solid var(--borda);
+  flex-wrap: wrap;
 }
 
-.painel-body .habitos-vg-item:last-child {
+.painel-body .habito-vg-linha:last-child {
   border-bottom: none;
+}
+
+.painel-body .habito-vg-nome {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--grafite);
+  display: block;
+}
+
+.painel-body .habito-vg-meta-label {
+  font-size: 11px;
+  color: var(--texto-suave);
+}
+
+.painel-body .habito-vg-semana {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+}
+
+.painel-body .habito-vg-dias-letras,
+.painel-body .habito-vg-dias-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.painel-body .habito-vg-dias-letras span {
+  width: 16px;
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--texto-suave);
+}
+
+.painel-body .habito-vg-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: rgba(var(--grafite-rgb), 0.08);
+}
+
+.painel-body .habito-vg-dot.feito {
+  background: var(--sucesso);
+}
+
+.painel-body .habito-vg-fracao {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--grafite);
+  min-width: 32px;
+  text-align: right;
+}
+
+/* ---- Calendário de hábitos (mini-calendário, só pra Visão Geral) ---- */
+
+.painel-body .habitos-cal-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.painel-body .habitos-cal-topo .card-titulo {
+  margin: 0;
+}
+
+.painel-body .habitos-cal-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.painel-body .habitos-cal-semana span {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--texto-suave);
+  text-transform: uppercase;
+}
+
+.painel-body .habitos-cal-grade {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.painel-body .habitos-cal-dia {
+  min-height: 44px;
+  border-radius: var(--raio-sm);
+  padding: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.painel-body .habitos-cal-dia-numero {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--grafite);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.painel-body .habitos-cal-dia-numero.cal-dia-hoje {
+  background: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .habitos-cal-dia-fora .habitos-cal-dia-numero {
+  opacity: 0.3;
+}
+
+.painel-body .habitos-cal-dia-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  justify-content: center;
+}
+
+.painel-body .habitos-cal-dia-dots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.painel-body .habitos-cal-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+  font-size: 11px;
+  color: var(--texto-suave);
+}
+
+.painel-body .habitos-cal-legenda-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.painel-body .habitos-cal-legenda-item span.ponto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 }
 
 /* ---- Hábitos: cards igual Metas (.meta-card), só que menores ---- */

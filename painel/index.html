@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001h">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001i">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1520,12 +1520,34 @@
 
             <div class="card">
               <h3 class="card-titulo">Principais metas</h3>
-              <div id="metas-vg-principais" class="metas-vg-lista"></div>
+              <div id="metas-vg-principais" class="metas-grid"></div>
             </div>
 
-            <div class="card">
-              <h3 class="card-titulo">Resumo dos hábitos</h3>
-              <div id="metas-vg-habitos" class="habitos-vg-lista"></div>
+            <div class="metas-vg-habitos-topo">
+              <div class="card">
+                <h3 class="card-titulo">Hábitos de hoje</h3>
+                <div id="metas-vg-habitos" class="habitos-vg-lista"></div>
+              </div>
+
+              <div class="card">
+                <div class="habitos-cal-topo">
+                  <h3 class="card-titulo">Calendário de hábitos</h3>
+                  <div class="cal-topo-nav">
+                    <button id="habitos-cal-mes-anterior" class="cal-btn cal-btn-icon" type="button" aria-label="Mês anterior">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <span class="cal-mes-label" id="habitos-cal-mes-label">Mês</span>
+                    <button id="habitos-cal-mes-proximo" class="cal-btn cal-btn-icon" type="button" aria-label="Próximo mês">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="habitos-cal-semana">
+                  <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
+                </div>
+                <div id="habitos-cal-grade" class="habitos-cal-grade"></div>
+                <div id="habitos-cal-legenda" class="habitos-cal-legenda"></div>
+              </div>
             </div>
           </div>
 
@@ -2822,6 +2844,10 @@
         <div class="cal-form-campo">
           <label for="habito-nome">Nome</label>
           <input type="text" id="habito-nome" placeholder="Ex: Beber água, Treinar">
+        </div>
+        <div class="cal-form-campo">
+          <label for="habito-meta-semanal">Meta semanal (opcional)</label>
+          <input type="number" min="1" max="7" step="1" id="habito-meta-semanal" placeholder="Ex: 5">
         </div>
 
         <div class="cal-form-acoes">
@@ -5381,6 +5407,8 @@
       document.getElementById('habito-modal-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'habito-modal-overlay') fecharModalHabito();
       });
+      document.getElementById('habitos-cal-mes-anterior').addEventListener('click', () => mudarMesCalendarioHabitos(-1));
+      document.getElementById('habitos-cal-mes-proximo').addEventListener('click', () => mudarMesCalendarioHabitos(1));
 
       // Instagram: Automações e Leads
       document.querySelectorAll('.instagram-subnav-btn').forEach((btn) => {
@@ -10021,6 +10049,13 @@
       `;
     }
 
+    // Wire comum pros cards de meta: clicar em qualquer um abre pra editar.
+    function wireMetaCards(container) {
+      container.querySelectorAll('.meta-card').forEach((card) => {
+        card.addEventListener('click', () => abrirModalMeta(metasCache.find((m) => m.id === card.dataset.id)));
+      });
+    }
+
     function renderizarMetasLista() {
       const lista = document.getElementById('metas-lista');
       if (!lista) return;
@@ -10029,18 +10064,30 @@
         return;
       }
       lista.innerHTML = ordenarPorPrazo(metasCache).map(metaCardHtml).join('');
-      lista.querySelectorAll('.meta-card').forEach((card) => {
-        card.addEventListener('click', () => abrirModalMeta(metasCache.find((m) => m.id === card.dataset.id)));
-      });
+      wireMetaCards(lista);
     }
 
-    // Semana começando na segunda-feira.
+    // Semana começando na segunda-feira (pra "Xx essa semana" e a grade da
+    // Visão Geral); o mini calendário mensal usa semana começando no
+    // domingo, como num calendário comum — ver renderizarCalendarioHabitos().
     function inicioSemana(data) {
       const d = new Date(data);
       const dia = d.getDay();
       d.setDate(d.getDate() - (dia === 0 ? 6 : dia - 1));
       d.setHours(0, 0, 0, 0);
       return d;
+    }
+
+    // As 7 datas (ISO) da semana atual, segunda a domingo.
+    function diasDaSemanaAtual() {
+      const inicio = inicioSemana(new Date());
+      const dias = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(inicio);
+        d.setDate(d.getDate() + i);
+        dias.push(dataParaISO(d));
+      }
+      return dias;
     }
 
     function contagemHabito(habitoId) {
@@ -10066,10 +10113,11 @@
       lista.innerHTML = habitosCache
         .map((h) => {
           const { semana, mes, feitoHoje } = contagemHabito(h.id);
+          const contagemSemana = h.meta_semanal ? `${semana}/${h.meta_semanal}` : `${semana}x`;
           return `
             <div class="habito-card">
               <h4 class="habito-card-nome" data-id="${h.id}">${escapeHtml(h.nome)}</h4>
-              <span class="habito-card-contagem">${semana}x essa semana · ${mes}x esse mês</span>
+              <span class="habito-card-contagem">${contagemSemana} essa semana · ${mes}x esse mês</span>
               <button type="button" class="habito-card-toggle ${feitoHoje ? 'ativo' : ''}" data-id="${h.id}">${feitoHoje ? '✓ Feito hoje' : 'Marcar hoje'}</button>
             </div>
           `;
@@ -10125,25 +10173,101 @@
       const principais = ordenarPorPrazo(metasCache.filter((m) => m.principal));
       const contPrincipais = document.getElementById('metas-vg-principais');
       contPrincipais.innerHTML = principais.length
-        ? principais
-            .map((m) => {
-              const pct = Math.round(progressoMeta(m) * 100);
+        ? principais.map(metaCardHtml).join('')
+        : '<p class="texto-vazio">Marque uma meta como "principal" pra ela aparecer aqui.</p>';
+      wireMetaCards(contPrincipais);
+
+      // Hábitos de hoje — grade semanal (segunda a domingo).
+      const diasSemana = diasDaSemanaAtual();
+      const LETRAS_SEMANA = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'];
+      const contHabitos = document.getElementById('metas-vg-habitos');
+      contHabitos.innerHTML = habitosCache.length
+        ? habitosCache
+            .map((h) => {
+              const registrosHabito = habitoRegistrosCache.filter((r) => r.habito_id === h.id);
+              const feitosNaSemana = diasSemana.filter((d) => registrosHabito.some((r) => r.data === d)).length;
+              const fracao = h.meta_semanal ? `${feitosNaSemana}/${h.meta_semanal}` : `${feitosNaSemana}x`;
+              const dots = diasSemana
+                .map((d) => `<span class="habito-vg-dot ${registrosHabito.some((r) => r.data === d) ? 'feito' : ''}"></span>`)
+                .join('');
               return `
-                <div class="metas-vg-item">
-                  <div class="metas-vg-item-topo"><span>${escapeHtml(m.nome)}</span><span>${pct}%</span></div>
-                  <div class="meta-progresso-barra"><div class="meta-progresso-preenchido" style="width:${pct}%"></div></div>
+                <div class="habito-vg-linha">
+                  <div>
+                    <span class="habito-vg-nome">${escapeHtml(h.nome)}</span>
+                    ${h.meta_semanal ? `<span class="habito-vg-meta-label">Meta: ${h.meta_semanal}x por semana</span>` : ''}
+                  </div>
+                  <div class="habito-vg-semana">
+                    <div class="habito-vg-dias-letras">${LETRAS_SEMANA.map((l) => `<span>${l}</span>`).join('')}</div>
+                    <div class="habito-vg-dias-dots">${dots}</div>
+                  </div>
+                  <span class="habito-vg-fracao">${fracao}</span>
                 </div>
               `;
             })
             .join('')
-        : '<p class="texto-vazio">Marque uma meta como "principal" pra ela aparecer aqui.</p>';
-
-      const contHabitos = document.getElementById('metas-vg-habitos');
-      contHabitos.innerHTML = habitosCache.length
-        ? habitosCache
-            .map((h) => `<div class="habitos-vg-item"><span>${escapeHtml(h.nome)}</span><span>${contagemHabito(h.id).semana}x essa semana</span></div>`)
-            .join('')
         : '<p class="texto-vazio">Nenhum hábito ainda.</p>';
+
+      renderizarCalendarioHabitos();
+    }
+
+    // ---- Calendário de hábitos (mini-calendário mensal, Visão Geral) ----
+    // Semana começando no domingo (igual um calendário comum). Cada hábito
+    // tem uma cor fixa (pela ordem em habitosCache) pra identificar nos
+    // pontinhos do dia e na legenda.
+    const CORES_HABITO = ['#7DB7CE', '#2fa96b', '#d4a017', '#c4453c', '#9b7fd4', '#e08ac4', '#5ec8c0', '#e0954a'];
+    function corHabito(indice) {
+      return CORES_HABITO[indice % CORES_HABITO.length];
+    }
+
+    let calendarioHabitosMes = new Date();
+
+    function mudarMesCalendarioHabitos(delta) {
+      calendarioHabitosMes = new Date(calendarioHabitosMes.getFullYear(), calendarioHabitosMes.getMonth() + delta, 1);
+      renderizarCalendarioHabitos();
+    }
+
+    function renderizarCalendarioHabitos() {
+      const grade = document.getElementById('habitos-cal-grade');
+      if (!grade) return;
+
+      const ano = calendarioHabitosMes.getFullYear();
+      const mes = calendarioHabitosMes.getMonth();
+      const hoje = new Date();
+      const hojeISO = dataParaISO(hoje);
+
+      const label = calendarioHabitosMes.toLocaleDateString(localeAtual(), { month: 'long', year: 'numeric' });
+      document.getElementById('habitos-cal-mes-label').textContent = label.charAt(0).toUpperCase() + label.slice(1);
+
+      const primeiroDiaSemana = new Date(ano, mes, 1).getDay(); // 0 = domingo
+      const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+
+      const celulas = [];
+      for (let i = 0; i < primeiroDiaSemana; i++) celulas.push(null);
+      for (let dia = 1; dia <= diasNoMes; dia++) celulas.push(dia);
+
+      grade.innerHTML = celulas
+        .map((dia) => {
+          if (!dia) return '<div class="habitos-cal-dia habitos-cal-dia-fora"></div>';
+          const dataISO = dataParaISO(new Date(ano, mes, dia));
+          const habitosNoDia = habitosCache
+            .map((h, indice) => ({ h, indice }))
+            .filter(({ h }) => habitoRegistrosCache.some((r) => r.habito_id === h.id && r.data === dataISO));
+          const dots = habitosNoDia.map(({ indice }) => `<span style="background:${corHabito(indice)}"></span>`).join('');
+          return `
+            <div class="habitos-cal-dia">
+              <span class="habitos-cal-dia-numero ${dataISO === hojeISO ? 'cal-dia-hoje' : ''}">${dia}</span>
+              <div class="habitos-cal-dia-dots">${dots}</div>
+            </div>
+          `;
+        })
+        .join('');
+
+      const legenda = document.getElementById('habitos-cal-legenda');
+      legenda.innerHTML = habitosCache.length
+        ? habitosCache
+            .map((h, indice) => `<span class="habitos-cal-legenda-item"><span class="ponto" style="background:${corHabito(indice)}"></span>${escapeHtml(h.nome)}</span>`)
+            .join('')
+        : '';
     }
 
     // ---- Modal: Meta ----
@@ -10274,13 +10398,17 @@
       habitoAbertoId = habito ? habito.id : null;
       document.getElementById('habito-modal-titulo').textContent = habito ? 'Editar hábito' : 'Novo hábito';
       document.getElementById('habito-nome').value = habito ? habito.nome : '';
+      document.getElementById('habito-meta-semanal').value = habito && habito.meta_semanal ? habito.meta_semanal : '';
       document.getElementById('habito-modal-excluir').hidden = !habito;
       document.getElementById('habito-modal-overlay').hidden = false;
       habitoSnapshotInicial = capturarEstadoHabito();
     }
 
     function capturarEstadoHabito() {
-      return document.getElementById('habito-nome').value;
+      return JSON.stringify({
+        nome: document.getElementById('habito-nome').value,
+        metaSemanal: document.getElementById('habito-meta-semanal').value,
+      });
     }
 
     function habitoTemAlteracoes() {
@@ -10307,14 +10435,20 @@
         return;
       }
 
+      const metaSemanalTexto = document.getElementById('habito-meta-semanal').value;
+      const linha = {
+        nome,
+        meta_semanal: metaSemanalTexto ? Number(metaSemanalTexto) : null,
+      };
+
       const btn = document.getElementById('habito-modal-salvar');
       btn.disabled = true;
       try {
         let error;
         if (habitoAbertoId) {
-          ({ error } = await Auth.sb.from('painel_habitos').update({ nome }).eq('id', habitoAbertoId));
+          ({ error } = await Auth.sb.from('painel_habitos').update(linha).eq('id', habitoAbertoId));
         } else {
-          ({ error } = await Auth.sb.from('painel_habitos').insert({ nome }));
+          ({ error } = await Auth.sb.from('painel_habitos').insert(linha));
         }
         if (error) throw error;
         fecharModalHabitoForcado();

@@ -2001,10 +2001,6 @@
   margin-bottom: 20px;
 }
 
-.painel-body .pl-hub[hidden] {
-  display: none;
-}
-
 .painel-body .pl-hub-card {
   background: transparent;
   border: 1px solid rgba(var(--grafite-rgb), 0.14);
@@ -2026,31 +2022,27 @@
   display: none;
 }
 
-.painel-body .pl-voltar {
-  display: block;
-  background: transparent;
-  border: none;
-  font-size: 13px;
-  font-weight: 600;
-  font-family: var(--fonte-corpo);
-  color: var(--texto-suave);
-  cursor: pointer;
-  margin-bottom: 12px;
-  padding: 0;
-}
-
-.painel-body .pl-voltar:hover {
-  color: var(--grafite);
-}
-
 .painel-body .pl-pagina-titulo {
   font-size: 28px;
   letter-spacing: 1.4px;
   margin-bottom: 16px;
 }
 
-.painel-body .pl-cronograma-secao {
-  margin-top: 24px;
+.painel-body .pl-vg {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.painel-body .pl-vg-cronograma .pl-pagina-titulo {
+  margin-top: 0;
+}
+
+@media (max-width: 900px) {
+  .painel-body .pl-vg {
+    grid-template-columns: 1fr;
+  }
 }
 
 .painel-body .pl-colunas-scroll {
@@ -2601,58 +2593,6 @@
 
 /* ---- Cronograma de postagem ---- */
 
-.painel-body .pl-cronograma-tabela-card {
-  margin-top: 24px;
-  margin-bottom: 20px;
-}
-
-.painel-body .pl-cronograma-cabecalho {
-  display: grid;
-  grid-template-columns: 1fr 160px 44px;
-  gap: 10px;
-  padding: 0 4px 8px;
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  color: var(--texto-suave);
-}
-
-.painel-body .pl-cronograma-linhas {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 14px;
-}
-
-.painel-body .pl-cronograma-linha {
-  display: grid;
-  grid-template-columns: 1fr 160px 44px;
-  gap: 10px;
-  align-items: center;
-}
-
-.painel-body .pl-cron-pilar-input,
-.painel-body .pl-cron-dia-select {
-  border: 1px solid var(--borda);
-  border-radius: var(--raio-sm);
-  padding: 8px 10px;
-  font-size: 13px;
-  font-family: var(--fonte-corpo);
-  background: rgba(255, 255, 255, 0.7);
-  color: var(--grafite);
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.painel-body .pl-cron-excluir {
-  width: 32px;
-  height: 32px;
-  box-shadow: none;
-  background: transparent;
-  color: var(--texto-suave);
-}
-
 .painel-body .pl-cron-grade {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -2798,11 +2738,6 @@
 }
 
 @media (max-width: 700px) {
-  .painel-body .pl-cronograma-cabecalho,
-  .painel-body .pl-cronograma-linha {
-    grid-template-columns: 1fr 120px 40px;
-  }
-
   .painel-body .pl-cron-dia-pilar {
     font-size: 8px;
   }
@@ -7239,6 +7174,12 @@
 .painel-body .pg-capa-nav .pl-hub-card:hover {
   background: rgba(255, 255, 255, 0.3);
   color: var(--branco);
+}
+
+.painel-body .pg-capa-nav .pl-hub-card.ativo {
+  background: var(--branco);
+  border-color: var(--branco);
+  color: var(--coral-hover);
 }
 
 /* ---- Abordagem por marca (Base de contatos) ---- */

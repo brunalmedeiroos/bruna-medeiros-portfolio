@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001m">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001n">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -876,13 +876,41 @@
         <!-- ---------- Aba: Planejador de Conteúdo ---------- -->
         <section id="panel-planejador" class="tab-panel" hidden>
           <div id="pl-hub" class="pl-hub">
+            <button class="pl-hub-card ativo" data-pagina="visao-geral" type="button" data-i18n="pl_visao_geral">Visão geral</button>
             <button class="pl-hub-card" data-pagina="banco" type="button" data-i18n="pl_banco_ideias">Banco de ideias</button>
             <button class="pl-hub-card" data-pagina="achados" type="button" data-i18n="pl_achados">Achados</button>
             <button class="pl-hub-card" data-pagina="radar" type="button" data-i18n="pl_radar">Radar de Notícias</button>
           </div>
 
+          <div id="pl-pagina-visao-geral" class="pl-pagina">
+            <div class="pl-vg">
+              <div class="card-numero pl-vg-numero">
+                <span class="card-label" data-i18n="pl_roteiros_prontos">Roteiros prontos</span>
+                <span class="card-valor" id="pl-vg-roteiros-prontos">0</span>
+              </div>
+
+              <div class="pl-vg-cronograma">
+                <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_cronograma">Cronograma de postagem</h3>
+            <div class="card pl-cronograma-calendario-card">
+              <div class="cal-topo">
+                <button id="pl-cron-mes-anterior" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_anterior" aria-label="Mês anterior">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <span class="cal-mes-label" id="pl-cron-mes-label">Mês</span>
+                <button id="pl-cron-mes-proximo" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_proximo" aria-label="Próximo mês">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
+              <div class="cal-semana">
+                <span data-i18n="cal_seg">Seg</span><span data-i18n="cal_ter">Ter</span><span data-i18n="cal_qua">Qua</span><span data-i18n="cal_qui">Qui</span><span data-i18n="cal_sex">Sex</span><span data-i18n="cal_sab">Sáb</span><span data-i18n="cal_dom">Dom</span>
+              </div>
+              <div class="pl-cron-grade" id="pl-cron-grade"></div>
+            </div>
+              </div>
+            </div>
+          </div>
+
           <div id="pl-pagina-banco" class="pl-pagina" hidden>
-            <button class="pl-voltar" type="button" data-i18n="voltar">← Voltar</button>
             <div class="pl-banco-topo">
               <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_banco_ideias">Banco de ideias</h3>
               <div class="pl-roteiros-prontos-badge">
@@ -896,7 +924,6 @@
           </div>
 
           <div id="pl-pagina-achados" class="pl-pagina" hidden>
-            <button class="pl-voltar" type="button" data-i18n="voltar">← Voltar</button>
             <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_achados">Achados</h3>
             <div class="pl-colunas-scroll">
               <div id="pl-colunas-achados" class="pl-colunas"></div>
@@ -904,7 +931,6 @@
           </div>
 
           <div id="pl-pagina-radar" class="pl-pagina" hidden>
-            <button class="pl-voltar" type="button" data-i18n="voltar">← Voltar</button>
             <h3 class="card-titulo pl-pagina-titulo" data-i18n="nav_radar">Radar de Notícias</h3>
           <div class="radar-topo">
             <button id="btn-radar-atualizar" class="cal-btn cal-btn-primario" type="button" data-i18n="radar_atualizar">Atualizar notícias</button>
@@ -940,35 +966,6 @@
           <div id="radar-lista" class="radar-lista"></div>
           </div>
 
-          <div id="pl-cronograma" class="pl-cronograma-secao">
-            <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_cronograma">Cronograma de postagem</h3>
-
-            <div class="card pl-cronograma-calendario-card">
-              <div class="cal-topo">
-                <button id="pl-cron-mes-anterior" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_anterior" aria-label="Mês anterior">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-                <span class="cal-mes-label" id="pl-cron-mes-label">Mês</span>
-                <button id="pl-cron-mes-proximo" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_proximo" aria-label="Próximo mês">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-              </div>
-              <div class="cal-semana">
-                <span data-i18n="cal_seg">Seg</span><span data-i18n="cal_ter">Ter</span><span data-i18n="cal_qua">Qua</span><span data-i18n="cal_qui">Qui</span><span data-i18n="cal_sex">Sex</span><span data-i18n="cal_sab">Sáb</span><span data-i18n="cal_dom">Dom</span>
-              </div>
-              <div class="pl-cron-grade" id="pl-cron-grade"></div>
-            </div>
-
-            <div class="card pl-cronograma-tabela-card">
-              <div class="pl-cronograma-cabecalho">
-                <span data-i18n="pl_pilar">Pilar</span>
-                <span data-i18n="pl_dia_semana">Dia da semana</span>
-                <span></span>
-              </div>
-              <div id="pl-cronograma-linhas" class="pl-cronograma-linhas"></div>
-              <button id="pl-cronograma-add" class="pl-coluna-add" type="button" data-i18n="pl_novo_pilar">+ Novo pilar do cronograma</button>
-            </div>
-          </div>
         </section>
 
         <!-- ---------- Aba: UGC / Publi ---------- -->
@@ -3050,20 +3047,6 @@
       const chave = STATUS_IDEIA_CHAVE[status];
       return chave ? tr(chave) : status;
     }
-    const DIAS_SEMANA = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
-    const DIA_SEMANA_CHAVE = {
-      'Segunda': 'dia_semana_segunda',
-      'Terça': 'dia_semana_terca',
-      'Quarta': 'dia_semana_quarta',
-      'Quinta': 'dia_semana_quinta',
-      'Sexta': 'dia_semana_sexta',
-      'Sábado': 'dia_semana_sabado',
-      'Domingo': 'dia_semana_domingo',
-    };
-    function traduzirDiaSemana(dia) {
-      const chave = DIA_SEMANA_CHAVE[dia];
-      return chave ? tr(chave) : dia;
-    }
     let radarAbaCarregada = false;
     let radarCache = [];
     let filtroPeriodoRadar = null; // null | 'hoje' | 'novas' | 'usadas'
@@ -3710,10 +3693,9 @@
         pl_achados: '🔍 Achados',
         pl_radar: '🗞️ Radar de Notícias',
         pl_achados_desc: 'Ganchos, frases, formatos, músicas e CTAs pra virarem ideia depois.',
+        pl_visao_geral: 'Visão geral',
         pl_cronograma: '📅 Cronograma de postagem',
         pl_pilar: 'Pilar',
-        pl_dia_semana: 'Dia da semana',
-        pl_novo_pilar: '+ Novo pilar do cronograma',
 
         // Radar de Notícias
         radar_atualizar: 'Atualizar notícias',
@@ -3776,9 +3758,6 @@
         pl_achado_novo_placeholder: 'Escreva o achado...',
         adicionar: 'Adicionar',
         erro_criar_generico: 'Não foi possível criar agora. Tente de novo em instantes.',
-        pl_cron_nenhum_pilar: 'Nenhum pilar cadastrado ainda.',
-        pl_cron_excluir_aria: 'Excluir',
-        pl_cron_excluir_confirmar: 'Excluir esta linha do cronograma?',
         pl_cron_agendar_ideia_aria: 'Agendar ideia',
         pl_cron_remover_pilar_dia_aria: 'Remover pilar deste dia',
         pl_cron_remover_ideia_calendario_aria: 'Remover do calendário',
@@ -3786,14 +3765,7 @@
         pl_cron_nenhuma_ideia_roteiro_pronto: 'Nenhuma ideia com roteiro pronto disponível',
         pl_erro_agendar: 'Não foi possível agendar agora. Tente de novo em instantes.',
         pl_erro_remover_calendario: 'Não foi possível remover agora. Tente de novo em instantes.',
-        pl_cron_nenhum_pilar_disponivel: 'Nenhum pilar disponível — cadastre um lá embaixo',
-        dia_semana_segunda: 'Segunda',
-        dia_semana_terca: 'Terça',
-        dia_semana_quarta: 'Quarta',
-        dia_semana_quinta: 'Quinta',
-        dia_semana_sexta: 'Sexta',
-        dia_semana_sabado: 'Sábado',
-        dia_semana_domingo: 'Domingo',
+        pl_cron_nenhum_pilar_disponivel: 'Nenhum pilar disponível — cadastre um no Banco de ideias',
         pl_excluir_achado_confirmar: 'Excluir este achado?',
         radar_erro_carregar: 'Não foi possível carregar as notícias agora.',
         radar_nenhuma_noticia: 'Nenhuma notícia por aqui ainda.',
@@ -4615,10 +4587,9 @@
         pl_achados: '🔍 Finds',
         pl_radar: '🗞️ News Radar',
         pl_achados_desc: 'Hooks, phrases, formats, music, and CTAs to turn into an idea later.',
+        pl_visao_geral: 'Overview',
         pl_cronograma: '📅 Posting schedule',
         pl_pilar: 'Pillar',
-        pl_dia_semana: 'Day of the week',
-        pl_novo_pilar: '+ New schedule pillar',
 
         // News Radar
         radar_atualizar: 'Refresh news',
@@ -4681,9 +4652,6 @@
         pl_achado_novo_placeholder: 'Write the find...',
         adicionar: 'Add',
         erro_criar_generico: 'Could not create it right now. Try again in a moment.',
-        pl_cron_nenhum_pilar: 'No pillars registered yet.',
-        pl_cron_excluir_aria: 'Delete',
-        pl_cron_excluir_confirmar: 'Delete this schedule row?',
         pl_cron_agendar_ideia_aria: 'Schedule idea',
         pl_cron_remover_pilar_dia_aria: "Remove this day's pillar",
         pl_cron_remover_ideia_calendario_aria: 'Remove from calendar',
@@ -4691,14 +4659,7 @@
         pl_cron_nenhuma_ideia_roteiro_pronto: 'No idea with a ready script available',
         pl_erro_agendar: 'Could not schedule it right now. Try again in a moment.',
         pl_erro_remover_calendario: 'Could not remove it right now. Try again in a moment.',
-        pl_cron_nenhum_pilar_disponivel: 'No pillars available — add one below',
-        dia_semana_segunda: 'Monday',
-        dia_semana_terca: 'Tuesday',
-        dia_semana_quarta: 'Wednesday',
-        dia_semana_quinta: 'Thursday',
-        dia_semana_sexta: 'Friday',
-        dia_semana_sabado: 'Saturday',
-        dia_semana_domingo: 'Sunday',
+        pl_cron_nenhum_pilar_disponivel: 'No pillars available — add one in the Idea bank',
         pl_excluir_achado_confirmar: 'Delete this find?',
         radar_erro_carregar: 'Could not load the news right now.',
         radar_nenhuma_noticia: 'No news here yet.',
@@ -5473,9 +5434,6 @@
       document.querySelectorAll('.pl-hub-card').forEach((btn) => {
         btn.addEventListener('click', () => abrirPaginaPlanejador(btn.dataset.pagina));
       });
-      document.querySelectorAll('.pl-voltar').forEach((btn) => {
-        btn.addEventListener('click', fecharPaginaPlanejador);
-      });
       document.getElementById('pl-modal-fechar').addEventListener('click', fecharModalIdeia);
       document.getElementById('pl-modal-salvar').addEventListener('click', salvarModalIdeia);
       document.getElementById('pl-modal-excluir').addEventListener('click', excluirModalIdeia);
@@ -5488,7 +5446,6 @@
       document.getElementById('pl-modal-achado-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'pl-modal-achado-overlay') fecharModalAchado();
       });
-      document.getElementById('pl-cronograma-add').addEventListener('click', criarLinhaCronogramaNova);
       document.getElementById('pl-cron-mes-anterior').addEventListener('click', () => mudarMesCronograma(-1));
       document.getElementById('pl-cron-mes-proximo').addEventListener('click', () => mudarMesCronograma(1));
       document.getElementById('pl-modal-agendar-fechar').addEventListener('click', fecharModalAgendar);
@@ -5888,8 +5845,7 @@
     }
 
     function abrirPaginaPlanejador(pagina) {
-      document.getElementById('pl-hub').hidden = true;
-      document.getElementById('pl-cronograma').hidden = true;
+      document.querySelectorAll('.pl-hub-card').forEach((b) => b.classList.toggle('ativo', b.dataset.pagina === pagina));
       document.querySelectorAll('.pl-pagina').forEach((p) => (p.hidden = true));
       document.getElementById('pl-pagina-' + pagina).hidden = false;
       if (pagina === 'banco') {
@@ -5909,12 +5865,6 @@
       } else {
         renderizarRadar();
       }
-    }
-
-    function fecharPaginaPlanejador() {
-      document.getElementById('pl-hub').hidden = false;
-      document.getElementById('pl-cronograma').hidden = false;
-      document.querySelectorAll('.pl-pagina').forEach((p) => (p.hidden = true));
     }
 
     function mudarMesCronograma(delta) {
@@ -9324,7 +9274,7 @@
 
         renderizarBancoIdeias();
         renderizarAchados();
-        renderizarCronogramaTabela();
+        atualizarContadorVisaoGeral();
         renderizarCronogramaCalendario();
       } catch (err) {
         console.error('Erro ao carregar planejador:', err);
@@ -9868,82 +9818,11 @@
       }
     }
 
-    // ---- Cronograma de postagem (pilar de cada dia da semana + calendário) ----
+    // ---- Visão geral + cronograma de postagem (calendário) ----
 
-    function renderizarCronogramaTabela() {
-      const container = document.getElementById('pl-cronograma-linhas');
-      container.innerHTML = '';
-
-      if (cronogramaCache.length === 0) {
-        container.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('pl_cron_nenhum_pilar'))}</p>`;
-        return;
-      }
-
-      // Ordem sempre automática pelo dia da semana (Segunda -> Domingo), não pela
-      // ordem de criação — mudar o dia de um pilar já reordena a lista sozinha.
-      const ordenado = [...cronogramaCache].sort((a, b) => DIAS_SEMANA.indexOf(a.dia_semana) - DIAS_SEMANA.indexOf(b.dia_semana));
-      ordenado.forEach((linha) => container.appendChild(criarLinhaCronograma(linha)));
-    }
-
-    function criarLinhaCronograma(linha) {
-      const el = document.createElement('div');
-      el.className = 'pl-cronograma-linha';
-      el.innerHTML = `
-        <input type="text" class="pl-cron-pilar-input" value="${escapeHtml(linha.pilar)}">
-        <select class="pl-cron-dia-select">
-          ${DIAS_SEMANA.map((d) => `<option value="${d}" ${d === linha.dia_semana ? 'selected' : ''}>${escapeHtml(traduzirDiaSemana(d))}</option>`).join('')}
-        </select>
-        <button type="button" class="pl-cron-excluir cal-btn cal-btn-icon" aria-label="${escapeHtml(tr('pl_cron_excluir_aria'))}">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-      `;
-
-      const inputPilar = el.querySelector('.pl-cron-pilar-input');
-      const selectDia = el.querySelector('.pl-cron-dia-select');
-
-      inputPilar.addEventListener('change', () => atualizarCronograma(linha.id, { pilar: inputPilar.value.trim() || linha.pilar }));
-      selectDia.addEventListener('change', () => atualizarCronograma(linha.id, { dia_semana: selectDia.value }));
-      el.querySelector('.pl-cron-excluir').addEventListener('click', () => excluirCronograma(linha.id));
-
-      return el;
-    }
-
-    async function criarLinhaCronogramaNova() {
-      try {
-        const { error } = await Auth.sb.from('planejador_cronograma').insert({
-          pilar: 'Novo pilar',
-          dia_semana: 'Segunda',
-          ordem: cronogramaCache.length,
-        });
-        if (error) throw error;
-        await carregarPlanejador();
-      } catch (err) {
-        console.error('Erro ao criar linha do cronograma:', err);
-        alert(tr('erro_criar_generico'));
-      }
-    }
-
-    async function atualizarCronograma(id, mudanca) {
-      try {
-        const { error } = await Auth.sb.from('planejador_cronograma').update(mudanca).eq('id', id);
-        if (error) throw error;
-        await carregarPlanejador();
-      } catch (err) {
-        console.error('Erro ao atualizar cronograma:', err);
-        alert(tr('erro_salvar_generico'));
-      }
-    }
-
-    async function excluirCronograma(id) {
-      if (!(await confirmarAcao(tr('pl_cron_excluir_confirmar')))) return;
-      try {
-        const { error } = await Auth.sb.from('planejador_cronograma').delete().eq('id', id);
-        if (error) throw error;
-        await carregarPlanejador();
-      } catch (err) {
-        console.error('Erro ao excluir cronograma:', err);
-        alert(tr('erro_excluir_generico'));
-      }
+    function atualizarContadorVisaoGeral() {
+      const prontos = ideiasCache.filter((i) => !i.gravado && i.status === 'Roteiro pronto').length;
+      document.getElementById('pl-vg-roteiros-prontos').textContent = prontos;
     }
 
     function renderizarCronogramaCalendario() {
@@ -9962,8 +9841,6 @@
       const hoje = new Date();
 
       // Mapa data (ISO) -> lista de pilares escolhidos pra aquele dia específico.
-      // O dia da semana cadastrado embaixo é só referência — não preenche o
-      // calendário sozinho, ela escolhe o pilar de cada dia na hora.
       const mapaDia = {};
       cronogramaDiasCache.forEach((linha) => {
         if (!mapaDia[linha.data]) mapaDia[linha.data] = [];
@@ -10086,17 +9963,13 @@
         new Date(diaISO + 'T00:00:00').toLocaleDateString(localeAtual(), { day: '2-digit', month: 'long' });
 
       const jaEscolhidos = cronogramaDiasCache.filter((l) => l.data === diaISO).map((l) => l.pilar);
-      const nomesPilares = [...new Set(cronogramaCache.map((l) => l.pilar))].filter((p) => !jaEscolhidos.includes(p));
+      const nomesPilares = [...new Set([...pilaresCache.map((p) => p.nome), ...cronogramaCache.map((l) => l.pilar)])].filter((p) => !jaEscolhidos.includes(p));
 
       const select = document.getElementById('pl-modal-pilar-dia-select');
       if (nomesPilares.length === 0) {
         select.innerHTML = `<option value="">${escapeHtml(tr('pl_cron_nenhum_pilar_disponivel'))}</option>`;
       } else {
         select.innerHTML = nomesPilares.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
-        // Sugere o pilar de referência daquele dia da semana, mas ela pode trocar livremente.
-        const nomeDiaSemana = DIAS_SEMANA[(new Date(diaISO + 'T00:00:00').getDay() + 6) % 7];
-        const sugestao = cronogramaCache.find((l) => l.dia_semana === nomeDiaSemana && !jaEscolhidos.includes(l.pilar));
-        if (sugestao) select.value = sugestao.pilar;
       }
 
       document.getElementById('pl-modal-pilar-dia-overlay').hidden = false;
@@ -10121,8 +9994,7 @@
       }
     }
 
-    // Tira um pilar do calendário naquele dia específico (não mexe no padrão de
-    // referência lá embaixo, só o registro daquele dia).
+    // Tira um pilar do calendário naquele dia específico.
     async function excluirPilarDoDia(diaISO, pilar) {
       try {
         const { error } = await Auth.sb.from('planejador_cronograma_dias').delete().eq('data', diaISO).eq('pilar', pilar);

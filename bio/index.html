@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bruna Medeiros | Links</title>
+<meta name="description" content="Todos os meus links em um lugar só: redes sociais, portfólio, equipamentos e contato.">
+<meta name="theme-color" content="#FAF9F4">
+<link rel="icon" type="image/png" href="/favicon.png">
+
+<meta property="og:title" content="Bruna Medeiros | Links">
+<meta property="og:description" content="Redes sociais, portfólio, equipamentos e contato da Bruna Medeiros.">
+<meta property="og:image" content="https://brunamedeiros.com/fotos/hero-capa.png">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Pinyon+Script&family=Newsreader:ital,wght@0,800;1,700&display=swap" rel="stylesheet">
+
+<style>
+@font-face{
+  font-family:'Bootzy TM';
+  src:url('/fonts/BootzyTM.woff2') format('woff2');
+  font-weight:normal; font-style:normal; font-display:swap;
+}
+
+:root{
+  --blue-light:#7DB7CE;
+  --gray-light:#F1F1F1;
+  --blue-dark:#04465D;
+  --butter:#FFF7C5;
+  --white:#FFFFFF;
+  --offwhite:#FAF9F4;
+  --blue-dark-70:rgba(4,70,93,0.7);
+  --blue-dark-15:rgba(4,70,93,0.12);
+  --glass-bg:rgba(255,255,255,0.38);
+  --glass-brd:rgba(255,255,255,0.55);
+  --shadow-soft:0 20px 45px rgba(4,70,93,0.16);
+  --shadow-hard:0 10px 24px rgba(4,70,93,0.22);
+  --font-display:'Newsreader', Georgia, serif;
+  --font-bootzy:'Bootzy TM','Newsreader',Georgia,serif;
+  --font-body:'Montserrat', sans-serif;
+  --font-script:'Pinyon Script', cursive;
+  --font-system:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+html{ scroll-behavior:smooth; }
+body{
+  font-family:var(--font-body);
+  color:var(--blue-dark);
+  background:var(--offwhite);
+  overflow-x:hidden;
+  min-height:100vh;
+}
+/* mesma camada de fundo do portfólio: off-white com as manchas azuis desfocadas */
+.backdrop{
+  position:fixed; inset:0; z-index:-1;
+  background:var(--offwhite) url("/fotos/fundo-hero.png") center/cover no-repeat;
+}
+img{ max-width:100%; display:block; }
+a{ color:inherit; text-decoration:none; }
+button, input{ font-family:inherit; }
+::selection{ background:var(--butter); color:var(--blue-dark); }
+
+/* A página é feita só pro tamanho de celular: no computador ela continua
+   do mesmo tamanho, centralizada, sem esticar. */
+.bio{
+  width:100%; max-width:430px; margin:0 auto;
+  min-height:100vh; position:relative; overflow:hidden;
+  background:rgba(250,249,244,0.55);
+  box-shadow:0 0 0 1px rgba(4,70,93,0.06), 0 30px 80px rgba(4,70,93,0.18);
+}
+
+/* =====================  TOPO  ===================== */
+.hero{ position:relative; height:540px; overflow:hidden; }
+.hero-glow{
+  position:absolute; inset:0;
+  background:
+    radial-gradient(70% 55% at 78% 22%, rgba(125,183,206,0.85) 0%, rgba(125,183,206,0) 70%),
+    radial-gradient(60% 50% at 12% 70%, rgba(147,197,253,0.7) 0%, rgba(147,197,253,0) 72%),
+    linear-gradient(180deg, #DCEBF3 0%, #EEF4F6 55%, var(--offwhite) 100%);
+}
+.hero-photo{
+  position:absolute; left:50%; bottom:0; transform:translateX(-50%);
+  height:100%; width:auto; max-width:none; object-fit:contain; object-position:50% 100%;
+  filter:drop-shadow(0 18px 30px rgba(4,70,93,0.22));
+}
+.hero-fade{
+  position:absolute; left:0; right:0; bottom:0; height:46%;
+  background:linear-gradient(180deg, rgba(250,249,244,0) 0%, rgba(250,249,244,0.78) 62%, var(--offwhite) 100%);
+}
+.hero-name{
+  position:absolute; left:0; right:0; bottom:18px; text-align:center; padding:0 20px;
+}
+.hero-name h1{
+  font-family:var(--font-script); font-weight:400;
+  font-size:clamp(2.5rem, 11vw, 3.4rem); line-height:1; white-space:nowrap; color:var(--blue-dark);
+  text-shadow:0 2px 18px rgba(250,249,244,0.9);
+}
+.hero-name p{
+  margin-top:8px;
+  font-weight:700; font-size:.68rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--blue-dark-70);
+}
+
+/* =====================  REDES  ===================== */
+.socials{
+  display:flex; justify-content:center; gap:14px; padding:6px 20px 0;
+}
+.social{
+  width:60px; height:60px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--glass-bg);
+  backdrop-filter:blur(18px) saturate(150%); -webkit-backdrop-filter:blur(18px) saturate(150%);
+  border:1px solid var(--glass-brd);
+  box-shadow:var(--shadow-soft);
+  color:var(--blue-dark);
+  transition:transform .18s cubic-bezier(.2,.8,.2,1), background .2s ease;
+}
+.social svg{ width:26px; height:26px; }
+.social:active{ transform:scale(.92); }
+@media (hover:hover){ .social:hover{ transform:translateY(-4px) scale(1.06); background:rgba(255,255,255,0.6); } }
+
+.chat-hint{
+  text-align:center; padding:26px 32px 0;
+  font-weight:600; font-size:.88rem; line-height:1.45; color:var(--blue-dark);
+}
+.chat-hint-arrow{
+  display:block; margin:10px auto 0; width:22px; height:22px; color:var(--blue-light);
+  animation:bounce 1.6s ease-in-out infinite;
+}
+@keyframes bounce{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(6px); } }
+
+/* =====================  CONCIERGE  ===================== */
+.section{ padding:0 18px; }
+.concierge{
+  margin-top:16px;
+  background:var(--glass-bg);
+  backdrop-filter:blur(18px) saturate(150%); -webkit-backdrop-filter:blur(18px) saturate(150%);
+  border:1px solid var(--glass-brd); border-radius:28px;
+  box-shadow:var(--shadow-soft);
+  overflow:hidden; font-family:var(--font-system);
+}
+.concierge-top{
+  display:flex; align-items:center; gap:10px; padding:12px 16px;
+  background:rgba(255,255,255,0.45); border-bottom:1px solid rgba(255,255,255,0.6);
+}
+.concierge-avatar{
+  width:38px; height:38px; border-radius:50%; overflow:hidden; flex-shrink:0;
+  border:2px solid var(--white); box-shadow:0 4px 10px rgba(4,70,93,0.18);
+}
+.concierge-avatar img{ width:100%; height:100%; object-fit:cover; object-position:center 22%; }
+.concierge-top strong{ display:block; font-size:.92rem; font-weight:700; line-height:1.2; }
+.concierge-top span{ display:flex; align-items:center; gap:5px; font-size:.7rem; color:var(--blue-dark-70); }
+.concierge-top span::before{ content:""; width:7px; height:7px; border-radius:50%; background:#34C759; }
+
+.chat-body{
+  position:relative;
+  background:
+    radial-gradient(rgba(4,70,93,0.09) 1px, transparent 1.4px) 0 0/16px 16px,
+    rgba(250,249,244,0.62);
+}
+.chat-log{
+  height:410px; overflow-y:auto; padding:16px 14px 10px;
+  display:flex; flex-direction:column; gap:8px; scroll-behavior:smooth;
+  scrollbar-width:none;
+}
+
+/* tela de início */
+.chat-start{
+  position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:6px; padding:20px; text-align:center;
+  background:rgba(250,249,244,0.94);
+  transition:opacity .3s ease, visibility .3s ease;
+}
+.chat-start.off{ opacity:0; visibility:hidden; pointer-events:none; }
+.chat-start-avatar{
+  width:96px; height:96px; border-radius:50%; padding:5px; margin-bottom:14px;
+  background:linear-gradient(135deg, var(--blue-light), var(--white) 50%, var(--blue-dark));
+  box-shadow:var(--shadow-soft);
+}
+.chat-start-avatar img{ width:100%; height:100%; border-radius:50%; object-fit:cover; object-position:center 22%; border:3px solid var(--white); }
+.chat-start strong{ font-size:1.12rem; font-weight:800; }
+.chat-start p{ font-size:.82rem; color:var(--blue-dark-70); }
+.chat-start-btn{
+  margin-top:16px; border:none; cursor:pointer; background:var(--blue-dark); color:var(--offwhite);
+  font-size:.92rem; font-weight:700; padding:14px 30px; border-radius:999px; box-shadow:var(--shadow-hard);
+  transition:transform .15s ease;
+}
+.chat-start-btn:active{ transform:scale(.94); }
+
+.opcoes{ align-self:flex-start; display:flex; flex-wrap:wrap; gap:8px; max-width:92%; animation:msgIn .28s .05s cubic-bezier(.2,.8,.2,1) both; }
+.opcao{
+  border:1.5px solid var(--blue-dark); background:rgba(255,255,255,0.85); color:var(--blue-dark);
+  font-size:.82rem; font-weight:700; padding:10px 16px; border-radius:999px; cursor:pointer;
+  transition:background .15s ease, color .15s ease, transform .15s ease;
+}
+.opcao:active{ background:var(--blue-dark); color:var(--offwhite); transform:scale(.95); }
+.opcao.suave{ border-color:rgba(4,70,93,0.25); font-weight:600; font-size:.74rem; color:var(--blue-dark-70); }
+.chat-log::-webkit-scrollbar{ display:none; }
+.msg{
+  max-width:84%; padding:10px 14px; border-radius:20px;
+  font-size:.88rem; line-height:1.4; word-wrap:break-word;
+  animation:msgIn .28s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes msgIn{ from{ opacity:0; transform:translateY(8px) scale(.97); } to{ opacity:1; transform:none; } }
+.msg.bot{ align-self:flex-start; background:var(--white); border-bottom-left-radius:6px; box-shadow:0 2px 8px rgba(4,70,93,0.08); }
+.msg.user{ align-self:flex-end; background:var(--blue-dark); color:var(--offwhite); border-bottom-right-radius:6px; }
+.msg-actions{ align-self:flex-start; display:flex; flex-direction:column; gap:6px; max-width:84%; animation:msgIn .28s .08s cubic-bezier(.2,.8,.2,1) both; }
+.msg-action{
+  display:inline-flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:12px 16px; border-radius:16px; font-size:.78rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+  background:var(--butter); color:var(--blue-dark); box-shadow:0 2px 8px rgba(4,70,93,0.1);
+}
+.msg-action::after{ content:"→"; }
+.typing{ align-self:flex-start; display:flex; gap:4px; padding:13px 15px; background:var(--white); border-radius:20px; border-bottom-left-radius:6px; }
+.typing i{ width:7px; height:7px; border-radius:50%; background:var(--blue-light); animation:dot 1.1s infinite; }
+.typing i:nth-child(2){ animation-delay:.15s; } .typing i:nth-child(3){ animation-delay:.3s; }
+@keyframes dot{ 0%,60%,100%{ transform:translateY(0); opacity:.5; } 30%{ transform:translateY(-4px); opacity:1; } }
+
+.chat-form{ display:flex; gap:8px; padding:10px 12px 14px; background:rgba(255,255,255,0.45); border-top:1px solid rgba(255,255,255,0.6); }
+.chat-input{
+  flex:1; min-width:0; border:1px solid rgba(4,70,93,0.16); background:rgba(255,255,255,0.8);
+  border-radius:999px; padding:12px 16px; font-size:16px; color:var(--blue-dark); outline:none;
+}
+.chat-input:focus{ border-color:var(--blue-light); box-shadow:0 0 0 3px rgba(125,183,206,0.3); }
+.chat-send{
+  width:46px; height:46px; border-radius:50%; border:none; flex-shrink:0; cursor:pointer;
+  background:var(--blue-dark); color:var(--offwhite);
+  display:flex; align-items:center; justify-content:center; transition:transform .15s ease;
+}
+.chat-send:active{ transform:scale(.9); }
+.chat-send:disabled{ opacity:.4; }
+.chat-input:disabled{ background:rgba(241,241,241,0.7); }
+.chat-send svg{ width:20px; height:20px; }
+
+.email-line{ text-align:center; margin-top:14px; font-size:.78rem; color:var(--blue-dark-70); }
+.email-line a{ font-weight:700; color:var(--blue-dark); border-bottom:1px solid rgba(4,70,93,0.25); }
+
+/* =====================  BLOCOS  ===================== */
+.stack{ display:flex; flex-direction:column; gap:14px; padding:26px 18px 0; }
+
+.btn-portfolio{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  background:var(--blue-dark); color:var(--offwhite);
+  padding:18px 20px; border-radius:22px; font-weight:700; font-size:.98rem;
+  box-shadow:var(--shadow-soft); transition:transform .18s ease;
+}
+.btn-portfolio:active{ transform:scale(.96); }
+.btn-portfolio svg{ width:20px; height:20px; }
+
+.widget{
+  background:var(--glass-bg);
+  backdrop-filter:blur(18px) saturate(150%); -webkit-backdrop-filter:blur(18px) saturate(150%);
+  border:1px solid var(--glass-brd); border-radius:28px; padding:22px 18px 18px;
+  box-shadow:var(--shadow-soft);
+}
+.widget h2{
+  font-family:var(--font-display); font-weight:800; font-size:1.35rem; letter-spacing:-.3px; line-height:1.15;
+}
+.widget h2 em{ font-style:italic; font-weight:700; }
+.widget-sub{ margin-top:6px; font-size:.8rem; line-height:1.45; color:var(--blue-dark-70); }
+
+.produtos{ display:flex; flex-direction:column; gap:10px; margin-top:16px; }
+.produto{
+  display:flex; align-items:center; gap:12px; padding:10px 12px 10px 10px;
+  background:rgba(255,255,255,0.72); border-radius:18px;
+  box-shadow:0 2px 8px rgba(4,70,93,0.07); transition:transform .15s ease;
+}
+.produto:active{ transform:scale(.97); }
+.produto-img{
+  width:54px; height:54px; border-radius:14px; flex-shrink:0; overflow:hidden;
+  background:var(--blue-dark-15); display:flex; align-items:center; justify-content:center; font-size:1.5rem;
+}
+.produto-img img{ width:100%; height:100%; object-fit:cover; }
+.produto-info{ flex:1; min-width:0; }
+.produto-info strong{ display:block; font-size:.88rem; font-weight:700; line-height:1.25; }
+.produto-info span{ display:block; margin-top:2px; font-size:.72rem; color:var(--blue-dark-70); }
+.produto-seta{ width:18px; height:18px; flex-shrink:0; color:var(--blue-light); }
+.vazio{
+  margin-top:16px; padding:22px 16px; text-align:center; font-size:.8rem; line-height:1.5;
+  color:var(--blue-dark-70); background:rgba(255,255,255,0.5); border:1.5px dashed rgba(4,70,93,0.2); border-radius:18px;
+}
+
+.curso{
+  display:block; margin-top:16px; border-radius:20px; overflow:hidden;
+  background:linear-gradient(135deg, var(--blue-dark) 0%, #0A6784 100%); color:var(--offwhite); padding:20px 18px;
+}
+.curso small{ font-weight:700; font-size:.64rem; letter-spacing:.14em; text-transform:uppercase; color:var(--butter); }
+.curso strong{ display:block; margin-top:8px; font-family:var(--font-display); font-weight:800; font-size:1.25rem; line-height:1.2; }
+.curso p{ margin-top:6px; font-size:.78rem; line-height:1.45; color:rgba(250,249,244,0.78); }
+.curso b{
+  display:inline-flex; align-items:center; gap:6px; margin-top:14px;
+  background:var(--butter); color:var(--blue-dark); font-size:.8rem; padding:10px 16px; border-radius:999px;
+}
+
+/* =====================  SPOTIFY  ===================== */
+.spotify iframe{ display:block; width:100%; border:0; border-radius:16px; margin-top:14px; }
+.spotify-soon{
+  margin-top:14px; display:flex; align-items:center; gap:14px; padding:14px; border-radius:18px;
+  background:rgba(255,255,255,0.7);
+}
+.spotify-disc{
+  width:62px; height:62px; border-radius:50%; flex-shrink:0;
+  background:conic-gradient(from 0deg, var(--blue-light), var(--butter), var(--blue-light), var(--blue-dark), var(--blue-light));
+  position:relative; animation:spin 7s linear infinite;
+}
+.spotify-disc::after{ content:""; position:absolute; inset:50% auto auto 50%; width:14px; height:14px; margin:-7px 0 0 -7px; border-radius:50%; background:var(--offwhite); }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.spotify-soon strong{ display:block; font-size:.88rem; }
+.spotify-soon span{ font-size:.74rem; color:var(--blue-dark-70); }
+
+/* =====================  WHATSAPP  ===================== */
+.zap{ text-align:center; padding:26px 20px 22px; }
+.zap h2{ font-size:1.6rem; }
+.zap-numero{ margin-top:10px; font-weight:700; font-size:1.05rem; letter-spacing:.02em; }
+.zap-btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px; margin-top:18px; width:100%;
+  background:#25D366; color:var(--white); padding:16px 20px; border-radius:20px; font-weight:800; font-size:.98rem;
+  box-shadow:0 10px 24px rgba(37,211,102,0.32); transition:transform .18s ease;
+}
+.zap-btn:active{ transform:scale(.96); }
+.zap-btn svg{ width:22px; height:22px; }
+
+.rodape{ text-align:center; padding:28px 20px calc(30px + env(safe-area-inset-bottom)); font-size:.66rem; letter-spacing:.04em; color:var(--blue-dark-70); }
+.rodape strong{ font-weight:700; }
+</style>
+</head>
+<body>
+<div class="backdrop" aria-hidden="true"></div>
+
+<main class="bio">
+
+  <!-- TOPO: foto em destaque + nome -->
+  <header class="hero">
+    <div class="hero-glow"></div>
+    <img class="hero-photo" src="/fotos/hero-capa.png" alt="Bruna Medeiros">
+    <div class="hero-fade"></div>
+    <div class="hero-name">
+      <h1>Bruna Medeiros</h1>
+      <p>Creator &amp; Estrategista de Conteúdo</p>
+    </div>
+  </header>
+
+  <!-- REDES -->
+  <nav class="socials" aria-label="Redes sociais">
+    <a class="social" href="https://instagram.com/brunalmedeiroos" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5.2"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg>
+    </a>
+    <a class="social" href="https://www.tiktok.com/@brunamedeiros" target="_blank" rel="noopener" aria-label="TikTok">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 3c.3 2.4 1.7 4 4 4.2v3.1c-1.5.1-2.9-.4-4-1.1v6.3c0 3.5-2.4 5.9-5.6 5.9-3 0-5.4-2.3-5.4-5.3 0-3.2 2.6-5.6 5.8-5.3v3.2c-1.6-.4-2.7.6-2.7 2 0 1.2.9 2.1 2.1 2.1 1.4 0 2.2-1 2.2-2.6V3h3.6z"/></svg>
+    </a>
+    <a class="social" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20vim%20pelo%20seu%20link%20da%20bio" target="_blank" rel="noopener" aria-label="WhatsApp">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2a9.8 9.8 0 0 0-8.4 14.8L2.2 21.8l4.9-1.3A9.8 9.8 0 1 0 12 2.2zm0 1.8a8 8 0 1 1-4.2 14.8l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 0 1 12 4zm-3.2 3.7c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.2 5 4.4 2.5 1 3 .8 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4l-.5-.3-1.9-.9c-.3-.1-.5-.2-.7.1l-.9 1.1c-.2.2-.3.2-.6.1-.3-.2-1.2-.4-2.3-1.4-.9-.8-1.4-1.700-1.600-2-.2-.3 0-.5.1-.6l.4-.5.3-.4c.1-.2.1-.3 0-.5l-.9-2.1c-.2-.5-.4-.4-.6-.4h-.5z"/></svg>
+    </a>
+    <a class="social" href="https://www.youtube.com/@brunamedeiros" target="_blank" rel="noopener" aria-label="YouTube">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.200 5 12 5 12 5s-6.200 0-7.800.4A2.500 2.500 0 0 0 2.400 7.200C2 8.800 2 12 2 12s0 3.200.4 4.800a2.500 2.500 0 0 0 1.800 1.800C5.800 19 12 19 12 19s6.200 0 7.800-.4a2.500 2.500 0 0 0 1.800-1.800c.4-1.600.4-4.800.4-4.800s0-3.200-.4-4.800zM10 15.100V8.900l5.200 3.100-5.200 3.100z"/></svg>
+    </a>
+  </nav>
+
+  <p class="chat-hint">
+    Use o chat para saber o melhor caminho para você
+    <svg class="chat-hint-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15M5 13l7 7 7-7"/></svg>
+  </p>
+
+  <!-- CONCIERGE DE IA -->
+  <section class="section" id="concierge">
+    <div class="concierge">
+      <div class="concierge-top">
+        <div class="concierge-avatar"><img src="/fotos/lock-avatar.jpg" alt=""></div>
+        <div>
+          <strong>Concierge da Bruna</strong>
+          <span>online agora</span>
+        </div>
+      </div>
+      <div class="chat-body">
+        <div class="chat-log" id="chatLog" aria-live="polite"></div>
+        <div class="chat-start" id="chatStart">
+          <div class="chat-start-avatar"><img src="/fotos/lock-avatar.jpg" alt=""></div>
+          <strong>Pronto para começarmos?</strong>
+          <p>É um bate-papo rápido e natural.</p>
+          <button class="chat-start-btn" id="chatStartBtn" type="button">Iniciar chat</button>
+        </div>
+      </div>
+      <form class="chat-form" id="chatForm" autocomplete="off">
+        <input class="chat-input" id="chatInput" type="text" placeholder="Digite sua resposta..." maxlength="200" aria-label="Digite sua resposta" disabled>
+        <button class="chat-send" id="chatSend" type="submit" aria-label="Enviar" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </button>
+      </form>
+    </div>
+    <p class="email-line">ou me escreva em <a href="mailto:brunamedeirosugc@gmail.com">brunamedeirosugc@gmail.com</a></p>
+  </section>
+
+  <div class="stack">
+
+    <!-- SOLICITE MEU PORTFÓLIO -->
+    <a class="btn-portfolio" id="btnPortfolio" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20receber%20o%20seu%20portf%C3%B3lio" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>
+      Solicite meu portfólio
+    </a>
+
+    <!-- EQUIPAMENTOS -->
+    <section class="widget" id="equipamentos">
+      <h2>Equipamentos que <em>uso</em></h2>
+      <p class="widget-sub">Tudo que uso na minha criação de conteúdo, com link pra você conferir.</p>
+      <div class="produtos" id="listaEquipamentos"></div>
+    </section>
+
+    <!-- CRIANDO SEU PORTFÓLIO -->
+    <section class="widget" id="criando-portfolio">
+      <h2>Criando seu <em>portfólio</em></h2>
+      <p class="widget-sub">Quer um portfólio com a sua cara, feito do zero?</p>
+      <a class="curso" id="cursoLink" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20criar%20o%20meu%20portf%C3%B3lio" target="_blank" rel="noopener">
+        <small>Passo a passo</small>
+        <strong>Criando seu portfólio</strong>
+        <p>Eu te mostro como montar o seu, do jeito que eu montei o meu.</p>
+        <b>Quero saber mais →</b>
+      </a>
+    </section>
+
+    <!-- SPOTIFY -->
+    <section class="widget spotify" id="spotify">
+      <h2>Tocando <em>agora</em></h2>
+      <p class="widget-sub">A música que está no repeat por aqui.</p>
+      <div id="spotifyBox"></div>
+    </section>
+
+    <!-- WHATSAPP -->
+    <section class="widget zap" id="contato">
+      <h2>Prefere falar <em>direto?</em></h2>
+      <p class="widget-sub">Me chama no WhatsApp, respondo por lá.</p>
+      <p class="zap-numero">(85) 99280-5861</p>
+      <a class="zap-btn" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20vim%20pelo%20seu%20link%20da%20bio" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2a9.8 9.8 0 0 0-8.4 14.8L2.2 21.8l4.9-1.3A9.8 9.8 0 1 0 12 2.2zm0 1.8a8 8 0 1 1-4.2 14.8l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 0 1 12 4zm-3.2 3.7c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.2 5 4.4 2.5 1 3 .8 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4l-.5-.3-1.9-.9c-.3-.1-.5-.2-.7.1l-.9 1.1c-.2.2-.3.2-.6.1-.3-.2-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5.3-.4c.1-.2.1-.3 0-.5l-.9-2.1c-.2-.5-.4-.4-.6-.4h-.5z"/></svg>
+        Vamos conversar!
+      </a>
+    </section>
+
+  </div>
+
+  <footer class="rodape">Feito por <strong>Bruna Medeiros</strong></footer>
+</main>
+
+<script>
+/* =====================================================================
+   CONFIGURAÇÃO — é só mexer aqui pra atualizar a página
+===================================================================== */
+var BIO = {
+  whatsapp: '5585992805861',
+
+  // Equipamentos que uso. Cada item: { nome, descricao, link, imagem (opcional), emoji (se não tiver imagem) }
+  equipamentos: [],
+
+  // Spotify: cole só o ID da faixa (a parte depois de /track/ no link da música).
+  // Ex.: https://open.spotify.com/track/ABC123  ->  'ABC123'
+  spotifyTrackId: ''
+};
+
+/* ---------------- Equipamentos ---------------- */
+(function(){
+  var lista = document.getElementById('listaEquipamentos');
+  if (!BIO.equipamentos.length) {
+    lista.innerHTML = '<div class="vazio">Estou separando tudo com carinho.<br>Em breve os links aparecem aqui.</div>';
+    return;
+  }
+  lista.innerHTML = BIO.equipamentos.map(function(p){
+    var img = p.imagem ? '<img src="' + p.imagem + '" alt="" loading="lazy">' : (p.emoji || '🎬');
+    return '<a class="produto" href="' + p.link + '" target="_blank" rel="noopener sponsored">' +
+      '<span class="produto-img">' + img + '</span>' +
+      '<span class="produto-info"><strong>' + p.nome + '</strong>' + (p.descricao ? '<span>' + p.descricao + '</span>' : '') + '</span>' +
+      '<svg class="produto-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>' +
+      '</a>';
+  }).join('');
+})();
+
+/* ---------------- Spotify ---------------- */
+(function(){
+  var box = document.getElementById('spotifyBox');
+  if (BIO.spotifyTrackId) {
+    box.innerHTML = '<iframe src="https://open.spotify.com/embed/track/' + encodeURIComponent(BIO.spotifyTrackId) +
+      '?utm_source=generator&theme=0" height="152" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title="Spotify"></iframe>';
+  } else {
+    box.innerHTML = '<div class="spotify-soon"><div class="spotify-disc"></div><div><strong>Escolhendo a trilha</strong><span>Em breve toca uma música aqui.</span></div></div>';
+  }
+})();
+
+/* =====================================================================
+   CONCIERGE (a lógica de conversa entra aqui)
+===================================================================== */
+var chatLog = document.getElementById('chatLog');
+var chatForm = document.getElementById('chatForm');
+var chatInput = document.getElementById('chatInput');
+var chatSend = document.getElementById('chatSend');
+var chatStart = document.getElementById('chatStart');
+
+var URL_PORTFOLIO = 'https://brunamedeiros.com/';
+var URL_INSTAGRAM = 'https://instagram.com/brunalmedeiroos';
+var URL_TIKTOK = 'https://www.tiktok.com/@brunamedeiros';
+function urlZap(texto){ return 'https://wa.me/' + BIO.whatsapp + '?text=' + encodeURIComponent(texto); }
+
+function rolar(){ chatLog.scrollTop = chatLog.scrollHeight; }
+function esperar(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+
+function addMsg(texto, quem){
+  var el = document.createElement('div');
+  el.className = 'msg ' + quem;
+  el.textContent = texto;
+  chatLog.appendChild(el);
+  rolar();
+}
+function addActions(acoes){
+  var wrap = document.createElement('div');
+  wrap.className = 'msg-actions';
+  acoes.forEach(function(a){
+    var link = document.createElement('a');
+    link.className = 'msg-action';
+    link.href = a.url;
+    if (a.url.charAt(0) !== '#') { link.target = '_blank'; link.rel = 'noopener'; }
+    link.textContent = a.label;
+    wrap.appendChild(link);
+  });
+  chatLog.appendChild(wrap);
+  rolar();
+}
+
+// mensagem da Bruna, com "digitando..." antes
+function bot(texto){
+  var dig = document.createElement('div');
+  dig.className = 'typing';
+  dig.innerHTML = '<i></i><i></i><i></i>';
+  chatLog.appendChild(dig);
+  rolar();
+  return esperar(550 + Math.min(texto.length * 11, 800)).then(function(){
+    dig.remove();
+    addMsg(texto, 'bot');
+  });
+}
+
+// botões de resposta; ao clicar, vira mensagem da pessoa
+function escolher(lista, suave){
+  return new Promise(function(resolve){
+    var wrap = document.createElement('div');
+    wrap.className = 'opcoes';
+    lista.forEach(function(rotulo){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opcao' + (suave ? ' suave' : '');
+      b.textContent = rotulo;
+      b.addEventListener('click', function(){
+        wrap.remove();
+        addMsg(rotulo, 'user');
+        resolve(rotulo);
+      });
+      wrap.appendChild(b);
+    });
+    chatLog.appendChild(wrap);
+    rolar();
+  });
+}
+
+// resposta escrita na barrinha
+var aguardandoTexto = null;
+function pedirTexto(dica){
+  return new Promise(function(resolve){
+    aguardandoTexto = resolve;
+    chatInput.disabled = false; chatSend.disabled = false;
+    chatInput.placeholder = dica || 'Digite sua resposta...';
+    chatInput.focus({ preventScroll: true });
+  });
+}
+chatForm.addEventListener('submit', function(e){
+  e.preventDefault();
+  var texto = chatInput.value.trim();
+  if (!texto || !aguardandoTexto) return;
+  var resolver = aguardandoTexto;
+  aguardandoTexto = null;
+  chatInput.value = ''; chatInput.disabled = true; chatSend.disabled = true;
+  chatInput.placeholder = 'Digite sua resposta...';
+  addMsg(texto, 'user');
+  resolver(texto);
+});
+
+function recomecar(){
+  return escolher(['Recomeçar conversa'], true).then(function(){
+    chatLog.innerHTML = '';
+    return conversa();
+  });
+}
+
+/* ---------------- Fluxo: Sou creator ---------------- */
+function fluxoCreator(nome){
+  return bot('Aaaah, creator! 💙 Me conta o que você está procurando por aqui:')
+    .then(function(){ return escolher(['Quero criar meu portfólio', 'Quero ver os equipamentos que você usa', 'Estou só explorando 👀']); })
+    .then(function(r){
+      if (r === 'Quero criar meu portfólio') {
+        return bot('Perfeito! Você chegou no lugar certo. ✨ Eu posso te ajudar a transformar o seu trabalho em um portfólio pensado para apresentar o que você faz no UGC e facilitar suas oportunidades com marcas.')
+          .then(function(){ addActions([{ label: 'Criar meu portfólio', url: urlZap('Oi, Bruna! Sou ' + nome + ', vim pelo seu link da bio e quero criar o meu portfólio.') }]); });
+      }
+      if (r === 'Quero ver os equipamentos que você usa') {
+        return bot('Quer saber o que eu uso para criar meus conteúdos? 👀')
+          .then(function(){ addActions([{ label: 'Ver meus equipamentos', url: '#equipamentos' }]); });
+      }
+      return bot('Pode ficar à vontade! 😂 Por enquanto, você pode conhecer meus conteúdos e acompanhar minha rotina de criação pelo Instagram e TikTok.')
+        .then(function(){ addActions([{ label: 'Instagram', url: URL_INSTAGRAM }, { label: 'TikTok', url: URL_TIKTOK }]); });
+    });
+}
+
+/* ---------------- Fluxo: Sou marca ---------------- */
+function fluxoMarca(nome){
+  var formato, uso, produto;
+  return bot('Perfeito! E o que você está buscando para a sua marca hoje? 👀')
+    .then(function(){ return escolher(['Vídeos', 'Fotos', 'Vídeos + fotos', 'Ainda não sei']); })
+    .then(function(r){
+      formato = r;
+      var comentario = {
+        'Vídeos': 'Boa! Vídeo é onde eu mais me divirto 🎥',
+        'Fotos': 'Show! Foto bem feita vende muito 📸',
+        'Vídeos + fotos': 'Combo completo, adorei! ✨',
+        'Ainda não sei': 'Tranquilo, a gente descobre juntos 💙'
+      }[r];
+      return bot(comentario);
+    })
+    .then(function(){ return bot('E onde você pretende usar esse conteúdo?'); })
+    .then(function(){ return escolher(['Redes sociais', 'Anúncios', 'Site ou loja online', 'Ainda não sei']); })
+    .then(function(r){
+      uso = r;
+      return bot('Anotado! 📝 Por último: qual produto, serviço ou campanha você quer divulgar?');
+    })
+    .then(function(){ return pedirTexto('Ex.: lançamento do meu creme facial'); })
+    .then(function(texto){
+      produto = texto;
+      return bot('Que legal, ' + nome + '! 💙 Já deu pra entender o que você procura. Dá uma olhada no meu portfólio e, quando quiser, me chama no WhatsApp pra gente conversar sobre o projeto.');
+    })
+    .then(function(){
+      var resumo = 'Oi, Bruna! Sou ' + nome + ', vim pelo seu link da bio.\n' +
+        'Estou buscando: ' + formato + '\n' +
+        'Para usar em: ' + uso + '\n' +
+        'Quero divulgar: ' + produto;
+      addActions([{ label: 'Ver meu portfólio', url: URL_PORTFOLIO }, { label: 'Falar comigo no WhatsApp', url: urlZap(resumo) }]);
+    });
+}
+
+/* ---------------- Conversa completa ---------------- */
+var conversando = false;
+function conversa(){
+  var nome;
+  return bot('Oii! Fico feliz em te ver aqui 💙')
+    .then(function(){ return bot('Primeiro, como posso te chamar?'); })
+    .then(function(){ return pedirTexto('Seu nome'); })
+    .then(function(texto){
+      nome = texto.slice(0, 30);
+      return bot('Prazer, ' + nome + '! Agora me conta: o que você veio procurar aqui?');
+    })
+    .then(function(){ return escolher(['Sou marca', 'Sou creator']); })
+    .then(function(r){ return r === 'Sou marca' ? fluxoMarca(nome) : fluxoCreator(nome); })
+    .then(recomecar);
+}
+
+document.getElementById('chatStartBtn').addEventListener('click', function(){
+  if (conversando) return;
+  conversando = true;
+  chatStart.classList.add('off');
+  conversa();
+});
+</script>
+</body>
+</html>

@@ -284,7 +284,7 @@ button, input{ font-family:inherit; }
   border:1px solid var(--glass-brd); border-radius:28px; padding:22px 18px 18px;
   box-shadow:var(--shadow-soft);
 }
-.eyebrow + .widget{ margin-top:10px; }
+.eyebrow + .widget, .eyebrow + .card-link{ margin-top:10px; }
 .widget h2{
   font-family:var(--font-display); font-weight:800; font-size:1.35rem; letter-spacing:-.3px; line-height:1.15; color:var(--blue-light);
 }
@@ -339,7 +339,7 @@ html.preview-ativo::-webkit-scrollbar{ display:none; }
 .card-link-icone svg{ width:23px; height:23px; }
 .card-link-icone img{ width:100%; height:100%; object-fit:cover; }
 .card-link-txt{ flex:1; min-width:0; }
-.card-link-txt strong{ display:block; font-size:.9rem; font-weight:800; line-height:1.25; color:var(--blue-dark); }
+.card-link-txt strong{ display:block; font-family:var(--font-display); font-size:1.12rem; font-weight:800; letter-spacing:-.2px; line-height:1.2; color:var(--blue-light); }
 .card-link-txt small{ display:block; margin-top:3px; font-size:.7rem; font-weight:500; line-height:1.4; color:var(--blue-dark-70); }
 .card-link-seta{ width:18px; height:18px; flex-shrink:0; color:var(--blue-light); }
 </style>
@@ -508,7 +508,6 @@ var DEFAULTS = {
     eyebrow: 'Para creators',
     titulo: 'Portfólio Profissional',
     descricao: 'Eu crio seu portfólio do zero, com uma apresentação profissional e personalizada para mostrar seu trabalho às marcas.',
-    botao: 'Criar meu portfólio',
     destino: 'zap', url: '', mensagem: 'Oi, Bruna! quero um portfólio profissional'
   },
   equipamentos: {
@@ -539,7 +538,8 @@ var ICONES = {
 };
 var SVG_SETA = '<svg class="concierge-btn-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 var SVG_CARRINHO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3.5h2.7l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1l1.6-6.6H6.1"/></svg>';
-var SVG_EXTERNO = '<svg class="card-link-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.500v-11A1.500 1.500 0 0 1 5.500 6H10"/></svg>';
+var SVG_COMPUTADOR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>';
+var SVG_EXTERNO ='<svg class="card-link-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.500v-11A1.500 1.500 0 0 1 5.500 6H10"/></svg>';
 
 /* ---------------- utilidades ---------------- */
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]; }); }
@@ -648,11 +648,11 @@ var RENDER = {
   },
   portfolio: function(s){
     return blocoAbre('portfolio', s) +
-      '<section class="widget" id="portfolio-profissional">' +
-        '<h2>' + esc(s.titulo) + '</h2>' +
-        (s.descricao ? '<p class="widget-sub">' + esc(s.descricao) + '</p>' : '') +
-        '<a class="curso" data-bio-id="portfolio_profissional"' + attrsLink(destino(s)) + '>' + esc(s.botao) + ' →</a>' +
-      '</section></div>';
+      '<a class="card-link" id="portfolio-profissional" data-bio-id="portfolio_profissional"' + attrsLink(destino(s)) + '>' +
+        '<span class="card-link-icone">' + SVG_COMPUTADOR + '</span>' +
+        '<span class="card-link-txt"><strong>' + esc(s.titulo) + '</strong>' + (s.descricao ? '<small>' + esc(s.descricao) + '</small>' : '') + '</span>' +
+        SVG_EXTERNO +
+      '</a></div>';
   },
   equipamentos: function(s){
     var icone = urlSegura(s.imagem) ? '<img src="' + esc(urlSegura(s.imagem)) + '" alt="">' : SVG_CARRINHO;

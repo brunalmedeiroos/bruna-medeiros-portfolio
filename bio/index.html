@@ -28,7 +28,6 @@
   --blue-light:#7DB7CE;
   --gray-light:#F1F1F1;
   --blue-dark:#04465D;
-  --butter:#FFF7C5;
   --white:#FFFFFF;
   --offwhite:#FAF9F4;
   --blue-dark-70:rgba(4,70,93,0.7);
@@ -61,7 +60,7 @@ body{
 img{ max-width:100%; display:block; }
 a{ color:inherit; text-decoration:none; }
 button, input{ font-family:inherit; }
-::selection{ background:var(--butter); color:var(--blue-dark); }
+::selection{ background:var(--blue-light); color:var(--blue-dark); }
 
 /* A página é feita só pro tamanho de celular: no computador ela continua
    do mesmo tamanho, centralizada, sem esticar. */
@@ -109,7 +108,7 @@ button, input{ font-family:inherit; }
   display:flex; justify-content:center; gap:14px; padding:6px 20px 0;
 }
 .social{
-  width:60px; height:60px; border-radius:50%;
+  width:52px; height:52px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   background:var(--glass-bg);
   backdrop-filter:blur(18px) saturate(150%); -webkit-backdrop-filter:blur(18px) saturate(150%);
@@ -118,7 +117,7 @@ button, input{ font-family:inherit; }
   color:var(--blue-dark);
   transition:transform .18s cubic-bezier(.2,.8,.2,1), background .2s ease;
 }
-.social svg{ width:26px; height:26px; }
+.social svg{ width:23px; height:23px; }
 .social:active{ transform:scale(.92); }
 @media (hover:hover){ .social:hover{ transform:translateY(-4px) scale(1.06); background:rgba(255,255,255,0.6); } }
 
@@ -134,17 +133,41 @@ button, input{ font-family:inherit; }
 
 /* =====================  CONCIERGE  ===================== */
 .section{ padding:0 18px; }
-.concierge{
-  margin-top:16px;
-  background:var(--glass-bg);
-  backdrop-filter:blur(18px) saturate(150%); -webkit-backdrop-filter:blur(18px) saturate(150%);
-  border:1px solid var(--glass-brd); border-radius:28px;
-  box-shadow:var(--shadow-soft);
-  overflow:hidden; font-family:var(--font-system);
+.concierge-btn{
+  display:flex; align-items:center; gap:11px; width:100%; max-width:316px; margin:14px auto 0;
+  padding:7px 14px 7px 7px; border:none; cursor:pointer; text-align:left; border-radius:999px;
+  background:var(--blue-light); color:var(--blue-dark); box-shadow:var(--shadow-soft);
+  font-family:var(--font-body); transition:transform .15s ease;
 }
+.concierge-btn:active{ transform:scale(.96); }
+.concierge-btn-icon{ width:34px; height:34px; border-radius:50%; flex-shrink:0; background:rgba(255,255,255,0.6); display:flex; align-items:center; justify-content:center; }
+.concierge-btn-icon svg{ width:17px; height:17px; }
+.concierge-btn small{ display:block; font-size:.54rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; opacity:.65; }
+.concierge-btn strong{ display:block; font-size:.78rem; font-weight:800; line-height:1.25; }
+.concierge-btn-seta{ margin-left:auto; width:16px; height:16px; flex-shrink:0; }
+
+.modal{
+  position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:16px;
+  visibility:hidden; opacity:0; transition:opacity .25s ease, visibility .25s ease;
+}
+.modal.open{ visibility:visible; opacity:1; }
+.modal-backdrop{ position:absolute; inset:0; background:rgba(4,70,93,0.42); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+.concierge{
+  position:relative; width:100%; max-width:398px;
+  height:min(640px, calc(100vh - 32px)); height:min(640px, calc(100dvh - 32px));
+  display:flex; flex-direction:column; background:var(--offwhite); border-radius:28px; overflow:hidden;
+  box-shadow:0 30px 80px rgba(4,70,93,0.35); font-family:var(--font-system);
+  transform:translateY(24px) scale(.96); transition:transform .3s cubic-bezier(.2,.8,.2,1);
+}
+.modal.open .concierge{ transform:none; }
+.concierge-close{
+  margin-left:auto; width:34px; height:34px; border-radius:50%; border:none; cursor:pointer; flex-shrink:0;
+  background:rgba(4,70,93,0.08); color:var(--blue-dark); display:flex; align-items:center; justify-content:center;
+}
+.concierge-close svg{ width:16px; height:16px; }
 .concierge-top{
   display:flex; align-items:center; gap:10px; padding:12px 16px;
-  background:rgba(255,255,255,0.45); border-bottom:1px solid rgba(255,255,255,0.6);
+  background:var(--white); border-bottom:1px solid rgba(4,70,93,0.08);
 }
 .concierge-avatar{
   width:38px; height:38px; border-radius:50%; overflow:hidden; flex-shrink:0;
@@ -152,17 +175,17 @@ button, input{ font-family:inherit; }
 }
 .concierge-avatar img{ width:100%; height:100%; object-fit:cover; object-position:center 22%; }
 .concierge-top strong{ display:block; font-size:.92rem; font-weight:700; line-height:1.2; }
-.concierge-top span{ display:flex; align-items:center; gap:5px; font-size:.7rem; color:var(--blue-dark-70); }
-.concierge-top span::before{ content:""; width:7px; height:7px; border-radius:50%; background:#34C759; }
+.concierge-top div span{ display:flex; align-items:center; gap:5px; font-size:.7rem; color:var(--blue-dark-70); }
+.concierge-top div span::before{ content:""; width:7px; height:7px; border-radius:50%; background:#34C759; }
 
 .chat-body{
-  position:relative;
+  position:relative; flex:1; min-height:0;
   background:
     radial-gradient(rgba(4,70,93,0.09) 1px, transparent 1.4px) 0 0/16px 16px,
     rgba(250,249,244,0.62);
 }
 .chat-log{
-  height:410px; overflow-y:auto; padding:16px 14px 10px;
+  height:100%; overflow-y:auto; padding:16px 14px 10px;
   display:flex; flex-direction:column; gap:8px; scroll-behavior:smooth;
   scrollbar-width:none;
 }
@@ -177,26 +200,26 @@ button, input{ font-family:inherit; }
 .chat-start.off{ opacity:0; visibility:hidden; pointer-events:none; }
 .chat-start-avatar{
   width:96px; height:96px; border-radius:50%; padding:5px; margin-bottom:14px;
-  background:linear-gradient(135deg, var(--blue-light), var(--white) 50%, var(--blue-dark));
+  background:linear-gradient(135deg, var(--blue-light), var(--white) 50%, var(--blue-light));
   box-shadow:var(--shadow-soft);
 }
 .chat-start-avatar img{ width:100%; height:100%; border-radius:50%; object-fit:cover; object-position:center 22%; border:3px solid var(--white); }
 .chat-start strong{ font-size:1.12rem; font-weight:800; }
 .chat-start p{ font-size:.82rem; color:var(--blue-dark-70); }
 .chat-start-btn{
-  margin-top:16px; border:none; cursor:pointer; background:var(--blue-dark); color:var(--offwhite);
-  font-size:.92rem; font-weight:700; padding:14px 30px; border-radius:999px; box-shadow:var(--shadow-hard);
+  margin-top:14px; border:none; cursor:pointer; background:var(--blue-light); color:var(--blue-dark);
+  font-size:.84rem; font-weight:800; padding:10px 24px; border-radius:999px; box-shadow:var(--shadow-hard);
   transition:transform .15s ease;
 }
 .chat-start-btn:active{ transform:scale(.94); }
 
 .opcoes{ align-self:flex-start; display:flex; flex-wrap:wrap; gap:8px; max-width:92%; animation:msgIn .28s .05s cubic-bezier(.2,.8,.2,1) both; }
 .opcao{
-  border:1.5px solid var(--blue-dark); background:rgba(255,255,255,0.85); color:var(--blue-dark);
-  font-size:.82rem; font-weight:700; padding:10px 16px; border-radius:999px; cursor:pointer;
+  border:1.5px solid var(--blue-light); background:rgba(255,255,255,0.9); color:var(--blue-dark);
+  font-size:.76rem; font-weight:700; padding:7px 13px; border-radius:999px; cursor:pointer;
   transition:background .15s ease, color .15s ease, transform .15s ease;
 }
-.opcao:active{ background:var(--blue-dark); color:var(--offwhite); transform:scale(.95); }
+.opcao:active{ background:var(--blue-light); transform:scale(.95); }
 .opcao.suave{ border-color:rgba(4,70,93,0.25); font-weight:600; font-size:.74rem; color:var(--blue-dark-70); }
 .chat-log::-webkit-scrollbar{ display:none; }
 .msg{
@@ -206,12 +229,12 @@ button, input{ font-family:inherit; }
 }
 @keyframes msgIn{ from{ opacity:0; transform:translateY(8px) scale(.97); } to{ opacity:1; transform:none; } }
 .msg.bot{ align-self:flex-start; background:var(--white); border-bottom-left-radius:6px; box-shadow:0 2px 8px rgba(4,70,93,0.08); }
-.msg.user{ align-self:flex-end; background:var(--blue-dark); color:var(--offwhite); border-bottom-right-radius:6px; }
+.msg.user{ align-self:flex-end; background:var(--blue-light); color:var(--blue-dark); border-bottom-right-radius:6px; }
 .msg-actions{ align-self:flex-start; display:flex; flex-direction:column; gap:6px; max-width:84%; animation:msgIn .28s .08s cubic-bezier(.2,.8,.2,1) both; }
 .msg-action{
   display:inline-flex; align-items:center; justify-content:space-between; gap:12px;
-  padding:12px 16px; border-radius:16px; font-size:.78rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
-  background:var(--butter); color:var(--blue-dark); box-shadow:0 2px 8px rgba(4,70,93,0.1);
+  padding:8px 14px; border-radius:14px; font-size:.7rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+  background:var(--blue-light); color:var(--blue-dark); box-shadow:0 2px 8px rgba(4,70,93,0.1);
 }
 .msg-action::after{ content:"→"; }
 .typing{ align-self:flex-start; display:flex; gap:4px; padding:13px 15px; background:var(--white); border-radius:20px; border-bottom-left-radius:6px; }
@@ -226,8 +249,8 @@ button, input{ font-family:inherit; }
 }
 .chat-input:focus{ border-color:var(--blue-light); box-shadow:0 0 0 3px rgba(125,183,206,0.3); }
 .chat-send{
-  width:46px; height:46px; border-radius:50%; border:none; flex-shrink:0; cursor:pointer;
-  background:var(--blue-dark); color:var(--offwhite);
+  width:42px; height:42px; border-radius:50%; border:none; flex-shrink:0; cursor:pointer;
+  background:var(--blue-light); color:var(--blue-dark);
   display:flex; align-items:center; justify-content:center; transition:transform .15s ease;
 }
 .chat-send:active{ transform:scale(.9); }
@@ -243,12 +266,12 @@ button, input{ font-family:inherit; }
 
 .btn-portfolio{
   display:flex; align-items:center; justify-content:center; gap:10px;
-  background:var(--blue-dark); color:var(--offwhite);
-  padding:18px 20px; border-radius:22px; font-weight:700; font-size:.98rem;
+  background:var(--blue-light); color:var(--blue-dark);
+  padding:13px 18px; border-radius:18px; font-weight:800; font-size:.86rem;
   box-shadow:var(--shadow-soft); transition:transform .18s ease;
 }
 .btn-portfolio:active{ transform:scale(.96); }
-.btn-portfolio svg{ width:20px; height:20px; }
+.btn-portfolio svg{ width:18px; height:18px; }
 
 .widget{
   background:var(--glass-bg);
@@ -285,14 +308,14 @@ button, input{ font-family:inherit; }
 
 .curso{
   display:block; margin-top:16px; border-radius:20px; overflow:hidden;
-  background:linear-gradient(135deg, var(--blue-dark) 0%, #0A6784 100%); color:var(--offwhite); padding:20px 18px;
+  background:linear-gradient(135deg, var(--blue-light) 0%, #A9D0E0 100%); color:var(--blue-dark); padding:18px 16px;
 }
-.curso small{ font-weight:700; font-size:.64rem; letter-spacing:.14em; text-transform:uppercase; color:var(--butter); }
+.curso small{ font-weight:700; font-size:.64rem; letter-spacing:.14em; text-transform:uppercase; color:var(--blue-dark-70); }
 .curso strong{ display:block; margin-top:8px; font-family:var(--font-display); font-weight:800; font-size:1.25rem; line-height:1.2; }
-.curso p{ margin-top:6px; font-size:.78rem; line-height:1.45; color:rgba(250,249,244,0.78); }
+.curso p{ margin-top:6px; font-size:.76rem; line-height:1.45; color:var(--blue-dark-70); }
 .curso b{
   display:inline-flex; align-items:center; gap:6px; margin-top:14px;
-  background:var(--butter); color:var(--blue-dark); font-size:.8rem; padding:10px 16px; border-radius:999px;
+  background:var(--white); color:var(--blue-dark); font-size:.74rem; padding:8px 14px; border-radius:999px;
 }
 
 /* =====================  SPOTIFY  ===================== */
@@ -303,7 +326,7 @@ button, input{ font-family:inherit; }
 }
 .spotify-disc{
   width:62px; height:62px; border-radius:50%; flex-shrink:0;
-  background:conic-gradient(from 0deg, var(--blue-light), var(--butter), var(--blue-light), var(--blue-dark), var(--blue-light));
+  background:conic-gradient(from 0deg, var(--blue-light), var(--white), var(--blue-light), #A9D0E0, var(--blue-light));
   position:relative; animation:spin 7s linear infinite;
 }
 .spotify-disc::after{ content:""; position:absolute; inset:50% auto auto 50%; width:14px; height:14px; margin:-7px 0 0 -7px; border-radius:50%; background:var(--offwhite); }
@@ -316,12 +339,12 @@ button, input{ font-family:inherit; }
 .zap h2{ font-size:1.6rem; }
 .zap-numero{ margin-top:10px; font-weight:700; font-size:1.05rem; letter-spacing:.02em; }
 .zap-btn{
-  display:inline-flex; align-items:center; justify-content:center; gap:10px; margin-top:18px; width:100%;
-  background:#25D366; color:var(--white); padding:16px 20px; border-radius:20px; font-weight:800; font-size:.98rem;
+  display:inline-flex; align-items:center; justify-content:center; gap:10px; margin-top:16px; width:100%; max-width:260px;
+  background:#25D366; color:var(--white); padding:12px 18px; border-radius:16px; font-weight:800; font-size:.86rem;
   box-shadow:0 10px 24px rgba(37,211,102,0.32); transition:transform .18s ease;
 }
 .zap-btn:active{ transform:scale(.96); }
-.zap-btn svg{ width:22px; height:22px; }
+.zap-btn svg{ width:19px; height:19px; }
 
 .rodape{ text-align:center; padding:28px 20px calc(30px + env(safe-area-inset-bottom)); font-size:.66rem; letter-spacing:.04em; color:var(--blue-dark-70); }
 .rodape strong{ font-weight:700; }
@@ -354,7 +377,7 @@ button, input{ font-family:inherit; }
     <a class="social" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20vim%20pelo%20seu%20link%20da%20bio" target="_blank" rel="noopener" aria-label="WhatsApp">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2a9.8 9.8 0 0 0-8.4 14.8L2.2 21.8l4.9-1.3A9.8 9.8 0 1 0 12 2.2zm0 1.8a8 8 0 1 1-4.2 14.8l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 0 1 12 4zm-3.2 3.7c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.2 5 4.4 2.5 1 3 .8 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4l-.5-.3-1.9-.9c-.3-.1-.5-.2-.7.1l-.9 1.1c-.2.2-.3.2-.6.1-.3-.2-1.2-.4-2.3-1.4-.9-.8-1.4-1.700-1.600-2-.2-.3 0-.5.1-.6l.4-.5.3-.4c.1-.2.1-.3 0-.5l-.9-2.1c-.2-.5-.4-.4-.6-.4h-.5z"/></svg>
     </a>
-    <a class="social" href="https://www.youtube.com/@brunamedeiros" target="_blank" rel="noopener" aria-label="YouTube">
+    <a class="social" href="https://www.youtube.com/@brunamedeiroos" target="_blank" rel="noopener" aria-label="YouTube">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.200 5 12 5 12 5s-6.200 0-7.800.4A2.500 2.500 0 0 0 2.400 7.200C2 8.800 2 12 2 12s0 3.200.4 4.800a2.500 2.500 0 0 0 1.800 1.800C5.800 19 12 19 12 19s6.200 0 7.800-.4a2.500 2.500 0 0 0 1.800-1.800c.4-1.600.4-4.800.4-4.800s0-3.200-.4-4.800zM10 15.100V8.900l5.200 3.100-5.200 3.100z"/></svg>
     </a>
   </nav>
@@ -366,30 +389,11 @@ button, input{ font-family:inherit; }
 
   <!-- CONCIERGE DE IA -->
   <section class="section" id="concierge">
-    <div class="concierge">
-      <div class="concierge-top">
-        <div class="concierge-avatar"><img src="/fotos/lock-avatar.jpg" alt=""></div>
-        <div>
-          <strong>Concierge da Bruna</strong>
-          <span>online agora</span>
-        </div>
-      </div>
-      <div class="chat-body">
-        <div class="chat-log" id="chatLog" aria-live="polite"></div>
-        <div class="chat-start" id="chatStart">
-          <div class="chat-start-avatar"><img src="/fotos/lock-avatar.jpg" alt=""></div>
-          <strong>Pronto para começarmos?</strong>
-          <p>É um bate-papo rápido e natural.</p>
-          <button class="chat-start-btn" id="chatStartBtn" type="button">Iniciar chat</button>
-        </div>
-      </div>
-      <form class="chat-form" id="chatForm" autocomplete="off">
-        <input class="chat-input" id="chatInput" type="text" placeholder="Digite sua resposta..." maxlength="200" aria-label="Digite sua resposta" disabled>
-        <button class="chat-send" id="chatSend" type="submit" aria-label="Enviar" disabled>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-        </button>
-      </form>
-    </div>
+    <button class="concierge-btn" id="abrirChat" type="button" aria-haspopup="dialog">
+      <span class="concierge-btn-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9L12 2zM19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9L19 15z"/></svg></span>
+      <span><small>Concierge de IA</small><strong>Como posso te ajudar hoje?</strong></span>
+      <svg class="concierge-btn-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
     <p class="email-line">ou me escreva em <a href="mailto:brunamedeirosugc@gmail.com">brunamedeirosugc@gmail.com</a></p>
   </section>
 
@@ -443,6 +447,35 @@ button, input{ font-family:inherit; }
   <footer class="rodape">Feito por <strong>Bruna Medeiros</strong></footer>
 </main>
 
+<div class="modal" id="chatModal" role="dialog" aria-modal="true" aria-label="Concierge da Bruna">
+  <div class="modal-backdrop" id="chatBackdrop"></div>
+    <div class="concierge">
+      <div class="concierge-top">
+        <div class="concierge-avatar"><img src="/fotos/lock-avatar.jpg" alt=""></div>
+        <div>
+          <strong>Concierge da Bruna</strong>
+          <span>online agora</span>
+        </div>
+        <button class="concierge-close" id="fecharChat" type="button" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      </div>
+      <div class="chat-body">
+        <div class="chat-log" id="chatLog" aria-live="polite"></div>
+        <div class="chat-start" id="chatStart">
+          <div class="chat-start-avatar"><img src="/fotos/lock-avatar.jpg" alt=""></div>
+          <strong>Pronto para começarmos?</strong>
+          <p>É um bate-papo rápido e natural.</p>
+          <button class="chat-start-btn" id="chatStartBtn" type="button">Iniciar chat</button>
+        </div>
+      </div>
+      <form class="chat-form" id="chatForm" autocomplete="off">
+        <input class="chat-input" id="chatInput" type="text" placeholder="Digite sua resposta..." maxlength="200" aria-label="Digite sua resposta" disabled>
+        <button class="chat-send" id="chatSend" type="submit" aria-label="Enviar" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </button>
+      </form>
+    </div>
+</div>
+
 <script>
 /* =====================================================================
    CONFIGURAÇÃO — é só mexer aqui pra atualizar a página
@@ -494,6 +527,20 @@ var chatForm = document.getElementById('chatForm');
 var chatInput = document.getElementById('chatInput');
 var chatSend = document.getElementById('chatSend');
 var chatStart = document.getElementById('chatStart');
+var chatModal = document.getElementById('chatModal');
+
+function abrirChat(){
+  chatModal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function fecharChat(){
+  chatModal.classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('abrirChat').addEventListener('click', abrirChat);
+document.getElementById('fecharChat').addEventListener('click', fecharChat);
+document.getElementById('chatBackdrop').addEventListener('click', fecharChat);
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') fecharChat(); });
 
 var URL_PORTFOLIO = 'https://brunamedeiros.com/';
 var URL_INSTAGRAM = 'https://instagram.com/brunalmedeiroos';
@@ -518,6 +565,7 @@ function addActions(acoes){
     link.className = 'msg-action';
     link.href = a.url;
     if (a.url.charAt(0) !== '#') { link.target = '_blank'; link.rel = 'noopener'; }
+    else link.addEventListener('click', fecharChat);
     link.textContent = a.label;
     wrap.appendChild(link);
   });

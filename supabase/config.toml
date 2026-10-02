@@ -442,6 +442,12 @@ verify_jwt = false
 import_map = "./functions/roteiro-comentar/deno.json"
 entrypoint = "./functions/roteiro-comentar/index.ts"
 
+[functions.bio-publico]
+enabled = true
+verify_jwt = false
+import_map = "./functions/bio-publico/deno.json"
+entrypoint = "./functions/bio-publico/index.ts"
+
 [functions.gmail-oauth-start]
 enabled = true
 import_map = "./functions/gmail-oauth-start/deno.json"

@@ -262,7 +262,6 @@ button, input{ font-family:inherit; }
 .email-line a{ font-weight:700; color:var(--blue-light); border-bottom:1px solid var(--blue-light); }
 
 /* =====================  BLOCOS  ===================== */
-.stack{ display:flex; flex-direction:column; gap:14px; padding:44px 18px 0; }
 
 .eyebrow{ text-align:center; font-size:.66rem; font-weight:800; letter-spacing:.18em; text-transform:uppercase; color:var(--blue-dark-70); }
 .btn-portfolio{
@@ -290,27 +289,6 @@ button, input{ font-family:inherit; }
 }
 .widget-sub{ margin-top:6px; font-size:.8rem; line-height:1.45; color:var(--blue-dark-70); }
 
-.produtos{ display:flex; flex-direction:column; gap:10px; margin-top:16px; }
-.produto{
-  display:flex; align-items:center; gap:12px; padding:10px 12px 10px 10px;
-  background:rgba(255,255,255,0.72); border-radius:18px;
-  box-shadow:0 2px 8px rgba(4,70,93,0.07); transition:transform .15s ease;
-}
-.produto:active{ transform:scale(.97); }
-.produto-img{
-  width:54px; height:54px; border-radius:14px; flex-shrink:0; overflow:hidden;
-  background:var(--blue-dark-15); display:flex; align-items:center; justify-content:center; font-size:1.5rem;
-}
-.produto-img img{ width:100%; height:100%; object-fit:cover; }
-.produto-info{ flex:1; min-width:0; }
-.produto-info strong{ display:block; font-size:.88rem; font-weight:700; line-height:1.25; }
-.produto-info span{ display:block; margin-top:2px; font-size:.72rem; color:var(--blue-dark-70); }
-.produto-seta{ width:18px; height:18px; flex-shrink:0; color:var(--blue-light); }
-.vazio{
-  margin-top:16px; padding:22px 16px; text-align:center; font-size:.8rem; line-height:1.5;
-  color:var(--blue-dark-70); background:rgba(255,255,255,0.5); border:1.5px dashed rgba(4,70,93,0.2); border-radius:18px;
-}
-
 .curso{
   display:inline-flex; align-items:center; justify-content:center; margin-top:16px; width:100%;
   background:var(--blue-light); color:#f1f1f1; font-weight:800; font-size:.84rem;
@@ -332,118 +310,80 @@ button, input{ font-family:inherit; }
 
 .rodape{ text-align:center; padding:28px 20px calc(30px + env(safe-area-inset-bottom)); font-size:.66rem; letter-spacing:.04em; color:var(--blue-dark-70); }
 .rodape strong{ font-weight:700; }
+
+/* =====================  SEÇÕES (montadas pela config)  ===================== */
+.secoes{ display:flex; flex-direction:column; gap:14px; padding:0 18px; }
+#concierge{ margin-bottom:30px; }
+.secoes > .bloco:first-child:not(#concierge){ margin-top:26px; }
+.carregando .hero-name, .carregando .socials, .carregando .secoes{ visibility:hidden; }
+a[aria-disabled="true"]{ opacity:.55; pointer-events:none; }
+.preview-ativo [data-sec]{ cursor:pointer; }
+html.preview-ativo{ scrollbar-width:none; }
+html.preview-ativo::-webkit-scrollbar{ display:none; }
+
+/* card de link único (Equipamentos): ícone, título, descrição e seta externa */
+.card-link{
+  display:flex; align-items:center; gap:13px; padding:14px 16px 14px 14px; border-radius:22px;
+  background:var(--glass-bg);
+  backdrop-filter:blur(18px) saturate(150%); -webkit-backdrop-filter:blur(18px) saturate(150%);
+  border:1px solid var(--glass-brd); box-shadow:var(--shadow-soft);
+  transition:transform .18s ease;
+}
+.card-link:active{ transform:scale(.97); }
+.card-link-icone{
+  width:48px; height:48px; border-radius:14px; flex-shrink:0; overflow:hidden;
+  background:var(--blue-light); color:var(--white);
+  display:flex; align-items:center; justify-content:center;
+}
+.card-link-icone svg{ width:23px; height:23px; }
+.card-link-icone img{ width:100%; height:100%; object-fit:cover; }
+.card-link-txt{ flex:1; min-width:0; }
+.card-link-txt strong{ display:block; font-size:.9rem; font-weight:800; line-height:1.25; color:var(--blue-dark); }
+.card-link-txt small{ display:block; margin-top:3px; font-size:.7rem; font-weight:500; line-height:1.4; color:var(--blue-dark-70); }
+.card-link-seta{ width:18px; height:18px; flex-shrink:0; color:var(--blue-light); }
 </style>
 </head>
 <body>
 <div class="backdrop" aria-hidden="true"></div>
 
-<main class="bio">
+<main class="bio" id="bio">
 
-  <!-- TOPO: foto em destaque + nome -->
-  <header class="hero">
+  <!-- TOPO: foto em destaque + nome (tudo vem da config; veja DEFAULTS no script) -->
+  <header class="hero" data-sec="perfil">
     <div class="hero-glow"></div>
-    <img class="hero-photo" src="/fotos/hero-capa.png" alt="Bruna Medeiros">
+    <img class="hero-photo" id="heroFoto" src="/fotos/hero-capa.png" alt="">
     <div class="hero-fade"></div>
     <div class="hero-name">
-      <h1>Bruna Medeiros</h1>
-      <p>Creator &amp; Estrategista de Conteúdo</p>
+      <h1 id="heroNome"></h1>
+      <p id="heroBio"></p>
     </div>
   </header>
 
-  <!-- REDES -->
-  <nav class="socials" aria-label="Redes sociais">
-    <a class="social" href="https://instagram.com/brunalmedeiroos" target="_blank" rel="noopener" aria-label="Instagram">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5.2"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg>
-    </a>
-    <a class="social" href="https://www.tiktok.com/@brunamedeiros" target="_blank" rel="noopener" aria-label="TikTok">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 3c.3 2.4 1.7 4 4 4.2v3.1c-1.5.1-2.9-.4-4-1.1v6.3c0 3.5-2.4 5.9-5.6 5.9-3 0-5.4-2.3-5.4-5.3 0-3.2 2.6-5.6 5.8-5.3v3.2c-1.6-.4-2.7.6-2.7 2 0 1.2.9 2.1 2.1 2.1 1.4 0 2.2-1 2.2-2.6V3h3.6z"/></svg>
-    </a>
-    <a class="social" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20vim%20pelo%20seu%20link%20da%20bio" target="_blank" rel="noopener" aria-label="WhatsApp">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-    </a>
-    <a class="social" href="https://www.youtube.com/@brunamedeiroos" target="_blank" rel="noopener" aria-label="YouTube">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.200 5 12 5 12 5s-6.200 0-7.800.4A2.500 2.500 0 0 0 2.400 7.200C2 8.800 2 12 2 12s0 3.200.4 4.800a2.500 2.500 0 0 0 1.800 1.800C5.800 19 12 19 12 19s6.200 0 7.800-.4a2.500 2.500 0 0 0 1.800-1.800c.4-1.600.4-4.800.4-4.800s0-3.200-.4-4.800zM10 15.100V8.900l5.200 3.100-5.200 3.100z"/></svg>
-    </a>
-  </nav>
+  <nav class="socials" id="redes" data-sec="perfil" aria-label="Redes sociais"></nav>
 
-  <p class="chat-hint">
-    Use o chat para saber o melhor caminho para você
-    <svg class="chat-hint-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15M5 13l7 7 7-7"/></svg>
-  </p>
-
-  <!-- CONCIERGE DE IA -->
-  <section class="section" id="concierge">
-    <button class="concierge-btn" id="abrirChat" type="button" aria-haspopup="dialog">
-      <span class="concierge-btn-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#EAF3F9"/><circle cx="32" cy="32" r="24" fill="#D3E8F4"/><circle cx="32" cy="32" r="18" fill="#B0D7EC"/><circle cx="32" cy="32" r="12" fill="#8CC5E3"/><circle cx="32" cy="32" r="6" fill="#6DB4D9"/></svg></span>
-      <span><small>Concierge de IA</small><strong>Como posso te ajudar hoje?</strong></span>
-      <svg class="concierge-btn-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </button>
-    <p class="email-line">ou me escreva em <a href="mailto:brunamedeirosugc@gmail.com">brunamedeirosugc@gmail.com</a></p>
-  </section>
-
-  <div class="stack">
-
-    <!-- PARA MARCAS -->
-    <div>
-      <p class="eyebrow">Para marcas</p>
-      <a class="btn-portfolio" id="btnPortfolio" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20receber%20o%20seu%20portf%C3%B3lio" target="_blank" rel="noopener">
-        <span class="btn-portfolio-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span>
-        <span class="btn-portfolio-txt"><strong>Oii! Solicite meu portfólio</strong><small>Como você pode fechar uma parceria comigo</small></span>
-        <svg class="btn-portfolio-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </a>
-    </div>
-
-    <!-- PARA CREATORS -->
-    <p class="eyebrow" style="margin-top:30px">Para creators</p>
-
-    <!-- PORTFÓLIO PROFISSIONAL -->
-    <section class="widget" id="portfolio-profissional">
-      <h2>Portfólio Profissional</h2>
-      <p class="widget-sub">Eu crio um portfólio personalizado para você, organizando seu trabalho e apresentando seus serviços de forma estratégica.</p>
-      <a class="curso" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20um%20portf%C3%B3lio%20profissional" target="_blank" rel="noopener">Quero o meu portfólio →</a>
-    </section>
-
-    <!-- EQUIPAMENTOS -->
-    <section class="widget" id="equipamentos">
-      <h2>Equipamentos que uso</h2>
-      <p class="widget-sub">Tudo que uso na minha criação de conteúdo, com link pra você conferir.</p>
-      <div class="produtos" id="listaEquipamentos"></div>
-    </section>
-
-    <!-- WHATSAPP -->
-    <section class="widget zap" id="contato">
-      <h2>Prefere falar direto?</h2>
-      <p class="widget-sub">Me chama no WhatsApp, respondo por lá.</p>
-      <p class="zap-numero">(85) 99280-5861</p>
-      <a class="zap-btn" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20vim%20pelo%20seu%20link%20da%20bio" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        Vamos conversar!
-      </a>
-    </section>
-
-  </div>
+  <div class="secoes" id="secoes"></div>
 
   <footer class="rodape">Feito por <strong>Bruna Medeiros</strong></footer>
 </main>
 
-<div class="modal" id="chatModal" role="dialog" aria-modal="true" aria-label="Concierge da Bruna">
+<div class="modal" id="chatModal" role="dialog" aria-modal="true" aria-label="Concierge">
   <div class="modal-backdrop" id="chatBackdrop"></div>
     <div class="concierge">
       <div class="concierge-top">
-        <div class="concierge-avatar"><img src="/fotos/lock-avatar.jpg" alt=""></div>
+        <div class="concierge-avatar"><img id="chatAvatarTopo" src="/fotos/lock-avatar.jpg" alt=""></div>
         <div>
-          <strong>Concierge da Bruna</strong>
-          <span>online agora</span>
+          <strong id="chatNome"></strong>
+          <span id="chatStatus"></span>
         </div>
         <button class="concierge-close" id="fecharChat" type="button" aria-label="Fechar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
       </div>
       <div class="chat-body">
         <div class="chat-log" id="chatLog" aria-live="polite"></div>
         <div class="chat-start" id="chatStart">
-          <div class="chat-start-avatar"><img src="/fotos/lock-avatar.jpg" alt=""></div>
-          <strong>Pronto para começarmos?</strong>
-          <p>É um bate-papo rápido e natural.</p>
-          <button class="chat-start-btn" id="chatStartBtn" type="button">Iniciar chat</button>
+          <div class="chat-start-avatar"><img id="chatAvatarInicio" src="/fotos/lock-avatar.jpg" alt=""></div>
+          <strong id="chatInicioTitulo"></strong>
+          <p id="chatInicioTexto"></p>
+          <button class="chat-start-btn" id="chatStartBtn" type="button"></button>
         </div>
       </div>
       <form class="chat-form" id="chatForm" autocomplete="off">
@@ -457,38 +397,337 @@ button, input{ font-family:inherit; }
 
 <script>
 /* =====================================================================
-   CONFIGURAÇÃO — é só mexer aqui pra atualizar a página
-===================================================================== */
-var BIO = {
-  whatsapp: '5585992805861',
+   LINK NA BIO
 
-  // Equipamentos que uso. Cada item: { nome, descricao, link, imagem (opcional), emoji (se não tiver imagem) }
-  equipamentos: [
-    { nome: 'Tripé magnético Ulanzi TT88', descricao: 'Bastão de selfie 57", controle remoto e cold shoe', link: 'https://collshp.com/medeir0slins525/category/4307188?view=storefront', imagem: '/fotos/equipamentos/ulanzi-tt88.jpg' },
-    { nome: 'Microfone de lapela Hollyland Lark M2', descricao: 'Sem fio, Bluetooth, versão Lightning e USB-C', link: 'https://collshp.com/medeir0slins525/category/4307188?view=storefront', imagem: '/fotos/equipamentos/hollyland-lark-m2.jpg' }
-  ]
+   Nada do conteúdo desta página fica escrito no HTML: textos, links,
+   botões e o fluxo do chat vêm da configuração salva no painel
+   (Instagram > Link na bio) e são lidos da Edge Function "bio-publico".
+
+   DEFAULTS abaixo é só o ponto de partida (e o plano B se a internet
+   falhar): o que for salvo no painel passa por cima.
+
+   Modo ?preview=1: usado pelo painel (iframe). Não registra visitas nem
+   cliques, recebe a config em tempo real por postMessage e avisa o painel
+   qual seção foi tocada.
+===================================================================== */
+var API = 'https://trfoymytrvdbslwizfqs.supabase.co/functions/v1/bio-publico';
+var CACHE_KEY = 'bio_cfg_v1';
+var PREVIEW = /[?&]preview=1/.test(location.search);
+
+var ZAP = '5585992805861';
+
+var DEFAULTS = {
+  perfil: {
+    foto: '/fotos/hero-capa.png',
+    nome: 'Bruna Medeiros',
+    bio: 'Creator & Estrategista de Conteúdo',
+    redes: [
+      { id: 'instagram', ativo: true, url: 'https://instagram.com/brunalmedeiroos' },
+      { id: 'tiktok',    ativo: true, url: 'https://www.tiktok.com/@brunamedeiros' },
+      { id: 'whatsapp',  ativo: true, url: '' },
+      { id: 'youtube',   ativo: true, url: 'https://www.youtube.com/@brunamedeiroos' }
+    ]
+  },
+  ordem: ['concierge', 'marcas', 'portfolio', 'equipamentos', 'whatsapp'],
+  concierge: {
+    ativo: true,
+    rotulo: 'Concierge de IA',
+    titulo: 'Como posso te ajudar hoje?',
+    descricao: 'Use o chat para saber o melhor caminho para você',
+    email: 'brunamedeirosugc@gmail.com',
+    chat: {
+      nome: 'Concierge da Bruna',
+      status: 'online agora',
+      avatar: '/fotos/lock-avatar.jpg',
+      inicio_titulo: 'Pronto para começarmos?',
+      inicio_texto: 'É um bate-papo rápido e natural.',
+      botao_inicio: 'Iniciar chat'
+    },
+    fluxo: {
+      inicio: 'oi',
+      nos: {
+        oi:           { nome: 'Texto inicial', tipo: 'msg', texto: 'Oii! Fico feliz em te ver aqui 💙', proximo: 'nome_p' },
+        nome_p:       { nome: 'Pergunta o nome', tipo: 'msg', texto: 'Primeiro, como posso te chamar?', proximo: 'nome' },
+        nome:         { nome: 'Resposta: nome', tipo: 'texto', dica: 'Seu nome', guardar: 'nome', max: 30, proximo: 'tipo_p' },
+        tipo_p:       { nome: 'Pergunta: marca ou creator', tipo: 'msg', texto: 'Prazer, {nome}! Agora me conta: o que você veio procurar aqui?', proximo: 'tipo' },
+        tipo:         { nome: 'Opções: marca ou creator', tipo: 'escolha', opcoes: [
+                          { rotulo: 'Sou marca', proximo: 'marca_1' },
+                          { rotulo: 'Sou creator', proximo: 'creator_1' } ] },
+
+        creator_1:    { nome: 'Creator: boas-vindas', tipo: 'msg', texto: 'Aaaah, creator! 💙 Me conta o que você está procurando por aqui:', proximo: 'creator_op' },
+        creator_op:   { nome: 'Creator: opções', tipo: 'escolha', opcoes: [
+                          { rotulo: 'Quero criar meu portfólio', proximo: 'c_port' },
+                          { rotulo: 'Quero ver os equipamentos que você usa', proximo: 'c_equip' },
+                          { rotulo: 'Estou só explorando 👀', proximo: 'c_expl' } ] },
+        c_port:       { nome: 'Creator: portfólio', tipo: 'msg', texto: 'Perfeito! Você chegou no lugar certo. ✨ Eu posso te ajudar a transformar o seu trabalho em um portfólio pensado para apresentar o que você faz no UGC e facilitar suas oportunidades com marcas.', proximo: 'c_port_btn' },
+        c_port_btn:   { nome: 'Creator: botão do portfólio', tipo: 'acoes', botoes: [
+                          { rotulo: 'Criar meu portfólio', destino: 'zap', url: '', mensagem: 'Oi, Bruna! Sou {nome}, vim pelo seu link da bio e quero criar o meu portfólio.' } ] },
+        c_equip:      { nome: 'Creator: equipamentos', tipo: 'msg', texto: 'Quer saber o que eu uso para criar meus conteúdos? 👀', proximo: 'c_equip_btn' },
+        c_equip_btn:  { nome: 'Creator: botão dos equipamentos', tipo: 'acoes', botoes: [
+                          { rotulo: 'Ver meus equipamentos', destino: 'link', url: '{equipamentos_url}', mensagem: '' } ] },
+        c_expl:       { nome: 'Creator: só explorando', tipo: 'msg', texto: 'Pode ficar à vontade! 😂 Por enquanto, você pode conhecer meus conteúdos e acompanhar minha rotina de criação pelo Instagram e TikTok.', proximo: 'c_expl_btn' },
+        c_expl_btn:   { nome: 'Creator: botões das redes', tipo: 'acoes', botoes: [
+                          { rotulo: 'Instagram', destino: 'link', url: '{rede_instagram}', mensagem: '' },
+                          { rotulo: 'TikTok', destino: 'link', url: '{rede_tiktok}', mensagem: '' } ] },
+
+        marca_1:      { nome: 'Marca: o que busca', tipo: 'msg', texto: 'Perfeito! E o que você está buscando para a sua marca hoje? 👀', proximo: 'marca_formato' },
+        marca_formato:{ nome: 'Marca: opções de formato', tipo: 'escolha', guardar: 'formato', opcoes: [
+                          { rotulo: 'Vídeos', proximo: 'mf_v' },
+                          { rotulo: 'Fotos', proximo: 'mf_f' },
+                          { rotulo: 'Vídeos + fotos', proximo: 'mf_vf' },
+                          { rotulo: 'Ainda não sei', proximo: 'mf_n' } ] },
+        mf_v:         { nome: 'Marca: resposta a Vídeos', tipo: 'msg', texto: 'Boa! Vídeo é onde eu mais me divirto 🎥', proximo: 'marca_uso_p' },
+        mf_f:         { nome: 'Marca: resposta a Fotos', tipo: 'msg', texto: 'Show! Foto bem feita vende muito 📸', proximo: 'marca_uso_p' },
+        mf_vf:        { nome: 'Marca: resposta a Vídeos + fotos', tipo: 'msg', texto: 'Combo completo, adorei! ✨', proximo: 'marca_uso_p' },
+        mf_n:         { nome: 'Marca: resposta a Ainda não sei', tipo: 'msg', texto: 'Tranquilo, a gente descobre juntos 💙', proximo: 'marca_uso_p' },
+        marca_uso_p:  { nome: 'Marca: pergunta onde usar', tipo: 'msg', texto: 'E onde você pretende usar esse conteúdo?', proximo: 'marca_uso' },
+        marca_uso:    { nome: 'Marca: opções de uso', tipo: 'escolha', guardar: 'uso', opcoes: [
+                          { rotulo: 'Redes sociais', proximo: 'marca_prod_p' },
+                          { rotulo: 'Anúncios', proximo: 'marca_prod_p' },
+                          { rotulo: 'Site ou loja online', proximo: 'marca_prod_p' },
+                          { rotulo: 'Ainda não sei', proximo: 'marca_prod_p' } ] },
+        marca_prod_p: { nome: 'Marca: pergunta o produto', tipo: 'msg', texto: 'Anotado! 📝 Por último: qual produto, serviço ou campanha você quer divulgar?', proximo: 'marca_prod' },
+        marca_prod:   { nome: 'Marca: resposta do produto', tipo: 'texto', dica: 'Ex.: lançamento do meu creme facial', guardar: 'produto', max: 200, proximo: 'marca_fim' },
+        marca_fim:    { nome: 'Marca: despedida', tipo: 'msg', texto: 'Que legal, {nome}! 💙 Já deu pra entender o que você procura. Dá uma olhada no meu portfólio e, quando quiser, me chama no WhatsApp pra gente conversar sobre o projeto.', proximo: 'marca_btn' },
+        marca_btn:    { nome: 'Marca: botões finais', tipo: 'acoes', botoes: [
+                          { rotulo: 'Ver meu portfólio', destino: 'link', url: 'https://brunamedeiros.com/', mensagem: '' },
+                          { rotulo: 'Falar comigo no WhatsApp', destino: 'zap', url: '', mensagem: 'Oi, Bruna! Sou {nome}, vim pelo seu link da bio.\nEstou buscando: {formato}\nPara usar em: {uso}\nQuero divulgar: {produto}' } ] }
+      }
+    }
+  },
+  marcas: {
+    ativo: true,
+    eyebrow: 'Para marcas',
+    titulo: 'Oii! Solicite meu portfólio',
+    descricao: 'Como você pode fechar uma parceria comigo',
+    destino: 'zap', url: '', mensagem: 'Oi, Bruna! quero receber o seu portfólio'
+  },
+  portfolio: {
+    ativo: true,
+    eyebrow: 'Para creators',
+    titulo: 'Portfólio Profissional',
+    descricao: 'Eu crio seu portfólio do zero, com uma apresentação profissional e personalizada para mostrar seu trabalho às marcas.',
+    botao: 'Criar meu portfólio',
+    destino: 'zap', url: '', mensagem: 'Oi, Bruna! quero um portfólio profissional'
+  },
+  equipamentos: {
+    ativo: true,
+    titulo: 'Produtos que uso na criação de conteúdo',
+    descricao: 'Câmera, luz, apps e os gadgets que uso pra gravar todo dia. Minha lista testada e aprovada.',
+    imagem: '',
+    url: 'https://collshp.com/medeir0slins525/category/4307188?view=storefront'
+  },
+  whatsapp: {
+    ativo: true,
+    titulo: 'Prefere falar direto?',
+    descricao: 'Me chama no WhatsApp, respondo por lá.',
+    numero: ZAP,
+    mostrar_numero: true,
+    botao: 'Vamos conversar!',
+    mensagem: 'Oi, Bruna! vim pelo seu link da bio'
+  }
 };
 
-/* ---------------- Equipamentos ---------------- */
-(function(){
-  var lista = document.getElementById('listaEquipamentos');
-  if (!BIO.equipamentos.length) {
-    lista.innerHTML = '<div class="vazio">Estou separando tudo com carinho.<br>Em breve os links aparecem aqui.</div>';
+var ROTULOS_REDE = { instagram: 'Instagram', tiktok: 'TikTok', whatsapp: 'WhatsApp', youtube: 'YouTube' };
+
+var ICONES = {
+  instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5.2"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg>',
+  tiktok: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 3c.3 2.4 1.7 4 4 4.2v3.1c-1.5.1-2.9-.4-4-1.1v6.3c0 3.5-2.4 5.9-5.6 5.9-3 0-5.4-2.3-5.4-5.3 0-3.2 2.6-5.6 5.8-5.3v3.2c-1.6-.4-2.7.6-2.7 2 0 1.2.9 2.1 2.1 2.1 1.4 0 2.2-1 2.2-2.6V3h3.6z"/></svg>',
+  whatsapp: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>',
+  youtube: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.200 5 12 5 12 5s-6.200 0-7.800.4A2.500 2.500 0 0 0 2.400 7.200C2 8.800 2 12 2 12s0 3.200.4 4.800a2.500 2.500 0 0 0 1.800 1.800C5.800 19 12 19 12 19s6.200 0 7.800-.4a2.500 2.500 0 0 0 1.800-1.800c.4-1.600.4-4.800.4-4.800s0-3.200-.4-4.800zM10 15.100V8.900l5.200 3.100-5.200 3.100z"/></svg>'
+};
+var SVG_SETA = '<svg class="concierge-btn-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+var SVG_CARRINHO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3.5h2.7l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1l1.6-6.6H6.1"/></svg>';
+var SVG_EXTERNO = '<svg class="card-link-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.500v-11A1.500 1.500 0 0 1 5.500 6H10"/></svg>';
+
+/* ---------------- utilidades ---------------- */
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]; }); }
+function urlSegura(u){ u = String(u || '').trim(); return /^(https?:\/\/|mailto:|tel:|\/|#)/i.test(u) ? u : ''; }
+function clonar(o){ return JSON.parse(JSON.stringify(o)); }
+function ehObjeto(x){ return x && typeof x === 'object' && !Array.isArray(x); }
+function mesclar(base, extra){
+  if (!ehObjeto(base) || !ehObjeto(extra)) return extra === undefined ? base : extra;
+  var r = {};
+  Object.keys(base).forEach(function(k){ r[k] = clonar(base[k]); });
+  Object.keys(extra).forEach(function(k){ r[k] = (k in base) ? mesclar(base[k], extra[k]) : clonar(extra[k]); });
+  return r;
+}
+function soDigitos(s){ return String(s || '').replace(/\D/g, ''); }
+function numeroZap(n){ var d = soDigitos(n); return (d.length === 10 || d.length === 11) ? '55' + d : d; }
+function numeroBonito(n){
+  var d = soDigitos(n);
+  if (d.indexOf('55') === 0 && d.length >= 12) d = d.slice(2);
+  if (d.length === 11) return '(' + d.slice(0, 2) + ') ' + d.slice(2, 7) + '-' + d.slice(7);
+  if (d.length === 10) return '(' + d.slice(0, 2) + ') ' + d.slice(2, 6) + '-' + d.slice(6);
+  return d;
+}
+
+var cfg = clonar(DEFAULTS);
+var vars = {};
+
+function linkZap(msg){ return 'https://wa.me/' + numeroZap(cfg.whatsapp.numero) + (msg ? '?text=' + encodeURIComponent(msg) : ''); }
+function trocarVars(txt){
+  var extra = {
+    equipamentos_url: cfg.equipamentos.url,
+    rede_instagram: urlRede('instagram'), rede_tiktok: urlRede('tiktok'), rede_youtube: urlRede('youtube')
+  };
+  return String(txt == null ? '' : txt).replace(/\{([a-z_]+)\}/g, function(m, k){
+    if (k in vars) return vars[k];
+    if (k in extra) return extra[k];
+    return m;
+  });
+}
+function urlRede(id){
+  var r = (cfg.perfil.redes || []).filter(function(x){ return x.id === id; })[0];
+  if (!r) return '';
+  if (r.url) return r.url;
+  return id === 'whatsapp' ? linkZap('Oi, Bruna! vim pelo seu link da bio') : '';
+}
+function destino(item){
+  if (item.destino === 'zap') return linkZap(trocarVars(item.mensagem));
+  return urlSegura(trocarVars(item.url));
+}
+function attrsLink(href){
+  if (!href) return ' href="#" aria-disabled="true"';
+  var externo = href.charAt(0) !== '#';
+  return ' href="' + esc(href) + '"' + (externo ? ' target="_blank" rel="noopener"' : '');
+}
+
+/* ---------------- métricas ---------------- */
+var visitante = null;
+var semMetricas = PREVIEW;
+try {
+  if (/[?&]nt=1/.test(location.search)) localStorage.setItem('bio_nt', '1');
+  if (localStorage.getItem('bio_nt') === '1') semMetricas = true;
+} catch(e){}
+
+function idVisitante(){
+  if (visitante) return visitante;
+  try { visitante = localStorage.getItem('bio_vid'); } catch(e){}
+  if (!visitante) {
+    visitante = 'v' + Math.random().toString(36).slice(2, 12) + Date.now().toString(36);
+    try { localStorage.setItem('bio_vid', visitante); } catch(e){}
+  }
+  return visitante;
+}
+function enviarEvento(tipo, elemento){
+  if (semMetricas) return;
+  var corpo = JSON.stringify({ tipo: tipo, elemento: elemento, visitante: idVisitante() });
+  try {
+    if (navigator.sendBeacon && navigator.sendBeacon(API, new Blob([corpo], { type: 'text/plain' }))) return;
+  } catch(e){}
+  try { fetch(API, { method: 'POST', body: corpo, keepalive: true }); } catch(e){}
+}
+
+/* ---------------- montagem da página ---------------- */
+var elSecoes = document.getElementById('secoes');
+
+function eyebrowHtml(s){ return s.eyebrow ? '<p class="eyebrow">' + esc(s.eyebrow) + '</p>' : ''; }
+function blocoAbre(id, s){ return '<div class="bloco' + (s.eyebrow ? ' com-eyebrow' : '') + '" data-sec="' + id + '">' + eyebrowHtml(s); }
+
+var RENDER = {
+  concierge: function(s){
+    return '<section class="bloco" id="concierge" data-sec="concierge">' +
+      (s.descricao ? '<p class="chat-hint">' + esc(s.descricao) +
+        '<svg class="chat-hint-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v15M5 13l7 7 7-7"/></svg></p>' : '') +
+      '<button class="concierge-btn" id="abrirChat" type="button" aria-haspopup="dialog" data-bio-id="concierge">' +
+        '<span class="concierge-btn-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#EAF3F9"/><circle cx="32" cy="32" r="24" fill="#D3E8F4"/><circle cx="32" cy="32" r="18" fill="#B0D7EC"/><circle cx="32" cy="32" r="12" fill="#8CC5E3"/><circle cx="32" cy="32" r="6" fill="#6DB4D9"/></svg></span>' +
+        '<span><small>' + esc(s.rotulo) + '</small><strong>' + esc(s.titulo) + '</strong></span>' + SVG_SETA +
+      '</button>' +
+      (s.email ? '<p class="email-line">ou me escreva em <a href="mailto:' + esc(s.email) + '" data-bio-id="email">' + esc(s.email) + '</a></p>' : '') +
+    '</section>';
+  },
+  marcas: function(s){
+    return blocoAbre('marcas', s) +
+      '<a class="btn-portfolio" data-bio-id="solicitar_portfolio"' + attrsLink(destino(s)) + '>' +
+        '<span class="btn-portfolio-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></span>' +
+        '<span class="btn-portfolio-txt"><strong>' + esc(s.titulo) + '</strong>' + (s.descricao ? '<small>' + esc(s.descricao) + '</small>' : '') + '</span>' +
+        '<svg class="btn-portfolio-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' +
+      '</a></div>';
+  },
+  portfolio: function(s){
+    return blocoAbre('portfolio', s) +
+      '<section class="widget" id="portfolio-profissional">' +
+        '<h2>' + esc(s.titulo) + '</h2>' +
+        (s.descricao ? '<p class="widget-sub">' + esc(s.descricao) + '</p>' : '') +
+        '<a class="curso" data-bio-id="portfolio_profissional"' + attrsLink(destino(s)) + '>' + esc(s.botao) + ' →</a>' +
+      '</section></div>';
+  },
+  equipamentos: function(s){
+    var icone = urlSegura(s.imagem) ? '<img src="' + esc(urlSegura(s.imagem)) + '" alt="">' : SVG_CARRINHO;
+    return '<div class="bloco" id="equipamentos" data-sec="equipamentos">' +
+      '<a class="card-link" data-bio-id="equipamentos" href="' + esc(urlSegura(s.url) || '#') + '" target="_blank" rel="noopener sponsored">' +
+        '<span class="card-link-icone">' + icone + '</span>' +
+        '<span class="card-link-txt"><strong>' + esc(s.titulo) + '</strong>' + (s.descricao ? '<small>' + esc(s.descricao) + '</small>' : '') + '</span>' +
+        SVG_EXTERNO +
+      '</a></div>';
+  },
+  whatsapp: function(s){
+    return '<div class="bloco" data-sec="whatsapp"><section class="widget zap" id="contato">' +
+      '<h2>' + esc(s.titulo) + '</h2>' +
+      (s.descricao ? '<p class="widget-sub">' + esc(s.descricao) + '</p>' : '') +
+      (s.mostrar_numero ? '<p class="zap-numero">' + esc(numeroBonito(s.numero)) + '</p>' : '') +
+      '<a class="zap-btn" data-bio-id="whatsapp" href="' + esc(linkZap(s.mensagem)) + '" target="_blank" rel="noopener">' + ICONES.whatsapp + esc(s.botao) + '</a>' +
+    '</section></div>';
+  }
+};
+var SECOES = ['concierge', 'marcas', 'portfolio', 'equipamentos', 'whatsapp'];
+
+var ultimoConcierge = '';
+function renderizar(){
+  var p = cfg.perfil;
+  var foto = urlSegura(p.foto) || DEFAULTS.perfil.foto;
+  var heroFoto = document.getElementById('heroFoto');
+  if (heroFoto.getAttribute('src') !== foto) heroFoto.setAttribute('src', foto);
+  heroFoto.alt = p.nome || '';
+  document.getElementById('heroNome').textContent = p.nome || '';
+  document.getElementById('heroBio').textContent = p.bio || '';
+
+  document.getElementById('redes').innerHTML = (p.redes || []).filter(function(r){ return r.ativo && ICONES[r.id]; }).map(function(r){
+    var href = urlRede(r.id);
+    return '<a class="social" data-bio-id="rede_' + r.id + '"' + attrsLink(href) + ' aria-label="' + esc(ROTULOS_REDE[r.id] || r.id) + '">' + ICONES[r.id] + '</a>';
+  }).join('');
+
+  var ordem = (cfg.ordem || []).filter(function(id){ return SECOES.indexOf(id) >= 0; });
+  SECOES.forEach(function(id){ if (ordem.indexOf(id) < 0) ordem.push(id); });
+  elSecoes.innerHTML = ordem.map(function(id){ return cfg[id] && cfg[id].ativo ? RENDER[id](cfg[id]) : ''; }).join('');
+
+  var c = cfg.concierge;
+  document.getElementById('chatNome').textContent = c.chat.nome;
+  document.getElementById('chatStatus').textContent = c.chat.status;
+  var av = urlSegura(c.chat.avatar) || DEFAULTS.concierge.chat.avatar;
+  document.getElementById('chatAvatarTopo').src = av;
+  document.getElementById('chatAvatarInicio').src = av;
+  document.getElementById('chatInicioTitulo').textContent = c.chat.inicio_titulo;
+  document.getElementById('chatInicioTexto').textContent = c.chat.inicio_texto;
+  document.getElementById('chatStartBtn').textContent = c.chat.botao_inicio;
+  document.getElementById('chatModal').setAttribute('aria-label', c.chat.nome);
+
+  var assinatura = JSON.stringify(c);
+  if (assinatura !== ultimoConcierge) { ultimoConcierge = assinatura; reiniciarChat(); }
+}
+
+function aplicarConfig(salva){
+  cfg = mesclar(DEFAULTS, salva || {});
+  var nos = salva && salva.concierge && salva.concierge.fluxo && salva.concierge.fluxo.nos;
+  if (nos) cfg.concierge.fluxo.nos = clonar(nos);
+  renderizar();
+}
+
+/* ---------------- cliques ---------------- */
+document.addEventListener('click', function(e){
+  var alvo = e.target.closest ? e.target.closest('[data-bio-id]') : null;
+  var secao = e.target.closest ? e.target.closest('[data-sec]') : null;
+  if (PREVIEW) {
+    var ehChat = alvo && alvo.id === 'abrirChat';
+    if (!ehChat && e.target.closest && e.target.closest('a')) e.preventDefault();
+    if (secao && window.parent !== window) window.parent.postMessage({ tipo: 'bio:selecionar', secao: secao.getAttribute('data-sec') }, location.origin);
     return;
   }
-  lista.innerHTML = BIO.equipamentos.map(function(p){
-    var img = p.imagem ? '<img src="' + p.imagem + '" alt="" loading="lazy">' : (p.emoji || '🎬');
-    return '<a class="produto" href="' + p.link + '" target="_blank" rel="noopener sponsored">' +
-      '<span class="produto-img">' + img + '</span>' +
-      '<span class="produto-info"><strong>' + p.nome + '</strong>' + (p.descricao ? '<span>' + p.descricao + '</span>' : '') + '</span>' +
-      '<svg class="produto-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>' +
-      '</a>';
-  }).join('');
-})();
+  if (alvo) enviarEvento('click', alvo.getAttribute('data-bio-id'));
+});
 
-/* =====================================================================
-   CONCIERGE (a lógica de conversa entra aqui)
-===================================================================== */
+/* ---------------- Concierge: motor do fluxo ---------------- */
 var chatLog = document.getElementById('chatLog');
 var chatForm = document.getElementById('chatForm');
 var chatInput = document.getElementById('chatInput');
@@ -504,18 +743,20 @@ function fecharChat(){
   chatModal.classList.remove('open');
   document.body.style.overflow = '';
 }
-document.getElementById('abrirChat').addEventListener('click', abrirChat);
+document.addEventListener('click', function(e){
+  if (e.target.closest && e.target.closest('#abrirChat')) abrirChat();
+});
 document.getElementById('fecharChat').addEventListener('click', fecharChat);
 document.getElementById('chatBackdrop').addEventListener('click', fecharChat);
 document.addEventListener('keydown', function(e){ if (e.key === 'Escape') fecharChat(); });
 
-var URL_PORTFOLIO = 'https://brunamedeiros.com/';
-var URL_INSTAGRAM = 'https://instagram.com/brunalmedeiroos';
-var URL_TIKTOK = 'https://www.tiktok.com/@brunamedeiros';
-function urlZap(texto){ return 'https://wa.me/' + BIO.whatsapp + '?text=' + encodeURIComponent(texto); }
+var geracao = 0;
+var conversando = false;
+var aguardandoTexto = null;
 
 function rolar(){ chatLog.scrollTop = chatLog.scrollHeight; }
 function esperar(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+function parado(){ return new Promise(function(){}); }
 
 function addMsg(texto, quem){
   var el = document.createElement('div');
@@ -524,16 +765,18 @@ function addMsg(texto, quem){
   chatLog.appendChild(el);
   rolar();
 }
-function addActions(acoes){
+function addActions(botoes){
   var wrap = document.createElement('div');
   wrap.className = 'msg-actions';
-  acoes.forEach(function(a){
+  botoes.forEach(function(b){
+    var href = destino(b);
     var link = document.createElement('a');
     link.className = 'msg-action';
-    link.href = a.url;
-    if (a.url.charAt(0) !== '#') { link.target = '_blank'; link.rel = 'noopener'; }
+    link.setAttribute('data-bio-id', 'concierge_acao');
+    link.href = href || '#';
+    if (href && href.charAt(0) !== '#') { link.target = '_blank'; link.rel = 'noopener'; }
     else link.addEventListener('click', fecharChat);
-    link.textContent = a.label;
+    link.textContent = b.rotulo;
     wrap.appendChild(link);
   });
   chatLog.appendChild(wrap);
@@ -541,13 +784,14 @@ function addActions(acoes){
 }
 
 // mensagem da Bruna, com "digitando..." antes
-function bot(texto){
+function bot(texto, g){
   var dig = document.createElement('div');
   dig.className = 'typing';
   dig.innerHTML = '<i></i><i></i><i></i>';
   chatLog.appendChild(dig);
   rolar();
   return esperar(550 + Math.min(texto.length * 11, 800)).then(function(){
+    if (g !== geracao) return parado();
     dig.remove();
     addMsg(texto, 'bot');
   });
@@ -558,15 +802,15 @@ function escolher(lista, suave){
   return new Promise(function(resolve){
     var wrap = document.createElement('div');
     wrap.className = 'opcoes';
-    lista.forEach(function(rotulo){
+    lista.forEach(function(op, i){
       var b = document.createElement('button');
       b.type = 'button';
       b.className = 'opcao' + (suave ? ' suave' : '');
-      b.textContent = rotulo;
+      b.textContent = op.rotulo;
       b.addEventListener('click', function(){
         wrap.remove();
-        addMsg(rotulo, 'user');
-        resolve(rotulo);
+        addMsg(op.rotulo, 'user');
+        resolve(op);
       });
       wrap.appendChild(b);
     });
@@ -576,7 +820,6 @@ function escolher(lista, suave){
 }
 
 // resposta escrita na barrinha
-var aguardandoTexto = null;
 function pedirTexto(dica){
   return new Promise(function(resolve){
     aguardandoTexto = resolve;
@@ -597,88 +840,101 @@ chatForm.addEventListener('submit', function(e){
   resolver(texto);
 });
 
-function recomecar(){
-  return escolher(['Recomeçar conversa'], true).then(function(){
+function recomecar(g){
+  return escolher([{ rotulo: 'Recomeçar conversa' }], true).then(function(){
+    if (g !== geracao) return parado();
     chatLog.innerHTML = '';
-    return conversa();
+    vars = {};
+    return rodarNo(cfg.concierge.fluxo.inicio, g);
   });
 }
 
-/* ---------------- Fluxo: Sou creator ---------------- */
-function fluxoCreator(nome){
-  return bot('Aaaah, creator! 💙 Me conta o que você está procurando por aqui:')
-    .then(function(){ return escolher(['Quero criar meu portfólio', 'Quero ver os equipamentos que você usa', 'Estou só explorando 👀']); })
-    .then(function(r){
-      if (r === 'Quero criar meu portfólio') {
-        return bot('Perfeito! Você chegou no lugar certo. ✨ Eu posso te ajudar a transformar o seu trabalho em um portfólio pensado para apresentar o que você faz no UGC e facilitar suas oportunidades com marcas.')
-          .then(function(){ addActions([{ label: 'Criar meu portfólio', url: urlZap('Oi, Bruna! Sou ' + nome + ', vim pelo seu link da bio e quero criar o meu portfólio.') }]); });
-      }
-      if (r === 'Quero ver os equipamentos que você usa') {
-        return bot('Quer saber o que eu uso para criar meus conteúdos? 👀')
-          .then(function(){ addActions([{ label: 'Ver meus equipamentos', url: '#equipamentos' }]); });
-      }
-      return bot('Pode ficar à vontade! 😂 Por enquanto, você pode conhecer meus conteúdos e acompanhar minha rotina de criação pelo Instagram e TikTok.')
-        .then(function(){ addActions([{ label: 'Instagram', url: URL_INSTAGRAM }, { label: 'TikTok', url: URL_TIKTOK }]); });
+// cada nó do fluxo: msg (fala), texto (pergunta digitada), escolha (botões), acoes (botões de link)
+function rodarNo(id, g){
+  if (g !== geracao) return parado();
+  var no = cfg.concierge.fluxo.nos[id];
+  if (!no) return recomecar(g);
+  var seguir = function(prox){ return prox && cfg.concierge.fluxo.nos[prox] ? rodarNo(prox, g) : recomecar(g); };
+
+  if (no.tipo === 'msg') {
+    return bot(trocarVars(no.texto), g).then(function(){ return seguir(no.proximo); });
+  }
+  if (no.tipo === 'texto') {
+    return pedirTexto(no.dica).then(function(texto){
+      if (g !== geracao) return parado();
+      vars[no.guardar || 'resposta'] = texto.slice(0, no.max || 200);
+      return seguir(no.proximo);
     });
+  }
+  if (no.tipo === 'escolha') {
+    return escolher(no.opcoes || []).then(function(op){
+      if (g !== geracao) return parado();
+      if (no.guardar) vars[no.guardar] = op.rotulo;
+      return seguir(op.proximo);
+    });
+  }
+  if (no.tipo === 'acoes') {
+    addActions(no.botoes || []);
+    return no.proximo ? seguir(no.proximo) : recomecar(g);
+  }
+  return recomecar(g);
 }
 
-/* ---------------- Fluxo: Sou marca ---------------- */
-function fluxoMarca(nome){
-  var formato, uso, produto;
-  return bot('Perfeito! E o que você está buscando para a sua marca hoje? 👀')
-    .then(function(){ return escolher(['Vídeos', 'Fotos', 'Vídeos + fotos', 'Ainda não sei']); })
-    .then(function(r){
-      formato = r;
-      var comentario = {
-        'Vídeos': 'Boa! Vídeo é onde eu mais me divirto 🎥',
-        'Fotos': 'Show! Foto bem feita vende muito 📸',
-        'Vídeos + fotos': 'Combo completo, adorei! ✨',
-        'Ainda não sei': 'Tranquilo, a gente descobre juntos 💙'
-      }[r];
-      return bot(comentario);
-    })
-    .then(function(){ return bot('E onde você pretende usar esse conteúdo?'); })
-    .then(function(){ return escolher(['Redes sociais', 'Anúncios', 'Site ou loja online', 'Ainda não sei']); })
-    .then(function(r){
-      uso = r;
-      return bot('Anotado! 📝 Por último: qual produto, serviço ou campanha você quer divulgar?');
-    })
-    .then(function(){ return pedirTexto('Ex.: lançamento do meu creme facial'); })
-    .then(function(texto){
-      produto = texto;
-      return bot('Que legal, ' + nome + '! 💙 Já deu pra entender o que você procura. Dá uma olhada no meu portfólio e, quando quiser, me chama no WhatsApp pra gente conversar sobre o projeto.');
-    })
-    .then(function(){
-      var resumo = 'Oi, Bruna! Sou ' + nome + ', vim pelo seu link da bio.\n' +
-        'Estou buscando: ' + formato + '\n' +
-        'Para usar em: ' + uso + '\n' +
-        'Quero divulgar: ' + produto;
-      addActions([{ label: 'Ver meu portfólio', url: URL_PORTFOLIO }, { label: 'Falar comigo no WhatsApp', url: urlZap(resumo) }]);
-    });
-}
-
-/* ---------------- Conversa completa ---------------- */
-var conversando = false;
-function conversa(){
-  var nome;
-  return bot('Oii! Fico feliz em te ver aqui 💙')
-    .then(function(){ return bot('Primeiro, como posso te chamar?'); })
-    .then(function(){ return pedirTexto('Seu nome'); })
-    .then(function(texto){
-      nome = texto.slice(0, 30);
-      return bot('Prazer, ' + nome + '! Agora me conta: o que você veio procurar aqui?');
-    })
-    .then(function(){ return escolher(['Sou marca', 'Sou creator']); })
-    .then(function(r){ return r === 'Sou marca' ? fluxoMarca(nome) : fluxoCreator(nome); })
-    .then(recomecar);
+function reiniciarChat(){
+  geracao++;
+  conversando = false;
+  aguardandoTexto = null;
+  vars = {};
+  chatLog.innerHTML = '';
+  chatInput.value = ''; chatInput.disabled = true; chatSend.disabled = true;
+  chatStart.classList.remove('off');
 }
 
 document.getElementById('chatStartBtn').addEventListener('click', function(){
   if (conversando) return;
   conversando = true;
   chatStart.classList.add('off');
-  conversa();
+  rodarNo(cfg.concierge.fluxo.inicio, geracao);
 });
+
+/* ---------------- carregamento ---------------- */
+var rootEl = document.documentElement;
+var ultimoJson = null;
+
+function receber(salva){
+  var json = JSON.stringify(salva || {});
+  if (json === ultimoJson) return;
+  ultimoJson = json;
+  aplicarConfig(salva);
+}
+
+if (PREVIEW) {
+  rootEl.classList.add('preview-ativo');
+  window.addEventListener('message', function(e){
+    if (e.origin !== location.origin || !e.data) return;
+    if (e.data.tipo === 'bio:config') { ultimoJson = null; receber(e.data.config); }
+    if (e.data.tipo === 'bio:rolar') {
+      var el = document.querySelector('[data-sec="' + String(e.data.secao).replace(/[^a-z_]/g, '') + '"]');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+  aplicarConfig({});
+  if (window.parent !== window) window.parent.postMessage({ tipo: 'bio:pronto', defaults: DEFAULTS }, location.origin);
+} else {
+  var cache = null;
+  try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); } catch(e){}
+  if (!cache) rootEl.classList.add('carregando');
+  receber(cache || {});
+  var liberar = function(){ rootEl.classList.remove('carregando'); };
+  setTimeout(liberar, 1200);
+  fetch(API).then(function(r){ return r.json(); }).then(function(d){
+    if (d && d.ok) {
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify(d.config || {})); } catch(e){}
+      receber(d.config || {});
+    }
+  }).catch(function(){}).then(liberar);
+  enviarEvento('view', 'pagina');
+}
 </script>
 </body>
 </html>

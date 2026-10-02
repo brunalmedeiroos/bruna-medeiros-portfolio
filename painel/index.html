@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001k">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001m">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -612,6 +612,7 @@
               <button class="instagram-subnav-btn" data-instagram-pagina="automacoes" type="button" data-i18n="instagram_automacoes">Automações</button>
               <button class="instagram-subnav-btn" data-instagram-pagina="leads" type="button" data-i18n="instagram_interacoes">Interações</button>
               <button class="instagram-subnav-btn" data-instagram-pagina="analises" type="button" data-i18n="instagram_analises">Análises</button>
+              <button class="instagram-subnav-btn" data-instagram-pagina="bio" type="button" data-i18n="bio_titulo">🔗 Link na bio</button>
             </div>
 
             <div id="instagram-pagina-visao-geral" class="instagram-pagina">
@@ -728,6 +729,81 @@
                   <span data-i18n="instagram_col_ultima_vez">Última vez</span>
                 </div>
                 <div id="instagram-leads-lista" class="cal-todas-linhas"></div>
+              </div>
+            </div>
+
+            <div id="instagram-pagina-bio" class="instagram-pagina bio-pagina" hidden>
+              <div class="cal-todas-topo">
+                <div>
+                  <h3 class="card-titulo" data-i18n="bio_titulo">Link na bio</h3>
+                  <p class="cal-todas-resumo" data-i18n="bio_resumo_pagina">Veja os resultados e edite a sua página de link na bio sem mexer em código.</p>
+                </div>
+                <div class="instagram-periodo-grupo bio-modos">
+                  <button class="instagram-periodo-btn ativo" data-bio-modo="analytics" type="button" data-i18n="bio_modo_analytics">Analytics</button>
+                  <button class="instagram-periodo-btn" data-bio-modo="configurar" type="button" data-i18n="bio_modo_configurar">Configurar</button>
+                </div>
+              </div>
+
+              <div id="bio-analytics">
+                <div class="instagram-periodo-grupo" id="bio-periodo-grupo">
+                  <button class="instagram-periodo-btn" data-bio-periodo="1" type="button" data-i18n="bio_periodo_hoje">Hoje</button>
+                  <button class="instagram-periodo-btn ativo" data-bio-periodo="7" type="button" data-i18n="bio_periodo_7">7 dias</button>
+                  <button class="instagram-periodo-btn" data-bio-periodo="30" type="button" data-i18n="bio_periodo_30">30 dias</button>
+                  <button class="instagram-periodo-btn" data-bio-periodo="0" type="button" data-i18n="bio_periodo_tudo">Tudo</button>
+                  <span class="bio-atualizado" id="bio-atualizado"></span>
+                </div>
+
+                <p class="instagram-avisos" id="bio-an-erro" hidden></p>
+
+                <div class="instagram-metricas-grid bio-metricas">
+                  <div class="card-numero">
+                    <span class="card-label" data-i18n="bio_visitas">Visitas</span>
+                    <span class="card-valor" id="bio-an-visitas">–</span>
+                    <span class="card-descricao" id="bio-an-visitas-desc"></span>
+                  </div>
+                  <div class="card-numero">
+                    <span class="card-label" data-i18n="bio_cliques_totais">Cliques totais</span>
+                    <span class="card-valor" id="bio-an-cliques">–</span>
+                    <span class="card-descricao" id="bio-an-cliques-desc"></span>
+                  </div>
+                </div>
+
+                <div class="card bio-card-grafico">
+                  <div class="bio-grafico-topo">
+                    <h3 class="card-titulo" data-i18n="bio_desempenho">Desempenho ao longo do tempo</h3>
+                    <div class="bio-legenda">
+                      <span><i class="bio-ponto bio-ponto-vis"></i><span data-i18n="bio_visitas">Visitas</span></span>
+                      <span><i class="bio-ponto bio-ponto-cli"></i><span data-i18n="bio_cliques">Cliques</span></span>
+                    </div>
+                  </div>
+                  <div id="bio-an-grafico"></div>
+                </div>
+
+                <div class="card">
+                  <h3 class="card-titulo" data-i18n="bio_cliques_por_elemento">Cliques por elemento</h3>
+                  <div class="instagram-ranking bio-ranking" id="bio-an-ranking"></div>
+                </div>
+
+                <p class="bio-nota" data-i18n="bio_nota_nt">Dica: abra a página com ?nt=1 no final do endereço (uma vez em cada aparelho seu) para as suas próprias visitas não entrarem nos números.</p>
+              </div>
+
+              <div id="bio-configurar" hidden>
+                <div class="bio-barra">
+                  <span class="bio-status" id="bio-config-status"></span>
+                  <a class="cal-btn" id="bio-abrir-pagina" href="/bio/" target="_blank" rel="noopener" data-i18n="bio_abrir_pagina">Abrir página</a>
+                  <button class="cal-btn cal-btn-primario" id="bio-salvar" type="button" data-i18n="bio_salvar" disabled>Salvar alterações</button>
+                </div>
+                <div class="bio-editor">
+                  <div class="bio-secoes" id="bio-secoes"></div>
+                  <div class="bio-preview">
+                    <div class="bio-celular">
+                      <div class="bio-tela">
+                        <iframe id="bio-preview-frame" title="Preview" loading="lazy"></iframe>
+                      </div>
+                    </div>
+                    <p class="bio-preview-legenda" data-i18n="bio_preview_legenda">Prévia em tempo real. Toque em um bloco para editá-lo.</p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -3573,6 +3649,111 @@
         instagram_int_deixaram_contato_desc: 'Email ou telefone na conversa',
         instagram_analises: '📈 Análises',
         instagram_analises_resumo: 'Alcance, engajamento e melhores posts por período.',
+        bio_titulo: '🔗 Link na bio',
+        bio_resumo_pagina: 'Veja os resultados e edite a sua página de link na bio sem mexer em código.',
+        bio_modo_analytics: 'Analytics',
+        bio_modo_configurar: 'Configurar',
+        bio_periodo_hoje: 'Hoje',
+        bio_periodo_7: '7 dias',
+        bio_periodo_30: '30 dias',
+        bio_periodo_tudo: 'Tudo',
+        bio_visitas: 'Visitas',
+        bio_cliques_totais: 'Cliques totais',
+        bio_desempenho: 'Desempenho ao longo do tempo',
+        bio_cliques: 'Cliques',
+        bio_cliques_por_elemento: 'Cliques por elemento',
+        bio_nota_nt: 'Dica: abra a página com ?nt=1 no final do endereço (uma vez em cada aparelho seu) para as suas próprias visitas não entrarem nos números.',
+        bio_abrir_pagina: 'Abrir página',
+        bio_salvar: 'Salvar alterações',
+        bio_preview_legenda: 'Prévia em tempo real. Toque em um bloco para editá-lo.',
+        bio_el_concierge: 'Concierge / IA',
+        bio_el_solicitar: 'Solicitar portfólio',
+        bio_el_portfolio: 'Portfólio Profissional',
+        bio_el_equipamentos: 'Equipamentos que uso',
+        bio_el_whatsapp: 'Prefere falar direto? (Vamos conversar)',
+        bio_el_redes: 'Redes sociais',
+        bio_el_email: 'E-mail',
+        bio_el_chat_botoes: 'Botões dentro do chat',
+        bio_sec_perfil: 'Perfil',
+        bio_sec_concierge: 'Concierge / IA',
+        bio_sec_marcas: 'Solicitar portfólio',
+        bio_sec_portfolio: 'Portfólio Profissional',
+        bio_sec_equipamentos: 'Equipamentos que uso',
+        bio_sec_whatsapp: 'Prefere falar direto?',
+        bio_atualizado_as: 'Atualizado às',
+        bio_erro_carregar: 'Não foi possível carregar agora. Tente de novo em instantes.',
+        bio_novo: 'novo',
+        bio_vs_anterior: 'vs. período anterior',
+        bio_acessos: 'acessos',
+        bio_sem_dados: 'Ainda sem dados neste período.',
+        bio_nao_salvo: 'Alterações não salvas',
+        bio_salvo_as: 'Salvo às',
+        bio_salvando: 'Salvando...',
+        bio_trocar_imagem: 'Trocar imagem',
+        bio_remover: 'Remover',
+        bio_destino: 'Para onde o botão leva',
+        bio_destino_link: 'Um link',
+        bio_mensagem_zap: 'Mensagem automática',
+        bio_mensagem_zap_ajuda: 'Texto que já vem escrito quando a pessoa abre o WhatsApp.',
+        bio_link_destino: 'Link de destino',
+        bio_no_fim: 'Fim da conversa',
+        bio_no_nome: 'Nome da etapa (só pra você)',
+        bio_no_texto: 'O que a Bruna fala',
+        bio_no_depois: 'Depois, vai para',
+        bio_no_dica: 'Texto de dica no campo',
+        bio_no_guardar: 'Guardar a resposta como',
+        bio_no_guardar_ajuda: 'Um nome curto, sem espaços (ex: nome). Depois use {nome} nas mensagens.',
+        bio_no_opcoes: 'Opções de resposta',
+        bio_op_rotulo: 'Texto da opção',
+        bio_add_opcao: '+ Opção',
+        bio_no_botoes: 'Botões',
+        bio_add_botao: '+ Botão',
+        bio_no_excluir: 'Excluir esta etapa',
+        bio_tipo_msg: 'Mensagem',
+        bio_tipo_texto: 'Pergunta',
+        bio_tipo_escolha: 'Escolha',
+        bio_tipo_acoes: 'Botões',
+        bio_fluxo_inicio: 'A conversa começa em',
+        bio_fluxo_ajuda: 'A conversa do chat é feita de etapas. Cada etapa fala algo, faz uma pergunta, oferece opções (ex: Sou marca / Sou creator) ou mostra botões de link.',
+        bio_variaveis: 'Variáveis para usar nos textos:',
+        bio_add_no: 'Nova etapa:',
+        bio_campo_foto: 'Foto',
+        bio_campo_nome: 'Nome',
+        bio_campo_bio: 'Descrição (bio)',
+        bio_redes: 'Redes sociais',
+        bio_rede_zap_vazio: 'Vazio = abre o WhatsApp do número configurado',
+        bio_texto_acima: 'Texto acima do botão',
+        bio_etiqueta: 'Etiqueta pequena do botão',
+        bio_titulo_botao: 'Título do botão',
+        bio_email_contato: 'E-mail de contato',
+        bio_email_ajuda: 'Deixe vazio para não mostrar.',
+        bio_janela_chat: 'Janela do chat',
+        bio_chat_nome: 'Nome no topo do chat',
+        bio_chat_status: 'Status no topo do chat',
+        bio_chat_avatar: 'Foto do chat',
+        bio_chat_inicio_titulo: 'Título da tela inicial',
+        bio_chat_inicio_texto: 'Texto inicial',
+        bio_chat_botao: 'Botão de começar',
+        bio_fluxo: 'Conversa do chat',
+        bio_etiqueta_secao: 'Etiqueta acima do bloco',
+        bio_campo_titulo: 'Título',
+        bio_campo_descricao: 'Descrição',
+        bio_campo_botao: 'Texto do botão',
+        bio_campo_imagem: 'Imagem do ícone',
+        bio_imagem_equip_ajuda: 'Opcional. Sem imagem, aparece o ícone de carrinho.',
+        bio_numero: 'Número do WhatsApp (com DDI e DDD)',
+        bio_mostrar_numero: 'Mostrar o número na página',
+        bio_subir: 'Subir',
+        bio_descer: 'Descer',
+        bio_ordem_ajuda: 'Use as setas para mudar a ordem dos blocos e o interruptor para ligar ou desligar. Toque num bloco para editar.',
+        bio_novo_msg: 'Nova mensagem',
+        bio_novo_texto: 'Nova pergunta',
+        bio_novo_escolha: 'Nova escolha',
+        bio_novo_acoes: 'Novos botões',
+        bio_no_excluir_conf: 'Excluir esta etapa da conversa?',
+        bio_imagem_grande: 'A imagem passa de 5 MB. Escolha uma menor.',
+        bio_enviando: 'Enviando imagem...',
+        bio_erro_upload: 'Não foi possível enviar a imagem agora.',
         instagram_atualizar: '↻ Atualizar',
         instagram_atualizando: 'Atualizando...',
         instagram_novos_seguidores: '➕ Novos seguidores',
@@ -4393,6 +4574,111 @@
         instagram_int_deixaram_contato_desc: 'Email or phone in the conversation',
         instagram_analises: '📈 Analytics',
         instagram_analises_resumo: 'Reach, engagement, and top posts by period.',
+        bio_titulo: '🔗 Link in bio',
+        bio_resumo_pagina: 'See the results and edit your link-in-bio page without touching code.',
+        bio_modo_analytics: 'Analytics',
+        bio_modo_configurar: 'Settings',
+        bio_periodo_hoje: 'Today',
+        bio_periodo_7: '7 days',
+        bio_periodo_30: '30 days',
+        bio_periodo_tudo: 'All time',
+        bio_visitas: 'Visits',
+        bio_cliques_totais: 'Total clicks',
+        bio_desempenho: 'Performance over time',
+        bio_cliques: 'Clicks',
+        bio_cliques_por_elemento: 'Clicks per element',
+        bio_nota_nt: 'Tip: open the page with ?nt=1 at the end of the address (once on each of your devices) so your own visits are not counted.',
+        bio_abrir_pagina: 'Open page',
+        bio_salvar: 'Save changes',
+        bio_preview_legenda: 'Live preview. Tap a block to edit it.',
+        bio_el_concierge: 'Concierge / AI',
+        bio_el_solicitar: 'Request portfolio',
+        bio_el_portfolio: 'Professional Portfolio',
+        bio_el_equipamentos: 'Gear I use',
+        bio_el_whatsapp: "Prefer to talk directly? (Let's talk)",
+        bio_el_redes: 'Social networks',
+        bio_el_email: 'Email',
+        bio_el_chat_botoes: 'Buttons inside the chat',
+        bio_sec_perfil: 'Profile',
+        bio_sec_concierge: 'Concierge / AI',
+        bio_sec_marcas: 'Request portfolio',
+        bio_sec_portfolio: 'Professional Portfolio',
+        bio_sec_equipamentos: 'Gear I use',
+        bio_sec_whatsapp: 'Prefer to talk directly?',
+        bio_atualizado_as: 'Updated at',
+        bio_erro_carregar: "Couldn't load right now. Try again shortly.",
+        bio_novo: 'new',
+        bio_vs_anterior: 'vs. previous period',
+        bio_acessos: 'page views',
+        bio_sem_dados: 'No data in this period yet.',
+        bio_nao_salvo: 'Unsaved changes',
+        bio_salvo_as: 'Saved at',
+        bio_salvando: 'Saving...',
+        bio_trocar_imagem: 'Change image',
+        bio_remover: 'Remove',
+        bio_destino: 'Where the button goes',
+        bio_destino_link: 'A link',
+        bio_mensagem_zap: 'Automatic message',
+        bio_mensagem_zap_ajuda: 'Text that comes pre-filled when the person opens WhatsApp.',
+        bio_link_destino: 'Destination link',
+        bio_no_fim: 'End of conversation',
+        bio_no_nome: 'Step name (just for you)',
+        bio_no_texto: 'What Bruna says',
+        bio_no_depois: 'Then go to',
+        bio_no_dica: 'Hint text in the field',
+        bio_no_guardar: 'Save the answer as',
+        bio_no_guardar_ajuda: 'A short name, no spaces (e.g. nome). Then use {nome} in the messages.',
+        bio_no_opcoes: 'Answer options',
+        bio_op_rotulo: 'Option text',
+        bio_add_opcao: '+ Option',
+        bio_no_botoes: 'Buttons',
+        bio_add_botao: '+ Button',
+        bio_no_excluir: 'Delete this step',
+        bio_tipo_msg: 'Message',
+        bio_tipo_texto: 'Question',
+        bio_tipo_escolha: 'Choice',
+        bio_tipo_acoes: 'Buttons',
+        bio_fluxo_inicio: 'The conversation starts at',
+        bio_fluxo_ajuda: 'The chat conversation is made of steps. Each step says something, asks a question, offers options (e.g. Brand / Creator) or shows link buttons.',
+        bio_variaveis: 'Variables you can use in texts:',
+        bio_add_no: 'New step:',
+        bio_campo_foto: 'Photo',
+        bio_campo_nome: 'Name',
+        bio_campo_bio: 'Description (bio)',
+        bio_redes: 'Social networks',
+        bio_rede_zap_vazio: 'Empty = opens WhatsApp for the configured number',
+        bio_texto_acima: 'Text above the button',
+        bio_etiqueta: 'Small label on the button',
+        bio_titulo_botao: 'Button title',
+        bio_email_contato: 'Contact email',
+        bio_email_ajuda: 'Leave empty to hide it.',
+        bio_janela_chat: 'Chat window',
+        bio_chat_nome: 'Name at the top of the chat',
+        bio_chat_status: 'Status at the top of the chat',
+        bio_chat_avatar: 'Chat photo',
+        bio_chat_inicio_titulo: 'Start screen title',
+        bio_chat_inicio_texto: 'Start screen text',
+        bio_chat_botao: 'Start button',
+        bio_fluxo: 'Chat conversation',
+        bio_etiqueta_secao: 'Label above the block',
+        bio_campo_titulo: 'Title',
+        bio_campo_descricao: 'Description',
+        bio_campo_botao: 'Button text',
+        bio_campo_imagem: 'Icon image',
+        bio_imagem_equip_ajuda: 'Optional. Without an image, the cart icon is shown.',
+        bio_numero: 'WhatsApp number (with country and area code)',
+        bio_mostrar_numero: 'Show the number on the page',
+        bio_subir: 'Move up',
+        bio_descer: 'Move down',
+        bio_ordem_ajuda: 'Use the arrows to change the order of the blocks and the switch to turn them on or off. Tap a block to edit.',
+        bio_novo_msg: 'New message',
+        bio_novo_texto: 'New question',
+        bio_novo_escolha: 'New choice',
+        bio_novo_acoes: 'New buttons',
+        bio_no_excluir_conf: 'Delete this conversation step?',
+        bio_imagem_grande: 'The image is over 5 MB. Pick a smaller one.',
+        bio_enviando: 'Uploading image...',
+        bio_erro_upload: "Couldn't upload the image right now.",
         instagram_atualizar: '↻ Refresh',
         instagram_atualizando: 'Refreshing...',
         instagram_novos_seguidores: '➕ New followers',
@@ -7654,6 +7940,632 @@
         .join('');
     }
 
+    // ==========================================================================
+    // Instagram > Link na bio: Analytics (visitas e cliques da página /bio) e
+    // Configurar (edita a config que a página lê da Edge Function bio-publico;
+    // o preview é a própria página dentro de um iframe, via ?preview=1).
+    // Tabelas e função: painel-admin/bio-tabelas.sql
+    // ==========================================================================
+
+    const BIO_ELEMENTOS = [
+      ['concierge', 'bio_el_concierge'],
+      ['solicitar_portfolio', 'bio_el_solicitar'],
+      ['portfolio_profissional', 'bio_el_portfolio'],
+      ['equipamentos', 'bio_el_equipamentos'],
+      ['whatsapp', 'bio_el_whatsapp'],
+    ];
+    const BIO_SECOES = [
+      ['perfil', '👤', 'bio_sec_perfil'],
+      ['concierge', '✨', 'bio_sec_concierge'],
+      ['marcas', '📱', 'bio_sec_marcas'],
+      ['portfolio', '💼', 'bio_sec_portfolio'],
+      ['equipamentos', '🛍️', 'bio_sec_equipamentos'],
+      ['whatsapp', '💬', 'bio_sec_whatsapp'],
+    ];
+    const BIO_REDES = { instagram: 'Instagram', tiktok: 'TikTok', whatsapp: 'WhatsApp', youtube: 'YouTube' };
+
+    let bioIniciado = false;
+    let bioModo = 'analytics';
+    let bioPeriodo = 7;
+    let bioCarregandoAn = false;
+    let bioCfg = null;
+    let bioDefaults = null;
+    let bioSalva = null;
+    let bioFramePronto = false;
+    let bioSalvoJson = '';
+    let bioUltimoSalvo = '';
+    let bioSecaoAberta = 'perfil';
+    const bioNosAbertos = new Set();
+    let bioEnvioTimer = null;
+
+    function bioAttr(s) {
+      return escapeHtml(s == null ? '' : s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function bioClonar(o) {
+      return JSON.parse(JSON.stringify(o));
+    }
+    function bioMesclar(base, extra) {
+      const ehObj = (x) => x && typeof x === 'object' && !Array.isArray(x);
+      if (!ehObj(base) || !ehObj(extra)) return extra === undefined ? base : extra;
+      const r = {};
+      Object.keys(base).forEach((k) => { r[k] = bioClonar(base[k]); });
+      Object.keys(extra).forEach((k) => { r[k] = k in base ? bioMesclar(base[k], extra[k]) : bioClonar(extra[k]); });
+      return r;
+    }
+    // Mesma regra da página pública: as etapas do chat salvas substituem as
+    // padrão (senão uma etapa apagada voltaria sozinha).
+    function bioAplicar(defaults, salva) {
+      const cfg = bioMesclar(defaults, salva || {});
+      const nos = salva && salva.concierge && salva.concierge.fluxo && salva.concierge.fluxo.nos;
+      if (nos) cfg.concierge.fluxo.nos = bioClonar(nos);
+      const ordem = (cfg.ordem || []).filter((id, i, a) => defaults.ordem.includes(id) && a.indexOf(id) === i);
+      defaults.ordem.forEach((id) => { if (!ordem.includes(id)) ordem.push(id); });
+      cfg.ordem = ordem;
+      return cfg;
+    }
+    function bioGetDe(obj, caminho) {
+      return caminho.split('.').reduce((o, k) => (o == null ? o : o[k]), obj);
+    }
+    function bioGet(caminho) {
+      return bioGetDe(bioCfg, caminho);
+    }
+    function bioSet(caminho, valor) {
+      const ks = caminho.split('.');
+      let o = bioCfg;
+      for (let i = 0; i < ks.length - 1; i++) o = o[ks[i]];
+      o[ks[ks.length - 1]] = valor;
+    }
+    function bioHora() {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function bioIniciar() {
+      if (!bioIniciado) {
+        bioIniciado = true;
+        bioLigarEventos();
+        setInterval(() => { if (bioAnalyticsVisivel()) bioCarregarAnalytics(true); }, 30000);
+      }
+      bioTrocarModo(bioModo);
+    }
+
+    function bioAnalyticsVisivel() {
+      return !document.hidden && bioModo === 'analytics'
+        && !document.getElementById('panel-instagram').hidden
+        && !document.getElementById('instagram-pagina-bio').hidden;
+    }
+
+    function bioTrocarModo(modo) {
+      bioModo = modo;
+      document.querySelectorAll('[data-bio-modo]').forEach((b) => b.classList.toggle('ativo', b.dataset.bioModo === modo));
+      document.getElementById('bio-analytics').hidden = modo !== 'analytics';
+      document.getElementById('bio-configurar').hidden = modo !== 'configurar';
+      if (modo === 'analytics') bioCarregarAnalytics();
+      else bioIniciarConfigurar();
+    }
+
+    function bioLigarEventos() {
+      document.querySelectorAll('[data-bio-modo]').forEach((b) => b.addEventListener('click', () => bioTrocarModo(b.dataset.bioModo)));
+      document.querySelectorAll('[data-bio-periodo]').forEach((b) => {
+        b.addEventListener('click', () => {
+          bioPeriodo = Number(b.dataset.bioPeriodo);
+          document.querySelectorAll('[data-bio-periodo]').forEach((x) => x.classList.toggle('ativo', x === b));
+          bioCarregarAnalytics();
+        });
+      });
+      document.getElementById('bio-salvar').addEventListener('click', bioSalvar);
+      const lista = document.getElementById('bio-secoes');
+      lista.addEventListener('input', bioAoDigitar);
+      lista.addEventListener('change', bioAoMudar);
+      lista.addEventListener('click', bioAoClicar);
+      lista.addEventListener('toggle', (e) => {
+        const d = e.target;
+        if (d.tagName !== 'DETAILS' || !d.dataset.no) return;
+        if (d.open) bioNosAbertos.add(d.dataset.no);
+        else bioNosAbertos.delete(d.dataset.no);
+      }, true);
+      window.addEventListener('message', (e) => {
+        const frame = document.getElementById('bio-preview-frame');
+        if (e.origin !== location.origin || !e.data || e.source !== frame.contentWindow) return;
+        if (e.data.tipo === 'bio:pronto') {
+          bioDefaults = e.data.defaults;
+          bioFramePronto = true;
+          bioTentarMontar();
+        }
+        if (e.data.tipo === 'bio:selecionar' && bioModo === 'configurar') bioAbrirSecao(e.data.secao, false);
+      });
+      window.addEventListener('beforeunload', (e) => {
+        if (bioSujo()) { e.preventDefault(); e.returnValue = ''; }
+      });
+    }
+
+    // ---------------------------- Analytics ----------------------------
+
+    async function bioCarregarAnalytics(silencioso) {
+      if (bioCarregandoAn) return;
+      bioCarregandoAn = true;
+      const erroEl = document.getElementById('bio-an-erro');
+      try {
+        const { data, error } = await Auth.sb.rpc('bio_resumo', { p_dias: bioPeriodo });
+        if (error) throw error;
+        erroEl.hidden = true;
+        bioRenderAnalytics(data);
+        document.getElementById('bio-atualizado').textContent = tr('bio_atualizado_as') + ' ' + bioHora();
+      } catch (err) {
+        console.error('Erro ao carregar analytics do link na bio:', err);
+        if (!silencioso) {
+          erroEl.textContent = tr('bio_erro_carregar');
+          erroEl.hidden = false;
+        }
+      } finally {
+        bioCarregandoAn = false;
+      }
+    }
+
+    function bioVariacaoHtml(atual, anterior) {
+      if (anterior == null) return '';
+      if (anterior === 0) return atual > 0 ? `<span class="bio-var bio-var-sobe">▲ ${escapeHtml(tr('bio_novo'))}</span>` : '';
+      const pct = Math.round(((atual - anterior) / anterior) * 100);
+      if (pct === 0) return `<span class="bio-var">= 0%</span> ${escapeHtml(tr('bio_vs_anterior'))}`;
+      return `<span class="bio-var ${pct > 0 ? 'bio-var-sobe' : 'bio-var-desce'}">${pct > 0 ? '▲' : '▼'} ${Math.abs(pct)}%</span> ${escapeHtml(tr('bio_vs_anterior'))}`;
+    }
+
+    function bioRenderAnalytics(d) {
+      document.getElementById('bio-an-visitas').textContent = formatarNumero(d.visitantes || 0);
+      document.getElementById('bio-an-visitas-desc').innerHTML =
+        `${formatarNumero(d.acessos || 0)} ${escapeHtml(tr('bio_acessos'))} ${bioVariacaoHtml(d.visitantes || 0, d.visitantes_anterior)}`;
+      document.getElementById('bio-an-cliques').textContent = formatarNumero(d.cliques || 0);
+      document.getElementById('bio-an-cliques-desc').innerHTML = bioVariacaoHtml(d.cliques || 0, d.cliques_anterior);
+
+      const por = d.por_elemento || {};
+      const soma = (filtro) => Object.keys(por).filter(filtro).reduce((s, k) => s + por[k], 0);
+      const principais = BIO_ELEMENTOS.map(([id, chave]) => ({ rotulo: tr(chave), total: por[id] || 0, extra: false }));
+      const extras = [
+        { rotulo: tr('bio_el_redes'), total: soma((k) => k.startsWith('rede_')), extra: true },
+        { rotulo: tr('bio_el_email'), total: por.email || 0, extra: true },
+        { rotulo: tr('bio_el_chat_botoes'), total: por.concierge_acao || 0, extra: true },
+      ];
+      const linhas = principais.concat(extras);
+      const maximo = Math.max(1, ...linhas.map((l) => l.total));
+      document.getElementById('bio-an-ranking').innerHTML = linhas
+        .map((l) => `
+        <div class="instagram-ranking-linha ${l.extra ? 'bio-extra' : ''}">
+          <span class="instagram-ranking-palavra">${escapeHtml(l.rotulo)}</span>
+          <div class="instagram-ranking-barra-fundo"><div class="instagram-ranking-barra" style="width:${l.total ? Math.max(4, Math.round((l.total / maximo) * 100)) : 0}%"></div></div>
+          <span class="instagram-ranking-total">${formatarNumero(l.total)}</span>
+        </div>`)
+        .join('');
+
+      document.getElementById('bio-an-grafico').innerHTML = bioGraficoHtml(d.serie || []);
+    }
+
+    function bioRotuloEixo(rotulo) {
+      return /^\d{4}-\d{2}-\d{2}$/.test(rotulo) ? rotulo.slice(8, 10) + '/' + rotulo.slice(5, 7) : rotulo;
+    }
+
+    function bioGraficoHtml(serie) {
+      const n = serie.length;
+      const max = Math.max(0, ...serie.map((p) => Math.max(p.visitantes, p.cliques)));
+      if (!n || max === 0) return `<p class="texto-vazio">${escapeHtml(tr('bio_sem_dados'))}</p>`;
+      const W = 640, H = 210, PL = 34, PR = 12, PT = 12, PB = 28;
+      const topo = max <= 4 ? 4 : Math.ceil(max / 4) * 4;
+      const x = (i) => PL + (n === 1 ? (W - PL - PR) / 2 : (i * (W - PL - PR)) / (n - 1));
+      const y = (v) => PT + (H - PT - PB) * (1 - v / topo);
+      const linha = (campo) => serie.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(p[campo]).toFixed(1)}`).join(' ');
+      const base = y(0).toFixed(1);
+      const area = `${linha('visitantes')} L${x(n - 1).toFixed(1)} ${base} L${x(0).toFixed(1)} ${base} Z`;
+      const grade = [0, topo / 2, topo]
+        .map((v) => `<line class="bio-grade" x1="${PL}" x2="${W - PR}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}"/><text class="bio-eixo" x="${PL - 6}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${Math.round(v)}</text>`)
+        .join('');
+      const idx = n === 24 ? [0, 6, 12, 18, 23] : [...new Set([0, Math.round((n - 1) / 2), n - 1])];
+      const rotulos = idx
+        .map((i) => `<text class="bio-eixo" x="${x(i).toFixed(1)}" y="${H - 8}" text-anchor="${i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle'}">${escapeHtml(bioRotuloEixo(serie[i].rotulo))}</text>`)
+        .join('');
+      const pontos = n <= 31
+        ? serie.map((p, i) => `<circle class="bio-pt-vis" cx="${x(i).toFixed(1)}" cy="${y(p.visitantes).toFixed(1)}" r="3"><title>${escapeHtml(bioRotuloEixo(p.rotulo))}: ${p.visitantes} ${escapeHtml(tr('bio_visitas'))}, ${p.cliques} ${escapeHtml(tr('bio_cliques'))}</title></circle>`
+          + `<circle class="bio-pt-cli" cx="${x(i).toFixed(1)}" cy="${y(p.cliques).toFixed(1)}" r="3"><title>${escapeHtml(bioRotuloEixo(p.rotulo))}: ${p.visitantes} ${escapeHtml(tr('bio_visitas'))}, ${p.cliques} ${escapeHtml(tr('bio_cliques'))}</title></circle>`).join('')
+        : '';
+      return `<svg class="bio-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${bioAttr(tr('bio_desempenho'))}">
+        ${grade}
+        <path class="bio-area-vis" d="${area}"/>
+        <path class="bio-linha-vis" d="${linha('visitantes')}"/>
+        <path class="bio-linha-cli" d="${linha('cliques')}"/>
+        ${pontos}${rotulos}
+      </svg>`;
+    }
+
+    // ---------------------------- Configurar ----------------------------
+
+    async function bioIniciarConfigurar() {
+      const frame = document.getElementById('bio-preview-frame');
+      if (!frame.getAttribute('src')) frame.setAttribute('src', '/bio/?preview=1');
+      if (bioSalva === null) {
+        try {
+          const { data, error } = await Auth.sb.from('bio_config').select('config').eq('id', 1).maybeSingle();
+          if (error) throw error;
+          bioSalva = (data && data.config) || {};
+        } catch (err) {
+          console.error('Erro ao carregar config do link na bio:', err);
+          document.getElementById('bio-config-status').textContent = tr('bio_erro_carregar');
+          return;
+        }
+      }
+      bioTentarMontar();
+    }
+
+    function bioTentarMontar() {
+      if (!bioDefaults || bioSalva === null) return;
+      if (!bioCfg) {
+        bioCfg = bioAplicar(bioDefaults, bioSalva);
+        bioSalvoJson = JSON.stringify(bioCfg);
+        bioRenderConfig();
+      }
+      bioEnviarPreview();
+    }
+
+    function bioSujo() {
+      return !!bioCfg && JSON.stringify(bioCfg) !== bioSalvoJson;
+    }
+
+    function bioAtualizarStatus() {
+      const sujo = bioSujo();
+      const st = document.getElementById('bio-config-status');
+      st.textContent = sujo ? tr('bio_nao_salvo') : (bioUltimoSalvo ? tr('bio_salvo_as') + ' ' + bioUltimoSalvo : '');
+      st.classList.toggle('bio-status-aviso', sujo);
+      document.getElementById('bio-salvar').disabled = !sujo;
+    }
+
+    function bioEnviarPreview() {
+      clearTimeout(bioEnvioTimer);
+      bioEnvioTimer = setTimeout(() => {
+        const f = document.getElementById('bio-preview-frame');
+        if (bioCfg && bioFramePronto && f.contentWindow) f.contentWindow.postMessage({ tipo: 'bio:config', config: bioCfg }, location.origin);
+      }, 60);
+    }
+
+    function bioRolarPreview(secao) {
+      const f = document.getElementById('bio-preview-frame');
+      if (bioFramePronto && f.contentWindow) f.contentWindow.postMessage({ tipo: 'bio:rolar', secao }, location.origin);
+    }
+
+    async function bioSalvar() {
+      const btn = document.getElementById('bio-salvar');
+      btn.disabled = true;
+      btn.textContent = tr('bio_salvando');
+      try {
+        const json = JSON.stringify(bioCfg);
+        const { error } = await Auth.sb.from('bio_config').upsert({ id: 1, config: bioCfg, updated_at: new Date().toISOString() });
+        if (error) throw error;
+        bioSalvoJson = json;
+        bioUltimoSalvo = bioHora();
+      } catch (err) {
+        console.error('Erro ao salvar config do link na bio:', err);
+        alert(tr('erro_salvar_generico'));
+      } finally {
+        btn.textContent = tr('bio_salvar');
+        bioAtualizarStatus();
+      }
+    }
+
+    // ---- Construtores de campo ----
+
+    function bioCampo(rotulo, caminho, o = {}) {
+      const v = bioGet(caminho);
+      const entrada = o.area
+        ? `<textarea data-bio-path="${caminho}" rows="${o.linhas || 3}" ${o.max ? `maxlength="${o.max}"` : ''}>${escapeHtml(v == null ? '' : v)}</textarea>`
+        : `<input type="text" data-bio-path="${caminho}" value="${bioAttr(v)}" placeholder="${bioAttr(o.placeholder || '')}" ${o.max ? `maxlength="${o.max}"` : ''}>`;
+      return `<div class="bio-campo"><label>${escapeHtml(rotulo)}</label>${entrada}${o.ajuda ? `<small>${escapeHtml(o.ajuda)}</small>` : ''}</div>`;
+    }
+
+    function bioToggle(rotulo, caminho) {
+      return `<label class="ig-toggle bio-toggle-linha"><input type="checkbox" data-bio-path="${caminho}" data-bio-rerender="1" ${bioGet(caminho) ? 'checked' : ''}><span>${escapeHtml(rotulo)}</span></label>`;
+    }
+
+    function bioImagemHtml(rotulo, caminho, ajuda) {
+      const url = bioGet(caminho);
+      return `<div class="bio-campo"><label>${escapeHtml(rotulo)}</label>
+        <div class="bio-imagem">
+          <span class="bio-imagem-prev">${url ? `<img src="${bioAttr(url)}" alt="">` : '<i></i>'}</span>
+          <label class="cal-btn bio-btn-arquivo">${escapeHtml(tr('bio_trocar_imagem'))}<input type="file" accept="image/*" hidden data-bio-upload="${caminho}"></label>
+          ${url && url !== bioGetDe(bioDefaults, caminho) ? `<button type="button" class="cal-btn" data-bio-acao="img-limpar" data-caminho="${caminho}">${escapeHtml(tr('bio_remover'))}</button>` : ''}
+        </div>${ajuda ? `<small>${escapeHtml(ajuda)}</small>` : ''}</div>`;
+    }
+
+    function bioDestinoHtml(base) {
+      const zap = bioGet(base + '.destino') === 'zap';
+      return `<div class="bio-campo"><label>${escapeHtml(tr('bio_destino'))}</label>
+        <select data-bio-path="${base}.destino" data-bio-rerender="1">
+          <option value="zap" ${zap ? 'selected' : ''}>WhatsApp</option>
+          <option value="link" ${zap ? '' : 'selected'}>${escapeHtml(tr('bio_destino_link'))}</option>
+        </select></div>`
+        + (zap
+          ? bioCampo(tr('bio_mensagem_zap'), base + '.mensagem', { area: true, ajuda: tr('bio_mensagem_zap_ajuda') })
+          : bioCampo(tr('bio_link_destino'), base + '.url', { placeholder: 'https://' }));
+    }
+
+    function bioSelectNo(rotulo, caminho, valor, proprioId, curto) {
+      const nos = bioCfg.concierge.fluxo.nos;
+      const opcoes = [`<option value="" ${valor ? '' : 'selected'}>${escapeHtml(tr('bio_no_fim'))}</option>`]
+        .concat(Object.keys(nos).filter((id) => id !== proprioId).map((id) => `<option value="${id}" ${id === valor ? 'selected' : ''}>${escapeHtml(nos[id].nome || id)}</option>`));
+      const select = `<select data-bio-path="${caminho}">${opcoes.join('')}</select>`;
+      return curto ? select : `<div class="bio-campo"><label>${escapeHtml(rotulo)}</label>${select}</div>`;
+    }
+
+    // ---- Etapas da conversa do chat ----
+
+    function bioNoHtml(id) {
+      const no = bioCfg.concierge.fluxo.nos[id];
+      const base = `concierge.fluxo.nos.${id}`;
+      let corpo = bioCampo(tr('bio_no_nome'), base + '.nome');
+      if (no.tipo === 'msg') {
+        corpo += bioCampo(tr('bio_no_texto'), base + '.texto', { area: true });
+        corpo += bioSelectNo(tr('bio_no_depois'), base + '.proximo', no.proximo, id);
+      } else if (no.tipo === 'texto') {
+        corpo += bioCampo(tr('bio_no_dica'), base + '.dica');
+        corpo += bioCampo(tr('bio_no_guardar'), base + '.guardar', { ajuda: tr('bio_no_guardar_ajuda') });
+        corpo += bioSelectNo(tr('bio_no_depois'), base + '.proximo', no.proximo, id);
+      } else if (no.tipo === 'escolha') {
+        corpo += bioCampo(tr('bio_no_guardar'), base + '.guardar', { ajuda: tr('bio_no_guardar_ajuda') });
+        corpo += `<div class="bio-sub">${escapeHtml(tr('bio_no_opcoes'))}</div>`;
+        corpo += (no.opcoes || []).map((op, i) => `
+          <div class="bio-item">
+            <input type="text" data-bio-path="${base}.opcoes.${i}.rotulo" value="${bioAttr(op.rotulo)}" placeholder="${bioAttr(tr('bio_op_rotulo'))}">
+            ${bioSelectNo('', `${base}.opcoes.${i}.proximo`, op.proximo, id, true)}
+            <button type="button" class="cal-btn bio-x" data-bio-acao="op-del" data-id="${id}" data-i="${i}" aria-label="${bioAttr(tr('bio_remover'))}">×</button>
+          </div>`).join('');
+        corpo += `<button type="button" class="cal-btn bio-add" data-bio-acao="op-add" data-id="${id}">${escapeHtml(tr('bio_add_opcao'))}</button>`;
+      } else if (no.tipo === 'acoes') {
+        corpo += `<div class="bio-sub">${escapeHtml(tr('bio_no_botoes'))}</div>`;
+        corpo += (no.botoes || []).map((b, i) => `
+          <div class="bio-item bio-item-coluna">
+            <div class="bio-item-topo">
+              <input type="text" data-bio-path="${base}.botoes.${i}.rotulo" value="${bioAttr(b.rotulo)}" placeholder="${bioAttr(tr('bio_op_rotulo'))}">
+              <button type="button" class="cal-btn bio-x" data-bio-acao="bt-del" data-id="${id}" data-i="${i}" aria-label="${bioAttr(tr('bio_remover'))}">×</button>
+            </div>
+            ${bioDestinoHtml(`${base}.botoes.${i}`)}
+          </div>`).join('');
+        corpo += `<button type="button" class="cal-btn bio-add" data-bio-acao="bt-add" data-id="${id}">${escapeHtml(tr('bio_add_botao'))}</button>`;
+      }
+      corpo += `<button type="button" class="cal-btn bio-perigo" data-bio-acao="no-del" data-id="${id}">${escapeHtml(tr('bio_no_excluir'))}</button>`;
+      return `<details class="bio-no" data-no="${id}" ${bioNosAbertos.has(id) ? 'open' : ''}>
+        <summary><span class="bio-no-tipo">${escapeHtml(tr('bio_tipo_' + no.tipo))}</span><span class="bio-no-nome">${escapeHtml(no.nome || id)}</span></summary>
+        <div class="bio-no-corpo">${corpo}</div>
+      </details>`;
+    }
+
+    function bioFluxoHtml() {
+      const f = bioCfg.concierge.fluxo;
+      const guardadas = new Set();
+      Object.values(f.nos).forEach((n) => { if (n.guardar) guardadas.add(n.guardar); });
+      const inicio = `<div class="bio-campo"><label>${escapeHtml(tr('bio_fluxo_inicio'))}</label>
+        <select data-bio-path="concierge.fluxo.inicio">${Object.keys(f.nos).map((id) => `<option value="${id}" ${id === f.inicio ? 'selected' : ''}>${escapeHtml(f.nos[id].nome || id)}</option>`).join('')}</select></div>`;
+      return `<p class="bio-ajuda">${escapeHtml(tr('bio_fluxo_ajuda'))}</p>
+        <p class="bio-ajuda">${escapeHtml(tr('bio_variaveis'))} ${[...guardadas].map((v) => `<code>{${escapeHtml(v)}}</code>`).join(' ')}</p>
+        ${inicio}
+        <div class="bio-nos">${Object.keys(f.nos).map(bioNoHtml).join('')}</div>
+        <div class="bio-add-nos"><span>${escapeHtml(tr('bio_add_no'))}</span>
+          ${['msg', 'texto', 'escolha', 'acoes'].map((t) => `<button type="button" class="cal-btn bio-add" data-bio-acao="no-add" data-tipo="${t}">+ ${escapeHtml(tr('bio_tipo_' + t))}</button>`).join('')}
+        </div>`;
+    }
+
+    // ---- Blocos da esquerda ----
+
+    function bioCorpoHtml(id) {
+      if (id === 'perfil') {
+        const redes = bioCfg.perfil.redes.map((r, i) => `
+          <div class="bio-rede">
+            <label class="ig-toggle"><input type="checkbox" data-bio-path="perfil.redes.${i}.ativo" ${r.ativo ? 'checked' : ''}><span>${BIO_REDES[r.id] || r.id}</span></label>
+            <input type="text" data-bio-path="perfil.redes.${i}.url" value="${bioAttr(r.url)}" placeholder="${bioAttr(r.id === 'whatsapp' ? tr('bio_rede_zap_vazio') : 'https://')}">
+          </div>`).join('');
+        return bioImagemHtml(tr('bio_campo_foto'), 'perfil.foto')
+          + bioCampo(tr('bio_campo_nome'), 'perfil.nome', { max: 60 })
+          + bioCampo(tr('bio_campo_bio'), 'perfil.bio', { max: 120 })
+          + `<div class="bio-sub">${escapeHtml(tr('bio_redes'))}</div>${redes}`;
+      }
+      if (id === 'concierge') {
+        return bioCampo(tr('bio_texto_acima'), 'concierge.descricao')
+          + bioCampo(tr('bio_etiqueta'), 'concierge.rotulo')
+          + bioCampo(tr('bio_titulo_botao'), 'concierge.titulo')
+          + bioCampo(tr('bio_email_contato'), 'concierge.email', { ajuda: tr('bio_email_ajuda') })
+          + `<div class="bio-sub">${escapeHtml(tr('bio_janela_chat'))}</div>`
+          + bioCampo(tr('bio_chat_nome'), 'concierge.chat.nome')
+          + bioCampo(tr('bio_chat_status'), 'concierge.chat.status')
+          + bioImagemHtml(tr('bio_chat_avatar'), 'concierge.chat.avatar')
+          + bioCampo(tr('bio_chat_inicio_titulo'), 'concierge.chat.inicio_titulo')
+          + bioCampo(tr('bio_chat_inicio_texto'), 'concierge.chat.inicio_texto')
+          + bioCampo(tr('bio_chat_botao'), 'concierge.chat.botao_inicio')
+          + `<div class="bio-sub">${escapeHtml(tr('bio_fluxo'))}</div>`
+          + bioFluxoHtml();
+      }
+      if (id === 'marcas') {
+        return bioCampo(tr('bio_etiqueta_secao'), 'marcas.eyebrow')
+          + bioCampo(tr('bio_campo_titulo'), 'marcas.titulo')
+          + bioCampo(tr('bio_campo_descricao'), 'marcas.descricao')
+          + bioDestinoHtml('marcas');
+      }
+      if (id === 'portfolio') {
+        return bioCampo(tr('bio_etiqueta_secao'), 'portfolio.eyebrow')
+          + bioCampo(tr('bio_campo_titulo'), 'portfolio.titulo')
+          + bioCampo(tr('bio_campo_descricao'), 'portfolio.descricao', { area: true })
+          + bioCampo(tr('bio_campo_botao'), 'portfolio.botao')
+          + bioDestinoHtml('portfolio');
+      }
+      if (id === 'equipamentos') {
+        return bioCampo(tr('bio_campo_titulo'), 'equipamentos.titulo')
+          + bioCampo(tr('bio_campo_descricao'), 'equipamentos.descricao', { area: true })
+          + bioImagemHtml(tr('bio_campo_imagem'), 'equipamentos.imagem', tr('bio_imagem_equip_ajuda'))
+          + bioCampo(tr('bio_link_destino'), 'equipamentos.url', { placeholder: 'https://' });
+      }
+      return bioCampo(tr('bio_campo_titulo'), 'whatsapp.titulo')
+        + bioCampo(tr('bio_campo_descricao'), 'whatsapp.descricao')
+        + bioCampo(tr('bio_numero'), 'whatsapp.numero', { placeholder: '5585999999999' })
+        + bioToggle(tr('bio_mostrar_numero'), 'whatsapp.mostrar_numero')
+        + bioCampo(tr('bio_campo_botao'), 'whatsapp.botao')
+        + bioCampo(tr('bio_mensagem_zap'), 'whatsapp.mensagem', { area: true, ajuda: tr('bio_mensagem_zap_ajuda') });
+    }
+
+    function bioSecaoHtml(sec, indice, total) {
+      const [id, icone, chave] = sec;
+      const aberto = bioSecaoAberta === id;
+      const movel = id !== 'perfil';
+      const ligado = !movel || bioCfg[id].ativo;
+      const acoes = movel
+        ? `<span class="bio-sec-acoes">
+            <button type="button" class="bio-seta" data-bio-mover="${id}" data-dir="-1" ${indice <= 1 ? 'disabled' : ''} aria-label="${bioAttr(tr('bio_subir'))}">↑</button>
+            <button type="button" class="bio-seta" data-bio-mover="${id}" data-dir="1" ${indice >= total - 1 ? 'disabled' : ''} aria-label="${bioAttr(tr('bio_descer'))}">↓</button>
+            <label class="ig-toggle bio-sec-toggle"><input type="checkbox" data-bio-path="${id}.ativo" data-bio-rerender="1" ${bioCfg[id].ativo ? 'checked' : ''} aria-label="${bioAttr(tr(chave))}"></label>
+          </span>`
+        : '';
+      return `<div class="bio-sec ${aberto ? 'aberta' : ''} ${ligado ? '' : 'desligada'}" data-bio-sec="${id}">
+        <div class="bio-sec-topo" data-bio-abrir="${id}" role="button" tabindex="0">
+          <span class="bio-sec-icone">${icone}</span>
+          <span class="bio-sec-nome">${escapeHtml(tr(chave))}</span>
+          ${acoes}
+          <span class="bio-sec-chevron">${aberto ? '▾' : '▸'}</span>
+        </div>
+        ${aberto ? `<div class="bio-sec-corpo">${bioCorpoHtml(id)}</div>` : ''}
+      </div>`;
+    }
+
+    function bioRenderConfig() {
+      const ordem = ['perfil'].concat(bioCfg.ordem);
+      const porId = Object.fromEntries(BIO_SECOES.map((s) => [s[0], s]));
+      const el = document.getElementById('bio-secoes');
+      el.innerHTML = `<p class="bio-ajuda">${escapeHtml(tr('bio_ordem_ajuda'))}</p>` + ordem.map((id, i) => bioSecaoHtml(porId[id], i, ordem.length)).join('');
+      bioAtualizarStatus();
+    }
+
+    function bioAbrirSecao(id, alternar) {
+      bioSecaoAberta = alternar && bioSecaoAberta === id ? null : id;
+      bioRenderConfig();
+      if (bioSecaoAberta) {
+        const el = document.querySelector(`[data-bio-sec="${id}"]`);
+        if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        if (alternar) bioRolarPreview(id);
+      }
+    }
+
+    // ---- Eventos do formulário ----
+
+    function bioAoDigitar(e) {
+      const el = e.target;
+      const caminho = el.dataset && el.dataset.bioPath;
+      if (!caminho || el.type === 'checkbox' || el.tagName === 'SELECT') return;
+      bioSet(caminho, el.value);
+      if (/\.nos\.[a-z0-9_]+\.nome$/.test(caminho)) {
+        const id = caminho.split('.')[3];
+        const resumo = document.querySelector(`details[data-no="${id}"] .bio-no-nome`);
+        if (resumo) resumo.textContent = el.value || id;
+        document.querySelectorAll(`#bio-secoes option[value="${id}"]`).forEach((o) => { o.textContent = el.value || id; });
+      }
+      bioEnviarPreview();
+      bioAtualizarStatus();
+    }
+
+    function bioAoMudar(e) {
+      const el = e.target;
+      if (el.dataset.bioUpload) {
+        bioUploadImagem(el.dataset.bioUpload, el.files && el.files[0]);
+        return;
+      }
+      const caminho = el.dataset.bioPath;
+      if (!caminho) return;
+      bioSet(caminho, el.type === 'checkbox' ? el.checked : el.value);
+      bioEnviarPreview();
+      if (el.dataset.bioRerender) bioRenderConfig();
+      else bioAtualizarStatus();
+    }
+
+    function bioNovoId() {
+      return 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+    }
+
+    function bioAoClicar(e) {
+      const alvo = e.target;
+      const mover = alvo.closest('[data-bio-mover]');
+      if (mover) {
+        const ordem = bioCfg.ordem;
+        const i = ordem.indexOf(mover.dataset.bioMover);
+        const j = i + Number(mover.dataset.dir);
+        if (i < 0 || j < 0 || j >= ordem.length) return;
+        [ordem[i], ordem[j]] = [ordem[j], ordem[i]];
+        bioRenderConfig();
+        bioEnviarPreview();
+        return;
+      }
+      const acao = alvo.closest('[data-bio-acao]');
+      if (acao) {
+        bioExecutarAcao(acao);
+        return;
+      }
+      if (alvo.closest('label, input, select, textarea')) return;
+      const topo = alvo.closest('[data-bio-abrir]');
+      if (topo) bioAbrirSecao(topo.dataset.bioAbrir, true);
+    }
+
+    function bioExecutarAcao(el) {
+      const nos = bioCfg.concierge.fluxo.nos;
+      const id = el.dataset.id;
+      const i = Number(el.dataset.i);
+      const tipo = el.dataset.bioAcao;
+      if (tipo === 'img-limpar') {
+        bioSet(el.dataset.caminho, bioGetDe(bioDefaults, el.dataset.caminho));
+      } else if (tipo === 'op-add') {
+        nos[id].opcoes.push({ rotulo: '', proximo: '' });
+      } else if (tipo === 'op-del') {
+        nos[id].opcoes.splice(i, 1);
+      } else if (tipo === 'bt-add') {
+        nos[id].botoes.push({ rotulo: '', destino: 'link', url: '', mensagem: '' });
+      } else if (tipo === 'bt-del') {
+        nos[id].botoes.splice(i, 1);
+      } else if (tipo === 'no-add') {
+        const novo = bioNovoId();
+        const modelos = {
+          msg: { nome: tr('bio_novo_msg'), tipo: 'msg', texto: '', proximo: '' },
+          texto: { nome: tr('bio_novo_texto'), tipo: 'texto', dica: '', guardar: 'resposta', max: 200, proximo: '' },
+          escolha: { nome: tr('bio_novo_escolha'), tipo: 'escolha', guardar: '', opcoes: [{ rotulo: '', proximo: '' }] },
+          acoes: { nome: tr('bio_novo_acoes'), tipo: 'acoes', botoes: [{ rotulo: '', destino: 'link', url: '', mensagem: '' }] },
+        };
+        nos[novo] = modelos[el.dataset.tipo];
+        bioNosAbertos.add(novo);
+        if (!bioCfg.concierge.fluxo.inicio) bioCfg.concierge.fluxo.inicio = novo;
+      } else if (tipo === 'no-del') {
+        if (!confirm(tr('bio_no_excluir_conf'))) return;
+        delete nos[id];
+        bioNosAbertos.delete(id);
+        Object.values(nos).forEach((n) => {
+          if (n.proximo === id) n.proximo = '';
+          (n.opcoes || []).forEach((o) => { if (o.proximo === id) o.proximo = ''; });
+        });
+        if (bioCfg.concierge.fluxo.inicio === id) bioCfg.concierge.fluxo.inicio = Object.keys(nos)[0] || '';
+      }
+      bioRenderConfig();
+      bioEnviarPreview();
+    }
+
+    async function bioUploadImagem(caminho, arquivo) {
+      if (!arquivo) return;
+      if (arquivo.size > 5 * 1024 * 1024) {
+        alert(tr('bio_imagem_grande'));
+        return;
+      }
+      const st = document.getElementById('bio-config-status');
+      st.textContent = tr('bio_enviando');
+      const ext = (arquivo.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || 'jpg';
+      const nome = `${caminho.replace(/[^a-z0-9]+/gi, '-')}-${Date.now()}.${ext}`;
+      try {
+        const { error } = await Auth.sb.storage.from('bio-imagens').upload(nome, arquivo, { contentType: arquivo.type });
+        if (error) throw error;
+        const { data } = Auth.sb.storage.from('bio-imagens').getPublicUrl(nome);
+        bioSet(caminho, data.publicUrl);
+        bioRenderConfig();
+        bioEnviarPreview();
+      } catch (err) {
+        console.error('Erro ao enviar imagem do link na bio:', err);
+        alert(tr('bio_erro_upload'));
+        bioAtualizarStatus();
+      }
+    }
+
     // ---- Sub-abas (Visão Geral / Automações / Leads) ----
     function trocarSubAbaInstagram(pagina) {
       instagramSubAbaAtual = pagina;
@@ -7666,6 +8578,7 @@
       if (pagina === 'analises' && !instagramAnalisesCache) {
         carregarInstagramAnalises();
       }
+      if (pagina === 'bio') bioIniciar();
     }
 
     async function carregarInstagramAutomacoes() {

@@ -2780,6 +2780,10 @@
         <div class="cal-form-campo">
           <label for="meta-prazo">Prazo (opcional)</label>
           <input type="date" id="meta-prazo">
+          <label class="ugc-permuta-check">
+            <input type="checkbox" id="meta-principal">
+            <span>Meta principal (aparece na Visão Geral)</span>
+          </label>
         </div>
 
         <div class="cal-form-acoes">
@@ -9978,7 +9982,7 @@
       return `
         <div class="meta-card" data-id="${meta.id}">
           <div class="meta-card-topo">
-            <h4 class="meta-card-nome">${escapeHtml(meta.nome)}</h4>
+            <h4 class="meta-card-nome">${meta.principal ? '⭐ ' : ''}${escapeHtml(meta.nome)}</h4>
             <span class="meta-categoria-pill meta-categoria-${meta.categoria}">${CATEGORIA_META_LABEL[meta.categoria] || meta.categoria}</span>
           </div>
           <div class="meta-card-numeros">
@@ -10094,7 +10098,7 @@
       document.getElementById('metas-vg-concluidas').textContent = concluidas;
       document.getElementById('metas-vg-progresso').textContent = progressoGeral + '%';
 
-      const principais = ordenarPorPrazo(metasCache.filter((m) => progressoMeta(m) < 1)).slice(0, 3);
+      const principais = ordenarPorPrazo(metasCache.filter((m) => m.principal));
       const contPrincipais = document.getElementById('metas-vg-principais');
       contPrincipais.innerHTML = principais.length
         ? principais
@@ -10108,7 +10112,7 @@
               `;
             })
             .join('')
-        : '<p class="texto-vazio">Nenhuma meta em andamento ainda.</p>';
+        : '<p class="texto-vazio">Marque uma meta como "principal" pra ela aparecer aqui.</p>';
 
       const contHabitos = document.getElementById('metas-vg-habitos');
       contHabitos.innerHTML = habitosCache.length
@@ -10146,6 +10150,7 @@
       document.getElementById('meta-valor-objetivo').value = meta ? formatarNumeroParaInput(meta.valor_objetivo) : '';
       document.getElementById('meta-unidade').value = meta ? meta.unidade || '' : '';
       document.getElementById('meta-prazo').value = meta ? meta.prazo || '' : '';
+      document.getElementById('meta-principal').checked = meta ? !!meta.principal : false;
       document.getElementById('meta-modal-excluir').hidden = !meta;
       document.getElementById('meta-modal-overlay').hidden = false;
       metaSnapshotInicial = capturarEstadoMeta();
@@ -10159,6 +10164,7 @@
         valorObjetivo: document.getElementById('meta-valor-objetivo').value,
         unidade: document.getElementById('meta-unidade').value,
         prazo: document.getElementById('meta-prazo').value,
+        principal: document.getElementById('meta-principal').checked,
       });
     }
 
@@ -10198,6 +10204,7 @@
         valor_objetivo: valorObjetivo,
         unidade: document.getElementById('meta-unidade').value.trim() || null,
         prazo: document.getElementById('meta-prazo').value || null,
+        principal: document.getElementById('meta-principal').checked,
       };
 
       const btn = document.getElementById('meta-modal-salvar');

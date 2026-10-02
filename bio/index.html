@@ -134,17 +134,17 @@ button, input{ font-family:inherit; }
 /* =====================  CONCIERGE  ===================== */
 .section{ padding:0 18px; }
 .concierge-btn{
-  display:flex; align-items:center; gap:11px; width:100%; max-width:316px; margin:14px auto 0;
-  padding:7px 14px 7px 7px; border:none; cursor:pointer; text-align:left; border-radius:999px;
+  display:flex; align-items:center; gap:13px; width:100%; max-width:340px; margin:16px auto 0;
+  padding:9px 18px 9px 9px; border:none; cursor:pointer; text-align:left; border-radius:999px;
   background:var(--blue-light); color:var(--blue-dark); box-shadow:var(--shadow-soft);
   font-family:var(--font-body); transition:transform .15s ease;
 }
 .concierge-btn:active{ transform:scale(.96); }
-.concierge-btn-icon{ width:34px; height:34px; border-radius:50%; flex-shrink:0; background:rgba(255,255,255,0.6); display:flex; align-items:center; justify-content:center; }
-.concierge-btn-icon svg{ width:17px; height:17px; }
-.concierge-btn small{ display:block; font-size:.54rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; opacity:.65; }
-.concierge-btn strong{ display:block; font-size:.78rem; font-weight:800; line-height:1.25; }
-.concierge-btn-seta{ margin-left:auto; width:16px; height:16px; flex-shrink:0; }
+.concierge-btn-icon{ width:46px; height:46px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(4,70,93,0.18); }
+.concierge-btn-icon svg{ width:100%; height:100%; display:block; }
+.concierge-btn small{ display:block; font-size:.62rem; font-weight:700; letter-spacing:.14em; text-transform:uppercase; opacity:.65; }
+.concierge-btn strong{ display:block; font-size:.92rem; font-weight:800; line-height:1.25; }
+.concierge-btn-seta{ margin-left:auto; width:18px; height:18px; flex-shrink:0; }
 
 .modal{
   position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:16px;
@@ -264,14 +264,20 @@ button, input{ font-family:inherit; }
 /* =====================  BLOCOS  ===================== */
 .stack{ display:flex; flex-direction:column; gap:14px; padding:26px 18px 0; }
 
+.eyebrow{ text-align:center; font-size:.66rem; font-weight:800; letter-spacing:.18em; text-transform:uppercase; color:var(--blue-dark-70); }
 .btn-portfolio{
-  display:flex; align-items:center; justify-content:center; gap:10px;
+  display:flex; align-items:center; gap:12px; margin-top:10px; text-align:left;
   background:var(--blue-light); color:var(--blue-dark);
-  padding:13px 18px; border-radius:18px; font-weight:800; font-size:.86rem;
+  padding:12px 16px 12px 12px; border-radius:20px;
   box-shadow:var(--shadow-soft); transition:transform .18s ease;
 }
-.btn-portfolio:active{ transform:scale(.96); }
-.btn-portfolio svg{ width:18px; height:18px; }
+.btn-portfolio:active{ transform:scale(.97); }
+.btn-portfolio-icon{ width:40px; height:40px; border-radius:12px; flex-shrink:0; background:rgba(255,255,255,0.6); display:flex; align-items:center; justify-content:center; }
+.btn-portfolio-icon svg{ width:19px; height:19px; }
+.btn-portfolio-txt{ flex:1; min-width:0; }
+.btn-portfolio-txt strong{ display:block; font-size:.92rem; font-weight:800; line-height:1.25; }
+.btn-portfolio-txt small{ display:block; margin-top:2px; font-size:.7rem; font-weight:500; line-height:1.35; color:var(--blue-dark-70); }
+.btn-portfolio-seta{ width:18px; height:18px; flex-shrink:0; }
 
 .widget{
   background:var(--glass-bg);
@@ -282,7 +288,6 @@ button, input{ font-family:inherit; }
 .widget h2{
   font-family:var(--font-display); font-weight:800; font-size:1.35rem; letter-spacing:-.3px; line-height:1.15;
 }
-.widget h2 em{ font-style:italic; font-weight:700; }
 .widget-sub{ margin-top:6px; font-size:.8rem; line-height:1.45; color:var(--blue-dark-70); }
 
 .produtos{ display:flex; flex-direction:column; gap:10px; margin-top:16px; }
@@ -307,32 +312,11 @@ button, input{ font-family:inherit; }
 }
 
 .curso{
-  display:block; margin-top:16px; border-radius:20px; overflow:hidden;
-  background:linear-gradient(135deg, var(--blue-light) 0%, #A9D0E0 100%); color:var(--blue-dark); padding:18px 16px;
+  display:inline-flex; align-items:center; justify-content:center; margin-top:16px; width:100%;
+  background:var(--blue-light); color:var(--blue-dark); font-weight:800; font-size:.84rem;
+  padding:12px 18px; border-radius:16px; transition:transform .18s ease;
 }
-.curso small{ font-weight:700; font-size:.64rem; letter-spacing:.14em; text-transform:uppercase; color:var(--blue-dark-70); }
-.curso strong{ display:block; margin-top:8px; font-family:var(--font-display); font-weight:800; font-size:1.25rem; line-height:1.2; }
-.curso p{ margin-top:6px; font-size:.76rem; line-height:1.45; color:var(--blue-dark-70); }
-.curso b{
-  display:inline-flex; align-items:center; gap:6px; margin-top:14px;
-  background:var(--white); color:var(--blue-dark); font-size:.74rem; padding:8px 14px; border-radius:999px;
-}
-
-/* =====================  SPOTIFY  ===================== */
-.spotify iframe{ display:block; width:100%; border:0; border-radius:16px; margin-top:14px; }
-.spotify-soon{
-  margin-top:14px; display:flex; align-items:center; gap:14px; padding:14px; border-radius:18px;
-  background:rgba(255,255,255,0.7);
-}
-.spotify-disc{
-  width:62px; height:62px; border-radius:50%; flex-shrink:0;
-  background:conic-gradient(from 0deg, var(--blue-light), var(--white), var(--blue-light), #A9D0E0, var(--blue-light));
-  position:relative; animation:spin 7s linear infinite;
-}
-.spotify-disc::after{ content:""; position:absolute; inset:50% auto auto 50%; width:14px; height:14px; margin:-7px 0 0 -7px; border-radius:50%; background:var(--offwhite); }
-@keyframes spin{ to{ transform:rotate(360deg); } }
-.spotify-soon strong{ display:block; font-size:.88rem; }
-.spotify-soon span{ font-size:.74rem; color:var(--blue-dark-70); }
+.curso:active{ transform:scale(.96); }
 
 /* =====================  WHATSAPP  ===================== */
 .zap{ text-align:center; padding:26px 20px 22px; }
@@ -375,7 +359,7 @@ button, input{ font-family:inherit; }
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 3c.3 2.4 1.7 4 4 4.2v3.1c-1.5.1-2.9-.4-4-1.1v6.3c0 3.5-2.4 5.9-5.6 5.9-3 0-5.4-2.3-5.4-5.3 0-3.2 2.6-5.6 5.8-5.3v3.2c-1.6-.4-2.7.6-2.7 2 0 1.2.9 2.1 2.1 2.1 1.4 0 2.2-1 2.2-2.6V3h3.6z"/></svg>
     </a>
     <a class="social" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20vim%20pelo%20seu%20link%20da%20bio" target="_blank" rel="noopener" aria-label="WhatsApp">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2a9.8 9.8 0 0 0-8.4 14.8L2.2 21.8l4.9-1.3A9.8 9.8 0 1 0 12 2.2zm0 1.8a8 8 0 1 1-4.2 14.8l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 0 1 12 4zm-3.2 3.7c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.2 5 4.4 2.5 1 3 .8 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4l-.5-.3-1.9-.9c-.3-.1-.5-.2-.7.1l-.9 1.1c-.2.2-.3.2-.6.1-.3-.2-1.2-.4-2.3-1.4-.9-.8-1.4-1.700-1.600-2-.2-.3 0-.5.1-.6l.4-.5.3-.4c.1-.2.1-.3 0-.5l-.9-2.1c-.2-.5-.4-.4-.6-.4h-.5z"/></svg>
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
     </a>
     <a class="social" href="https://www.youtube.com/@brunamedeiroos" target="_blank" rel="noopener" aria-label="YouTube">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.200 5 12 5 12 5s-6.200 0-7.800.4A2.500 2.500 0 0 0 2.400 7.200C2 8.800 2 12 2 12s0 3.200.4 4.800a2.500 2.500 0 0 0 1.800 1.800C5.800 19 12 19 12 19s6.200 0 7.800-.4a2.500 2.500 0 0 0 1.800-1.800c.4-1.600.4-4.800.4-4.800s0-3.200-.4-4.800zM10 15.100V8.900l5.200 3.100-5.200 3.100z"/></svg>
@@ -390,7 +374,7 @@ button, input{ font-family:inherit; }
   <!-- CONCIERGE DE IA -->
   <section class="section" id="concierge">
     <button class="concierge-btn" id="abrirChat" type="button" aria-haspopup="dialog">
-      <span class="concierge-btn-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.9 5.6L19.5 9.5l-5.6 1.9L12 17l-1.9-5.6L4.5 9.5l5.6-1.9L12 2zM19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9L19 15z"/></svg></span>
+      <span class="concierge-btn-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" fill="#EAF3F9"/><circle cx="32" cy="32" r="24" fill="#D3E8F4"/><circle cx="32" cy="32" r="18" fill="#B0D7EC"/><circle cx="32" cy="32" r="12" fill="#8CC5E3"/><circle cx="32" cy="32" r="6" fill="#6DB4D9"/></svg></span>
       <span><small>Concierge de IA</small><strong>Como posso te ajudar hoje?</strong></span>
       <svg class="concierge-btn-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </button>
@@ -399,45 +383,40 @@ button, input{ font-family:inherit; }
 
   <div class="stack">
 
-    <!-- SOLICITE MEU PORTFÓLIO -->
-    <a class="btn-portfolio" id="btnPortfolio" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20receber%20o%20seu%20portf%C3%B3lio" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/></svg>
-      Solicite meu portfólio
-    </a>
+    <!-- PARA MARCAS -->
+    <div>
+      <p class="eyebrow">Para marcas</p>
+      <a class="btn-portfolio" id="btnPortfolio" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20receber%20o%20seu%20portf%C3%B3lio" target="_blank" rel="noopener">
+        <span class="btn-portfolio-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.500 4h3A1.500 1.500 0 0 1 15 5.500V7"/></svg></span>
+        <span class="btn-portfolio-txt"><strong>Oii! Solicite meu portfólio</strong><small>Cases, formatos e como fechar uma parceria comigo</small></span>
+        <svg class="btn-portfolio-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+
+    <!-- PARA CREATORS -->
+    <p class="eyebrow" style="margin-top:10px">Para creators</p>
 
     <!-- EQUIPAMENTOS -->
     <section class="widget" id="equipamentos">
-      <h2>Equipamentos que <em>uso</em></h2>
+      <h2>Equipamentos que uso</h2>
       <p class="widget-sub">Tudo que uso na minha criação de conteúdo, com link pra você conferir.</p>
       <div class="produtos" id="listaEquipamentos"></div>
     </section>
 
-    <!-- CRIANDO SEU PORTFÓLIO -->
-    <section class="widget" id="criando-portfolio">
-      <h2>Criando seu <em>portfólio</em></h2>
-      <p class="widget-sub">Quer um portfólio com a sua cara, feito do zero?</p>
-      <a class="curso" id="cursoLink" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20criar%20o%20meu%20portf%C3%B3lio" target="_blank" rel="noopener">
-        <small>Passo a passo</small>
-        <strong>Criando seu portfólio</strong>
-        <p>Eu te mostro como montar o seu, do jeito que eu montei o meu.</p>
-        <b>Quero saber mais →</b>
-      </a>
-    </section>
-
-    <!-- SPOTIFY -->
-    <section class="widget spotify" id="spotify">
-      <h2>Tocando <em>agora</em></h2>
-      <p class="widget-sub">A música que está no repeat por aqui.</p>
-      <div id="spotifyBox"></div>
+    <!-- PORTFÓLIO PROFISSIONAL -->
+    <section class="widget" id="portfolio-profissional">
+      <h2>Portfólio Profissional</h2>
+      <p class="widget-sub">Eu crio um portfólio personalizado para você, organizando seu trabalho e apresentando seus serviços de forma estratégica.</p>
+      <a class="curso" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20um%20portf%C3%B3lio%20profissional" target="_blank" rel="noopener">Quero o meu portfólio →</a>
     </section>
 
     <!-- WHATSAPP -->
     <section class="widget zap" id="contato">
-      <h2>Prefere falar <em>direto?</em></h2>
+      <h2>Prefere falar direto?</h2>
       <p class="widget-sub">Me chama no WhatsApp, respondo por lá.</p>
       <p class="zap-numero">(85) 99280-5861</p>
       <a class="zap-btn" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20vim%20pelo%20seu%20link%20da%20bio" target="_blank" rel="noopener">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2a9.8 9.8 0 0 0-8.4 14.8L2.2 21.8l4.9-1.3A9.8 9.8 0 1 0 12 2.2zm0 1.8a8 8 0 1 1-4.2 14.8l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 0 1 12 4zm-3.2 3.7c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.2 5 4.4 2.5 1 3 .8 3.5.7.6-.1 1.8-.7 2-1.4.3-.7.3-1.3.2-1.4l-.5-.3-1.9-.9c-.3-.1-.5-.2-.7.1l-.9 1.1c-.2.2-.3.2-.6.1-.3-.2-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.4-.5.3-.4c.1-.2.1-.3 0-.5l-.9-2.1c-.2-.5-.4-.4-.6-.4h-.5z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
         Vamos conversar!
       </a>
     </section>
@@ -484,11 +463,7 @@ var BIO = {
   whatsapp: '5585992805861',
 
   // Equipamentos que uso. Cada item: { nome, descricao, link, imagem (opcional), emoji (se não tiver imagem) }
-  equipamentos: [],
-
-  // Spotify: cole só o ID da faixa (a parte depois de /track/ no link da música).
-  // Ex.: https://open.spotify.com/track/ABC123  ->  'ABC123'
-  spotifyTrackId: ''
+  equipamentos: []
 };
 
 /* ---------------- Equipamentos ---------------- */
@@ -506,17 +481,6 @@ var BIO = {
       '<svg class="produto-seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>' +
       '</a>';
   }).join('');
-})();
-
-/* ---------------- Spotify ---------------- */
-(function(){
-  var box = document.getElementById('spotifyBox');
-  if (BIO.spotifyTrackId) {
-    box.innerHTML = '<iframe src="https://open.spotify.com/embed/track/' + encodeURIComponent(BIO.spotifyTrackId) +
-      '?utm_source=generator&theme=0" height="152" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title="Spotify"></iframe>';
-  } else {
-    box.innerHTML = '<div class="spotify-soon"><div class="spotify-disc"></div><div><strong>Escolhendo a trilha</strong><span>Em breve toca uma música aqui.</span></div></div>';
-  }
 })();
 
 /* =====================================================================

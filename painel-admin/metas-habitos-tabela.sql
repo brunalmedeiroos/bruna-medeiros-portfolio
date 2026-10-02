@@ -43,8 +43,11 @@ create table if not exists public.painel_habitos (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
   nome text not null,
-  -- opcional: quantas vezes por semana o hábito deveria ser feito (ex: 5).
-  meta_semanal integer
+  -- como o hábito é acompanhado: todo dia, Nx por semana/mês, ou só em
+  -- dias específicos da semana — ver renderização em progressoHabito().
+  tipo_frequencia text not null default 'diario' check (tipo_frequencia in ('diario', 'semana', 'mes', 'dias_especificos')),
+  frequencia_valor integer,   -- Nx por semana/mês; null pros outros tipos.
+  dias_semana integer[]       -- só tipo "dias_especificos": 0=domingo … 6=sábado.
 );
 
 alter table public.painel_habitos enable row level security;

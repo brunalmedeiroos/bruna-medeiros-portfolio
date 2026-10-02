@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261001j">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261001k">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1538,31 +1538,9 @@
               <div id="metas-vg-principais" class="metas-grid"></div>
             </div>
 
-            <div class="metas-vg-habitos-topo">
-              <div class="card">
-                <h3 class="card-titulo">Hábitos de hoje</h3>
-                <div id="metas-vg-habitos" class="habitos-vg-lista"></div>
-              </div>
-
-              <div class="card">
-                <div class="habitos-cal-topo">
-                  <h3 class="card-titulo">Calendário de hábitos</h3>
-                  <div class="cal-topo-nav">
-                    <button id="habitos-cal-mes-anterior" class="cal-btn cal-btn-icon" type="button" aria-label="Mês anterior">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                    <span class="cal-mes-label" id="habitos-cal-mes-label">Mês</span>
-                    <button id="habitos-cal-mes-proximo" class="cal-btn cal-btn-icon" type="button" aria-label="Próximo mês">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                  </div>
-                </div>
-                <div class="habitos-cal-semana">
-                  <span>D</span><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span>
-                </div>
-                <div id="habitos-cal-grade" class="habitos-cal-grade"></div>
-                <div id="habitos-cal-legenda" class="habitos-cal-legenda"></div>
-              </div>
+            <div class="card">
+              <h3 class="card-titulo">Hábitos de hoje</h3>
+              <div id="metas-vg-habitos" class="habitos-vg-lista"></div>
             </div>
           </div>
 
@@ -2861,8 +2839,29 @@
           <input type="text" id="habito-nome" placeholder="Ex: Beber água, Treinar">
         </div>
         <div class="cal-form-campo">
-          <label for="habito-meta-semanal">Meta semanal (opcional)</label>
-          <input type="number" min="1" max="7" step="1" id="habito-meta-semanal" placeholder="Ex: 5">
+          <label for="habito-tipo-frequencia">Frequência</label>
+          <select id="habito-tipo-frequencia">
+            <option value="diario">Diário</option>
+            <option value="semana">Algumas vezes por semana</option>
+            <option value="mes">Algumas vezes por mês</option>
+            <option value="dias_especificos">Dias específicos</option>
+          </select>
+        </div>
+        <div class="cal-form-campo" id="habito-frequencia-valor-campo" hidden>
+          <label for="habito-frequencia-valor" id="habito-frequencia-valor-label">Quantas vezes por semana</label>
+          <input type="number" min="1" max="31" step="1" id="habito-frequencia-valor" placeholder="Ex: 3">
+        </div>
+        <div class="cal-form-campo" id="habito-dias-semana-campo" hidden>
+          <label>Quais dias</label>
+          <div class="meta-icone-presets">
+            <button type="button" class="habito-dia-semana-btn" data-dia="0">Dom</button>
+            <button type="button" class="habito-dia-semana-btn" data-dia="1">Seg</button>
+            <button type="button" class="habito-dia-semana-btn" data-dia="2">Ter</button>
+            <button type="button" class="habito-dia-semana-btn" data-dia="3">Qua</button>
+            <button type="button" class="habito-dia-semana-btn" data-dia="4">Qui</button>
+            <button type="button" class="habito-dia-semana-btn" data-dia="5">Sex</button>
+            <button type="button" class="habito-dia-semana-btn" data-dia="6">Sáb</button>
+          </div>
         </div>
 
         <div class="cal-form-acoes">
@@ -5422,8 +5421,10 @@
       document.getElementById('habito-modal-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'habito-modal-overlay') fecharModalHabito();
       });
-      document.getElementById('habitos-cal-mes-anterior').addEventListener('click', () => mudarMesCalendarioHabitos(-1));
-      document.getElementById('habitos-cal-mes-proximo').addEventListener('click', () => mudarMesCalendarioHabitos(1));
+      document.getElementById('habito-tipo-frequencia').addEventListener('change', atualizarCamposFrequenciaHabito);
+      document.querySelectorAll('.habito-dia-semana-btn').forEach((btn) => {
+        btn.addEventListener('click', () => btn.classList.toggle('ativo'));
+      });
 
       // Instagram: Automações e Leads
       document.querySelectorAll('.instagram-subnav-btn').forEach((btn) => {
@@ -10082,9 +10083,7 @@
       wireMetaCards(lista);
     }
 
-    // Semana começando na segunda-feira (pra "Xx essa semana" e a grade da
-    // Visão Geral); o mini calendário mensal usa semana começando no
-    // domingo, como num calendário comum — ver renderizarCalendarioHabitos().
+    // Semana começando na segunda-feira.
     function inicioSemana(data) {
       const d = new Date(data);
       const dia = d.getDay();
@@ -10105,17 +10104,64 @@
       return dias;
     }
 
-    function contagemHabito(habitoId) {
+    const NOMES_DIA_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+
+    function labelFrequenciaHabito(habito) {
+      if (habito.tipo_frequencia === 'semana') return `${habito.frequencia_valor || 1}x por semana`;
+      if (habito.tipo_frequencia === 'mes') return `${habito.frequencia_valor || 1}x por mês`;
+      if (habito.tipo_frequencia === 'dias_especificos') {
+        const dias = (habito.dias_semana || []).slice().sort((a, b) => a - b).map((d) => NOMES_DIA_SEMANA[d]);
+        return dias.length ? dias.join(', ') : 'Dias específicos';
+      }
+      return 'Diário';
+    }
+
+    // Progresso do período atual conforme o tipo de frequência — cada tipo
+    // é acompanhado de um jeito diferente: "diário" e "dias específicos"
+    // mostram os dias da semana (bolinhas); "semana" e "mês" mostram só um
+    // contador + barra, sem bolinhas (não faz sentido 7 bolinhas pra um
+    // hábito de 2x por mês, por exemplo).
+    function progressoHabito(habito) {
       const hoje = new Date();
-      const inicioSemanaISO = dataParaISO(inicioSemana(hoje));
-      const anoMes = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0');
       const hojeISO = dataParaISO(hoje);
-      const registros = habitoRegistrosCache.filter((r) => r.habito_id === habitoId);
-      return {
-        semana: registros.filter((r) => r.data >= inicioSemanaISO).length,
-        mes: registros.filter((r) => r.data.startsWith(anoMes)).length,
-        feitoHoje: registros.some((r) => r.data === hojeISO),
-      };
+      const registros = habitoRegistrosCache.filter((r) => r.habito_id === habito.id);
+      const feitoHoje = registros.some((r) => r.data === hojeISO);
+
+      if (habito.tipo_frequencia === 'semana') {
+        const feitos = diasDaSemanaAtual().filter((d) => registros.some((r) => r.data === d)).length;
+        return { modo: 'contador', feitos, meta: habito.frequencia_valor || 1, periodo: 'esta semana', feitoHoje };
+      }
+
+      if (habito.tipo_frequencia === 'mes') {
+        const anoMes = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0');
+        const feitos = registros.filter((r) => r.data.startsWith(anoMes)).length;
+        return { modo: 'contador', feitos, meta: habito.frequencia_valor || 1, periodo: 'este mês', feitoHoje };
+      }
+
+      const diasSemana = diasDaSemanaAtual();
+      const dias = habito.tipo_frequencia === 'dias_especificos'
+        ? diasSemana.filter((iso) => (habito.dias_semana || []).includes(new Date(iso + 'T00:00:00').getDay()))
+        : diasSemana;
+      const feitosPorDia = dias.map((d) => registros.some((r) => r.data === d));
+      return { modo: 'dias', feitosPorDia, feitos: feitosPorDia.filter(Boolean).length, meta: dias.length, feitoHoje };
+    }
+
+    // HTML do "miolo" de progresso (bolinhas ou contador+barra) a partir do
+    // retorno de progressoHabito() — reaproveitado pelos cards da aba
+    // Hábitos e pelo resumo da Visão Geral.
+    function habitoProgressoHtml(p) {
+      if (p.modo === 'contador') {
+        const pct = p.meta > 0 ? Math.min(Math.round((p.feitos / p.meta) * 100), 100) : 0;
+        return `
+          <span class="habito-progresso-fracao">${p.feitos}/${p.meta} ${p.periodo}</span>
+          <div class="meta-progresso-barra"><div class="meta-progresso-preenchido ${pct >= 100 ? 'meta-progresso-completa' : ''}" style="width:${pct}%"></div></div>
+        `;
+      }
+      const dots = p.feitosPorDia.map((feito) => `<span class="habito-vg-dot ${feito ? 'feito' : ''}"></span>`).join('');
+      return `
+        <span class="habito-progresso-fracao">${p.feitos}/${p.meta} dias</span>
+        <div class="habito-vg-dias-dots">${dots}</div>
+      `;
     }
 
     function renderizarHabitos() {
@@ -10127,13 +10173,13 @@
       }
       lista.innerHTML = habitosCache
         .map((h) => {
-          const { semana, mes, feitoHoje } = contagemHabito(h.id);
-          const contagemSemana = h.meta_semanal ? `${semana}/${h.meta_semanal}` : `${semana}x`;
+          const p = progressoHabito(h);
           return `
             <div class="habito-card">
               <h4 class="habito-card-nome" data-id="${h.id}">${escapeHtml(h.nome)}</h4>
-              <span class="habito-card-contagem">${contagemSemana} essa semana · ${mes}x esse mês</span>
-              <button type="button" class="habito-card-toggle ${feitoHoje ? 'ativo' : ''}" data-id="${h.id}">${feitoHoje ? '✓ Feito hoje' : 'Marcar hoje'}</button>
+              <span class="habito-card-frequencia">${labelFrequenciaHabito(h)}</span>
+              ${habitoProgressoHtml(p)}
+              <button type="button" class="habito-card-toggle ${p.feitoHoje ? 'ativo' : ''}" data-id="${h.id}">${p.feitoHoje ? '✓ Feito hoje' : 'Marcar hoje'}</button>
             </div>
           `;
         })
@@ -10198,97 +10244,26 @@
         : '<p class="texto-vazio">Marque uma meta como "principal" pra ela aparecer aqui.</p>';
       wireMetaCards(contPrincipais);
 
-      // Hábitos de hoje — grade semanal (segunda a domingo).
-      const diasSemana = diasDaSemanaAtual();
-      const LETRAS_SEMANA = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'];
+      // Hábitos de hoje — mesma lógica de progressoHabito()/habitoProgressoHtml()
+      // da aba Hábitos: cada um mostra o que faz sentido pro seu tipo de
+      // frequência, não uma grade fixa de 7 dias pra todo mundo.
       const contHabitos = document.getElementById('metas-vg-habitos');
       contHabitos.innerHTML = habitosCache.length
         ? habitosCache
             .map((h) => {
-              const registrosHabito = habitoRegistrosCache.filter((r) => r.habito_id === h.id);
-              const feitosNaSemana = diasSemana.filter((d) => registrosHabito.some((r) => r.data === d)).length;
-              const fracao = h.meta_semanal ? `${feitosNaSemana}/${h.meta_semanal}` : `${feitosNaSemana}x`;
-              const dots = diasSemana
-                .map((d) => `<span class="habito-vg-dot ${registrosHabito.some((r) => r.data === d) ? 'feito' : ''}"></span>`)
-                .join('');
+              const p = progressoHabito(h);
               return `
                 <div class="habito-vg-linha">
                   <div>
                     <span class="habito-vg-nome">${escapeHtml(h.nome)}</span>
-                    ${h.meta_semanal ? `<span class="habito-vg-meta-label">Meta: ${h.meta_semanal}x por semana</span>` : ''}
+                    <span class="habito-vg-meta-label">${labelFrequenciaHabito(h)}</span>
                   </div>
-                  <div class="habito-vg-semana">
-                    <div class="habito-vg-dias-letras">${LETRAS_SEMANA.map((l) => `<span>${l}</span>`).join('')}</div>
-                    <div class="habito-vg-dias-dots">${dots}</div>
-                  </div>
-                  <span class="habito-vg-fracao">${fracao}</span>
+                  <div class="habito-vg-progresso">${habitoProgressoHtml(p)}</div>
                 </div>
               `;
             })
             .join('')
         : '<p class="texto-vazio">Nenhum hábito ainda.</p>';
-
-      renderizarCalendarioHabitos();
-    }
-
-    // ---- Calendário de hábitos (mini-calendário mensal, Visão Geral) ----
-    // Semana começando no domingo (igual um calendário comum). Cada hábito
-    // tem uma cor fixa (pela ordem em habitosCache) pra identificar nos
-    // pontinhos do dia e na legenda.
-    const CORES_HABITO = ['#7DB7CE', '#2fa96b', '#d4a017', '#c4453c', '#9b7fd4', '#e08ac4', '#5ec8c0', '#e0954a'];
-    function corHabito(indice) {
-      return CORES_HABITO[indice % CORES_HABITO.length];
-    }
-
-    let calendarioHabitosMes = new Date();
-
-    function mudarMesCalendarioHabitos(delta) {
-      calendarioHabitosMes = new Date(calendarioHabitosMes.getFullYear(), calendarioHabitosMes.getMonth() + delta, 1);
-      renderizarCalendarioHabitos();
-    }
-
-    function renderizarCalendarioHabitos() {
-      const grade = document.getElementById('habitos-cal-grade');
-      if (!grade) return;
-
-      const ano = calendarioHabitosMes.getFullYear();
-      const mes = calendarioHabitosMes.getMonth();
-      const hoje = new Date();
-      const hojeISO = dataParaISO(hoje);
-
-      const label = calendarioHabitosMes.toLocaleDateString(localeAtual(), { month: 'long', year: 'numeric' });
-      document.getElementById('habitos-cal-mes-label').textContent = label.charAt(0).toUpperCase() + label.slice(1);
-
-      const primeiroDiaSemana = new Date(ano, mes, 1).getDay(); // 0 = domingo
-      const diasNoMes = new Date(ano, mes + 1, 0).getDate();
-
-      const celulas = [];
-      for (let i = 0; i < primeiroDiaSemana; i++) celulas.push(null);
-      for (let dia = 1; dia <= diasNoMes; dia++) celulas.push(dia);
-
-      grade.innerHTML = celulas
-        .map((dia) => {
-          if (!dia) return '<div class="habitos-cal-dia habitos-cal-dia-fora"></div>';
-          const dataISO = dataParaISO(new Date(ano, mes, dia));
-          const habitosNoDia = habitosCache
-            .map((h, indice) => ({ h, indice }))
-            .filter(({ h }) => habitoRegistrosCache.some((r) => r.habito_id === h.id && r.data === dataISO));
-          const dots = habitosNoDia.map(({ indice }) => `<span style="background:${corHabito(indice)}"></span>`).join('');
-          return `
-            <div class="habitos-cal-dia">
-              <span class="habitos-cal-dia-numero ${dataISO === hojeISO ? 'cal-dia-hoje' : ''}">${dia}</span>
-              <div class="habitos-cal-dia-dots">${dots}</div>
-            </div>
-          `;
-        })
-        .join('');
-
-      const legenda = document.getElementById('habitos-cal-legenda');
-      legenda.innerHTML = habitosCache.length
-        ? habitosCache
-            .map((h, indice) => `<span class="habitos-cal-legenda-item"><span class="ponto" style="background:${corHabito(indice)}"></span>${escapeHtml(h.nome)}</span>`)
-            .join('')
-        : '';
     }
 
     // ---- Modal: Meta ----
@@ -10415,20 +10390,46 @@
 
     // ---- Modal: Hábito ----
 
+    // Mostra só o campo que faz sentido pro tipo de frequência escolhido —
+    // número (semana/mês) ou os botões de dia da semana (dias específicos).
+    function atualizarCamposFrequenciaHabito() {
+      const tipo = document.getElementById('habito-tipo-frequencia').value;
+      const campoValor = document.getElementById('habito-frequencia-valor-campo');
+      const campoDias = document.getElementById('habito-dias-semana-campo');
+      campoValor.hidden = tipo !== 'semana' && tipo !== 'mes';
+      campoDias.hidden = tipo !== 'dias_especificos';
+      document.getElementById('habito-frequencia-valor-label').textContent =
+        tipo === 'mes' ? 'Quantas vezes por mês' : 'Quantas vezes por semana';
+    }
+
     function abrirModalHabito(habito) {
       habitoAbertoId = habito ? habito.id : null;
       document.getElementById('habito-modal-titulo').textContent = habito ? 'Editar hábito' : 'Novo hábito';
       document.getElementById('habito-nome').value = habito ? habito.nome : '';
-      document.getElementById('habito-meta-semanal').value = habito && habito.meta_semanal ? habito.meta_semanal : '';
+      document.getElementById('habito-tipo-frequencia').value = habito ? habito.tipo_frequencia : 'diario';
+      document.getElementById('habito-frequencia-valor').value = habito && habito.frequencia_valor ? habito.frequencia_valor : '';
+      const diasSelecionados = (habito && habito.dias_semana) || [];
+      document.querySelectorAll('.habito-dia-semana-btn').forEach((btn) => {
+        btn.classList.toggle('ativo', diasSelecionados.includes(Number(btn.dataset.dia)));
+      });
+      atualizarCamposFrequenciaHabito();
       document.getElementById('habito-modal-excluir').hidden = !habito;
       document.getElementById('habito-modal-overlay').hidden = false;
       habitoSnapshotInicial = capturarEstadoHabito();
     }
 
+    function diasSemanaSelecionados() {
+      return [...document.querySelectorAll('.habito-dia-semana-btn.ativo')]
+        .map((btn) => Number(btn.dataset.dia))
+        .sort((a, b) => a - b);
+    }
+
     function capturarEstadoHabito() {
       return JSON.stringify({
         nome: document.getElementById('habito-nome').value,
-        metaSemanal: document.getElementById('habito-meta-semanal').value,
+        tipo: document.getElementById('habito-tipo-frequencia').value,
+        frequenciaValor: document.getElementById('habito-frequencia-valor').value,
+        diasSemana: diasSemanaSelecionados(),
       });
     }
 
@@ -10456,10 +10457,13 @@
         return;
       }
 
-      const metaSemanalTexto = document.getElementById('habito-meta-semanal').value;
+      const tipo = document.getElementById('habito-tipo-frequencia').value;
+      const frequenciaValorTexto = document.getElementById('habito-frequencia-valor').value;
       const linha = {
         nome,
-        meta_semanal: metaSemanalTexto ? Number(metaSemanalTexto) : null,
+        tipo_frequencia: tipo,
+        frequencia_valor: (tipo === 'semana' || tipo === 'mes') && frequenciaValorTexto ? Number(frequenciaValorTexto) : null,
+        dias_semana: tipo === 'dias_especificos' ? diasSemanaSelecionados() : null,
       };
 
       const btn = document.getElementById('habito-modal-salvar');

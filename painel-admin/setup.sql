@@ -1220,7 +1220,9 @@ create table if not exists public.painel_habitos (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
   nome text not null,
-  meta_semanal integer
+  tipo_frequencia text not null default 'diario' check (tipo_frequencia in ('diario', 'semana', 'mes', 'dias_especificos')),
+  frequencia_valor integer,
+  dias_semana integer[]
 );
 
 alter table public.painel_habitos enable row level security;

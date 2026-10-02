@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261001i">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261001j">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1503,18 +1503,33 @@
 
           <!-- Visão Geral: resumo enxuto — ver renderizarMetasVisaoGeral(). -->
           <div id="metas-pagina-visao-geral" class="metas-pagina">
-            <div class="cards-numeros cards-numeros-visao-geral-metas">
-              <div class="card-numero">
-                <span class="card-label">Metas</span>
-                <span class="card-valor" id="metas-vg-quantidade">0</span>
-              </div>
-              <div class="card-numero">
-                <span class="card-label">Concluídas</span>
-                <span class="card-valor" id="metas-vg-concluidas">0</span>
-              </div>
-              <div class="card-numero">
-                <span class="card-label">Progresso geral</span>
-                <span class="card-valor" id="metas-vg-progresso">0%</span>
+            <div class="card metas-progresso-card">
+              <h3 class="card-titulo">Meu progresso</h3>
+              <div class="metas-progresso-linha">
+                <div class="metas-progresso-item">
+                  <span class="metas-progresso-icone">🎯</span>
+                  <div class="metas-progresso-textos">
+                    <span class="metas-progresso-valor" id="metas-vg-quantidade">0</span>
+                    <span class="metas-progresso-label">Total de metas</span>
+                  </div>
+                </div>
+                <div class="metas-progresso-item">
+                  <span class="metas-progresso-icone metas-progresso-icone-check">✓</span>
+                  <div class="metas-progresso-textos">
+                    <span class="metas-progresso-valor" id="metas-vg-concluidas">0</span>
+                    <span class="metas-progresso-label">Concluídas</span>
+                  </div>
+                </div>
+                <div class="metas-progresso-item">
+                  <svg class="metas-progresso-anel" viewBox="0 0 36 36">
+                    <circle cx="18" cy="18" r="15.5" fill="none" stroke="rgba(var(--grafite-rgb), 0.12)" stroke-width="3"></circle>
+                    <circle id="metas-vg-progresso-anel" cx="18" cy="18" r="15.5" fill="none" stroke="var(--grafite)" stroke-width="3" stroke-linecap="round" stroke-dasharray="97.39" stroke-dashoffset="97.39" transform="rotate(-90 18 18)"></circle>
+                  </svg>
+                  <div class="metas-progresso-textos">
+                    <span class="metas-progresso-valor" id="metas-vg-progresso">0%</span>
+                    <span class="metas-progresso-label">De progresso geral</span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -10022,7 +10037,7 @@
       const hojeISO = dataParaISO(new Date());
       const vencido = meta.prazo < hojeISO;
       const dataFormatada = formatarDataCurta(new Date(meta.prazo + 'T00:00:00'));
-      return `<span class="meta-card-prazo ${vencido ? 'meta-card-prazo-vencido' : ''}">${vencido ? 'Venceu em' : 'Prazo:'} ${dataFormatada}</span>`;
+      return `<span class="meta-card-prazo ${vencido ? 'meta-card-prazo-vencido' : ''}">📅 ${vencido ? 'Venceu em' : 'Até'} ${dataFormatada}</span>`;
     }
 
     function metaCardHtml(meta) {
@@ -10169,6 +10184,12 @@
       campoQtd.textContent = total;
       document.getElementById('metas-vg-concluidas').textContent = concluidas;
       document.getElementById('metas-vg-progresso').textContent = progressoGeral + '%';
+
+      // Anel de progresso (SVG): circunferência de r=15.5 ≈ 97,39 — o traço
+      // "esvazia" conforme o progresso cresce (stroke-dashoffset menor).
+      const CIRCUNFERENCIA_ANEL = 97.39;
+      const anel = document.getElementById('metas-vg-progresso-anel');
+      if (anel) anel.style.strokeDashoffset = CIRCUNFERENCIA_ANEL * (1 - progressoGeral / 100);
 
       const principais = ordenarPorPrazo(metasCache.filter((m) => m.principal));
       const contPrincipais = document.getElementById('metas-vg-principais');

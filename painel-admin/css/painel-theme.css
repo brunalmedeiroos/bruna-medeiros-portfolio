@@ -8761,13 +8761,13 @@
 }
 
 .painel-body .meta-categoria-trabalho {
-  background: var(--coral);
-  color: var(--branco);
+  background: rgba(var(--coral-rgb), 0.16);
+  color: var(--coral-hover);
 }
 
 .painel-body .meta-categoria-dinheiro {
-  background: var(--sucesso);
-  color: var(--branco);
+  background: rgba(45, 122, 79, 0.14);
+  color: var(--sucesso);
 }
 
 .painel-body .meta-categoria-pessoal {
@@ -9077,4 +9077,93 @@
   background: var(--sucesso);
   border-color: var(--sucesso);
   color: var(--branco);
+}
+
+/* ---- Visão Geral de Metas: "Meu progresso" (3 estatísticas com ícone,
+   a última em formato de anel de progresso, num card só) ---- */
+
+.painel-body .metas-progresso-linha {
+  display: flex;
+  align-items: center;
+}
+
+.painel-body .metas-progresso-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  padding: 0 20px;
+}
+
+.painel-body .metas-progresso-item:first-child {
+  padding-left: 0;
+}
+
+.painel-body .metas-progresso-item:not(:first-child) {
+  border-left: 1px solid var(--borda);
+}
+
+.painel-body .metas-progresso-icone {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(var(--grafite-rgb), 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.painel-body .metas-progresso-icone-check {
+  background: rgba(45, 122, 79, 0.15);
+  color: var(--sucesso);
+  font-weight: 700;
+}
+
+.painel-body .metas-progresso-anel {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.painel-body .metas-progresso-anel circle {
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.painel-body .metas-progresso-textos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.painel-body .metas-progresso-valor {
+  font-family: var(--fonte-titulo);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--grafite);
+  line-height: 1;
+}
+
+.painel-body .metas-progresso-label {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+@media (max-width: 640px) {
+  .painel-body .metas-progresso-linha {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .painel-body .metas-progresso-item {
+    padding: 0;
+  }
+
+  .painel-body .metas-progresso-item:not(:first-child) {
+    border-left: none;
+    border-top: 1px solid var(--borda);
+    padding-top: 14px;
+  }
 }

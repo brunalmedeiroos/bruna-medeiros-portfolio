@@ -3054,6 +3054,17 @@
           <textarea id="pf-campo-texto-en" rows="3"></textarea>
           <span class="texto-vazio" id="pf-dica-texto" hidden></span>
         </div>
+        <div class="cal-form-campo" id="pf-grupo-link" hidden>
+          <label for="pf-campo-link-tipo" data-i18n="pf_lbl_link_tipo">Pra onde o ícone leva</label>
+          <select id="pf-campo-link-tipo">
+            <option value="" data-i18n="pf_link_livre">Um link que eu digito</option>
+            <option value="whatsapp" data-i18n="pf_link_whatsapp">Meu WhatsApp</option>
+            <option value="email" data-i18n="pf_link_email">Meu e-mail</option>
+            <option value="instagram" data-i18n="pf_link_instagram">Meu Instagram</option>
+            <option value="tiktok" data-i18n="pf_link_tiktok">Meu TikTok</option>
+          </select>
+          <input type="text" id="pf-campo-link" placeholder="https://...  ou  #portfolio">
+        </div>
         <div class="cal-form-campo" id="pf-grupo-logo" hidden>
           <label id="pf-lbl-logo" data-i18n="pf_lbl_logo">Logo</label>
           <div class="pf-logo-linha">
@@ -3629,6 +3640,24 @@
         pf_ocultos: 'Ocultos no site:',
         pf_mover_antes: '← Mover pra trás',
         pf_mover_depois: 'Mover pra frente →',
+        pf_novo_dock: 'Novo ícone do dock',
+        pf_editar_dock: 'Editar ícone do dock',
+        pf_lbl_dock_nome: 'Nome do ícone',
+        pf_lbl_icone_dock: 'Ícone (imagem quadrada)',
+        pf_lbl_link_tipo: 'Pra onde o ícone leva',
+        pf_link_livre: 'Um link que eu digito',
+        pf_link_whatsapp: 'Meu WhatsApp',
+        pf_link_email: 'Meu e-mail',
+        pf_link_instagram: 'Meu Instagram',
+        pf_link_tiktok: 'Meu TikTok',
+        pf_link_invalido: 'Link inválido. Use https://..., mailto:..., tel:... ou #secao (ex: #portfolio).',
+        pf_preencha_icone: 'Envie o ícone.',
+        pf_b_novo_dock: '+ Ícone do dock',
+        pf_t_menu_sobre: 'Menu: Sobre',
+        pf_t_menu_portfolio: 'Menu: Portfólio',
+        pf_t_menu_servicos: 'Menu: Serviços',
+        pf_t_menu_feedbacks: 'Menu: Feedbacks',
+        pf_t_menu_proposta: 'Menu: botão de proposta',
         pf_confirmar_excluir_nicho: 'Excluir esse nicho? {n} vídeo(s) estão nele e vão deixar de aparecer no site até você trocar o nicho deles.',
         pf_t_hero_badge: 'Início: faixa de apresentação',
         pf_t_hero_headline: 'Início: título principal',
@@ -4671,6 +4700,24 @@
         pf_ocultos: 'Hidden on the site:',
         pf_mover_antes: '← Move back',
         pf_mover_depois: 'Move forward →',
+        pf_novo_dock: 'New dock icon',
+        pf_editar_dock: 'Edit dock icon',
+        pf_lbl_dock_nome: 'Icon name',
+        pf_lbl_icone_dock: 'Icon (square image)',
+        pf_lbl_link_tipo: 'Where the icon leads',
+        pf_link_livre: 'A link I type',
+        pf_link_whatsapp: 'My WhatsApp',
+        pf_link_email: 'My e-mail',
+        pf_link_instagram: 'My Instagram',
+        pf_link_tiktok: 'My TikTok',
+        pf_link_invalido: 'Invalid link. Use https://..., mailto:..., tel:... or #section (e.g. #portfolio).',
+        pf_preencha_icone: 'Upload the icon.',
+        pf_b_novo_dock: '+ Dock icon',
+        pf_t_menu_sobre: 'Menu: About',
+        pf_t_menu_portfolio: 'Menu: Portfolio',
+        pf_t_menu_servicos: 'Menu: Services',
+        pf_t_menu_feedbacks: 'Menu: Feedback',
+        pf_t_menu_proposta: 'Menu: proposal button',
         pf_confirmar_excluir_nicho: 'Delete this niche? {n} video(s) are in it and will stop showing on the site until you change their niche.',
         pf_t_hero_badge: 'Home: intro badge',
         pf_t_hero_headline: 'Home: main headline',
@@ -18188,7 +18235,7 @@
       { categoria: 'entretenimento', titulo: 'Entretenimento' },
       { categoria: 'experiencia', titulo: 'Experiência' },
     ];
-    const PF_TEXTOS_PADRAO = [{"key":"hero_badge","destaque":null,"pt":"Creator & Estrategista de Conteúdo · Disponível 2026","en":"Creator & Content Strategist · Available 2026"},{"key":"hero_headline","destaque":"accent","pt":"Conteúdo que gera *identificação* de verdade.","en":"Content that creates real *connection*."},{"key":"hero_botao","destaque":null,"pt":"Solicitar proposta","en":"Request a proposal"},{"key":"hero_link","destaque":null,"pt":"Ver portfólio →","en":"View portfolio →"},{"key":"sobre_titulo","destaque":"script","pt":"Oii!! sou a *Bruna*,","en":"Hii!! I'm *Bruna*,"},{"key":"sobre_texto","destaque":"notes-highlight","pt":"tenho 20 anos, criadora de conteúdo. Sempre fui apaixonada pelo audiovisual e meu olhar está em transformar produtos em experiências reais. Por isso, antes de criar qualquer conteúdo, penso em *como uma marca pode se conectar às pessoas de forma natural*, respeitando sua comunicação e criando histórias que façam sentido. Hoje trabalho com marcas de diferentes nichos, desenvolvendo conteúdos estratégicos, autênticos e pensados para *gerar identificação e resultados*.","en":"I'm 20 years old, a content creator. I've always been passionate about audiovisual work, and my focus is turning products into real experiences. That's why, before creating any content, I think about *how a brand can connect with people naturally*, respecting their voice and telling stories that make sense. Today I work with brands across different niches, developing strategic, authentic content built to *create identification and results*."},{"key":"marcas_titulo","destaque":null,"pt":"marcas que já passaram pelo meu computador","en":"brands that have passed through my computer"},{"key":"servicos_titulo","destaque":null,"pt":"como podemos trabalhar juntos","en":"how we can work together"},{"key":"servicos_sub","destaque":null,"pt":"todos os botões abaixo levam direto pro meu whatsapp.","en":"all the buttons below go straight to my whatsapp."},{"key":"feedbacks_titulo","destaque":null,"pt":"o que as marcas acham do meu trabalho","en":"what brands think of my work"},{"key":"feedbacks_sub","destaque":null,"pt":"arraste pro lado e toque nas pastas pra ler.","en":"drag sideways and tap the folders to read."},{"key":"contato_titulo","destaque":"script","pt":"Vamos criar *algo incrível*\npara a sua marca?","en":"Let's create *something amazing*\nfor your brand?"},{"key":"contato_texto","destaque":null,"pt":"Me conta um pouco sobre a sua marca e o que você precisa, eu te respondo com uma proposta pensada pro seu momento e objetivo.","en":"Tell me a bit about your brand and what you need, and I'll get back to you with a proposal tailored to your moment and goals."},{"key":"contato_base","destaque":null,"pt":"Eusébio, CE · Brasil inteiro","en":"Eusébio, CE · all of Brazil"},{"key":"form_titulo","destaque":null,"pt":"formulário de proposta","en":"proposal form"},{"key":"form_botao","destaque":null,"pt":"Enviar proposta","en":"Send proposal"},{"key":"form_nota","destaque":null,"pt":"* Conecte este formulário a um serviço de e-mail/CRM de sua preferência.","en":"* Connect this form to an email/CRM service of your choice."},{"key":"form_sucesso","destaque":null,"pt":"Recebido! A Bruna vai te responder em breve.","en":"Got it! Bruna will get back to you soon."},{"key":"rodape_texto","destaque":null,"pt":"criadora de conteúdo & UGC creator · Eusébio, CE.\nconteúdo que conecta marcas e pessoas.","en":"content creator & UGC creator · Eusébio, CE.\ncontent that connects brands and people."},{"key":"rodape_local","destaque":null,"pt":"Eusébio, CE · Brasil","en":"Eusébio, CE · Brazil"},{"key":"rodape_copy","destaque":null,"pt":"© 2026 Bruna Medeiros · todos os direitos reservados","en":"© 2026 Bruna Medeiros · all rights reserved"}];
+    const PF_TEXTOS_PADRAO = [{"key":"hero_badge","destaque":null,"pt":"Creator & Estrategista de Conteúdo · Disponível 2026","en":"Creator & Content Strategist · Available 2026"},{"key":"hero_headline","destaque":"accent","pt":"Conteúdo que gera *identificação* de verdade.","en":"Content that creates real *connection*."},{"key":"hero_botao","destaque":null,"pt":"Solicitar proposta","en":"Request a proposal"},{"key":"hero_link","destaque":null,"pt":"Ver portfólio →","en":"View portfolio →"},{"key":"menu_sobre","destaque":null,"pt":"Sobre","en":"About"},{"key":"menu_portfolio","destaque":null,"pt":"Portfólio","en":"Portfolio"},{"key":"menu_servicos","destaque":null,"pt":"Serviços","en":"Services"},{"key":"menu_feedbacks","destaque":null,"pt":"Feedbacks","en":"Feedback"},{"key":"menu_proposta","destaque":null,"pt":"Solicitar proposta","en":"Request a proposal"},{"key":"sobre_titulo","destaque":"script","pt":"Oii!! sou a *Bruna*,","en":"Hii!! I'm *Bruna*,"},{"key":"sobre_texto","destaque":"notes-highlight","pt":"tenho 20 anos, criadora de conteúdo. Sempre fui apaixonada pelo audiovisual e meu olhar está em transformar produtos em experiências reais. Por isso, antes de criar qualquer conteúdo, penso em *como uma marca pode se conectar às pessoas de forma natural*, respeitando sua comunicação e criando histórias que façam sentido. Hoje trabalho com marcas de diferentes nichos, desenvolvendo conteúdos estratégicos, autênticos e pensados para *gerar identificação e resultados*.","en":"I'm 20 years old, a content creator. I've always been passionate about audiovisual work, and my focus is turning products into real experiences. That's why, before creating any content, I think about *how a brand can connect with people naturally*, respecting their voice and telling stories that make sense. Today I work with brands across different niches, developing strategic, authentic content built to *create identification and results*."},{"key":"marcas_titulo","destaque":null,"pt":"marcas que já passaram pelo meu computador","en":"brands that have passed through my computer"},{"key":"servicos_titulo","destaque":null,"pt":"como podemos trabalhar juntos","en":"how we can work together"},{"key":"servicos_sub","destaque":null,"pt":"todos os botões abaixo levam direto pro meu whatsapp.","en":"all the buttons below go straight to my whatsapp."},{"key":"feedbacks_titulo","destaque":null,"pt":"o que as marcas acham do meu trabalho","en":"what brands think of my work"},{"key":"feedbacks_sub","destaque":null,"pt":"arraste pro lado e toque nas pastas pra ler.","en":"drag sideways and tap the folders to read."},{"key":"contato_titulo","destaque":"script","pt":"Vamos criar *algo incrível*\npara a sua marca?","en":"Let's create *something amazing*\nfor your brand?"},{"key":"contato_texto","destaque":null,"pt":"Me conta um pouco sobre a sua marca e o que você precisa, eu te respondo com uma proposta pensada pro seu momento e objetivo.","en":"Tell me a bit about your brand and what you need, and I'll get back to you with a proposal tailored to your moment and goals."},{"key":"contato_base","destaque":null,"pt":"Eusébio, CE · Brasil inteiro","en":"Eusébio, CE · all of Brazil"},{"key":"form_titulo","destaque":null,"pt":"formulário de proposta","en":"proposal form"},{"key":"form_botao","destaque":null,"pt":"Enviar proposta","en":"Send proposal"},{"key":"form_nota","destaque":null,"pt":"* Conecte este formulário a um serviço de e-mail/CRM de sua preferência.","en":"* Connect this form to an email/CRM service of your choice."},{"key":"form_sucesso","destaque":null,"pt":"Recebido! A Bruna vai te responder em breve.","en":"Got it! Bruna will get back to you soon."},{"key":"rodape_texto","destaque":null,"pt":"criadora de conteúdo & UGC creator · Eusébio, CE.\nconteúdo que conecta marcas e pessoas.","en":"content creator & UGC creator · Eusébio, CE.\ncontent that connects brands and people."},{"key":"rodape_local","destaque":null,"pt":"Eusébio, CE · Brasil","en":"Eusébio, CE · Brazil"},{"key":"rodape_copy","destaque":null,"pt":"© 2026 Bruna Medeiros · todos os direitos reservados","en":"© 2026 Bruna Medeiros · all rights reserved"}];
     const PF_FOTOS_PADRAO = [{"key":"hero","src":"fotos/hero-capa.png"},{"key":"sobre","src":"fotos/sobre.jpg"},{"key":"lock","src":"fotos/lock-avatar.jpg"}];
     let pfItens = [];
     let pfAbertoId = null;
@@ -18256,7 +18303,16 @@
       pfRecarregarPrevia();
     }
 
+    function pfTipoLogico(item) {
+      return item.tipo === 'texto' && item.categoria === 'dock' ? 'dock' : item.tipo;
+    }
+
+    function pfAtualizarCampoLink() {
+      document.getElementById('pf-campo-link').hidden = document.getElementById('pf-campo-link-tipo').value !== '';
+    }
+
     function pfDoTipo(tipo) {
+      if (tipo === 'dock') return pfItens.filter((i) => i.tipo === 'texto' && i.categoria === 'dock');
       return pfItens.filter((i) => i.tipo === tipo && (tipo !== 'data' || !i.categoria));
     }
 
@@ -18361,6 +18417,7 @@
         feedback: ['pf_novo_feedback', 'pf_editar_feedback', 'pf_lbl_nome_feedback'],
         marca: ['pf_nova_marca', 'pf_editar_marca', 'pf_lbl_marca'],
         nicho: ['pf_novo_nicho', 'pf_editar_nicho', 'pf_lbl_nicho_nome'],
+        dock: ['pf_novo_dock', 'pf_editar_dock', 'pf_lbl_dock_nome'],
         servico: ['pf_novo_servico', 'pf_editar_servico', 'pf_lbl_servico_nome'],
         data: ['pf_nova_data', 'pf_editar_data', 'pf_lbl_data_titulo'],
         texto: ['pf_editar_texto', 'pf_editar_texto', 'pf_lbl_marca'],
@@ -18396,11 +18453,15 @@
         document.getElementById('pf-lbl-texto-pt').textContent = tr(rotulosTexto[0]);
         document.getElementById('pf-lbl-texto-en').textContent = tr(rotulosTexto[1]);
       }
-      document.getElementById('pf-grupo-logo').hidden = !(tipo === 'feedback' || tipo === 'marca');
+      document.getElementById('pf-grupo-logo').hidden = !(tipo === 'feedback' || tipo === 'marca' || tipo === 'dock');
       document.getElementById('pf-grupo-data').hidden = !(tipo === 'data' && !pfChave);
       document.getElementById('pf-grupo-ativo').hidden = ehTexto || ehContato;
-      document.getElementById('pf-lbl-logo').textContent = tr(tipo === 'marca' ? 'pf_lbl_logo' : 'pf_lbl_logo_opcional');
+      document.getElementById('pf-lbl-logo').textContent = tr(tipo === 'marca' ? 'pf_lbl_logo' : tipo === 'dock' ? 'pf_lbl_icone_dock' : 'pf_lbl_logo_opcional');
       document.getElementById('pf-campo-youtube').value = item && item.youtube_id ? 'https://youtube.com/shorts/' + item.youtube_id : '';
+      document.getElementById('pf-grupo-link').hidden = tipo !== 'dock';
+      document.getElementById('pf-campo-link-tipo').value = tipo === 'dock' && item && item.texto_en ? item.texto_en : '';
+      document.getElementById('pf-campo-link').value = tipo === 'dock' && item && !item.texto_en ? item.texto_pt || '' : '';
+      pfAtualizarCampoLink();
       let textoPt = item ? item.texto_pt || '' : '';
       let textoEn = item ? item.texto_en || '' : '';
       if (ehTexto && !item) {
@@ -18429,7 +18490,7 @@
       const btnExcluir = document.getElementById('pf-modal-excluir');
       btnExcluir.hidden = !item;
       btnExcluir.textContent = tr(voltaAoOriginal ? 'pf_original' : 'excluir');
-      document.getElementById('pf-mover-linha').hidden = !(item && ['video', 'nicho', 'feedback', 'marca', 'servico'].includes(tipo));
+      document.getElementById('pf-mover-linha').hidden = !(item && ['video', 'nicho', 'feedback', 'marca', 'servico', 'dock'].includes(tipo));
       document.getElementById('pf-modal-overlay').hidden = false;
     }
 
@@ -18597,6 +18658,22 @@
             linha.data_dia = dia;
             linha.ordem = 0;
           }
+        } else if (tipo === 'dock') {
+          const tipoLink = document.getElementById('pf-campo-link-tipo').value;
+          const link = document.getElementById('pf-campo-link').value.trim();
+          if (!tipoLink && !/^(https?:\/\/|mailto:|tel:|#)/i.test(link)) {
+            alert(tr('pf_link_invalido'));
+            return;
+          }
+          if (!pfLogoUrl) {
+            alert(tr('pf_preencha_icone'));
+            return;
+          }
+          linha.tipo = 'texto';
+          linha.categoria = 'dock';
+          linha.texto_pt = tipoLink ? null : link;
+          linha.texto_en = tipoLink || null;
+          linha.logo_url = pfLogoUrl;
         } else {
           linha.logo_url = pfLogoUrl;
           if (!linha.logo_url) {
@@ -18612,7 +18689,7 @@
         if (pfAbertoId) {
           ({ error } = await Auth.sb.from('portfolio_itens').update(linha).eq('id', pfAbertoId));
         } else {
-          const ordens = pfItens.filter((i) => i.tipo === tipo).map((i) => i.ordem);
+          const ordens = pfDoTipo(tipo).map((i) => i.ordem);
           if (linha.ordem === undefined) linha.ordem = (ordens.length ? Math.max(...ordens) : 0) + 1;
           ({ error } = await Auth.sb.from('portfolio_itens').insert(linha));
         }
@@ -18654,7 +18731,7 @@
     async function pfMover(id, direcao) {
       const item = pfItens.find((i) => i.id === id);
       if (!item) return;
-      const irmaos = pfItens.filter((i) => i.tipo === item.tipo);
+      const irmaos = pfDoTipo(pfTipoLogico(item));
       const pos = irmaos.findIndex((i) => i.id === id);
       const outro = irmaos[pos + direcao];
       if (!outro) return;
@@ -18717,7 +18794,7 @@
         }
         if (e.target.closest('.pf-editar-item')) {
           const item = pfItens.find((i) => i.id === id);
-          if (item) pfAbrirModal(item.tipo, item);
+          if (item) pfAbrirModal(pfTipoLogico(item), item);
         }
       });
       document.getElementById('pf-input-foto').addEventListener('change', (e) => {
@@ -18736,6 +18813,7 @@
         await pfMover(id, 1);
       });
       pfLigarVisual();
+      document.getElementById('pf-campo-link-tipo').addEventListener('change', pfAtualizarCampoLink);
       document.getElementById('pf-modal-salvar').addEventListener('click', pfSalvar);
       document.getElementById('pf-modal-excluir').addEventListener('click', pfExcluir);
       document.getElementById('pf-campo-logo').addEventListener('change', (e) => {
@@ -18759,7 +18837,7 @@
       contato: ['#contato', 'footer.site-footer'],
     };
     const PF_BARRA = {
-      hero: ['datas', 'foto_hero', 'foto_lock'],
+      hero: ['datas', 'novo_dock', 'foto_hero', 'foto_lock'],
       sobre: ['foto_sobre'],
       marcas: ['novo_marca'],
       servicos: ['novo_servico'],
@@ -18767,9 +18845,10 @@
       feedbacks: ['novo_feedback'],
       contato: ['whatsapp_msg', 'form_sucesso'],
     };
-    const PF_OCULTOS = { marcas: ['marca'], servicos: ['servico'], portfolio: ['video', 'nicho'], feedbacks: ['feedback'] };
+    const PF_OCULTOS = { hero: ['dock'], marcas: ['marca'], servicos: ['servico'], portfolio: ['video', 'nicho'], feedbacks: ['feedback'] };
     const PF_ACOES = {
       datas: () => (document.getElementById('pf-datas-overlay').hidden = false),
+      novo_dock: () => pfAbrirModal('dock', null),
       foto_hero: () => pfEscolherFoto('hero'),
       foto_sobre: () => pfEscolherFoto('sobre'),
       foto_lock: () => pfEscolherFoto('lock'),
@@ -18785,8 +18864,8 @@
       '.pf-oculto{display:none!important}',
       '#popupBackdrop,#popupNotif,#fileModal,#lockScreen{display:none!important}',
       '.marquee-track{animation-play-state:paused!important}',
-      '[data-texto],img[data-foto],a[data-contato],.file-card,.brand-tile,.feedback-folder,.widget-glass,#promoBar{cursor:pointer!important}',
-      '[data-texto]:hover,img[data-foto]:hover,a[data-contato]:hover,.file-card:hover,.brand-tile:hover,.feedback-folder:hover,.widget-glass:hover,#promoBar:hover{outline:2px dashed var(--blue-dark);outline-offset:3px;box-shadow:0 0 0 5px rgba(255,255,255,.7)}',
+      '[data-texto],img[data-foto],a[data-contato],.dock-icon,.file-card,.brand-tile,.feedback-folder,.widget-glass,#promoBar{cursor:pointer!important}',
+      '[data-texto]:hover,img[data-foto]:hover,a[data-contato]:hover,.dock-icon:hover,.file-card:hover,.brand-tile:hover,.feedback-folder:hover,.widget-glass:hover,#promoBar:hover{outline:2px dashed var(--blue-dark);outline-offset:3px;box-shadow:0 0 0 5px rgba(255,255,255,.7)}',
       '.folder-tab[data-id],.folder-tab[data-filter]{position:relative;padding-right:32px!important}',
       '.folder-tab[data-filter]::after{content:"\\270E";position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;opacity:.55}',
       '.folder-tab[data-filter]:hover::after{opacity:1}',
@@ -18922,6 +19001,14 @@
         pfEscolherFoto(foto.getAttribute('data-foto'));
         return;
       }
+      const dock = alvo.closest('.dock-icon');
+      if (dock) {
+        parar();
+        const rotulo = dock.getAttribute('aria-label');
+        const item = pfDoTipo('dock').find((i) => i.titulo === rotulo);
+        if (item) pfAbrirModal('dock', item);
+        return;
+      }
       const contato = alvo.closest('a[data-contato]');
       if (contato) {
         parar();
@@ -18941,7 +19028,7 @@
       const acoes = PF_BARRA[pfSecao] || [];
       let html = acoes.map((a) => '<button type="button" class="cal-btn pf-acao" data-acao="' + a + '">' + escapeHtml(tr('pf_b_' + a)) + '</button>').join('');
       const tipos = PF_OCULTOS[pfSecao] || [];
-      const ocultos = pfItens.filter((i) => !i.ativo && tipos.includes(i.tipo));
+      const ocultos = pfItens.filter((i) => !i.ativo && tipos.includes(pfTipoLogico(i)));
       if (ocultos.length) {
         html += '<span class="pf-ocultos-rotulo">' + escapeHtml(tr('pf_ocultos')) + '</span>'
           + ocultos.map((i) => '<button type="button" class="cal-btn pf-chip-oculto" data-oculto-id="' + i.id + '">' + escapeHtml(i.titulo) + '</button>').join('');
@@ -18979,7 +19066,7 @@
         const chip = e.target.closest('.pf-chip-oculto');
         if (chip) {
           const item = pfItens.find((i) => i.id === chip.dataset.ocultoId);
-          if (item) pfAbrirModal(item.tipo, item);
+          if (item) pfAbrirModal(pfTipoLogico(item), item);
         }
       });
       document.getElementById('pf-datas-fechar').addEventListener('click', () => (document.getElementById('pf-datas-overlay').hidden = true));

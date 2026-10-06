@@ -1045,12 +1045,12 @@ a.info-value:hover{ text-decoration:underline; }
       <span>Eusébio, CE</span>
     </div>
     <nav class="nav-tabs" aria-label="Navegação principal">
-      <a href="#sobre" class="nav-tab" data-pt="Sobre" data-en="About">Sobre</a>
-      <a href="#portfolio" class="nav-tab" data-pt="Portfólio" data-en="Portfolio">Portfólio</a>
-      <a href="#servicos" class="nav-tab" data-pt="Serviços" data-en="Services">Serviços</a>
+      <a href="#sobre" class="nav-tab" data-texto="menu_sobre" data-pt="Sobre" data-en="About">Sobre</a>
+      <a href="#portfolio" class="nav-tab" data-texto="menu_portfolio" data-pt="Portfólio" data-en="Portfolio">Portfólio</a>
+      <a href="#servicos" class="nav-tab" data-texto="menu_servicos" data-pt="Serviços" data-en="Services">Serviços</a>
       <a href="#resultados" class="nav-tab" data-pt="Resultados" data-en="Results" style="display:none">Resultados</a>
-      <a href="#feedbacks" class="nav-tab" data-pt="Feedbacks" data-en="Feedback">Feedbacks</a>
-      <a href="#contato" class="nav-tab is-cta" data-pt="Solicitar proposta" data-en="Request a proposal">Solicitar proposta</a>
+      <a href="#feedbacks" class="nav-tab" data-texto="menu_feedbacks" data-pt="Feedbacks" data-en="Feedback">Feedbacks</a>
+      <a href="#contato" class="nav-tab is-cta" data-texto="menu_proposta" data-pt="Solicitar proposta" data-en="Request a proposal">Solicitar proposta</a>
     </nav>
     <div class="lang-toggle" id="langToggle" role="group" aria-label="Switch language / Mudar idioma">
       <button type="button" class="lang-option" data-lang="pt">PT</button>
@@ -1845,7 +1845,7 @@ a.info-value:hover{ text-decoration:underline; }
   function aplicarTextos(textos){
     if (!Array.isArray(textos)) return;
     textos.forEach(function(t){
-      if (!t.categoria || !t.texto_pt) return;
+      if (!t.categoria || !t.texto_pt || t.categoria === 'dock') return;
       var el = document.querySelector('[data-texto="' + t.categoria + '"]');
       if (!el) return;
       var pt = t.texto_pt;
@@ -1938,6 +1938,42 @@ a.info-value:hover{ text-decoration:underline; }
     });
   }
 
+  /* Dock (ícones do topo): vem do painel como itens do tipo texto com categoria "dock".
+     titulo = nome, logo_url = ícone, texto_en = contato que o ícone usa (whatsapp, email,
+     instagram, tiktok) ou vazio, texto_pt = link livre. */
+  function aplicarDock(textos){
+    var nav = document.querySelector('.mac-dock');
+    var lista = (Array.isArray(textos) ? textos : []).filter(function(t){ return t.categoria === 'dock' && t.titulo && t.logo_url; });
+    if (!nav || !lista.length) return;
+    nav.innerHTML = '';
+    lista.forEach(function(d){
+      var a = document.createElement('a');
+      a.className = 'dock-icon';
+      a.setAttribute('aria-label', d.titulo);
+      var tipo = d.texto_en;
+      if (tipo && CONTATOS_PADRAO.hasOwnProperty(tipo) && tipo !== 'whatsapp_msg'){
+        a.setAttribute('href', '#');
+        a.setAttribute('data-contato', tipo);
+        if (tipo === 'whatsapp') a.setAttribute('data-contato-msg', '1');
+        if (tipo !== 'email'){ a.target = '_blank'; a.rel = 'noopener'; }
+      } else {
+        var h = d.texto_pt || '#';
+        if (!/^(https?:\/\/|mailto:|tel:|#)/i.test(h)) h = '#';
+        a.setAttribute('href', h);
+        if (/^https?:/i.test(h)){ a.target = '_blank'; a.rel = 'noopener'; }
+      }
+      var bg = document.createElement('span');
+      bg.className = 'dock-icon-bg';
+      var img = document.createElement('img');
+      img.src = d.logo_url;
+      img.alt = '';
+      img.loading = 'lazy';
+      bg.appendChild(img);
+      a.appendChild(bg);
+      nav.appendChild(a);
+    });
+  }
+
   function carregarPortfolioPublicavel(){
     return fetch(PORTFOLIO_PUBLICO_URL)
       .then(function(res){ return res.json(); })
@@ -1945,6 +1981,7 @@ a.info-value:hover{ text-decoration:underline; }
         if (!resposta || !resposta.ok || !Array.isArray(resposta.itens)) return;
         portfolioExtras = { datas: resposta.datas || [] };
         aplicarServicos(resposta.servicos);
+        aplicarDock(resposta.textos);
         aplicarContatos(resposta.contatos);
         aplicarNichos(resposta.nichos);
         aplicarTextos(resposta.textos);

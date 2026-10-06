@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001p">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001q">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -216,6 +216,14 @@
               <div class="pf-lista" id="pf-lista-video"></div>
             </div>
 
+            <div class="card pf-secao" data-tipo="nicho">
+              <div class="pf-secao-topo">
+                <h3 class="card-titulo" data-i18n="pf_nichos">Nichos</h3>
+                <button type="button" class="cal-btn cal-btn-primario pf-btn-novo" data-tipo="nicho" data-i18n="pf_adicionar">+ Adicionar</button>
+              </div>
+              <div class="pf-lista" id="pf-lista-nicho"></div>
+            </div>
+
             <div class="card pf-secao" data-tipo="feedback">
               <div class="pf-secao-topo">
                 <h3 class="card-titulo" data-i18n="pf_feedbacks">Feedbacks</h3>
@@ -230,6 +238,23 @@
                 <button type="button" class="cal-btn cal-btn-primario pf-btn-novo" data-tipo="marca" data-i18n="pf_adicionar">+ Adicionar</button>
               </div>
               <div class="pf-lista" id="pf-lista-marca"></div>
+            </div>
+
+            <div class="card pf-secao" data-tipo="texto">
+              <div class="pf-secao-topo">
+                <h3 class="card-titulo" data-i18n="pf_textos">Textos</h3>
+              </div>
+              <p class="texto-vazio" data-i18n="pf_dica_destaque">Use *asteriscos* em volta de uma palavra pra deixar ela em destaque.</p>
+              <div class="pf-lista" id="pf-lista-texto"></div>
+            </div>
+
+            <div class="card pf-secao" data-tipo="foto">
+              <div class="pf-secao-topo">
+                <h3 class="card-titulo" data-i18n="pf_fotos">Fotos</h3>
+              </div>
+              <p class="texto-vazio" id="pf-foto-status"></p>
+              <div class="pf-lista" id="pf-lista-foto"></div>
+              <input type="file" id="pf-input-foto" accept="image/*" hidden>
             </div>
           </div>
 
@@ -2940,9 +2965,13 @@
           </button>
         </div>
 
-        <div class="cal-form-campo">
+        <div class="cal-form-campo" id="pf-grupo-titulo">
           <label for="pf-campo-titulo" id="pf-lbl-titulo">Nome</label>
           <input type="text" id="pf-campo-titulo" maxlength="80">
+        </div>
+        <div class="cal-form-campo" id="pf-grupo-nome-en" hidden>
+          <label for="pf-campo-nome-en" data-i18n="pf_lbl_nicho_nome_en">Nome em inglês</label>
+          <input type="text" id="pf-campo-nome-en" maxlength="40">
         </div>
         <div class="cal-form-campo" id="pf-grupo-video" hidden>
           <label for="pf-campo-youtube" data-i18n="pf_lbl_video">Link ou ID do vídeo do YouTube</label>
@@ -2958,10 +2987,11 @@
           </select>
         </div>
         <div class="cal-form-campo" id="pf-grupo-texto" hidden>
-          <label for="pf-campo-texto-pt" data-i18n="pf_lbl_texto_pt">Texto do feedback</label>
+          <label for="pf-campo-texto-pt" id="pf-lbl-texto-pt">Texto do feedback</label>
           <textarea id="pf-campo-texto-pt" rows="4"></textarea>
-          <label for="pf-campo-texto-en" data-i18n="pf_lbl_texto_en">Texto em inglês (opcional)</label>
+          <label for="pf-campo-texto-en" id="pf-lbl-texto-en">Texto em inglês (opcional)</label>
           <textarea id="pf-campo-texto-en" rows="3"></textarea>
+          <span class="texto-vazio" id="pf-dica-texto" hidden></span>
         </div>
         <div class="cal-form-campo" id="pf-grupo-logo" hidden>
           <label id="pf-lbl-logo" data-i18n="pf_lbl_logo">Logo</label>
@@ -2973,13 +3003,13 @@
           </div>
           <span class="texto-vazio" id="pf-logo-status"></span>
         </div>
-        <label class="pf-ativo-linha">
+        <label class="pf-ativo-linha" id="pf-grupo-ativo">
           <input type="checkbox" id="pf-campo-ativo" checked>
           <span data-i18n="pf_lbl_ativo">Mostrar no site</span>
         </label>
 
         <div class="cal-form-acoes">
-          <button type="button" id="pf-modal-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
+          <button type="button" id="pf-modal-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
           <button type="button" id="pf-modal-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
         </div>
       </div>
@@ -3417,6 +3447,38 @@
         pf_preencha_logo: 'Envie o logo da marca.',
         pf_video_invalido: 'Não consegui achar o ID do vídeo. Cole o link do YouTube (Shorts ou vídeo normal).',
         pf_confirmar_excluir: 'Excluir esse item do portfólio? Ele sai do site.',
+        pf_nichos: 'Nichos',
+        pf_textos: 'Textos',
+        pf_fotos: 'Fotos',
+        pf_editado: 'editado',
+        pf_original: 'Voltar ao original',
+        pf_trocar: 'Trocar foto',
+        pf_novo_nicho: 'Novo nicho',
+        pf_editar_nicho: 'Editar nicho',
+        pf_lbl_nicho_nome: 'Nome do nicho (português)',
+        pf_lbl_nicho_nome_en: 'Nome em inglês',
+        pf_editar_texto: 'Editar texto',
+        pf_lbl_texto_geral_pt: 'Texto em português',
+        pf_lbl_texto_geral_en: 'Texto em inglês (se vazio, usa o português)',
+        pf_dica_destaque: 'Use *asteriscos* em volta de uma palavra pra deixar ela em destaque.',
+        pf_confirmar_original: 'Voltar ao original? O que você mudou aqui some do site.',
+        pf_confirmar_excluir_nicho: 'Excluir esse nicho? {n} vídeo(s) estão nele e vão deixar de aparecer no site até você trocar o nicho deles.',
+        pf_t_hero_badge: 'Início: faixa de apresentação',
+        pf_t_hero_headline: 'Início: título principal',
+        pf_t_sobre_titulo: 'Sobre: título',
+        pf_t_sobre_texto: 'Sobre: texto',
+        pf_t_servicos_titulo: 'Serviços: título',
+        pf_t_servicos_sub: 'Serviços: subtítulo',
+        pf_t_servicos_1_texto: 'Serviço 1 (UGC): descrição',
+        pf_t_servicos_2_titulo: 'Serviço 2: nome',
+        pf_t_servicos_2_texto: 'Serviço 2: descrição',
+        pf_t_servicos_3_titulo: 'Serviço 3: nome',
+        pf_t_servicos_3_texto: 'Serviço 3: descrição',
+        pf_t_contato_titulo: 'Contato: título',
+        pf_t_contato_texto: 'Contato: texto',
+        pf_f_hero: 'Foto do início (capa)',
+        pf_f_sobre: 'Foto do Sobre',
+        pf_f_lock: 'Foto da tela de bloqueio',
         nav_calendario: 'Calendário',
         nav_email: 'E-mail',
         nav_ferramentas: 'Ferramentas',
@@ -4346,6 +4408,38 @@
         pf_preencha_logo: "Upload the brand's logo.",
         pf_video_invalido: "Couldn't find the video ID. Paste the YouTube link (Shorts or regular video).",
         pf_confirmar_excluir: 'Delete this portfolio item? It will be removed from the site.',
+        pf_nichos: 'Niches',
+        pf_textos: 'Texts',
+        pf_fotos: 'Photos',
+        pf_editado: 'edited',
+        pf_original: 'Restore original',
+        pf_trocar: 'Change photo',
+        pf_novo_nicho: 'New niche',
+        pf_editar_nicho: 'Edit niche',
+        pf_lbl_nicho_nome: 'Niche name (Portuguese)',
+        pf_lbl_nicho_nome_en: 'English name',
+        pf_editar_texto: 'Edit text',
+        pf_lbl_texto_geral_pt: 'Text in Portuguese',
+        pf_lbl_texto_geral_en: 'Text in English (if empty, uses Portuguese)',
+        pf_dica_destaque: 'Use *asterisks* around a word to highlight it.',
+        pf_confirmar_original: 'Restore the original? Your changes here will be removed from the site.',
+        pf_confirmar_excluir_nicho: 'Delete this niche? {n} video(s) are in it and will stop showing on the site until you change their niche.',
+        pf_t_hero_badge: 'Home: intro badge',
+        pf_t_hero_headline: 'Home: main headline',
+        pf_t_sobre_titulo: 'About: title',
+        pf_t_sobre_texto: 'About: text',
+        pf_t_servicos_titulo: 'Services: title',
+        pf_t_servicos_sub: 'Services: subtitle',
+        pf_t_servicos_1_texto: 'Service 1 (UGC): description',
+        pf_t_servicos_2_titulo: 'Service 2: name',
+        pf_t_servicos_2_texto: 'Service 2: description',
+        pf_t_servicos_3_titulo: 'Service 3: name',
+        pf_t_servicos_3_texto: 'Service 3: description',
+        pf_t_contato_titulo: 'Contact: title',
+        pf_t_contato_texto: 'Contact: text',
+        pf_f_hero: 'Home photo (cover)',
+        pf_f_sobre: 'About photo',
+        pf_f_lock: 'Lock screen photo',
         nav_calendario: 'Calendar',
         nav_email: 'Email',
         nav_ferramentas: 'Tools',
@@ -17835,14 +17929,23 @@
       });
     }
 
-    // ---- Portfólio > Editar portfólio (vídeos, feedbacks e marcas do site) ----
+    // ---- Portfólio > Editar portfólio (nichos, vídeos, feedbacks, marcas, textos e fotos do site) ----
     const PF_SITE = 'https://brunamedeiros.com/';
-    const PF_TIPOS = ['video', 'feedback', 'marca'];
-    const PF_NICHOS = { tech: 'Tech', beleza: 'Beleza', entretenimento: 'Entretenimento', experiencia: 'Experiência' };
+    const PF_TIPOS = ['video', 'nicho', 'feedback', 'marca'];
+    const PF_NICHOS_PADRAO = [
+      { categoria: 'tech', titulo: 'Tech' },
+      { categoria: 'beleza', titulo: 'Beleza' },
+      { categoria: 'entretenimento', titulo: 'Entretenimento' },
+      { categoria: 'experiencia', titulo: 'Experiência' },
+    ];
+    const PF_TEXTOS_PADRAO = [{"key":"hero_badge","destaque":null,"pt":"Creator & Estrategista de Conteúdo · Disponível 2026","en":"Creator & Content Strategist · Available 2026"},{"key":"hero_headline","destaque":"accent","pt":"Conteúdo que gera *identificação* de verdade.","en":"Content that creates real *connection*."},{"key":"sobre_titulo","destaque":"script","pt":"Oii!! sou a *Bruna*,","en":"Hii!! I'm *Bruna*,"},{"key":"sobre_texto","destaque":"notes-highlight","pt":"tenho 20 anos, criadora de conteúdo. Sempre fui apaixonada pelo audiovisual e meu olhar está em transformar produtos em experiências reais. Por isso, antes de criar qualquer conteúdo, penso em *como uma marca pode se conectar às pessoas de forma natural*, respeitando sua comunicação e criando histórias que façam sentido. Hoje trabalho com marcas de diferentes nichos, desenvolvendo conteúdos estratégicos, autênticos e pensados para *gerar identificação e resultados*.","en":"I'm 20 years old, a content creator. I've always been passionate about audiovisual work, and my focus is turning products into real experiences. That's why, before creating any content, I think about *how a brand can connect with people naturally*, respecting their voice and telling stories that make sense. Today I work with brands across different niches, developing strategic, authentic content built to *create identification and results*."},{"key":"servicos_titulo","destaque":null,"pt":"como podemos trabalhar juntos","en":"how we can work together"},{"key":"servicos_sub","destaque":null,"pt":"todos os botões abaixo levam direto pro meu whatsapp.","en":"all the buttons below go straight to my whatsapp."},{"key":"servicos_1_texto","destaque":null,"pt":"Vídeos no estilo depoimento real para gerar conexão orgânica. Roteiro próprio + variações por entrega.","en":"Testimonial-style videos to build organic connection. Original script, with variations per delivery."},{"key":"servicos_2_titulo","destaque":null,"pt":"Publicidade no meu perfil","en":"Advertising on my profile"},{"key":"servicos_2_texto","destaque":null,"pt":"Conteúdo publicado para minha audiência com alcance orgânico real.","en":"Content published to my audience with real organic reach."},{"key":"servicos_3_titulo","destaque":null,"pt":"Fotos UGC","en":"UGC Photos"},{"key":"servicos_3_texto","destaque":null,"pt":"Fotografia de produto e lifestyle com direção de estética, imagens prontas pra feed, ads e catálogo.","en":"Product and lifestyle photography with art direction — images ready for feed, ads, and catalog."},{"key":"contato_titulo","destaque":"script","pt":"Vamos criar *algo incrível*\npara a sua marca?","en":"Let's create *something amazing*\nfor your brand?"},{"key":"contato_texto","destaque":null,"pt":"Me conta um pouco sobre a sua marca e o que você precisa, eu te respondo com uma proposta pensada pro seu momento e objetivo.","en":"Tell me a bit about your brand and what you need, and I'll get back to you with a proposal tailored to your moment and goals."}];
+    const PF_FOTOS_PADRAO = [{"key":"hero","src":"fotos/hero-capa.png"},{"key":"sobre","src":"fotos/sobre.jpg"},{"key":"lock","src":"fotos/lock-avatar.jpg"}];
     let pfItens = [];
     let pfAbertoId = null;
     let pfTipoAberto = null;
+    let pfTextoChave = null;
     let pfLogoUrl = null;
+    let pfFotoChave = null;
 
     function pfUrlImagem(url) {
       if (!url) return '';
@@ -17854,6 +17957,29 @@
       const m = t.match(/(?:youtu\.be\/|[?&]v=|shorts\/|embed\/)([A-Za-z0-9_-]{11})/);
       if (m) return m[1];
       return /^[A-Za-z0-9_-]{11}$/.test(t) ? t : null;
+    }
+
+    function pfNichos() {
+      const lista = pfItens.filter((i) => i.tipo === 'nicho');
+      return lista.length ? lista : PF_NICHOS_PADRAO;
+    }
+
+    function pfNomeNicho(categoria) {
+      const n = pfNichos().find((x) => x.categoria === categoria);
+      return n ? n.titulo : categoria || '';
+    }
+
+    function pfSlug(texto) {
+      const base = texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'nicho';
+      const usados = pfItens.filter((i) => i.tipo === 'nicho').map((i) => i.categoria);
+      let slug = base;
+      let n = 2;
+      while (usados.includes(slug)) slug = base + '-' + n++;
+      return slug;
+    }
+
+    function pfOverride(tipo, chave) {
+      return pfItens.find((i) => i.tipo === tipo && i.categoria === chave) || null;
     }
 
     function pfSetModoEditor(editando) {
@@ -17891,7 +18017,10 @@
           let sub = '';
           if (tipo === 'video') {
             miniatura = '<img class="pf-thumb" src="https://i.ytimg.com/vi/' + encodeURIComponent(item.youtube_id || '') + '/mqdefault.jpg" alt="" loading="lazy">';
-            sub = PF_NICHOS[item.categoria] || '';
+            sub = pfNomeNicho(item.categoria);
+          } else if (tipo === 'nicho') {
+            miniatura = '<span class="pf-thumb pf-thumb-vazio" aria-hidden="true">Aa</span>';
+            sub = item.texto_en || '';
           } else {
             miniatura = item.logo_url
               ? '<img class="pf-thumb pf-thumb-logo" src="' + escapeHtml(pfUrlImagem(item.logo_url)) + '" alt="" loading="lazy">'
@@ -17909,29 +18038,79 @@
             + '</div></div>';
         }).join('');
       });
+
+      document.getElementById('pf-lista-texto').innerHTML = PF_TEXTOS_PADRAO.map((padrao) => {
+        const ov = pfOverride('texto', padrao.key);
+        const atual = ov ? ov.texto_pt : padrao.pt;
+        return '<div class="pf-linha" data-texto-key="' + padrao.key + '">'
+          + '<div class="pf-linha-texto"><span class="pf-linha-titulo">' + escapeHtml(tr('pf_t_' + padrao.key)) + (ov ? ' · ' + escapeHtml(tr('pf_editado')) : '') + '</span>'
+          + '<span class="pf-linha-sub">' + escapeHtml(atual.replace(/\n/g, ' ')) + '</span></div>'
+          + '<div class="pf-linha-acoes"><button type="button" class="cal-btn pf-editar-texto">✎</button></div></div>';
+      }).join('');
+
+      document.getElementById('pf-lista-foto').innerHTML = PF_FOTOS_PADRAO.map((padrao) => {
+        const ov = pfOverride('foto', padrao.key);
+        const src = ov ? ov.logo_url : padrao.src;
+        return '<div class="pf-linha" data-foto-key="' + padrao.key + '">'
+          + '<img class="pf-thumb" src="' + escapeHtml(pfUrlImagem(src)) + '" alt="" loading="lazy">'
+          + '<div class="pf-linha-texto"><span class="pf-linha-titulo">' + escapeHtml(tr('pf_f_' + padrao.key)) + (ov ? ' · ' + escapeHtml(tr('pf_editado')) : '') + '</span></div>'
+          + '<div class="pf-linha-acoes">'
+          + (ov ? '<button type="button" class="cal-btn pf-restaurar-foto">' + escapeHtml(tr('pf_original')) + '</button>' : '')
+          + '<button type="button" class="cal-btn pf-trocar-foto">' + escapeHtml(tr('pf_trocar')) + '</button>'
+          + '</div></div>';
+      }).join('');
     }
 
-    function pfAbrirModal(tipo, item) {
+    function pfAbrirModal(tipo, item, textoChave) {
       pfTipoAberto = tipo;
       pfAbertoId = item ? item.id : null;
+      pfTextoChave = textoChave || null;
       pfLogoUrl = item ? item.logo_url || null : null;
-      const nomes = { video: ['pf_novo_video', 'pf_editar_video', 'pf_lbl_marca'], feedback: ['pf_novo_feedback', 'pf_editar_feedback', 'pf_lbl_nome_feedback'], marca: ['pf_nova_marca', 'pf_editar_marca', 'pf_lbl_marca'] }[tipo];
-      document.getElementById('pf-modal-titulo').textContent = tr(item ? nomes[1] : nomes[0]);
+      const ehTexto = tipo === 'texto';
+      const nomes = {
+        video: ['pf_novo_video', 'pf_editar_video', 'pf_lbl_marca'],
+        feedback: ['pf_novo_feedback', 'pf_editar_feedback', 'pf_lbl_nome_feedback'],
+        marca: ['pf_nova_marca', 'pf_editar_marca', 'pf_lbl_marca'],
+        nicho: ['pf_novo_nicho', 'pf_editar_nicho', 'pf_lbl_nicho_nome'],
+        texto: ['pf_editar_texto', 'pf_editar_texto', 'pf_lbl_marca'],
+      }[tipo];
+      document.getElementById('pf-modal-titulo').textContent = ehTexto ? tr('pf_t_' + textoChave) : tr(item ? nomes[1] : nomes[0]);
       document.getElementById('pf-lbl-titulo').textContent = tr(nomes[2]);
-      document.getElementById('pf-campo-titulo').value = item ? item.titulo : '';
+      document.getElementById('pf-grupo-titulo').hidden = ehTexto;
+      document.getElementById('pf-campo-titulo').value = item && !ehTexto ? item.titulo : '';
+      document.getElementById('pf-grupo-nome-en').hidden = tipo !== 'nicho';
+      document.getElementById('pf-campo-nome-en').value = item && tipo === 'nicho' ? item.texto_en || '' : '';
       document.getElementById('pf-grupo-video').hidden = tipo !== 'video';
       document.getElementById('pf-grupo-nicho').hidden = tipo !== 'video';
-      document.getElementById('pf-grupo-texto').hidden = tipo !== 'feedback';
-      document.getElementById('pf-grupo-logo').hidden = tipo === 'video';
+      if (tipo === 'video') {
+        document.getElementById('pf-campo-categoria').innerHTML = pfNichos().map((n) => '<option value="' + escapeHtml(n.categoria) + '">' + escapeHtml(n.titulo) + '</option>').join('');
+      }
+      document.getElementById('pf-grupo-texto').hidden = !(tipo === 'feedback' || ehTexto);
+      document.getElementById('pf-lbl-texto-pt').textContent = tr(ehTexto ? 'pf_lbl_texto_geral_pt' : 'pf_lbl_texto_pt');
+      document.getElementById('pf-lbl-texto-en').textContent = tr(ehTexto ? 'pf_lbl_texto_geral_en' : 'pf_lbl_texto_en');
+      document.getElementById('pf-grupo-logo').hidden = !(tipo === 'feedback' || tipo === 'marca');
+      document.getElementById('pf-grupo-ativo').hidden = ehTexto;
       document.getElementById('pf-lbl-logo').textContent = tr(tipo === 'marca' ? 'pf_lbl_logo' : 'pf_lbl_logo_opcional');
       document.getElementById('pf-campo-youtube').value = item && item.youtube_id ? 'https://youtube.com/shorts/' + item.youtube_id : '';
-      document.getElementById('pf-campo-categoria').value = item && item.categoria ? item.categoria : 'tech';
-      document.getElementById('pf-campo-texto-pt').value = item ? item.texto_pt || '' : '';
-      document.getElementById('pf-campo-texto-en').value = item ? item.texto_en || '' : '';
+      if (tipo === 'video') document.getElementById('pf-campo-categoria').value = item && item.categoria ? item.categoria : pfNichos()[0].categoria;
+      if (ehTexto) {
+        const padrao = PF_TEXTOS_PADRAO.find((t) => t.key === textoChave);
+        document.getElementById('pf-campo-texto-pt').value = item ? item.texto_pt || '' : padrao.pt;
+        document.getElementById('pf-campo-texto-en').value = item ? item.texto_en || '' : padrao.en;
+        const dica = document.getElementById('pf-dica-texto');
+        dica.hidden = !padrao.destaque;
+        dica.textContent = tr('pf_dica_destaque');
+      } else {
+        document.getElementById('pf-campo-texto-pt').value = item ? item.texto_pt || '' : '';
+        document.getElementById('pf-campo-texto-en').value = item ? item.texto_en || '' : '';
+        document.getElementById('pf-dica-texto').hidden = true;
+      }
       document.getElementById('pf-campo-ativo').checked = item ? !!item.ativo : true;
       document.getElementById('pf-logo-status').textContent = '';
       pfAtualizarLogoPrevia();
-      document.getElementById('pf-modal-excluir').hidden = !item;
+      const btnExcluir = document.getElementById('pf-modal-excluir');
+      btnExcluir.hidden = !item;
+      btnExcluir.textContent = tr(ehTexto ? 'pf_original' : 'excluir');
       document.getElementById('pf-modal-overlay').hidden = false;
     }
 
@@ -17947,6 +18126,14 @@
       document.getElementById('pf-modal-overlay').hidden = true;
     }
 
+    async function pfUploadImagem(prefixo, arquivo) {
+      const ext = (arquivo.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || 'png';
+      const nome = prefixo + '-' + Date.now() + '.' + ext;
+      const { error } = await Auth.sb.storage.from('portfolio-imagens').upload(nome, arquivo, { contentType: arquivo.type });
+      if (error) throw error;
+      return Auth.sb.storage.from('portfolio-imagens').getPublicUrl(nome).data.publicUrl;
+    }
+
     async function pfEnviarLogo(arquivo) {
       if (!arquivo) return;
       const status = document.getElementById('pf-logo-status');
@@ -17955,12 +18142,8 @@
         return;
       }
       status.textContent = tr('pf_enviando');
-      const ext = (arquivo.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || 'png';
-      const nome = pfTipoAberto + '-' + Date.now() + '.' + ext;
       try {
-        const { error } = await Auth.sb.storage.from('portfolio-imagens').upload(nome, arquivo, { contentType: arquivo.type });
-        if (error) throw error;
-        pfLogoUrl = Auth.sb.storage.from('portfolio-imagens').getPublicUrl(nome).data.publicUrl;
+        pfLogoUrl = await pfUploadImagem(pfTipoAberto, arquivo);
         status.textContent = '';
         pfAtualizarLogoPrevia();
       } catch (err) {
@@ -17969,44 +18152,90 @@
       }
     }
 
-    async function pfSalvar() {
-      const tipo = pfTipoAberto;
-      const titulo = document.getElementById('pf-campo-titulo').value.trim();
-      if (!titulo) {
-        alert(tr('pf_preencha_nome'));
+    async function pfEnviarFoto(chave, arquivo) {
+      if (!arquivo) return;
+      const status = document.getElementById('pf-foto-status');
+      if (arquivo.size > 5 * 1024 * 1024) {
+        status.textContent = tr('pf_imagem_grande');
         return;
       }
-      const linha = {
-        tipo,
-        titulo,
-        ativo: document.getElementById('pf-campo-ativo').checked,
-        youtube_id: null,
-        categoria: null,
-        texto_pt: null,
-        texto_en: null,
-        logo_url: null,
-      };
-      if (tipo === 'video') {
-        const id = pfExtrairYoutubeId(document.getElementById('pf-campo-youtube').value);
-        if (!id) {
-          alert(tr('pf_video_invalido'));
-          return;
+      status.textContent = tr('pf_enviando');
+      try {
+        const url = await pfUploadImagem('foto-' + chave, arquivo);
+        const ov = pfOverride('foto', chave);
+        let error;
+        if (ov) {
+          ({ error } = await Auth.sb.from('portfolio_itens').update({ logo_url: url }).eq('id', ov.id));
+        } else {
+          ({ error } = await Auth.sb.from('portfolio_itens').insert({ tipo: 'foto', titulo: tr('pf_f_' + chave), categoria: chave, logo_url: url, ordem: 0, ativo: true }));
         }
-        linha.youtube_id = id;
-        linha.categoria = document.getElementById('pf-campo-categoria').value;
-      } else if (tipo === 'feedback') {
-        linha.texto_pt = document.getElementById('pf-campo-texto-pt').value.trim();
-        linha.texto_en = document.getElementById('pf-campo-texto-en').value.trim() || null;
-        linha.logo_url = pfLogoUrl;
-        if (!linha.texto_pt) {
+        if (error) throw error;
+        status.textContent = '';
+        await pfCarregar();
+      } catch (err) {
+        console.error('Erro ao trocar foto do site:', err);
+        status.textContent = tr('pf_erro_upload');
+      }
+    }
+
+    async function pfRestaurar(tipo, chave) {
+      const ov = pfOverride(tipo, chave);
+      if (!ov) return;
+      if (!(await confirmarAcao(tr('pf_confirmar_original'), { textoConfirmar: tr('pf_original'), perigo: false }))) return;
+      try {
+        const { error } = await Auth.sb.from('portfolio_itens').delete().eq('id', ov.id);
+        if (error) throw error;
+        pfFecharModal();
+        await pfCarregar();
+      } catch (err) {
+        console.error('Erro ao voltar ao original:', err);
+        alert(tr('erro_excluir_generico'));
+      }
+    }
+
+    async function pfSalvar() {
+      const tipo = pfTipoAberto;
+      let linha;
+      if (tipo === 'texto') {
+        const pt = document.getElementById('pf-campo-texto-pt').value.trim();
+        if (!pt) {
           alert(tr('pf_preencha_texto'));
           return;
         }
+        linha = { tipo, titulo: tr('pf_t_' + pfTextoChave), categoria: pfTextoChave, texto_pt: pt, texto_en: document.getElementById('pf-campo-texto-en').value.trim() || null, ordem: 0, ativo: true };
       } else {
-        linha.logo_url = pfLogoUrl;
-        if (!linha.logo_url) {
-          alert(tr('pf_preencha_logo'));
+        const titulo = document.getElementById('pf-campo-titulo').value.trim();
+        if (!titulo) {
+          alert(tr('pf_preencha_nome'));
           return;
+        }
+        linha = { tipo, titulo, ativo: document.getElementById('pf-campo-ativo').checked, youtube_id: null, categoria: null, texto_pt: null, texto_en: null, logo_url: null };
+        if (tipo === 'video') {
+          const id = pfExtrairYoutubeId(document.getElementById('pf-campo-youtube').value);
+          if (!id) {
+            alert(tr('pf_video_invalido'));
+            return;
+          }
+          linha.youtube_id = id;
+          linha.categoria = document.getElementById('pf-campo-categoria').value;
+        } else if (tipo === 'feedback') {
+          linha.texto_pt = document.getElementById('pf-campo-texto-pt').value.trim();
+          linha.texto_en = document.getElementById('pf-campo-texto-en').value.trim() || null;
+          linha.logo_url = pfLogoUrl;
+          if (!linha.texto_pt) {
+            alert(tr('pf_preencha_texto'));
+            return;
+          }
+        } else if (tipo === 'nicho') {
+          linha.texto_en = document.getElementById('pf-campo-nome-en').value.trim() || titulo;
+          const atual = pfAbertoId ? pfItens.find((i) => i.id === pfAbertoId) : null;
+          linha.categoria = atual ? atual.categoria : pfSlug(titulo);
+        } else {
+          linha.logo_url = pfLogoUrl;
+          if (!linha.logo_url) {
+            alert(tr('pf_preencha_logo'));
+            return;
+          }
         }
       }
       const btn = document.getElementById('pf-modal-salvar');
@@ -18017,7 +18246,7 @@
           ({ error } = await Auth.sb.from('portfolio_itens').update(linha).eq('id', pfAbertoId));
         } else {
           const ordens = pfItens.filter((i) => i.tipo === tipo).map((i) => i.ordem);
-          linha.ordem = (ordens.length ? Math.max(...ordens) : 0) + 1;
+          if (tipo !== 'texto') linha.ordem = (ordens.length ? Math.max(...ordens) : 0) + 1;
           ({ error } = await Auth.sb.from('portfolio_itens').insert(linha));
         }
         if (error) throw error;
@@ -18033,7 +18262,17 @@
 
     async function pfExcluir() {
       if (!pfAbertoId) return;
-      if (!(await confirmarAcao(tr('pf_confirmar_excluir')))) return;
+      if (pfTipoAberto === 'texto') {
+        await pfRestaurar('texto', pfTextoChave);
+        return;
+      }
+      let mensagem = tr('pf_confirmar_excluir');
+      if (pfTipoAberto === 'nicho') {
+        const nicho = pfItens.find((i) => i.id === pfAbertoId);
+        const usados = nicho ? pfItens.filter((i) => i.tipo === 'video' && i.categoria === nicho.categoria).length : 0;
+        if (usados) mensagem = tr('pf_confirmar_excluir_nicho').replace('{n}', usados);
+      }
+      if (!(await confirmarAcao(mensagem))) return;
       try {
         const { error } = await Auth.sb.from('portfolio_itens').delete().eq('id', pfAbertoId);
         if (error) throw error;
@@ -18072,8 +18311,25 @@
       document.getElementById('pf-btn-numeros').addEventListener('click', () => pfSetModoEditor(false));
       document.querySelectorAll('.pf-btn-novo').forEach((btn) => btn.addEventListener('click', () => pfAbrirModal(btn.dataset.tipo, null)));
       document.getElementById('pf-editor').addEventListener('click', (e) => {
+        const linhaTexto = e.target.closest('[data-texto-key]');
+        if (linhaTexto) {
+          const chave = linhaTexto.dataset.textoKey;
+          if (e.target.closest('.pf-editar-texto')) pfAbrirModal('texto', pfOverride('texto', chave), chave);
+          return;
+        }
+        const linhaFoto = e.target.closest('[data-foto-key]');
+        if (linhaFoto) {
+          const chave = linhaFoto.dataset.fotoKey;
+          if (e.target.closest('.pf-trocar-foto')) {
+            pfFotoChave = chave;
+            document.getElementById('pf-input-foto').click();
+          } else if (e.target.closest('.pf-restaurar-foto')) {
+            pfRestaurar('foto', chave);
+          }
+          return;
+        }
         const linha = e.target.closest('.pf-linha');
-        if (!linha) return;
+        if (!linha || !linha.dataset.id) return;
         const id = linha.dataset.id;
         const mover = e.target.closest('.pf-mover');
         if (mover) {
@@ -18084,6 +18340,10 @@
           const item = pfItens.find((i) => i.id === id);
           if (item) pfAbrirModal(item.tipo, item);
         }
+      });
+      document.getElementById('pf-input-foto').addEventListener('change', (e) => {
+        pfEnviarFoto(pfFotoChave, e.target.files[0]);
+        e.target.value = '';
       });
       document.getElementById('pf-modal-fechar').addEventListener('click', pfFecharModal);
       document.getElementById('pf-modal-salvar').addEventListener('click', pfSalvar);

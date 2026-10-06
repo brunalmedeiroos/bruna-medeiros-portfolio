@@ -9627,3 +9627,7 @@
     height: 38px;
   }
 }
+
+.painel-body #pf-modal-overlay [hidden] {
+  display: none;
+}

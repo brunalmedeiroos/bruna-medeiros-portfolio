@@ -40,7 +40,7 @@ export default {
 
     if (error) return jsonResponse({ ok: false, error: error.message }, 500);
 
-    // Vídeos, feedbacks e marcas editados no painel (aba Portfólio > Editar).
+    // Vídeos, feedbacks, marcas, nichos, textos e fotos editados no painel (aba Portfólio > Editar).
     // Se a tabela ainda não existe, o site simplesmente segue com o conteúdo fixo.
     const { data: itensEditaveis } = await ctx.supabaseAdmin
       .from("portfolio_itens")
@@ -57,6 +57,9 @@ export default {
       videos: porTipo("video"),
       feedbacks: porTipo("feedback"),
       marcas: porTipo("marca"),
+      nichos: porTipo("nicho"),
+      textos: porTipo("texto"),
+      fotos: porTipo("foto"),
     });
   }),
 };

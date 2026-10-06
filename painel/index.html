@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001q">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001r">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -238,6 +238,33 @@
                 <button type="button" class="cal-btn cal-btn-primario pf-btn-novo" data-tipo="marca" data-i18n="pf_adicionar">+ Adicionar</button>
               </div>
               <div class="pf-lista" id="pf-lista-marca"></div>
+            </div>
+
+            <div class="card pf-secao" data-tipo="servico">
+              <div class="pf-secao-topo">
+                <h3 class="card-titulo" data-i18n="pf_servicos">Serviços</h3>
+                <button type="button" class="cal-btn cal-btn-primario pf-btn-novo" data-tipo="servico" data-i18n="pf_adicionar">+ Adicionar</button>
+              </div>
+              <div class="pf-lista" id="pf-lista-servico"></div>
+            </div>
+
+            <div class="card pf-secao" data-tipo="contato">
+              <div class="pf-secao-topo">
+                <h3 class="card-titulo" data-i18n="pf_contatos">Contatos</h3>
+              </div>
+              <p class="texto-vazio" data-i18n="pf_dica_contatos">Vale pro site inteiro: topo, serviços, contato e rodapé.</p>
+              <div class="pf-lista" id="pf-lista-contato"></div>
+            </div>
+
+            <div class="card pf-secao" data-tipo="data">
+              <div class="pf-secao-topo">
+                <h3 class="card-titulo" data-i18n="pf_datas">Datas comemorativas</h3>
+                <button type="button" class="cal-btn cal-btn-primario pf-btn-novo" data-tipo="data" data-i18n="pf_adicionar_data">+ Nova data</button>
+              </div>
+              <p class="texto-vazio" data-i18n="pf_dica_datas">A faixa do topo do site mostra sempre a próxima data da lista.</p>
+              <div class="pf-lista" id="pf-lista-data-padrao"></div>
+              <h4 class="pf-subtitulo" data-i18n="pf_datas_suas">Suas datas</h4>
+              <div class="pf-lista" id="pf-lista-data"></div>
             </div>
 
             <div class="card pf-secao" data-tipo="texto">
@@ -2970,7 +2997,7 @@
           <input type="text" id="pf-campo-titulo" maxlength="80">
         </div>
         <div class="cal-form-campo" id="pf-grupo-nome-en" hidden>
-          <label for="pf-campo-nome-en" data-i18n="pf_lbl_nicho_nome_en">Nome em inglês</label>
+          <label for="pf-campo-nome-en" id="pf-lbl-nome-en">Nome em inglês</label>
           <input type="text" id="pf-campo-nome-en" maxlength="40">
         </div>
         <div class="cal-form-campo" id="pf-grupo-video" hidden>
@@ -3002,6 +3029,26 @@
             <button type="button" class="cal-btn" id="pf-logo-remover" data-i18n="pf_remover_logo" hidden>Remover</button>
           </div>
           <span class="texto-vazio" id="pf-logo-status"></span>
+        </div>
+        <div class="cal-form-campo pf-grupo-data" id="pf-grupo-data" hidden>
+          <label for="pf-campo-dia" data-i18n="pf_lbl_data_dia">Dia</label>
+          <div class="pf-data-linha">
+            <input type="number" id="pf-campo-dia" min="1" max="31" step="1" placeholder="12">
+            <select id="pf-campo-mes" aria-label="Mês">
+              <option value="1">Janeiro</option>
+              <option value="2">Fevereiro</option>
+              <option value="3">Março</option>
+              <option value="4">Abril</option>
+              <option value="5">Maio</option>
+              <option value="6">Junho</option>
+              <option value="7">Julho</option>
+              <option value="8">Agosto</option>
+              <option value="9">Setembro</option>
+              <option value="10">Outubro</option>
+              <option value="11">Novembro</option>
+              <option value="12">Dezembro</option>
+            </select>
+          </div>
         </div>
         <label class="pf-ativo-linha" id="pf-grupo-ativo">
           <input type="checkbox" id="pf-campo-ativo" checked>
@@ -3462,6 +3509,50 @@
         pf_lbl_texto_geral_en: 'Texto em inglês (se vazio, usa o português)',
         pf_dica_destaque: 'Use *asteriscos* em volta de uma palavra pra deixar ela em destaque.',
         pf_confirmar_original: 'Voltar ao original? O que você mudou aqui some do site.',
+        pf_servicos: 'Serviços',
+        pf_contatos: 'Contatos',
+        pf_datas: 'Datas comemorativas',
+        pf_datas_suas: 'Suas datas',
+        pf_adicionar_data: '+ Nova data',
+        pf_dica_contatos: 'Vale pro site inteiro: topo, serviços, contato e rodapé.',
+        pf_dica_datas: 'A faixa do topo do site mostra sempre a próxima data da lista.',
+        pf_novo_servico: 'Novo serviço',
+        pf_editar_servico: 'Editar serviço',
+        pf_lbl_servico_nome: 'Nome do serviço (português)',
+        pf_lbl_servico_nome_en: 'Nome do serviço (inglês)',
+        pf_lbl_desc_pt: 'Descrição (português)',
+        pf_lbl_desc_en: 'Descrição em inglês (se vazio, usa o português)',
+        pf_nova_data: 'Nova data',
+        pf_editar_data: 'Editar data',
+        pf_lbl_data_titulo: 'Título da faixa (português)',
+        pf_lbl_data_titulo_en: 'Título da faixa (inglês)',
+        pf_lbl_sub_pt: 'Frase de apoio (português)',
+        pf_lbl_sub_en: 'Frase de apoio em inglês (se vazio, usa o português)',
+        pf_lbl_data_dia: 'Dia',
+        pf_lbl_data_mes: 'Mês',
+        pf_data_invalida: 'Dia ou mês inválido.',
+        pf_editar_contato: 'Editar contato',
+        pf_contato_invalido: 'Valor inválido. Confira o número, o e-mail ou o usuário.',
+        pf_c_whatsapp: 'WhatsApp (número com DDD)',
+        pf_c_whatsapp_msg: 'WhatsApp: mensagem pronta',
+        pf_c_email: 'E-mail',
+        pf_c_instagram: 'Instagram (usuário)',
+        pf_c_tiktok: 'TikTok (usuário)',
+        pf_dica_c_whatsapp: 'Só números, com 55 e o DDD. Ex: 5585999999999',
+        pf_dica_c_whatsapp_msg: 'Texto que já vem escrito quando alguém clica no botão do WhatsApp.',
+        pf_dica_c_email: 'Ex: contato@seudominio.com',
+        pf_dica_c_instagram: 'Só o usuário, sem @. Dá pra colar o link do perfil.',
+        pf_dica_c_tiktok: 'Só o usuário, sem @. Dá pra colar o link do perfil.',
+        pf_d_carnaval: 'Carnaval',
+        pf_d_mulher: 'Dia da Mulher',
+        pf_d_maes: 'Dia das Mães',
+        pf_d_namorados: 'Dia dos Namorados',
+        pf_d_pais: 'Dia dos Pais',
+        pf_d_cliente: 'Semana do Cliente',
+        pf_d_criancas: 'Dia das Crianças',
+        pf_d_blackfriday: 'Black Friday',
+        pf_d_natal: 'Natal',
+        pf_d_anonovo: 'Ano Novo',
         pf_confirmar_excluir_nicho: 'Excluir esse nicho? {n} vídeo(s) estão nele e vão deixar de aparecer no site até você trocar o nicho deles.',
         pf_t_hero_badge: 'Início: faixa de apresentação',
         pf_t_hero_headline: 'Início: título principal',
@@ -4423,6 +4514,50 @@
         pf_lbl_texto_geral_en: 'Text in English (if empty, uses Portuguese)',
         pf_dica_destaque: 'Use *asterisks* around a word to highlight it.',
         pf_confirmar_original: 'Restore the original? Your changes here will be removed from the site.',
+        pf_servicos: 'Services',
+        pf_contatos: 'Contacts',
+        pf_datas: 'Special dates',
+        pf_datas_suas: 'Your dates',
+        pf_adicionar_data: '+ New date',
+        pf_dica_contatos: 'Applies to the whole site: top, services, contact and footer.',
+        pf_dica_datas: 'The banner at the top of the site always shows the next date in the list.',
+        pf_novo_servico: 'New service',
+        pf_editar_servico: 'Edit service',
+        pf_lbl_servico_nome: 'Service name (Portuguese)',
+        pf_lbl_servico_nome_en: 'Service name (English)',
+        pf_lbl_desc_pt: 'Description (Portuguese)',
+        pf_lbl_desc_en: 'English description (if empty, uses Portuguese)',
+        pf_nova_data: 'New date',
+        pf_editar_data: 'Edit date',
+        pf_lbl_data_titulo: 'Banner title (Portuguese)',
+        pf_lbl_data_titulo_en: 'Banner title (English)',
+        pf_lbl_sub_pt: 'Supporting line (Portuguese)',
+        pf_lbl_sub_en: 'English supporting line (if empty, uses Portuguese)',
+        pf_lbl_data_dia: 'Day',
+        pf_lbl_data_mes: 'Month',
+        pf_data_invalida: 'Invalid day or month.',
+        pf_editar_contato: 'Edit contact',
+        pf_contato_invalido: 'Invalid value. Check the number, e-mail or username.',
+        pf_c_whatsapp: 'WhatsApp (number with area code)',
+        pf_c_whatsapp_msg: 'WhatsApp: ready-made message',
+        pf_c_email: 'E-mail',
+        pf_c_instagram: 'Instagram (username)',
+        pf_c_tiktok: 'TikTok (username)',
+        pf_dica_c_whatsapp: 'Numbers only, with 55 and the area code. Ex: 5585999999999',
+        pf_dica_c_whatsapp_msg: 'Text that comes pre-written when someone clicks the WhatsApp button.',
+        pf_dica_c_email: 'Ex: contact@yourdomain.com',
+        pf_dica_c_instagram: 'Username only, without @. You can paste the profile link.',
+        pf_dica_c_tiktok: 'Username only, without @. You can paste the profile link.',
+        pf_d_carnaval: 'Carnival',
+        pf_d_mulher: 'Women’s Day',
+        pf_d_maes: 'Mother’s Day',
+        pf_d_namorados: 'Valentine’s Day',
+        pf_d_pais: 'Father’s Day',
+        pf_d_cliente: 'Customer Week',
+        pf_d_criancas: 'Children’s Day',
+        pf_d_blackfriday: 'Black Friday',
+        pf_d_natal: 'Christmas',
+        pf_d_anonovo: 'New Year',
         pf_confirmar_excluir_nicho: 'Delete this niche? {n} video(s) are in it and will stop showing on the site until you change their niche.',
         pf_t_hero_badge: 'Home: intro badge',
         pf_t_hero_headline: 'Home: main headline',
@@ -17931,19 +18066,21 @@
 
     // ---- Portfólio > Editar portfólio (nichos, vídeos, feedbacks, marcas, textos e fotos do site) ----
     const PF_SITE = 'https://brunamedeiros.com/';
-    const PF_TIPOS = ['video', 'nicho', 'feedback', 'marca'];
+    const PF_TIPOS = ['video', 'nicho', 'servico', 'data', 'feedback', 'marca'];
+    const PF_CONTATOS_PADRAO = [{"key":"whatsapp","valor":"5585992805861"},{"key":"whatsapp_msg","valor":"Oi, Bruna! quero solicitar uma proposta"},{"key":"email","valor":"brunamedeirosugc@gmail.com"},{"key":"instagram","valor":"brunalmedeiroos"},{"key":"tiktok","valor":"brunamedeiros"}];
+    const PF_DATAS_PADRAO = [{"key":"carnaval","pt_t":"Carnaval está chegando!","pt_s":"Bora criar um conteúdo com a energia da folia?","en_t":"Carnival is coming!","en_s":"Let’s make content with festival energy."},{"key":"mulher","pt_t":"O Dia da Mulher está chegando!","pt_s":"Ótimo momento pra campanhas que valorizam quem é mulher.","en_t":"Women’s Day is coming!","en_s":"A great moment for campaigns that celebrate women."},{"key":"maes","pt_t":"O Dia das Mães está chegando!","pt_s":"Presente, beleza e casa bombam nessa época.","en_t":"Mother’s Day is coming!","en_s":"Gift, beauty and home brands shine this season."},{"key":"namorados","pt_t":"O Dia dos Namorados está chegando!","pt_s":"Hora de criar campanhas de presente que conectam.","en_t":"Valentine’s Day is coming!","en_s":"Time for gift campaigns that connect."},{"key":"pais","pt_t":"O Dia dos Pais está chegando!","pt_s":"Ótimo momento pra campanhas de presente.","en_t":"Father’s Day is coming!","en_s":"A great moment for gift campaigns."},{"key":"cliente","pt_t":"A Semana do Cliente está chegando!","pt_s":"Esse é o momento de contar histórias incríveis.","en_t":"Customer Week is coming!","en_s":"This is the moment for great brand stories."},{"key":"criancas","pt_t":"O Dia das Crianças está chegando!","pt_s":"Marcas infantis e de presente bombam agora.","en_t":"Children’s Day is coming!","en_s":"Kids and gift brands shine right now."},{"key":"blackfriday","pt_t":"A Black Friday está chegando!","pt_s":"Hora de criar conteúdo que converte de verdade.","en_t":"Black Friday is coming!","en_s":"Time to create content that really converts."},{"key":"natal","pt_t":"O Natal está chegando!","pt_s":"Campanhas de fim de ano pedem conteúdo com carinho.","en_t":"Christmas is coming!","en_s":"Year-end campaigns need content made with care."},{"key":"anonovo","pt_t":"O Ano Novo está chegando!","pt_s":"Comece o ano com uma campanha que conecta.","en_t":"New Year is coming!","en_s":"Start the year with a campaign that connects."}];
     const PF_NICHOS_PADRAO = [
       { categoria: 'tech', titulo: 'Tech' },
       { categoria: 'beleza', titulo: 'Beleza' },
       { categoria: 'entretenimento', titulo: 'Entretenimento' },
       { categoria: 'experiencia', titulo: 'Experiência' },
     ];
-    const PF_TEXTOS_PADRAO = [{"key":"hero_badge","destaque":null,"pt":"Creator & Estrategista de Conteúdo · Disponível 2026","en":"Creator & Content Strategist · Available 2026"},{"key":"hero_headline","destaque":"accent","pt":"Conteúdo que gera *identificação* de verdade.","en":"Content that creates real *connection*."},{"key":"sobre_titulo","destaque":"script","pt":"Oii!! sou a *Bruna*,","en":"Hii!! I'm *Bruna*,"},{"key":"sobre_texto","destaque":"notes-highlight","pt":"tenho 20 anos, criadora de conteúdo. Sempre fui apaixonada pelo audiovisual e meu olhar está em transformar produtos em experiências reais. Por isso, antes de criar qualquer conteúdo, penso em *como uma marca pode se conectar às pessoas de forma natural*, respeitando sua comunicação e criando histórias que façam sentido. Hoje trabalho com marcas de diferentes nichos, desenvolvendo conteúdos estratégicos, autênticos e pensados para *gerar identificação e resultados*.","en":"I'm 20 years old, a content creator. I've always been passionate about audiovisual work, and my focus is turning products into real experiences. That's why, before creating any content, I think about *how a brand can connect with people naturally*, respecting their voice and telling stories that make sense. Today I work with brands across different niches, developing strategic, authentic content built to *create identification and results*."},{"key":"servicos_titulo","destaque":null,"pt":"como podemos trabalhar juntos","en":"how we can work together"},{"key":"servicos_sub","destaque":null,"pt":"todos os botões abaixo levam direto pro meu whatsapp.","en":"all the buttons below go straight to my whatsapp."},{"key":"servicos_1_texto","destaque":null,"pt":"Vídeos no estilo depoimento real para gerar conexão orgânica. Roteiro próprio + variações por entrega.","en":"Testimonial-style videos to build organic connection. Original script, with variations per delivery."},{"key":"servicos_2_titulo","destaque":null,"pt":"Publicidade no meu perfil","en":"Advertising on my profile"},{"key":"servicos_2_texto","destaque":null,"pt":"Conteúdo publicado para minha audiência com alcance orgânico real.","en":"Content published to my audience with real organic reach."},{"key":"servicos_3_titulo","destaque":null,"pt":"Fotos UGC","en":"UGC Photos"},{"key":"servicos_3_texto","destaque":null,"pt":"Fotografia de produto e lifestyle com direção de estética, imagens prontas pra feed, ads e catálogo.","en":"Product and lifestyle photography with art direction — images ready for feed, ads, and catalog."},{"key":"contato_titulo","destaque":"script","pt":"Vamos criar *algo incrível*\npara a sua marca?","en":"Let's create *something amazing*\nfor your brand?"},{"key":"contato_texto","destaque":null,"pt":"Me conta um pouco sobre a sua marca e o que você precisa, eu te respondo com uma proposta pensada pro seu momento e objetivo.","en":"Tell me a bit about your brand and what you need, and I'll get back to you with a proposal tailored to your moment and goals."}];
+    const PF_TEXTOS_PADRAO = [{"key":"hero_badge","destaque":null,"pt":"Creator & Estrategista de Conteúdo · Disponível 2026","en":"Creator & Content Strategist · Available 2026"},{"key":"hero_headline","destaque":"accent","pt":"Conteúdo que gera *identificação* de verdade.","en":"Content that creates real *connection*."},{"key":"sobre_titulo","destaque":"script","pt":"Oii!! sou a *Bruna*,","en":"Hii!! I'm *Bruna*,"},{"key":"sobre_texto","destaque":"notes-highlight","pt":"tenho 20 anos, criadora de conteúdo. Sempre fui apaixonada pelo audiovisual e meu olhar está em transformar produtos em experiências reais. Por isso, antes de criar qualquer conteúdo, penso em *como uma marca pode se conectar às pessoas de forma natural*, respeitando sua comunicação e criando histórias que façam sentido. Hoje trabalho com marcas de diferentes nichos, desenvolvendo conteúdos estratégicos, autênticos e pensados para *gerar identificação e resultados*.","en":"I'm 20 years old, a content creator. I've always been passionate about audiovisual work, and my focus is turning products into real experiences. That's why, before creating any content, I think about *how a brand can connect with people naturally*, respecting their voice and telling stories that make sense. Today I work with brands across different niches, developing strategic, authentic content built to *create identification and results*."},{"key":"servicos_titulo","destaque":null,"pt":"como podemos trabalhar juntos","en":"how we can work together"},{"key":"servicos_sub","destaque":null,"pt":"todos os botões abaixo levam direto pro meu whatsapp.","en":"all the buttons below go straight to my whatsapp."},{"key":"contato_titulo","destaque":"script","pt":"Vamos criar *algo incrível*\npara a sua marca?","en":"Let's create *something amazing*\nfor your brand?"},{"key":"contato_texto","destaque":null,"pt":"Me conta um pouco sobre a sua marca e o que você precisa, eu te respondo com uma proposta pensada pro seu momento e objetivo.","en":"Tell me a bit about your brand and what you need, and I'll get back to you with a proposal tailored to your moment and goals."}];
     const PF_FOTOS_PADRAO = [{"key":"hero","src":"fotos/hero-capa.png"},{"key":"sobre","src":"fotos/sobre.jpg"},{"key":"lock","src":"fotos/lock-avatar.jpg"}];
     let pfItens = [];
     let pfAbertoId = null;
     let pfTipoAberto = null;
-    let pfTextoChave = null;
+    let pfChave = null;
     let pfLogoUrl = null;
     let pfFotoChave = null;
 
@@ -18004,10 +18141,14 @@
       pfRenderizar();
     }
 
+    function pfDoTipo(tipo) {
+      return pfItens.filter((i) => i.tipo === tipo && (tipo !== 'data' || !i.categoria));
+    }
+
     function pfRenderizar() {
       PF_TIPOS.forEach((tipo) => {
         const lista = document.getElementById('pf-lista-' + tipo);
-        const itens = pfItens.filter((i) => i.tipo === tipo);
+        const itens = pfDoTipo(tipo);
         if (!itens.length) {
           lista.innerHTML = '<p class="texto-vazio">' + escapeHtml(tr('pf_vazio')) + '</p>';
           return;
@@ -18021,19 +18162,25 @@
           } else if (tipo === 'nicho') {
             miniatura = '<span class="pf-thumb pf-thumb-vazio" aria-hidden="true">Aa</span>';
             sub = item.texto_en || '';
+          } else if (tipo === 'servico') {
+            miniatura = '<span class="pf-thumb pf-thumb-vazio" aria-hidden="true">' + String(idx + 1).padStart(2, '0') + '</span>';
+            sub = (item.texto_pt || '').slice(0, 90);
+          } else if (tipo === 'data') {
+            miniatura = '<span class="pf-thumb pf-thumb-vazio" aria-hidden="true">' + pfFormatarDia(item) + '</span>';
+            sub = (item.texto_pt || '').slice(0, 90);
           } else {
             miniatura = item.logo_url
               ? '<img class="pf-thumb pf-thumb-logo" src="' + escapeHtml(pfUrlImagem(item.logo_url)) + '" alt="" loading="lazy">'
               : '<span class="pf-thumb pf-thumb-vazio" aria-hidden="true">Aa</span>';
             sub = tipo === 'feedback' ? (item.texto_pt || '').slice(0, 90) : '';
           }
+          const mover = tipo === 'data' ? '' : '<button type="button" class="cal-btn cal-btn-icon pf-mover" data-dir="-1" aria-label="↑"' + (idx === 0 ? ' disabled' : '') + '>↑</button>'
+            + '<button type="button" class="cal-btn cal-btn-icon pf-mover" data-dir="1" aria-label="↓"' + (idx === itens.length - 1 ? ' disabled' : '') + '>↓</button>';
           return '<div class="pf-linha' + (item.ativo ? '' : ' pf-linha-inativo') + '" data-id="' + item.id + '">'
             + miniatura
             + '<div class="pf-linha-texto"><span class="pf-linha-titulo">' + escapeHtml(item.titulo) + '</span>'
             + '<span class="pf-linha-sub">' + escapeHtml(sub) + (item.ativo ? '' : ' · ' + escapeHtml(tr('pf_oculto'))) + '</span></div>'
-            + '<div class="pf-linha-acoes">'
-            + '<button type="button" class="cal-btn cal-btn-icon pf-mover" data-dir="-1" aria-label="↑"' + (idx === 0 ? ' disabled' : '') + '>↑</button>'
-            + '<button type="button" class="cal-btn cal-btn-icon pf-mover" data-dir="1" aria-label="↓"' + (idx === itens.length - 1 ? ' disabled' : '') + '>↓</button>'
+            + '<div class="pf-linha-acoes">' + mover
             + '<button type="button" class="cal-btn pf-editar-item">✎</button>'
             + '</div></div>';
         }).join('');
@@ -18046,6 +18193,24 @@
           + '<div class="pf-linha-texto"><span class="pf-linha-titulo">' + escapeHtml(tr('pf_t_' + padrao.key)) + (ov ? ' · ' + escapeHtml(tr('pf_editado')) : '') + '</span>'
           + '<span class="pf-linha-sub">' + escapeHtml(atual.replace(/\n/g, ' ')) + '</span></div>'
           + '<div class="pf-linha-acoes"><button type="button" class="cal-btn pf-editar-texto">✎</button></div></div>';
+      }).join('');
+
+      document.getElementById('pf-lista-contato').innerHTML = PF_CONTATOS_PADRAO.map((padrao) => {
+        const ov = pfOverride('contato', padrao.key);
+        const atual = ov ? ov.texto_pt : padrao.valor;
+        return '<div class="pf-linha" data-contato-key="' + padrao.key + '">'
+          + '<div class="pf-linha-texto"><span class="pf-linha-titulo">' + escapeHtml(tr('pf_c_' + padrao.key)) + (ov ? ' · ' + escapeHtml(tr('pf_editado')) : '') + '</span>'
+          + '<span class="pf-linha-sub">' + escapeHtml(atual) + '</span></div>'
+          + '<div class="pf-linha-acoes"><button type="button" class="cal-btn pf-editar-contato">✎</button></div></div>';
+      }).join('');
+
+      document.getElementById('pf-lista-data-padrao').innerHTML = PF_DATAS_PADRAO.map((padrao) => {
+        const ov = pfOverride('data', padrao.key);
+        const oculta = ov && !ov.ativo;
+        return '<div class="pf-linha' + (oculta ? ' pf-linha-inativo' : '') + '" data-data-key="' + padrao.key + '">'
+          + '<div class="pf-linha-texto"><span class="pf-linha-titulo">' + escapeHtml(tr('pf_d_' + padrao.key)) + (ov ? ' · ' + escapeHtml(tr(oculta ? 'pf_oculto' : 'pf_editado')) : '') + '</span>'
+          + '<span class="pf-linha-sub">' + escapeHtml(ov && ov.titulo ? ov.titulo : padrao.pt_t) + '</span></div>'
+          + '<div class="pf-linha-acoes"><button type="button" class="cal-btn pf-editar-data-padrao">✎</button></div></div>';
       }).join('');
 
       document.getElementById('pf-lista-foto').innerHTML = PF_FOTOS_PADRAO.map((padrao) => {
@@ -18061,56 +18226,93 @@
       }).join('');
     }
 
-    function pfAbrirModal(tipo, item, textoChave) {
+    function pfFormatarDia(item) {
+      if (!item.data_dia || !item.data_mes) return '--';
+      return String(item.data_dia).padStart(2, '0') + '/' + String(item.data_mes).padStart(2, '0');
+    }
+
+    function pfAbrirModal(tipo, item, chave) {
       pfTipoAberto = tipo;
       pfAbertoId = item ? item.id : null;
-      pfTextoChave = textoChave || null;
+      pfChave = chave || null;
       pfLogoUrl = item ? item.logo_url || null : null;
       const ehTexto = tipo === 'texto';
+      const ehContato = tipo === 'contato';
+      const ehDataPadrao = tipo === 'data' && !!pfChave;
+      const padraoData = ehDataPadrao ? PF_DATAS_PADRAO.find((d) => d.key === pfChave) : null;
       const nomes = {
         video: ['pf_novo_video', 'pf_editar_video', 'pf_lbl_marca'],
         feedback: ['pf_novo_feedback', 'pf_editar_feedback', 'pf_lbl_nome_feedback'],
         marca: ['pf_nova_marca', 'pf_editar_marca', 'pf_lbl_marca'],
         nicho: ['pf_novo_nicho', 'pf_editar_nicho', 'pf_lbl_nicho_nome'],
+        servico: ['pf_novo_servico', 'pf_editar_servico', 'pf_lbl_servico_nome'],
+        data: ['pf_nova_data', 'pf_editar_data', 'pf_lbl_data_titulo'],
         texto: ['pf_editar_texto', 'pf_editar_texto', 'pf_lbl_marca'],
+        contato: ['pf_editar_contato', 'pf_editar_contato', 'pf_lbl_marca'],
       }[tipo];
-      document.getElementById('pf-modal-titulo').textContent = ehTexto ? tr('pf_t_' + textoChave) : tr(item ? nomes[1] : nomes[0]);
-      document.getElementById('pf-lbl-titulo').textContent = tr(nomes[2]);
+      let titulo = tr(item ? nomes[1] : nomes[0]);
+      if (ehTexto) titulo = tr('pf_t_' + pfChave);
+      if (ehContato) titulo = tr('pf_c_' + pfChave);
+      if (ehDataPadrao) titulo = tr('pf_d_' + pfChave);
+      document.getElementById('pf-modal-titulo').textContent = titulo;
+      document.getElementById('pf-lbl-titulo').textContent = ehContato ? tr('pf_c_' + pfChave) : tr(nomes[2]);
       document.getElementById('pf-grupo-titulo').hidden = ehTexto;
-      document.getElementById('pf-campo-titulo').value = item && !ehTexto ? item.titulo : '';
-      document.getElementById('pf-grupo-nome-en').hidden = tipo !== 'nicho';
-      document.getElementById('pf-campo-nome-en').value = item && tipo === 'nicho' ? item.texto_en || '' : '';
+      document.getElementById('pf-campo-titulo').value = item && !ehTexto ? (ehContato ? item.texto_pt || '' : item.titulo) : '';
+      if (ehContato && !item) document.getElementById('pf-campo-titulo').value = PF_CONTATOS_PADRAO.find((c) => c.key === pfChave).valor;
+      if (ehDataPadrao && !item) document.getElementById('pf-campo-titulo').value = padraoData.pt_t;
+      const temNomeEn = tipo === 'nicho' || tipo === 'servico' || tipo === 'data';
+      document.getElementById('pf-grupo-nome-en').hidden = !temNomeEn;
+      document.getElementById('pf-lbl-nome-en').textContent = tr(tipo === 'servico' ? 'pf_lbl_servico_nome_en' : tipo === 'data' ? 'pf_lbl_data_titulo_en' : 'pf_lbl_nicho_nome_en');
+      let nomeEn = '';
+      if (item) nomeEn = (tipo === 'nicho' ? item.texto_en : item.titulo_en) || '';
+      else if (ehDataPadrao) nomeEn = padraoData.en_t;
+      document.getElementById('pf-campo-nome-en').value = nomeEn;
       document.getElementById('pf-grupo-video').hidden = tipo !== 'video';
       document.getElementById('pf-grupo-nicho').hidden = tipo !== 'video';
       if (tipo === 'video') {
         document.getElementById('pf-campo-categoria').innerHTML = pfNichos().map((n) => '<option value="' + escapeHtml(n.categoria) + '">' + escapeHtml(n.titulo) + '</option>').join('');
+        document.getElementById('pf-campo-categoria').value = item && item.categoria ? item.categoria : pfNichos()[0].categoria;
       }
-      document.getElementById('pf-grupo-texto').hidden = !(tipo === 'feedback' || ehTexto);
-      document.getElementById('pf-lbl-texto-pt').textContent = tr(ehTexto ? 'pf_lbl_texto_geral_pt' : 'pf_lbl_texto_pt');
-      document.getElementById('pf-lbl-texto-en').textContent = tr(ehTexto ? 'pf_lbl_texto_geral_en' : 'pf_lbl_texto_en');
+      const temTexto = tipo === 'feedback' || ehTexto || tipo === 'servico' || tipo === 'data';
+      document.getElementById('pf-grupo-texto').hidden = !temTexto;
+      const rotulosTexto = { feedback: ['pf_lbl_texto_pt', 'pf_lbl_texto_en'], texto: ['pf_lbl_texto_geral_pt', 'pf_lbl_texto_geral_en'], servico: ['pf_lbl_desc_pt', 'pf_lbl_desc_en'], data: ['pf_lbl_sub_pt', 'pf_lbl_sub_en'] }[tipo];
+      if (rotulosTexto) {
+        document.getElementById('pf-lbl-texto-pt').textContent = tr(rotulosTexto[0]);
+        document.getElementById('pf-lbl-texto-en').textContent = tr(rotulosTexto[1]);
+      }
       document.getElementById('pf-grupo-logo').hidden = !(tipo === 'feedback' || tipo === 'marca');
-      document.getElementById('pf-grupo-ativo').hidden = ehTexto;
+      document.getElementById('pf-grupo-data').hidden = !(tipo === 'data' && !pfChave);
+      document.getElementById('pf-grupo-ativo').hidden = ehTexto || ehContato;
       document.getElementById('pf-lbl-logo').textContent = tr(tipo === 'marca' ? 'pf_lbl_logo' : 'pf_lbl_logo_opcional');
       document.getElementById('pf-campo-youtube').value = item && item.youtube_id ? 'https://youtube.com/shorts/' + item.youtube_id : '';
-      if (tipo === 'video') document.getElementById('pf-campo-categoria').value = item && item.categoria ? item.categoria : pfNichos()[0].categoria;
-      if (ehTexto) {
-        const padrao = PF_TEXTOS_PADRAO.find((t) => t.key === textoChave);
-        document.getElementById('pf-campo-texto-pt').value = item ? item.texto_pt || '' : padrao.pt;
-        document.getElementById('pf-campo-texto-en').value = item ? item.texto_en || '' : padrao.en;
-        const dica = document.getElementById('pf-dica-texto');
-        dica.hidden = !padrao.destaque;
-        dica.textContent = tr('pf_dica_destaque');
-      } else {
-        document.getElementById('pf-campo-texto-pt').value = item ? item.texto_pt || '' : '';
-        document.getElementById('pf-campo-texto-en').value = item ? item.texto_en || '' : '';
-        document.getElementById('pf-dica-texto').hidden = true;
+      let textoPt = item ? item.texto_pt || '' : '';
+      let textoEn = item ? item.texto_en || '' : '';
+      if (ehTexto && !item) {
+        const padrao = PF_TEXTOS_PADRAO.find((t) => t.key === pfChave);
+        textoPt = padrao.pt;
+        textoEn = padrao.en;
+      }
+      if (ehDataPadrao && !item) {
+        textoPt = padraoData.pt_s;
+        textoEn = padraoData.en_s;
+      }
+      document.getElementById('pf-campo-texto-pt').value = textoPt;
+      document.getElementById('pf-campo-texto-en').value = textoEn;
+      const dica = document.getElementById('pf-dica-texto');
+      const padraoTexto = ehTexto ? PF_TEXTOS_PADRAO.find((t) => t.key === pfChave) : null;
+      dica.hidden = !(padraoTexto && padraoTexto.destaque) && !ehContato;
+      dica.textContent = ehContato ? tr('pf_dica_c_' + pfChave) : tr('pf_dica_destaque');
+      if (tipo === 'data' && !pfChave) {
+        document.getElementById('pf-campo-mes').value = item && item.data_mes ? item.data_mes : new Date().getMonth() + 1;
+        document.getElementById('pf-campo-dia').value = item && item.data_dia ? item.data_dia : '';
       }
       document.getElementById('pf-campo-ativo').checked = item ? !!item.ativo : true;
       document.getElementById('pf-logo-status').textContent = '';
       pfAtualizarLogoPrevia();
+      const voltaAoOriginal = ehTexto || ehContato || ehDataPadrao;
       const btnExcluir = document.getElementById('pf-modal-excluir');
       btnExcluir.hidden = !item;
-      btnExcluir.textContent = tr(ehTexto ? 'pf_original' : 'excluir');
+      btnExcluir.textContent = tr(voltaAoOriginal ? 'pf_original' : 'excluir');
       document.getElementById('pf-modal-overlay').hidden = false;
     }
 
@@ -18193,23 +18395,44 @@
       }
     }
 
+    function pfNormalizarContato(chave, bruto) {
+      const v = (bruto || '').trim();
+      if (chave === 'whatsapp') {
+        const digitos = v.replace(/\D/g, '');
+        return digitos.length >= 10 && digitos.length <= 15 ? digitos : null;
+      }
+      if (chave === 'whatsapp_msg') return v || null;
+      if (chave === 'email') return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? v : null;
+      const usuario = v.replace(/[?#].*$/, '').replace(/\/+$/, '').split('/').pop().replace(/^@/, '').trim();
+      return /^[A-Za-z0-9._]{1,40}$/.test(usuario) ? usuario : null;
+    }
+
     async function pfSalvar() {
       const tipo = pfTipoAberto;
+      const campoTitulo = document.getElementById('pf-campo-titulo').value.trim();
+      const nomeEn = document.getElementById('pf-campo-nome-en').value.trim();
+      const textoPt = document.getElementById('pf-campo-texto-pt').value.trim();
+      const textoEn = document.getElementById('pf-campo-texto-en').value.trim() || null;
       let linha;
       if (tipo === 'texto') {
-        const pt = document.getElementById('pf-campo-texto-pt').value.trim();
-        if (!pt) {
+        if (!textoPt) {
           alert(tr('pf_preencha_texto'));
           return;
         }
-        linha = { tipo, titulo: tr('pf_t_' + pfTextoChave), categoria: pfTextoChave, texto_pt: pt, texto_en: document.getElementById('pf-campo-texto-en').value.trim() || null, ordem: 0, ativo: true };
+        linha = { tipo, titulo: tr('pf_t_' + pfChave), categoria: pfChave, texto_pt: textoPt, texto_en: textoEn, ordem: 0, ativo: true };
+      } else if (tipo === 'contato') {
+        const valor = pfNormalizarContato(pfChave, campoTitulo);
+        if (!valor) {
+          alert(tr('pf_contato_invalido'));
+          return;
+        }
+        linha = { tipo, titulo: tr('pf_c_' + pfChave), categoria: pfChave, texto_pt: valor, ordem: 0, ativo: true };
       } else {
-        const titulo = document.getElementById('pf-campo-titulo').value.trim();
-        if (!titulo) {
+        if (!campoTitulo) {
           alert(tr('pf_preencha_nome'));
           return;
         }
-        linha = { tipo, titulo, ativo: document.getElementById('pf-campo-ativo').checked, youtube_id: null, categoria: null, texto_pt: null, texto_en: null, logo_url: null };
+        linha = { tipo, titulo: campoTitulo, ativo: document.getElementById('pf-campo-ativo').checked, youtube_id: null, categoria: null, texto_pt: null, texto_en: null, logo_url: null };
         if (tipo === 'video') {
           const id = pfExtrairYoutubeId(document.getElementById('pf-campo-youtube').value);
           if (!id) {
@@ -18219,17 +18442,44 @@
           linha.youtube_id = id;
           linha.categoria = document.getElementById('pf-campo-categoria').value;
         } else if (tipo === 'feedback') {
-          linha.texto_pt = document.getElementById('pf-campo-texto-pt').value.trim();
-          linha.texto_en = document.getElementById('pf-campo-texto-en').value.trim() || null;
+          linha.texto_pt = textoPt;
+          linha.texto_en = textoEn;
           linha.logo_url = pfLogoUrl;
           if (!linha.texto_pt) {
             alert(tr('pf_preencha_texto'));
             return;
           }
         } else if (tipo === 'nicho') {
-          linha.texto_en = document.getElementById('pf-campo-nome-en').value.trim() || titulo;
+          linha.texto_en = nomeEn || campoTitulo;
           const atual = pfAbertoId ? pfItens.find((i) => i.id === pfAbertoId) : null;
-          linha.categoria = atual ? atual.categoria : pfSlug(titulo);
+          linha.categoria = atual ? atual.categoria : pfSlug(campoTitulo);
+        } else if (tipo === 'servico') {
+          if (!textoPt) {
+            alert(tr('pf_preencha_texto'));
+            return;
+          }
+          linha.titulo_en = nomeEn || campoTitulo;
+          linha.texto_pt = textoPt;
+          linha.texto_en = textoEn;
+        } else if (tipo === 'data') {
+          linha.titulo_en = nomeEn || campoTitulo;
+          linha.texto_pt = textoPt || null;
+          linha.texto_en = textoEn;
+          if (pfChave) {
+            linha.categoria = pfChave;
+            linha.ordem = 0;
+          } else {
+            const mes = Number(document.getElementById('pf-campo-mes').value);
+            const dia = Number(document.getElementById('pf-campo-dia').value);
+            const teste = new Date(2024, mes - 1, dia);
+            if (!mes || !dia || teste.getMonth() !== mes - 1 || teste.getDate() !== dia) {
+              alert(tr('pf_data_invalida'));
+              return;
+            }
+            linha.data_mes = mes;
+            linha.data_dia = dia;
+            linha.ordem = 0;
+          }
         } else {
           linha.logo_url = pfLogoUrl;
           if (!linha.logo_url) {
@@ -18246,7 +18496,7 @@
           ({ error } = await Auth.sb.from('portfolio_itens').update(linha).eq('id', pfAbertoId));
         } else {
           const ordens = pfItens.filter((i) => i.tipo === tipo).map((i) => i.ordem);
-          if (tipo !== 'texto') linha.ordem = (ordens.length ? Math.max(...ordens) : 0) + 1;
+          if (linha.ordem === undefined) linha.ordem = (ordens.length ? Math.max(...ordens) : 0) + 1;
           ({ error } = await Auth.sb.from('portfolio_itens').insert(linha));
         }
         if (error) throw error;
@@ -18262,8 +18512,8 @@
 
     async function pfExcluir() {
       if (!pfAbertoId) return;
-      if (pfTipoAberto === 'texto') {
-        await pfRestaurar('texto', pfTextoChave);
+      if (pfTipoAberto === 'texto' || pfTipoAberto === 'contato' || (pfTipoAberto === 'data' && pfChave)) {
+        await pfRestaurar(pfTipoAberto, pfChave);
         return;
       }
       let mensagem = tr('pf_confirmar_excluir');
@@ -18315,6 +18565,18 @@
         if (linhaTexto) {
           const chave = linhaTexto.dataset.textoKey;
           if (e.target.closest('.pf-editar-texto')) pfAbrirModal('texto', pfOverride('texto', chave), chave);
+          return;
+        }
+        const linhaContato = e.target.closest('[data-contato-key]');
+        if (linhaContato) {
+          const chave = linhaContato.dataset.contatoKey;
+          if (e.target.closest('.pf-editar-contato')) pfAbrirModal('contato', pfOverride('contato', chave), chave);
+          return;
+        }
+        const linhaData = e.target.closest('[data-data-key]');
+        if (linhaData) {
+          const chave = linhaData.dataset.dataKey;
+          if (e.target.closest('.pf-editar-data-padrao')) pfAbrirModal('data', pfOverride('data', chave), chave);
           return;
         }
         const linhaFoto = e.target.closest('[data-foto-key]');

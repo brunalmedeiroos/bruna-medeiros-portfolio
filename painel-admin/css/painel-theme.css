@@ -9631,3 +9631,21 @@
 .painel-body #pf-modal-overlay [hidden] {
   display: none;
 }
+
+.painel-body .pf-subtitulo {
+  margin: 16px 0 8px;
+  font-size: 14px;
+}
+
+.painel-body .pf-data-linha {
+  display: flex;
+  gap: 8px;
+}
+
+.painel-body .pf-data-linha input {
+  width: 90px;
+}
+
+.painel-body .pf-data-linha select {
+  flex: 1;
+}

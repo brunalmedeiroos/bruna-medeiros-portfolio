@@ -40,16 +40,21 @@ export default {
 
     if (error) return jsonResponse({ ok: false, error: error.message }, 500);
 
-    // Vídeos, feedbacks, marcas, nichos, textos e fotos editados no painel (aba Portfólio > Editar).
-    // Se a tabela ainda não existe, o site simplesmente segue com o conteúdo fixo.
-    const { data: itensEditaveis } = await ctx.supabaseAdmin
-      .from("portfolio_itens")
-      .select("tipo, titulo, youtube_id, categoria, texto_pt, texto_en, logo_url")
-      .eq("ativo", true)
-      .order("ordem", { ascending: true })
-      .order("created_at", { ascending: true });
-    const lista = itensEditaveis ?? [];
-    const porTipo = (tipo: string) => lista.filter((i) => i.tipo === tipo);
+    // Itens editados no painel (aba Portfólio > Editar). Se a tabela ainda não existe,
+    // o site simplesmente segue com o conteúdo fixo. Se as colunas novas (titulo_en,
+    // data_mes, data_dia) ainda não existem, cai pra lista antiga de colunas.
+    const COLUNAS_NOVAS = "tipo, titulo, titulo_en, youtube_id, categoria, texto_pt, texto_en, logo_url, data_mes, data_dia, ativo";
+    const COLUNAS_ANTIGAS = "tipo, titulo, youtube_id, categoria, texto_pt, texto_en, logo_url, ativo";
+    const buscar = (colunas: string) =>
+      // deno-lint-ignore no-explicit-any
+      (ctx.supabaseAdmin.from("portfolio_itens").select(colunas) as any)
+        .order("ordem", { ascending: true })
+        .order("created_at", { ascending: true });
+    let { data: itensEditaveis, error: erroItens } = await buscar(COLUNAS_NOVAS);
+    if (erroItens) ({ data: itensEditaveis } = await buscar(COLUNAS_ANTIGAS));
+    // deno-lint-ignore no-explicit-any
+    const lista: any[] = itensEditaveis ?? [];
+    const porTipo = (tipo: string) => lista.filter((i) => i.tipo === tipo && i.ativo);
 
     return jsonResponse({
       ok: true,
@@ -60,6 +65,10 @@ export default {
       nichos: porTipo("nicho"),
       textos: porTipo("texto"),
       fotos: porTipo("foto"),
+      contatos: porTipo("contato"),
+      servicos: porTipo("servico"),
+      // Datas: as desligadas também vão, pra o site esconder a data fixa correspondente.
+      datas: lista.filter((i) => i.tipo === "data"),
     });
   }),
 };

@@ -1599,11 +1599,11 @@ a.info-value:hover{ text-decoration:underline; }
 
     <form class="contact-form-glass" id="formularioProposta">
       <div class="form-title" data-texto="form_titulo" data-pt="formulário de proposta" data-en="proposal form">formulário de proposta</div>
-      <div class="form-field"><label for="cName" data-pt="Nome" data-en="Name">Nome</label><input id="cName" type="text" placeholder="seu nome" data-pt-placeholder="seu nome" data-en-placeholder="your name" required></div>
-      <div class="form-field"><label for="cCompany" data-pt="Empresa" data-en="Company">Empresa</label><input id="cCompany" type="text" placeholder="nome da marca" data-pt-placeholder="nome da marca" data-en-placeholder="brand name"></div>
-      <div class="form-field"><label for="cEmail" data-pt="E-mail" data-en="Email">E-mail</label><input id="cEmail" type="email" placeholder="voce@empresa.com" data-pt-placeholder="voce@empresa.com" data-en-placeholder="you@company.com" required></div>
+      <div class="form-field"><label for="cName" data-texto="form_nome" data-pt="Nome" data-en="Name">Nome</label><input id="cName" type="text" placeholder="seu nome" data-pt-placeholder="seu nome" data-en-placeholder="your name" required></div>
+      <div class="form-field"><label for="cCompany" data-texto="form_empresa" data-pt="Empresa" data-en="Company">Empresa</label><input id="cCompany" type="text" placeholder="nome da marca" data-pt-placeholder="nome da marca" data-en-placeholder="brand name"></div>
+      <div class="form-field"><label for="cEmail" data-texto="form_email" data-pt="E-mail" data-en="Email">E-mail</label><input id="cEmail" type="email" placeholder="voce@empresa.com" data-pt-placeholder="voce@empresa.com" data-en-placeholder="you@company.com" required></div>
       <div class="form-field"><label for="cWhats">WhatsApp</label><input id="cWhats" type="tel" placeholder="(00) 00000-0000"></div>
-      <div class="form-field"><label for="cBrief" data-pt="Briefing" data-en="Brief">Briefing</label><textarea id="cBrief" placeholder="conte um pouco sobre a campanha" data-pt-placeholder="conte um pouco sobre a campanha" data-en-placeholder="tell me a bit about the campaign"></textarea></div>
+      <div class="form-field"><label for="cBrief" data-texto="form_briefing" data-pt="Briefing" data-en="Brief">Briefing</label><textarea id="cBrief" placeholder="conte um pouco sobre a campanha" data-pt-placeholder="conte um pouco sobre a campanha" data-en-placeholder="tell me a bit about the campaign"></textarea></div>
       <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;" data-texto="form_botao" data-pt="Enviar proposta" data-en="Send proposal">Enviar proposta</button>
       <div class="form-note" data-texto="form_nota" data-pt="* Conecte este formulário a um serviço de e-mail/CRM de sua preferência." data-en="* Connect this form to an email/CRM service of your choice.">* Conecte este formulário a um serviço de e-mail/CRM de sua preferência.</div>
       <div class="form-success" id="formSuccess" data-texto="form_sucesso" data-pt="Recebido! A Bruna vai te responder em breve." data-en="Got it! Bruna will get back to you soon.">Recebido! A Bruna vai te responder em breve.</div>
@@ -1657,18 +1657,18 @@ a.info-value:hover{ text-decoration:underline; }
       <span class="popup-dot d-yellow"></span>
       <span class="popup-dot d-green"></span>
     </div>
-    <span class="popup-filename" data-pt="proposta_rápida.exe" data-en="quick_proposal.exe">proposta_rápida.exe</span>
+    <span class="popup-filename" data-texto="popup_arquivo" data-pt="proposta_rápida.exe" data-en="quick_proposal.exe">proposta_rápida.exe</span>
     <button class="popup-close" id="popupClose" aria-label="Fechar">✕</button>
   </div>
   <div class="popup-body">
-    <h4 data-pt-html="me conta rapidinho o que você&amp;nbsp;precisa." data-en-html="quickly tell me what you&amp;nbsp;need.">me conta rapidinho o que você&nbsp;precisa.</h4>
+    <h4 data-texto="popup_titulo" data-pt-html="me conta rapidinho o que você&amp;nbsp;precisa." data-en-html="quickly tell me what you&amp;nbsp;need.">me conta rapidinho o que você&nbsp;precisa.</h4>
     <form id="popupForm">
-      <div class="form-field"><label data-pt="nome" data-en="name">nome</label><input type="text" placeholder="seu nome" data-pt-placeholder="seu nome" data-en-placeholder="your name" required></div>
-      <div class="form-field"><label data-pt="empresa" data-en="company">empresa</label><input type="text" placeholder="nome da marca" data-pt-placeholder="nome da marca" data-en-placeholder="brand name"></div>
+      <div class="form-field"><label data-texto="popup_nome" data-pt="nome" data-en="name">nome</label><input type="text" placeholder="seu nome" data-pt-placeholder="seu nome" data-en-placeholder="your name" required></div>
+      <div class="form-field"><label data-texto="popup_empresa" data-pt="empresa" data-en="company">empresa</label><input type="text" placeholder="nome da marca" data-pt-placeholder="nome da marca" data-en-placeholder="brand name"></div>
       <div class="form-field"><label>email</label><input type="email" placeholder="email@empresa.com" data-pt-placeholder="email@empresa.com" data-en-placeholder="email@company.com" required></div>
       <div class="form-field"><label>whatsapp</label><input type="tel" placeholder="(00) 00000-0000"></div>
-      <div class="form-field"><label data-pt="mensagem" data-en="message">mensagem</label><textarea placeholder="objetivo da campanha, prazo, referências" data-pt-placeholder="objetivo da campanha, prazo, referências" data-en-placeholder="campaign goal, deadline, references"></textarea></div>
-      <button type="submit" class="btn btn-butter" data-pt="solicitar proposta" data-en="request a proposal">solicitar proposta</button>
+      <div class="form-field"><label data-texto="popup_mensagem" data-pt="mensagem" data-en="message">mensagem</label><textarea placeholder="objetivo da campanha, prazo, referências" data-pt-placeholder="objetivo da campanha, prazo, referências" data-en-placeholder="campaign goal, deadline, references"></textarea></div>
+      <button type="submit" class="btn btn-butter" data-texto="popup_botao" data-pt="solicitar proposta" data-en="request a proposal">solicitar proposta</button>
     </form>
   </div>
 </div>
@@ -2423,7 +2423,7 @@ a.info-value:hover{ text-decoration:underline; }
   var popupShown = false;
 
   function showPopup(){
-    if (popupShown) return;
+    if (popupShown || MODO_EDITOR) return;
     popupShown = true;
     popup.classList.add('is-visible');
     popupBackdrop.classList.add('is-visible');

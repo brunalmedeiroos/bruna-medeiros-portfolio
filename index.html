@@ -1732,13 +1732,101 @@ a.info-value:hover{ text-decoration:underline; }
     return card;
   }
 
+  /* Faixa de marcas e pastas de feedback: se o painel mandou itens, eles
+     substituem os fixos do HTML. Sem itens (ou com erro), o HTML fixo fica. */
+  function aplicarMarcas(marcas){
+    if (!Array.isArray(marcas)) return;
+    var validas = marcas.filter(function(m){ return m.logo_url && m.titulo; });
+    var track = document.querySelector('.marquee-track');
+    if (!validas.length || !track) return;
+    var porMetade = Math.max(validas.length, Math.ceil(16 / validas.length) * validas.length);
+    var metade = [];
+    for (var i = 0; i < porMetade; i++) metade.push(validas[i % validas.length]);
+    track.innerHTML = '';
+    metade.concat(metade).forEach(function(m){
+      var tile = document.createElement('div');
+      tile.className = 'brand-tile';
+      var img = document.createElement('img');
+      img.src = m.logo_url;
+      img.alt = m.titulo;
+      tile.appendChild(img);
+      track.appendChild(tile);
+    });
+  }
+
+  function comAspas(texto){
+    var t = (texto || '').trim();
+    if (!t) return '';
+    return /^["“]/.test(t) ? t : '"' + t + '"';
+  }
+
+  function aplicarFeedbacks(feedbacks){
+    if (!Array.isArray(feedbacks)) return;
+    var validos = feedbacks.filter(function(f){ return f.titulo && f.texto_pt; });
+    var grid = document.getElementById('feedbackGrid');
+    if (!validos.length || !grid) return;
+    grid.innerHTML = '';
+    validos.forEach(function(f){
+      var pt = comAspas(f.texto_pt);
+      var en = comAspas(f.texto_en) || pt;
+
+      var pasta = document.createElement('div');
+      pasta.className = 'feedback-folder';
+      var forma = document.createElement('div');
+      forma.className = 'folder-shape';
+      var peek = document.createElement('span');
+      peek.className = 'feedback-peek';
+      peek.setAttribute('data-pt', f.titulo);
+      peek.setAttribute('data-en', f.titulo);
+      peek.textContent = f.titulo;
+      var nota = document.createElement('div');
+      nota.className = 'feedback-note';
+
+      var logo = document.createElement('div');
+      if (f.logo_url){
+        logo.className = 'feedback-logo';
+        var img = document.createElement('img');
+        img.src = f.logo_url;
+        img.alt = f.titulo;
+        logo.appendChild(img);
+      } else {
+        logo.className = 'feedback-logo feedback-logo--text';
+        logo.setAttribute('data-pt', f.titulo);
+        logo.setAttribute('data-en', f.titulo);
+        logo.textContent = f.titulo;
+      }
+
+      var texto = document.createElement('p');
+      texto.setAttribute('data-pt', pt);
+      texto.setAttribute('data-en', en);
+      texto.textContent = currentLang === 'en' ? en : pt;
+
+      nota.appendChild(logo);
+      nota.appendChild(texto);
+      pasta.appendChild(forma);
+      pasta.appendChild(peek);
+      pasta.appendChild(nota);
+      grid.appendChild(pasta);
+    });
+  }
+
   function carregarPortfolioPublicavel(){
     return fetch(PORTFOLIO_PUBLICO_URL)
       .then(function(res){ return res.json(); })
       .then(function(resposta){
         if (!resposta || !resposta.ok || !Array.isArray(resposta.itens)) return;
+        aplicarMarcas(resposta.marcas);
+        aplicarFeedbacks(resposta.feedbacks);
         var grid = document.getElementById('filesGrid');
         if (!grid) return;
+        // Vídeos editados no painel (Portfólio > Editar) substituem os fixos do HTML.
+        if (Array.isArray(resposta.videos) && resposta.videos.length){
+          grid.querySelectorAll('.file-card').forEach(function(c){ c.remove(); });
+          resposta.videos.forEach(function(v){
+            if (!v.youtube_id || !v.titulo) return;
+            grid.appendChild(criarCardPortfolio({ marca: v.titulo, portfolio_youtube_id: v.youtube_id, portfolio_categoria: v.categoria }));
+          });
+        }
         resposta.itens.forEach(function(item){
           if (!item.portfolio_youtube_id || !item.marca) return;
           grid.appendChild(criarCardPortfolio(item));

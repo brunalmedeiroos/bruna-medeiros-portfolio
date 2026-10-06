@@ -39,6 +39,24 @@ export default {
       .order("data_entrega", { ascending: false });
 
     if (error) return jsonResponse({ ok: false, error: error.message }, 500);
-    return jsonResponse({ ok: true, itens: data });
+
+    // Vídeos, feedbacks e marcas editados no painel (aba Portfólio > Editar).
+    // Se a tabela ainda não existe, o site simplesmente segue com o conteúdo fixo.
+    const { data: itensEditaveis } = await ctx.supabaseAdmin
+      .from("portfolio_itens")
+      .select("tipo, titulo, youtube_id, categoria, texto_pt, texto_en, logo_url")
+      .eq("ativo", true)
+      .order("ordem", { ascending: true })
+      .order("created_at", { ascending: true });
+    const lista = itensEditaveis ?? [];
+    const porTipo = (tipo: string) => lista.filter((i) => i.tipo === tipo);
+
+    return jsonResponse({
+      ok: true,
+      itens: data,
+      videos: porTipo("video"),
+      feedbacks: porTipo("feedback"),
+      marcas: porTipo("marca"),
+    });
   }),
 };

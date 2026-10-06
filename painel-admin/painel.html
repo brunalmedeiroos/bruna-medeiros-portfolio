@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261001o">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261001p">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -198,6 +198,41 @@
 
         <!-- ---------- Aba: Portfólio ---------- -->
         <section id="panel-portfolio" class="tab-panel" hidden>
+          <div class="pf-acoes pf-fixo">
+            <button type="button" id="pf-btn-editar" class="cal-btn cal-btn-primario" data-i18n="pf_editar">✏️ Editar portfólio</button>
+            <button type="button" id="pf-btn-numeros" class="cal-btn" data-i18n="pf_voltar_numeros" hidden>← Voltar aos números</button>
+            <a class="cal-btn pf-link-site" href="https://brunamedeiros.com" target="_blank" rel="noopener" data-i18n="pf_ver_site">Ver o site</a>
+          </div>
+
+          <div id="pf-editor" class="pf-fixo" hidden>
+            <p class="dash-aviso" id="pf-aviso" hidden data-i18n="pf_aviso_tabela">Falta rodar o arquivo portfolio-itens-tabela.sql no Supabase pra editar o portfólio por aqui.</p>
+            <p class="texto-vazio" data-i18n="pf_dica">Salvou, já aparece no site (atualize a página dele pra ver).</p>
+
+            <div class="card pf-secao" data-tipo="video">
+              <div class="pf-secao-topo">
+                <h3 class="card-titulo" data-i18n="pf_videos">Vídeos</h3>
+                <button type="button" class="cal-btn cal-btn-primario pf-btn-novo" data-tipo="video" data-i18n="pf_adicionar">+ Adicionar</button>
+              </div>
+              <div class="pf-lista" id="pf-lista-video"></div>
+            </div>
+
+            <div class="card pf-secao" data-tipo="feedback">
+              <div class="pf-secao-topo">
+                <h3 class="card-titulo" data-i18n="pf_feedbacks">Feedbacks</h3>
+                <button type="button" class="cal-btn cal-btn-primario pf-btn-novo" data-tipo="feedback" data-i18n="pf_adicionar">+ Adicionar</button>
+              </div>
+              <div class="pf-lista" id="pf-lista-feedback"></div>
+            </div>
+
+            <div class="card pf-secao" data-tipo="marca">
+              <div class="pf-secao-topo">
+                <h3 class="card-titulo" data-i18n="pf_marcas">Marcas</h3>
+                <button type="button" class="cal-btn cal-btn-primario pf-btn-novo" data-tipo="marca" data-i18n="pf_adicionar">+ Adicionar</button>
+              </div>
+              <div class="pf-lista" id="pf-lista-marca"></div>
+            </div>
+          </div>
+
           <h2 class="saudacao" data-i18n="portfolio_ola">Olá! Aqui estão os números do seu portfólio.</h2>
 
           <div class="cards-numeros">
@@ -2895,6 +2930,61 @@
       </div>
     </div>
 
+    <!-- Modal: item do portfólio (vídeo, feedback ou marca) -->
+    <div id="pf-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pl-modal-pequeno">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo" id="pf-modal-titulo">Novo item</span>
+          <button id="pf-modal-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="pf-campo-titulo" id="pf-lbl-titulo">Nome</label>
+          <input type="text" id="pf-campo-titulo" maxlength="80">
+        </div>
+        <div class="cal-form-campo" id="pf-grupo-video" hidden>
+          <label for="pf-campo-youtube" data-i18n="pf_lbl_video">Link ou ID do vídeo do YouTube</label>
+          <input type="text" id="pf-campo-youtube" placeholder="https://youtube.com/shorts/...">
+        </div>
+        <div class="cal-form-campo" id="pf-grupo-nicho" hidden>
+          <label for="pf-campo-categoria" data-i18n="pf_lbl_nicho">Nicho</label>
+          <select id="pf-campo-categoria">
+            <option value="tech">Tech</option>
+            <option value="beleza">Beleza</option>
+            <option value="entretenimento">Entretenimento</option>
+            <option value="experiencia">Experiência</option>
+          </select>
+        </div>
+        <div class="cal-form-campo" id="pf-grupo-texto" hidden>
+          <label for="pf-campo-texto-pt" data-i18n="pf_lbl_texto_pt">Texto do feedback</label>
+          <textarea id="pf-campo-texto-pt" rows="4"></textarea>
+          <label for="pf-campo-texto-en" data-i18n="pf_lbl_texto_en">Texto em inglês (opcional)</label>
+          <textarea id="pf-campo-texto-en" rows="3"></textarea>
+        </div>
+        <div class="cal-form-campo" id="pf-grupo-logo" hidden>
+          <label id="pf-lbl-logo" data-i18n="pf_lbl_logo">Logo</label>
+          <div class="pf-logo-linha">
+            <img id="pf-logo-previa" class="pf-logo-previa" alt="" hidden>
+            <label class="cal-btn pf-btn-arquivo" for="pf-campo-logo" data-i18n="pf_enviar_logo">Enviar imagem</label>
+            <input type="file" id="pf-campo-logo" accept="image/*" hidden>
+            <button type="button" class="cal-btn" id="pf-logo-remover" data-i18n="pf_remover_logo" hidden>Remover</button>
+          </div>
+          <span class="texto-vazio" id="pf-logo-status"></span>
+        </div>
+        <label class="pf-ativo-linha">
+          <input type="checkbox" id="pf-campo-ativo" checked>
+          <span data-i18n="pf_lbl_ativo">Mostrar no site</span>
+        </label>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="pf-modal-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
+          <button type="button" id="pf-modal-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: proposta personalizada (calculadora, não é salva no banco) -->
     <div id="ugc-modal-proposta-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal pl-modal-grande">
@@ -3291,6 +3381,42 @@
         financeiro_ritmo_mes_passado: 'Mês passado',
         nav_dashboard: 'Dashboard',
         nav_portfolio: 'Portfólio',
+        pf_editar: '✏️ Editar portfólio',
+        pf_voltar_numeros: '← Voltar aos números',
+        pf_ver_site: 'Ver o site',
+        pf_aviso_tabela: 'Falta rodar o arquivo portfolio-itens-tabela.sql no Supabase pra editar o portfólio por aqui.',
+        pf_dica: 'Salvou, já aparece no site (atualize a página dele pra ver).',
+        pf_videos: 'Vídeos',
+        pf_feedbacks: 'Feedbacks',
+        pf_marcas: 'Marcas',
+        pf_adicionar: '+ Adicionar',
+        pf_vazio: 'Nada por aqui ainda.',
+        pf_oculto: 'oculto no site',
+        pf_novo_video: 'Novo vídeo',
+        pf_editar_video: 'Editar vídeo',
+        pf_novo_feedback: 'Novo feedback',
+        pf_editar_feedback: 'Editar feedback',
+        pf_nova_marca: 'Nova marca',
+        pf_editar_marca: 'Editar marca',
+        pf_lbl_marca: 'Nome da marca',
+        pf_lbl_nome_feedback: 'Nome da marca ou pessoa',
+        pf_lbl_video: 'Link ou ID do vídeo do YouTube',
+        pf_lbl_nicho: 'Nicho',
+        pf_lbl_texto_pt: 'Texto do feedback',
+        pf_lbl_texto_en: 'Texto em inglês (opcional)',
+        pf_lbl_logo: 'Logo',
+        pf_lbl_logo_opcional: 'Logo (opcional)',
+        pf_enviar_logo: 'Enviar imagem',
+        pf_remover_logo: 'Remover',
+        pf_lbl_ativo: 'Mostrar no site',
+        pf_enviando: 'Enviando...',
+        pf_imagem_grande: 'Imagem muito grande (máximo 5 MB).',
+        pf_erro_upload: 'Não foi possível enviar a imagem. Tente de novo.',
+        pf_preencha_nome: 'Preencha o nome.',
+        pf_preencha_texto: 'Preencha o texto do feedback.',
+        pf_preencha_logo: 'Envie o logo da marca.',
+        pf_video_invalido: 'Não consegui achar o ID do vídeo. Cole o link do YouTube (Shorts ou vídeo normal).',
+        pf_confirmar_excluir: 'Excluir esse item do portfólio? Ele sai do site.',
         nav_calendario: 'Calendário',
         nav_email: 'E-mail',
         nav_ferramentas: 'Ferramentas',
@@ -4184,6 +4310,42 @@
         financeiro_ritmo_mes_passado: 'Last month',
         nav_dashboard: 'Dashboard',
         nav_portfolio: 'Portfolio',
+        pf_editar: '✏️ Edit portfolio',
+        pf_voltar_numeros: '← Back to numbers',
+        pf_ver_site: 'View site',
+        pf_aviso_tabela: 'You still need to run portfolio-itens-tabela.sql in Supabase to edit the portfolio here.',
+        pf_dica: 'Once saved, it shows on the site (refresh the site page to see it).',
+        pf_videos: 'Videos',
+        pf_feedbacks: 'Feedback',
+        pf_marcas: 'Brands',
+        pf_adicionar: '+ Add',
+        pf_vazio: 'Nothing here yet.',
+        pf_oculto: 'hidden on the site',
+        pf_novo_video: 'New video',
+        pf_editar_video: 'Edit video',
+        pf_novo_feedback: 'New feedback',
+        pf_editar_feedback: 'Edit feedback',
+        pf_nova_marca: 'New brand',
+        pf_editar_marca: 'Edit brand',
+        pf_lbl_marca: 'Brand name',
+        pf_lbl_nome_feedback: 'Brand or person name',
+        pf_lbl_video: 'YouTube video link or ID',
+        pf_lbl_nicho: 'Niche',
+        pf_lbl_texto_pt: 'Feedback text',
+        pf_lbl_texto_en: 'English text (optional)',
+        pf_lbl_logo: 'Logo',
+        pf_lbl_logo_opcional: 'Logo (optional)',
+        pf_enviar_logo: 'Upload image',
+        pf_remover_logo: 'Remove',
+        pf_lbl_ativo: 'Show on the site',
+        pf_enviando: 'Uploading...',
+        pf_imagem_grande: 'Image too large (5 MB max).',
+        pf_erro_upload: "Couldn't upload the image. Try again.",
+        pf_preencha_nome: 'Fill in the name.',
+        pf_preencha_texto: 'Fill in the feedback text.',
+        pf_preencha_logo: "Upload the brand's logo.",
+        pf_video_invalido: "Couldn't find the video ID. Paste the YouTube link (Shorts or regular video).",
+        pf_confirmar_excluir: 'Delete this portfolio item? It will be removed from the site.',
         nav_calendario: 'Calendar',
         nav_email: 'Email',
         nav_ferramentas: 'Tools',
@@ -17066,6 +17228,7 @@
 
       document.getElementById('btn-nota-abrir').addEventListener('click', notaAbrir);
       document.getElementById('btn-nota-capa').addEventListener('click', notaAbrir);
+      pfLigarEventos();
       document.getElementById('nota-fechar').addEventListener('click', notaFechar);
       document.getElementById('nota-nova').addEventListener('click', async () => {
         const atual = notaAtual();
@@ -17669,6 +17832,269 @@
       document.getElementById('btn-abd-voltar-modelos').addEventListener('click', () => {
         abdMostrarItens = false;
         ferrRenderizar();
+      });
+    }
+
+    // ---- Portfólio > Editar portfólio (vídeos, feedbacks e marcas do site) ----
+    const PF_SITE = 'https://brunamedeiros.com/';
+    const PF_TIPOS = ['video', 'feedback', 'marca'];
+    const PF_NICHOS = { tech: 'Tech', beleza: 'Beleza', entretenimento: 'Entretenimento', experiencia: 'Experiência' };
+    let pfItens = [];
+    let pfAbertoId = null;
+    let pfTipoAberto = null;
+    let pfLogoUrl = null;
+
+    function pfUrlImagem(url) {
+      if (!url) return '';
+      return /^https?:/i.test(url) ? url : PF_SITE + url;
+    }
+
+    function pfExtrairYoutubeId(texto) {
+      const t = (texto || '').trim();
+      const m = t.match(/(?:youtu\.be\/|[?&]v=|shorts\/|embed\/)([A-Za-z0-9_-]{11})/);
+      if (m) return m[1];
+      return /^[A-Za-z0-9_-]{11}$/.test(t) ? t : null;
+    }
+
+    function pfSetModoEditor(editando) {
+      document.querySelectorAll('#panel-portfolio > :not(.pf-fixo)').forEach((el) => (el.hidden = editando));
+      document.getElementById('pf-editor').hidden = !editando;
+      document.getElementById('pf-btn-editar').hidden = editando;
+      document.getElementById('pf-btn-numeros').hidden = !editando;
+      document.getElementById('filtros-periodo').hidden = editando;
+      if (editando) pfCarregar();
+    }
+
+    async function pfCarregar() {
+      const { data, error } = await Auth.sb.from('portfolio_itens').select('*').order('ordem', { ascending: true }).order('created_at', { ascending: true });
+      document.getElementById('pf-aviso').hidden = !error;
+      if (error) {
+        console.error('Portfólio (portfolio-itens-tabela.sql) ainda não disponível:', error);
+        pfItens = [];
+      } else {
+        pfItens = data || [];
+      }
+      document.querySelectorAll('.pf-btn-novo').forEach((b) => (b.disabled = !!error));
+      pfRenderizar();
+    }
+
+    function pfRenderizar() {
+      PF_TIPOS.forEach((tipo) => {
+        const lista = document.getElementById('pf-lista-' + tipo);
+        const itens = pfItens.filter((i) => i.tipo === tipo);
+        if (!itens.length) {
+          lista.innerHTML = '<p class="texto-vazio">' + escapeHtml(tr('pf_vazio')) + '</p>';
+          return;
+        }
+        lista.innerHTML = itens.map((item, idx) => {
+          let miniatura = '';
+          let sub = '';
+          if (tipo === 'video') {
+            miniatura = '<img class="pf-thumb" src="https://i.ytimg.com/vi/' + encodeURIComponent(item.youtube_id || '') + '/mqdefault.jpg" alt="" loading="lazy">';
+            sub = PF_NICHOS[item.categoria] || '';
+          } else {
+            miniatura = item.logo_url
+              ? '<img class="pf-thumb pf-thumb-logo" src="' + escapeHtml(pfUrlImagem(item.logo_url)) + '" alt="" loading="lazy">'
+              : '<span class="pf-thumb pf-thumb-vazio" aria-hidden="true">Aa</span>';
+            sub = tipo === 'feedback' ? (item.texto_pt || '').slice(0, 90) : '';
+          }
+          return '<div class="pf-linha' + (item.ativo ? '' : ' pf-linha-inativo') + '" data-id="' + item.id + '">'
+            + miniatura
+            + '<div class="pf-linha-texto"><span class="pf-linha-titulo">' + escapeHtml(item.titulo) + '</span>'
+            + '<span class="pf-linha-sub">' + escapeHtml(sub) + (item.ativo ? '' : ' · ' + escapeHtml(tr('pf_oculto'))) + '</span></div>'
+            + '<div class="pf-linha-acoes">'
+            + '<button type="button" class="cal-btn cal-btn-icon pf-mover" data-dir="-1" aria-label="↑"' + (idx === 0 ? ' disabled' : '') + '>↑</button>'
+            + '<button type="button" class="cal-btn cal-btn-icon pf-mover" data-dir="1" aria-label="↓"' + (idx === itens.length - 1 ? ' disabled' : '') + '>↓</button>'
+            + '<button type="button" class="cal-btn pf-editar-item">✎</button>'
+            + '</div></div>';
+        }).join('');
+      });
+    }
+
+    function pfAbrirModal(tipo, item) {
+      pfTipoAberto = tipo;
+      pfAbertoId = item ? item.id : null;
+      pfLogoUrl = item ? item.logo_url || null : null;
+      const nomes = { video: ['pf_novo_video', 'pf_editar_video', 'pf_lbl_marca'], feedback: ['pf_novo_feedback', 'pf_editar_feedback', 'pf_lbl_nome_feedback'], marca: ['pf_nova_marca', 'pf_editar_marca', 'pf_lbl_marca'] }[tipo];
+      document.getElementById('pf-modal-titulo').textContent = tr(item ? nomes[1] : nomes[0]);
+      document.getElementById('pf-lbl-titulo').textContent = tr(nomes[2]);
+      document.getElementById('pf-campo-titulo').value = item ? item.titulo : '';
+      document.getElementById('pf-grupo-video').hidden = tipo !== 'video';
+      document.getElementById('pf-grupo-nicho').hidden = tipo !== 'video';
+      document.getElementById('pf-grupo-texto').hidden = tipo !== 'feedback';
+      document.getElementById('pf-grupo-logo').hidden = tipo === 'video';
+      document.getElementById('pf-lbl-logo').textContent = tr(tipo === 'marca' ? 'pf_lbl_logo' : 'pf_lbl_logo_opcional');
+      document.getElementById('pf-campo-youtube').value = item && item.youtube_id ? 'https://youtube.com/shorts/' + item.youtube_id : '';
+      document.getElementById('pf-campo-categoria').value = item && item.categoria ? item.categoria : 'tech';
+      document.getElementById('pf-campo-texto-pt').value = item ? item.texto_pt || '' : '';
+      document.getElementById('pf-campo-texto-en').value = item ? item.texto_en || '' : '';
+      document.getElementById('pf-campo-ativo').checked = item ? !!item.ativo : true;
+      document.getElementById('pf-logo-status').textContent = '';
+      pfAtualizarLogoPrevia();
+      document.getElementById('pf-modal-excluir').hidden = !item;
+      document.getElementById('pf-modal-overlay').hidden = false;
+    }
+
+    function pfAtualizarLogoPrevia() {
+      const img = document.getElementById('pf-logo-previa');
+      img.hidden = !pfLogoUrl;
+      img.src = pfLogoUrl ? pfUrlImagem(pfLogoUrl) : '';
+      document.getElementById('pf-logo-remover').hidden = !pfLogoUrl;
+    }
+
+    function pfFecharModal() {
+      pfAbertoId = null;
+      document.getElementById('pf-modal-overlay').hidden = true;
+    }
+
+    async function pfEnviarLogo(arquivo) {
+      if (!arquivo) return;
+      const status = document.getElementById('pf-logo-status');
+      if (arquivo.size > 5 * 1024 * 1024) {
+        status.textContent = tr('pf_imagem_grande');
+        return;
+      }
+      status.textContent = tr('pf_enviando');
+      const ext = (arquivo.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || 'png';
+      const nome = pfTipoAberto + '-' + Date.now() + '.' + ext;
+      try {
+        const { error } = await Auth.sb.storage.from('portfolio-imagens').upload(nome, arquivo, { contentType: arquivo.type });
+        if (error) throw error;
+        pfLogoUrl = Auth.sb.storage.from('portfolio-imagens').getPublicUrl(nome).data.publicUrl;
+        status.textContent = '';
+        pfAtualizarLogoPrevia();
+      } catch (err) {
+        console.error('Erro ao enviar logo do portfólio:', err);
+        status.textContent = tr('pf_erro_upload');
+      }
+    }
+
+    async function pfSalvar() {
+      const tipo = pfTipoAberto;
+      const titulo = document.getElementById('pf-campo-titulo').value.trim();
+      if (!titulo) {
+        alert(tr('pf_preencha_nome'));
+        return;
+      }
+      const linha = {
+        tipo,
+        titulo,
+        ativo: document.getElementById('pf-campo-ativo').checked,
+        youtube_id: null,
+        categoria: null,
+        texto_pt: null,
+        texto_en: null,
+        logo_url: null,
+      };
+      if (tipo === 'video') {
+        const id = pfExtrairYoutubeId(document.getElementById('pf-campo-youtube').value);
+        if (!id) {
+          alert(tr('pf_video_invalido'));
+          return;
+        }
+        linha.youtube_id = id;
+        linha.categoria = document.getElementById('pf-campo-categoria').value;
+      } else if (tipo === 'feedback') {
+        linha.texto_pt = document.getElementById('pf-campo-texto-pt').value.trim();
+        linha.texto_en = document.getElementById('pf-campo-texto-en').value.trim() || null;
+        linha.logo_url = pfLogoUrl;
+        if (!linha.texto_pt) {
+          alert(tr('pf_preencha_texto'));
+          return;
+        }
+      } else {
+        linha.logo_url = pfLogoUrl;
+        if (!linha.logo_url) {
+          alert(tr('pf_preencha_logo'));
+          return;
+        }
+      }
+      const btn = document.getElementById('pf-modal-salvar');
+      btn.disabled = true;
+      try {
+        let error;
+        if (pfAbertoId) {
+          ({ error } = await Auth.sb.from('portfolio_itens').update(linha).eq('id', pfAbertoId));
+        } else {
+          const ordens = pfItens.filter((i) => i.tipo === tipo).map((i) => i.ordem);
+          linha.ordem = (ordens.length ? Math.max(...ordens) : 0) + 1;
+          ({ error } = await Auth.sb.from('portfolio_itens').insert(linha));
+        }
+        if (error) throw error;
+        pfFecharModal();
+        await pfCarregar();
+      } catch (err) {
+        console.error('Erro ao salvar item do portfólio:', err);
+        alert(tr('erro_salvar_generico'));
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function pfExcluir() {
+      if (!pfAbertoId) return;
+      if (!(await confirmarAcao(tr('pf_confirmar_excluir')))) return;
+      try {
+        const { error } = await Auth.sb.from('portfolio_itens').delete().eq('id', pfAbertoId);
+        if (error) throw error;
+        pfFecharModal();
+        await pfCarregar();
+      } catch (err) {
+        console.error('Erro ao excluir item do portfólio:', err);
+        alert(tr('erro_excluir_generico'));
+      }
+    }
+
+    async function pfMover(id, direcao) {
+      const item = pfItens.find((i) => i.id === id);
+      if (!item) return;
+      const irmaos = pfItens.filter((i) => i.tipo === item.tipo);
+      const pos = irmaos.findIndex((i) => i.id === id);
+      const outro = irmaos[pos + direcao];
+      if (!outro) return;
+      // Reescreve a ordem 1..n da seção inteira, pra nunca depender de números repetidos.
+      const nova = irmaos.slice();
+      nova[pos] = outro;
+      nova[pos + direcao] = item;
+      try {
+        const resultados = await Promise.all(nova.map((it, i) => Auth.sb.from('portfolio_itens').update({ ordem: i + 1 }).eq('id', it.id)));
+        const falha = resultados.find((r) => r.error);
+        if (falha) throw falha.error;
+      } catch (err) {
+        console.error('Erro ao reordenar o portfólio:', err);
+        alert(tr('erro_salvar_generico'));
+      }
+      await pfCarregar();
+    }
+
+    function pfLigarEventos() {
+      document.getElementById('pf-btn-editar').addEventListener('click', () => pfSetModoEditor(true));
+      document.getElementById('pf-btn-numeros').addEventListener('click', () => pfSetModoEditor(false));
+      document.querySelectorAll('.pf-btn-novo').forEach((btn) => btn.addEventListener('click', () => pfAbrirModal(btn.dataset.tipo, null)));
+      document.getElementById('pf-editor').addEventListener('click', (e) => {
+        const linha = e.target.closest('.pf-linha');
+        if (!linha) return;
+        const id = linha.dataset.id;
+        const mover = e.target.closest('.pf-mover');
+        if (mover) {
+          pfMover(id, Number(mover.dataset.dir));
+          return;
+        }
+        if (e.target.closest('.pf-editar-item')) {
+          const item = pfItens.find((i) => i.id === id);
+          if (item) pfAbrirModal(item.tipo, item);
+        }
+      });
+      document.getElementById('pf-modal-fechar').addEventListener('click', pfFecharModal);
+      document.getElementById('pf-modal-salvar').addEventListener('click', pfSalvar);
+      document.getElementById('pf-modal-excluir').addEventListener('click', pfExcluir);
+      document.getElementById('pf-campo-logo').addEventListener('change', (e) => {
+        pfEnviarLogo(e.target.files[0]);
+        e.target.value = '';
+      });
+      document.getElementById('pf-logo-remover').addEventListener('click', () => {
+        pfLogoUrl = null;
+        pfAtualizarLogoPrevia();
       });
     }
 

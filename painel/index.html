@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001r">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001s">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -206,7 +206,30 @@
 
           <div id="pf-editor" class="pf-fixo" hidden>
             <p class="dash-aviso" id="pf-aviso" hidden data-i18n="pf_aviso_tabela">Falta rodar o arquivo portfolio-itens-tabela.sql no Supabase pra editar o portfólio por aqui.</p>
-            <p class="texto-vazio" data-i18n="pf_dica">Salvou, já aparece no site (atualize a página dele pra ver).</p>
+            <div id="pf-visual" class="pf-visual">
+              <div class="pf-abas" id="pf-abas" role="tablist">
+                <button type="button" class="pf-aba ativo" data-secao="hero" data-i18n="pf_s_hero">Hero</button>
+                <button type="button" class="pf-aba" data-secao="sobre" data-i18n="pf_s_sobre">Sobre</button>
+                <button type="button" class="pf-aba" data-secao="marcas" data-i18n="pf_s_marcas">Marcas</button>
+                <button type="button" class="pf-aba" data-secao="servicos" data-i18n="pf_s_servicos">Serviços</button>
+                <button type="button" class="pf-aba" data-secao="portfolio" data-i18n="pf_s_portfolio">Portfólio</button>
+                <button type="button" class="pf-aba" data-secao="feedbacks" data-i18n="pf_s_feedbacks">Feedbacks</button>
+                <button type="button" class="pf-aba" data-secao="contato" data-i18n="pf_s_contato">Contato</button>
+              </div>
+              <div class="pf-barra">
+                <div class="pf-barra-acoes" id="pf-barra-acoes"></div>
+                <div class="pf-dispositivos" id="pf-dispositivos">
+                  <button type="button" class="pf-disp ativo" data-disp="desktop" data-i18n="pf_disp_pc">Computador</button>
+                  <button type="button" class="pf-disp" data-disp="celular" data-i18n="pf_disp_cel">Celular</button>
+                </div>
+              </div>
+              <p class="texto-vazio" data-i18n="pf_dica_visual">Clique em qualquer parte do site pra editar. Salvou, a prévia atualiza sozinha.</p>
+              <div class="pf-moldura" id="pf-moldura">
+                <iframe id="pf-iframe" title="Prévia do portfólio"></iframe>
+              </div>
+            </div>
+
+            <div id="pf-listas" hidden>
 
             <div class="card pf-secao" data-tipo="video">
               <div class="pf-secao-topo">
@@ -256,17 +279,6 @@
               <div class="pf-lista" id="pf-lista-contato"></div>
             </div>
 
-            <div class="card pf-secao" data-tipo="data">
-              <div class="pf-secao-topo">
-                <h3 class="card-titulo" data-i18n="pf_datas">Datas comemorativas</h3>
-                <button type="button" class="cal-btn cal-btn-primario pf-btn-novo" data-tipo="data" data-i18n="pf_adicionar_data">+ Nova data</button>
-              </div>
-              <p class="texto-vazio" data-i18n="pf_dica_datas">A faixa do topo do site mostra sempre a próxima data da lista.</p>
-              <div class="pf-lista" id="pf-lista-data-padrao"></div>
-              <h4 class="pf-subtitulo" data-i18n="pf_datas_suas">Suas datas</h4>
-              <div class="pf-lista" id="pf-lista-data"></div>
-            </div>
-
             <div class="card pf-secao" data-tipo="texto">
               <div class="pf-secao-topo">
                 <h3 class="card-titulo" data-i18n="pf_textos">Textos</h3>
@@ -282,6 +294,28 @@
               <p class="texto-vazio" id="pf-foto-status"></p>
               <div class="pf-lista" id="pf-lista-foto"></div>
               <input type="file" id="pf-input-foto" accept="image/*" hidden>
+            </div>
+            </div>
+
+            <div id="pf-datas-overlay" class="pl-modal-overlay" hidden>
+              <div class="pl-modal pl-modal-grande">
+                <div class="pl-modal-topo">
+                  <span class="pl-modal-titulo-fixo" data-i18n="pf_datas">Datas comemorativas</span>
+                  <button id="pf-datas-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  </button>
+                </div>
+            <div class="card pf-secao" data-tipo="data">
+              <div class="pf-secao-topo">
+                <h3 class="card-titulo" data-i18n="pf_datas">Datas comemorativas</h3>
+                <button type="button" class="cal-btn cal-btn-primario pf-btn-novo" data-tipo="data" data-i18n="pf_adicionar_data">+ Nova data</button>
+              </div>
+              <p class="texto-vazio" data-i18n="pf_dica_datas">A faixa do topo do site mostra sempre a próxima data da lista.</p>
+              <div class="pf-lista" id="pf-lista-data-padrao"></div>
+              <h4 class="pf-subtitulo" data-i18n="pf_datas_suas">Suas datas</h4>
+              <div class="pf-lista" id="pf-lista-data"></div>
+            </div>
+              </div>
             </div>
           </div>
 
@@ -3055,6 +3089,11 @@
           <span data-i18n="pf_lbl_ativo">Mostrar no site</span>
         </label>
 
+        <div class="pf-mover-linha" id="pf-mover-linha" hidden>
+          <button type="button" class="cal-btn" id="pf-mover-antes" data-i18n="pf_mover_antes">← Mover pra trás</button>
+          <button type="button" class="cal-btn" id="pf-mover-depois" data-i18n="pf_mover_depois">Mover pra frente →</button>
+        </div>
+
         <div class="cal-form-acoes">
           <button type="button" id="pf-modal-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
           <button type="button" id="pf-modal-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
@@ -3566,6 +3605,30 @@
         pf_t_rodape_texto: 'Rodapé: apresentação',
         pf_t_rodape_local: 'Rodapé: localização',
         pf_t_rodape_copy: 'Rodapé: copyright',
+        pf_s_hero: 'Hero',
+        pf_s_sobre: 'Sobre',
+        pf_s_marcas: 'Marcas',
+        pf_s_servicos: 'Serviços',
+        pf_s_portfolio: 'Portfólio',
+        pf_s_feedbacks: 'Feedbacks',
+        pf_s_contato: 'Contato',
+        pf_dica_visual: 'Clique em qualquer parte do site pra editar. Salvou, a prévia atualiza sozinha.',
+        pf_disp_pc: 'Computador',
+        pf_disp_cel: 'Celular',
+        pf_b_datas: 'Datas comemorativas',
+        pf_b_foto_hero: 'Foto da capa',
+        pf_b_foto_sobre: 'Foto do Sobre',
+        pf_b_foto_lock: 'Foto da tela de bloqueio',
+        pf_b_novo_marca: '+ Marca',
+        pf_b_novo_servico: '+ Serviço',
+        pf_b_novo_video: '+ Vídeo',
+        pf_b_novo_nicho: '+ Nicho',
+        pf_b_novo_feedback: '+ Feedback',
+        pf_b_whatsapp_msg: 'Mensagem do WhatsApp',
+        pf_b_form_sucesso: 'Mensagem de sucesso do formulário',
+        pf_ocultos: 'Ocultos no site:',
+        pf_mover_antes: '← Mover pra trás',
+        pf_mover_depois: 'Mover pra frente →',
         pf_confirmar_excluir_nicho: 'Excluir esse nicho? {n} vídeo(s) estão nele e vão deixar de aparecer no site até você trocar o nicho deles.',
         pf_t_hero_badge: 'Início: faixa de apresentação',
         pf_t_hero_headline: 'Início: título principal',
@@ -4584,6 +4647,30 @@
         pf_t_rodape_texto: 'Footer: intro',
         pf_t_rodape_local: 'Footer: location',
         pf_t_rodape_copy: 'Footer: copyright',
+        pf_s_hero: 'Hero',
+        pf_s_sobre: 'About',
+        pf_s_marcas: 'Brands',
+        pf_s_servicos: 'Services',
+        pf_s_portfolio: 'Portfolio',
+        pf_s_feedbacks: 'Feedback',
+        pf_s_contato: 'Contact',
+        pf_dica_visual: 'Click anything on the site to edit it. Once saved, the preview updates itself.',
+        pf_disp_pc: 'Computer',
+        pf_disp_cel: 'Phone',
+        pf_b_datas: 'Special dates',
+        pf_b_foto_hero: 'Cover photo',
+        pf_b_foto_sobre: 'About photo',
+        pf_b_foto_lock: 'Lock screen photo',
+        pf_b_novo_marca: '+ Brand',
+        pf_b_novo_servico: '+ Service',
+        pf_b_novo_video: '+ Video',
+        pf_b_novo_nicho: '+ Niche',
+        pf_b_novo_feedback: '+ Feedback',
+        pf_b_whatsapp_msg: 'WhatsApp message',
+        pf_b_form_sucesso: 'Form success message',
+        pf_ocultos: 'Hidden on the site:',
+        pf_mover_antes: '← Move back',
+        pf_mover_depois: 'Move forward →',
         pf_confirmar_excluir_nicho: 'Delete this niche? {n} video(s) are in it and will stop showing on the site until you change their niche.',
         pf_t_hero_badge: 'Home: intro badge',
         pf_t_hero_headline: 'Home: main headline',
@@ -18152,6 +18239,7 @@
       document.getElementById('pf-btn-numeros').hidden = !editando;
       document.getElementById('filtros-periodo').hidden = editando;
       if (editando) pfCarregar();
+      else document.getElementById('pf-iframe').src = 'about:blank';
     }
 
     async function pfCarregar() {
@@ -18165,6 +18253,7 @@
       }
       document.querySelectorAll('.pf-btn-novo').forEach((b) => (b.disabled = !!error));
       pfRenderizar();
+      pfRecarregarPrevia();
     }
 
     function pfDoTipo(tipo) {
@@ -18250,6 +18339,7 @@
           + '<button type="button" class="cal-btn pf-trocar-foto">' + escapeHtml(tr('pf_trocar')) + '</button>'
           + '</div></div>';
       }).join('');
+      pfRenderizarBarra();
     }
 
     function pfFormatarDia(item) {
@@ -18339,6 +18429,7 @@
       const btnExcluir = document.getElementById('pf-modal-excluir');
       btnExcluir.hidden = !item;
       btnExcluir.textContent = tr(voltaAoOriginal ? 'pf_original' : 'excluir');
+      document.getElementById('pf-mover-linha').hidden = !(item && ['video', 'nicho', 'feedback', 'marca', 'servico'].includes(tipo));
       document.getElementById('pf-modal-overlay').hidden = false;
     }
 
@@ -18634,6 +18725,17 @@
         e.target.value = '';
       });
       document.getElementById('pf-modal-fechar').addEventListener('click', pfFecharModal);
+      document.getElementById('pf-mover-antes').addEventListener('click', async () => {
+        const id = pfAbertoId;
+        pfFecharModal();
+        await pfMover(id, -1);
+      });
+      document.getElementById('pf-mover-depois').addEventListener('click', async () => {
+        const id = pfAbertoId;
+        pfFecharModal();
+        await pfMover(id, 1);
+      });
+      pfLigarVisual();
       document.getElementById('pf-modal-salvar').addEventListener('click', pfSalvar);
       document.getElementById('pf-modal-excluir').addEventListener('click', pfExcluir);
       document.getElementById('pf-campo-logo').addEventListener('change', (e) => {
@@ -18644,6 +18746,243 @@
         pfLogoUrl = null;
         pfAtualizarLogoPrevia();
       });
+    }
+
+    // ---- Editor visual: prévia do site com clique pra editar ----
+    const PF_SECOES = {
+      hero: ['header.navbar', '#promoBar', '#hero'],
+      sobre: ['#sobre'],
+      marcas: ['.brands-strip'],
+      servicos: ['#servicos'],
+      portfolio: ['#portfolio'],
+      feedbacks: ['#feedbacks'],
+      contato: ['#contato', 'footer.site-footer'],
+    };
+    const PF_BARRA = {
+      hero: ['datas', 'foto_hero', 'foto_lock'],
+      sobre: ['foto_sobre'],
+      marcas: ['novo_marca'],
+      servicos: ['novo_servico'],
+      portfolio: ['novo_video', 'novo_nicho'],
+      feedbacks: ['novo_feedback'],
+      contato: ['whatsapp_msg', 'form_sucesso'],
+    };
+    const PF_OCULTOS = { marcas: ['marca'], servicos: ['servico'], portfolio: ['video', 'nicho'], feedbacks: ['feedback'] };
+    const PF_ACOES = {
+      datas: () => (document.getElementById('pf-datas-overlay').hidden = false),
+      foto_hero: () => pfEscolherFoto('hero'),
+      foto_sobre: () => pfEscolherFoto('sobre'),
+      foto_lock: () => pfEscolherFoto('lock'),
+      novo_marca: () => pfAbrirModal('marca', null),
+      novo_servico: () => pfAbrirModal('servico', null),
+      novo_video: () => pfAbrirModal('video', null),
+      novo_nicho: () => pfAbrirModal('nicho', null),
+      novo_feedback: () => pfAbrirModal('feedback', null),
+      whatsapp_msg: () => pfAbrirModal('contato', pfOverride('contato', 'whatsapp_msg'), 'whatsapp_msg'),
+      form_sucesso: () => pfAbrirModal('texto', pfOverride('texto', 'form_sucesso'), 'form_sucesso'),
+    };
+    const PF_CSS_PREVIA = [
+      '.pf-oculto{display:none!important}',
+      '#popupBackdrop,#popupNotif,#fileModal,#lockScreen{display:none!important}',
+      '.marquee-track{animation-play-state:paused!important}',
+      '[data-texto],img[data-foto],a[data-contato],.file-card,.brand-tile,.feedback-folder,.widget-glass,#promoBar{cursor:pointer!important}',
+      '[data-texto]:hover,img[data-foto]:hover,a[data-contato]:hover,.file-card:hover,.brand-tile:hover,.feedback-folder:hover,.widget-glass:hover,#promoBar:hover{outline:2px dashed var(--blue-dark);outline-offset:3px;box-shadow:0 0 0 5px rgba(255,255,255,.7)}',
+      '.folder-tab[data-id],.folder-tab[data-filter]{position:relative;padding-right:32px!important}',
+      '.folder-tab[data-filter]::after{content:"\\270E";position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;opacity:.55}',
+      '.folder-tab[data-filter]:hover::after{opacity:1}',
+    ].join('');
+    let pfSecao = 'hero';
+    let pfScrollPrevia = 0;
+    let pfEsperaPrevia = null;
+
+    function pfDocPrevia() {
+      try {
+        const f = document.getElementById('pf-iframe');
+        return f.contentWindow && f.contentWindow.__portfolioPronto ? f.contentDocument : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function pfRecarregarPrevia() {
+      if (document.getElementById('pf-editor').hidden) return;
+      const doc = pfDocPrevia();
+      if (doc) pfScrollPrevia = doc.defaultView.scrollY;
+      document.getElementById('pf-iframe').src = '/?editor=1&_=' + Date.now();
+    }
+
+    function pfAguardarPrevia() {
+      clearInterval(pfEsperaPrevia);
+      let tentativas = 0;
+      pfEsperaPrevia = setInterval(() => {
+        tentativas++;
+        const doc = pfDocPrevia();
+        if (doc) {
+          clearInterval(pfEsperaPrevia);
+          pfInjetarPrevia(doc);
+        } else if (tentativas > 120) {
+          clearInterval(pfEsperaPrevia);
+        }
+      }, 100);
+    }
+
+    function pfInjetarPrevia(doc) {
+      if (doc.getElementById('pf-estilo-editor')) return;
+      const estilo = doc.createElement('style');
+      estilo.id = 'pf-estilo-editor';
+      estilo.textContent = PF_CSS_PREVIA;
+      doc.head.appendChild(estilo);
+      doc.addEventListener('click', pfCliquePrevia, true);
+      doc.addEventListener('submit', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }, true);
+      pfAplicarSecao(doc);
+      doc.defaultView.scrollTo({ top: pfScrollPrevia, behavior: 'instant' });
+    }
+
+    function pfAplicarSecao(doc) {
+      const manter = new Set();
+      PF_SECOES[pfSecao].forEach((sel) => doc.querySelectorAll(sel).forEach((el) => manter.add(el)));
+      [...doc.body.children].forEach((el) => {
+        if (/^(SCRIPT|STYLE|LINK|SVG)$/i.test(el.tagName)) return;
+        el.classList.toggle('pf-oculto', !manter.has(el));
+      });
+    }
+
+    function pfEscolherFoto(chave) {
+      pfFotoChave = chave;
+      document.getElementById('pf-input-foto').click();
+    }
+
+    function pfCliquePrevia(e) {
+      const alvo = e.target;
+      if (!alvo || !alvo.closest) return;
+      const parar = () => {
+        e.preventDefault();
+        e.stopPropagation();
+      };
+      const aba = alvo.closest('.folder-tab');
+      if (aba) {
+        // Clique no lápis (canto direito) edita o nicho; no resto da aba, filtra os vídeos como no site.
+        const r = aba.getBoundingClientRect();
+        if (e.clientX > r.right - 34) {
+          const nicho = pfItens.find((i) => i.tipo === 'nicho' && i.categoria === aba.getAttribute('data-filter'));
+          if (nicho) {
+            parar();
+            pfAbrirModal('nicho', nicho);
+          }
+        }
+        return;
+      }
+      const card = alvo.closest('.file-card');
+      if (card) {
+        parar();
+        const item = pfItens.find((i) => i.tipo === 'video' && i.youtube_id === card.getAttribute('data-youtube'));
+        if (item) pfAbrirModal('video', item);
+        return;
+      }
+      const tile = alvo.closest('.brand-tile');
+      if (tile) {
+        parar();
+        const img = tile.querySelector('img');
+        const src = img && img.getAttribute('src');
+        const item = pfItens.find((i) => i.tipo === 'marca' && i.logo_url === src);
+        if (item) pfAbrirModal('marca', item);
+        return;
+      }
+      const pasta = alvo.closest('.feedback-folder');
+      if (pasta) {
+        parar();
+        const peek = pasta.querySelector('.feedback-peek');
+        const nome = peek && peek.getAttribute('data-pt');
+        const item = pfItens.find((i) => i.tipo === 'feedback' && i.titulo === nome);
+        if (item) pfAbrirModal('feedback', item);
+        return;
+      }
+      const widget = alvo.closest('.widget-glass');
+      if (widget) {
+        parar();
+        const h3 = widget.querySelector('h3');
+        const nome = h3 && h3.getAttribute('data-pt');
+        const item = pfItens.find((i) => i.tipo === 'servico' && i.titulo === nome);
+        if (item) pfAbrirModal('servico', item);
+        return;
+      }
+      const texto = alvo.closest('[data-texto]');
+      if (texto) {
+        parar();
+        const chave = texto.getAttribute('data-texto');
+        if (PF_TEXTOS_PADRAO.some((t) => t.key === chave)) pfAbrirModal('texto', pfOverride('texto', chave), chave);
+        return;
+      }
+      const foto = alvo.closest('img[data-foto]');
+      if (foto) {
+        parar();
+        pfEscolherFoto(foto.getAttribute('data-foto'));
+        return;
+      }
+      const contato = alvo.closest('a[data-contato]');
+      if (contato) {
+        parar();
+        const chave = contato.getAttribute('data-contato');
+        pfAbrirModal('contato', pfOverride('contato', chave), chave);
+        return;
+      }
+      if (alvo.closest('#promoBar')) {
+        parar();
+        PF_ACOES.datas();
+        return;
+      }
+      if (alvo.closest('a')) parar();
+    }
+
+    function pfRenderizarBarra() {
+      const acoes = PF_BARRA[pfSecao] || [];
+      let html = acoes.map((a) => '<button type="button" class="cal-btn pf-acao" data-acao="' + a + '">' + escapeHtml(tr('pf_b_' + a)) + '</button>').join('');
+      const tipos = PF_OCULTOS[pfSecao] || [];
+      const ocultos = pfItens.filter((i) => !i.ativo && tipos.includes(i.tipo));
+      if (ocultos.length) {
+        html += '<span class="pf-ocultos-rotulo">' + escapeHtml(tr('pf_ocultos')) + '</span>'
+          + ocultos.map((i) => '<button type="button" class="cal-btn pf-chip-oculto" data-oculto-id="' + i.id + '">' + escapeHtml(i.titulo) + '</button>').join('');
+      }
+      document.getElementById('pf-barra-acoes').innerHTML = html;
+    }
+
+    function pfLigarVisual() {
+      document.getElementById('pf-iframe').addEventListener('load', pfAguardarPrevia);
+      document.getElementById('pf-abas').addEventListener('click', (e) => {
+        const btn = e.target.closest('.pf-aba');
+        if (!btn) return;
+        pfSecao = btn.dataset.secao;
+        document.querySelectorAll('.pf-aba').forEach((b) => b.classList.toggle('ativo', b === btn));
+        pfScrollPrevia = 0;
+        const doc = pfDocPrevia();
+        if (doc) {
+          pfAplicarSecao(doc);
+          doc.defaultView.scrollTo({ top: 0, behavior: 'instant' });
+        }
+        pfRenderizarBarra();
+      });
+      document.getElementById('pf-dispositivos').addEventListener('click', (e) => {
+        const btn = e.target.closest('.pf-disp');
+        if (!btn) return;
+        document.querySelectorAll('.pf-disp').forEach((b) => b.classList.toggle('ativo', b === btn));
+        document.getElementById('pf-moldura').classList.toggle('pf-moldura-celular', btn.dataset.disp === 'celular');
+      });
+      document.getElementById('pf-barra-acoes').addEventListener('click', (e) => {
+        const acao = e.target.closest('.pf-acao');
+        if (acao) {
+          PF_ACOES[acao.dataset.acao]();
+          return;
+        }
+        const chip = e.target.closest('.pf-chip-oculto');
+        if (chip) {
+          const item = pfItens.find((i) => i.id === chip.dataset.ocultoId);
+          if (item) pfAbrirModal(item.tipo, item);
+        }
+      });
+      document.getElementById('pf-datas-fechar').addEventListener('click', () => (document.getElementById('pf-datas-overlay').hidden = true));
     }
 
     function confirmarAcao(mensagem, opcoes = {}) {

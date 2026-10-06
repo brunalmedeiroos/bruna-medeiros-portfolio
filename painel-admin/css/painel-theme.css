@@ -9649,3 +9649,122 @@
 .painel-body .pf-data-linha select {
   flex: 1;
 }
+
+/* Editor visual do portfólio: prévia do site com clique pra editar */
+.painel-body #pf-datas-overlay[hidden],
+.painel-body #pf-listas[hidden],
+.painel-body .pf-mover-linha[hidden] {
+  display: none;
+}
+
+.painel-body .pf-abas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.painel-body .pf-aba {
+  padding: 8px 18px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: var(--branco);
+  color: var(--grafite);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.painel-body .pf-aba:hover {
+  background: rgba(var(--grafite-rgb), 0.06);
+}
+
+.painel-body .pf-aba.ativo {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .pf-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.painel-body .pf-barra-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+}
+
+.painel-body .pf-ocultos-rotulo {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.painel-body .pf-chip-oculto {
+  opacity: 0.75;
+  border-style: dashed;
+}
+
+.painel-body .pf-dispositivos {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: var(--branco);
+}
+
+.painel-body .pf-disp {
+  padding: 5px 14px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--grafite);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.painel-body .pf-disp.ativo {
+  background: var(--grafite);
+  color: var(--branco);
+}
+
+.painel-body .pf-moldura {
+  height: calc(100vh - 290px);
+  min-height: 520px;
+  margin-top: 8px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-lg);
+  overflow: hidden;
+  background: var(--branco);
+  box-shadow: var(--sombra);
+}
+
+.painel-body .pf-moldura iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.painel-body .pf-moldura-celular {
+  width: 390px;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.painel-body .pf-mover-linha {
+  display: flex;
+  gap: 8px;
+  margin: 4px 0 14px;
+}

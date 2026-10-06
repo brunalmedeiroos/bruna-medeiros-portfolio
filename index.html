@@ -1680,6 +1680,9 @@ a.info-value:hover{ text-decoration:underline; }
   /* ---------------- Idioma do site (PT/EN) ---------------- */
   var currentLang = localStorage.getItem('portfolioLang') || 'pt';
 
+  /* Prévia do painel (Portfólio > Editar): abre o site com ?editor=1, sem tela de bloqueio e sem contar visita. */
+  var MODO_EDITOR = /[?&]editor=1(&|$)/.test(location.search);
+
   /* ---------------- Rastreamento (visitas, cliques, mensagens) ----------------
      Manda os avisos pra função do Supabase (supabase/functions/track), que é
      quem tem permissão de gravar no banco. O site nunca grava direto. */
@@ -1979,6 +1982,7 @@ a.info-value:hover{ text-decoration:underline; }
   }
 
   function enviarTrack(kind, data){
+    if (MODO_EDITOR) return Promise.resolve(false);
     return fetch(TRACK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -2017,7 +2021,12 @@ a.info-value:hover{ text-decoration:underline; }
 
   /* ---------------- Tela de bloqueio (senha em bolinhas) ---------------- */
   var lockScreen = document.getElementById('lockScreen');
-  if (lockScreen){
+  if (lockScreen && MODO_EDITOR){
+    lockScreen.style.display = 'none';
+    document.body.classList.remove('lock-active');
+    var promoEditor = document.getElementById('promoBar');
+    if (promoEditor) promoEditor.classList.add('is-visible');
+  } else if (lockScreen){
     var lockDots = lockScreen.querySelectorAll('.lock-dot');
     var lockUnlocked = false;
     function unlockScreen(){
@@ -2433,6 +2442,7 @@ a.info-value:hover{ text-decoration:underline; }
     });
   }
   applyLang(currentLang);
+  window.__portfolioPronto = true;
 
 })();
 </script>

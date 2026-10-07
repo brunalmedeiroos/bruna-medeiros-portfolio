@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261007f">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261007g">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1050,6 +1050,7 @@
 
           <div id="pl-pagina-banco-teste" class="pl-pagina" hidden>
             <nav id="bt-migalhas" class="bt-migalhas" aria-label="Caminho"></nav>
+            <div id="bt-copiado" class="bt-copiado" hidden></div>
             <div class="card email-vazio" id="bt-aviso-tabelas" hidden>
               <h3 class="card-titulo">O Banco de ideias (teste) ainda não está pronto no banco</h3>
               <p class="cal-todas-resumo">Falta rodar o arquivo banco-ideias-teste.sql no SQL Editor do Supabase. O Banco de ideias de sempre continua funcionando normal.</p>
@@ -2015,6 +2016,7 @@
 
         <div class="cal-form-acoes">
           <button type="button" id="pl-modal-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
+          <button type="button" id="pl-modal-copiar" class="cal-btn" title="Copia este conteúdo (ideia e roteiro) pra colar em outra pasta" hidden>📋 Copiar</button>
           <button type="button" id="pl-modal-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
         </div>
       </div>
@@ -6109,6 +6111,7 @@
       document.getElementById('bt-pasta-modal-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'bt-pasta-modal-overlay') btFecharModalPasta();
       });
+      document.getElementById('pl-modal-copiar').addEventListener('click', btCopiarDoEditor);
       // Pastas principais do Banco de ideias (teste)
       document.getElementById('bt-grupo-modal-fechar').addEventListener('click', btFecharModalGrupo);
       document.getElementById('bt-grupo-salvar').addEventListener('click', btSalvarGrupo);
@@ -10528,6 +10531,7 @@
       }
       if (btPastaId && !btPastaAtual()) btPastaId = null; // pasta apagada
       btAtualizarCronograma();
+      btRenderizarCopiado();
       btRenderizarMigalhas();
       if (!btTabelasOk) return;
       if (btPastaId) btRenderizarPasta(area);
@@ -10543,9 +10547,9 @@
         { rotulo: 'Meus conteúdos', ir: () => abrirPaginaPlanejador('visao-geral') },
         { rotulo: 'Banco de ideias (teste)', ir: () => btIr(null, null) },
       ];
-      if (btGrupo) partes.push({ rotulo: btInfoGrupo(btGrupo).rotulo, ir: () => btIr(btGrupo, null) });
+      if (btGrupo) partes.push({ rotulo: btInfoGrupo(btGrupo).rotulo, ir: () => btIr(btGrupo, null), alvo: { grupo: btGrupo } });
       const pasta = btPastaAtual();
-      if (pasta) btCaminhoPasta(pasta).forEach((p) => partes.push({ rotulo: btNomePasta(p), ir: () => btIr(btGrupo, p.id) }));
+      if (pasta) btCaminhoPasta(pasta).forEach((p) => partes.push({ rotulo: btNomePasta(p), ir: () => btIr(btGrupo, p.id), alvo: { pastaId: p.id } }));
 
       nav.innerHTML = '';
       partes.forEach((parte, i) => {
@@ -10557,6 +10561,7 @@
         if (!ultima) {
           el.type = 'button';
           el.addEventListener('click', parte.ir);
+          if (parte.alvo) btLigarAlvoDoCaminho(el, parte.alvo);
         }
         nav.appendChild(el);
       });
@@ -10672,35 +10677,246 @@
       }
     }
 
-    // Arrastar e soltar (mouse), igual ao da aba Ferramentas. Cada item precisa de data-chave.
-    function btLigarArrasto(cont, seletor, aoReordenar) {
-      let arrastando = null;
+    // Arrastar e soltar (mouse), igual ao da aba Ferramentas, e agora também pra colocar dentro de outra pasta:
+    //  - soltar nas pontas de outra pasta (ou em outro conteúdo) muda a ordem;
+    //  - soltar no MEIO de uma pasta coloca o que você arrastou dentro dela;
+    //  - soltar no caminho lá em cima (Conteúdos › Beleza...) leva pra aquele nível.
+    // Cada item precisa de data-chave (o id).
+    let btArrasto = null; // o que está sendo arrastado: { tipo: 'grupo' | 'pasta' | 'conteudo', id }
+
+    function btZonaDoCartao(e, el) {
+      const r = el.getBoundingClientRect();
+      const x = r.width ? (e.clientX - r.left) / r.width : 0.5;
+      return x < 0.28 ? 'antes' : x > 0.72 ? 'depois' : 'meio';
+    }
+
+    function btLimparAlvos() {
+      document.querySelectorAll('.ferr-alvo, .bt-alvo-dentro').forEach((x) => x.classList.remove('ferr-alvo', 'bt-alvo-dentro'));
+    }
+
+    // O que acontece se soltar aqui: 'dentro', 'ordem' ou null (nada).
+    function btAcaoDoDrop(e, el, tipo, aceitaDentro) {
+      if (!btArrasto || btArrasto.id === el.dataset.chave) return null;
+      if (btArrasto.tipo === tipo) {
+        if (aceitaDentro && tipo === 'pasta' && btZonaDoCartao(e, el) === 'meio') return 'dentro';
+        return 'ordem';
+      }
+      if (aceitaDentro && tipo === 'pasta' && btArrasto.tipo === 'conteudo') return 'dentro';
+      return null;
+    }
+
+    function btLigarArrasto(cont, seletor, tipo, aoReordenar, aceitaDentro) {
       cont.querySelectorAll(seletor).forEach((el) => {
         el.draggable = true;
         el.addEventListener('dragstart', (e) => {
-          arrastando = el.dataset.chave;
+          btArrasto = { tipo, id: el.dataset.chave };
           el.classList.add('ferr-arrastando');
           e.dataTransfer.effectAllowed = 'move';
-          e.dataTransfer.setData('text/plain', arrastando);
+          e.dataTransfer.setData('text/plain', el.dataset.chave);
         });
         el.addEventListener('dragend', () => {
-          arrastando = null;
+          btArrasto = null;
           el.classList.remove('ferr-arrastando');
-          cont.querySelectorAll('.ferr-alvo').forEach((x) => x.classList.remove('ferr-alvo'));
+          btLimparAlvos();
         });
         el.addEventListener('dragover', (e) => {
-          if (!arrastando || arrastando === el.dataset.chave) return;
+          const acao = btAcaoDoDrop(e, el, tipo, aceitaDentro);
+          if (!acao) return;
           e.preventDefault();
-          el.classList.add('ferr-alvo');
+          btLimparAlvos();
+          el.classList.add(acao === 'dentro' ? 'bt-alvo-dentro' : 'ferr-alvo');
         });
-        el.addEventListener('dragleave', () => el.classList.remove('ferr-alvo'));
+        el.addEventListener('dragleave', () => el.classList.remove('ferr-alvo', 'bt-alvo-dentro'));
         el.addEventListener('drop', (e) => {
           e.preventDefault();
-          const origem = arrastando;
-          arrastando = null;
-          if (origem && origem !== el.dataset.chave) aoReordenar(origem, el.dataset.chave);
+          const acao = btAcaoDoDrop(e, el, tipo, aceitaDentro);
+          const arrastado = btArrasto;
+          btArrasto = null;
+          btLimparAlvos();
+          if (!acao) return;
+          if (acao === 'dentro') btSoltarDentro(arrastado, el.dataset.chave);
+          else aoReordenar(arrastado.id, el.dataset.chave);
         });
       });
+    }
+
+    function btSoltarDentro(arrastado, pastaDestinoId) {
+      if (arrastado.tipo === 'pasta') btMoverPastaPara(arrastado.id, pastaDestinoId, null);
+      else if (arrastado.tipo === 'conteudo') btMoverConteudoPara(arrastado.id, pastaDestinoId);
+    }
+
+    // O caminho lá em cima também recebe o que você arrasta. alvo = { pastaId } ou { grupo } (raiz de uma pasta principal).
+    function btLigarAlvoDoCaminho(el, alvo) {
+      const aceita = () => btArrasto && (btArrasto.tipo === 'pasta' || (btArrasto.tipo === 'conteudo' && alvo.pastaId));
+      el.addEventListener('dragover', (e) => {
+        if (!aceita()) return;
+        e.preventDefault();
+        btLimparAlvos();
+        el.classList.add('bt-alvo-dentro');
+      });
+      el.addEventListener('dragleave', () => el.classList.remove('bt-alvo-dentro'));
+      el.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const ok = aceita();
+        const arrastado = btArrasto;
+        btArrasto = null;
+        btLimparAlvos();
+        if (!ok) return;
+        if (arrastado.tipo === 'pasta') btMoverPastaPara(arrastado.id, alvo.pastaId || null, alvo.grupo || null);
+        else btMoverConteudoPara(arrastado.id, alvo.pastaId);
+      });
+    }
+
+    // Mensagem rápida no pé da tela ("Movido para...", "Copiado").
+    function btToast(texto) {
+      const el = document.createElement('div');
+      el.className = 'bt-toast';
+      el.textContent = texto;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3800);
+    }
+
+    // Move uma pasta (com tudo o que tem dentro) pra dentro de outra pasta (paiId) ou pra raiz de uma pasta principal (grupoRaiz).
+    async function btMoverPastaPara(id, paiId, grupoRaiz) {
+      const pasta = btPastas.find((p) => p.id === id);
+      if (!pasta) return;
+      if (!btSubOk) {
+        alert('Pra mover pastas, rode o arquivo banco-ideias-teste-subpastas.sql no SQL Editor do Supabase.');
+        return;
+      }
+      let grupo = grupoRaiz;
+      let nomeDestino;
+      if (paiId) {
+        const pai = btPastas.find((p) => p.id === paiId);
+        if (!pai) return;
+        if (paiId === id || btDescendentes(id).includes(paiId)) {
+          alert('Uma pasta não pode ir pra dentro dela mesma.');
+          return;
+        }
+        grupo = btGrupoRaiz(pai);
+        nomeDestino = btNomePasta(pai);
+      } else {
+        nomeDestino = btInfoGrupo(grupo).rotulo;
+      }
+      const grupoAntes = btGrupoRaiz(pasta);
+      if ((pasta.pai_id || null) === (paiId || null) && grupoAntes === grupo) return; // já está aí
+      const ordem = btFilhas(grupo, paiId || null).reduce((max, p) => Math.max(max, p.ordem || 0), -1) + 1;
+      const descendentes = grupo !== grupoAntes ? btDescendentes(id) : [];
+      try {
+        const { data, error } = await Auth.sb.from('ideias_pastas').update({ pai_id: paiId || null, grupo, ordem }).eq('id', id).select();
+        if (error) throw error;
+        const i = btPastas.findIndex((p) => p.id === id);
+        if (i >= 0 && data[0]) btPastas[i] = data[0];
+        if (descendentes.length) {
+          const { error: erroFilhas } = await Auth.sb.from('ideias_pastas').update({ grupo }).in('id', descendentes);
+          if (erroFilhas) throw erroFilhas;
+          btPastas.forEach((p) => {
+            if (descendentes.includes(p.id)) p.grupo = grupo;
+          });
+        }
+        btToast(`"${pasta.nome}" foi pra ${nomeDestino}.`);
+        btRenderizar();
+      } catch (err) {
+        console.error('Erro ao mover pasta:', err);
+        alert('Não consegui mover a pasta. Tente de novo.');
+        await btCarregar();
+        btRenderizar();
+      }
+    }
+
+    async function btMoverConteudoPara(id, pastaId) {
+      const c = btConteudos.find((x) => x.id === id);
+      const pasta = btPastas.find((p) => p.id === pastaId);
+      if (!c || !pasta || c.pasta_id === pastaId) return;
+      const ordem = btConteudosDaPasta(pastaId).reduce((max, x) => Math.max(max, x.ordem || 0), -1) + 1;
+      try {
+        const { data, error } = await Auth.sb.from('ideias_conteudos').update({ pasta_id: pastaId, ordem }).eq('id', id).select();
+        if (error) throw error;
+        const i = btConteudos.findIndex((x) => x.id === id);
+        if (i >= 0 && data[0]) btConteudos[i] = data[0];
+        btToast(`"${c.titulo}" foi pra ${btNomePasta(pasta)}.`);
+        btRenderizar();
+      } catch (err) {
+        console.error('Erro ao mover conteúdo:', err);
+        alert('Não consegui mover o conteúdo. Tente de novo.');
+      }
+    }
+
+    // ---------- copiar e colar um conteúdo (ideia + roteiro) em outra pasta ----------
+
+    let btCopiado = null; // { titulo, formato, status, roteiro_breve, roteiro_completo, pastaId }
+
+    function btRenderizarCopiado() {
+      const el = document.getElementById('bt-copiado');
+      el.hidden = !btCopiado;
+      if (!btCopiado) {
+        el.innerHTML = '';
+        return;
+      }
+      el.innerHTML = `<span>📋 Copiado: <strong>${escapeHtml(btCopiado.titulo)}</strong>. Entre na pasta de destino e clique em "Colar aqui".</span><button type="button" class="cal-btn" id="bt-limpar-copia">Limpar</button>`;
+      document.getElementById('bt-limpar-copia').addEventListener('click', () => {
+        btCopiado = null;
+        btRenderizar();
+      });
+    }
+
+    function btCopiarConteudo(dados, pastaId) {
+      btCopiado = {
+        titulo: dados.titulo,
+        formato: dados.formato || null,
+        status: dados.status || 'Não iniciado',
+        roteiro_breve: dados.roteiro_breve || null,
+        roteiro_completo: dados.roteiro_completo || null,
+        pastaId,
+      };
+      btRenderizar();
+      btToast('Copiado. Entre em outra pasta e clique em "Colar aqui".');
+    }
+
+    // Copia o que está na tela do editor (inclusive o que ainda não foi salvo).
+    function btCopiarDoEditor() {
+      const original = btConteudos.find((c) => c.id === btConteudoAbertoId);
+      if (!original) return;
+      const area = document.getElementById('pl-modal-roteiro-completo');
+      btCopiarConteudo(
+        {
+          titulo: document.getElementById('pl-modal-titulo').value.trim() || original.titulo,
+          formato: document.getElementById('pl-modal-formato').value.trim(),
+          status: document.getElementById('pl-modal-status').value,
+          roteiro_breve: document.getElementById('pl-modal-roteiro-breve').value.trim(),
+          roteiro_completo: conteudoRoteiroVazio(area) ? null : area.innerHTML,
+        },
+        original.pasta_id
+      );
+    }
+
+    async function btColarAqui() {
+      const pasta = btPastaAtual();
+      if (!pasta || !btCopiado) return;
+      const proxima = btConteudosDaPasta(pasta.id).reduce((max, c) => Math.max(max, c.ordem || 0), -1) + 1;
+      const titulo = btCopiado.pastaId === pasta.id ? `${btCopiado.titulo} (cópia)` : btCopiado.titulo;
+      try {
+        const { data, error } = await Auth.sb
+          .from('ideias_conteudos')
+          .insert({
+            pasta_id: pasta.id,
+            titulo,
+            formato: btCopiado.formato,
+            status: btCopiado.status,
+            roteiro_breve: btCopiado.roteiro_breve,
+            roteiro_completo: btCopiado.roteiro_completo,
+            gravado: false,
+            ordem: proxima,
+          })
+          .select();
+        if (error) throw error;
+        btConteudos.push(data[0]);
+        btRenderizar();
+        btToast(`Colado em ${btNomePasta(pasta)}.`);
+      } catch (err) {
+        console.error('Erro ao colar conteúdo:', err);
+        alert('Não consegui colar. Tente de novo.');
+      }
     }
 
     // A pasta principal (Quadros, Séries...) em que uma pasta de qualquer nível está.
@@ -10821,7 +11037,7 @@
         }
       });
       if (btGruposEditaveis) {
-        btLigarArrasto(area, '.ferr-pasta', (origem, destino) => {
+        btLigarArrasto(area, '.ferr-pasta', 'grupo', (origem, destino) => {
           btGrupos = btReordenarLista(btOrdenar(btGrupos), 'chave', origem, destino);
           btPersistirOrdem(btGrupos, 'ideias_grupos');
         });
@@ -10843,6 +11059,7 @@
             <button type="button" class="cal-btn cal-btn-primario" id="bt-nova-pasta">${escapeHtml(g.novaPasta)}</button>
           </div>
         </div>
+        ${pastas.length > 1 ? '<p class="bt-dica">Dica: arraste uma pasta pro meio de outra pra colocar dentro dela, ou pelas pontas pra mudar a ordem.</p>' : ''}
         ${
           pastas.length === 0
             ? `<div class="ferr-vazio"><p>${escapeHtml(g.vazio)}</p></div>`
@@ -10860,9 +11077,15 @@
           btAbrirMenuPasta(el, pasta, false);
         });
       });
-      btLigarArrasto(area, '.ferr-pasta', (origem, destino) => {
-        btPersistirOrdem(btReordenarLista(btFilhas(btGrupo, null), 'id', origem, destino), 'ideias_pastas');
-      });
+      btLigarArrasto(
+        area,
+        '.ferr-pasta',
+        'pasta',
+        (origem, destino) => {
+          btPersistirOrdem(btReordenarLista(btFilhas(btGrupo, null), 'id', origem, destino), 'ideias_pastas');
+        },
+        true
+      );
     }
 
     // Dentro de uma pasta: subpastas (em qualquer nível) e conteúdos (cada um abre o editor de roteiro de sempre).
@@ -10889,11 +11112,13 @@
           <div class="ferr-pasta-acoes">
             <button type="button" class="cal-btn cal-btn-primario" id="bt-novo-item">${escapeHtml(g.novoItem)}</button>
             <button type="button" class="cal-btn cal-btn-primario" id="bt-nova-subpasta" ${btSubOk ? '' : 'disabled'}>+ Nova pasta</button>
+            ${btCopiado ? '<button type="button" class="cal-btn" id="bt-colar" title="Cola aqui o conteúdo que você copiou">📋 Colar aqui</button>' : ''}
             <div class="bt-menu-ancora" id="bt-pasta-menu-ancora">
               <button type="button" class="cal-btn cal-btn-icon" id="bt-pasta-menu" title="Editar ou excluir esta pasta" aria-label="Mais ações da pasta">⋯</button>
             </div>
           </div>
         </div>
+        ${subpastas.length || conteudos.length ? '<p class="bt-dica">Dica: arraste uma pasta ou um conteúdo pro meio de uma pasta pra colocar dentro dela, ou pelas pontas pra mudar a ordem. Pra subir de nível, solte sobre o caminho lá em cima.</p>' : ''}
         ${
           subpastas.length
             ? `<div class="ferr-pastas-grade bt-subpastas">${subpastas
@@ -10906,6 +11131,8 @@
       document.getElementById('bt-voltar').addEventListener('click', () => btIr(btGrupo, pai ? pai.id : null));
       document.getElementById('bt-novo-item').addEventListener('click', () => btMostrarFormNovoItem(g));
       document.getElementById('bt-nova-subpasta').addEventListener('click', () => btAbrirModalPasta(null, pasta.id));
+      const botaoColar = document.getElementById('bt-colar');
+      if (botaoColar) botaoColar.addEventListener('click', btColarAqui);
       document.getElementById('bt-pasta-menu').addEventListener('click', (e) => {
         e.stopPropagation();
         btAbrirMenuPasta(document.getElementById('bt-pasta-menu-ancora'), pasta, true);
@@ -10920,10 +11147,16 @@
       });
       const grade = document.getElementById('bt-itens-grade');
       conteudos.forEach((c, i) => grade.appendChild(btCriarCardConteudo(c, i, btGrupo === 'serie')));
-      btLigarArrasto(area, '.bt-subpastas .ferr-pasta', (origem, destino) => {
-        btPersistirOrdem(btReordenarLista(btFilhas(btGrupo, pasta.id), 'id', origem, destino), 'ideias_pastas');
-      });
-      btLigarArrasto(area, '#bt-itens-grade .ugc-roteiro-card', (origem, destino) => {
+      btLigarArrasto(
+        area,
+        '.bt-subpastas .ferr-pasta',
+        'pasta',
+        (origem, destino) => {
+          btPersistirOrdem(btReordenarLista(btFilhas(btGrupo, pasta.id), 'id', origem, destino), 'ideias_pastas');
+        },
+        true
+      );
+      btLigarArrasto(area, '#bt-itens-grade .ugc-roteiro-card', 'conteudo', (origem, destino) => {
         btPersistirOrdem(btReordenarLista(btConteudosDaPasta(pasta.id), 'id', origem, destino), 'ideias_conteudos');
       });
     }
@@ -10942,8 +11175,14 @@
         ${btAgendaOk && c.data_agendada ? `<span class="bt-agendado">📅 ${escapeHtml(btDataCurta(c.data_agendada))}</span>` : ''}
         ${c.gravado ? '<span class="bt-gravado">Gravado</span>' : ''}
         ${btAgendaOk && c.data_agendada && !c.gravado ? `<span class="pl-card-marcar-gravado">${escapeHtml(tr('pl_marcar_gravado'))}</span>` : ''}
+        <span class="bt-card-copiar" title="Copiar este conteúdo pra colar em outra pasta">Copiar</span>
       `;
       card.addEventListener('click', (e) => {
+        if (e.target.closest('.bt-card-copiar')) {
+          e.stopPropagation();
+          btCopiarConteudo(c, c.pasta_id);
+          return;
+        }
         if (e.target.closest('.pl-card-marcar-gravado')) {
           e.stopPropagation();
           btMarcarGravado(c);
@@ -11002,6 +11241,7 @@
       document.getElementById('pl-modal-pasta-campo').hidden = !teste;
       document.getElementById('pl-modal-gravado-txt').hidden = teste;
       document.getElementById('pl-modal-gravado-txt-teste').hidden = !teste;
+      document.getElementById('pl-modal-copiar').hidden = !teste;
     }
 
     function btAbrirConteudo(c) {

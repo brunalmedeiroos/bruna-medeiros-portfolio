@@ -9848,3 +9848,54 @@
 .painel-body #pl-modal-pasta-campo[hidden] {
   display: none;
 }
+
+/* ---- Banco de ideias (teste): pastas principais editáveis ---- */
+
+.painel-body #bt-grupo-nome-campo[hidden],
+.painel-body #bt-grupo-emoji-campo[hidden] {
+  display: none;
+}
+
+.painel-body .ferr-pasta.bt-menu-aberto {
+  z-index: 30;
+}
+
+.painel-body .ferr-pasta.bt-menu-aberto .ferr-pasta-editar {
+  opacity: 1;
+}
+
+.painel-body .bt-menu {
+  position: absolute;
+  top: 58px;
+  right: 8px;
+  z-index: 40;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  background: var(--branco);
+  border: 1px solid rgba(var(--grafite-rgb), 0.12);
+  border-radius: 12px;
+  box-shadow: var(--sombra);
+  cursor: default;
+}
+
+.painel-body .bt-menu button {
+  border: none;
+  background: none;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--grafite);
+  cursor: pointer;
+}
+
+.painel-body .bt-menu button:hover {
+  background: rgba(var(--grafite-rgb), 0.07);
+}
+
+.painel-body .bt-menu .bt-menu-perigo {
+  color: #C4453C;
+}

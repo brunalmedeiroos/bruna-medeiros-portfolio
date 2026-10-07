@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261007b">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261007c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1849,6 +1849,33 @@
           <div class="cal-form-acoes">
             <button class="cal-btn cal-btn-primario" id="config-salvar-senha" data-i18n="config_alterar_senha" type="button">Alterar senha</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: pasta principal do Banco de ideias (teste) -->
+    <div id="bt-grupo-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo" id="bt-grupo-titulo">Nova pasta</span>
+          <button id="bt-grupo-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="cal-form-campo" id="bt-grupo-nome-campo">
+          <label for="bt-grupo-nome-input">Nome da pasta</label>
+          <input type="text" id="bt-grupo-nome-input" placeholder="Ex: YouTube" maxlength="80">
+        </div>
+        <div class="cal-form-campo" id="bt-grupo-emoji-campo">
+          <label for="bt-grupo-emoji-input">Emoji (opcional)</label>
+          <input type="text" id="bt-grupo-emoji-input" placeholder="Ex: 🎬" maxlength="4">
+        </div>
+        <div class="cal-form-campo">
+          <label>Cor da pasta</label>
+          <div id="bt-grupo-cores" class="ferr-cores"></div>
+        </div>
+        <div class="cal-form-acoes">
+          <button type="button" id="bt-grupo-salvar" class="cal-btn cal-btn-primario">Salvar</button>
         </div>
       </div>
     </div>
@@ -6070,6 +6097,13 @@
       document.getElementById('bt-pasta-modal-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'bt-pasta-modal-overlay') btFecharModalPasta();
       });
+      // Pastas principais do Banco de ideias (teste)
+      document.getElementById('bt-grupo-modal-fechar').addEventListener('click', btFecharModalGrupo);
+      document.getElementById('bt-grupo-salvar').addEventListener('click', btSalvarGrupo);
+      document.getElementById('bt-grupo-modal-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'bt-grupo-modal-overlay') btFecharModalGrupo();
+      });
+      document.addEventListener('click', btFecharMenuGrupo);
       document.getElementById('pl-modal-achado-fechar').addEventListener('click', fecharModalAchado);
       document.getElementById('pl-modal-achado-salvar').addEventListener('click', salvarModalAchado);
       document.getElementById('pl-modal-achado-excluir').addEventListener('click', excluirModalAchado);
@@ -10372,6 +10406,36 @@
       },
     };
 
+    // Configuração das pastas criadas por você (sem as mensagens específicas de Quadros e Séries).
+    const BT_GENERICO = {
+      um: 'pasta',
+      plural: 'pastas',
+      itemUm: 'conteúdo',
+      itemPlural: 'conteúdos',
+      novaPasta: '+ Nova pasta',
+      novoItem: '+ Novo conteúdo',
+      resumo: 'Crie pastas aqui dentro e guarde os conteúdos em cada uma.',
+      vazio: 'Nenhuma pasta aqui dentro ainda.',
+      vazioItens: 'Nenhum conteúdo nesta pasta ainda.',
+      exemploNome: 'Ex: Ideias da semana',
+      placeholderItem: 'Título do conteúdo...',
+    };
+
+    let btGrupos = []; // pastas principais (linhas de ideias_grupos)
+    let btGruposEditaveis = true;
+
+    // Mensagens da pasta (BT_GRUPOS ou genérica) com o nome e a cor que estão no banco.
+    function btInfoGrupo(chave) {
+      const linha = btGrupos.find((g) => g.chave === chave);
+      const base = BT_GRUPOS[chave] || BT_GENERICO;
+      return {
+        ...base,
+        rotulo: linha ? linha.nome : base.rotulo || 'Pasta',
+        cor: linha ? linha.cor || FERR_COR_PADRAO : base.cor || FERR_COR_PADRAO,
+        emoji: linha ? linha.emoji : null,
+      };
+    }
+
     let btPastas = [];
     let btConteudos = [];
     let btTabelasOk = true;
@@ -10418,6 +10482,7 @@
         btConteudos = [];
         btTabelasOk = false;
       }
+      await btCarregarGrupos();
       btCarregado = true;
     }
 
@@ -10441,6 +10506,10 @@
       const area = document.getElementById('bt-conteudo');
       document.getElementById('bt-aviso-tabelas').hidden = btTabelasOk;
       area.hidden = !btTabelasOk;
+      if (btGrupo && !btGrupos.some((g) => g.chave === btGrupo)) {
+        btGrupo = null;
+        btPastaId = null;
+      }
       if (btPastaId && !btPastaAtual()) btPastaId = null; // pasta apagada
       btRenderizarMigalhas();
       if (!btTabelasOk) return;
@@ -10457,7 +10526,7 @@
         { rotulo: 'Meus conteúdos', ir: () => abrirPaginaPlanejador('visao-geral') },
         { rotulo: 'Banco de ideias (teste)', ir: () => btIr(null, null) },
       ];
-      if (btGrupo) partes.push({ rotulo: BT_GRUPOS[btGrupo].rotulo, ir: () => btIr(btGrupo, null) });
+      if (btGrupo) partes.push({ rotulo: btInfoGrupo(btGrupo).rotulo, ir: () => btIr(btGrupo, null) });
       const pasta = btPastaAtual();
       if (pasta) partes.push({ rotulo: pasta.nome });
 
@@ -10491,26 +10560,48 @@
         </article>`;
     }
 
-    // Primeira tela: só as três pastas principais.
+    // Primeira tela: as pastas principais (editáveis) e o botão de criar outras.
     function btRenderizarRaiz(area) {
-      const cartoes = Object.keys(BT_GRUPOS)
-        .map((chave) => {
-          const g = BT_GRUPOS[chave];
-          const n = btPastasDoGrupo(chave).length;
-          return btHtmlPasta(chave, g.rotulo.toUpperCase(), g.cor, btPlural(n, g.um, g.plural), false);
+      const cartoes = btGrupos
+        .map((gr) => {
+          const g = btInfoGrupo(gr.chave);
+          const n = btPastasDoGrupo(gr.chave).length;
+          const nome = (g.emoji ? g.emoji + ' ' : '') + g.rotulo;
+          return btHtmlPasta(gr.chave, nome, g.cor, btPlural(n, g.um, g.plural), btGruposEditaveis);
         })
         .join('');
       area.innerHTML = `
-        <p class="cal-todas-resumo bt-intro">Escolha uma pasta pra entrar. Isso é só um teste: o Banco de ideias de sempre continua do jeito que está.</p>
-        <div class="ferr-pastas-grade">${cartoes}</div>`;
+        <div class="ferr-pasta-topo">
+          <div class="ferr-pasta-titulo-bloco">
+            <p class="cal-todas-resumo bt-intro">Escolha uma pasta pra entrar, ou crie as suas. Isso é só um teste: o Banco de ideias de sempre continua do jeito que está.</p>
+            ${btGruposEditaveis ? '' : '<p class="bt-descricao">Pra criar e editar as pastas desta tela, rode o arquivo banco-ideias-teste-pastas.sql no SQL Editor do Supabase.</p>'}
+          </div>
+          <div class="ferr-pasta-acoes">
+            <button type="button" class="cal-btn cal-btn-primario" id="bt-nova-grupo" ${btGruposEditaveis ? '' : 'disabled'}>+ Nova pasta</button>
+          </div>
+        </div>
+        ${
+          btGrupos.length === 0
+            ? '<div class="ferr-vazio"><p>Você ainda não tem nenhuma pasta.</p></div>'
+            : `<div class="ferr-pastas-grade">${cartoes}</div>`
+        }`;
+      document.getElementById('bt-nova-grupo').addEventListener('click', () => btAbrirModalGrupo(null, false));
       area.querySelectorAll('.ferr-pasta').forEach((el) => {
+        const grupo = btGrupos.find((g) => g.chave === el.dataset.chave);
         el.addEventListener('click', () => btIr(el.dataset.chave, null));
+        const editar = el.querySelector('[data-acao="editar"]');
+        if (editar) {
+          editar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            btAbrirMenuGrupo(el, grupo);
+          });
+        }
       });
     }
 
     // Dentro de Quadros / Séries / Conteúdos: as pastas daquele grupo.
     function btRenderizarGrupo(area) {
-      const g = BT_GRUPOS[btGrupo];
+      const g = btInfoGrupo(btGrupo);
       const pastas = btPastasDoGrupo(btGrupo);
       area.innerHTML = `
         <div class="ferr-pasta-topo">
@@ -10544,7 +10635,7 @@
 
     // Dentro de uma pasta: os conteúdos (cada um abre o editor de roteiro de sempre).
     function btRenderizarPasta(area) {
-      const g = BT_GRUPOS[btGrupo];
+      const g = btInfoGrupo(btGrupo);
       const pasta = btPastaAtual();
       const conteudos = btConteudosDaPasta(pasta.id);
       const prontos = conteudos.filter((c) => c.status === 'Roteiro pronto').length;
@@ -10654,14 +10745,15 @@
       prepararEstiloPadraoRoteiro(areaRoteiroCompleto);
       document.getElementById('pl-modal-gravado').checked = !!c.gravado;
 
-      document.getElementById('pl-modal-pasta').innerHTML = Object.keys(BT_GRUPOS)
+      document.getElementById('pl-modal-pasta').innerHTML = btGrupos
+        .map((gr) => gr.chave)
         .map((chave) => {
           const pastas = btPastasDoGrupo(chave);
           if (!pastas.length) return '';
           const opcoes = pastas
             .map((p) => `<option value="${p.id}" ${p.id === c.pasta_id ? 'selected' : ''}>${escapeHtml(p.nome)}</option>`)
             .join('');
-          return `<optgroup label="${escapeHtml(BT_GRUPOS[chave].rotulo)}">${opcoes}</optgroup>`;
+          return `<optgroup label="${escapeHtml(btInfoGrupo(chave).rotulo)}">${opcoes}</optgroup>`;
         })
         .join('');
 
@@ -10710,11 +10802,161 @@
       }
     }
 
+    // ---------- pastas principais (tela inicial): criar, editar, recolorir, excluir ----------
+
+    let btGrupoEditandoId = null;
+    let btGrupoSoCor = false;
+    let btGrupoCorEscolhida = '#7DB7CE'; // mesma cor padrão das pastas de Ferramentas
+
+    function btNovaChave() {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return 'g' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    }
+
+    async function btCarregarGrupos() {
+      try {
+        const { data, error } = await Auth.sb.from('ideias_grupos').select('*');
+        if (error) throw error;
+        btGrupos = btOrdenar(data || []);
+        btGruposEditaveis = true;
+      } catch (err) {
+        // Sem a tabela nova, as três pastas de sempre continuam funcionando; só não dá pra editar.
+        console.warn('Pastas principais editáveis indisponíveis:', err);
+        btGrupos = Object.keys(BT_GRUPOS).map((chave, i) => ({
+          id: null,
+          chave,
+          nome: BT_GRUPOS[chave].rotulo,
+          cor: BT_GRUPOS[chave].cor,
+          emoji: null,
+          ordem: i,
+        }));
+        btGruposEditaveis = false;
+      }
+    }
+
+    function btFecharMenuGrupo() {
+      document.querySelectorAll('.bt-menu').forEach((m) => m.remove());
+      document.querySelectorAll('.bt-menu-aberto').forEach((el) => el.classList.remove('bt-menu-aberto'));
+    }
+
+    function btAbrirMenuGrupo(el, grupo) {
+      btFecharMenuGrupo();
+      const menu = document.createElement('div');
+      menu.className = 'bt-menu';
+      menu.innerHTML = `
+        <button type="button" data-a="editar">Editar</button>
+        <button type="button" data-a="cor">Alterar cor</button>
+        <button type="button" data-a="excluir" class="bt-menu-perigo">Excluir</button>`;
+      el.appendChild(menu);
+      el.classList.add('bt-menu-aberto');
+      menu.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const acao = e.target.dataset.a;
+        if (!acao) return;
+        btFecharMenuGrupo();
+        if (acao === 'editar') btAbrirModalGrupo(grupo, false);
+        if (acao === 'cor') btAbrirModalGrupo(grupo, true);
+        if (acao === 'excluir') btExcluirGrupo(grupo);
+      });
+    }
+
+    function btRenderizarCoresGrupo() {
+      const cont = document.getElementById('bt-grupo-cores');
+      cont.innerHTML = FERR_CORES.map(
+        (c) => `<button type="button" class="ferr-cor${c === btGrupoCorEscolhida ? ' ativa' : ''}" data-cor="${c}" style="background:${c}" aria-label="Cor ${c}"></button>`
+      ).join('');
+      cont.querySelectorAll('.ferr-cor').forEach((b) =>
+        b.addEventListener('click', () => {
+          btGrupoCorEscolhida = b.dataset.cor;
+          btRenderizarCoresGrupo();
+        })
+      );
+    }
+
+    function btAbrirModalGrupo(grupo, soCor) {
+      btGrupoEditandoId = grupo ? grupo.id : null;
+      btGrupoSoCor = !!soCor;
+      btGrupoCorEscolhida = grupo ? grupo.cor || FERR_COR_PADRAO : FERR_COR_PADRAO;
+      document.getElementById('bt-grupo-titulo').textContent = !grupo ? 'Nova pasta' : soCor ? `Cor de "${grupo.nome}"` : 'Editar pasta';
+      document.getElementById('bt-grupo-nome-input').value = grupo ? grupo.nome : '';
+      document.getElementById('bt-grupo-emoji-input').value = grupo && grupo.emoji ? grupo.emoji : '';
+      document.getElementById('bt-grupo-nome-campo').hidden = !!soCor;
+      document.getElementById('bt-grupo-emoji-campo').hidden = !!soCor;
+      btRenderizarCoresGrupo();
+      document.getElementById('bt-grupo-modal-overlay').hidden = false;
+      if (!soCor) document.getElementById('bt-grupo-nome-input').focus();
+    }
+
+    function btFecharModalGrupo() {
+      btGrupoEditandoId = null;
+      document.getElementById('bt-grupo-modal-overlay').hidden = true;
+    }
+
+    async function btSalvarGrupo() {
+      const nome = document.getElementById('bt-grupo-nome-input').value.trim();
+      const emoji = document.getElementById('bt-grupo-emoji-input').value.trim() || null;
+      if (!btGrupoSoCor && !nome) {
+        alert('Dê um nome pra pasta.');
+        return;
+      }
+      const btn = document.getElementById('bt-grupo-salvar');
+      btn.disabled = true;
+      try {
+        if (btGrupoEditandoId) {
+          const campos = btGrupoSoCor ? { cor: btGrupoCorEscolhida } : { nome, emoji, cor: btGrupoCorEscolhida };
+          const { data, error } = await Auth.sb.from('ideias_grupos').update(campos).eq('id', btGrupoEditandoId).select();
+          if (error) throw error;
+          const i = btGrupos.findIndex((g) => g.id === btGrupoEditandoId);
+          if (i >= 0 && data[0]) btGrupos[i] = data[0];
+        } else {
+          const proxima = btGrupos.reduce((max, g) => Math.max(max, g.ordem || 0), -1) + 1;
+          const { data, error } = await Auth.sb
+            .from('ideias_grupos')
+            .insert({ chave: btNovaChave(), nome, emoji, cor: btGrupoCorEscolhida, ordem: proxima })
+            .select();
+          if (error) throw error;
+          btGrupos.push(data[0]);
+        }
+        btFecharModalGrupo();
+        btRenderizar();
+      } catch (err) {
+        console.error('Erro ao salvar pasta principal:', err);
+        alert('Não consegui salvar a pasta. Tente de novo.');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // Excluir só é permitido com a pasta vazia: nada de conteúdo se perde por acidente.
+    async function btExcluirGrupo(grupo) {
+      const pastas = btPastasDoGrupo(grupo.chave);
+      if (pastas.length > 0) {
+        const total = pastas.reduce((soma, p) => soma + btConteudosDaPasta(p.id).length, 0);
+        const dentro = `${btPlural(pastas.length, 'pasta', 'pastas')}${total ? ` e ${btPlural(total, 'conteúdo', 'conteúdos')}` : ''}`;
+        alert(
+          `"${grupo.nome}" ainda tem ${dentro} dentro, então não dá pra excluir agora.\n\n` +
+            'Pra não perder nada: abra a pasta, mova os conteúdos que quer guardar pra outra pasta (campo "Pasta" do editor) ' +
+            'e exclua as pastas de dentro. Quando ela estiver vazia, a exclusão é liberada.'
+        );
+        return;
+      }
+      if (!(await confirmarAcao(`Excluir a pasta "${grupo.nome}"?`))) return;
+      try {
+        const { error } = await Auth.sb.from('ideias_grupos').delete().eq('id', grupo.id);
+        if (error) throw error;
+        btGrupos = btGrupos.filter((g) => g.id !== grupo.id);
+        btRenderizar();
+      } catch (err) {
+        console.error('Erro ao excluir pasta principal:', err);
+        alert('Não consegui excluir a pasta.');
+      }
+    }
+
     // ---------- pastas: criar, editar, excluir ----------
 
     function btAbrirModalPasta(pasta) {
       btPastaEditandoId = pasta ? pasta.id : null;
-      const g = BT_GRUPOS[btGrupo];
+      const g = btInfoGrupo(btGrupo);
       const nomeInput = document.getElementById('bt-pasta-nome-input');
       nomeInput.value = pasta ? pasta.nome : '';
       nomeInput.placeholder = g.exemploNome;
@@ -10763,7 +11005,7 @@
     async function btExcluirPasta() {
       const pasta = btPastas.find((p) => p.id === btPastaEditandoId);
       if (!pasta) return;
-      const g = BT_GRUPOS[pasta.grupo];
+      const g = btInfoGrupo(pasta.grupo);
       const qtd = btConteudosDaPasta(pasta.id).length;
       const aviso =
         qtd > 0

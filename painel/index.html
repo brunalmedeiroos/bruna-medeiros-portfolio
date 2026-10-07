@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261007e">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261007f">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1896,6 +1896,10 @@
         <div class="cal-form-campo">
           <label for="bt-pasta-descricao">Descrição (opcional)</label>
           <textarea id="bt-pasta-descricao" placeholder="Pra que serve essa pasta..."></textarea>
+        </div>
+        <div class="cal-form-campo" id="bt-pasta-destino-campo">
+          <label for="bt-pasta-destino">Mover para</label>
+          <select id="bt-pasta-destino"></select>
         </div>
         <div class="cal-form-campo" id="bt-pasta-cores-campo">
           <label>Cor da pasta</label>
@@ -10576,7 +10580,8 @@
 
     // Pastas que estão direto dentro de paiId (null = direto na pasta principal).
     function btFilhas(grupo, paiId) {
-      return btOrdenar(btPastas.filter((p) => p.grupo === grupo && (p.pai_id || null) === (paiId || null)));
+      if (paiId) return btOrdenar(btPastas.filter((p) => p.pai_id === paiId));
+      return btOrdenar(btPastas.filter((p) => p.grupo === grupo && !p.pai_id));
     }
 
     // Todas as pastas que estão dentro de uma pasta, em qualquer nível.
@@ -10609,7 +10614,7 @@
       for (const p of btCaminhoPasta(pasta).reverse()) {
         if (p.cor) return p.cor;
       }
-      return btInfoGrupo(pasta.grupo).cor;
+      return btInfoGrupo(btGrupoRaiz(pasta)).cor;
     }
 
     function btNomePasta(pasta) {
@@ -10634,6 +10639,110 @@
       };
       visitar(null, '');
       return saida;
+    }
+
+    // ---------- reordenar (arrastar) e mover pastas ----------
+
+    function btReordenarLista(lista, campo, origem, destino) {
+      const de = lista.findIndex((x) => x[campo] === origem);
+      const para = lista.findIndex((x) => x[campo] === destino);
+      if (de < 0 || para < 0) return lista;
+      const [movido] = lista.splice(de, 1);
+      lista.splice(para, 0, movido);
+      return lista;
+    }
+
+    // Grava a nova ordem (só o que mudou) e redesenha; se der erro, recarrega do banco.
+    async function btPersistirOrdem(lista, tabela) {
+      const mudancas = [];
+      lista.forEach((x, i) => {
+        if (x.ordem !== i) {
+          x.ordem = i;
+          mudancas.push({ id: x.id, ordem: i });
+        }
+      });
+      btRenderizar();
+      if (mudancas.length === 0) return;
+      const resultados = await Promise.all(mudancas.map((m) => Auth.sb.from(tabela).update({ ordem: m.ordem }).eq('id', m.id)));
+      if (resultados.some((r) => r.error)) {
+        console.error('Erro ao salvar a ordem:', resultados.find((r) => r.error).error);
+        alert('Não consegui salvar a nova ordem. Vou recarregar.');
+        await btCarregar();
+        btRenderizar();
+      }
+    }
+
+    // Arrastar e soltar (mouse), igual ao da aba Ferramentas. Cada item precisa de data-chave.
+    function btLigarArrasto(cont, seletor, aoReordenar) {
+      let arrastando = null;
+      cont.querySelectorAll(seletor).forEach((el) => {
+        el.draggable = true;
+        el.addEventListener('dragstart', (e) => {
+          arrastando = el.dataset.chave;
+          el.classList.add('ferr-arrastando');
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', arrastando);
+        });
+        el.addEventListener('dragend', () => {
+          arrastando = null;
+          el.classList.remove('ferr-arrastando');
+          cont.querySelectorAll('.ferr-alvo').forEach((x) => x.classList.remove('ferr-alvo'));
+        });
+        el.addEventListener('dragover', (e) => {
+          if (!arrastando || arrastando === el.dataset.chave) return;
+          e.preventDefault();
+          el.classList.add('ferr-alvo');
+        });
+        el.addEventListener('dragleave', () => el.classList.remove('ferr-alvo'));
+        el.addEventListener('drop', (e) => {
+          e.preventDefault();
+          const origem = arrastando;
+          arrastando = null;
+          if (origem && origem !== el.dataset.chave) aoReordenar(origem, el.dataset.chave);
+        });
+      });
+    }
+
+    // A pasta principal (Quadros, Séries...) em que uma pasta de qualquer nível está.
+    function btGrupoRaiz(pasta) {
+      return btCaminhoPasta(pasta)[0].grupo;
+    }
+
+    // Opções do "Mover para": a raiz de cada pasta principal e todas as pastas, menos a própria e as de dentro dela.
+    function btOpcoesDestino(pasta) {
+      const bloqueadas = new Set([pasta.id, ...btDescendentes(pasta.id)]);
+      return btOrdenar(btGrupos)
+        .map((gr) => {
+          const nome = (gr.emoji ? gr.emoji + ' ' : '') + gr.nome;
+          const itens = btListaArvore(gr.chave).filter((x) => !bloqueadas.has(x.id));
+          const opcoes =
+            `<option value="g:${escapeHtml(gr.chave)}">Direto em ${escapeHtml(nome)}</option>` +
+            itens.map((x) => `<option value="p:${x.id}">${escapeHtml(x.rotulo)}</option>`).join('');
+          return `<optgroup label="${escapeHtml(nome)}">${opcoes}</optgroup>`;
+        })
+        .join('');
+    }
+
+    function btDestinoAtual(pasta) {
+      return pasta.pai_id ? 'p:' + pasta.pai_id : 'g:' + btGrupoRaiz(pasta);
+    }
+
+    // Lê o "Mover para" do modal. Devolve null se continuou no mesmo lugar.
+    function btDestinoEscolhido(pasta) {
+      const valor = document.getElementById('bt-pasta-destino').value;
+      if (!valor || valor === btDestinoAtual(pasta)) return null;
+      let grupo;
+      let paiId = null;
+      if (valor.startsWith('g:')) {
+        grupo = valor.slice(2);
+      } else {
+        paiId = valor.slice(2);
+        const pai = btPastas.find((p) => p.id === paiId);
+        if (!pai) return null;
+        grupo = btGrupoRaiz(pai);
+      }
+      const ordem = btFilhas(grupo, paiId).reduce((max, p) => Math.max(max, p.ordem || 0), -1) + 1;
+      return { campos: { pai_id: paiId, grupo, ordem }, grupoMudou: grupo !== btGrupoRaiz(pasta) };
     }
 
     // Menu ⋯ de uma pasta (de dentro): Editar e Excluir.
@@ -10676,7 +10785,7 @@
 
     // Primeira tela: as pastas principais (editáveis) e o botão de criar outras.
     function btRenderizarRaiz(area) {
-      const cartoes = btGrupos
+      const cartoes = btOrdenar(btGrupos)
         .map((gr) => {
           const g = btInfoGrupo(gr.chave);
           const n = btFilhas(gr.chave, null).length;
@@ -10711,6 +10820,12 @@
           });
         }
       });
+      if (btGruposEditaveis) {
+        btLigarArrasto(area, '.ferr-pasta', (origem, destino) => {
+          btGrupos = btReordenarLista(btOrdenar(btGrupos), 'chave', origem, destino);
+          btPersistirOrdem(btGrupos, 'ideias_grupos');
+        });
+      }
     }
 
     // Dentro de Quadros / Séries / Conteúdos: as pastas daquele grupo.
@@ -10744,6 +10859,9 @@
           e.stopPropagation();
           btAbrirMenuPasta(el, pasta, false);
         });
+      });
+      btLigarArrasto(area, '.ferr-pasta', (origem, destino) => {
+        btPersistirOrdem(btReordenarLista(btFilhas(btGrupo, null), 'id', origem, destino), 'ideias_pastas');
       });
     }
 
@@ -10802,11 +10920,18 @@
       });
       const grade = document.getElementById('bt-itens-grade');
       conteudos.forEach((c, i) => grade.appendChild(btCriarCardConteudo(c, i, btGrupo === 'serie')));
+      btLigarArrasto(area, '.bt-subpastas .ferr-pasta', (origem, destino) => {
+        btPersistirOrdem(btReordenarLista(btFilhas(btGrupo, pasta.id), 'id', origem, destino), 'ideias_pastas');
+      });
+      btLigarArrasto(area, '#bt-itens-grade .ugc-roteiro-card', (origem, destino) => {
+        btPersistirOrdem(btReordenarLista(btConteudosDaPasta(pasta.id), 'id', origem, destino), 'ideias_conteudos');
+      });
     }
 
     function btCriarCardConteudo(c, indice, ehSerie) {
       const card = document.createElement('button');
       card.type = 'button';
+      card.dataset.chave = c.id;
       card.className = 'ugc-roteiro-card';
       card.innerHTML = `
         <span class="ugc-status-pill ${classeStatusIdeia(c.status)}">${escapeHtml(traduzirStatusIdeia(c.status || 'Não iniciado'))}</span>
@@ -10893,7 +11018,7 @@
       prepararEstiloPadraoRoteiro(areaRoteiroCompleto);
       document.getElementById('pl-modal-gravado').checked = !!c.gravado;
 
-      document.getElementById('pl-modal-pasta').innerHTML = btGrupos
+      document.getElementById('pl-modal-pasta').innerHTML = btOrdenar(btGrupos)
         .map((gr) => gr.chave)
         .map((chave) => {
           const pastas = btListaArvore(chave);
@@ -11223,6 +11348,14 @@
       // Emoji e cor só existem depois do SQL de subpastas.
       document.getElementById('bt-pasta-emoji-campo').hidden = !btSubOk;
       document.getElementById('bt-pasta-cores-campo').hidden = !btSubOk;
+      // "Mover para" só aparece ao editar uma pasta que já existe.
+      const campoDestino = document.getElementById('bt-pasta-destino-campo');
+      campoDestino.hidden = !(pasta && btSubOk);
+      if (pasta && btSubOk) {
+        const seletor = document.getElementById('bt-pasta-destino');
+        seletor.innerHTML = btOpcoesDestino(pasta);
+        seletor.value = btDestinoAtual(pasta);
+      }
       btPastaCorTocada = false;
       btPastaCorEscolhida = pasta ? btCorPasta(pasta) : pai ? btCorPasta(pai) : g.cor;
       btMontarCores(document.getElementById('bt-pasta-cores'), btPastaCorEscolhida, (c) => {
@@ -11256,10 +11389,22 @@
             }
           : {};
         if (btPastaEditandoId) {
-          const { data, error } = await Auth.sb.from('ideias_pastas').update({ nome, descricao, ...extras }).eq('id', btPastaEditandoId).select();
+          const mover = btSubOk ? btDestinoEscolhido(existente) : null;
+          const descendentes = mover && mover.grupoMudou ? btDescendentes(existente.id) : [];
+          const { data, error } = await Auth.sb.from('ideias_pastas').update({ nome, descricao, ...extras, ...(mover ? mover.campos : {}) }).eq('id', btPastaEditandoId).select();
           if (error) throw error;
           const i = btPastas.findIndex((p) => p.id === btPastaEditandoId);
           if (i >= 0 && data[0]) btPastas[i] = data[0];
+          if (descendentes.length) {
+            // as pastas de dentro acompanham a pasta principal nova
+            const { error: erroFilhas } = await Auth.sb.from('ideias_pastas').update({ grupo: mover.campos.grupo }).in('id', descendentes);
+            if (erroFilhas) throw erroFilhas;
+            btPastas.forEach((p) => {
+              if (descendentes.includes(p.id)) p.grupo = mover.campos.grupo;
+            });
+          }
+          // se você está dentro da pasta que acabou de mudar de lugar, continua nela
+          if (mover && btPastaId === existente.id) btGrupo = mover.campos.grupo;
         } else {
           const proxima = btPastasDoGrupo(btGrupo).reduce((max, p) => Math.max(max, p.ordem || 0), -1) + 1;
           const nova = { grupo: btGrupo, nome, descricao, ordem: proxima, ...extras };

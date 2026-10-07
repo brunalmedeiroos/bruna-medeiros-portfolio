@@ -9899,3 +9899,43 @@
 .painel-body .bt-menu .bt-menu-perigo {
   color: #C4453C;
 }
+
+/* ---- Banco de ideias (teste): rodinha de cor e cronograma ---- */
+
+.painel-body .ferr-cor-livre {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: conic-gradient(#e5484d, #f5a524, #f5e642, #3dd68c, #2fb5d6, #4a6cf7, #b44ae0, #e5484d);
+}
+
+.painel-body .ferr-cor-livre input[type='color'] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+.painel-body .ferr-cor-livre-miolo {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--branco);
+  pointer-events: none;
+}
+
+.painel-body .bt-agendado {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(var(--grafite-rgb), 0.08);
+  color: var(--grafite);
+}

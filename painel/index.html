@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261007c">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261007d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -9940,6 +9940,7 @@
         achadosCache = achados.data || [];
         cronogramaCache = cronograma.data || [];
         cronogramaDiasCache = cronogramaDias.data || [];
+        btCarregar().then(btAtualizarCronograma); // conteúdos do Banco de ideias (teste) também entram no cronograma
 
         renderizarBancoIdeias();
         renderizarAchados();
@@ -10422,6 +10423,7 @@
     };
 
     let btGrupos = []; // pastas principais (linhas de ideias_grupos)
+    let btAgendaOk = false; // a coluna data_agendada existe (SQL do cronograma rodado)
     let btGruposEditaveis = true;
 
     // Mensagens da pasta (BT_GRUPOS ou genérica) com o nome e a cor que estão no banco.
@@ -10483,6 +10485,7 @@
         btTabelasOk = false;
       }
       await btCarregarGrupos();
+      await btCarregarAgenda();
       btCarregado = true;
     }
 
@@ -10511,6 +10514,7 @@
         btPastaId = null;
       }
       if (btPastaId && !btPastaAtual()) btPastaId = null; // pasta apagada
+      btAtualizarCronograma();
       btRenderizarMigalhas();
       if (!btTabelasOk) return;
       if (btPastaId) btRenderizarPasta(area);
@@ -10675,9 +10679,18 @@
         <span class="ugc-roteiro-card-marca">${escapeHtml(c.titulo)}</span>
         <span class="ugc-roteiro-card-info">${escapeHtml(c.formato || tr('ugc_sem_detalhes_ainda'))}</span>
         ${temRoteiro(c) ? `<span class="ugc-roteiro-card-comentarios">${escapeHtml(tr('pl_ja_tem_roteiro'))}</span>` : ''}
+        ${btAgendaOk && c.data_agendada ? `<span class="bt-agendado">📅 ${escapeHtml(btDataCurta(c.data_agendada))}</span>` : ''}
         ${c.gravado ? '<span class="bt-gravado">Gravado</span>' : ''}
+        ${btAgendaOk && c.data_agendada && !c.gravado ? `<span class="pl-card-marcar-gravado">${escapeHtml(tr('pl_marcar_gravado'))}</span>` : ''}
       `;
-      card.addEventListener('click', () => btAbrirConteudo(c));
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.pl-card-marcar-gravado')) {
+          e.stopPropagation();
+          btMarcarGravado(c);
+          return;
+        }
+        btAbrirConteudo(c);
+      });
       return card;
     }
 
@@ -10802,6 +10815,91 @@
       }
     }
 
+    // ---------- Cronograma de postagem: os conteúdos do teste entram no mesmo calendário ----------
+
+    function btDataCurta(iso) {
+      return new Date(iso + 'T00:00:00').toLocaleDateString(localeAtual(), { day: '2-digit', month: '2-digit' });
+    }
+
+    // "Quadros › Como eu faria um vídeo para..." (de onde o conteúdo é)
+    function btCaminhoConteudo(c) {
+      const pasta = btPastas.find((p) => p.id === c.pasta_id);
+      if (!pasta) return '';
+      const grupo = btGrupos.find((g) => g.chave === pasta.grupo);
+      return grupo ? `${grupo.nome} › ${pasta.nome}` : pasta.nome;
+    }
+
+    async function btCarregarAgenda() {
+      // Sem a coluna data_agendada (SQL do cronograma ainda não rodado) o teste fica de fora do calendário.
+      try {
+        const { error } = await Auth.sb.from('ideias_conteudos').select('data_agendada').limit(1);
+        btAgendaOk = !error;
+      } catch (err) {
+        btAgendaOk = false;
+      }
+    }
+
+    // Itens do teste marcados num dia, no formato que o calendário já usa (id com prefixo "bt:").
+    function btItensDoDia(diaISO) {
+      if (!btAgendaOk) return [];
+      return btConteudos
+        .filter((c) => c.data_agendada === diaISO)
+        .map((c) => ({ id: 'bt:' + c.id, titulo: c.titulo, dica: btCaminhoConteudo(c) }));
+    }
+
+    function btOpcoesAgendar(lista) {
+      return lista
+        .map((c) => {
+          const caminho = btCaminhoConteudo(c);
+          return `<option value="bt:${c.id}">${escapeHtml(c.titulo)}${caminho ? ` (${escapeHtml(caminho)})` : ''}</option>`;
+        })
+        .join('');
+    }
+
+    // Calendário e contador de "Roteiros prontos" da Visão geral passam a contar o teste também.
+    function btAtualizarCronograma() {
+      atualizarContadorVisaoGeral();
+      renderizarCronogramaCalendario();
+    }
+
+    async function btAtualizarDataAgendada(id, dia, mensagemErro) {
+      try {
+        const { data, error } = await Auth.sb.from('ideias_conteudos').update({ data_agendada: dia }).eq('id', id).select();
+        if (error) throw error;
+        const i = btConteudos.findIndex((c) => c.id === id);
+        if (i >= 0 && data[0]) btConteudos[i] = data[0];
+        return true;
+      } catch (err) {
+        console.error('Erro ao mexer no cronograma:', err);
+        alert(mensagemErro);
+        return false;
+      }
+    }
+
+    async function btAgendar(id, dia) {
+      if (await btAtualizarDataAgendada(id, dia, tr('pl_erro_agendar'))) {
+        fecharModalAgendar();
+        btRenderizar();
+      }
+    }
+
+    async function btDesagendar(id) {
+      if (await btAtualizarDataAgendada(id, null, tr('pl_erro_remover_calendario'))) btRenderizar();
+    }
+
+    async function btMarcarGravado(c) {
+      try {
+        const { data, error } = await Auth.sb.from('ideias_conteudos').update({ gravado: true }).eq('id', c.id).select();
+        if (error) throw error;
+        const i = btConteudos.findIndex((x) => x.id === c.id);
+        if (i >= 0 && data[0]) btConteudos[i] = data[0];
+        btRenderizar();
+      } catch (err) {
+        console.error('Erro ao marcar conteúdo como gravado:', err);
+        alert(tr('erro_salvar_generico'));
+      }
+    }
+
     // ---------- pastas principais (tela inicial): criar, editar, recolorir, excluir ----------
 
     let btGrupoEditandoId = null;
@@ -10860,17 +10958,35 @@
       });
     }
 
+    // Paleta pronta + uma "rodinha" pra escolher qualquer outro tom.
     function btRenderizarCoresGrupo() {
       const cont = document.getElementById('bt-grupo-cores');
-      cont.innerHTML = FERR_CORES.map(
-        (c) => `<button type="button" class="ferr-cor${c === btGrupoCorEscolhida ? ' ativa' : ''}" data-cor="${c}" style="background:${c}" aria-label="Cor ${c}"></button>`
-      ).join('');
-      cont.querySelectorAll('.ferr-cor').forEach((b) =>
+      const cor = String(btGrupoCorEscolhida).toLowerCase();
+      const personalizada = !FERR_CORES.some((c) => c.toLowerCase() === cor);
+      cont.innerHTML =
+        FERR_CORES.map(
+          (c) => `<button type="button" class="ferr-cor${c.toLowerCase() === cor ? ' ativa' : ''}" data-cor="${c}" style="background:${c}" aria-label="Cor ${c}"></button>`
+        ).join('') +
+        `<label class="ferr-cor ferr-cor-livre${personalizada ? ' ativa' : ''}" title="Escolher outro tom" aria-label="Escolher outro tom">
+          <span class="ferr-cor-livre-miolo" style="${personalizada ? `background:${cor}` : 'display:none'}"></span>
+          <input type="color" value="${/^#[0-9a-f]{6}$/.test(cor) ? cor : '#7db7ce'}">
+        </label>`;
+      cont.querySelectorAll('button.ferr-cor').forEach((b) =>
         b.addEventListener('click', () => {
           btGrupoCorEscolhida = b.dataset.cor;
           btRenderizarCoresGrupo();
         })
       );
+      const roda = cont.querySelector('.ferr-cor-livre');
+      const miolo = roda.querySelector('.ferr-cor-livre-miolo');
+      // Enquanto arrasta na rodinha só atualiza a cor (sem redesenhar, senão o seletor fecha).
+      roda.querySelector('input').addEventListener('input', (e) => {
+        btGrupoCorEscolhida = e.target.value;
+        cont.querySelectorAll('.ferr-cor').forEach((b) => b.classList.remove('ativa'));
+        roda.classList.add('ativa');
+        miolo.style.display = '';
+        miolo.style.background = e.target.value;
+      });
     }
 
     function btAbrirModalGrupo(grupo, soCor) {
@@ -11170,7 +11286,9 @@
     // ---- Visão geral + cronograma de postagem (calendário) ----
 
     function atualizarContadorVisaoGeral() {
-      const prontos = ideiasCache.filter((i) => !i.gravado && i.status === 'Roteiro pronto').length;
+      const prontos =
+        ideiasCache.filter((i) => !i.gravado && i.status === 'Roteiro pronto').length +
+        btConteudos.filter((c) => !c.gravado && c.status === 'Roteiro pronto').length;
       document.getElementById('pl-vg-roteiros-prontos').textContent = prontos;
     }
 
@@ -11202,7 +11320,7 @@
         const diaISO = dataParaISO(dia);
 
         const pilaresDoDia = mapaDia[diaISO] || [];
-        const ideiasDoDia = ideiasCache.filter((idea) => idea.data_agendada === diaISO);
+        const ideiasDoDia = ideiasCache.filter((idea) => idea.data_agendada === diaISO).concat(btItensDoDia(diaISO));
 
         const celula = document.createElement('div');
         celula.className = 'pl-cron-dia';
@@ -11222,7 +11340,7 @@
           `).join('')}
           ${pilaresDoDia.length === 0 ? `<button type="button" class="pl-cron-dia-add-pilar" data-dia="${diaISO}">${escapeHtml(tr('pl_cron_add_pilar_curto'))}</button>` : ''}
           ${ideiasDoDia.map((idea) => `
-            <span class="pl-cron-dia-ideia" data-id="${escapeHtml(idea.id)}">
+            <span class="pl-cron-dia-ideia" data-id="${escapeHtml(idea.id)}"${idea.dica ? ` title="${escapeHtml(idea.dica)}"` : ''}>
               <span class="pl-cron-dia-ideia-titulo">${escapeHtml(idea.titulo)}</span>
               <button type="button" class="pl-cron-dia-ideia-remover" data-id="${escapeHtml(idea.id)}" aria-label="${escapeHtml(tr('pl_cron_remover_ideia_calendario_aria'))}">×</button>
             </span>
@@ -11246,6 +11364,11 @@
         if (botaoAddPilar) botaoAddPilar.addEventListener('click', () => abrirModalPilarDia(diaISO));
         celula.querySelectorAll('.pl-cron-dia-ideia').forEach((tag) => {
           tag.addEventListener('click', () => {
+            if (tag.dataset.id.startsWith('bt:')) {
+              const c = btConteudos.find((x) => x.id === tag.dataset.id.slice(3));
+              if (c) btAbrirConteudo(c);
+              return;
+            }
             const idea = ideiasCache.find((i) => i.id === tag.dataset.id);
             if (idea) abrirModalIdeia(idea);
           });
@@ -11261,8 +11384,9 @@
         new Date(diaISO + 'T00:00:00').toLocaleDateString(localeAtual(), { day: '2-digit', month: 'long' });
 
       const disponiveis = ideiasCache.filter((idea) => !idea.data_agendada && idea.status === 'Roteiro pronto');
+      const disponiveisTeste = btAgendaOk ? btConteudos.filter((c) => !c.data_agendada && c.status === 'Roteiro pronto') : [];
       const select = document.getElementById('pl-modal-agendar-select');
-      if (disponiveis.length === 0) {
+      if (disponiveis.length === 0 && disponiveisTeste.length === 0) {
         select.innerHTML = `<option value="">${escapeHtml(tr('pl_cron_nenhuma_ideia_roteiro_pronto'))}</option>`;
       } else {
         select.innerHTML = disponiveis
@@ -11270,7 +11394,7 @@
             const pilar = pilaresCache.find((p) => p.id === idea.pilar_id);
             return `<option value="${idea.id}">${escapeHtml(idea.titulo)}${pilar ? ` (${escapeHtml(pilar.nome)})` : ''}</option>`;
           })
-          .join('');
+          .join('') + btOpcoesAgendar(disponiveisTeste);
       }
 
       document.getElementById('pl-modal-agendar-overlay').hidden = false;
@@ -11284,6 +11408,7 @@
     async function confirmarAgendamento() {
       const ideiaId = document.getElementById('pl-modal-agendar-select').value;
       if (!ideiaId || !dataAgendarAtual) return;
+      if (ideiaId.startsWith('bt:')) return btAgendar(ideiaId.slice(3), dataAgendarAtual);
       try {
         const { error } = await Auth.sb.from('planejador_ideias').update({ data_agendada: dataAgendarAtual }).eq('id', ideiaId);
         if (error) throw error;
@@ -11296,6 +11421,7 @@
     }
 
     async function desagendarIdeia(ideiaId) {
+      if (String(ideiaId).startsWith('bt:')) return btDesagendar(ideiaId.slice(3));
       try {
         const { error } = await Auth.sb.from('planejador_ideias').update({ data_agendada: null }).eq('id', ideiaId);
         if (error) throw error;

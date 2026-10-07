@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261001s">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261007b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1002,6 +1002,7 @@
           <div id="pl-hub" class="pl-hub">
             <button class="pl-hub-card ativo" data-pagina="visao-geral" type="button" data-i18n="pl_visao_geral">Visão geral</button>
             <button class="pl-hub-card" data-pagina="banco" type="button" data-i18n="pl_banco_ideias">Banco de ideias</button>
+            <button class="pl-hub-card" data-pagina="banco-teste" type="button" data-i18n="pl_banco_ideias_teste">Banco de ideias (teste)</button>
             <button class="pl-hub-card" data-pagina="achados" type="button" data-i18n="pl_achados">Achados</button>
             <button class="pl-hub-card" data-pagina="radar" type="button" data-i18n="pl_radar">Radar de Notícias</button>
           </div>
@@ -1045,6 +1046,15 @@
               <div id="pl-pilar-strip" class="pl-pilar-strip"></div>
             </div>
             <div id="pl-banco-roteiros-area"></div>
+          </div>
+
+          <div id="pl-pagina-banco-teste" class="pl-pagina" hidden>
+            <nav id="bt-migalhas" class="bt-migalhas" aria-label="Caminho"></nav>
+            <div class="card email-vazio" id="bt-aviso-tabelas" hidden>
+              <h3 class="card-titulo">O Banco de ideias (teste) ainda não está pronto no banco</h3>
+              <p class="cal-todas-resumo">Falta rodar o arquivo banco-ideias-teste.sql no SQL Editor do Supabase. O Banco de ideias de sempre continua funcionando normal.</p>
+            </div>
+            <div id="bt-conteudo"></div>
           </div>
 
           <div id="pl-pagina-achados" class="pl-pagina" hidden>
@@ -1843,6 +1853,26 @@
       </div>
     </div>
 
+    <!-- Modal: pasta do Banco de ideias (teste) -->
+    <div id="bt-pasta-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal">
+        <div class="pl-modal-topo">
+          <input type="text" id="bt-pasta-nome-input" class="pl-modal-titulo-input" placeholder="Nome" maxlength="120">
+          <button id="bt-pasta-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="cal-form-campo">
+          <label for="bt-pasta-descricao">Descrição (opcional)</label>
+          <textarea id="bt-pasta-descricao" placeholder="Pra que serve essa pasta..."></textarea>
+        </div>
+        <div class="cal-form-acoes">
+          <button type="button" id="bt-pasta-excluir" class="cal-btn pl-btn-excluir">Excluir</button>
+          <button type="button" id="bt-pasta-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: detalhe de uma ideia do Banco de Ideias -->
     <div id="pl-modal-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal pl-modal-grande pl-modal-xl">
@@ -1866,15 +1896,20 @@
               <option value="Publicado" data-i18n="pl_status_publicado">Publicado</option>
             </select>
           </div>
-          <div class="cal-form-campo">
+          <div class="cal-form-campo" id="pl-modal-pilar-campo">
             <label for="pl-modal-pilar" data-i18n="pl_pilar">Pilar</label>
             <select id="pl-modal-pilar"></select>
+          </div>
+          <div class="cal-form-campo" id="pl-modal-pasta-campo" hidden>
+            <label for="pl-modal-pasta">Pasta</label>
+            <select id="pl-modal-pasta"></select>
           </div>
         </div>
 
         <label class="pl-checkbox-linha">
           <input type="checkbox" id="pl-modal-gravado">
-          <span data-i18n="pl_ja_gravado">Já foi gravado (some do Banco de Ideias, continua no Cronograma)</span>
+          <span id="pl-modal-gravado-txt" data-i18n="pl_ja_gravado">Já foi gravado (some do Banco de Ideias, continua no Cronograma)</span>
+          <span id="pl-modal-gravado-txt-teste" hidden>Já foi gravado</span>
         </label>
 
         <div class="cal-form-campo">
@@ -4092,6 +4127,7 @@
         // Planejador de Conteúdo
         voltar: '← Voltar',
         pl_banco_ideias: '💡 Banco de ideias',
+        pl_banco_ideias_teste: '🧪 Banco de ideias (teste)',
         pl_banco_desc: 'Minhas ideias organizadas por pilar de conteúdo, com espaço pro roteiro.',
         pl_achados: '🔍 Achados',
         pl_radar: '🗞️ Radar de Notícias',
@@ -5169,6 +5205,7 @@
         // Content Planner
         voltar: '← Back',
         pl_banco_ideias: '💡 Idea bank',
+        pl_banco_ideias_teste: '🧪 Idea bank (test)',
         pl_banco_desc: 'My ideas organized by content pillar, with room for the script.',
         pl_achados: '🔍 Finds',
         pl_radar: '🗞️ News Radar',
@@ -6026,6 +6063,13 @@
       document.getElementById('pl-modal-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'pl-modal-overlay') fecharModalIdeia();
       });
+      // Banco de ideias (teste)
+      document.getElementById('bt-pasta-modal-fechar').addEventListener('click', btFecharModalPasta);
+      document.getElementById('bt-pasta-salvar').addEventListener('click', btSalvarPasta);
+      document.getElementById('bt-pasta-excluir').addEventListener('click', btExcluirPasta);
+      document.getElementById('bt-pasta-modal-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'bt-pasta-modal-overlay') btFecharModalPasta();
+      });
       document.getElementById('pl-modal-achado-fechar').addEventListener('click', fecharModalAchado);
       document.getElementById('pl-modal-achado-salvar').addEventListener('click', salvarModalAchado);
       document.getElementById('pl-modal-achado-excluir').addEventListener('click', excluirModalAchado);
@@ -6438,6 +6482,7 @@
         pilarSelecionadoId = null;
         renderizarBancoIdeias();
       }
+      if (pagina === 'banco-teste') btAbrir();
       if (pagina === 'radar') abrirRadarNoPlanejador();
     }
 
@@ -10174,6 +10219,8 @@
 
     function abrirModalIdeia(ideia) {
       ideiaAbertaId = ideia.id;
+      btConteudoAbertoId = null;
+      prepararModalIdeiaModo(false);
       document.getElementById('pl-modal-titulo').value = ideia.titulo;
       document.getElementById('pl-modal-formato').value = ideia.formato || '';
       document.getElementById('pl-modal-status').value = ideia.status || 'Não iniciado';
@@ -10201,6 +10248,7 @@
         formato: document.getElementById('pl-modal-formato').value,
         status: document.getElementById('pl-modal-status').value,
         pilar: document.getElementById('pl-modal-pilar').value,
+        pasta: document.getElementById('pl-modal-pasta').value,
         gravado: document.getElementById('pl-modal-gravado').checked,
         roteiroBreve: document.getElementById('pl-modal-roteiro-breve').value,
         roteiroCompleto: document.getElementById('pl-modal-roteiro-completo').innerHTML,
@@ -10221,10 +10269,12 @@
 
     function fecharModalIdeiaForcado() {
       ideiaAbertaId = null;
+      btConteudoAbertoId = null;
       document.getElementById('pl-modal-overlay').hidden = true;
     }
 
     async function salvarModalIdeia() {
+      if (btConteudoAbertoId) return btSalvarConteudo();
       if (!ideiaAbertaId) return;
 
       const linha = {
@@ -10253,6 +10303,7 @@
     }
 
     async function excluirModalIdeia() {
+      if (btConteudoAbertoId) return btExcluirConteudo();
       if (!ideiaAbertaId) return;
       if (!(await confirmarAcao(tr('pl_excluir_ideia_confirmar')))) return;
       try {
@@ -10264,6 +10315,472 @@
         console.error('Erro ao excluir ideia:', err);
         alert(tr('erro_excluir_generico'));
       }
+    }
+
+    // ==========================================================================
+    // Banco de ideias (teste): Quadros, Séries e Conteúdos navegados como pastas.
+    // Convive com o Banco de ideias atual sem mexer nele: usa as tabelas
+    // ideias_pastas e ideias_conteudos (ver banco-ideias-teste.sql) e abre o
+    // MESMO editor de roteiro (#pl-modal-overlay), só trocando onde salva.
+    // ==========================================================================
+
+    const BT_GRUPOS = {
+      quadro: {
+        rotulo: 'Quadros',
+        cor: '#7DB7CE',
+        um: 'quadro',
+        plural: 'quadros',
+        itemUm: 'conteúdo',
+        itemPlural: 'conteúdos',
+        novaPasta: '+ Novo quadro',
+        novoItem: '+ Novo conteúdo',
+        resumo: 'Formatos que se repetem. Cada quadro guarda os conteúdos que seguem aquela ideia.',
+        vazio: 'Você ainda não criou nenhum quadro.',
+        vazioItens: 'Nenhum conteúdo neste quadro ainda.',
+        exemploNome: 'Ex: Como eu faria um vídeo para...',
+        placeholderItem: 'Ex: L\'Oréal Paris...',
+      },
+      serie: {
+        rotulo: 'Séries',
+        cor: '#04465D',
+        um: 'série',
+        plural: 'séries',
+        itemUm: 'episódio',
+        itemPlural: 'episódios',
+        novaPasta: '+ Nova série',
+        novoItem: '+ Novo episódio',
+        resumo: 'Histórias que continuam. Cada série guarda os episódios, na ordem em que você criou.',
+        vazio: 'Você ainda não criou nenhuma série.',
+        vazioItens: 'Nenhum episódio nesta série ainda.',
+        exemploNome: 'Ex: Minha jornada com o cabelo',
+        placeholderItem: 'Título do episódio...',
+      },
+      tema: {
+        rotulo: 'Conteúdos',
+        cor: '#FFF7C5',
+        um: 'tema',
+        plural: 'temas',
+        itemUm: 'conteúdo',
+        itemPlural: 'conteúdos',
+        novaPasta: '+ Novo tema',
+        novoItem: '+ Novo conteúdo',
+        resumo: 'Conteúdos soltos, que não são de um quadro nem de uma série, separados por tema.',
+        vazio: 'Você ainda não criou nenhum tema.',
+        vazioItens: 'Nenhum conteúdo neste tema ainda.',
+        exemploNome: 'Ex: Beleza',
+        placeholderItem: 'Título do conteúdo...',
+      },
+    };
+
+    let btPastas = [];
+    let btConteudos = [];
+    let btTabelasOk = true;
+    let btCarregado = false;
+    let btGrupo = null; // 'quadro' | 'serie' | 'tema' | null (primeira tela)
+    let btPastaId = null; // pasta aberta (null = lista de pastas do grupo)
+    let btPastaEditandoId = null;
+    let btConteudoAbertoId = null; // conteúdo aberto no editor de roteiro
+
+    function btOrdenar(lista) {
+      return [...lista].sort((a, b) => (a.ordem || 0) - (b.ordem || 0) || String(a.created_at).localeCompare(String(b.created_at)));
+    }
+
+    function btPastasDoGrupo(grupo) {
+      return btOrdenar(btPastas.filter((p) => p.grupo === grupo));
+    }
+
+    function btConteudosDaPasta(pastaId) {
+      return btOrdenar(btConteudos.filter((c) => c.pasta_id === pastaId));
+    }
+
+    function btPastaAtual() {
+      return btPastaId ? btPastas.find((p) => p.id === btPastaId) || null : null;
+    }
+
+    function btPlural(n, um, plural) {
+      return `${n} ${n === 1 ? um : plural}`;
+    }
+
+    async function btCarregar() {
+      try {
+        const [pastas, conteudos] = await Promise.all([
+          Auth.sb.from('ideias_pastas').select('*'),
+          Auth.sb.from('ideias_conteudos').select('*'),
+        ]);
+        if (pastas.error) throw pastas.error;
+        if (conteudos.error) throw conteudos.error;
+        btPastas = pastas.data || [];
+        btConteudos = conteudos.data || [];
+        btTabelasOk = true;
+      } catch (err) {
+        console.warn('Banco de ideias (teste) indisponível:', err);
+        btPastas = [];
+        btConteudos = [];
+        btTabelasOk = false;
+      }
+      btCarregado = true;
+    }
+
+    async function btAbrir() {
+      btGrupo = null;
+      btPastaId = null;
+      if (!btCarregado) document.getElementById('bt-conteudo').innerHTML = '<p class="texto-vazio">Carregando...</p>';
+      else btRenderizar();
+      await btCarregar();
+      btRenderizar();
+    }
+
+    function btIr(grupo, pastaId) {
+      btGrupo = grupo;
+      btPastaId = pastaId;
+      btRenderizar();
+      window.scrollTo({ top: 0 });
+    }
+
+    function btRenderizar() {
+      const area = document.getElementById('bt-conteudo');
+      document.getElementById('bt-aviso-tabelas').hidden = btTabelasOk;
+      area.hidden = !btTabelasOk;
+      if (btPastaId && !btPastaAtual()) btPastaId = null; // pasta apagada
+      btRenderizarMigalhas();
+      if (!btTabelasOk) return;
+      if (btPastaId) btRenderizarPasta(area);
+      else if (btGrupo) btRenderizarGrupo(area);
+      else btRenderizarRaiz(area);
+    }
+
+    // ---------- caminho (breadcrumb) ----------
+
+    function btRenderizarMigalhas() {
+      const nav = document.getElementById('bt-migalhas');
+      const partes = [
+        { rotulo: 'Meus conteúdos', ir: () => abrirPaginaPlanejador('visao-geral') },
+        { rotulo: 'Banco de ideias (teste)', ir: () => btIr(null, null) },
+      ];
+      if (btGrupo) partes.push({ rotulo: BT_GRUPOS[btGrupo].rotulo, ir: () => btIr(btGrupo, null) });
+      const pasta = btPastaAtual();
+      if (pasta) partes.push({ rotulo: pasta.nome });
+
+      nav.innerHTML = '';
+      partes.forEach((parte, i) => {
+        if (i > 0) nav.insertAdjacentHTML('beforeend', '<span class="bt-migalha-sep" aria-hidden="true">›</span>');
+        const ultima = i === partes.length - 1;
+        const el = document.createElement(ultima ? 'span' : 'button');
+        el.className = ultima ? 'bt-migalha-atual' : 'bt-migalha';
+        el.textContent = parte.rotulo;
+        if (!ultima) {
+          el.type = 'button';
+          el.addEventListener('click', parte.ir);
+        }
+        nav.appendChild(el);
+      });
+    }
+
+    // ---------- pastas (mesmo desenho das pastas da aba Ferramentas) ----------
+
+    function btHtmlPasta(chave, nome, cor, subtitulo, editavel) {
+      return `
+        <article class="ferr-pasta" data-chave="${escapeHtml(chave)}" style="--pc:${cor};--pd:${ferrCorEscura(cor)};--pt:${ferrTextoSobre(cor)}">
+          <div class="ferr-pasta-fundo"></div>
+          <div class="ferr-pasta-folha"></div>
+          <div class="ferr-pasta-frente">
+            <span class="ferr-pasta-nome">${escapeHtml(nome)}</span>
+            <span class="ferr-pasta-qtd">${escapeHtml(subtitulo)}</span>
+          </div>
+          ${editavel ? '<button type="button" class="ferr-pasta-editar" data-acao="editar" title="Editar pasta" aria-label="Editar pasta">⋯</button>' : ''}
+        </article>`;
+    }
+
+    // Primeira tela: só as três pastas principais.
+    function btRenderizarRaiz(area) {
+      const cartoes = Object.keys(BT_GRUPOS)
+        .map((chave) => {
+          const g = BT_GRUPOS[chave];
+          const n = btPastasDoGrupo(chave).length;
+          return btHtmlPasta(chave, g.rotulo.toUpperCase(), g.cor, btPlural(n, g.um, g.plural), false);
+        })
+        .join('');
+      area.innerHTML = `
+        <p class="cal-todas-resumo bt-intro">Escolha uma pasta pra entrar. Isso é só um teste: o Banco de ideias de sempre continua do jeito que está.</p>
+        <div class="ferr-pastas-grade">${cartoes}</div>`;
+      area.querySelectorAll('.ferr-pasta').forEach((el) => {
+        el.addEventListener('click', () => btIr(el.dataset.chave, null));
+      });
+    }
+
+    // Dentro de Quadros / Séries / Conteúdos: as pastas daquele grupo.
+    function btRenderizarGrupo(area) {
+      const g = BT_GRUPOS[btGrupo];
+      const pastas = btPastasDoGrupo(btGrupo);
+      area.innerHTML = `
+        <div class="ferr-pasta-topo">
+          <button type="button" class="cal-btn" id="bt-voltar">← Voltar</button>
+          <div class="ferr-pasta-titulo-bloco">
+            <h3 class="card-titulo">${escapeHtml(g.rotulo)}</h3>
+            <p class="cal-todas-resumo">${escapeHtml(g.resumo)}</p>
+          </div>
+          <div class="ferr-pasta-acoes">
+            <button type="button" class="cal-btn cal-btn-primario" id="bt-nova-pasta">${escapeHtml(g.novaPasta)}</button>
+          </div>
+        </div>
+        ${
+          pastas.length === 0
+            ? `<div class="ferr-vazio"><p>${escapeHtml(g.vazio)}</p></div>`
+            : `<div class="ferr-pastas-grade">${pastas
+                .map((p) => btHtmlPasta(p.id, p.nome, g.cor, btPlural(btConteudosDaPasta(p.id).length, g.itemUm, g.itemPlural), true))
+                .join('')}</div>`
+        }`;
+      document.getElementById('bt-voltar').addEventListener('click', () => btIr(null, null));
+      document.getElementById('bt-nova-pasta').addEventListener('click', () => btAbrirModalPasta(null));
+      area.querySelectorAll('.ferr-pasta').forEach((el) => {
+        const pasta = pastas.find((p) => p.id === el.dataset.chave);
+        el.addEventListener('click', () => btIr(btGrupo, pasta.id));
+        el.querySelector('[data-acao="editar"]').addEventListener('click', (e) => {
+          e.stopPropagation();
+          btAbrirModalPasta(pasta);
+        });
+      });
+    }
+
+    // Dentro de uma pasta: os conteúdos (cada um abre o editor de roteiro de sempre).
+    function btRenderizarPasta(area) {
+      const g = BT_GRUPOS[btGrupo];
+      const pasta = btPastaAtual();
+      const conteudos = btConteudosDaPasta(pasta.id);
+      const prontos = conteudos.filter((c) => c.status === 'Roteiro pronto').length;
+      const resumo =
+        conteudos.length === 0
+          ? g.vazioItens
+          : `${btPlural(conteudos.length, g.itemUm, g.itemPlural)}${prontos ? ` · ${prontos} com roteiro pronto` : ''}`;
+      area.innerHTML = `
+        <div class="ferr-pasta-topo">
+          <button type="button" class="cal-btn" id="bt-voltar">← ${escapeHtml(g.rotulo)}</button>
+          <div class="ferr-pasta-titulo-bloco">
+            <h3 class="card-titulo">${escapeHtml(pasta.nome)}</h3>
+            <p class="cal-todas-resumo">${escapeHtml(resumo)}</p>
+            ${pasta.descricao ? `<p class="bt-descricao">${escapeHtml(pasta.descricao)}</p>` : ''}
+          </div>
+          <div class="ferr-pasta-acoes">
+            <button type="button" class="cal-btn" id="bt-editar-pasta">Editar pasta</button>
+            <button type="button" class="cal-btn cal-btn-primario" id="bt-novo-item">${escapeHtml(g.novoItem)}</button>
+          </div>
+        </div>
+        <div id="bt-novo-item-area"></div>
+        <div class="ugc-roteiros-grade" id="bt-itens-grade"></div>`;
+      document.getElementById('bt-voltar').addEventListener('click', () => btIr(btGrupo, null));
+      document.getElementById('bt-editar-pasta').addEventListener('click', () => btAbrirModalPasta(pasta));
+      document.getElementById('bt-novo-item').addEventListener('click', () => btMostrarFormNovoItem(g));
+      const grade = document.getElementById('bt-itens-grade');
+      conteudos.forEach((c, i) => grade.appendChild(btCriarCardConteudo(c, i, btGrupo === 'serie')));
+    }
+
+    function btCriarCardConteudo(c, indice, ehSerie) {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'ugc-roteiro-card';
+      card.innerHTML = `
+        <span class="ugc-status-pill ${classeStatusIdeia(c.status)}">${escapeHtml(traduzirStatusIdeia(c.status || 'Não iniciado'))}</span>
+        ${ehSerie ? `<span class="bt-ep">EP. ${String(indice + 1).padStart(2, '0')}</span>` : ''}
+        <span class="ugc-roteiro-card-marca">${escapeHtml(c.titulo)}</span>
+        <span class="ugc-roteiro-card-info">${escapeHtml(c.formato || tr('ugc_sem_detalhes_ainda'))}</span>
+        ${temRoteiro(c) ? `<span class="ugc-roteiro-card-comentarios">${escapeHtml(tr('pl_ja_tem_roteiro'))}</span>` : ''}
+        ${c.gravado ? '<span class="bt-gravado">Gravado</span>' : ''}
+      `;
+      card.addEventListener('click', () => btAbrirConteudo(c));
+      return card;
+    }
+
+    // ---------- novo conteúdo / episódio ----------
+
+    function btMostrarFormNovoItem(g) {
+      const area = document.getElementById('bt-novo-item-area');
+      if (area.querySelector('.pl-novo-card-form')) return;
+      const form = document.createElement('div');
+      form.className = 'pl-novo-card-form';
+      form.innerHTML = `
+        <textarea placeholder="${escapeHtml(g.placeholderItem)}" rows="2"></textarea>
+        <div class="pl-novo-card-acoes">
+          <button type="button" class="cal-btn cal-btn-primario pl-novo-card-salvar">${escapeHtml(tr('adicionar'))}</button>
+          <button type="button" class="cal-btn pl-novo-card-cancelar">${escapeHtml(tr('confirm_cancelar'))}</button>
+        </div>`;
+      area.appendChild(form);
+      const textarea = form.querySelector('textarea');
+      textarea.focus();
+      form.querySelector('.pl-novo-card-cancelar').addEventListener('click', () => form.remove());
+      form.querySelector('.pl-novo-card-salvar').addEventListener('click', async () => {
+        const titulo = textarea.value.trim();
+        if (!titulo) return;
+        await btCriarConteudo(titulo);
+      });
+    }
+
+    async function btCriarConteudo(titulo) {
+      const pasta = btPastaAtual();
+      if (!pasta) return;
+      try {
+        const proxima = btConteudosDaPasta(pasta.id).reduce((max, c) => Math.max(max, c.ordem || 0), -1) + 1;
+        const { data, error } = await Auth.sb.from('ideias_conteudos').insert({ pasta_id: pasta.id, titulo, ordem: proxima }).select();
+        if (error) throw error;
+        btConteudos.push(data[0]);
+        btRenderizar();
+      } catch (err) {
+        console.error('Erro ao criar conteúdo:', err);
+        alert(tr('pl_erro_criar_ideia'));
+      }
+    }
+
+    // ---------- editor de roteiro (o mesmo de sempre) ----------
+
+    // O editor é um só. Aqui só escolhemos qual campo aparece (Pilar no banco
+    // de sempre, Pasta no banco de teste) e qual texto do "já gravado" vale.
+    function prepararModalIdeiaModo(teste) {
+      document.getElementById('pl-modal-pilar-campo').hidden = teste;
+      document.getElementById('pl-modal-pasta-campo').hidden = !teste;
+      document.getElementById('pl-modal-gravado-txt').hidden = teste;
+      document.getElementById('pl-modal-gravado-txt-teste').hidden = !teste;
+    }
+
+    function btAbrirConteudo(c) {
+      ideiaAbertaId = null;
+      btConteudoAbertoId = c.id;
+      prepararModalIdeiaModo(true);
+      document.getElementById('pl-modal-titulo').value = c.titulo;
+      document.getElementById('pl-modal-formato').value = c.formato || '';
+      document.getElementById('pl-modal-status').value = c.status || 'Não iniciado';
+      document.getElementById('pl-modal-roteiro-breve').value = c.roteiro_breve || '';
+      const areaRoteiroCompleto = document.getElementById('pl-modal-roteiro-completo');
+      areaRoteiroCompleto.innerHTML = c.roteiro_completo || '';
+      areaRoteiroCompleto.setAttribute('data-placeholder', tr('pl_roteiro_completo_placeholder'));
+      prepararEstiloPadraoRoteiro(areaRoteiroCompleto);
+      document.getElementById('pl-modal-gravado').checked = !!c.gravado;
+
+      document.getElementById('pl-modal-pasta').innerHTML = Object.keys(BT_GRUPOS)
+        .map((chave) => {
+          const pastas = btPastasDoGrupo(chave);
+          if (!pastas.length) return '';
+          const opcoes = pastas
+            .map((p) => `<option value="${p.id}" ${p.id === c.pasta_id ? 'selected' : ''}>${escapeHtml(p.nome)}</option>`)
+            .join('');
+          return `<optgroup label="${escapeHtml(BT_GRUPOS[chave].rotulo)}">${opcoes}</optgroup>`;
+        })
+        .join('');
+
+      document.getElementById('pl-modal-overlay').hidden = false;
+      ideiaSnapshotInicial = capturarEstadoIdeia();
+    }
+
+    async function btSalvarConteudo() {
+      const linha = {
+        titulo: document.getElementById('pl-modal-titulo').value.trim(),
+        formato: document.getElementById('pl-modal-formato').value.trim() || null,
+        status: document.getElementById('pl-modal-status').value,
+        pasta_id: document.getElementById('pl-modal-pasta').value,
+        gravado: document.getElementById('pl-modal-gravado').checked,
+        roteiro_breve: document.getElementById('pl-modal-roteiro-breve').value.trim() || null,
+        roteiro_completo: (() => {
+          const area = document.getElementById('pl-modal-roteiro-completo');
+          return conteudoRoteiroVazio(area) ? null : area.innerHTML;
+        })(),
+      };
+      if (!linha.titulo || !linha.pasta_id) return;
+      try {
+        const { data, error } = await Auth.sb.from('ideias_conteudos').update(linha).eq('id', btConteudoAbertoId).select();
+        if (error) throw error;
+        const i = btConteudos.findIndex((c) => c.id === btConteudoAbertoId);
+        if (i >= 0 && data[0]) btConteudos[i] = data[0];
+        fecharModalIdeiaForcado();
+        btRenderizar();
+      } catch (err) {
+        console.error('Erro ao salvar conteúdo:', err);
+        alert(tr('erro_salvar_generico'));
+      }
+    }
+
+    async function btExcluirConteudo() {
+      if (!(await confirmarAcao(tr('pl_excluir_ideia_confirmar')))) return;
+      try {
+        const { error } = await Auth.sb.from('ideias_conteudos').delete().eq('id', btConteudoAbertoId);
+        if (error) throw error;
+        btConteudos = btConteudos.filter((c) => c.id !== btConteudoAbertoId);
+        fecharModalIdeiaForcado();
+        btRenderizar();
+      } catch (err) {
+        console.error('Erro ao excluir conteúdo:', err);
+        alert(tr('erro_excluir_generico'));
+      }
+    }
+
+    // ---------- pastas: criar, editar, excluir ----------
+
+    function btAbrirModalPasta(pasta) {
+      btPastaEditandoId = pasta ? pasta.id : null;
+      const g = BT_GRUPOS[btGrupo];
+      const nomeInput = document.getElementById('bt-pasta-nome-input');
+      nomeInput.value = pasta ? pasta.nome : '';
+      nomeInput.placeholder = g.exemploNome;
+      document.getElementById('bt-pasta-descricao').value = pasta ? pasta.descricao || '' : '';
+      document.getElementById('bt-pasta-excluir').hidden = !pasta;
+      document.getElementById('bt-pasta-modal-overlay').hidden = false;
+      nomeInput.focus();
+    }
+
+    function btFecharModalPasta() {
+      btPastaEditandoId = null;
+      document.getElementById('bt-pasta-modal-overlay').hidden = true;
+    }
+
+    async function btSalvarPasta() {
+      const nome = document.getElementById('bt-pasta-nome-input').value.trim();
+      const descricao = document.getElementById('bt-pasta-descricao').value.trim() || null;
+      if (!nome) {
+        alert('Dê um nome pra pasta.');
+        return;
+      }
+      const btn = document.getElementById('bt-pasta-salvar');
+      btn.disabled = true;
+      try {
+        if (btPastaEditandoId) {
+          const { data, error } = await Auth.sb.from('ideias_pastas').update({ nome, descricao }).eq('id', btPastaEditandoId).select();
+          if (error) throw error;
+          const i = btPastas.findIndex((p) => p.id === btPastaEditandoId);
+          if (i >= 0 && data[0]) btPastas[i] = data[0];
+        } else {
+          const proxima = btPastasDoGrupo(btGrupo).reduce((max, p) => Math.max(max, p.ordem || 0), -1) + 1;
+          const { data, error } = await Auth.sb.from('ideias_pastas').insert({ grupo: btGrupo, nome, descricao, ordem: proxima }).select();
+          if (error) throw error;
+          btPastas.push(data[0]);
+        }
+        btFecharModalPasta();
+        btRenderizar();
+      } catch (err) {
+        console.error('Erro ao salvar pasta:', err);
+        alert('Não consegui salvar a pasta. Tente de novo.');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function btExcluirPasta() {
+      const pasta = btPastas.find((p) => p.id === btPastaEditandoId);
+      if (!pasta) return;
+      const g = BT_GRUPOS[pasta.grupo];
+      const qtd = btConteudosDaPasta(pasta.id).length;
+      const aviso =
+        qtd > 0
+          ? `Excluir "${pasta.nome}" e os ${btPlural(qtd, g.itemUm, g.itemPlural)} que estão dentro dela? Não dá pra desfazer.`
+          : `Excluir "${pasta.nome}"?`;
+      if (!(await confirmarAcao(aviso))) return;
+      const { error } = await Auth.sb.from('ideias_pastas').delete().eq('id', pasta.id);
+      if (error) {
+        console.error('Erro ao excluir pasta:', error);
+        alert('Não consegui excluir a pasta.');
+        return;
+      }
+      btPastas = btPastas.filter((p) => p.id !== pasta.id);
+      btConteudos = btConteudos.filter((c) => c.pasta_id !== pasta.id);
+      if (btPastaId === pasta.id) btPastaId = null;
+      btFecharModalPasta();
+      btRenderizar();
     }
 
     // ---- Achados (pilares fixos: Gancho, Frase, Formato, Música, CTA) ----

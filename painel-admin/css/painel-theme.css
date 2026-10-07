@@ -9768,3 +9768,83 @@
   gap: 8px;
   margin: 4px 0 14px;
 }
+
+/* ---- Banco de ideias (teste): navegação em pastas ---- */
+
+.painel-body .bt-migalhas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 18px;
+  font-size: 13px;
+}
+
+.painel-body .bt-migalha {
+  border: none;
+  background: none;
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: var(--texto-suave);
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.painel-body .bt-migalha:hover {
+  background: rgba(var(--grafite-rgb), 0.07);
+  color: var(--grafite);
+}
+
+.painel-body .bt-migalha-atual {
+  padding: 4px 8px;
+  color: var(--grafite);
+  font-weight: 700;
+}
+
+.painel-body .bt-migalha-sep {
+  color: var(--texto-suave);
+  opacity: 0.6;
+}
+
+.painel-body .bt-intro {
+  margin-bottom: 8px;
+}
+
+.painel-body .bt-descricao {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--texto-suave);
+  white-space: pre-wrap;
+}
+
+.painel-body .bt-ep {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--texto-suave);
+}
+
+.painel-body .bt-gravado {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(var(--grafite-rgb), 0.08);
+  color: var(--texto-suave);
+}
+
+.painel-body #bt-novo-item-area {
+  margin-bottom: 16px;
+}
+
+.painel-body #bt-pasta-descricao {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.painel-body #pl-modal-pilar-campo[hidden],
+.painel-body #pl-modal-pasta-campo[hidden] {
+  display: none;
+}

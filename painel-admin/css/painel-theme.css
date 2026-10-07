@@ -9939,3 +9939,23 @@
   background: rgba(var(--grafite-rgb), 0.08);
   color: var(--grafite);
 }
+
+/* ---- Banco de ideias (teste): subpastas ---- */
+
+.painel-body #bt-pasta-emoji-campo[hidden],
+.painel-body #bt-pasta-cores-campo[hidden] {
+  display: none;
+}
+
+.painel-body .bt-subpastas {
+  margin-bottom: 28px;
+}
+
+.painel-body .bt-menu-ancora {
+  position: relative;
+}
+
+.painel-body .bt-menu.bt-menu-cabecalho {
+  top: calc(100% + 6px);
+  right: 0;
+}

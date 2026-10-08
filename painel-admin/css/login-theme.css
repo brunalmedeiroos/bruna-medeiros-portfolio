@@ -33,14 +33,20 @@
   border: 1px solid rgba(4, 70, 93, 0.06); /* borda sutil do .services-window */
 }
 
-/* Logo: fonte de destaque do painel (--fonte-titulo), centralizada.
-   Tamanho maior que o padrão de 22px do style.css, mas reduzido em
-   relação ao original: a Quicksand é mais larga que a Bootzy TM no
-   mesmo tamanho de fonte, e "Creator Center" ficava perto demais da
-   borda do card de login (348px de conteúdo, com padding). */
+/* Logo "Bru | Painel": Bootzy TM, a fonte da marca (mesmo arquivo do site e da
+   logo do menu lateral do painel). */
+@font-face {
+  font-family: 'Bootzy TM';
+  src: url('../../fonts/BootzyTM.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 .login-body .logo {
-  font-family: var(--fonte-titulo);
-  font-size: 2rem;
+  font-family: 'Bootzy TM', var(--fonte-titulo);
+  font-size: 2.4rem;
+  letter-spacing: 1.2px;
   text-align: center;
 }
 

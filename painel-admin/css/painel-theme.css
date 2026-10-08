@@ -10046,3 +10046,96 @@
   font-weight: 600;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
+
+/* ---- Meus conteúdos: Visão geral por etapa, cronograma semanal/mensal e novos status ---- */
+
+.painel-body .pl-vg {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.painel-body .pl-vg-numeros {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 1100px) {
+  .painel-body .pl-vg-numeros {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .painel-body .pl-vg-numeros {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.painel-body .pl-cron-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.painel-body .pl-cron-cabecalho .pl-pagina-titulo {
+  margin: 0;
+}
+
+.painel-body .pl-cron-visoes {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: var(--branco);
+}
+
+.painel-body .pl-cron-visao {
+  padding: 5px 16px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--grafite);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.painel-body .pl-cron-visao.ativo {
+  background: var(--grafite);
+  color: var(--branco);
+}
+
+.painel-body .pl-cron-grade-semana .pl-cron-dia {
+  min-height: 260px;
+}
+
+.painel-body .pl-status-gravado {
+  background: #4a90d9;
+  color: var(--branco);
+}
+
+.painel-body .pl-status-editando {
+  background: #c98a1c;
+  color: var(--branco);
+}
+
+.painel-body .pl-status-editado {
+  background: #7DB7CE;
+  color: #04465D;
+}
+
+.painel-body .pl-status-pronto-postar {
+  background: #04465D;
+  color: var(--branco);
+}
+
+.painel-body .bt-total {
+  max-width: 260px;
+  margin-bottom: 22px;
+}

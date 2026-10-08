@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261008a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261008b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1008,13 +1008,37 @@
 
           <div id="pl-pagina-visao-geral" class="pl-pagina">
             <div class="pl-vg">
-              <div class="card-numero pl-vg-numero">
-                <span class="card-label" data-i18n="pl_roteiros_prontos">Roteiros prontos</span>
-                <span class="card-valor" id="pl-vg-roteiros-prontos">0</span>
+              <div class="pl-vg-numeros">
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="pl_roteiros_prontos">Roteiros prontos</span>
+                  <span class="card-valor" id="pl-vg-roteiros-prontos">0</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="pl_vg_gravados">Gravados</span>
+                  <span class="card-valor" id="pl-vg-gravados">0</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="pl_vg_editando">Editando</span>
+                  <span class="card-valor" id="pl-vg-editando">0</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="pl_vg_pronto_postar">Pronto para postar</span>
+                  <span class="card-valor" id="pl-vg-pronto-postar">0</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="pl_vg_postados">Postados</span>
+                  <span class="card-valor" id="pl-vg-postados">0</span>
+                </div>
               </div>
 
               <div class="pl-vg-cronograma">
-                <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_cronograma">Cronograma de postagem</h3>
+                <div class="pl-cron-cabecalho">
+                  <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_cronograma">Cronograma de postagem</h3>
+                  <div class="pl-cron-visoes" role="group">
+                    <button type="button" class="pl-cron-visao ativo" data-visao="semana" data-i18n="pl_cron_semanal">Semanal</button>
+                    <button type="button" class="pl-cron-visao" data-visao="mes" data-i18n="pl_cron_mensal">Mensal</button>
+                  </div>
+                </div>
             <div class="card pl-cronograma-calendario-card">
               <div class="cal-topo">
                 <button id="pl-cron-mes-anterior" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_mes_anterior" aria-label="Mês anterior">
@@ -1919,6 +1943,10 @@
             <select id="pl-modal-status">
               <option value="Não iniciado" data-i18n="pl_status_nao_iniciado">Não iniciado</option>
               <option value="Roteiro pronto" data-i18n="pl_status_roteiro_pronto">Roteiro pronto</option>
+              <option value="Gravado" data-i18n="pl_status_gravado">Gravado</option>
+              <option value="Editando" data-i18n="pl_status_editando">Editando</option>
+              <option value="Editado" data-i18n="pl_status_editado">Editado</option>
+              <option value="Pronto para postar" data-i18n="pl_status_pronto_postar">Pronto para postar</option>
               <option value="Publicado" data-i18n="pl_status_publicado">Publicado</option>
             </select>
           </div>
@@ -3298,6 +3326,8 @@
     let cronogramaDiasCache = [];
     let dataPilarDiaAtual = null;
     let cronMesAtual = new Date(); // mês exibido no calendário do cronograma
+    let cronModo = 'semana'; // 'semana' (padrão) ou 'mes'
+    let cronSemanaAtual = new Date(); // qualquer dia da semana exibida
     let ideiaAbertaId = null;
     let ideiaSnapshotInicial = '';
     let achadoAbertoId = null;
@@ -3323,8 +3353,22 @@
     const STATUS_IDEIA_CHAVE = {
       'Não iniciado': 'pl_status_nao_iniciado',
       'Roteiro pronto': 'pl_status_roteiro_pronto',
+      'Gravado': 'pl_status_gravado',
+      'Editando': 'pl_status_editando',
+      'Editado': 'pl_status_editado',
+      'Pronto para postar': 'pl_status_pronto_postar',
       'Publicado': 'pl_status_publicado',
     };
+    // Etapas do roteiro, do rascunho até o post. Os valores gravados no banco ficam em português.
+    const PL_STATUS_ORDEM = ['Roteiro pronto', 'Gravado', 'Editando', 'Editado', 'Pronto para postar', 'Não iniciado', 'Publicado'];
+    const PL_STATUS_AGENDAVEIS = ['Roteiro pronto', 'Gravado', 'Editando', 'Editado', 'Pronto para postar'];
+    // A etapa de um conteúdo é o status; só que quem já estava marcado como gravado sem ter avançado conta como Gravado.
+    function plEstagio(item) {
+      const status = item.status || 'Não iniciado';
+      if (item.gravado && (status === 'Não iniciado' || status === 'Roteiro pronto')) return 'Gravado';
+      return status;
+    }
+
     function traduzirStatusIdeia(status) {
       const chave = STATUS_IDEIA_CHAVE[status];
       return chave ? tr(chave) : status;
@@ -4189,6 +4233,17 @@
         pl_status_nao_iniciado: 'Não iniciado',
         pl_status_roteiro_pronto: 'Roteiro pronto',
         pl_status_publicado: 'Publicado',
+        pl_status_gravado: 'Gravado',
+        pl_status_editando: 'Editando',
+        pl_status_editado: 'Editado',
+        pl_status_pronto_postar: 'Pronto para postar',
+        pl_vg_gravados: 'Gravados',
+        pl_vg_editando: 'Editando',
+        pl_vg_pronto_postar: 'Pronto para postar',
+        pl_vg_postados: 'Postados',
+        pl_cron_semanal: 'Semanal',
+        pl_cron_mensal: 'Mensal',
+        pl_cron_a: 'a',
         pl_roteiro_breve: 'Roteiro breve',
         pl_roteiro_breve_placeholder: 'Uma ideia rápida, um rascunho...',
         pl_roteiro_completo: 'Roteiro completo',
@@ -5267,6 +5322,17 @@
         pl_status_nao_iniciado: 'Not started',
         pl_status_roteiro_pronto: 'Script ready',
         pl_status_publicado: 'Published',
+        pl_status_gravado: 'Filmed',
+        pl_status_editando: 'Editing',
+        pl_status_editado: 'Edited',
+        pl_status_pronto_postar: 'Ready to post',
+        pl_vg_gravados: 'Filmed',
+        pl_vg_editando: 'Editing',
+        pl_vg_pronto_postar: 'Ready to post',
+        pl_vg_postados: 'Posted',
+        pl_cron_semanal: 'Weekly',
+        pl_cron_mensal: 'Monthly',
+        pl_cron_a: 'to',
         pl_roteiro_breve: 'Brief script',
         pl_roteiro_breve_placeholder: 'A quick idea, a draft...',
         pl_roteiro_completo: 'Full script',
@@ -6098,6 +6164,15 @@
         if (e.target.id === 'bt-pasta-modal-overlay') btFecharModalPasta();
       });
       document.getElementById('pl-modal-copiar').addEventListener('click', btCopiarDoEditor);
+      document.getElementById('pl-modal-status').addEventListener('change', (e) => {
+        if (btConteudoAbertoId && ['Gravado', 'Editando', 'Editado', 'Pronto para postar', 'Publicado'].includes(e.target.value)) {
+          document.getElementById('pl-modal-gravado').checked = true;
+        }
+      });
+      document.getElementById('pl-modal-gravado').addEventListener('change', (e) => {
+        const status = document.getElementById('pl-modal-status');
+        if (btConteudoAbertoId && e.target.checked && (status.value === 'Não iniciado' || status.value === 'Roteiro pronto')) status.value = 'Gravado';
+      });
       // Pastas principais do Banco de ideias (teste)
       document.getElementById('bt-grupo-modal-fechar').addEventListener('click', btFecharModalGrupo);
       document.getElementById('bt-grupo-salvar').addEventListener('click', btSalvarGrupo);
@@ -6111,8 +6186,9 @@
       document.getElementById('pl-modal-achado-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'pl-modal-achado-overlay') fecharModalAchado();
       });
-      document.getElementById('pl-cron-mes-anterior').addEventListener('click', () => mudarMesCronograma(-1));
-      document.getElementById('pl-cron-mes-proximo').addEventListener('click', () => mudarMesCronograma(1));
+      document.getElementById('pl-cron-mes-anterior').addEventListener('click', () => mudarPeriodoCronograma(-1));
+      document.getElementById('pl-cron-mes-proximo').addEventListener('click', () => mudarPeriodoCronograma(1));
+      document.querySelectorAll('.pl-cron-visao').forEach((b) => b.addEventListener('click', () => trocarVisaoCronograma(b.dataset.visao)));
       document.getElementById('pl-modal-agendar-fechar').addEventListener('click', fecharModalAgendar);
       document.getElementById('pl-modal-agendar-confirmar').addEventListener('click', confirmarAgendamento);
       document.getElementById('pl-modal-agendar-overlay').addEventListener('click', (e) => {
@@ -9982,6 +10058,10 @@
     function classeStatusIdeia(status) {
       if (status === 'Roteiro pronto') return 'ugc-status-producao';
       if (status === 'Publicado') return 'ugc-status-pago';
+      if (status === 'Gravado') return 'pl-status-gravado';
+      if (status === 'Editando') return 'pl-status-editando';
+      if (status === 'Editado') return 'pl-status-editado';
+      if (status === 'Pronto para postar') return 'pl-status-pronto-postar';
       return 'ugc-status-inicial';
     }
 
@@ -10648,7 +10728,7 @@
     function btReordenarNoStatus(geral, status, origem, destino) {
       const posicoes = [];
       geral.forEach((c, i) => {
-        if ((c.status || 'Não iniciado') === status) posicoes.push(i);
+        if (plEstagio(c) === status) posicoes.push(i);
       });
       const itens = posicoes.map((i) => geral[i]);
       btReordenarLista(itens, 'id', origem, destino);
@@ -11012,6 +11092,10 @@
         })
         .join('');
       area.innerHTML = `
+        <div class="card-numero bt-total">
+          <span class="card-label">Roteiros criados</span>
+          <span class="card-valor">${btConteudos.length}</span>
+        </div>
         <div class="ferr-pasta-topo">
           <div class="ferr-pasta-titulo-bloco">
             <p class="cal-todas-resumo bt-intro">Escolha uma pasta pra entrar, ou crie as suas.</p>
@@ -11097,7 +11181,7 @@
       const pai = pasta.pai_id ? btPastas.find((p) => p.id === pasta.pai_id) : null;
       const conteudos = btConteudosDaPasta(pasta.id);
       const subpastas = btFilhas(btGrupo, pasta.id);
-      const prontos = conteudos.filter((c) => c.status === 'Roteiro pronto').length;
+      const prontos = conteudos.filter((c) => plEstagio(c) === 'Roteiro pronto').length;
       const partes = [];
       if (conteudos.length) partes.push(`${btPlural(conteudos.length, g.itemUm, g.itemPlural)}${prontos ? ` · ${prontos} com roteiro pronto` : ''}`);
       if (subpastas.length) partes.push(btPlural(subpastas.length, 'pasta', 'pastas'));
@@ -11150,10 +11234,10 @@
       // Os conteúdos ficam separados por status (Roteiro pronto, Não iniciado, Publicado), cada grupo com a sua ordem.
       // Em séries o EP vem da posição na ordem geral, então não muda conforme o grupo.
       const grade = document.getElementById('bt-itens-grade');
-      const ORDEM_STATUS = ['Roteiro pronto', 'Não iniciado', 'Publicado'];
+      const ORDEM_STATUS = PL_STATUS_ORDEM;
       const porStatus = new Map();
       conteudos.forEach((c) => {
-        const status = c.status || 'Não iniciado';
+        const status = plEstagio(c);
         if (!porStatus.has(status)) porStatus.set(status, []);
         porStatus.get(status).push(c);
       });
@@ -11205,7 +11289,7 @@
       card.dataset.chave = c.id;
       card.className = 'ugc-roteiro-card';
       card.innerHTML = `
-        <span class="ugc-status-pill ${classeStatusIdeia(c.status)}">${escapeHtml(traduzirStatusIdeia(c.status || 'Não iniciado'))}</span>
+        <span class="ugc-status-pill ${classeStatusIdeia(plEstagio(c))}">${escapeHtml(traduzirStatusIdeia(plEstagio(c)))}</span>
         ${ehSerie ? `<span class="bt-ep">EP. ${String(indice + 1).padStart(2, '0')}</span>` : ''}
         <span class="ugc-roteiro-card-marca">${escapeHtml(c.titulo)}</span>
         <span class="ugc-roteiro-card-info">${escapeHtml(c.formato || tr('ugc_sem_detalhes_ainda'))}</span>
@@ -11288,7 +11372,7 @@
       prepararModalIdeiaModo(true);
       document.getElementById('pl-modal-titulo').value = c.titulo;
       document.getElementById('pl-modal-formato').value = c.formato || '';
-      document.getElementById('pl-modal-status').value = c.status || 'Não iniciado';
+      document.getElementById('pl-modal-status').value = plEstagio(c);
       document.getElementById('pl-modal-roteiro-breve').value = c.roteiro_breve || '';
       const areaRoteiroCompleto = document.getElementById('pl-modal-roteiro-completo');
       areaRoteiroCompleto.innerHTML = c.roteiro_completo || '';
@@ -11426,7 +11510,10 @@
 
     async function btMarcarGravado(c) {
       try {
-        const { data, error } = await Auth.sb.from('ideias_conteudos').update({ gravado: true }).eq('id', c.id).select();
+        // Gravar um roteiro que ainda estava nas primeiras etapas leva ele pra etapa "Gravado".
+        const antes = c.status || 'Não iniciado';
+        const status = antes === 'Não iniciado' || antes === 'Roteiro pronto' ? 'Gravado' : antes;
+        const { data, error } = await Auth.sb.from('ideias_conteudos').update({ gravado: true, status }).eq('id', c.id).select();
         if (error) throw error;
         const i = btConteudos.findIndex((x) => x.id === c.id);
         if (i >= 0 && data[0]) btConteudos[i] = data[0];
@@ -11873,25 +11960,80 @@
 
     // ---- Visão geral + cronograma de postagem (calendário) ----
 
+    // Contadores por etapa do roteiro, do Banco de ideias & Roteiros (todas as pastas).
     function atualizarContadorVisaoGeral() {
-      const prontos =
-        ideiasCache.filter((i) => !i.gravado && i.status === 'Roteiro pronto').length +
-        btConteudos.filter((c) => !c.gravado && c.status === 'Roteiro pronto').length;
-      document.getElementById('pl-vg-roteiros-prontos').textContent = prontos;
+      const conta = (etapa) => btConteudos.filter((c) => plEstagio(c) === etapa).length;
+      [
+        ['pl-vg-roteiros-prontos', 'Roteiro pronto'],
+        ['pl-vg-gravados', 'Gravado'],
+        ['pl-vg-editando', 'Editando'],
+        ['pl-vg-pronto-postar', 'Pronto para postar'],
+        ['pl-vg-postados', 'Publicado'],
+      ].forEach(([id, etapa]) => {
+        document.getElementById(id).textContent = conta(etapa);
+      });
+    }
+
+    // Cronograma: visão semanal (padrão) ou mensal.
+    function cronInicioDaSemana(data) {
+      const inicio = new Date(data.getFullYear(), data.getMonth(), data.getDate());
+      inicio.setDate(inicio.getDate() - ((inicio.getDay() + 6) % 7)); // semana começa na segunda
+      return inicio;
+    }
+
+    function cronRotuloSemana(inicio) {
+      const fim = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate() + 6);
+      const loc = localeAtual();
+      const ligacao = ` ${tr('pl_cron_a')} `;
+      if (inicio.getMonth() === fim.getMonth()) {
+        return `${inicio.getDate()}${ligacao}${fim.toLocaleDateString(loc, { day: 'numeric', month: 'long', year: 'numeric' })}`;
+      }
+      return `${inicio.toLocaleDateString(loc, { day: 'numeric', month: 'short' })}${ligacao}${fim.toLocaleDateString(loc, { day: 'numeric', month: 'short', year: 'numeric' })}`;
+    }
+
+    function mudarPeriodoCronograma(delta) {
+      if (cronModo === 'semana') {
+        cronSemanaAtual = new Date(cronSemanaAtual.getFullYear(), cronSemanaAtual.getMonth(), cronSemanaAtual.getDate() + 7 * delta);
+        cronMesAtual = new Date(cronSemanaAtual.getFullYear(), cronSemanaAtual.getMonth(), 1);
+        renderizarCronogramaCalendario();
+      } else {
+        mudarMesCronograma(delta);
+      }
+    }
+
+    function trocarVisaoCronograma(modo) {
+      if (modo === cronModo) return;
+      if (modo === 'mes') {
+        cronMesAtual = new Date(cronSemanaAtual.getFullYear(), cronSemanaAtual.getMonth(), 1);
+      } else {
+        const hoje = new Date();
+        const mesmoMes = hoje.getFullYear() === cronMesAtual.getFullYear() && hoje.getMonth() === cronMesAtual.getMonth();
+        cronSemanaAtual = mesmoMes ? hoje : new Date(cronMesAtual.getFullYear(), cronMesAtual.getMonth(), 1);
+      }
+      cronModo = modo;
+      document.querySelectorAll('.pl-cron-visao').forEach((b) => b.classList.toggle('ativo', b.dataset.visao === modo));
+      renderizarCronogramaCalendario();
     }
 
     function renderizarCronogramaCalendario() {
-      document.getElementById('pl-cron-mes-label').textContent =
-        cronMesAtual.toLocaleDateString(localeAtual(), { month: 'long', year: 'numeric' });
-
+      const emSemana = cronModo === 'semana';
       const grade = document.getElementById('pl-cron-grade');
       grade.innerHTML = '';
+      grade.classList.toggle('pl-cron-grade-semana', emSemana);
 
-      const primeiroDiaMes = new Date(cronMesAtual.getFullYear(), cronMesAtual.getMonth(), 1);
-      // getDay(): 0=domingo...6=sábado. Semana começa na segunda, então ajusta o offset.
-      const offset = (primeiroDiaMes.getDay() + 6) % 7;
-      const inicioGrade = new Date(primeiroDiaMes);
-      inicioGrade.setDate(inicioGrade.getDate() - offset);
+      let inicioGrade;
+      if (emSemana) {
+        inicioGrade = cronInicioDaSemana(cronSemanaAtual);
+        document.getElementById('pl-cron-mes-label').textContent = cronRotuloSemana(inicioGrade);
+      } else {
+        document.getElementById('pl-cron-mes-label').textContent =
+          cronMesAtual.toLocaleDateString(localeAtual(), { month: 'long', year: 'numeric' });
+        const primeiroDiaMes = new Date(cronMesAtual.getFullYear(), cronMesAtual.getMonth(), 1);
+        // getDay(): 0=domingo...6=sábado. Semana começa na segunda, então ajusta o offset.
+        const offset = (primeiroDiaMes.getDay() + 6) % 7;
+        inicioGrade = new Date(primeiroDiaMes);
+        inicioGrade.setDate(inicioGrade.getDate() - offset);
+      }
 
       const hoje = new Date();
 
@@ -11902,7 +12044,7 @@
         mapaDia[linha.data].push(linha.pilar);
       });
 
-      for (let i = 0; i < 42; i++) {
+      for (let i = 0; i < (emSemana ? 7 : 42); i++) {
         const dia = new Date(inicioGrade);
         dia.setDate(dia.getDate() + i);
         const diaISO = dataParaISO(dia);
@@ -11912,7 +12054,7 @@
 
         const celula = document.createElement('div');
         celula.className = 'pl-cron-dia';
-        if (dia.getMonth() !== cronMesAtual.getMonth()) celula.classList.add('pl-cron-dia-fora');
+        if (!emSemana && dia.getMonth() !== cronMesAtual.getMonth()) celula.classList.add('pl-cron-dia-fora');
         if (mesmoDia(dia, hoje)) celula.classList.add('pl-cron-dia-hoje');
 
         celula.innerHTML = `
@@ -11972,7 +12114,7 @@
         new Date(diaISO + 'T00:00:00').toLocaleDateString(localeAtual(), { day: '2-digit', month: 'long' });
 
       const disponiveis = ideiasCache.filter((idea) => !idea.data_agendada && idea.status === 'Roteiro pronto');
-      const disponiveisTeste = btAgendaOk ? btConteudos.filter((c) => !c.data_agendada && c.status === 'Roteiro pronto') : [];
+      const disponiveisTeste = btAgendaOk ? btConteudos.filter((c) => !c.data_agendada && PL_STATUS_AGENDAVEIS.includes(plEstagio(c))) : [];
       const select = document.getElementById('pl-modal-agendar-select');
       if (disponiveis.length === 0 && disponiveisTeste.length === 0) {
         select.innerHTML = `<option value="">${escapeHtml(tr('pl_cron_nenhuma_ideia_roteiro_pronto'))}</option>`;

@@ -10167,3 +10167,54 @@
 .painel-body .pl-pilar-sugestao:hover {
   background: rgba(var(--grafite-rgb), 0.07);
 }
+
+/* ---- Menu lateral: setinha branca dentro da aba azul; fechado, some por completo ---- */
+
+@media (min-width: 769px) {
+  .painel-body .btn-colapsar-sidebar {
+    top: 26px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .painel-body .btn-colapsar-sidebar:hover {
+    color: #fff;
+    opacity: 0.75;
+  }
+
+  .painel-body .btn-colapsar-sidebar svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Fechado: o menu some por completo e sobra só a setinha, numa abinha azul na borda da tela. */
+  .painel-body .sidebar.colapsada {
+    width: 0;
+    padding: 0;
+    border: none;
+  }
+
+  .painel-body .sidebar.colapsada > *:not(.btn-colapsar-sidebar) {
+    display: none;
+  }
+
+  .painel-body .sidebar.colapsada .btn-colapsar-sidebar {
+    position: fixed;
+    top: 24px;
+    left: 0;
+    right: auto;
+    width: 30px;
+    height: 44px;
+    border-radius: 0 12px 12px 0;
+    background: var(--coral);
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.12);
+    z-index: 30;
+  }
+}

@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261008f">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261008g">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1010,6 +1010,10 @@
             <div class="pl-vg">
               <div class="pl-vg-numeros">
                 <div class="card-numero">
+                  <span class="card-label" data-i18n="pl_vg_construcao">Roteiros em construção</span>
+                  <span class="card-valor" id="pl-vg-construcao">0</span>
+                </div>
+                <div class="card-numero">
                   <span class="card-label" data-i18n="pl_roteiros_prontos">Roteiros prontos</span>
                   <span class="card-valor" id="pl-vg-roteiros-prontos">0</span>
                 </div>
@@ -1020,6 +1024,10 @@
                 <div class="card-numero">
                   <span class="card-label" data-i18n="pl_vg_editando">Editando</span>
                   <span class="card-valor" id="pl-vg-editando">0</span>
+                </div>
+                <div class="card-numero">
+                  <span class="card-label" data-i18n="pl_vg_editados">Editados</span>
+                  <span class="card-valor" id="pl-vg-editados">0</span>
                 </div>
                 <div class="card-numero">
                   <span class="card-label" data-i18n="pl_vg_pronto_postar">Pronto para postar</span>
@@ -4245,6 +4253,8 @@
         pl_vg_editando: 'Editando',
         pl_vg_pronto_postar: 'Pronto para postar',
         pl_vg_postados: 'Postados',
+        pl_vg_construcao: 'Roteiros em construção',
+        pl_vg_editados: 'Editados',
         pl_cron_semanal: 'Semanal',
         pl_cron_mensal: 'Mensal',
         pl_cron_a: 'a',
@@ -5338,6 +5348,8 @@
         pl_vg_editando: 'Editing',
         pl_vg_pronto_postar: 'Ready to post',
         pl_vg_postados: 'Posted',
+        pl_vg_construcao: 'Scripts in progress',
+        pl_vg_editados: 'Edited',
         pl_cron_semanal: 'Weekly',
         pl_cron_mensal: 'Monthly',
         pl_cron_a: 'to',
@@ -11987,9 +11999,11 @@
     function atualizarContadorVisaoGeral() {
       const conta = (etapa) => btConteudos.filter((c) => plEstagio(c) === etapa).length;
       [
+        ['pl-vg-construcao', 'Roteiro em construção'],
         ['pl-vg-roteiros-prontos', 'Roteiro pronto'],
         ['pl-vg-gravados', 'Gravado'],
         ['pl-vg-editando', 'Editando'],
+        ['pl-vg-editados', 'Editado'],
         ['pl-vg-pronto-postar', 'Pronto para postar'],
         ['pl-vg-postados', 'Publicado'],
       ].forEach(([id, etapa]) => {

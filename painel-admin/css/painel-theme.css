@@ -10109,11 +10109,6 @@
   min-height: 260px;
 }
 
-.painel-body .pl-status-gravado {
-  background: #4a90d9;
-  color: var(--branco);
-}
-
 .painel-body .pl-status-editando {
   background: #c98a1c;
   color: var(--branco);

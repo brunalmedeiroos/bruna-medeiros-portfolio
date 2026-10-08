@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261008n">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261008o">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -411,14 +411,14 @@
         <div class="card card-google-agenda-conectar" id="google-agenda-conectar" hidden>
           <h3 class="card-titulo" data-i18n="cal_google_conectar_titulo">Conectar Google Agenda</h3>
           <p class="cal-google-conectar-texto" data-i18n="cal_google_conectar_texto">
-            Cria automaticamente uma agenda chamada "Creator Center" na sua conta Google e sincroniza nos dois sentidos: o que você marcar aqui aparece lá, e o que você criar lá aparece aqui.
+            Cria automaticamente uma agenda dedicada na sua conta Google e sincroniza nos dois sentidos: o que você marcar aqui aparece lá, e o que você criar lá aparece aqui.
           </p>
           <button id="btn-google-agenda-conectar" class="cal-btn cal-btn-primario" type="button" data-i18n="cal_google_conectar_btn">Conectar Google Agenda</button>
           <p class="cal-google-conectar-erro" id="google-agenda-conectar-erro" hidden></p>
         </div>
 
         <div class="cal-google-status" id="google-agenda-status" hidden>
-          <span class="cal-google-status-texto" data-i18n="cal_google_conectado">Google Agenda conectada ("Creator Center")</span>
+          <span class="cal-google-status-texto" data-i18n="cal_google_conectado">Google Agenda conectada</span>
           <button id="cal-btn-sincronizar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="cal_sincronizar_aria" aria-label="Sincronizar agora">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
@@ -3929,9 +3929,9 @@
         cal_visao_semana: 'Semana',
         cal_visao_dia: 'Dia',
         cal_google_conectar_titulo: 'Conectar Google Agenda',
-        cal_google_conectar_texto: 'Cria automaticamente uma agenda chamada "Creator Center" na sua conta Google e sincroniza nos dois sentidos: o que você marcar aqui aparece lá, e o que você criar lá aparece aqui.',
+        cal_google_conectar_texto: 'Cria automaticamente uma agenda dedicada na sua conta Google e sincroniza nos dois sentidos: o que você marcar aqui aparece lá, e o que você criar lá aparece aqui.',
         cal_google_conectar_btn: 'Conectar Google Agenda',
-        cal_google_conectado: 'Google Agenda conectada ("Creator Center")',
+        cal_google_conectado: 'Google Agenda conectada',
         cal_google_desconectar_btn: 'Desconectar',
         cal_google_desconectar_pergunta: 'Desconectar do Google Agenda? Suas tarefas continuam aqui no painel, só param de sincronizar.',
         cal_sincronizar_aria: 'Sincronizar agora',
@@ -5021,9 +5021,9 @@
         cal_visao_semana: 'Week',
         cal_visao_dia: 'Day',
         cal_google_conectar_titulo: 'Connect Google Calendar',
-        cal_google_conectar_texto: 'Automatically creates a calendar called "Creator Center" in your Google account and syncs both ways: what you mark here shows up there, and what you create there shows up here.',
+        cal_google_conectar_texto: 'Automatically creates a dedicated calendar in your Google account and syncs both ways: what you mark here shows up there, and what you create there shows up here.',
         cal_google_conectar_btn: 'Connect Google Calendar',
-        cal_google_conectado: 'Google Calendar connected ("Creator Center")',
+        cal_google_conectado: 'Google Calendar connected',
         cal_google_desconectar_btn: 'Disconnect',
         cal_google_desconectar_pergunta: 'Disconnect from Google Calendar? Your tasks stay here in the panel, they just stop syncing.',
         cal_sincronizar_aria: 'Sync now',

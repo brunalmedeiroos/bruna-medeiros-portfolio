@@ -10218,3 +10218,65 @@
     z-index: 30;
   }
 }
+
+/* ---- Dashboard: Hoje e "Precisa da sua atenção" lado a lado ---- */
+
+.painel-body .dash-duplo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  align-items: stretch;
+}
+
+.painel-body .dash-duplo .dash-card-hoje {
+  max-width: none;
+}
+
+@media (max-width: 900px) {
+  .painel-body .dash-duplo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.painel-body .dash-atencao-urgente {
+  background: var(--erro);
+}
+
+.painel-body .dash-atencao-detalhe {
+  margin-left: auto;
+  text-align: right;
+}
+
+.painel-body .dash-atencao-secao {
+  margin: 12px 6px 2px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.painel-body .dash-atencao-secao:first-child {
+  margin-top: 0;
+}
+
+.painel-body .dash-atencao-ver-tudo {
+  align-self: flex-start;
+  margin-top: 12px;
+  padding: 6px;
+  border: none;
+  background: transparent;
+  font-family: var(--fonte-corpo);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--grafite);
+  cursor: pointer;
+}
+
+.painel-body .dash-atencao-ver-tudo:hover {
+  text-decoration: underline;
+}
+
+.painel-body .dash-atencao-ver-tudo[hidden] {
+  display: none;
+}

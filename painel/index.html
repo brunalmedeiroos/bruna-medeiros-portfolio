@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261008o">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261008q">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -184,6 +184,7 @@
 
           <!-- Hoje: compromissos do Calendário (só leitura) e checklist do dia (separado
                do Calendário, não sincroniza com o Google) no mesmo card. -->
+          <div class="dash-duplo">
           <div class="card dash-card-hoje">
             <h3 class="dash-hoje-titulo">☀️ Hoje</h3>
             <div id="dash-hoje-lista" class="dash-hoje-linhas"></div>
@@ -193,6 +194,16 @@
               <input type="text" id="dash-check-input" placeholder="+ Adicionar tarefa de hoje" maxlength="200">
             </form>
             <p class="dash-aviso" id="dash-aviso-tabelas" hidden>Falta rodar o arquivo dashboard.sql no Supabase pra usar o checklist e as notas.</p>
+          </div>
+
+          <!-- Precisa da sua atenção: junta, sozinho, o que está pendente em UGC/Publi
+               (entregas, pagamentos, contratos, aprovações) e no Calendário (tarefas atrasadas). -->
+          <div class="card dash-card-hoje dash-card-atencao">
+            <h3 class="dash-hoje-titulo" data-i18n="dash_atencao_titulo">🚨 Precisa da sua atenção</h3>
+            <div id="dash-atencao-lista" class="dash-hoje-linhas"></div>
+            <p class="texto-vazio" id="dash-atencao-vazio" hidden data-i18n="dash_atencao_tudo_em_dia">✨ Tudo em dia por aqui!</p>
+            <button type="button" id="dash-atencao-ver-tudo" class="dash-atencao-ver-tudo" hidden></button>
+          </div>
           </div>
         </section>
 
@@ -3822,6 +3833,15 @@
         dash_atencao: 'Precisa da sua atenção',
         dash_hoje_vazio: 'Nada marcado para hoje.',
         dash_atencao_vazio: 'Tudo em dia por aqui.',
+        dash_atencao_titulo: '🚨 Precisa da sua atenção',
+        dash_atencao_tudo_em_dia: '✨ Tudo em dia por aqui!',
+        dash_atencao_ver_tudo: 'Ver tudo',
+        dash_atencao_ver_menos: '← Ver menos',
+        dash_aguardando_marca: 'Aguardando a marca',
+        atencao_ajustes_pedidos: 'Ajustes pedidos pela marca',
+        atencao_tarefas_atrasadas: 'Tarefas atrasadas',
+        atencao_conteudo_aprovacao: 'Conteúdo aguardando aprovação',
+        atencao_roteiros_aprovacao: 'Roteiros aguardando aprovação',
         notif_titulo: 'Notificações',
         notif_vazio: 'Nenhum aviso por enquanto.',
         saudacao_bom_dia: 'Bom dia',
@@ -4914,6 +4934,15 @@
         dash_atencao: 'Needs your attention',
         dash_hoje_vazio: 'Nothing scheduled for today.',
         dash_atencao_vazio: 'All caught up here.',
+        dash_atencao_titulo: '🚨 Needs your attention',
+        dash_atencao_tudo_em_dia: '✨ All caught up here!',
+        dash_atencao_ver_tudo: 'See all',
+        dash_atencao_ver_menos: '← See less',
+        dash_aguardando_marca: 'Waiting on the brand',
+        atencao_ajustes_pedidos: 'Changes requested by the brand',
+        atencao_tarefas_atrasadas: 'Overdue tasks',
+        atencao_conteudo_aprovacao: 'Content awaiting approval',
+        atencao_roteiros_aprovacao: 'Scripts awaiting approval',
         notif_titulo: 'Notifications',
         notif_vazio: 'No alerts for now.',
         saudacao_bom_dia: 'Good morning',
@@ -6810,6 +6839,7 @@
     // traz o que veio do Google Agenda). São eventos, não tarefas: sem check,
     // sem editar. Clicar leva pro Calendário.
     function renderizarHojeDashboard() {
+      renderizarPrecisaAtencao();
       const hojeISO = dataParaISO(new Date());
       const doDia = tarefasCache
         .filter((t) => t.data === hojeISO)
@@ -6850,6 +6880,126 @@
       const atrasadas = entregas.filter((t) => t.data_entrega < hojeISO);
       const proximas = entregas.filter((t) => t.data_entrega >= hojeISO && t.data_entrega <= daqui3ISO);
       renderizarSinoNotificacoes(atrasadas, proximas);
+      dashAtencaoPronto = true;
+      renderizarPrecisaAtencao();
+    }
+
+    // ---- Dashboard: "Precisa da sua atenção" ----
+    // Lê só o que já está carregado (UGC/Publi e Calendário), sem tabela nem cadastro próprio.
+    // Fica em branco até o UGC carregar, pra não mostrar "Tudo em dia" por engano.
+    let dashAtencaoPronto = false;
+    let dashAtencaoExpandido = false;
+    const DASH_ATENCAO_LIMITE = 4;
+
+    function dashColetarAtencao() {
+      const hojeISO = dataParaISO(new Date());
+      const daqui3ISO = dataParaISO(new Date(Date.now() + 3 * 86400000));
+      const desde14ISO = dataParaISO(new Date(Date.now() - 14 * 86400000));
+      const dia = (iso) => formatarDataCurta(new Date(iso + 'T00:00:00'));
+      const ativo = (t) => !['Entregue', 'Cancelado'].includes(t.status);
+      const nome = (t) => [t.marca, t.tipo_trabalho ? traduzirTipoTrabalho(t.tipo_trabalho) : ''].filter(Boolean).join(' — ');
+      const irTrabalho = (t) => () => { trocarAba('ugc'); trocarSubAbaUGC('trabalhos'); abrirModalTrabalho(t); };
+      const irRoteiro = (r) => () => { trocarAba('ugc'); trocarSubAbaUGC('roteiros'); abrirModalRoteiro(r); };
+      const nomeRoteiro = (r) => [r.marca || tr('ugc_sem_marca'), r.produto].filter(Boolean).join(' — ');
+
+      const entregas = obterEntregasPendentes();
+      const grupos = [];
+      const add = (chave, urgente, itens) => {
+        if (itens.length) grupos.push({ titulo: tr(chave), urgente, itens: itens.map((i) => ({ ...i, urgente })) });
+      };
+
+      add('atencao_entregas_atrasadas', true, entregas
+        .filter((t) => t.data_entrega < hojeISO)
+        .map((t) => ({ texto: nome(t), detalhe: `${tr('atencao_era')} ${dia(t.data_entrega)}`, onClick: irTrabalho(t) })));
+
+      add('atencao_pagamentos_pendentes', true, obterPagamentosPendentes()
+        .map((t) => ({ texto: nome(t), detalhe: t.permuta ? tr('permuta') : formatarMoeda(t.valor), onClick: irTrabalho(t) })));
+
+      add('atencao_ajustes_pedidos', true, ugcRoteirosCache
+        .filter((r) => r.status === 'Ajustes pedidos')
+        .map((r) => ({ texto: nomeRoteiro(r), detalhe: tr('ugc_roteiro_status_ajustes'), onClick: irRoteiro(r) })));
+
+      // Só tarefas "dia todo" e dos últimos 14 dias: compromisso com horário que já passou não é pendência.
+      add('atencao_tarefas_atrasadas', true, tarefasCache
+        .filter((t) => !t.feito && !t.hora_inicio && t.data < hojeISO && t.data >= desde14ISO)
+        .sort((a, b) => a.data.localeCompare(b.data))
+        .map((t) => ({ texto: t.titulo, detalhe: dia(t.data), onClick: () => { trocarAba('calendario'); abrirFormularioTarefa(t); } })));
+
+      add('atencao_contratos', false, obterContratosPendentes()
+        .map((c) => ({ texto: c.marca, detalhe: traduzirStatusContrato(c.status), onClick: () => { trocarAba('ugc'); trocarSubAbaUGC('contratos'); abrirModalContrato(c); } })));
+
+      add('atencao_conteudo_aprovacao', false, ugcTrabalhosCache
+        .filter((t) => ativo(t) && t.conteudo_enviado_aprovacao && !t.conteudo_entregue)
+        .map((t) => ({ texto: nome(t), detalhe: tr('dash_aguardando_marca'), onClick: irTrabalho(t) })));
+
+      add('atencao_roteiros_aprovacao', false, ugcRoteirosCache
+        .filter((r) => r.status === 'Enviado')
+        .map((r) => ({ texto: nomeRoteiro(r), detalhe: tr('dash_aguardando_marca'), onClick: irRoteiro(r) })));
+
+      add('atencao_direitos_uso', false, obterDireitosUsoVencendo()
+        .map((t) => ({
+          texto: t.marca,
+          detalhe: `${tr(t.direitos_uso_ate < hojeISO ? 'atencao_venceu_em' : 'atencao_vence_em')} ${dia(t.direitos_uso_ate)}`,
+          onClick: irTrabalho(t),
+        })));
+
+      add('atencao_entregas_proximas', false, entregas
+        .filter((t) => t.data_entrega >= hojeISO && t.data_entrega <= daqui3ISO)
+        .map((t) => ({ texto: nome(t), detalhe: dia(t.data_entrega), onClick: irTrabalho(t) })));
+
+      return grupos;
+    }
+
+    function renderizarPrecisaAtencao() {
+      const lista = document.getElementById('dash-atencao-lista');
+      if (!lista) return;
+      const vazio = document.getElementById('dash-atencao-vazio');
+      const verTudo = document.getElementById('dash-atencao-ver-tudo');
+      lista.innerHTML = '';
+      if (!dashAtencaoPronto) {
+        vazio.hidden = true;
+        verTudo.hidden = true;
+        return;
+      }
+
+      const grupos = dashColetarAtencao();
+      const todos = grupos.flatMap((g) => g.itens);
+      vazio.hidden = todos.length > 0;
+      verTudo.hidden = todos.length === 0;
+      if (todos.length === 0) {
+        dashAtencaoExpandido = false;
+        return;
+      }
+
+      const linha = (item) => {
+        const botao = document.createElement('button');
+        botao.type = 'button';
+        botao.className = 'dash-compromisso';
+        botao.innerHTML = `
+          <span class="dash-compromisso-marca${item.urgente ? ' dash-atencao-urgente' : ''}"></span>
+          <span class="dash-compromisso-titulo">${escapeHtml(item.texto)}</span>
+          <span class="dash-compromisso-hora dash-atencao-detalhe">${escapeHtml(item.detalhe)}</span>`;
+        botao.addEventListener('click', item.onClick);
+        return botao;
+      };
+
+      if (dashAtencaoExpandido) {
+        grupos.forEach((g) => {
+          const titulo = document.createElement('p');
+          titulo.className = 'dash-atencao-secao';
+          titulo.textContent = g.titulo;
+          lista.appendChild(titulo);
+          g.itens.forEach((item) => lista.appendChild(linha(item)));
+        });
+      } else {
+        todos.slice(0, DASH_ATENCAO_LIMITE).forEach((item) => lista.appendChild(linha(item)));
+      }
+
+      verTudo.textContent = dashAtencaoExpandido
+        ? tr('dash_atencao_ver_menos')
+        : todos.length > DASH_ATENCAO_LIMITE
+          ? `${tr('dash_atencao_ver_tudo')} (${todos.length}) →`
+          : `${tr('dash_atencao_ver_tudo')} →`;
     }
 
     // Sino de notificações do topbar — visível em qualquer aba. Só cobre
@@ -19301,6 +19451,10 @@
     }
 
     function dashLigarEventos() {
+      document.getElementById('dash-atencao-ver-tudo').addEventListener('click', () => {
+        dashAtencaoExpandido = !dashAtencaoExpandido;
+        renderizarPrecisaAtencao();
+      });
       document.getElementById('dash-check-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         const campo = document.getElementById('dash-check-input');

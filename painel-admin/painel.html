@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261008e">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261008f">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -2096,8 +2096,9 @@
         </div>
 
         <div class="cal-form-campo">
-          <label for="pl-modal-pilar-dia-select" data-i18n="pl_pilar">Pilar</label>
-          <select id="pl-modal-pilar-dia-select"></select>
+          <label for="pl-modal-pilar-dia-input" data-i18n="pl_pilar">Pilar</label>
+          <input type="text" id="pl-modal-pilar-dia-input" maxlength="60" autocomplete="off" data-i18n-placeholder="pl_cron_pilar_placeholder" placeholder="Escreva um pilar novo...">
+          <div id="pl-modal-pilar-dia-sugestoes"></div>
         </div>
 
         <div class="cal-form-acoes">
@@ -4290,6 +4291,9 @@
         pl_erro_agendar: 'Não foi possível agendar agora. Tente de novo em instantes.',
         pl_erro_remover_calendario: 'Não foi possível remover agora. Tente de novo em instantes.',
         pl_cron_nenhum_pilar_disponivel: 'Nenhum pilar disponível — cadastre um no Banco de ideias',
+        pl_cron_pilar_placeholder: 'Escreva um pilar novo...',
+        pl_cron_pilar_suas_pastas: 'Suas pastas',
+        pl_cron_pilar_usados: 'Já usados no calendário',
         pl_excluir_achado_confirmar: 'Excluir este achado?',
         radar_erro_carregar: 'Não foi possível carregar as notícias agora.',
         radar_nenhuma_noticia: 'Nenhuma notícia por aqui ainda.',
@@ -5380,6 +5384,9 @@
         pl_erro_agendar: 'Could not schedule it right now. Try again in a moment.',
         pl_erro_remover_calendario: 'Could not remove it right now. Try again in a moment.',
         pl_cron_nenhum_pilar_disponivel: 'No pillars available — add one in the Idea bank',
+        pl_cron_pilar_placeholder: 'Type a new pillar...',
+        pl_cron_pilar_suas_pastas: 'Your folders',
+        pl_cron_pilar_usados: 'Already used in the calendar',
         pl_excluir_achado_confirmar: 'Delete this find?',
         radar_erro_carregar: 'Could not load the news right now.',
         radar_nenhuma_noticia: 'No news here yet.',
@@ -6199,7 +6206,13 @@
         if (e.target.id === 'pl-modal-agendar-overlay') fecharModalAgendar();
       });
       document.getElementById('pl-modal-pilar-dia-fechar').addEventListener('click', fecharModalPilarDia);
-      document.getElementById('pl-modal-pilar-dia-confirmar').addEventListener('click', confirmarPilarDia);
+      document.getElementById('pl-modal-pilar-dia-confirmar').addEventListener('click', () => confirmarPilarDia());
+      document.getElementById('pl-modal-pilar-dia-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          confirmarPilarDia();
+        }
+      });
       document.getElementById('pl-modal-pilar-dia-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'pl-modal-pilar-dia-overlay') fecharModalPilarDia();
       });
@@ -12174,22 +12187,33 @@
       }
     }
 
-    function abrirModalPilarDia(diaISO) {
+    // "+ PILAR" do cronograma: o pilar do dia é só um rótulo. Sugere as suas pastas e os pilares que você já usou
+    // no calendário, e aceita qualquer nome novo (não depende mais do banco de ideias antigo).
+    async function abrirModalPilarDia(diaISO) {
       dataPilarDiaAtual = diaISO;
       document.getElementById('pl-modal-pilar-dia-data').textContent =
         new Date(diaISO + 'T00:00:00').toLocaleDateString(localeAtual(), { day: '2-digit', month: 'long' });
 
+      if (!btCarregado) await btCarregar();
       const jaEscolhidos = cronogramaDiasCache.filter((l) => l.data === diaISO).map((l) => l.pilar);
-      const nomesPilares = [...new Set([...pilaresCache.map((p) => p.nome), ...cronogramaCache.map((l) => l.pilar)])].filter((p) => !jaEscolhidos.includes(p));
+      const unicos = (nomes) => [...new Set(nomes.filter(Boolean))].filter((n) => !jaEscolhidos.includes(n));
+      const dasPastas = unicos(btOrdenar(btPastas).map((p) => p.nome));
+      const usados = unicos([...cronogramaDiasCache.map((l) => l.pilar), ...cronogramaCache.map((l) => l.pilar)]).filter((n) => !dasPastas.includes(n));
 
-      const select = document.getElementById('pl-modal-pilar-dia-select');
-      if (nomesPilares.length === 0) {
-        select.innerHTML = `<option value="">${escapeHtml(tr('pl_cron_nenhum_pilar_disponivel'))}</option>`;
-      } else {
-        select.innerHTML = nomesPilares.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
-      }
+      const chips = (titulo, nomes) =>
+        nomes.length
+          ? `<p class="cal-todas-resumo pl-pilar-sugestoes-titulo">${escapeHtml(titulo)}</p><div class="pl-pilar-sugestoes">${nomes
+              .map((n) => `<button type="button" class="pl-pilar-sugestao" data-nome="${escapeHtml(n)}">${escapeHtml(n)}</button>`)
+              .join('')}</div>`
+          : '';
+      const area = document.getElementById('pl-modal-pilar-dia-sugestoes');
+      area.innerHTML = chips(tr('pl_cron_pilar_suas_pastas'), dasPastas) + chips(tr('pl_cron_pilar_usados'), usados);
+      area.querySelectorAll('.pl-pilar-sugestao').forEach((b) => b.addEventListener('click', () => confirmarPilarDia(b.dataset.nome)));
 
+      const input = document.getElementById('pl-modal-pilar-dia-input');
+      input.value = '';
       document.getElementById('pl-modal-pilar-dia-overlay').hidden = false;
+      input.focus();
     }
 
     function fecharModalPilarDia() {
@@ -12197,9 +12221,14 @@
       document.getElementById('pl-modal-pilar-dia-overlay').hidden = true;
     }
 
-    async function confirmarPilarDia() {
-      const pilar = document.getElementById('pl-modal-pilar-dia-select').value;
+    // nomeEscolhido vem dos botões de sugestão; sem ele, vale o que foi escrito no campo.
+    async function confirmarPilarDia(nomeEscolhido) {
+      const pilar = (typeof nomeEscolhido === 'string' ? nomeEscolhido : document.getElementById('pl-modal-pilar-dia-input').value).trim();
       if (!pilar || !dataPilarDiaAtual) return;
+      if (cronogramaDiasCache.some((l) => l.data === dataPilarDiaAtual && l.pilar === pilar)) {
+        fecharModalPilarDia();
+        return;
+      }
       try {
         const { error } = await Auth.sb.from('planejador_cronograma_dias').insert({ data: dataPilarDiaAtual, pilar });
         if (error) throw error;

@@ -10151,3 +10151,30 @@
   color: #04465D;
   box-shadow: inset 0 0 0 1px rgba(var(--grafite-rgb), 0.15);
 }
+
+/* ---- Cronograma: sugestões de pilar do dia ---- */
+
+.painel-body .pl-pilar-sugestoes-titulo {
+  margin: 14px 0 6px;
+}
+
+.painel-body .pl-pilar-sugestoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.painel-body .pl-pilar-sugestao {
+  padding: 5px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: var(--branco);
+  color: var(--grafite);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.painel-body .pl-pilar-sugestao:hover {
+  background: rgba(var(--grafite-rgb), 0.07);
+}

@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261007g">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261008a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1001,8 +1001,7 @@
         <section id="panel-planejador" class="tab-panel" hidden>
           <div id="pl-hub" class="pl-hub">
             <button class="pl-hub-card ativo" data-pagina="visao-geral" type="button" data-i18n="pl_visao_geral">Visão geral</button>
-            <button class="pl-hub-card" data-pagina="banco" type="button" data-i18n="pl_banco_ideias">Banco de ideias</button>
-            <button class="pl-hub-card" data-pagina="banco-teste" type="button" data-i18n="pl_banco_ideias_teste">Banco de ideias (teste)</button>
+            <button class="pl-hub-card" data-pagina="banco-teste" type="button" data-i18n="pl_banco_ideias_teste">Banco de ideias &amp; Roteiros</button>
             <button class="pl-hub-card" data-pagina="achados" type="button" data-i18n="pl_achados">Achados</button>
             <button class="pl-hub-card" data-pagina="radar" type="button" data-i18n="pl_radar">Radar de Notícias</button>
           </div>
@@ -1035,25 +1034,12 @@
             </div>
           </div>
 
-          <div id="pl-pagina-banco" class="pl-pagina" hidden>
-            <div class="pl-banco-topo">
-              <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_banco_ideias">Banco de ideias</h3>
-              <div class="pl-roteiros-prontos-badge">
-                <span data-i18n="pl_roteiros_prontos">Roteiros prontos</span>: <span id="pl-roteiros-prontos-contagem">0</span>
-              </div>
-            </div>
-            <div class="pl-pilar-strip-scroll">
-              <div id="pl-pilar-strip" class="pl-pilar-strip"></div>
-            </div>
-            <div id="pl-banco-roteiros-area"></div>
-          </div>
-
           <div id="pl-pagina-banco-teste" class="pl-pagina" hidden>
             <nav id="bt-migalhas" class="bt-migalhas" aria-label="Caminho"></nav>
             <div id="bt-copiado" class="bt-copiado" hidden></div>
             <div class="card email-vazio" id="bt-aviso-tabelas" hidden>
-              <h3 class="card-titulo">O Banco de ideias (teste) ainda não está pronto no banco</h3>
-              <p class="cal-todas-resumo">Falta rodar o arquivo banco-ideias-teste.sql no SQL Editor do Supabase. O Banco de ideias de sempre continua funcionando normal.</p>
+              <h3 class="card-titulo">O Banco de ideias &amp; Roteiros ainda não está pronto no banco</h3>
+              <p class="cal-todas-resumo">Falta rodar o arquivo banco-ideias-teste.sql no SQL Editor do Supabase.</p>
             </div>
             <div id="bt-conteudo"></div>
           </div>
@@ -2139,7 +2125,7 @@
         </div>
 
         <div class="cal-form-campo">
-          <label for="radar-pilar-select" data-i18n="pl_pilar">Pilar</label>
+          <label for="radar-pilar-select">Pasta</label>
           <select id="radar-pilar-select"></select>
           <p class="radar-pilar-sugestao" id="radar-pilar-sugestao" hidden></p>
         </div>
@@ -4168,7 +4154,7 @@
         // Planejador de Conteúdo
         voltar: '← Voltar',
         pl_banco_ideias: '💡 Banco de ideias',
-        pl_banco_ideias_teste: '🧪 Banco de ideias (teste)',
+        pl_banco_ideias_teste: '💡 Banco de ideias & Roteiros',
         pl_banco_desc: 'Minhas ideias organizadas por pilar de conteúdo, com espaço pro roteiro.',
         pl_achados: '🔍 Achados',
         pl_radar: '🗞️ Radar de Notícias',
@@ -5246,7 +5232,7 @@
         // Content Planner
         voltar: '← Back',
         pl_banco_ideias: '💡 Idea bank',
-        pl_banco_ideias_teste: '🧪 Idea bank (test)',
+        pl_banco_ideias_teste: '💡 Ideas & Scripts',
         pl_banco_desc: 'My ideas organized by content pillar, with room for the script.',
         pl_achados: '🔍 Finds',
         pl_radar: '🗞️ News Radar',
@@ -9963,8 +9949,8 @@
         renderizarCronogramaCalendario();
       } catch (err) {
         console.error('Erro ao carregar planejador:', err);
-        document.getElementById('pl-colunas-banco').innerHTML =
-          `<p class="texto-erro">${escapeHtml(tr('pl_erro_carregar'))}</p>`;
+        const alvoErro = document.getElementById('pl-colunas-banco');
+        if (alvoErro) alvoErro.innerHTML = `<p class="texto-erro">${escapeHtml(tr('pl_erro_carregar'))}</p>`;
       }
     }
 
@@ -9976,6 +9962,7 @@
     let pilarSelecionadoId = null;
 
     function renderizarBancoIdeias() {
+      if (!document.getElementById('pl-pilar-strip')) return; // o banco antigo saiu da tela
       if (pilarSelecionadoId && !pilaresCache.some((p) => p.id === pilarSelecionadoId)) {
         pilarSelecionadoId = null;
       }
@@ -10545,7 +10532,7 @@
       const nav = document.getElementById('bt-migalhas');
       const partes = [
         { rotulo: 'Meus conteúdos', ir: () => abrirPaginaPlanejador('visao-geral') },
-        { rotulo: 'Banco de ideias (teste)', ir: () => btIr(null, null) },
+        { rotulo: 'Banco de ideias & Roteiros', ir: () => btIr(null, null) },
       ];
       if (btGrupo) partes.push({ rotulo: btInfoGrupo(btGrupo).rotulo, ir: () => btIr(btGrupo, null), alvo: { grupo: btGrupo } });
       const pasta = btPastaAtual();
@@ -10657,6 +10644,20 @@
       return lista;
     }
 
+    // Reordena só os conteúdos de um status, sem mexer nos lugares dos outros (a ordem geral continua valendo pros EP das séries).
+    function btReordenarNoStatus(geral, status, origem, destino) {
+      const posicoes = [];
+      geral.forEach((c, i) => {
+        if ((c.status || 'Não iniciado') === status) posicoes.push(i);
+      });
+      const itens = posicoes.map((i) => geral[i]);
+      btReordenarLista(itens, 'id', origem, destino);
+      posicoes.forEach((pos, k) => {
+        geral[pos] = itens[k];
+      });
+      return geral;
+    }
+
     // Grava a nova ordem (só o que mudou) e redesenha; se der erro, recarrega do banco.
     async function btPersistirOrdem(lista, tabela) {
       const mudancas = [];
@@ -10695,9 +10696,10 @@
     }
 
     // O que acontece se soltar aqui: 'dentro', 'ordem' ou null (nada).
-    function btAcaoDoDrop(e, el, tipo, aceitaDentro) {
+    function btAcaoDoDrop(e, el, tipo, aceitaDentro, lote) {
       if (!btArrasto || btArrasto.id === el.dataset.chave) return null;
       if (btArrasto.tipo === tipo) {
+        if (lote !== undefined && btArrasto.lote !== lote) return null; // só reordena dentro do mesmo grupo
         if (aceitaDentro && tipo === 'pasta' && btZonaDoCartao(e, el) === 'meio') return 'dentro';
         return 'ordem';
       }
@@ -10705,11 +10707,11 @@
       return null;
     }
 
-    function btLigarArrasto(cont, seletor, tipo, aoReordenar, aceitaDentro) {
+    function btLigarArrasto(cont, seletor, tipo, aoReordenar, aceitaDentro, lote) {
       cont.querySelectorAll(seletor).forEach((el) => {
         el.draggable = true;
         el.addEventListener('dragstart', (e) => {
-          btArrasto = { tipo, id: el.dataset.chave };
+          btArrasto = { tipo, id: el.dataset.chave, lote };
           el.classList.add('ferr-arrastando');
           e.dataTransfer.effectAllowed = 'move';
           e.dataTransfer.setData('text/plain', el.dataset.chave);
@@ -10720,7 +10722,7 @@
           btLimparAlvos();
         });
         el.addEventListener('dragover', (e) => {
-          const acao = btAcaoDoDrop(e, el, tipo, aceitaDentro);
+          const acao = btAcaoDoDrop(e, el, tipo, aceitaDentro, lote);
           if (!acao) return;
           e.preventDefault();
           btLimparAlvos();
@@ -10729,7 +10731,7 @@
         el.addEventListener('dragleave', () => el.classList.remove('ferr-alvo', 'bt-alvo-dentro'));
         el.addEventListener('drop', (e) => {
           e.preventDefault();
-          const acao = btAcaoDoDrop(e, el, tipo, aceitaDentro);
+          const acao = btAcaoDoDrop(e, el, tipo, aceitaDentro, lote);
           const arrastado = btArrasto;
           btArrasto = null;
           btLimparAlvos();
@@ -11012,7 +11014,7 @@
       area.innerHTML = `
         <div class="ferr-pasta-topo">
           <div class="ferr-pasta-titulo-bloco">
-            <p class="cal-todas-resumo bt-intro">Escolha uma pasta pra entrar, ou crie as suas. Isso é só um teste: o Banco de ideias de sempre continua do jeito que está.</p>
+            <p class="cal-todas-resumo bt-intro">Escolha uma pasta pra entrar, ou crie as suas.</p>
             ${btGruposEditaveis ? '' : '<p class="bt-descricao">Pra criar e editar as pastas desta tela, rode o arquivo banco-ideias-teste-pastas.sql no SQL Editor do Supabase.</p>'}
           </div>
           <div class="ferr-pasta-acoes">
@@ -11127,7 +11129,7 @@
             : ''
         }
         <div id="bt-novo-item-area"></div>
-        <div class="ugc-roteiros-grade" id="bt-itens-grade"></div>`;
+        <div id="bt-itens-grade"></div>`;
       document.getElementById('bt-voltar').addEventListener('click', () => btIr(btGrupo, pai ? pai.id : null));
       document.getElementById('bt-novo-item').addEventListener('click', () => btMostrarFormNovoItem(g));
       document.getElementById('bt-nova-subpasta').addEventListener('click', () => btAbrirModalPasta(null, pasta.id));
@@ -11145,8 +11147,47 @@
           btAbrirMenuPasta(el, sub, false);
         });
       });
+      // Os conteúdos ficam separados por status (Roteiro pronto, Não iniciado, Publicado), cada grupo com a sua ordem.
+      // Em séries o EP vem da posição na ordem geral, então não muda conforme o grupo.
       const grade = document.getElementById('bt-itens-grade');
-      conteudos.forEach((c, i) => grade.appendChild(btCriarCardConteudo(c, i, btGrupo === 'serie')));
+      const ORDEM_STATUS = ['Roteiro pronto', 'Não iniciado', 'Publicado'];
+      const porStatus = new Map();
+      conteudos.forEach((c) => {
+        const status = c.status || 'Não iniciado';
+        if (!porStatus.has(status)) porStatus.set(status, []);
+        porStatus.get(status).push(c);
+      });
+      [...porStatus.keys()]
+        .sort((a, b) => {
+          const ia = ORDEM_STATUS.indexOf(a);
+          const ib = ORDEM_STATUS.indexOf(b);
+          return (ia === -1 ? ORDEM_STATUS.length : ia) - (ib === -1 ? ORDEM_STATUS.length : ib);
+        })
+        .forEach((status) => {
+          const lista = porStatus.get(status);
+          const secao = document.createElement('div');
+          secao.className = 'pl-banco-grupo';
+          secao.innerHTML = `
+            <div class="pl-banco-grupo-titulo">
+              <span class="ugc-status-pill ${classeStatusIdeia(status)}">${escapeHtml(traduzirStatusIdeia(status))}</span>
+              <span class="pl-banco-grupo-contagem">${lista.length}</span>
+            </div>`;
+          const cartoes = document.createElement('div');
+          cartoes.className = 'ugc-roteiros-grade';
+          lista.forEach((c) => cartoes.appendChild(btCriarCardConteudo(c, conteudos.indexOf(c), btGrupo === 'serie')));
+          secao.appendChild(cartoes);
+          grade.appendChild(secao);
+          btLigarArrasto(
+            secao,
+            '.ugc-roteiro-card',
+            'conteudo',
+            (origem, destino) => {
+              btPersistirOrdem(btReordenarNoStatus(btConteudosDaPasta(pasta.id), status, origem, destino), 'ideias_conteudos');
+            },
+            false,
+            status
+          );
+        });
       btLigarArrasto(
         area,
         '.bt-subpastas .ferr-pasta',
@@ -11156,9 +11197,6 @@
         },
         true
       );
-      btLigarArrasto(area, '#bt-itens-grade .ugc-roteiro-card', 'conteudo', (origem, destino) => {
-        btPersistirOrdem(btReordenarLista(btConteudosDaPasta(pasta.id), 'id', origem, destino), 'ideias_conteudos');
-      });
     }
 
     function btCriarCardConteudo(c, indice, ehSerie) {
@@ -12178,34 +12216,31 @@
     // já preenchido em "roteiro breve" — só falta escolher o pilar.
     async function abrirModalEscolherPilar() {
       if (!radarAbertaId) return;
-      if (pilaresCache.length === 0) {
-        try {
-          const { data, error } = await Auth.sb.from('planejador_pilares').select('*').order('ordem');
-          if (error) throw error;
-          pilaresCache = data || [];
-        } catch (err) {
-          console.error('Erro ao carregar pilares:', err);
-        }
-      }
-      if (pilaresCache.length === 0) {
-        alert(tr('radar_crie_pilar_primeiro'));
+      // A ideia vai pro Banco de ideias & Roteiros: escolhe-se a pasta (de qualquer nível).
+      if (!btCarregado) await btCarregar();
+      const opcoes = btOrdenar(btGrupos)
+        .map((gr) => {
+          const lista = btListaArvore(gr.chave);
+          if (!lista.length) return '';
+          return `<optgroup label="${escapeHtml(gr.nome)}">${lista.map((x) => `<option value="${x.id}">${escapeHtml(x.rotulo)}</option>`).join('')}</optgroup>`;
+        })
+        .join('');
+      if (!opcoes) {
+        alert('Crie uma pasta no Banco de ideias & Roteiros primeiro, pra eu saber onde guardar essa ideia.');
         return;
       }
       const select = document.getElementById('radar-pilar-select');
-      select.innerHTML = pilaresCache
-        .map((p) => `<option value="${p.id}">${escapeHtml(p.nome)}</option>`)
-        .join('');
+      select.innerHTML = opcoes;
 
-      // Sugestão do Gemini (calculada na captura, olhando os pilares que
-      // existiam na hora) — só aplica se o pilar sugerido ainda existir.
+      // Sugestão do Gemini: só aparece se existir uma pasta com o mesmo nome do pilar sugerido.
       const item = radarCache.find((i) => i.id === radarAbertaId);
       const sugestaoEl = document.getElementById('radar-pilar-sugestao');
-      const pilarSugerido = item && item.pilar_sugerido
-        ? pilaresCache.find((p) => p.nome.trim().toLowerCase() === item.pilar_sugerido.trim().toLowerCase())
+      const pastaSugerida = item && item.pilar_sugerido
+        ? btPastas.find((p) => p.nome.trim().toLowerCase() === item.pilar_sugerido.trim().toLowerCase())
         : null;
-      if (pilarSugerido) {
-        select.value = pilarSugerido.id;
-        sugestaoEl.textContent = `${tr('radar_pilar_sugerido_prefixo')} ${pilarSugerido.nome}`;
+      if (pastaSugerida) {
+        select.value = pastaSugerida.id;
+        sugestaoEl.textContent = `${tr('radar_pilar_sugerido_prefixo')} ${pastaSugerida.nome}`;
         sugestaoEl.hidden = false;
       } else {
         sugestaoEl.hidden = true;
@@ -12228,14 +12263,16 @@
       btn.disabled = true;
       btn.textContent = tr('radar_adicionando');
       try {
-        const { error: erroIdeia } = await Auth.sb.from('planejador_ideias').insert({
-          pilar_id: pilarId,
-          titulo: item.titulo,
-          status: 'Roteiro pronto',
-          roteiro_breve: item.adaptacao || '',
-          ordem: ideiasCache.length,
-        });
+        const proxima = btConteudosDaPasta(pilarId).reduce((max, c) => Math.max(max, c.ordem || 0), -1) + 1;
+        const { data: criada, error: erroIdeia } = await Auth.sb
+          .from('ideias_conteudos')
+          .insert({ pasta_id: pilarId, titulo: item.titulo, status: 'Roteiro pronto', roteiro_breve: item.adaptacao || '', ordem: proxima })
+          .select();
         if (erroIdeia) throw erroIdeia;
+        if (criada && criada[0]) {
+          btConteudos.push(criada[0]);
+          btAtualizarCronograma();
+        }
 
         await Auth.sb.from('radar_noticias').update({ usada: true }).eq('id', radarAbertaId);
 

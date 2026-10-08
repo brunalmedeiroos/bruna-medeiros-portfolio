@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261008q">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261008r">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -2072,7 +2072,7 @@
 
     <!-- Modal: agendar uma ideia do Banco de Ideias num dia do cronograma -->
     <div id="pl-modal-agendar-overlay" class="pl-modal-overlay" hidden>
-      <div class="pl-modal pl-modal-pequeno">
+      <div class="pl-modal pl-modal-agendar">
         <div class="pl-modal-topo">
           <span class="pl-modal-titulo-fixo"><span data-i18n="pl_agendar_ideia">Agendar ideia</span> — <span id="pl-modal-agendar-data"></span></span>
           <button id="pl-modal-agendar-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
@@ -2081,12 +2081,17 @@
         </div>
 
         <div class="cal-form-campo">
-          <label for="pl-modal-agendar-select" data-i18n="pl_ideia_do_banco">Ideia do Banco de Ideias</label>
-          <select id="pl-modal-agendar-select"></select>
+          <label data-i18n="pl_cron_pasta">Pasta</label>
+          <div id="pl-agendar-pastas" class="pl-agendar-pastas"></div>
+        </div>
+
+        <div class="cal-form-campo" id="pl-agendar-roteiros-campo">
+          <label data-i18n="pl_roteiros_prontos">Roteiros prontos</label>
+          <div id="pl-agendar-roteiros" class="pl-agendar-roteiros"></div>
         </div>
 
         <div class="cal-form-acoes">
-          <button type="button" id="pl-modal-agendar-confirmar" class="cal-btn cal-btn-primario" data-i18n="pl_agendar">Agendar</button>
+          <button type="button" id="pl-modal-agendar-confirmar" class="cal-btn cal-btn-primario" data-i18n="pl_agendar" disabled>Agendar</button>
         </div>
       </div>
     </div>
@@ -4301,13 +4306,15 @@
         pl_cron_remover_pilar_dia_aria: 'Remover pilar deste dia',
         pl_cron_remover_ideia_calendario_aria: 'Remover do calendário',
         pl_cron_add_pilar_curto: '+ pilar',
-        pl_cron_nenhuma_ideia_roteiro_pronto: 'Nenhuma ideia com roteiro pronto disponível',
+        pl_cron_nenhuma_ideia_roteiro_pronto: 'Nenhum roteiro pronto disponível pra agendar. Marque um roteiro como "Roteiro pronto" no Banco de ideias & Roteiros.',
         pl_erro_agendar: 'Não foi possível agendar agora. Tente de novo em instantes.',
         pl_erro_remover_calendario: 'Não foi possível remover agora. Tente de novo em instantes.',
         pl_cron_nenhum_pilar_disponivel: 'Nenhum pilar disponível — cadastre um no Banco de ideias',
         pl_cron_pilar_placeholder: 'Escreva um pilar novo...',
         pl_cron_pilar_suas_pastas: 'Suas pastas',
         pl_cron_pilar_usados: 'Já usados no calendário',
+        pl_cron_pasta: 'Pasta',
+        pl_cron_escolha_pasta: 'Escolha uma pasta pra ver os roteiros prontos dela.',
         pl_excluir_achado_confirmar: 'Excluir este achado?',
         radar_erro_carregar: 'Não foi possível carregar as notícias agora.',
         radar_nenhuma_noticia: 'Nenhuma notícia por aqui ainda.',
@@ -5402,13 +5409,15 @@
         pl_cron_remover_pilar_dia_aria: "Remove this day's pillar",
         pl_cron_remover_ideia_calendario_aria: 'Remove from calendar',
         pl_cron_add_pilar_curto: '+ pillar',
-        pl_cron_nenhuma_ideia_roteiro_pronto: 'No idea with a ready script available',
+        pl_cron_nenhuma_ideia_roteiro_pronto: 'No ready script available to schedule. Mark a script as "Ready script" in the Idea bank & Scripts.',
         pl_erro_agendar: 'Could not schedule it right now. Try again in a moment.',
         pl_erro_remover_calendario: 'Could not remove it right now. Try again in a moment.',
         pl_cron_nenhum_pilar_disponivel: 'No pillars available — add one in the Idea bank',
         pl_cron_pilar_placeholder: 'Type a new pillar...',
         pl_cron_pilar_suas_pastas: 'Your folders',
         pl_cron_pilar_usados: 'Already used in the calendar',
+        pl_cron_pasta: 'Folder',
+        pl_cron_escolha_pasta: 'Pick a folder to see its ready scripts.',
         pl_excluir_achado_confirmar: 'Delete this find?',
         radar_erro_carregar: 'Could not load the news right now.',
         radar_nenhuma_noticia: 'No news here yet.',
@@ -12291,27 +12300,95 @@
       }
     }
 
-    function abrirModalAgendar(diaISO) {
+    // "+" de um dia do cronograma: primeiro escolhe a pasta, depois um dos roteiros prontos dela (só os marcados
+    // como "Roteiro pronto" e que ainda não têm data).
+    let agendarPastaId = null;
+    let agendarSelecionadoId = null;
+
+    function agendarRoteirosProntos() {
+      return btAgendaOk ? btConteudos.filter((c) => !c.data_agendada && plEstagio(c) === 'Roteiro pronto') : [];
+    }
+
+    async function abrirModalAgendar(diaISO) {
       dataAgendarAtual = diaISO;
+      agendarSelecionadoId = null;
+      agendarPastaId = null;
       document.getElementById('pl-modal-agendar-data').textContent =
         new Date(diaISO + 'T00:00:00').toLocaleDateString(localeAtual(), { day: '2-digit', month: 'long' });
 
-      const jaImportadas = btIdsAntigosMigrados();
-      const disponiveis = ideiasCache.filter((idea) => !idea.data_agendada && idea.status === 'Roteiro pronto' && !jaImportadas.has(idea.id));
-      const disponiveisTeste = btAgendaOk ? btConteudos.filter((c) => !c.data_agendada && PL_STATUS_AGENDAVEIS.includes(plEstagio(c))) : [];
-      const select = document.getElementById('pl-modal-agendar-select');
-      if (disponiveis.length === 0 && disponiveisTeste.length === 0) {
-        select.innerHTML = `<option value="">${escapeHtml(tr('pl_cron_nenhuma_ideia_roteiro_pronto'))}</option>`;
-      } else {
-        select.innerHTML = disponiveis
-          .map((idea) => {
-            const pilar = pilaresCache.find((p) => p.id === idea.pilar_id);
-            return `<option value="${idea.id}">${escapeHtml(idea.titulo)}${pilar ? ` (${escapeHtml(pilar.nome)})` : ''}</option>`;
-          })
-          .join('') + btOpcoesAgendar(disponiveisTeste);
-      }
-
+      if (!btCarregado) await btCarregar();
+      const pastas = agendarPastasComRoteiros();
+      if (pastas.length === 1) agendarPastaId = pastas[0].id;
+      agendarRenderizar();
       document.getElementById('pl-modal-agendar-overlay').hidden = false;
+    }
+
+    // Pastas que têm roteiro pronto disponível, na ordem em que aparecem no Banco de ideias & Roteiros.
+    function agendarPastasComRoteiros() {
+      const ids = new Set(agendarRoteirosProntos().map((c) => c.pasta_id));
+      const ordem = btOrdenar(btGrupos).flatMap((g) => btListaArvore(g.chave).map((x) => x.id));
+      const posicao = (p) => {
+        const i = ordem.indexOf(p.id);
+        return i < 0 ? 9999 : i;
+      };
+      return btPastas.filter((p) => ids.has(p.id)).sort((a, b) => posicao(a) - posicao(b));
+    }
+
+    function agendarRenderizar() {
+      const prontos = agendarRoteirosProntos();
+      const pastas = agendarPastasComRoteiros();
+      const areaPastas = document.getElementById('pl-agendar-pastas');
+      const areaRoteiros = document.getElementById('pl-agendar-roteiros');
+      const confirmar = document.getElementById('pl-modal-agendar-confirmar');
+      areaPastas.innerHTML = '';
+      areaRoteiros.innerHTML = '';
+      confirmar.disabled = !agendarSelecionadoId;
+
+      if (pastas.length === 0) {
+        areaPastas.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('pl_cron_nenhuma_ideia_roteiro_pronto'))}</p>`;
+        document.getElementById('pl-agendar-roteiros-campo').hidden = true;
+        return;
+      }
+      document.getElementById('pl-agendar-roteiros-campo').hidden = false;
+
+      const nomesRepetidos = new Set(pastas.map((p) => p.nome).filter((n, i, todos) => todos.indexOf(n) !== i));
+      pastas.forEach((p) => {
+        const qtd = prontos.filter((c) => c.pasta_id === p.id).length;
+        const grupo = btGrupos.find((g) => g.chave === p.grupo);
+        const botao = document.createElement('button');
+        botao.type = 'button';
+        botao.className = 'pl-agendar-pasta' + (p.id === agendarPastaId ? ' selecionado' : '');
+        botao.title = [grupo ? grupo.nome : null, ...btCaminhoPasta(p).map((x) => x.nome)].filter(Boolean).join(' › ');
+        botao.innerHTML = `
+          <span class="pl-agendar-pasta-cor" style="background:${escapeHtml(btCorPasta(p))}"></span>
+          <span>${escapeHtml(btNomePasta(p))}${nomesRepetidos.has(p.nome) && grupo ? ` <small>· ${escapeHtml(grupo.nome)}</small>` : ''}</span>
+          <span class="pl-agendar-pasta-qtd">${qtd}</span>`;
+        botao.addEventListener('click', () => {
+          agendarPastaId = p.id;
+          agendarSelecionadoId = null;
+          agendarRenderizar();
+        });
+        areaPastas.appendChild(botao);
+      });
+
+      if (!agendarPastaId) {
+        areaRoteiros.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('pl_cron_escolha_pasta'))}</p>`;
+        return;
+      }
+      btOrdenar(prontos.filter((c) => c.pasta_id === agendarPastaId)).forEach((c) => {
+        const botao = document.createElement('button');
+        botao.type = 'button';
+        botao.className = 'pl-agendar-roteiro' + (c.id === agendarSelecionadoId ? ' selecionado' : '');
+        botao.innerHTML = `
+          <span class="pl-agendar-roteiro-titulo">${escapeHtml(c.titulo)}</span>
+          ${c.formato && c.formato.trim() ? `<span class="pl-agendar-roteiro-formato">${escapeHtml(c.formato)}</span>` : ''}
+          <span class="pl-agendar-roteiro-check" aria-hidden="true">✓</span>`;
+        botao.addEventListener('click', () => {
+          agendarSelecionadoId = c.id;
+          agendarRenderizar();
+        });
+        areaRoteiros.appendChild(botao);
+      });
     }
 
     function fecharModalAgendar() {
@@ -12320,18 +12397,8 @@
     }
 
     async function confirmarAgendamento() {
-      const ideiaId = document.getElementById('pl-modal-agendar-select').value;
-      if (!ideiaId || !dataAgendarAtual) return;
-      if (ideiaId.startsWith('bt:')) return btAgendar(ideiaId.slice(3), dataAgendarAtual);
-      try {
-        const { error } = await Auth.sb.from('planejador_ideias').update({ data_agendada: dataAgendarAtual }).eq('id', ideiaId);
-        if (error) throw error;
-        fecharModalAgendar();
-        await carregarPlanejador();
-      } catch (err) {
-        console.error('Erro ao agendar ideia:', err);
-        alert(tr('pl_erro_agendar'));
-      }
+      if (!agendarSelecionadoId || !dataAgendarAtual) return;
+      await btAgendar(agendarSelecionadoId, dataAgendarAtual);
     }
 
     async function desagendarIdeia(ideiaId) {
@@ -12346,10 +12413,13 @@
       }
     }
 
-    // "+ PILAR" do cronograma: o pilar do dia é só um rótulo. Sugere as suas pastas e os pilares que você já usou
-    // no calendário, e aceita qualquer nome novo (não depende mais do banco de ideias antigo).
+    // "+ PILAR" do cronograma: o pilar do dia é só um rótulo. Você marca (fica azul) uma ou mais pastas e/ou pilares já
+    // usados no calendário, pode escrever um novo, e "Escolher" coloca tudo no dia.
+    let pilarDiaSelecionados = new Set();
+
     async function abrirModalPilarDia(diaISO) {
       dataPilarDiaAtual = diaISO;
+      pilarDiaSelecionados = new Set();
       document.getElementById('pl-modal-pilar-dia-data').textContent =
         new Date(diaISO + 'T00:00:00').toLocaleDateString(localeAtual(), { day: '2-digit', month: 'long' });
 
@@ -12362,12 +12432,21 @@
       const chips = (titulo, nomes) =>
         nomes.length
           ? `<p class="cal-todas-resumo pl-pilar-sugestoes-titulo">${escapeHtml(titulo)}</p><div class="pl-pilar-sugestoes">${nomes
-              .map((n) => `<button type="button" class="pl-pilar-sugestao" data-nome="${escapeHtml(n)}">${escapeHtml(n)}</button>`)
+              .map((n) => `<button type="button" class="pl-pilar-sugestao" aria-pressed="false" data-nome="${escapeHtml(n)}">${escapeHtml(n)}</button>`)
               .join('')}</div>`
           : '';
       const area = document.getElementById('pl-modal-pilar-dia-sugestoes');
       area.innerHTML = chips(tr('pl_cron_pilar_suas_pastas'), dasPastas) + chips(tr('pl_cron_pilar_usados'), usados);
-      area.querySelectorAll('.pl-pilar-sugestao').forEach((b) => b.addEventListener('click', () => confirmarPilarDia(b.dataset.nome)));
+      area.querySelectorAll('.pl-pilar-sugestao').forEach((b) =>
+        b.addEventListener('click', () => {
+          const nome = b.dataset.nome;
+          const marcado = !pilarDiaSelecionados.has(nome);
+          if (marcado) pilarDiaSelecionados.add(nome);
+          else pilarDiaSelecionados.delete(nome);
+          b.classList.toggle('selecionado', marcado);
+          b.setAttribute('aria-pressed', String(marcado));
+        })
+      );
 
       const input = document.getElementById('pl-modal-pilar-dia-input');
       input.value = '';
@@ -12380,16 +12459,21 @@
       document.getElementById('pl-modal-pilar-dia-overlay').hidden = true;
     }
 
-    // nomeEscolhido vem dos botões de sugestão; sem ele, vale o que foi escrito no campo.
-    async function confirmarPilarDia(nomeEscolhido) {
-      const pilar = (typeof nomeEscolhido === 'string' ? nomeEscolhido : document.getElementById('pl-modal-pilar-dia-input').value).trim();
-      if (!pilar || !dataPilarDiaAtual) return;
-      if (cronogramaDiasCache.some((l) => l.data === dataPilarDiaAtual && l.pilar === pilar)) {
+    // Coloca no dia tudo o que foi marcado, mais o que foi escrito no campo.
+    async function confirmarPilarDia() {
+      if (!dataPilarDiaAtual) return;
+      const digitado = document.getElementById('pl-modal-pilar-dia-input').value.trim();
+      const nomes = [...pilarDiaSelecionados];
+      if (digitado && !nomes.includes(digitado)) nomes.push(digitado);
+      if (nomes.length === 0) return;
+      const jaNoDia = cronogramaDiasCache.filter((l) => l.data === dataPilarDiaAtual).map((l) => l.pilar);
+      const novos = nomes.filter((n) => !jaNoDia.includes(n));
+      if (novos.length === 0) {
         fecharModalPilarDia();
         return;
       }
       try {
-        const { error } = await Auth.sb.from('planejador_cronograma_dias').insert({ data: dataPilarDiaAtual, pilar });
+        const { error } = await Auth.sb.from('planejador_cronograma_dias').insert(novos.map((pilar) => ({ data: dataPilarDiaAtual, pilar })));
         if (error) throw error;
         fecharModalPilarDia();
         await carregarPlanejador();

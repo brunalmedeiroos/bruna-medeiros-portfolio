@@ -10280,3 +10280,178 @@
 .painel-body .dash-atencao-ver-tudo[hidden] {
   display: none;
 }
+
+/* ---- Cronograma: semana mais baixa, título completo; agendar por pasta; pilar com seleção ---- */
+
+.painel-body .pl-cron-grade-semana .pl-cron-dia {
+  min-height: 150px;
+}
+
+/* Na semana as células são largas o bastante: o título do conteúdo quebra em linhas em vez de ser cortado. */
+.painel-body .pl-cron-grade-semana .pl-cron-dia-ideia {
+  align-items: flex-start;
+  font-size: 11px;
+  line-height: 1.3;
+  padding: 4px 5px 4px 8px;
+  border-radius: 8px;
+}
+
+.painel-body .pl-cron-grade-semana .pl-cron-dia-ideia-titulo {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.painel-body .pl-modal-agendar {
+  max-width: 660px;
+}
+
+.painel-body .pl-agendar-pastas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.painel-body .pl-agendar-pasta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: var(--branco);
+  color: var(--grafite);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.painel-body .pl-agendar-pasta:hover {
+  background: rgba(var(--grafite-rgb), 0.06);
+}
+
+.painel-body .pl-agendar-pasta.selecionado {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .pl-agendar-pasta small {
+  font-weight: 500;
+  opacity: 0.75;
+}
+
+.painel-body .pl-agendar-pasta-cor {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
+}
+
+.painel-body .pl-agendar-pasta-qtd {
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(var(--grafite-rgb), 0.1);
+  font-size: 11px;
+  text-align: center;
+}
+
+.painel-body .pl-agendar-pasta.selecionado .pl-agendar-pasta-qtd {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.painel-body .pl-agendar-roteiros {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 2px;
+  scrollbar-width: thin;
+}
+
+.painel-body .pl-agendar-roteiros > .texto-vazio {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 560px) {
+  .painel-body .pl-agendar-roteiros {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.painel-body .pl-agendar-roteiro {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 64px;
+  padding: 12px 34px 12px 14px;
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  background: var(--branco);
+  color: var(--grafite);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+.painel-body .pl-agendar-roteiro:hover {
+  transform: translateY(-1px);
+  border-color: var(--coral);
+}
+
+.painel-body .pl-agendar-roteiro.selecionado {
+  background: rgba(var(--coral-rgb), 0.18);
+  border-color: var(--coral);
+  box-shadow: inset 0 0 0 1px var(--coral);
+}
+
+.painel-body .pl-agendar-roteiro-titulo {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.painel-body .pl-agendar-roteiro-formato {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.painel-body .pl-agendar-roteiro-check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: var(--coral);
+  color: var(--branco);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.painel-body .pl-agendar-roteiro.selecionado .pl-agendar-roteiro-check {
+  display: flex;
+}
+
+.painel-body .pl-pilar-sugestao.selecionado {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: var(--branco);
+  font-weight: 600;
+}
+
+.painel-body .pl-pilar-sugestao.selecionado:hover {
+  background: var(--coral);
+}

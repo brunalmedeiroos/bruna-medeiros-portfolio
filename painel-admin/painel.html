@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261008d">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261008e">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -10021,11 +10021,7 @@
         achadosCache = achados.data || [];
         cronogramaCache = cronograma.data || [];
         cronogramaDiasCache = cronogramaDias.data || [];
-        // conteúdos do Banco de ideias & Roteiros também entram no cronograma (e o aviso de importação aparece se sobrar ideia antiga)
-        btCarregar().then(() => {
-          btAtualizarCronograma();
-          if (!btGrupo && !btPastaId) btRenderizar();
-        });
+        btCarregar().then(btAtualizarCronograma); // conteúdos do Banco de ideias & Roteiros também entram no cronograma
 
         renderizarBancoIdeias();
         renderizarAchados();
@@ -10578,7 +10574,6 @@
       await btCarregarGrupos();
       await btCarregarAgenda();
       await btCarregarSub();
-      await btCarregarOrigem();
       btCarregado = true;
     }
 
@@ -10934,121 +10929,9 @@
       }
     }
 
-    // ---------- importar o banco antigo (só copia: nada é apagado nem alterado lá) ----------
-
-    let btOrigemOk = false; // as colunas origem_pilar_id / origem_ideia_id existem (SQL de importação rodado)
-    let btImportarDispensado = false; // "Não preciso": esconde o aviso até recarregar a página
-    let btImportando = false;
-
-    async function btCarregarOrigem() {
-      try {
-        const [a, b] = await Promise.all([
-          Auth.sb.from('ideias_conteudos').select('origem_ideia_id').limit(1),
-          Auth.sb.from('ideias_pastas').select('origem_pilar_id').limit(1),
-        ]);
-        btOrigemOk = !a.error && !b.error;
-      } catch (err) {
-        btOrigemOk = false;
-      }
-    }
-
-    // Ideias do banco antigo que já ganharam uma cópia aqui.
+    // Ideias do banco antigo que têm cópia aqui (campo origem_ideia_id): saem do cronograma antigo pra não aparecer duas vezes.
     function btIdsAntigosMigrados() {
       return new Set(btConteudos.map((c) => c.origem_ideia_id).filter(Boolean));
-    }
-
-    function btIdeiasAntigasPendentes() {
-      const feitas = btIdsAntigosMigrados();
-      return ideiasCache.filter((i) => !feitas.has(i.id));
-    }
-
-    function btBannerImportar() {
-      const pendentes = btIdeiasAntigasPendentes();
-      if (btImportarDispensado || pendentes.length === 0) return '';
-      return `
-        <div class="card bt-importar">
-          <div class="bt-importar-texto">
-            <strong>Você ainda tem ${btPlural(pendentes.length, 'ideia', 'ideias')} no banco antigo.</strong>
-            <p class="cal-todas-resumo">Elas não aparecem mais aqui. Posso copiar tudo, com os roteiros, pra uma pasta "Banco antigo". Nada é apagado nem muda no banco antigo.</p>
-            ${btOrigemOk ? '' : '<p class="bt-descricao">Antes, rode o arquivo banco-ideias-importar-antigo.sql no SQL Editor do Supabase.</p>'}
-          </div>
-          <div class="bt-importar-acoes">
-            <button type="button" class="cal-btn cal-btn-primario" id="bt-importar" ${btOrigemOk && btGruposEditaveis ? '' : 'disabled'}>Importar pro banco novo</button>
-            <button type="button" class="cal-btn" id="bt-importar-dispensar">Não preciso</button>
-          </div>
-        </div>`;
-    }
-
-    async function btImportarAntigo() {
-      if (btImportando) return;
-      const pendentes = btIdeiasAntigasPendentes();
-      if (pendentes.length === 0) return;
-      const aviso =
-        `Vou copiar ${btPlural(pendentes.length, 'ideia', 'ideias')} do banco antigo, com os roteiros, pra uma pasta nova chamada "Banco antigo" ` +
-        '(uma subpasta por pilar). Nada é apagado nem muda no banco antigo, e depois você pode reorganizar ou excluir a cópia.';
-      if (!(await confirmarAcao(aviso, { textoConfirmar: 'Importar', perigo: false }))) return;
-      btImportando = true;
-      const botao = document.getElementById('bt-importar');
-      if (botao) botao.disabled = true;
-      try {
-        let grupo = btGrupos.find((g) => g.chave === 'banco-antigo');
-        if (!grupo) {
-          const ordem = btGrupos.reduce((max, g) => Math.max(max, g.ordem || 0), -1) + 1;
-          const { data, error } = await Auth.sb
-            .from('ideias_grupos')
-            .insert({ chave: 'banco-antigo', nome: 'Banco antigo', emoji: '📦', cor: '#c98a1c', ordem })
-            .select();
-          if (error) throw error;
-          grupo = data[0];
-          btGrupos.push(grupo);
-        }
-
-        // uma pasta por pilar (pula as que já foram criadas numa tentativa anterior)
-        const pastaDoPilar = {};
-        btPastas.filter((p) => p.origem_pilar_id).forEach((p) => {
-          pastaDoPilar[p.origem_pilar_id] = p.id;
-        });
-        const novasPastas = pilaresCache
-          .filter((p) => !pastaDoPilar[p.id])
-          .map((p, i) => ({ grupo: 'banco-antigo', nome: p.nome, ordem: p.ordem || i, origem_pilar_id: p.id }));
-        if (novasPastas.length) {
-          const { data, error } = await Auth.sb.from('ideias_pastas').insert(novasPastas).select();
-          if (error) throw error;
-          data.forEach((p) => {
-            btPastas.push(p);
-            pastaDoPilar[p.origem_pilar_id] = p.id;
-          });
-        }
-
-        // as ideias, em blocos
-        const linhas = pendentes
-          .filter((i) => pastaDoPilar[i.pilar_id])
-          .map((i) => ({
-            pasta_id: pastaDoPilar[i.pilar_id],
-            titulo: i.titulo,
-            formato: i.formato || null,
-            status: i.status || 'Não iniciado',
-            roteiro_breve: i.roteiro_breve || null,
-            roteiro_completo: i.roteiro_completo || null,
-            gravado: !!i.gravado,
-            ordem: i.ordem || 0,
-            origem_ideia_id: i.id,
-            ...(btAgendaOk ? { data_agendada: i.data_agendada || null } : {}),
-          }));
-        for (let k = 0; k < linhas.length; k += 100) {
-          const { data, error } = await Auth.sb.from('ideias_conteudos').insert(linhas.slice(k, k + 100)).select();
-          if (error) throw error;
-          btConteudos.push(...data);
-        }
-        btToast(`${btPlural(linhas.length, 'ideia importada', 'ideias importadas')} pra "Banco antigo".`);
-      } catch (err) {
-        console.error('Erro ao importar o banco antigo:', err);
-        alert('Não consegui importar tudo. O que já foi copiado continua lá, e se você tentar de novo ele continua de onde parou.');
-        await btCarregar();
-      } finally {
-        btImportando = false;
-        btRenderizar();
-      }
     }
 
     // ---------- copiar e colar um conteúdo (ideia + roteiro) em outra pasta ----------
@@ -11223,7 +11106,6 @@
           <span class="card-label">Roteiros criados</span>
           <span class="card-valor">${btConteudos.length}</span>
         </div>
-        ${btBannerImportar()}
         <div class="ferr-pasta-topo">
           <div class="ferr-pasta-titulo-bloco">
             <p class="cal-todas-resumo bt-intro">Escolha uma pasta pra entrar, ou crie as suas.</p>
@@ -11239,15 +11121,6 @@
             : `<div class="ferr-pastas-grade">${cartoes}</div>`
         }`;
       document.getElementById('bt-nova-grupo').addEventListener('click', () => btAbrirModalGrupo(null, false));
-      const botaoImportar = document.getElementById('bt-importar');
-      if (botaoImportar) botaoImportar.addEventListener('click', btImportarAntigo);
-      const botaoDispensar = document.getElementById('bt-importar-dispensar');
-      if (botaoDispensar) {
-        botaoDispensar.addEventListener('click', () => {
-          btImportarDispensado = true;
-          btRenderizar();
-        });
-      }
       area.querySelectorAll('.ferr-pasta').forEach((el) => {
         const grupo = btGrupos.find((g) => g.chave === el.dataset.chave);
         el.addEventListener('click', () => btIr(el.dataset.chave, null));

@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261008b">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261008c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1942,6 +1942,7 @@
             <label for="pl-modal-status" data-i18n="status">Status</label>
             <select id="pl-modal-status">
               <option value="Não iniciado" data-i18n="pl_status_nao_iniciado">Não iniciado</option>
+              <option value="Roteiro em construção" data-i18n="pl_status_em_construcao">Roteiro em construção</option>
               <option value="Roteiro pronto" data-i18n="pl_status_roteiro_pronto">Roteiro pronto</option>
               <option value="Gravado" data-i18n="pl_status_gravado">Gravado</option>
               <option value="Editando" data-i18n="pl_status_editando">Editando</option>
@@ -3352,6 +3353,7 @@
     // continua em português, só o rótulo exibido muda.
     const STATUS_IDEIA_CHAVE = {
       'Não iniciado': 'pl_status_nao_iniciado',
+      'Roteiro em construção': 'pl_status_em_construcao',
       'Roteiro pronto': 'pl_status_roteiro_pronto',
       'Gravado': 'pl_status_gravado',
       'Editando': 'pl_status_editando',
@@ -3360,7 +3362,7 @@
       'Publicado': 'pl_status_publicado',
     };
     // Etapas do roteiro, do rascunho até o post. Os valores gravados no banco ficam em português.
-    const PL_STATUS_ORDEM = ['Roteiro pronto', 'Gravado', 'Editando', 'Editado', 'Pronto para postar', 'Não iniciado', 'Publicado'];
+    const PL_STATUS_ORDEM = ['Roteiro pronto', 'Gravado', 'Editando', 'Editado', 'Pronto para postar', 'Roteiro em construção', 'Não iniciado', 'Publicado'];
     const PL_STATUS_AGENDAVEIS = ['Roteiro pronto', 'Gravado', 'Editando', 'Editado', 'Pronto para postar'];
     // A etapa de um conteúdo é o status; só que quem já estava marcado como gravado sem ter avançado conta como Gravado.
     function plEstagio(item) {
@@ -4233,6 +4235,7 @@
         pl_status_nao_iniciado: 'Não iniciado',
         pl_status_roteiro_pronto: 'Roteiro pronto',
         pl_status_publicado: 'Publicado',
+        pl_status_em_construcao: 'Roteiro em construção',
         pl_status_gravado: 'Gravado',
         pl_status_editando: 'Editando',
         pl_status_editado: 'Editado',
@@ -5322,6 +5325,7 @@
         pl_status_nao_iniciado: 'Not started',
         pl_status_roteiro_pronto: 'Script ready',
         pl_status_publicado: 'Published',
+        pl_status_em_construcao: 'Script in progress',
         pl_status_gravado: 'Filmed',
         pl_status_editando: 'Editing',
         pl_status_editado: 'Edited',
@@ -10062,6 +10066,7 @@
       if (status === 'Editando') return 'pl-status-editando';
       if (status === 'Editado') return 'pl-status-editado';
       if (status === 'Pronto para postar') return 'pl-status-pronto-postar';
+      if (status === 'Roteiro em construção') return 'pl-status-construcao';
       return 'ugc-status-inicial';
     }
 

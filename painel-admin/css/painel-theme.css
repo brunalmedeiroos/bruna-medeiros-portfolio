@@ -10139,3 +10139,15 @@
   max-width: 260px;
   margin-bottom: 22px;
 }
+
+/* ---- Visão geral: blocos na largura toda + status Roteiro em construção ---- */
+
+.painel-body .pl-vg {
+  align-items: stretch;
+}
+
+.painel-body .pl-status-construcao {
+  background: #FFF7C5;
+  color: #04465D;
+  box-shadow: inset 0 0 0 1px rgba(var(--grafite-rgb), 0.15);
+}

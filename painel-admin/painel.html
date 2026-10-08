@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261008j">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261008k">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -4305,6 +4305,7 @@
         pl_erro_carregar: 'Não foi possível carregar o planejador agora.',
         pl_nova_ideia: '+ Nova ideia',
         pl_ja_tem_roteiro: 'Já tem roteiro',
+        pl_ideia_criada: 'Ideia criada',
         pl_marcar_gravado: 'Marcar como gravado',
         pl_ja_gravado: 'Já foi gravado (some do Banco de Ideias, continua no Cronograma)',
         pl_erro_ordem: 'Não foi possível salvar a nova ordem agora.',
@@ -5396,6 +5397,7 @@
         pl_erro_carregar: 'Could not load the planner right now.',
         pl_nova_ideia: '+ New idea',
         pl_ja_tem_roteiro: 'Already has a script',
+        pl_ideia_criada: 'Idea created',
         pl_marcar_gravado: 'Mark as filmed',
         pl_ja_gravado: 'Already filmed (disappears from the Idea Bank, stays on the Schedule)',
         pl_erro_ordem: 'Could not save the new order right now.',
@@ -11263,8 +11265,8 @@
         })
         .forEach((status) => {
           let lista = porStatus.get(status);
-          // Em Não iniciado, quem já tem roteiro sobe pro começo (a ordem de cada grupo continua a que você arrumou).
-          if (status === 'Não iniciado') lista = [...lista.filter(temRoteiro), ...lista.filter((c) => !temRoteiro(c))];
+          // Em Não iniciado sobem primeiro os que já têm roteiro, depois os que só têm ideia (roteiro breve); a ordem dentro de cada grupo continua a que você arrumou.
+          if (status === 'Não iniciado') lista = [2, 1, 0].flatMap((nivel) => lista.filter((c) => btNivelRoteiro(c) === nivel));
           const secao = document.createElement('div');
           secao.className = 'pl-banco-grupo';
           secao.innerHTML = `
@@ -11299,6 +11301,21 @@
       );
     }
 
+    // Etiqueta do card: roteiro completo escrito = "Já tem roteiro"; só o roteiro breve = "Ideia criada".
+    // Depois que o roteiro está pronto (Roteiro pronto em diante) a etiqueta some, o status já diz isso.
+    function btNivelRoteiro(c) {
+      if (c.roteiro_completo && c.roteiro_completo.trim()) return 2;
+      if (c.roteiro_breve && c.roteiro_breve.trim()) return 1;
+      return 0;
+    }
+
+    function btEtiquetaRoteiro(c) {
+      const etapa = plEstagio(c);
+      if (etapa !== 'Não iniciado' && etapa !== 'Roteiro em construção') return '';
+      const nivel = btNivelRoteiro(c);
+      return nivel === 2 ? tr('pl_ja_tem_roteiro') : nivel === 1 ? tr('pl_ideia_criada') : '';
+    }
+
     function btCriarCardConteudo(c, indice, ehSerie) {
       const card = document.createElement('button');
       card.type = 'button';
@@ -11309,7 +11326,7 @@
         ${ehSerie ? `<span class="bt-ep">EP. ${String(indice + 1).padStart(2, '0')}</span>` : ''}
         <span class="ugc-roteiro-card-marca">${escapeHtml(c.titulo)}</span>
         <span class="ugc-roteiro-card-info">${escapeHtml(c.formato || tr('ugc_sem_detalhes_ainda'))}</span>
-        ${temRoteiro(c) ? `<span class="ugc-roteiro-card-comentarios">${escapeHtml(tr('pl_ja_tem_roteiro'))}</span>` : ''}
+        ${btEtiquetaRoteiro(c) ? `<span class="ugc-roteiro-card-comentarios">${escapeHtml(btEtiquetaRoteiro(c))}</span>` : ''}
         ${btAgendaOk && c.data_agendada ? `<span class="bt-agendado">📅 ${escapeHtml(btDataCurta(c.data_agendada))}</span>` : ''}
         ${c.gravado ? '<span class="bt-gravado">Gravado</span>' : ''}
         ${btAgendaOk && c.data_agendada && !c.gravado ? `<span class="pl-card-marcar-gravado">${escapeHtml(tr('pl_marcar_gravado'))}</span>` : ''}

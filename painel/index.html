@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261009b">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261009c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1386,6 +1386,24 @@
                 </div>
               </div>
               <p class="dash-aviso" id="ugc-pacotes-aviso" hidden data-i18n="ugc_pacote_sem_tabela">Falta rodar o arquivo ugc-pacotes-tabela.sql no Supabase pra criar pacotes.</p>
+              <p class="dash-aviso" id="ugc-orc-aviso" hidden data-i18n="ugc_orc_aviso_sem_sql">Falta rodar o arquivo ugc-orcamento-pagina.sql no Supabase pra ter a página de orçamento.</p>
+              <div class="ugc-orc-bloco" id="ugc-orc-bloco" hidden>
+                <div class="ugc-orc-texto">
+                  <strong data-i18n="ugc_orc_titulo">🔗 Página de orçamento</strong>
+                  <span class="cal-todas-resumo" data-i18n="ugc_orc_desc">Um link só, sempre atualizado, com os pacotes que você marcar. Mande o mesmo link pra todo mundo.</span>
+                  <span class="cal-todas-resumo" id="ugc-orc-contagem"></span>
+                </div>
+                <div class="ugc-orc-link">
+                  <input type="text" id="ugc-orc-link-input" readonly>
+                  <button type="button" id="ugc-orc-copiar" class="cal-btn cal-btn-primario" data-i18n="ugc_orc_copiar_link">Copiar link</button>
+                  <a id="ugc-orc-abrir" class="cal-btn" target="_blank" rel="noopener" data-i18n="ugc_orc_abrir">Abrir</a>
+                </div>
+                <div class="ugc-orc-acoes">
+                  <label class="ugc-orc-ativa"><input type="checkbox" id="ugc-orc-ativa"><span data-i18n="ugc_orc_link_ativo">Link ativo</span></label>
+                  <button type="button" id="ugc-orc-editar" class="cal-btn" data-i18n="ugc_orc_editar">✏️ Editar textos</button>
+                  <button type="button" id="ugc-orc-novo-link" class="cal-btn pl-btn-excluir" data-i18n="ugc_orc_novo_link">Gerar novo link</button>
+                </div>
+              </div>
               <div id="ugc-pacotes-lista" class="ugc-pacotes-lista"></div>
             </div>
 
@@ -3277,6 +3295,42 @@
       </div>
     </div>
 
+    <!-- Modal: textos da página pública de orçamento -->
+    <div id="ugc-modal-orc-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo" data-i18n="ugc_orc_modal_titulo">Textos da página de orçamento</span>
+          <button id="ugc-modal-orc-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="cal-form-campo">
+          <label for="ugc-orc-titulo" data-i18n="ugc_orc_campo_titulo">Título da página</label>
+          <input type="text" id="ugc-orc-titulo" maxlength="80" placeholder="Orçamentos">
+        </div>
+        <div class="cal-form-campo">
+          <label for="ugc-orc-intro" data-i18n="ugc_orc_campo_intro">Apresentação</label>
+          <textarea id="ugc-orc-intro"></textarea>
+        </div>
+        <div class="cal-form-campo">
+          <label for="ugc-orc-condicoes" data-i18n="ugc_orc_campo_condicoes">Condições (prazo, pagamento, direitos de uso...)</label>
+          <textarea id="ugc-orc-condicoes"></textarea>
+        </div>
+        <div class="cal-form-campo">
+          <label for="ugc-orc-contato-rotulo" data-i18n="ugc_orc_campo_contato_rotulo">Texto do botão de contato</label>
+          <input type="text" id="ugc-orc-contato-rotulo" maxlength="40" placeholder="Falar com a Bru">
+        </div>
+        <div class="cal-form-campo">
+          <label for="ugc-orc-contato-link" data-i18n="ugc_orc_campo_contato_link">WhatsApp, e-mail ou link do botão</label>
+          <input type="text" id="ugc-orc-contato-link" placeholder="85999999999">
+          <span class="cal-todas-resumo" data-i18n="ugc_orc_campo_contato_dica">Pode ser só o número com DDD (ex: 85999999999), um e-mail ou um link.</span>
+        </div>
+        <div class="cal-form-acoes">
+          <button type="button" id="ugc-modal-orc-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: pacote (proposta da calculadora guardada com nome e valor) -->
     <div id="ugc-modal-pacote-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal">
@@ -3306,6 +3360,12 @@
         <div class="cal-form-campo">
           <label for="ugc-pacote-observacoes" data-i18n="ugc_observacoes">Observações</label>
           <textarea id="ugc-pacote-observacoes"></textarea>
+        </div>
+
+        <div class="cal-form-campo" id="ugc-pacote-publico-campo" hidden>
+          <label class="ugc-orc-ativa"><input type="checkbox" id="ugc-pacote-publicado"><span data-i18n="ugc_pacote_mostrar_pagina">Mostrar na página de orçamento</span></label>
+          <label for="ugc-pacote-descricao" data-i18n="ugc_pacote_descricao_pagina">Descrição na página (opcional)</label>
+          <textarea id="ugc-pacote-descricao"></textarea>
         </div>
 
         <div class="cal-form-acoes">
@@ -3467,6 +3527,8 @@
     let ugcContratosCache = [];
     let ugcPrecosCache = [];
     let ugcPacotesCache = [];
+    let ugcOrcPagina = null; // linha única de orcamento_pagina (token, ativa, textos)
+    let ugcOrcOk = true; // a tabela orcamento_pagina existe (ugc-orcamento-pagina.sql já rodado)
     let ugcPacotesOk = true; // a tabela ugc_pacotes existe (ugc-pacotes-tabela.sql já rodado)
     let ugcPacoteAbertoId = null;
     let ugcPacoteRascunho = null; // itens e totais vindos da calculadora enquanto o pacote novo não foi salvo
@@ -4459,6 +4521,30 @@
         ugc_excluir_pacote_confirmar: 'Excluir este pacote?',
         ugc_pacote_alteracoes_nao_salvas: 'Você tem alterações não salvas nesse pacote. Sair sem salvar?',
         ugc_sair_sem_salvar: 'Sair sem salvar',
+        ugc_orc_aviso_sem_sql: 'Falta rodar o arquivo ugc-orcamento-pagina.sql no Supabase pra ter a página de orçamento.',
+        ugc_orc_titulo: '🔗 Página de orçamento',
+        ugc_orc_desc: 'Um link só, sempre atualizado, com os pacotes que você marcar. Mande o mesmo link pra todo mundo.',
+        ugc_orc_nenhum_marcado: 'Nenhum pacote aparece na página ainda. Abra um pacote e marque "Mostrar na página de orçamento".',
+        ugc_orc_conta_um: '1 pacote aparece na página.',
+        ugc_orc_conta_varios: 'pacotes aparecem na página.',
+        ugc_orc_copiar_link: 'Copiar link',
+        ugc_orc_abrir: 'Abrir',
+        ugc_orc_link_ativo: 'Link ativo',
+        ugc_orc_editar: '✏️ Editar textos',
+        ugc_orc_novo_link: 'Gerar novo link',
+        ugc_orc_link_copiado: 'Link copiado!',
+        ugc_orc_novo_link_confirmar: 'Gerar um novo link? O link atual para de funcionar na hora, e quem tem ele não vai mais conseguir abrir a página.',
+        ugc_orc_novo_link_ok: 'Novo link gerado. Copie e mande para quem precisar.',
+        ugc_orc_modal_titulo: 'Textos da página de orçamento',
+        ugc_orc_campo_titulo: 'Título da página',
+        ugc_orc_campo_intro: 'Apresentação',
+        ugc_orc_campo_condicoes: 'Condições (prazo, pagamento, direitos de uso...)',
+        ugc_orc_campo_contato_rotulo: 'Texto do botão de contato',
+        ugc_orc_campo_contato_link: 'WhatsApp, e-mail ou link do botão',
+        ugc_orc_campo_contato_dica: 'Pode ser só o número com DDD (ex: 85999999999), um e-mail ou um link.',
+        ugc_pacote_mostrar_pagina: 'Mostrar na página de orçamento',
+        ugc_pacote_descricao_pagina: 'Descrição na página (opcional)',
+        ugc_pacote_na_pagina: 'na página',
         ugc_pacote_sem_tabela: 'Falta rodar o arquivo ugc-pacotes-tabela.sql no Supabase pra criar pacotes.',
         ugc_adicionar_servico_aria: 'Adicionar serviço',
         ugc_publicidade: 'Publicidade',
@@ -5580,6 +5666,30 @@
         ugc_excluir_pacote_confirmar: 'Delete this package?',
         ugc_pacote_alteracoes_nao_salvas: 'You have unsaved changes on this package. Leave without saving?',
         ugc_sair_sem_salvar: 'Leave without saving',
+        ugc_orc_aviso_sem_sql: 'You need to run ugc-orcamento-pagina.sql in Supabase to have the quote page.',
+        ugc_orc_titulo: '🔗 Quote page',
+        ugc_orc_desc: 'One link, always up to date, with the packages you mark. Send the same link to everyone.',
+        ugc_orc_nenhum_marcado: 'No package is on the page yet. Open a package and check "Show on the quote page".',
+        ugc_orc_conta_um: '1 package is on the page.',
+        ugc_orc_conta_varios: 'packages are on the page.',
+        ugc_orc_copiar_link: 'Copy link',
+        ugc_orc_abrir: 'Open',
+        ugc_orc_link_ativo: 'Link active',
+        ugc_orc_editar: '✏️ Edit texts',
+        ugc_orc_novo_link: 'Generate new link',
+        ugc_orc_link_copiado: 'Link copied!',
+        ugc_orc_novo_link_confirmar: 'Generate a new link? The current link stops working right away, and anyone who has it will no longer be able to open the page.',
+        ugc_orc_novo_link_ok: 'New link generated. Copy it and send it to whoever needs it.',
+        ugc_orc_modal_titulo: 'Quote page texts',
+        ugc_orc_campo_titulo: 'Page title',
+        ugc_orc_campo_intro: 'Introduction',
+        ugc_orc_campo_condicoes: 'Terms (deadline, payment, usage rights...)',
+        ugc_orc_campo_contato_rotulo: 'Contact button text',
+        ugc_orc_campo_contato_link: 'WhatsApp, e-mail or button link',
+        ugc_orc_campo_contato_dica: 'It can be just the number with area code (e.g. 85999999999), an e-mail or a link.',
+        ugc_pacote_mostrar_pagina: 'Show on the quote page',
+        ugc_pacote_descricao_pagina: 'Description on the page (optional)',
+        ugc_pacote_na_pagina: 'on the page',
         ugc_pacote_sem_tabela: 'You need to run ugc-pacotes-tabela.sql in Supabase to create packages.',
         ugc_adicionar_servico_aria: 'Add service',
         ugc_publicidade: 'Advertising',
@@ -6729,6 +6839,15 @@
       document.getElementById('ugc-modal-pacote-salvar').addEventListener('click', salvarModalPacote);
       document.getElementById('ugc-modal-pacote-excluir').addEventListener('click', excluirModalPacote);
       document.getElementById('ugc-pacote-copiar').addEventListener('click', copiarResumoPacote);
+      document.getElementById('ugc-orc-copiar').addEventListener('click', copiarLinkOrcamento);
+      document.getElementById('ugc-orc-ativa').addEventListener('change', (e) => alternarOrcAtiva(e.target.checked));
+      document.getElementById('ugc-orc-editar').addEventListener('click', abrirModalOrcTextos);
+      document.getElementById('ugc-orc-novo-link').addEventListener('click', gerarNovoLinkOrcamento);
+      document.getElementById('ugc-modal-orc-fechar').addEventListener('click', fecharModalOrcTextos);
+      document.getElementById('ugc-modal-orc-salvar').addEventListener('click', salvarModalOrcTextos);
+      document.getElementById('ugc-modal-orc-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'ugc-modal-orc-overlay') fecharModalOrcTextos();
+      });
       document.getElementById('ugc-modal-pacote-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'ugc-modal-pacote-overlay') fecharModalPacote();
       });
@@ -12822,7 +12941,7 @@
 
     async function carregarUGC() {
       try {
-        const [trabalhos, entregaveis, roteiros, visualizacoes, comentarios, contatos, contratos, precos, abordagens, pacotes] = await Promise.all([
+        const [trabalhos, entregaveis, roteiros, visualizacoes, comentarios, contatos, contratos, precos, abordagens, pacotes, orcamento] = await Promise.all([
           buscarTudo('ugc_trabalhos'),
           buscarTudo('ugc_trabalho_entregaveis'),
           buscarTudo('ugc_roteiros'),
@@ -12858,6 +12977,17 @@
               ugcPacotesOk = false;
               return [];
             }),
+          // Página pública de orçamento (ugc-orcamento-pagina.sql).
+          buscarTudo('orcamento_pagina')
+            .then((lista) => {
+              ugcOrcOk = true;
+              return lista;
+            })
+            .catch((err) => {
+              console.error('Página de orçamento ainda não disponível (ugc-orcamento-pagina.sql):', err);
+              ugcOrcOk = false;
+              return [];
+            }),
         ]);
         abdIndexar(abordagens);
         ugcTrabalhosCache = trabalhos;
@@ -12869,6 +12999,7 @@
         ugcContratosCache = contratos;
         ugcPrecosCache = precos;
         ugcPacotesCache = pacotes;
+        ugcOrcPagina = orcamento[0] || null;
         renderizarUGC();
       } catch (err) {
         console.error('Erro ao carregar UGC/Publi:', err);
@@ -12883,6 +13014,7 @@
       renderizarContratos();
       renderizarPrecos();
       renderizarPacotes();
+      renderizarOrcPagina();
       renderizarResultadosUGC();
       renderizarFinanceiro();
       renderizarRitmoRecebimento();
@@ -16963,6 +17095,105 @@
       }
     }
 
+    // ---- Página de orçamento: um link só (brunamedeiros.com/orcamento/?t=...) com os pacotes marcados ----
+    const ORC_URL_BASE = 'https://brunamedeiros.com/orcamento/?t=';
+
+    function renderizarOrcPagina() {
+      const bloco = document.getElementById('ugc-orc-bloco');
+      document.getElementById('ugc-orc-aviso').hidden = !ugcPacotesOk || ugcOrcOk;
+      bloco.hidden = !(ugcPacotesOk && ugcOrcOk && ugcOrcPagina);
+      if (bloco.hidden) return;
+      const url = ORC_URL_BASE + ugcOrcPagina.token;
+      document.getElementById('ugc-orc-link-input').value = url;
+      document.getElementById('ugc-orc-abrir').href = url;
+      document.getElementById('ugc-orc-ativa').checked = !!ugcOrcPagina.ativa;
+      bloco.classList.toggle('ugc-orc-desligada', !ugcOrcPagina.ativa);
+      const n = ugcPacotesCache.filter((p) => p.publicado).length;
+      document.getElementById('ugc-orc-contagem').textContent =
+        n === 0 ? tr('ugc_orc_nenhum_marcado') : n === 1 ? tr('ugc_orc_conta_um') : `${n} ${tr('ugc_orc_conta_varios')}`;
+    }
+
+    async function copiarLinkOrcamento() {
+      try {
+        await navigator.clipboard.writeText(document.getElementById('ugc-orc-link-input').value);
+        alert(tr('ugc_orc_link_copiado'));
+      } catch (err) {
+        console.error('Erro ao copiar o link do orçamento:', err);
+        document.getElementById('ugc-orc-link-input').select();
+        alert(tr('ugc_erro_copiar'));
+      }
+    }
+
+    async function alternarOrcAtiva(ativa) {
+      try {
+        const { error } = await Auth.sb.from('orcamento_pagina').update({ ativa }).eq('id', ugcOrcPagina.id);
+        if (error) throw error;
+        await carregarUGC();
+      } catch (err) {
+        console.error('Erro ao ligar/desligar a página de orçamento:', err);
+        alert(tr('erro_salvar_generico'));
+        renderizarOrcPagina();
+      }
+    }
+
+    function tokenAleatorio() {
+      const bytes = new Uint8Array(32);
+      crypto.getRandomValues(bytes);
+      return [...bytes].map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function gerarNovoLinkOrcamento() {
+      if (!(await confirmarAcao(tr('ugc_orc_novo_link_confirmar'), { textoConfirmar: tr('ugc_orc_novo_link'), perigo: true }))) return;
+      try {
+        const { error } = await Auth.sb.from('orcamento_pagina').update({ token: tokenAleatorio() }).eq('id', ugcOrcPagina.id);
+        if (error) throw error;
+        await carregarUGC();
+        alert(tr('ugc_orc_novo_link_ok'));
+      } catch (err) {
+        console.error('Erro ao gerar novo link do orçamento:', err);
+        alert(tr('erro_salvar_generico'));
+      }
+    }
+
+    function abrirModalOrcTextos() {
+      document.getElementById('ugc-orc-titulo').value = ugcOrcPagina.titulo || '';
+      document.getElementById('ugc-orc-intro').value = ugcOrcPagina.intro || '';
+      document.getElementById('ugc-orc-condicoes').value = ugcOrcPagina.condicoes || '';
+      document.getElementById('ugc-orc-contato-rotulo').value = ugcOrcPagina.contato_rotulo || '';
+      document.getElementById('ugc-orc-contato-link').value = ugcOrcPagina.contato_link || '';
+      document.getElementById('ugc-modal-orc-overlay').hidden = false;
+    }
+
+    function fecharModalOrcTextos() {
+      document.getElementById('ugc-modal-orc-overlay').hidden = true;
+    }
+
+    async function salvarModalOrcTextos() {
+      const texto = (id) => document.getElementById(id).value.trim() || null;
+      const btn = document.getElementById('ugc-modal-orc-salvar');
+      btn.disabled = true;
+      try {
+        const { error } = await Auth.sb
+          .from('orcamento_pagina')
+          .update({
+            titulo: texto('ugc-orc-titulo'),
+            intro: texto('ugc-orc-intro'),
+            condicoes: texto('ugc-orc-condicoes'),
+            contato_rotulo: texto('ugc-orc-contato-rotulo'),
+            contato_link: texto('ugc-orc-contato-link'),
+          })
+          .eq('id', ugcOrcPagina.id);
+        if (error) throw error;
+        fecharModalOrcTextos();
+        await carregarUGC();
+      } catch (err) {
+        console.error('Erro ao salvar os textos da página de orçamento:', err);
+        alert(tr('erro_salvar_generico'));
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
     // ---- Pacotes: uma proposta da calculadora guardada com nome e valor, listada em Preços ----
 
     function itensDoPacote(pacote) {
@@ -16994,6 +17225,7 @@
       card.type = 'button';
       card.className = 'ugc-pacote-card';
       card.innerHTML = `
+        ${pacote.publicado ? `<span class="ugc-pacote-na-pagina">🔗 ${escapeHtml(tr('ugc_pacote_na_pagina'))}</span>` : ''}
         <span class="ugc-pacote-nome">${escapeHtml(pacote.nome)}</span>
         ${pacote.marca ? `<span class="ugc-pacote-marca">${escapeHtml(pacote.marca)}</span>` : ''}
         <ul class="ugc-pacote-itens">${linhas}${mais}</ul>
@@ -17052,6 +17284,9 @@
       document.getElementById('ugc-pacote-nome').value = pacote ? pacote.nome : base.marca ? `${tr('ugc_pacote')} ${base.marca}` : '';
       document.getElementById('ugc-pacote-observacoes').value = pacote ? pacote.observacoes || '' : '';
       document.getElementById('ugc-pacote-valor').value = base.valor_final != null ? Number(base.valor_final) : '';
+      document.getElementById('ugc-pacote-publico-campo').hidden = !ugcOrcOk;
+      document.getElementById('ugc-pacote-publicado').checked = pacote ? !!pacote.publicado : false;
+      document.getElementById('ugc-pacote-descricao').value = pacote ? pacote.descricao_publica || '' : '';
 
       document.getElementById('ugc-pacote-itens').innerHTML = itensDoPacote(base)
         .map((i) => `<div class="ugc-pacote-item"><span>${escapeHtml(i.quantidade)}x ${escapeHtml(i.servico)}</span><strong>${formatarMoeda((Number(i.valor_unitario) || 0) * (Number(i.quantidade) || 0))}</strong></div>`)
@@ -17076,6 +17311,8 @@
         nome: document.getElementById('ugc-pacote-nome').value,
         observacoes: document.getElementById('ugc-pacote-observacoes').value,
         valor: document.getElementById('ugc-pacote-valor').value,
+        publicado: document.getElementById('ugc-pacote-publicado').checked,
+        descricao: document.getElementById('ugc-pacote-descricao').value,
       });
     }
 
@@ -17106,6 +17343,12 @@
         nome,
         observacoes: document.getElementById('ugc-pacote-observacoes').value.trim() || null,
         valor_final: valorFinal,
+        ...(ugcOrcOk
+          ? {
+              publicado: document.getElementById('ugc-pacote-publicado').checked,
+              descricao_publica: document.getElementById('ugc-pacote-descricao').value.trim() || null,
+            }
+          : {}),
       };
 
       const btn = document.getElementById('ugc-modal-pacote-salvar');

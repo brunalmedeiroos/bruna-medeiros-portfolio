@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orçamento — Bruna Medeiros</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="../favicon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  @font-face {
+    font-family: 'Bootzy TM';
+    src: url('../fonts/BootzyTM.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  :root {
+    --blue-light: #7DB7CE;
+    --blue-dark: #04465D;
+    --butter: #FFF7C5;
+    --offwhite: #FAF9F4;
+    --white: #FFFFFF;
+    --blue-dark-70: rgba(4, 70, 93, 0.7);
+    --blue-dark-15: rgba(4, 70, 93, 0.12);
+    --shadow-soft: 0 20px 45px rgba(4, 70, 93, 0.14);
+    --font-bootzy: 'Bootzy TM', Georgia, serif;
+    --font-body: 'Montserrat', 'Segoe UI', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    color: var(--blue-dark);
+    background: var(--offwhite);
+    min-height: 100vh;
+    padding: 48px 20px 72px;
+    line-height: 1.5;
+  }
+
+  .pagina { max-width: 1040px; margin: 0 auto; }
+
+  .marca {
+    font-family: var(--font-bootzy);
+    font-size: 22px;
+    letter-spacing: 1.2px;
+    margin-bottom: 36px;
+  }
+
+  .marca span { color: var(--blue-light); }
+
+  h1 {
+    font-family: var(--font-bootzy);
+    font-size: clamp(34px, 6vw, 56px);
+    line-height: 1.05;
+    letter-spacing: 1px;
+    font-weight: normal;
+    margin-bottom: 14px;
+  }
+
+  .intro {
+    max-width: 620px;
+    font-size: 16px;
+    color: var(--blue-dark-70);
+    white-space: pre-line;
+    margin-bottom: 40px;
+  }
+
+  .pacotes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .pacote {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 28px 26px 24px;
+    background: var(--white);
+    border: 1px solid rgba(4, 70, 93, 0.06);
+    border-radius: 24px;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .pacote-nome {
+    font-family: var(--font-bootzy);
+    font-size: 26px;
+    line-height: 1.1;
+    letter-spacing: 0.8px;
+    overflow-wrap: anywhere;
+  }
+
+  .pacote-desc {
+    font-size: 14px;
+    color: var(--blue-dark-70);
+    white-space: pre-line;
+  }
+
+  .pacote-itens {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding-top: 14px;
+    border-top: 1px dashed rgba(4, 70, 93, 0.22);
+  }
+
+  .pacote-itens li {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .pacote-itens li::before {
+    content: '✓';
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--butter);
+    color: var(--blue-dark);
+    font-size: 11px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(3px);
+  }
+
+  .pacote-rodape {
+    margin-top: auto;
+    padding-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .pacote-de {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--blue-dark-70);
+    min-height: 22px;
+  }
+
+  .pacote-de s { opacity: 0.8; }
+
+  .pacote-selo {
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--blue-light);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .pacote-valor {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .condicoes {
+    margin-top: 44px;
+    padding: 26px 28px;
+    background: var(--butter);
+    border-radius: 20px;
+  }
+
+  .condicoes h2 {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .condicoes p {
+    font-size: 14px;
+    white-space: pre-line;
+  }
+
+  .contato {
+    margin-top: 36px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .botao {
+    display: inline-block;
+    padding: 16px 34px;
+    border-radius: 14px;
+    border: 2px solid var(--blue-dark);
+    background: var(--blue-light);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 10px 24px rgba(4, 70, 93, 0.22);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .botao:hover { background: var(--blue-dark); transform: translateY(-3px); }
+
+  .aviso {
+    max-width: 480px;
+    margin: 12vh auto 0;
+    text-align: center;
+  }
+
+  .aviso h1 { font-size: 34px; }
+  .aviso p { color: var(--blue-dark-70); }
+
+  .vazio { color: var(--blue-dark-70); }
+
+  @media (max-width: 560px) {
+    body { padding: 32px 16px 56px; }
+    .pacote { padding: 24px 20px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<main class="pagina" id="pagina">
+  <p class="aviso" id="carregando">Carregando...</p>
+</main>
+
+<script>
+  // Página pública de orçamento. Só mostra algo com o link certo (?t=...): sem ele, ou com o link
+  // desligado ou trocado, aparece "Link indisponível". Os dados vêm da função orcamento_publico
+  // do Supabase, que só devolve os pacotes que a Bruna marcou pra aparecer aqui.
+  const SUPABASE_URL = 'https://trfoymytrvdbslwizfqs.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyZm95bXl0cnZkYnNsd2l6ZnFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNzg1MjksImV4cCI6MjA5OTg1NDUyOX0.fG-ACsRsLw_QeACvgSkrY1qWpctIBq5_LYonJ6hMBKE';
+
+  const raiz = document.getElementById('pagina');
+
+  function el(tag, classe, texto) {
+    const e = document.createElement(tag);
+    if (classe) e.className = classe;
+    if (texto != null) e.textContent = texto;
+    return e;
+  }
+
+  function moeda(valor) {
+    return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+
+  function mostrarIndisponivel() {
+    raiz.innerHTML = '';
+    const aviso = el('div', 'aviso');
+    aviso.append(el('h1', null, 'Link indisponível'), el('p', null, 'Esse link não está mais ativo. Peça um novo link para a Bruna.'));
+    raiz.appendChild(aviso);
+  }
+
+  // Aceita link pronto, e-mail ou só o número (vira WhatsApp).
+  function normalizarContato(valor) {
+    const v = (valor || '').trim();
+    if (!v) return '';
+    if (/^https?:\/\//i.test(v) || /^mailto:/i.test(v) || /^tel:/i.test(v)) return v;
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'mailto:' + v;
+    const digitos = v.replace(/\D/g, '');
+    // Só DDD + número (10 ou 11 dígitos): completa com o código do Brasil.
+    if (digitos.length >= 10) return 'https://wa.me/' + (digitos.length <= 11 ? '55' + digitos : digitos);
+    return '';
+  }
+
+  function desenhar(dados) {
+    raiz.innerHTML = '';
+    document.title = (dados.titulo || 'Orçamento') + ' — Bruna Medeiros';
+
+    const marca = el('p', 'marca');
+    marca.append('Bru ', el('span', null, 'Medeiros'));
+    raiz.appendChild(marca);
+
+    raiz.appendChild(el('h1', null, dados.titulo || 'Orçamentos'));
+    if (dados.intro) raiz.appendChild(el('p', 'intro', dados.intro));
+
+    const pacotes = Array.isArray(dados.pacotes) ? dados.pacotes : [];
+    if (pacotes.length === 0) {
+      raiz.appendChild(el('p', 'vazio', 'Em breve por aqui.'));
+    } else {
+      const grade = el('div', 'pacotes');
+      pacotes.forEach((p) => {
+        const card = el('article', 'pacote');
+        card.appendChild(el('h2', 'pacote-nome', p.nome));
+        if (p.descricao) card.appendChild(el('p', 'pacote-desc', p.descricao));
+
+        const itens = el('ul', 'pacote-itens');
+        (p.itens || []).forEach((i) => itens.appendChild(el('li', null, `${i.quantidade}x ${i.servico}`)));
+        card.appendChild(itens);
+
+        const rodape = el('div', 'pacote-rodape');
+        const de = el('div', 'pacote-de');
+        if (Number(p.desconto_pct) > 0 && Number(p.valor_bruto) > Number(p.valor_final)) {
+          de.append(el('s', null, moeda(p.valor_bruto)), el('span', 'pacote-selo', `${Number(p.desconto_pct).toLocaleString('pt-BR')}% off`));
+        }
+        rodape.append(de, el('div', 'pacote-valor', moeda(p.valor_final)));
+        card.appendChild(rodape);
+        grade.appendChild(card);
+      });
+      raiz.appendChild(grade);
+    }
+
+    if (dados.condicoes) {
+      const bloco = el('section', 'condicoes');
+      bloco.append(el('h2', null, 'Condições'), el('p', null, dados.condicoes));
+      raiz.appendChild(bloco);
+    }
+
+    const link = normalizarContato(dados.contato_link);
+    if (link) {
+      const contato = el('div', 'contato');
+      const botao = el('a', 'botao', dados.contato_rotulo || 'Falar com a Bru');
+      botao.href = link;
+      botao.target = '_blank';
+      botao.rel = 'noopener';
+      contato.appendChild(botao);
+      raiz.appendChild(contato);
+    }
+  }
+
+  (async () => {
+    const token = new URLSearchParams(location.search).get('t');
+    if (!token) return mostrarIndisponivel();
+    try {
+      const resposta = await fetch(`${SUPABASE_URL}/rest/v1/rpc/orcamento_publico`, {
+        method: 'POST',
+        headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_token: token }),
+      });
+      if (!resposta.ok) return mostrarIndisponivel();
+      const dados = await resposta.json();
+      if (!dados) return mostrarIndisponivel();
+      desenhar(dados);
+    } catch (err) {
+      console.error('Erro ao carregar o orçamento:', err);
+      mostrarIndisponivel();
+    }
+  })();
+</script>
+</body>
+</html>

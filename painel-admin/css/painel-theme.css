@@ -10661,3 +10661,19 @@
   font-size: 11px;
   font-weight: 700;
 }
+
+.painel-body .ugc-orc-v2-campos,
+.painel-body .ugc-pacote-v2-campos {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.painel-body .ugc-orc-v2-campos {
+  gap: 14px;
+}
+
+.painel-body .ugc-orc-v2-campos[hidden],
+.painel-body .ugc-pacote-v2-campos[hidden] {
+  display: none;
+}

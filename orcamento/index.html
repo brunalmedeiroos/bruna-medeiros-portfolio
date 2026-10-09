@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Orçamento — Bruna Medeiros</title>
+<title>Orçamento | Bruna Medeiros</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/png" href="../favicon.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
 
 <style>
   @font-face {
@@ -20,231 +20,537 @@
     font-display: swap;
   }
 
+  /* Mesma paleta e mesmo jeito da página da reforma (meuquarto). */
   :root {
-    --blue-light: #7DB7CE;
-    --blue-dark: #04465D;
+    --blue: #7DB7CE;
+    --blue-pale: #EAF3F6;
+    --blue-pale-2: #D6E8EE;
+    --navy: #04465D;
+    --navy-deep: #032F40;
     --butter: #FFF7C5;
-    --offwhite: #FAF9F4;
     --white: #FFFFFF;
-    --blue-dark-70: rgba(4, 70, 93, 0.7);
-    --blue-dark-15: rgba(4, 70, 93, 0.12);
-    --shadow-soft: 0 20px 45px rgba(4, 70, 93, 0.14);
-    --font-bootzy: 'Bootzy TM', Georgia, serif;
+    --offwhite: #F1F1F1;
+    --ink: #29323A;
+    --ink-65: rgba(41, 50, 58, 0.66);
+    --ink-40: rgba(41, 50, 58, 0.42);
+    --ink-08: rgba(41, 50, 58, 0.06);
+    --shadow: 0 22px 48px rgba(125, 183, 206, 0.22);
+    --shadow-sm: 0 8px 20px rgba(125, 183, 206, 0.18);
+    --radius: 22px;
+    --font-display: 'Newsreader', Georgia, serif;
+    --font-brand: 'Bootzy TM', Georgia, serif;
     --font-body: 'Montserrat', 'Segoe UI', sans-serif;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
 
   body {
     font-family: var(--font-body);
-    color: var(--blue-dark);
+    color: var(--ink);
     background: var(--offwhite);
-    min-height: 100vh;
-    padding: 48px 20px 72px;
+    overflow-x: hidden;
     line-height: 1.5;
   }
 
-  .pagina { max-width: 1040px; margin: 0 auto; }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+
+  .wrap { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  .titulo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    color: var(--navy);
+  }
+
+  .accent { font-style: italic; color: var(--blue); }
+
+  /* ---------- topo ---------- */
+  .topo {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(241, 241, 241, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--ink-08);
+  }
+
+  .topo-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
 
   .marca {
-    font-family: var(--font-bootzy);
+    font-family: var(--font-brand);
     font-size: 22px;
     letter-spacing: 1.2px;
-    margin-bottom: 36px;
+    color: var(--navy);
   }
 
-  .marca span { color: var(--blue-light); }
+  .marca span { color: var(--blue); }
 
-  h1 {
-    font-family: var(--font-bootzy);
-    font-size: clamp(34px, 6vw, 56px);
-    line-height: 1.05;
-    letter-spacing: 1px;
-    font-weight: normal;
-    margin-bottom: 14px;
+  /* ---------- botões ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 26px;
+    border-radius: 999px;
+    border: 1.5px solid transparent;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
   }
 
-  .intro {
-    max-width: 620px;
-    font-size: 16px;
-    color: var(--blue-dark-70);
+  .btn:hover { transform: translateY(-2px); }
+
+  .btn-navy { background: var(--navy); color: var(--white); box-shadow: var(--shadow-sm); }
+  .btn-navy:hover { background: var(--navy-deep); box-shadow: var(--shadow); }
+
+  .btn-ghost { background: transparent; color: var(--navy); border-color: var(--blue-pale-2); }
+  .btn-ghost:hover { background: var(--blue-pale); border-color: var(--blue); }
+
+  .btn-sm { padding: 10px 18px; font-size: 13px; }
+  .btn-lg { padding: 17px 32px; font-size: 15px; }
+
+  /* ---------- capa ---------- */
+  .capa {
+    position: relative;
+    padding: 96px 0 84px;
+    text-align: center;
+    overflow: hidden;
+    background:
+      radial-gradient(1100px 480px at 50% -20%, rgba(125, 183, 206, 0.34), transparent 62%),
+      radial-gradient(900px 420px at 50% 100%, rgba(255, 247, 197, 0.45), transparent 55%),
+      var(--offwhite);
+  }
+
+  .deco { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .deco-icone { position: absolute; width: 50px; height: 50px; color: var(--navy); opacity: 0.14; }
+  .deco-camera { top: 12%; left: 8%; transform: rotate(-8deg); }
+  .deco-play { top: 16%; right: 9%; width: 46px; height: 46px; transform: rotate(10deg); }
+  .deco-coracao { bottom: 14%; left: 11%; width: 44px; height: 44px; transform: rotate(-6deg); }
+  .deco-celular { bottom: 12%; right: 9%; width: 46px; height: 46px; transform: rotate(8deg); }
+  .deco-brilho { position: absolute; color: var(--navy); }
+  .deco-brilho-1 { top: 14%; left: 27%; width: 16px; height: 16px; opacity: 0.4; }
+  .deco-brilho-2 { top: 9%; right: 30%; width: 12px; height: 12px; opacity: 0.3; }
+  .deco-brilho-3 { bottom: 24%; left: 40%; width: 14px; height: 14px; opacity: 0.35; }
+  .deco-brilho-4 { bottom: 18%; right: 33%; width: 18px; height: 18px; opacity: 0.3; }
+
+  .capa-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 880px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .selo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--white);
+    border: 1px solid var(--blue-pale-2);
+    box-shadow: var(--shadow-sm);
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .selo i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--navy);
+    animation: pulso 1.8s ease-in-out infinite;
+  }
+
+  @keyframes pulso { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  .capa h1 {
+    font-size: clamp(34px, 5.6vw, 62px);
+    line-height: 1.3;
+    margin-bottom: 22px;
+  }
+
+  /* destaque em "marca-texto", igual à página da reforma */
+  .capa h1 .accent {
+    font-style: normal;
+    color: var(--navy);
+    background: rgba(125, 183, 206, 0.55);
+    padding: 2px 14px;
+    border-radius: 4px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+
+  .lede {
+    max-width: 600px;
+    font-size: clamp(15px, 1.6vw, 17.5px);
+    line-height: 1.65;
+    color: var(--ink-65);
     white-space: pre-line;
-    margin-bottom: 40px;
   }
 
+  .capa-acoes { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 34px; }
+
+  /* ---------- seções ---------- */
+  .secao { padding: 88px 0 24px; }
+
+  .secao-cabeca {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    margin-bottom: 52px;
+  }
+
+  .eyebrow {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue);
+  }
+
+  .secao-cabeca h2 { font-size: clamp(27px, 3.6vw, 40px); }
+
+  /* ---------- pacotes ---------- */
   .pacotes {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
     align-items: stretch;
+    padding-top: 14px;
   }
 
   .pacote {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    padding: 28px 26px 24px;
+    padding: 36px 30px 30px;
     background: var(--white);
-    border: 1px solid rgba(4, 70, 93, 0.06);
-    border-radius: 24px;
-    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--blue-pale-2);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .pacote:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+
+  .pacote-num {
+    position: absolute;
+    top: 22px;
+    right: 26px;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink-40);
   }
 
   .pacote-nome {
-    font-family: var(--font-bootzy);
-    font-size: 26px;
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 700;
     line-height: 1.1;
-    letter-spacing: 0.8px;
+    color: var(--navy);
+    padding-right: 34px;
     overflow-wrap: anywhere;
   }
 
   .pacote-desc {
+    margin-top: 10px;
     font-size: 14px;
-    color: var(--blue-dark-70);
+    line-height: 1.6;
+    color: var(--ink-65);
     white-space: pre-line;
   }
 
-  .pacote-itens {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-    padding-top: 14px;
-    border-top: 1px dashed rgba(4, 70, 93, 0.22);
-  }
-
-  .pacote-itens li {
-    display: flex;
-    gap: 10px;
-    align-items: baseline;
-    font-size: 14px;
-    font-weight: 500;
-  }
-
-  .pacote-itens li::before {
-    content: '✓';
-    flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--butter);
-    color: var(--blue-dark);
-    font-size: 11px;
-    font-weight: 800;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform: translateY(3px);
-  }
-
-  .pacote-rodape {
-    margin-top: auto;
-    padding-top: 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
+  .pacote-preco { margin-top: 22px; }
 
   .pacote-de {
     display: flex;
     align-items: center;
     gap: 8px;
+    min-height: 24px;
     font-size: 13px;
-    color: var(--blue-dark-70);
-    min-height: 22px;
+    color: var(--ink-40);
   }
 
-  .pacote-de s { opacity: 0.8; }
+  .pacote-de s { text-decoration-thickness: 1px; }
 
-  .pacote-selo {
-    padding: 2px 10px;
+  .pacote-selo-off {
+    padding: 3px 10px;
     border-radius: 999px;
-    background: var(--blue-light);
-    color: var(--white);
-    font-size: 11px;
-    font-weight: 700;
+    background: var(--butter);
+    color: var(--navy);
+    font-size: 11.5px;
+    font-weight: 800;
   }
 
   .pacote-valor {
-    font-size: 34px;
+    font-family: var(--font-display);
+    font-size: 46px;
     font-weight: 800;
-    letter-spacing: -0.5px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--navy);
+  }
+
+  .pacote-inclui {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 24px 0 28px;
+    padding-top: 22px;
+    border-top: 1px dashed var(--blue-pale-2);
+    flex: 1;
+  }
+
+  .pacote-inclui li {
+    display: flex;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+
+  .pacote-inclui li::before { content: '✓'; flex-shrink: 0; color: var(--blue); font-weight: 800; }
+
+  .pacote .btn { width: 100%; }
+
+  /* o pacote em destaque: azul-escuro, um pouco mais alto, com etiqueta */
+  .pacote.destaque {
+    background: var(--navy);
+    border-color: var(--navy);
+    box-shadow: 0 26px 54px rgba(4, 70, 93, 0.3);
+    transform: translateY(-12px);
+  }
+
+  .pacote.destaque:hover { transform: translateY(-16px); }
+  .pacote.destaque .pacote-nome,
+  .pacote.destaque .pacote-valor { color: var(--white); }
+  .pacote.destaque .pacote-num { color: rgba(255, 255, 255, 0.45); }
+  .pacote.destaque .pacote-desc { color: rgba(255, 255, 255, 0.75); }
+  .pacote.destaque .pacote-de { color: rgba(255, 255, 255, 0.6); }
+  .pacote.destaque .pacote-inclui { border-top-color: rgba(255, 255, 255, 0.22); }
+  .pacote.destaque .pacote-inclui li { color: rgba(255, 255, 255, 0.92); }
+  .pacote.destaque .pacote-inclui li::before { color: var(--butter); }
+  .pacote.destaque .btn { background: var(--blue); color: var(--navy); box-shadow: none; }
+  .pacote.destaque .btn:hover { background: var(--white); }
+
+  .pacote-etiqueta {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: var(--butter);
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    box-shadow: 0 8px 18px rgba(4, 70, 93, 0.18);
   }
 
   .condicoes {
-    margin-top: 44px;
-    padding: 26px 28px;
-    background: var(--butter);
-    border-radius: 20px;
-  }
-
-  .condicoes h2 {
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
-  .condicoes p {
-    font-size: 14px;
+    max-width: 720px;
+    margin: 44px auto 0;
+    text-align: center;
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--ink-65);
     white-space: pre-line;
   }
 
-  .contato {
-    margin-top: 36px;
+  /* ---------- vídeo avulso (discreto) ---------- */
+  .avulso {
+    margin-top: 56px;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    gap: 14px;
   }
 
-  .botao {
-    display: inline-block;
-    padding: 16px 34px;
-    border-radius: 14px;
-    border: 2px solid var(--blue-dark);
-    background: var(--blue-light);
+  .avulso-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px 28px;
+    padding: 22px 28px;
+    background: var(--blue-pale);
+    border: 1px solid var(--blue-pale-2);
+    border-radius: 18px;
+  }
+
+  .avulso-texto { flex: 1; min-width: 240px; }
+
+  .avulso-topo { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--blue); margin-bottom: 4px; }
+
+  .avulso-nome { font-family: var(--font-display); font-size: 21px; font-weight: 700; color: var(--navy); }
+
+  .avulso-inclui { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px 18px; list-style: none; font-size: 13.5px; color: var(--ink-65); }
+  .avulso-inclui li::before { content: '✓ '; color: var(--blue); font-weight: 800; }
+
+  .avulso-valor { font-family: var(--font-display); font-size: 30px; font-weight: 800; color: var(--navy); white-space: nowrap; }
+
+  .avulso-direita { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+
+  /* ---------- contato ---------- */
+  .contato { padding: 96px 0 56px; }
+
+  .contato-painel {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 52px;
+    align-items: center;
+    padding: 52px;
+    background: var(--navy);
+    border-radius: 34px;
+    box-shadow: 0 30px 60px rgba(4, 70, 93, 0.28);
+  }
+
+  .contato-painel::before {
+    content: '';
+    position: absolute;
+    top: -120px;
+    right: -100px;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(125, 183, 206, 0.35), transparent 68%);
+    pointer-events: none;
+  }
+
+  .foto { position: relative; z-index: 1; }
+
+  .foto::after {
+    content: '';
+    position: absolute;
+    inset: 16px -14px -14px 16px;
+    border-radius: 26px;
+    background: var(--blue);
+    opacity: 0.35;
+    z-index: -1;
+  }
+
+  .foto img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 20%;
+    border-radius: 26px;
+    border: 4px solid rgba(255, 255, 255, 0.9);
+  }
+
+  .contato-texto { position: relative; z-index: 1; }
+
+  .contato-texto .eyebrow { color: var(--blue); }
+
+  .contato-texto h2 {
+    margin: 10px 0 14px;
+    font-size: clamp(28px, 3.8vw, 42px);
     color: var(--white);
-    font-family: var(--font-body);
-    font-size: 15px;
-    font-weight: 700;
-    text-decoration: none;
-    box-shadow: 0 10px 24px rgba(4, 70, 93, 0.22);
-    transition: transform 0.15s ease, background 0.15s ease;
   }
 
-  .botao:hover { background: var(--blue-dark); transform: translateY(-3px); }
+  .contato-texto p { max-width: 460px; font-size: 15px; line-height: 1.65; color: rgba(255, 255, 255, 0.78); }
 
-  .aviso {
-    max-width: 480px;
-    margin: 12vh auto 0;
-    text-align: center;
+  .contato-botoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+
+  .contato .btn-wa { background: var(--blue); color: var(--navy); }
+  .contato .btn-wa:hover { background: var(--white); }
+
+  .canais { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+
+  .canal {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    transition: background 0.2s ease, border-color 0.2s ease;
   }
 
-  .aviso h1 { font-size: 34px; }
-  .aviso p { color: var(--blue-dark-70); }
+  .canal:hover { background: rgba(255, 255, 255, 0.16); border-color: rgba(255, 255, 255, 0.45); }
+  .canal svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-  .vazio { color: var(--blue-dark-70); }
+  .rodape { padding: 8px 0 40px; text-align: center; font-size: 12.5px; color: var(--ink-40); }
 
-  @media (max-width: 560px) {
-    body { padding: 32px 16px 56px; }
-    .pacote { padding: 24px 20px 20px; }
+  /* ---------- estados ---------- */
+  .aviso { max-width: 480px; margin: 22vh auto 0; padding: 0 24px; text-align: center; }
+  .aviso h1 { font-size: 34px; margin-bottom: 10px; }
+  .aviso p { color: var(--ink-65); }
+
+  /* ---------- responsivo ---------- */
+  @media (max-width: 960px) {
+    .pacotes { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; gap: 30px; }
+    .pacote.destaque { transform: none; }
+    .pacote.destaque:hover { transform: translateY(-4px); }
+    .contato-painel { grid-template-columns: 1fr; padding: 40px 28px; gap: 44px; }
+    .foto { max-width: 300px; margin: 0 auto; }
+  }
+
+  @media (max-width: 620px) {
+    .wrap { padding: 0 18px; }
+    .capa { padding: 64px 0 56px; }
+    .deco { display: none; }
+    .secao { padding-top: 64px; }
+    .pacote { padding: 32px 24px 26px; }
+    .avulso-item { padding: 20px; }
+    .contato-painel { padding: 32px 22px; border-radius: 26px; }
+    .topo-inner { padding: 10px 18px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .selo i { animation: none; }
+    .btn, .pacote { transition: none; }
   }
 </style>
 </head>
 <body>
 
-<main class="pagina" id="pagina">
-  <p class="aviso" id="carregando">Carregando...</p>
+<main id="raiz">
+  <div class="aviso"><p>Carregando...</p></div>
 </main>
 
 <script>
-  // Página pública de orçamento. Só mostra algo com o link certo (?t=...): sem ele, ou com o link
-  // desligado ou trocado, aparece "Link indisponível". Os dados vêm da função orcamento_publico
-  // do Supabase, que só devolve os pacotes que a Bruna marcou pra aparecer aqui.
+  // Página pública de orçamento. Só abre com o link certo (?t=...). Os dados (pacotes, valores, textos)
+  // vêm do painel pela função orcamento_publico do Supabase. Opcional: ?m=Nome da marca personaliza a capa.
   const SUPABASE_URL = 'https://trfoymytrvdbslwizfqs.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRyZm95bXl0cnZkYnNsd2l6ZnFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNzg1MjksImV4cCI6MjA5OTg1NDUyOX0.fG-ACsRsLw_QeACvgSkrY1qWpctIBq5_LYonJ6hMBKE';
+  const FOTO = '../meuquarto/img/sobre/bruna-sobre.jpg';
 
-  const raiz = document.getElementById('pagina');
+  const raiz = document.getElementById('raiz');
+  const NS = 'http://www.w3.org/2000/svg';
 
   function el(tag, classe, texto) {
     const e = document.createElement(tag);
@@ -253,86 +559,262 @@
     return e;
   }
 
+  // Texto com *destaque*: o trecho entre asteriscos vira <span class="accent">.
+  function comDestaque(pai, texto) {
+    String(texto || '').split(/\*([^*]+)\*/).forEach((trecho, i) => {
+      if (!trecho) return;
+      if (i % 2 === 1) pai.appendChild(el('span', 'accent', trecho));
+      else pai.appendChild(document.createTextNode(trecho));
+    });
+    return pai;
+  }
+
   function moeda(valor) {
-    return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    return Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: Number(valor) % 1 ? 2 : 0 });
+  }
+
+  function icone(caminhos, classe, extra) {
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    if (classe) svg.setAttribute('class', classe);
+    svg.setAttribute('fill', 'none');
+    svg.setAttribute('stroke', 'currentColor');
+    svg.setAttribute('stroke-width', extra && extra.grosso ? '2' : '1.6');
+    svg.setAttribute('stroke-linecap', 'round');
+    svg.setAttribute('stroke-linejoin', 'round');
+    svg.setAttribute('aria-hidden', 'true');
+    caminhos.forEach((d) => {
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', d);
+      svg.appendChild(p);
+    });
+    return svg;
+  }
+
+  function brilho(classe) {
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('class', 'deco-brilho ' + classe);
+    svg.setAttribute('fill', 'currentColor');
+    svg.setAttribute('aria-hidden', 'true');
+    const p = document.createElementNS(NS, 'path');
+    p.setAttribute('d', 'M12 2 13.6 9.4 21 11 13.6 12.6 12 20 10.4 12.6 3 11 10.4 9.4 12 2Z');
+    svg.appendChild(p);
+    return svg;
   }
 
   function mostrarIndisponivel() {
     raiz.innerHTML = '';
     const aviso = el('div', 'aviso');
-    aviso.append(el('h1', null, 'Link indisponível'), el('p', null, 'Esse link não está mais ativo. Peça um novo link para a Bruna.'));
+    const h = el('h1', 'titulo', 'Link indisponível');
+    aviso.append(h, el('p', null, 'Esse link não está mais ativo. Peça um novo link para a Bruna.'));
     raiz.appendChild(aviso);
   }
 
-  // Aceita link pronto, e-mail ou só o número (vira WhatsApp).
-  function normalizarContato(valor) {
+  // ---------- contato: aceita link pronto, e-mail ou só o número (vira WhatsApp) ----------
+  function lerContato(valor) {
     const v = (valor || '').trim();
-    if (!v) return '';
-    if (/^https?:\/\//i.test(v) || /^mailto:/i.test(v) || /^tel:/i.test(v)) return v;
-    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return 'mailto:' + v;
+    if (!v) return null;
+    if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return { tipo: 'email', valor: v };
+    if (/^mailto:/i.test(v)) return { tipo: 'email', valor: v.replace(/^mailto:/i, '') };
+    if (/^https?:\/\//i.test(v)) return /wa\.me|whatsapp\.com/i.test(v) ? { tipo: 'wa-url', valor: v } : { tipo: 'url', valor: v };
     const digitos = v.replace(/\D/g, '');
-    // Só DDD + número (10 ou 11 dígitos): completa com o código do Brasil.
-    if (digitos.length >= 10) return 'https://wa.me/' + (digitos.length <= 11 ? '55' + digitos : digitos);
-    return '';
+    if (digitos.length >= 10) return { tipo: 'wa', valor: digitos.length <= 11 ? '55' + digitos : digitos };
+    return null;
   }
 
-  function desenhar(dados) {
+  function linkComMensagem(contato, email, mensagem) {
+    const c = lerContato(contato);
+    if (c && c.tipo === 'wa') return `https://wa.me/${c.valor}?text=${encodeURIComponent(mensagem)}`;
+    if (c && c.tipo === 'wa-url') return c.valor + (c.valor.includes('?') ? '&' : '?') + 'text=' + encodeURIComponent(mensagem);
+    if (c && c.tipo === 'url') return c.valor;
+    const mail = c && c.tipo === 'email' ? c.valor : (email || '').trim();
+    if (mail) return `mailto:${mail}?subject=${encodeURIComponent('Orçamento')}&body=${encodeURIComponent(mensagem)}`;
+    return '#contato';
+  }
+
+  function linhaItem(i) {
+    const q = Number(i.quantidade) || 1;
+    return q > 1 ? `${q}x ${i.servico}` : i.servico;
+  }
+
+  function desenhar(dados, marcaCliente) {
     raiz.innerHTML = '';
-    document.title = (dados.titulo || 'Orçamento') + ' — Bruna Medeiros';
+    const pacotesTodos = Array.isArray(dados.pacotes) ? dados.pacotes : [];
+    const pacotes = pacotesTodos.filter((p) => p.tipo !== 'avulso');
+    const avulsos = pacotesTodos.filter((p) => p.tipo === 'avulso');
+    const aMarca = marcaCliente ? ` (${marcaCliente})` : '';
+    const msg = (nome) => `Oi, Bruna! Vi o seu orçamento${aMarca} e tenho interesse em: ${nome}.`;
+    const linkInteresse = (nome) => linkComMensagem(dados.contato_link, dados.contato_email, msg(nome));
+    const abreFora = (a, href) => {
+      a.href = href;
+      if (/^https?:/i.test(href)) { a.target = '_blank'; a.rel = 'noopener'; }
+    };
+    document.title = 'Orçamento | Bruna Medeiros';
 
-    const marca = el('p', 'marca');
+    // topo
+    const topo = el('header', 'topo');
+    const topoInner = el('div', 'topo-inner');
+    const marca = el('span', 'marca');
     marca.append('Bru ', el('span', null, 'Medeiros'));
-    raiz.appendChild(marca);
+    const falar = el('a', 'btn btn-navy btn-sm', 'Falar com a Bru');
+    falar.href = '#contato';
+    topoInner.append(marca, falar);
+    topo.appendChild(topoInner);
+    raiz.appendChild(topo);
 
-    raiz.appendChild(el('h1', null, dados.titulo || 'Orçamentos'));
-    if (dados.intro) raiz.appendChild(el('p', 'intro', dados.intro));
+    // capa
+    const capa = el('section', 'capa');
+    const deco = el('div', 'deco');
+    deco.setAttribute('aria-hidden', 'true');
+    deco.append(
+      icone(['M3 7.5A2.5 2.5 0 0 1 5.5 5h8A2.5 2.5 0 0 1 16 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-8A2.5 2.5 0 0 1 3 16.5v-9Z', 'm16 10 5-3v10l-5-3'], 'deco-icone deco-camera'),
+      icone(['M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z', 'm10 8.5 5.5 3.5-5.5 3.5v-7Z'], 'deco-icone deco-play'),
+      icone(['M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z'], 'deco-icone deco-coracao'),
+      icone(['M8 3h8a1.5 1.5 0 0 1 1.5 1.5v15A1.5 1.5 0 0 1 16 21H8a1.5 1.5 0 0 1-1.5-1.5v-15A1.5 1.5 0 0 1 8 3Z', 'M11 18h2'], 'deco-icone deco-celular'),
+      brilho('deco-brilho-1'), brilho('deco-brilho-2'), brilho('deco-brilho-3'), brilho('deco-brilho-4')
+    );
+    const capaInner = el('div', 'wrap capa-inner');
+    const selo = el('span', 'selo');
+    selo.append(el('i'), marcaCliente ? `Proposta para ${marcaCliente}` : 'Proposta comercial · UGC e publicidade');
+    const h1 = el('h1', 'titulo');
+    comDestaque(h1, dados.titulo || 'Vamos criar algo *incrível juntos?*');
+    capaInner.append(selo, h1);
+    if (dados.intro) capaInner.appendChild(el('p', 'lede', dados.intro));
+    const acoes = el('div', 'capa-acoes');
+    const verPacotes = el('a', 'btn btn-navy btn-lg', 'Ver os pacotes');
+    verPacotes.href = pacotes.length ? '#pacotes' : '#contato';
+    const falarCapa = el('a', 'btn btn-ghost btn-lg', 'Falar com a Bru');
+    falarCapa.href = '#contato';
+    acoes.append(verPacotes, falarCapa);
+    capaInner.appendChild(acoes);
+    capa.append(deco, capaInner);
+    raiz.appendChild(capa);
 
-    const pacotes = Array.isArray(dados.pacotes) ? dados.pacotes : [];
-    if (pacotes.length === 0) {
-      raiz.appendChild(el('p', 'vazio', 'Em breve por aqui.'));
-    } else {
+    // pacotes
+    if (pacotes.length) {
+      const secao = el('section', 'secao');
+      secao.id = 'pacotes';
+      const wrap = el('div', 'wrap');
+      const cabeca = el('div', 'secao-cabeca');
+      const h2 = el('h2', 'titulo', 'Pacotes de criação de conteúdo');
+      cabeca.append(el('span', 'eyebrow', 'Escolha o seu formato'), h2);
+      wrap.appendChild(cabeca);
+
       const grade = el('div', 'pacotes');
-      pacotes.forEach((p) => {
-        const card = el('article', 'pacote');
-        card.appendChild(el('h2', 'pacote-nome', p.nome));
+      pacotes.forEach((p, idx) => {
+        const emDestaque = !!(p.destaque && p.destaque.trim());
+        const card = el('article', 'pacote' + (emDestaque ? ' destaque' : ''));
+        if (emDestaque) card.appendChild(el('span', 'pacote-etiqueta', p.destaque.trim()));
+        card.appendChild(el('span', 'pacote-num', String(idx + 1).padStart(2, '0')));
+        card.appendChild(el('h3', 'pacote-nome', p.nome));
         if (p.descricao) card.appendChild(el('p', 'pacote-desc', p.descricao));
 
-        const itens = el('ul', 'pacote-itens');
-        (p.itens || []).forEach((i) => itens.appendChild(el('li', null, `${i.quantidade}x ${i.servico}`)));
-        card.appendChild(itens);
-
-        const rodape = el('div', 'pacote-rodape');
+        const preco = el('div', 'pacote-preco');
         const de = el('div', 'pacote-de');
         if (Number(p.desconto_pct) > 0 && Number(p.valor_bruto) > Number(p.valor_final)) {
-          de.append(el('s', null, moeda(p.valor_bruto)), el('span', 'pacote-selo', `${Number(p.desconto_pct).toLocaleString('pt-BR')}% off`));
+          de.append(el('s', null, moeda(p.valor_bruto)), el('span', 'pacote-selo-off', `${Number(p.desconto_pct).toLocaleString('pt-BR')}% de desconto`));
         }
-        rodape.append(de, el('div', 'pacote-valor', moeda(p.valor_final)));
-        card.appendChild(rodape);
+        preco.append(de, el('div', 'pacote-valor', moeda(p.valor_final)));
+        card.appendChild(preco);
+
+        const lista = el('ul', 'pacote-inclui');
+        (p.itens || []).forEach((i) => lista.appendChild(el('li', null, linhaItem(i))));
+        card.appendChild(lista);
+
+        const botao = el('a', 'btn btn-navy');
+        botao.append(`Quero o ${p.nome}`, icone(['M7 17 17 7', 'M8 7h9v9'], null, { grosso: true }));
+        botao.lastChild.setAttribute('width', '14');
+        botao.lastChild.setAttribute('height', '14');
+        abreFora(botao, linkInteresse(`pacote ${p.nome}`));
+        card.appendChild(botao);
         grade.appendChild(card);
       });
-      raiz.appendChild(grade);
+      wrap.appendChild(grade);
+
+      if (dados.condicoes) wrap.appendChild(el('p', 'condicoes', dados.condicoes));
+
+      // vídeo avulso: discreto, abaixo dos pacotes
+      if (avulsos.length) {
+        const caixa = el('div', 'avulso');
+        avulsos.forEach((p) => {
+          const item = el('div', 'avulso-item');
+          const texto = el('div', 'avulso-texto');
+          texto.append(el('div', 'avulso-topo', 'Prefere um vídeo só?'), el('div', 'avulso-nome', p.nome));
+          const inclui = el('ul', 'avulso-inclui');
+          (p.itens || []).forEach((i) => inclui.appendChild(el('li', null, linhaItem(i))));
+          texto.appendChild(inclui);
+          const direita = el('div', 'avulso-direita');
+          const botao = el('a', 'btn btn-ghost btn-sm', 'Quero esse vídeo');
+          abreFora(botao, linkInteresse(p.nome));
+          direita.append(el('div', 'avulso-valor', moeda(p.valor_final)), botao);
+          item.append(texto, direita);
+          caixa.appendChild(item);
+        });
+        wrap.appendChild(caixa);
+      }
+      secao.appendChild(wrap);
+      raiz.appendChild(secao);
+    } else if (dados.condicoes) {
+      const wrap = el('div', 'wrap');
+      wrap.appendChild(el('p', 'condicoes', dados.condicoes));
+      raiz.appendChild(wrap);
     }
 
-    if (dados.condicoes) {
-      const bloco = el('section', 'condicoes');
-      bloco.append(el('h2', null, 'Condições'), el('p', null, dados.condicoes));
-      raiz.appendChild(bloco);
-    }
+    // contato
+    const contato = el('section', 'contato');
+    contato.id = 'contato';
+    const wrapC = el('div', 'wrap');
+    const painel = el('div', 'contato-painel');
+    const foto = el('div', 'foto');
+    const img = document.createElement('img');
+    img.src = FOTO;
+    img.alt = 'Bruna Medeiros';
+    img.loading = 'lazy';
+    foto.appendChild(img);
 
-    const link = normalizarContato(dados.contato_link);
-    if (link) {
-      const contato = el('div', 'contato');
-      const botao = el('a', 'botao', dados.contato_rotulo || 'Falar com a Bru');
-      botao.href = link;
-      botao.target = '_blank';
-      botao.rel = 'noopener';
-      contato.appendChild(botao);
-      raiz.appendChild(contato);
+    const texto = el('div', 'contato-texto');
+    const h2c = el('h2', 'titulo');
+    comDestaque(h2c, dados.frase_final || 'Vamos trabalhar juntos para dar vida às ideias *da sua marca?*');
+    texto.append(el('span', 'eyebrow', 'Contato'), h2c, el('p', null, 'Me conta um pouco sobre a sua marca e o que você tem em mente. Eu respondo com carinho e te ajudo a escolher o melhor formato.'));
+
+    const botoes = el('div', 'contato-botoes');
+    const principal = el('a', 'btn btn-wa btn-lg', 'Chamar a Bru');
+    abreFora(principal, linkComMensagem(dados.contato_link, dados.contato_email, `Oi, Bruna! Vi o seu orçamento${aMarca} e quero conversar sobre uma parceria.`));
+    botoes.appendChild(principal);
+    texto.appendChild(botoes);
+
+    const canais = el('div', 'canais');
+    const email = (dados.contato_email || '').trim();
+    const insta = (dados.contato_instagram || '').trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/$/, '');
+    if (email) {
+      const a = el('a', 'canal');
+      a.append(icone(['M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z', 'm3 7 9 6 9-6'], null, { grosso: true }), email);
+      a.href = 'mailto:' + email;
+      canais.appendChild(a);
     }
+    if (insta) {
+      const a = el('a', 'canal');
+      a.append(icone(['M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4Z', 'M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z'], null, { grosso: true }), '@' + insta);
+      a.href = 'https://instagram.com/' + insta;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      canais.appendChild(a);
+    }
+    if (canais.children.length) texto.appendChild(canais);
+
+    painel.append(foto, texto);
+    wrapC.appendChild(painel);
+    contato.appendChild(wrapC);
+    raiz.appendChild(contato);
+
+    raiz.appendChild(el('footer', 'rodape', `© ${new Date().getFullYear()} Bruna Medeiros`));
   }
 
   (async () => {
-    const token = new URLSearchParams(location.search).get('t');
+    const params = new URLSearchParams(location.search);
+    const token = params.get('t');
+    const marcaCliente = (params.get('m') || '').trim().slice(0, 60);
     if (!token) return mostrarIndisponivel();
     try {
       const resposta = await fetch(`${SUPABASE_URL}/rest/v1/rpc/orcamento_publico`, {
@@ -343,7 +825,7 @@
       if (!resposta.ok) return mostrarIndisponivel();
       const dados = await resposta.json();
       if (!dados) return mostrarIndisponivel();
-      desenhar(dados);
+      desenhar(dados, marcaCliente);
     } catch (err) {
       console.error('Erro ao carregar o orçamento:', err);
       mostrarIndisponivel();

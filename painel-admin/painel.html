@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261009c">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261009d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -3306,7 +3306,8 @@
         </div>
         <div class="cal-form-campo">
           <label for="ugc-orc-titulo" data-i18n="ugc_orc_campo_titulo">Título da página</label>
-          <input type="text" id="ugc-orc-titulo" maxlength="80" placeholder="Orçamentos">
+          <input type="text" id="ugc-orc-titulo" maxlength="80" placeholder="Vamos criar algo *incrível juntos?*">
+          <span class="cal-todas-resumo" data-i18n="ugc_orc_campo_titulo_dica">O que ficar entre *asteriscos* ganha o destaque colorido. Ex: Vamos criar algo *incrível juntos?*</span>
         </div>
         <div class="cal-form-campo">
           <label for="ugc-orc-intro" data-i18n="ugc_orc_campo_intro">Apresentação</label>
@@ -3317,13 +3318,23 @@
           <textarea id="ugc-orc-condicoes"></textarea>
         </div>
         <div class="cal-form-campo">
-          <label for="ugc-orc-contato-rotulo" data-i18n="ugc_orc_campo_contato_rotulo">Texto do botão de contato</label>
-          <input type="text" id="ugc-orc-contato-rotulo" maxlength="40" placeholder="Falar com a Bru">
-        </div>
-        <div class="cal-form-campo">
-          <label for="ugc-orc-contato-link" data-i18n="ugc_orc_campo_contato_link">WhatsApp, e-mail ou link do botão</label>
+          <label for="ugc-orc-contato-link" data-i18n="ugc_orc_campo_contato_link">WhatsApp</label>
           <input type="text" id="ugc-orc-contato-link" placeholder="85999999999">
-          <span class="cal-todas-resumo" data-i18n="ugc_orc_campo_contato_dica">Pode ser só o número com DDD (ex: 85999999999), um e-mail ou um link.</span>
+          <span class="cal-todas-resumo" data-i18n="ugc_orc_campo_contato_dica">Só o número com DDD, ex: 85999999999. É pra onde vão as mensagens dos botões "Quero esse pacote".</span>
+        </div>
+        <div id="ugc-orc-v2-campos" class="ugc-orc-v2-campos">
+          <div class="cal-form-campo">
+            <label for="ugc-orc-frase-final" data-i18n="ugc_orc_campo_frase_final">Frase final (antes do contato)</label>
+            <input type="text" id="ugc-orc-frase-final" maxlength="140" placeholder="Vamos trabalhar juntos para dar vida às ideias *da sua marca?*">
+          </div>
+          <div class="cal-form-campo">
+            <label for="ugc-orc-contato-email" data-i18n="ugc_orc_campo_email">E-mail</label>
+            <input type="text" id="ugc-orc-contato-email" placeholder="voce@email.com">
+          </div>
+          <div class="cal-form-campo">
+            <label for="ugc-orc-contato-instagram" data-i18n="ugc_orc_campo_instagram">Instagram (sem o @)</label>
+            <input type="text" id="ugc-orc-contato-instagram" placeholder="brunalmedeiroos">
+          </div>
         </div>
         <div class="cal-form-acoes">
           <button type="button" id="ugc-modal-orc-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
@@ -3366,6 +3377,15 @@
           <label class="ugc-orc-ativa"><input type="checkbox" id="ugc-pacote-publicado"><span data-i18n="ugc_pacote_mostrar_pagina">Mostrar na página de orçamento</span></label>
           <label for="ugc-pacote-descricao" data-i18n="ugc_pacote_descricao_pagina">Descrição na página (opcional)</label>
           <textarea id="ugc-pacote-descricao"></textarea>
+          <div id="ugc-pacote-v2-campos" class="ugc-pacote-v2-campos">
+            <label for="ugc-pacote-tipo" data-i18n="ugc_pacote_tipo">Aparece como</label>
+            <select id="ugc-pacote-tipo">
+              <option value="pacote" data-i18n="ugc_pacote_tipo_pacote">Pacote (card)</option>
+              <option value="avulso" data-i18n="ugc_pacote_tipo_avulso">Vídeo avulso (seção discreta)</option>
+            </select>
+            <label for="ugc-pacote-destaque" data-i18n="ugc_pacote_destaque">Etiqueta de destaque (opcional)</label>
+            <input type="text" id="ugc-pacote-destaque" maxlength="30" placeholder="Mais escolhido">
+          </div>
         </div>
 
         <div class="cal-form-acoes">
@@ -4540,11 +4560,20 @@
         ugc_orc_campo_intro: 'Apresentação',
         ugc_orc_campo_condicoes: 'Condições (prazo, pagamento, direitos de uso...)',
         ugc_orc_campo_contato_rotulo: 'Texto do botão de contato',
-        ugc_orc_campo_contato_link: 'WhatsApp, e-mail ou link do botão',
-        ugc_orc_campo_contato_dica: 'Pode ser só o número com DDD (ex: 85999999999), um e-mail ou um link.',
+        ugc_orc_campo_contato_link: 'WhatsApp',
+        ugc_orc_campo_contato_dica: 'Só o número com DDD, ex: 85999999999. É pra onde vão as mensagens dos botões "Quero esse pacote".',
         ugc_pacote_mostrar_pagina: 'Mostrar na página de orçamento',
         ugc_pacote_descricao_pagina: 'Descrição na página (opcional)',
         ugc_pacote_na_pagina: 'na página',
+        ugc_orc_aviso_v2: 'Falta rodar o arquivo ugc-orcamento-pagina-v2.sql no Supabase pra usar a nova página de orçamento.',
+        ugc_orc_campo_titulo_dica: 'O que ficar entre *asteriscos* ganha o destaque colorido. Ex: Vamos criar algo *incrível juntos?*',
+        ugc_orc_campo_frase_final: 'Frase final (antes do contato)',
+        ugc_orc_campo_email: 'E-mail',
+        ugc_orc_campo_instagram: 'Instagram (sem o @)',
+        ugc_pacote_tipo: 'Aparece como',
+        ugc_pacote_tipo_pacote: 'Pacote (card)',
+        ugc_pacote_tipo_avulso: 'Vídeo avulso (seção discreta)',
+        ugc_pacote_destaque: 'Etiqueta de destaque (opcional)',
         ugc_pacote_sem_tabela: 'Falta rodar o arquivo ugc-pacotes-tabela.sql no Supabase pra criar pacotes.',
         ugc_adicionar_servico_aria: 'Adicionar serviço',
         ugc_publicidade: 'Publicidade',
@@ -5685,11 +5714,20 @@
         ugc_orc_campo_intro: 'Introduction',
         ugc_orc_campo_condicoes: 'Terms (deadline, payment, usage rights...)',
         ugc_orc_campo_contato_rotulo: 'Contact button text',
-        ugc_orc_campo_contato_link: 'WhatsApp, e-mail or button link',
-        ugc_orc_campo_contato_dica: 'It can be just the number with area code (e.g. 85999999999), an e-mail or a link.',
+        ugc_orc_campo_contato_link: 'WhatsApp',
+        ugc_orc_campo_contato_dica: 'Just the number with area code, e.g. 85999999999. It is where the "I want this package" button messages go.',
         ugc_pacote_mostrar_pagina: 'Show on the quote page',
         ugc_pacote_descricao_pagina: 'Description on the page (optional)',
         ugc_pacote_na_pagina: 'on the page',
+        ugc_orc_aviso_v2: 'You need to run ugc-orcamento-pagina-v2.sql in Supabase to use the new quote page.',
+        ugc_orc_campo_titulo_dica: 'Text between *asterisks* gets the colored highlight. E.g.: Let\'s create something *amazing together?*',
+        ugc_orc_campo_frase_final: 'Closing line (before the contact)',
+        ugc_orc_campo_email: 'E-mail',
+        ugc_orc_campo_instagram: 'Instagram (without the @)',
+        ugc_pacote_tipo: 'Shown as',
+        ugc_pacote_tipo_pacote: 'Package (card)',
+        ugc_pacote_tipo_avulso: 'Single video (discreet section)',
+        ugc_pacote_destaque: 'Highlight tag (optional)',
         ugc_pacote_sem_tabela: 'You need to run ugc-pacotes-tabela.sql in Supabase to create packages.',
         ugc_adicionar_servico_aria: 'Add service',
         ugc_publicidade: 'Advertising',
@@ -17098,9 +17136,17 @@
     // ---- Página de orçamento: um link só (brunamedeiros.com/orcamento/?t=...) com os pacotes marcados ----
     const ORC_URL_BASE = 'https://brunamedeiros.com/orcamento/?t=';
 
+    // As colunas novas da página (ugc-orcamento-pagina-v2.sql) existem quando a linha traz contato_email.
+    function ugcOrcV2() {
+      return !!(ugcOrcPagina && 'contato_email' in ugcOrcPagina);
+    }
+
     function renderizarOrcPagina() {
       const bloco = document.getElementById('ugc-orc-bloco');
-      document.getElementById('ugc-orc-aviso').hidden = !ugcPacotesOk || ugcOrcOk;
+      const aviso = document.getElementById('ugc-orc-aviso');
+      const semV2 = ugcPacotesOk && ugcOrcOk && !!ugcOrcPagina && !ugcOrcV2();
+      aviso.hidden = !(ugcPacotesOk && (!ugcOrcOk || semV2));
+      aviso.textContent = tr(semV2 ? 'ugc_orc_aviso_v2' : 'ugc_orc_aviso_sem_sql');
       bloco.hidden = !(ugcPacotesOk && ugcOrcOk && ugcOrcPagina);
       if (bloco.hidden) return;
       const url = ORC_URL_BASE + ugcOrcPagina.token;
@@ -17159,8 +17205,11 @@
       document.getElementById('ugc-orc-titulo').value = ugcOrcPagina.titulo || '';
       document.getElementById('ugc-orc-intro').value = ugcOrcPagina.intro || '';
       document.getElementById('ugc-orc-condicoes').value = ugcOrcPagina.condicoes || '';
-      document.getElementById('ugc-orc-contato-rotulo').value = ugcOrcPagina.contato_rotulo || '';
       document.getElementById('ugc-orc-contato-link').value = ugcOrcPagina.contato_link || '';
+      document.getElementById('ugc-orc-v2-campos').hidden = !ugcOrcV2();
+      document.getElementById('ugc-orc-frase-final').value = ugcOrcPagina.frase_final || '';
+      document.getElementById('ugc-orc-contato-email').value = ugcOrcPagina.contato_email || '';
+      document.getElementById('ugc-orc-contato-instagram').value = ugcOrcPagina.contato_instagram || '';
       document.getElementById('ugc-modal-orc-overlay').hidden = false;
     }
 
@@ -17179,8 +17228,14 @@
             titulo: texto('ugc-orc-titulo'),
             intro: texto('ugc-orc-intro'),
             condicoes: texto('ugc-orc-condicoes'),
-            contato_rotulo: texto('ugc-orc-contato-rotulo'),
             contato_link: texto('ugc-orc-contato-link'),
+            ...(ugcOrcV2()
+              ? {
+                  frase_final: texto('ugc-orc-frase-final'),
+                  contato_email: texto('ugc-orc-contato-email'),
+                  contato_instagram: texto('ugc-orc-contato-instagram'),
+                }
+              : {}),
           })
           .eq('id', ugcOrcPagina.id);
         if (error) throw error;
@@ -17287,6 +17342,9 @@
       document.getElementById('ugc-pacote-publico-campo').hidden = !ugcOrcOk;
       document.getElementById('ugc-pacote-publicado').checked = pacote ? !!pacote.publicado : false;
       document.getElementById('ugc-pacote-descricao').value = pacote ? pacote.descricao_publica || '' : '';
+      document.getElementById('ugc-pacote-v2-campos').hidden = !ugcOrcV2();
+      document.getElementById('ugc-pacote-tipo').value = pacote && pacote.tipo ? pacote.tipo : 'pacote';
+      document.getElementById('ugc-pacote-destaque').value = pacote ? pacote.destaque || '' : '';
 
       document.getElementById('ugc-pacote-itens').innerHTML = itensDoPacote(base)
         .map((i) => `<div class="ugc-pacote-item"><span>${escapeHtml(i.quantidade)}x ${escapeHtml(i.servico)}</span><strong>${formatarMoeda((Number(i.valor_unitario) || 0) * (Number(i.quantidade) || 0))}</strong></div>`)
@@ -17313,6 +17371,8 @@
         valor: document.getElementById('ugc-pacote-valor').value,
         publicado: document.getElementById('ugc-pacote-publicado').checked,
         descricao: document.getElementById('ugc-pacote-descricao').value,
+        tipo: document.getElementById('ugc-pacote-tipo').value,
+        destaque: document.getElementById('ugc-pacote-destaque').value,
       });
     }
 
@@ -17347,6 +17407,12 @@
           ? {
               publicado: document.getElementById('ugc-pacote-publicado').checked,
               descricao_publica: document.getElementById('ugc-pacote-descricao').value.trim() || null,
+              ...(ugcOrcV2()
+                ? {
+                    tipo: document.getElementById('ugc-pacote-tipo').value,
+                    destaque: document.getElementById('ugc-pacote-destaque').value.trim() || null,
+                  }
+                : {}),
             }
           : {}),
       };

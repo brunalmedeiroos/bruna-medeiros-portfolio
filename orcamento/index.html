@@ -338,25 +338,24 @@
 
   .pacote .btn { width: 100%; }
 
-  /* o pacote em destaque: azul-escuro, um pouco mais alto, com etiqueta */
+  /* o pacote em destaque: azul-claro da marca, um pouco mais alto, com etiqueta azul-escura */
   .pacote.destaque {
-    background: var(--navy);
-    border-color: var(--navy);
-    box-shadow: 0 26px 54px rgba(4, 70, 93, 0.3);
+    background: linear-gradient(160deg, #94C7DA 0%, var(--blue) 100%);
+    border-color: var(--blue);
+    box-shadow: 0 26px 54px rgba(125, 183, 206, 0.5);
     transform: translateY(-12px);
   }
 
   .pacote.destaque:hover { transform: translateY(-16px); }
   .pacote.destaque .pacote-nome,
-  .pacote.destaque .pacote-valor { color: var(--white); }
-  .pacote.destaque .pacote-num { color: rgba(255, 255, 255, 0.45); }
-  .pacote.destaque .pacote-desc { color: rgba(255, 255, 255, 0.75); }
-  .pacote.destaque .pacote-de { color: rgba(255, 255, 255, 0.6); }
-  .pacote.destaque .pacote-inclui { border-top-color: rgba(255, 255, 255, 0.22); }
-  .pacote.destaque .pacote-inclui li { color: rgba(255, 255, 255, 0.92); }
-  .pacote.destaque .pacote-inclui li::before { color: var(--butter); }
-  .pacote.destaque .btn { background: var(--blue); color: var(--navy); box-shadow: none; }
-  .pacote.destaque .btn:hover { background: var(--white); }
+  .pacote.destaque .pacote-valor { color: var(--navy); }
+  .pacote.destaque .pacote-num { color: rgba(4, 70, 93, 0.5); }
+  .pacote.destaque .pacote-desc { color: rgba(4, 70, 93, 0.8); }
+  .pacote.destaque .pacote-de { color: rgba(4, 70, 93, 0.6); }
+  .pacote.destaque .pacote-selo-off { background: var(--white); }
+  .pacote.destaque .pacote-inclui { border-top-color: rgba(4, 70, 93, 0.25); }
+  .pacote.destaque .pacote-inclui li { color: var(--navy); }
+  .pacote.destaque .pacote-inclui li::before { color: var(--navy); }
 
   .pacote-etiqueta {
     position: absolute;
@@ -365,13 +364,13 @@
     transform: translateX(-50%);
     padding: 6px 16px;
     border-radius: 999px;
-    background: var(--butter);
-    color: var(--navy);
+    background: var(--navy);
+    color: var(--white);
     font-size: 12px;
     font-weight: 800;
     letter-spacing: 0.04em;
     white-space: nowrap;
-    box-shadow: 0 8px 18px rgba(4, 70, 93, 0.18);
+    box-shadow: 0 8px 18px rgba(4, 70, 93, 0.25);
   }
 
   .condicoes {
@@ -679,6 +678,9 @@
     selo.append(el('i'), marcaCliente ? `Proposta para ${marcaCliente}` : 'Proposta comercial · UGC e publicidade');
     const h1 = el('h1', 'titulo');
     comDestaque(h1, dados.titulo || 'Vamos criar algo *incrível juntos?*');
+    // o trecho em destaque vai pra segunda linha
+    const destaqueTitulo = h1.querySelector('.accent');
+    if (destaqueTitulo && destaqueTitulo.previousSibling) h1.insertBefore(document.createElement('br'), destaqueTitulo);
     capaInner.append(selo, h1);
     if (dados.intro) capaInner.appendChild(el('p', 'lede', dados.intro));
     const acoes = el('div', 'capa-acoes');

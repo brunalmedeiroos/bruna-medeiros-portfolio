@@ -192,13 +192,22 @@
 
   /* destaque em "marca-texto", igual à página da reforma */
   .capa h1 .accent {
+    position: relative;
+    display: inline-block;
+    z-index: 0;
     font-style: normal;
     color: var(--navy);
-    background: rgba(125, 183, 206, 0.55);
     padding: 2px 14px;
+  }
+
+  .capa h1 .accent::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgba(125, 183, 206, 0.55);
     border-radius: 4px;
-    box-decoration-break: clone;
-    -webkit-box-decoration-break: clone;
+    transform: rotate(-1.2deg);
   }
 
   .lede {
@@ -338,39 +347,30 @@
 
   .pacote .btn { width: 100%; }
 
-  /* o pacote em destaque: azul-claro da marca, um pouco mais alto, com etiqueta azul-escura */
+  /* o pacote em destaque: mesma cor dos outros, só um pouco mais alto, com borda azul-clara e etiqueta */
   .pacote.destaque {
-    background: linear-gradient(160deg, #94C7DA 0%, var(--blue) 100%);
-    border-color: var(--blue);
-    box-shadow: 0 26px 54px rgba(125, 183, 206, 0.5);
+    border: 2px solid var(--blue);
+    box-shadow: 0 26px 54px rgba(125, 183, 206, 0.4);
     transform: translateY(-12px);
   }
 
   .pacote.destaque:hover { transform: translateY(-16px); }
-  .pacote.destaque .pacote-nome,
-  .pacote.destaque .pacote-valor { color: var(--navy); }
-  .pacote.destaque .pacote-num { color: rgba(4, 70, 93, 0.5); }
-  .pacote.destaque .pacote-desc { color: rgba(4, 70, 93, 0.8); }
-  .pacote.destaque .pacote-de { color: rgba(4, 70, 93, 0.6); }
-  .pacote.destaque .pacote-selo-off { background: var(--white); }
-  .pacote.destaque .pacote-inclui { border-top-color: rgba(4, 70, 93, 0.25); }
-  .pacote.destaque .pacote-inclui li { color: var(--navy); }
-  .pacote.destaque .pacote-inclui li::before { color: var(--navy); }
 
   .pacote-etiqueta {
     position: absolute;
-    top: -14px;
+    top: -15px;
     left: 50%;
     transform: translateX(-50%);
     padding: 6px 16px;
     border-radius: 999px;
-    background: var(--navy);
-    color: var(--white);
+    background: var(--white);
+    border: 1.5px solid var(--blue);
+    color: var(--navy);
     font-size: 12px;
     font-weight: 800;
     letter-spacing: 0.04em;
     white-space: nowrap;
-    box-shadow: 0 8px 18px rgba(4, 70, 93, 0.25);
+    box-shadow: 0 8px 18px rgba(125, 183, 206, 0.35);
   }
 
   .condicoes {
@@ -655,8 +655,8 @@
     const topo = el('header', 'topo');
     const topoInner = el('div', 'topo-inner');
     const marca = el('span', 'marca');
-    marca.append('Bru ', el('span', null, 'Medeiros'));
-    const falar = el('a', 'btn btn-navy btn-sm', 'Falar com a Bru');
+    marca.append('Bruna ', el('span', null, 'Medeiros'));
+    const falar = el('a', 'btn btn-navy btn-sm', 'Falar com a Bruna');
     falar.href = '#contato';
     topoInner.append(marca, falar);
     topo.appendChild(topoInner);
@@ -675,7 +675,7 @@
     );
     const capaInner = el('div', 'wrap capa-inner');
     const selo = el('span', 'selo');
-    selo.append(el('i'), marcaCliente ? `Proposta para ${marcaCliente}` : 'Proposta comercial · UGC e publicidade');
+    selo.append(el('i'), marcaCliente ? `Proposta para ${marcaCliente}` : 'Proposta comercial · UGC');
     const h1 = el('h1', 'titulo');
     comDestaque(h1, dados.titulo || 'Vamos criar algo *incrível juntos?*');
     // o trecho em destaque vai pra segunda linha
@@ -686,7 +686,7 @@
     const acoes = el('div', 'capa-acoes');
     const verPacotes = el('a', 'btn btn-navy btn-lg', 'Ver os pacotes');
     verPacotes.href = pacotes.length ? '#pacotes' : '#contato';
-    const falarCapa = el('a', 'btn btn-ghost btn-lg', 'Falar com a Bru');
+    const falarCapa = el('a', 'btn btn-ghost btn-lg', 'Falar com a Bruna');
     falarCapa.href = '#contato';
     acoes.append(verPacotes, falarCapa);
     capaInner.appendChild(acoes);
@@ -707,7 +707,7 @@
       pacotes.forEach((p, idx) => {
         const emDestaque = !!(p.destaque && p.destaque.trim());
         const card = el('article', 'pacote' + (emDestaque ? ' destaque' : ''));
-        if (emDestaque) card.appendChild(el('span', 'pacote-etiqueta', p.destaque.trim()));
+        if (emDestaque) card.appendChild(el('span', 'pacote-etiqueta', p.destaque.includes('✨') ? p.destaque.trim() : '✨ ' + p.destaque.trim()));
         card.appendChild(el('span', 'pacote-num', String(idx + 1).padStart(2, '0')));
         card.appendChild(el('h3', 'pacote-nome', p.nome));
         if (p.descricao) card.appendChild(el('p', 'pacote-desc', p.descricao));
@@ -781,7 +781,7 @@
     texto.append(el('span', 'eyebrow', 'Contato'), h2c, el('p', null, 'Me conta um pouco sobre a sua marca e o que você tem em mente. Eu respondo com carinho e te ajudo a escolher o melhor formato.'));
 
     const botoes = el('div', 'contato-botoes');
-    const principal = el('a', 'btn btn-wa btn-lg', 'Chamar a Bru');
+    const principal = el('a', 'btn btn-wa btn-lg', 'Chamar a Bruna');
     abreFora(principal, linkComMensagem(dados.contato_link, dados.contato_email, `Oi, Bruna! Vi o seu orçamento${aMarca} e quero conversar sobre uma parceria.`));
     botoes.appendChild(principal);
     texto.appendChild(botoes);

@@ -10455,3 +10455,123 @@
 .painel-body .pl-pilar-sugestao.selecionado:hover {
   background: var(--coral);
 }
+
+/* ---- UGC/Publi > Preços: pacotes ---- */
+
+.painel-body .ugc-pacotes-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.painel-body .ugc-pacotes-lista > .texto-vazio {
+  grid-column: 1 / -1;
+}
+
+.painel-body .ugc-pacote-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  text-align: left;
+  background: var(--creme);
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  color: var(--grafite);
+  font-family: var(--fonte-corpo);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.painel-body .ugc-pacote-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra);
+}
+
+.painel-body .ugc-pacote-nome {
+  font-family: var(--fonte-titulo);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.painel-body .ugc-pacote-marca {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.painel-body .ugc-pacote-itens {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+
+.painel-body .ugc-pacote-mais {
+  color: var(--texto-suave);
+}
+
+.painel-body .ugc-pacote-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px dashed var(--borda);
+}
+
+.painel-body .ugc-pacote-desconto {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(var(--coral-rgb), 0.2);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.painel-body .ugc-pacote-valor {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--grafite);
+  white-space: nowrap;
+}
+
+.painel-body .ugc-pacote-itens-modal,
+.painel-body .ugc-pacote-resumo {
+  display: flex;
+  flex-direction: column;
+}
+
+.painel-body .ugc-pacote-item,
+.painel-body .ugc-pacote-resumo > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--borda);
+  font-size: 14px;
+}
+
+.painel-body .ugc-pacote-resumo > div {
+  border-bottom: none;
+  padding: 3px 0;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.painel-body #ugc-pacote-valor {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: var(--fonte-corpo);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--grafite);
+}

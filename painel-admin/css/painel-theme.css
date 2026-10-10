@@ -10124,9 +10124,16 @@
   color: var(--branco);
 }
 
-.painel-body .bt-total {
-  max-width: 260px;
+.painel-body .bt-totais {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
   margin-bottom: 22px;
+}
+
+.painel-body .bt-totais .card-numero {
+  flex: 0 1 220px;
+  min-width: 150px;
 }
 
 /* ---- Visão geral: blocos na largura toda + status Roteiro em construção ---- */

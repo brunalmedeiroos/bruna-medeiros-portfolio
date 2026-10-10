@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261010b">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261010c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1382,8 +1382,9 @@
               <div class="ugc-precos-topo">
                 <div>
                   <h3 class="card-titulo" data-i18n="ugc_pacotes">📦 Pacotes</h3>
-                  <p class="cal-todas-resumo" data-i18n="ugc_pacotes_desc">Propostas que você guardou com nome e valor. Monte na calculadora e clique em "Criar pacote".</p>
+                  <p class="cal-todas-resumo" data-i18n="ugc_pacotes_desc">Propostas que você guardou com nome e valor. Monte na calculadora e clique em "Criar pacote", ou crie um do zero.</p>
                 </div>
+                <button id="btn-ugc-novo-pacote-branco" class="cal-btn cal-btn-primario" type="button" data-i18n="ugc_novo_pacote_branco">+ Novo pacote ou serviço</button>
               </div>
               <p class="dash-aviso" id="ugc-pacotes-aviso" hidden data-i18n="ugc_pacote_sem_tabela">Falta rodar o arquivo ugc-pacotes-tabela.sql no Supabase pra criar pacotes.</p>
               <p class="dash-aviso" id="ugc-orc-aviso" hidden data-i18n="ugc_orc_aviso_sem_sql">Falta rodar o arquivo ugc-orcamento-pagina.sql no Supabase pra ter a página de orçamento.</p>
@@ -3387,7 +3388,7 @@
             <label for="ugc-pacote-tipo" data-i18n="ugc_pacote_tipo">Aparece como</label>
             <select id="ugc-pacote-tipo">
               <option value="pacote" data-i18n="ugc_pacote_tipo_pacote">Pacote (card)</option>
-              <option value="avulso" data-i18n="ugc_pacote_tipo_avulso">Vídeo avulso (seção discreta)</option>
+              <option value="avulso" data-i18n="ugc_pacote_tipo_avulso">Serviço avulso (seção discreta)</option>
             </select>
             <label for="ugc-pacote-destaque" data-i18n="ugc_pacote_destaque">Etiqueta de destaque (opcional)</label>
             <input type="text" id="ugc-pacote-destaque" maxlength="30" placeholder="Mais escolhido">
@@ -4534,7 +4535,8 @@
         ugc_proposta_desc: 'Monte uma proposta combinando os serviços da tabela, com desconto por quantidade.',
         ugc_nova_proposta: '+ Nova proposta',
         ugc_pacotes: '📦 Pacotes',
-        ugc_pacotes_desc: 'Propostas que você guardou com nome e valor. Monte na calculadora e clique em "Criar pacote".',
+        ugc_pacotes_desc: 'Propostas que você guardou com nome e valor. Monte na calculadora e clique em "Criar pacote", ou crie um do zero.',
+        ugc_novo_pacote_branco: '+ Novo pacote ou serviço',
         ugc_nenhum_pacote: 'Nenhum pacote ainda. Monte uma proposta na calculadora e clique em "Criar pacote".',
         ugc_criar_pacote: '📦 Criar pacote',
         ugc_pacote: 'Pacote',
@@ -4588,7 +4590,7 @@
         ugc_orc_campo_instagram: 'Instagram (sem o @)',
         ugc_pacote_tipo: 'Aparece como',
         ugc_pacote_tipo_pacote: 'Pacote (card)',
-        ugc_pacote_tipo_avulso: 'Vídeo avulso (seção discreta)',
+        ugc_pacote_tipo_avulso: 'Serviço avulso (seção discreta)',
         ugc_pacote_destaque: 'Etiqueta de destaque (opcional)',
         ugc_pacote_sem_tabela: 'Falta rodar o arquivo ugc-pacotes-tabela.sql no Supabase pra criar pacotes.',
         ugc_adicionar_servico_aria: 'Adicionar serviço',
@@ -5695,7 +5697,8 @@
         ugc_proposta_desc: 'Build a proposal combining services from the table, with a quantity discount.',
         ugc_nova_proposta: '+ New proposal',
         ugc_pacotes: '📦 Packages',
-        ugc_pacotes_desc: 'Proposals you saved with a name and price. Build one in the calculator and click "Create package".',
+        ugc_pacotes_desc: 'Proposals you saved with a name and price. Build one in the calculator and click "Create package", or start from scratch.',
+        ugc_novo_pacote_branco: '+ New package or service',
         ugc_nenhum_pacote: 'No packages yet. Build a proposal in the calculator and click "Create package".',
         ugc_criar_pacote: '📦 Create package',
         ugc_pacote: 'Package',
@@ -5749,7 +5752,7 @@
         ugc_orc_campo_instagram: 'Instagram (without the @)',
         ugc_pacote_tipo: 'Shown as',
         ugc_pacote_tipo_pacote: 'Package (card)',
-        ugc_pacote_tipo_avulso: 'Single video (discreet section)',
+        ugc_pacote_tipo_avulso: 'Single service (discreet section)',
         ugc_pacote_destaque: 'Highlight tag (optional)',
         ugc_pacote_sem_tabela: 'You need to run ugc-pacotes-tabela.sql in Supabase to create packages.',
         ugc_adicionar_servico_aria: 'Add service',
@@ -6901,6 +6904,7 @@
       document.getElementById('ugc-modal-pacote-excluir').addEventListener('click', excluirModalPacote);
       document.getElementById('ugc-pacote-copiar').addEventListener('click', copiarResumoPacote);
       document.getElementById('ugc-pacote-add-item').addEventListener('click', adicionarItemPacote);
+      document.getElementById('btn-ugc-novo-pacote-branco').addEventListener('click', criarPacoteEmBranco);
       document.getElementById('ugc-pacote-desconto').addEventListener('input', () => atualizarResumoPacote(true));
       const contItensPacote = document.getElementById('ugc-pacote-itens');
       contItensPacote.addEventListener('input', (e) => {
@@ -17399,6 +17403,24 @@
         valor_bruto: t.bruto,
         valor_final: t.final,
       });
+    }
+
+    // Pacote ou serviço do zero, sem passar pela calculadora: já abre com uma linha pra preencher.
+    function criarPacoteEmBranco() {
+      if (!ugcPacotesOk) {
+        alert(tr('ugc_pacote_sem_tabela'));
+        return;
+      }
+      abrirModalPacote(null, {
+        marca: '',
+        itens: [{ servico: '', categoria: 'Adicionais', quantidade: 1, valor_unitario: 0 }],
+        desconto_pct: 0,
+        urgencia_pct: 0,
+        valor_bruto: 0,
+        valor_final: 0,
+      });
+      const campo = document.querySelector('#ugc-pacote-itens .ugc-pi-servico');
+      if (campo) campo.focus();
     }
 
     // pacote: um já salvo; rascunho: o que veio da calculadora (pacote novo).

@@ -742,12 +742,12 @@
         avulsos.forEach((p) => {
           const item = el('div', 'avulso-item');
           const texto = el('div', 'avulso-texto');
-          texto.append(el('div', 'avulso-topo', 'Prefere um vídeo só?'), el('div', 'avulso-nome', p.nome));
+          texto.append(el('div', 'avulso-topo', 'Serviço avulso'), el('div', 'avulso-nome', p.nome));
           const inclui = el('ul', 'avulso-inclui');
           (p.itens || []).forEach((i) => inclui.appendChild(el('li', null, linhaItem(i))));
           texto.appendChild(inclui);
           const direita = el('div', 'avulso-direita');
-          const botao = el('a', 'btn btn-ghost btn-sm', 'Quero esse vídeo');
+          const botao = el('a', 'btn btn-ghost btn-sm', 'Tenho interesse');
           abreFora(botao, linkInteresse(p.nome));
           direita.append(el('div', 'avulso-valor', moeda(p.valor_final)), botao);
           item.append(texto, direita);

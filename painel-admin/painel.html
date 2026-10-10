@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261010a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261010b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -3360,7 +3360,13 @@
         <div class="cal-form-campo">
           <label data-i18n="ugc_itens_do_pacote">O que está no pacote</label>
           <div id="ugc-pacote-itens" class="ugc-pacote-itens-modal"></div>
+          <datalist id="ugc-pacote-servicos-lista"></datalist>
+          <button type="button" id="ugc-pacote-add-item" class="cal-btn ugc-pacote-add-item" data-i18n="ugc_pacote_add_item">+ Adicionar serviço</button>
           <div id="ugc-pacote-resumo" class="ugc-pacote-resumo"></div>
+          <div class="ugc-pacote-desconto-linha">
+            <label for="ugc-pacote-desconto" data-i18n="ugc_pacote_desconto_pct">Desconto (%)</label>
+            <input type="number" step="0.5" min="0" max="100" id="ugc-pacote-desconto">
+          </div>
         </div>
 
         <div class="cal-form-campo">
@@ -3553,6 +3559,9 @@
     let ugcPacoteAbertoId = null;
     let ugcPacoteRascunho = null; // itens e totais vindos da calculadora enquanto o pacote novo não foi salvo
     let ugcPacoteSnapshotInicial = '';
+    let ugcPacoteItensEdit = []; // itens do pacote aberto, editáveis no modal
+    let ugcPacoteUrgenciaPct = 0;
+    let ugcPacoteSugerido = 0; // último valor calculado a partir dos itens (o campo de valor acompanha enquanto não for mexido na mão)
     let ugcSubAbaAtual = 'visao-geral';
     let filtroRoteirosTexto = '';
     let filtroRoteirosStatus = '';
@@ -4533,6 +4542,13 @@
         ugc_editar_pacote: 'Editar pacote',
         ugc_nome_pacote: 'Nome do pacote',
         ugc_itens_do_pacote: 'O que está no pacote',
+        ugc_pacote_add_item: '+ Adicionar serviço',
+        ugc_pacote_desconto_pct: 'Desconto (%)',
+        ugc_pacote_col_servico: 'Serviço',
+        ugc_pacote_col_qtd: 'Qtd.',
+        ugc_pacote_col_valor: 'Valor (R$)',
+        ugc_pacote_remover_item: 'Remover serviço',
+        ugc_pacote_sem_itens: 'Deixe pelo menos um serviço no pacote.',
         ugc_valor_do_pacote: 'Valor do pacote (R$)',
         ugc_pacote_de_desconto: 'de desconto',
         ugc_pacote_escolha_servico: 'Escolha pelo menos um serviço na proposta antes de criar o pacote.',
@@ -5687,6 +5703,13 @@
         ugc_editar_pacote: 'Edit package',
         ugc_nome_pacote: 'Package name',
         ugc_itens_do_pacote: "What's in the package",
+        ugc_pacote_add_item: '+ Add service',
+        ugc_pacote_desconto_pct: 'Discount (%)',
+        ugc_pacote_col_servico: 'Service',
+        ugc_pacote_col_qtd: 'Qty',
+        ugc_pacote_col_valor: 'Price (R$)',
+        ugc_pacote_remover_item: 'Remove service',
+        ugc_pacote_sem_itens: 'Keep at least one service in the package.',
         ugc_valor_do_pacote: 'Package price (R$)',
         ugc_pacote_de_desconto: 'off',
         ugc_pacote_escolha_servico: 'Pick at least one service in the proposal before creating the package.',
@@ -6877,6 +6900,42 @@
       document.getElementById('ugc-modal-pacote-salvar').addEventListener('click', salvarModalPacote);
       document.getElementById('ugc-modal-pacote-excluir').addEventListener('click', excluirModalPacote);
       document.getElementById('ugc-pacote-copiar').addEventListener('click', copiarResumoPacote);
+      document.getElementById('ugc-pacote-add-item').addEventListener('click', adicionarItemPacote);
+      document.getElementById('ugc-pacote-desconto').addEventListener('input', () => atualizarResumoPacote(true));
+      const contItensPacote = document.getElementById('ugc-pacote-itens');
+      contItensPacote.addEventListener('input', (e) => {
+        const linha = e.target.closest('.ugc-pacote-item-edit');
+        if (!linha) return;
+        const item = ugcPacoteItensEdit[Number(linha.dataset.i)];
+        if (!item) return;
+        if (e.target.classList.contains('ugc-pi-servico')) item.servico = e.target.value;
+        else if (e.target.classList.contains('ugc-pi-qtd')) item.quantidade = Number(e.target.value) || 0;
+        else if (e.target.classList.contains('ugc-pi-valor')) item.valor_unitario = Number(e.target.value) || 0;
+        atualizarResumoPacote(true);
+      });
+      // Escolheu um serviço da tabela de preços: já puxa o valor e a categoria dele.
+      contItensPacote.addEventListener('change', (e) => {
+        if (!e.target.classList.contains('ugc-pi-servico')) return;
+        const linha = e.target.closest('.ugc-pacote-item-edit');
+        const item = linha && ugcPacoteItensEdit[Number(linha.dataset.i)];
+        if (!item) return;
+        const nome = e.target.value.trim().toLowerCase();
+        const preco = ugcPrecosCache.find((p) => !p.eh_percentual && String(p.servico).trim().toLowerCase() === nome);
+        if (!preco) return;
+        item.servico = preco.servico;
+        item.categoria = preco.categoria;
+        item.valor_unitario = Number(preco.valor) || 0;
+        e.target.value = preco.servico;
+        linha.querySelector('.ugc-pi-valor').value = item.valor_unitario;
+        atualizarResumoPacote(true);
+      });
+      contItensPacote.addEventListener('click', (e) => {
+        const btn = e.target.closest('.ugc-pi-remover');
+        if (!btn) return;
+        ugcPacoteItensEdit.splice(Number(btn.closest('.ugc-pacote-item-edit').dataset.i), 1);
+        renderizarItensPacote();
+        atualizarResumoPacote(true);
+      });
       document.getElementById('ugc-orc-copiar').addEventListener('click', copiarLinkOrcamento);
       document.getElementById('ugc-orc-ativa').addEventListener('change', (e) => alternarOrcAtiva(e.target.checked));
       document.getElementById('ugc-orc-editar').addEventListener('click', abrirModalOrcTextos);
@@ -17358,26 +17417,101 @@
       document.getElementById('ugc-pacote-tipo').value = pacote && pacote.tipo ? pacote.tipo : 'pacote';
       document.getElementById('ugc-pacote-destaque').value = pacote ? pacote.destaque || '' : '';
 
-      document.getElementById('ugc-pacote-itens').innerHTML = itensDoPacote(base)
-        .map((i) => `<div class="ugc-pacote-item"><span>${escapeHtml(i.quantidade)}x ${escapeHtml(i.servico)}</span><strong>${formatarMoeda((Number(i.valor_unitario) || 0) * (Number(i.quantidade) || 0))}</strong></div>`)
+      ugcPacoteItensEdit = itensDoPacote(base).map((i) => ({
+        servico: i.servico || '',
+        categoria: i.categoria || 'Adicionais',
+        quantidade: Number(i.quantidade) || 0,
+        valor_unitario: Number(i.valor_unitario) || 0,
+      }));
+      ugcPacoteUrgenciaPct = Number(base.urgencia_pct) || 0;
+      document.getElementById('ugc-pacote-desconto').value = Number(base.desconto_pct) || 0;
+      document.getElementById('ugc-pacote-servicos-lista').innerHTML = [...new Set(ugcPrecosCache.filter((p) => !p.eh_percentual).map((p) => p.servico))]
+        .map((s) => `<option value="${escapeHtml(s)}"></option>`)
         .join('');
-      const descontoValor = Number(base.valor_bruto) * (Number(base.desconto_pct) / 100);
-      const linhasResumo = [
-        [tr('ugc_valor_bruto'), formatarMoeda(base.valor_bruto)],
-        Number(base.desconto_pct) > 0 ? [`${tr('ugc_desconto_valor_label')} (${formatarPercentual(base.desconto_pct)})`, `- ${formatarMoeda(descontoValor)}`] : null,
-        Number(base.urgencia_pct) > 0 ? [tr('ugc_urgencia'), `+${formatarPercentual(base.urgencia_pct)}`] : null,
-      ].filter(Boolean);
-      document.getElementById('ugc-pacote-resumo').innerHTML = linhasResumo
-        .map(([rotulo, valor]) => `<div><span>${escapeHtml(rotulo)}</span><strong>${escapeHtml(valor)}</strong></div>`)
-        .join('');
+      renderizarItensPacote();
+      atualizarResumoPacote(false);
 
       document.getElementById('ugc-modal-pacote-excluir').hidden = !pacote;
       document.getElementById('ugc-modal-pacote-overlay').hidden = false;
       ugcPacoteSnapshotInicial = capturarEstadoPacote();
     }
 
+    function arredondar2(n) {
+      return Math.round((Number(n) || 0) * 100) / 100;
+    }
+
+    function descontoPctPacote() {
+      return Math.min(100, Math.max(0, Number(document.getElementById('ugc-pacote-desconto').value) || 0));
+    }
+
+    function brutoPacoteEditado() {
+      return arredondar2(ugcPacoteItensEdit.reduce((soma, i) => soma + (Number(i.valor_unitario) || 0) * (Number(i.quantidade) || 0), 0));
+    }
+
+    function finalSugeridoPacote() {
+      const subtotal = brutoPacoteEditado() * (1 - descontoPctPacote() / 100);
+      return arredondar2(subtotal * (1 + ugcPacoteUrgenciaPct / 100));
+    }
+
+    function renderizarItensPacote() {
+      const cabecalho = `<div class="ugc-pacote-item-edit ugc-pacote-item-cab"><span>${escapeHtml(tr('ugc_pacote_col_servico'))}</span><span>${escapeHtml(tr('ugc_pacote_col_qtd'))}</span><span>${escapeHtml(tr('ugc_pacote_col_valor'))}</span><span></span></div>`;
+      document.getElementById('ugc-pacote-itens').innerHTML =
+        cabecalho +
+        ugcPacoteItensEdit
+          .map(
+            (i, idx) => `<div class="ugc-pacote-item-edit" data-i="${idx}">
+              <input type="text" class="ugc-pi-servico" list="ugc-pacote-servicos-lista" maxlength="120" autocomplete="off" value="${escapeHtml(i.servico)}" aria-label="${escapeHtml(tr('ugc_pacote_col_servico'))}">
+              <input type="number" class="ugc-pi-qtd" min="1" step="1" value="${Number(i.quantidade) || ''}" aria-label="${escapeHtml(tr('ugc_pacote_col_qtd'))}">
+              <input type="number" class="ugc-pi-valor" min="0" step="0.01" value="${Number(i.valor_unitario)}" aria-label="${escapeHtml(tr('ugc_pacote_col_valor'))}">
+              <button type="button" class="ugc-pi-remover" aria-label="${escapeHtml(tr('ugc_pacote_remover_item'))}" title="${escapeHtml(tr('ugc_pacote_remover_item'))}">✕</button>
+            </div>`
+          )
+          .join('');
+    }
+
+    function adicionarItemPacote() {
+      ugcPacoteItensEdit.push({ servico: '', categoria: 'Adicionais', quantidade: 1, valor_unitario: 0 });
+      renderizarItensPacote();
+      const campos = document.querySelectorAll('#ugc-pacote-itens .ugc-pi-servico');
+      if (campos.length) campos[campos.length - 1].focus();
+      atualizarResumoPacote(true);
+    }
+
+    // Refaz o resumo (bruto, desconto, urgência). Com sincronizar, o valor do pacote acompanha o cálculo
+    // enquanto ela não tiver digitado um valor próprio; se ela já mexeu, o valor dela fica.
+    function atualizarResumoPacote(sincronizar) {
+      const bruto = brutoPacoteEditado();
+      const descontoPct = descontoPctPacote();
+      const sugerido = finalSugeridoPacote();
+      const campoValor = document.getElementById('ugc-pacote-valor');
+      if (sincronizar && (campoValor.value === '' || Math.abs(Number(campoValor.value) - ugcPacoteSugerido) < 0.005)) campoValor.value = sugerido;
+      ugcPacoteSugerido = sugerido;
+      const linhasResumo = [
+        [tr('ugc_valor_bruto'), formatarMoeda(bruto)],
+        descontoPct > 0 ? [`${tr('ugc_desconto_valor_label')} (${formatarPercentual(descontoPct)})`, `- ${formatarMoeda(bruto * (descontoPct / 100))}`] : null,
+        ugcPacoteUrgenciaPct > 0 ? [tr('ugc_urgencia'), `+${formatarPercentual(ugcPacoteUrgenciaPct)}`] : null,
+      ].filter(Boolean);
+      document.getElementById('ugc-pacote-resumo').innerHTML = linhasResumo
+        .map(([rotulo, valor]) => `<div><span>${escapeHtml(rotulo)}</span><strong>${escapeHtml(valor)}</strong></div>`)
+        .join('');
+    }
+
+    // Itens que valem de verdade: com nome e quantidade.
+    function itensValidosPacote() {
+      return ugcPacoteItensEdit
+        .map((i) => ({
+          servico: String(i.servico || '').trim(),
+          categoria: i.categoria || 'Adicionais',
+          quantidade: Number(i.quantidade) || 0,
+          valor_unitario: Number(i.valor_unitario) || 0,
+        }))
+        .filter((i) => i.servico && i.quantidade > 0);
+    }
+
     function capturarEstadoPacote() {
       return JSON.stringify({
+        itens: ugcPacoteItensEdit,
+        desconto: document.getElementById('ugc-pacote-desconto').value,
         nome: document.getElementById('ugc-pacote-nome').value,
         observacoes: document.getElementById('ugc-pacote-observacoes').value,
         valor: document.getElementById('ugc-pacote-valor').value,
@@ -17408,11 +17542,18 @@
         alert(tr('ugc_pacote_preencha_nome'));
         return;
       }
+      const itens = itensValidosPacote();
+      if (itens.length === 0) {
+        alert(tr('ugc_pacote_sem_itens'));
+        return;
+      }
       const valorTexto = document.getElementById('ugc-pacote-valor').value;
-      const salvo = ugcPacoteAbertoId ? ugcPacotesCache.find((p) => p.id === ugcPacoteAbertoId) : null;
-      const valorFinal = valorTexto === '' ? Number((salvo || ugcPacoteRascunho).valor_final) : Number(valorTexto);
+      const valorFinal = valorTexto === '' ? finalSugeridoPacote() : Number(valorTexto);
       const linha = {
         nome,
+        itens,
+        desconto_pct: descontoPctPacote(),
+        valor_bruto: brutoPacoteEditado(),
         observacoes: document.getElementById('ugc-pacote-observacoes').value.trim() || null,
         valor_final: valorFinal,
         ...(ugcOrcOk
@@ -17440,10 +17581,7 @@
           ({ error } = await Auth.sb.from('ugc_pacotes').insert({
             ...linha,
             marca: r.marca || null,
-            itens: r.itens,
-            desconto_pct: r.desconto_pct,
             urgencia_pct: r.urgencia_pct,
-            valor_bruto: r.valor_bruto,
           }));
         }
         if (error) throw error;
@@ -17479,16 +17617,18 @@
       if (!base) return;
       const nome = document.getElementById('ugc-pacote-nome').value.trim();
       const valor = document.getElementById('ugc-pacote-valor').value;
-      const valorFinal = valor === '' ? Number(base.valor_final) : Number(valor);
+      const valorFinal = valor === '' ? finalSugeridoPacote() : Number(valor);
       const observacoes = document.getElementById('ugc-pacote-observacoes').value.trim();
+      const brutoEdit = brutoPacoteEditado();
+      const descontoEdit = descontoPctPacote();
       const texto = [
         nome ? `${tr('ugc_pacote')} — ${nome}` : tr('ugc_pacote'),
         '',
-        ...itensDoPacote(base).map((i) => `${i.quantidade}x ${i.servico} — ${formatarMoeda((Number(i.valor_unitario) || 0) * (Number(i.quantidade) || 0))}`),
+        ...itensValidosPacote().map((i) => `${i.quantidade}x ${i.servico} — ${formatarMoeda(i.valor_unitario * i.quantidade)}`),
         '',
-        `${tr('ugc_valor_bruto')}: ${formatarMoeda(base.valor_bruto)}`,
-        Number(base.desconto_pct) > 0 ? `${tr('ugc_desconto_valor_label')} (${Number(base.desconto_pct)}%): ${formatarMoeda(Number(base.valor_bruto) * (Number(base.desconto_pct) / 100))}` : null,
-        Number(base.urgencia_pct) > 0 ? `${tr('ugc_urgencia')} (${Number(base.urgencia_pct)}%)` : null,
+        `${tr('ugc_valor_bruto')}: ${formatarMoeda(brutoEdit)}`,
+        descontoEdit > 0 ? `${tr('ugc_desconto_valor_label')} (${descontoEdit}%): ${formatarMoeda(brutoEdit * (descontoEdit / 100))}` : null,
+        ugcPacoteUrgenciaPct > 0 ? `${tr('ugc_urgencia')} (${ugcPacoteUrgenciaPct}%)` : null,
         `${tr('ugc_valor_do_pacote')}: ${formatarMoeda(valorFinal)}`,
         observacoes ? `\n${observacoes}` : null,
       ]

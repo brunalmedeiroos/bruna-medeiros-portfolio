@@ -10564,6 +10564,82 @@
   font-size: 14px;
 }
 
+/* Itens editáveis do pacote */
+.painel-body .ugc-pacote-item-edit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 62px 104px 30px;
+  gap: 6px;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.painel-body .ugc-pacote-item-edit input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 8px 9px;
+  font-size: 13px;
+  font-family: var(--fonte-corpo);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--grafite);
+}
+
+.painel-body .ugc-pacote-item-cab {
+  padding: 0 0 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.painel-body .ugc-pi-remover {
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--texto-suave);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.painel-body .ugc-pi-remover:hover {
+  background: rgba(var(--coral-rgb), 0.2);
+  color: var(--grafite);
+}
+
+.painel-body .ugc-pacote-add-item {
+  align-self: flex-start;
+  margin: 6px 0 10px;
+}
+
+.painel-body .ugc-pacote-desconto-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.painel-body .ugc-pacote-desconto-linha label {
+  margin: 0;
+}
+
+.painel-body .ugc-pacote-desconto-linha input {
+  width: 90px;
+  box-sizing: border-box;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 8px 10px;
+  font-size: 13px;
+  font-family: var(--fonte-corpo);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--grafite);
+}
+
 .painel-body .ugc-pacote-resumo > div {
   border-bottom: none;
   padding: 3px 0;

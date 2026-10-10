@@ -416,6 +416,33 @@
 
   .avulso-direita { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
 
+  /* ---------- serviços adicionais ---------- */
+  .adicionais { margin-top: 56px; }
+
+  .adicionais-grade {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px;
+  }
+
+  .adicional {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 22px 24px;
+    background: var(--white);
+    border: 1px solid var(--blue-pale-2);
+    border-radius: 18px;
+    box-shadow: 0 14px 34px rgba(125, 183, 206, .18);
+  }
+
+  .adicional-nome { font-family: var(--font-display); font-size: 20px; line-height: 1.25; font-weight: 700; color: var(--navy); }
+
+  .adicional-desc { font-size: 13.5px; line-height: 1.55; color: var(--ink-65); }
+
+  .adicional-valor { margin-top: auto; padding-top: 8px; font-family: var(--font-display); font-size: 24px; font-weight: 800; color: var(--navy); }
+
   /* ---------- contato ---------- */
   .contato { padding: 96px 0 56px; }
 
@@ -640,8 +667,9 @@
   function desenhar(dados, marcaCliente) {
     raiz.innerHTML = '';
     const pacotesTodos = Array.isArray(dados.pacotes) ? dados.pacotes : [];
-    const pacotes = pacotesTodos.filter((p) => p.tipo !== 'avulso');
+    const pacotes = pacotesTodos.filter((p) => p.tipo !== 'avulso' && p.tipo !== 'adicional');
     const avulsos = pacotesTodos.filter((p) => p.tipo === 'avulso');
+    const adicionais = pacotesTodos.filter((p) => p.tipo === 'adicional');
     const aMarca = marcaCliente ? ` (${marcaCliente})` : '';
     const msg = (nome) => `Oi, Bruna! Vi o seu orçamento${aMarca} e tenho interesse em: ${nome}.`;
     const linkInteresse = (nome) => linkComMensagem(dados.contato_link, dados.contato_email, msg(nome));
@@ -754,6 +782,22 @@
           caixa.appendChild(item);
         });
         wrap.appendChild(caixa);
+      }
+
+      // serviços adicionais: cards lado a lado, só o texto em destaque e o valor (sem botão)
+      if (adicionais.length) {
+        const bloco = el('div', 'adicionais');
+        bloco.appendChild(el('span', 'eyebrow', 'Serviços adicionais'));
+        const grade2 = el('div', 'adicionais-grade');
+        adicionais.forEach((p) => {
+          const card = el('div', 'adicional');
+          card.appendChild(el('div', 'adicional-nome', p.nome));
+          if (p.descricao) card.appendChild(el('p', 'adicional-desc', p.descricao));
+          card.appendChild(el('div', 'adicional-valor', moeda(p.valor_final)));
+          grade2.appendChild(card);
+        });
+        bloco.appendChild(grade2);
+        wrap.appendChild(bloco);
       }
       secao.appendChild(wrap);
       raiz.appendChild(secao);

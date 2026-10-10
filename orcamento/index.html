@@ -634,7 +634,7 @@
 
   function linhaItem(i) {
     const q = Number(i.quantidade) || 1;
-    return q > 1 ? `${q}x ${i.servico}` : i.servico;
+    return q > 1 ? `${q} ${i.servico}` : i.servico;
   }
 
   function desenhar(dados, marcaCliente) {

@@ -4426,9 +4426,9 @@
         bt_publico_ambos: 'Os dois',
         bt_classif_aviso: 'Pra marcar o pilar e o público, rode o arquivo banco-ideias-pilar-publico.sql no SQL Editor do Supabase.',
         pl_eq_pilares_titulo: 'Pilares de conteúdo',
-        pl_eq_pilares_desc: 'Quantos roteiros tem em cada pilar. Um roteiro com mais de um pilar conta em todos.',
+        pl_eq_pilares_desc: 'Quantos roteiros tem em cada pilar. Um roteiro com mais de um pilar conta em todos. A pasta Youtube não entra na conta.',
         pl_eq_publico_titulo: 'Marcas × Comunidade',
-        pl_eq_publico_desc: 'Pra quem são os seus roteiros.',
+        pl_eq_publico_desc: 'Pra quem são os seus roteiros. A pasta Youtube não entra na conta.',
         pl_eq_vazio_pilares: 'Marque o pilar dos seus roteiros pra ver aqui qual está mais forte.',
         pl_eq_vazio_publico: 'Marque pra quem é cada roteiro (marcas, comunidade ou os dois) pra ver o equilíbrio aqui.',
         pl_eq_mais_forte: 'Mais forte',
@@ -5616,9 +5616,9 @@
         bt_publico_ambos: 'Both',
         bt_classif_aviso: 'To mark the pillar and audience, run banco-ideias-pilar-publico.sql in the Supabase SQL Editor.',
         pl_eq_pilares_titulo: 'Content pillars',
-        pl_eq_pilares_desc: 'How many scripts are in each pillar. A script with more than one pillar counts in all of them.',
+        pl_eq_pilares_desc: 'How many scripts are in each pillar. A script with more than one pillar counts in all of them. The Youtube folder is not counted.',
         pl_eq_publico_titulo: 'Brands × Community',
-        pl_eq_publico_desc: 'Who your scripts are for.',
+        pl_eq_publico_desc: 'Who your scripts are for. The Youtube folder is not counted.',
         pl_eq_vazio_pilares: 'Mark the pillar of your scripts to see which one is strongest here.',
         pl_eq_vazio_publico: 'Mark who each script is for (brands, community or both) to see the balance here.',
         pl_eq_mais_forte: 'Strongest',
@@ -12703,17 +12703,26 @@
     // ---- Visão geral + cronograma de postagem (calendário) ----
 
     // Gráficos de equilíbrio da Visão geral: pilares e marcas × comunidade, a partir do que está marcado nos roteiros.
+    // Conteúdos da pasta Youtube (ou de qualquer pasta dentro dela) ficam de fora: são pra comunidade e não levam pilar.
+    function btForaDosGraficos(c) {
+      const pasta = btPastas.find((p) => p.id === c.pasta_id);
+      if (!pasta) return false;
+      const grupo = btGrupos.find((g) => g.chave === pasta.grupo);
+      return [grupo ? grupo.nome : '', ...btCaminhoPasta(pasta).map((p) => p.nome)].some((n) => String(n).toLowerCase().replace(/[^a-z0-9]/g, '') === 'youtube');
+    }
+
     function renderizarEquilibrioConteudo() {
       const bloco = document.getElementById('pl-vg-equilibrio');
       bloco.hidden = !(btCarregado && btClassifOk);
       if (bloco.hidden) return;
+      const conteudos = btConteudos.filter((c) => !btForaDosGraficos(c));
       const plural = (n, um, varios) => `${n} ${n === 1 ? tr(um) : tr(varios)}`;
 
       // --- pilares ---
       const chavePilar = { Autoridade: 'bt_pilar_autoridade', Desejo: 'bt_pilar_desejo', Conexão: 'bt_pilar_conexao', Oferta: 'bt_pilar_oferta' };
       const contagem = { Autoridade: 0, Desejo: 0, Conexão: 0, Oferta: 0 };
       let semPilar = 0;
-      btConteudos.forEach((c) => {
+      conteudos.forEach((c) => {
         const marcados = String(c.pilar_conteudo || '').split(',').filter((p) => p in contagem);
         if (!marcados.length) semPilar++;
         marcados.forEach((p) => contagem[p]++);
@@ -12752,7 +12761,7 @@
       let comunidade = 0;
       let ambos = 0;
       let semPublico = 0;
-      btConteudos.forEach((c) => {
+      conteudos.forEach((c) => {
         if (c.publico === 'marcas') marcas++;
         else if (c.publico === 'comunidade') comunidade++;
         else if (c.publico === 'ambos') ambos++;

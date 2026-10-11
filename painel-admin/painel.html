@@ -11591,11 +11591,16 @@
         .join('');
       const prontos = btConteudos.filter((c) => plEstagio(c) === 'Roteiro pronto').length;
       const ideias = btConteudos.filter((c) => btEtiquetaRoteiro(c) === tr('pl_ideia_criada')).length;
+      const emConstrucao = btConteudos.filter((c) => plEstagio(c) === 'Roteiro em construção').length;
       area.innerHTML = `
         <div class="bt-totais">
           <div class="card-numero">
             <span class="card-label">Roteiros prontos</span>
             <span class="card-valor">${prontos}</span>
+          </div>
+          <div class="card-numero">
+            <span class="card-label">Roteiros em construção</span>
+            <span class="card-valor">${emConstrucao}</span>
           </div>
           <div class="card-numero">
             <span class="card-label">Ideias criadas</span>

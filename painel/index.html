@@ -12703,12 +12703,12 @@
     // ---- Visão geral + cronograma de postagem (calendário) ----
 
     // Gráficos de equilíbrio da Visão geral: pilares e marcas × comunidade, a partir do que está marcado nos roteiros.
-    // Conteúdos da pasta Youtube (ou de qualquer pasta dentro dela) ficam de fora: são pra comunidade e não levam pilar.
+    // Conteúdos de qualquer pasta com "Youtube" no nome (ou dentro de uma) ficam de fora: são pra comunidade e não levam pilar.
     function btForaDosGraficos(c) {
       const pasta = btPastas.find((p) => p.id === c.pasta_id);
       if (!pasta) return false;
       const grupo = btGrupos.find((g) => g.chave === pasta.grupo);
-      return [grupo ? grupo.nome : '', ...btCaminhoPasta(pasta).map((p) => p.nome)].some((n) => String(n).toLowerCase().replace(/[^a-z0-9]/g, '') === 'youtube');
+      return [grupo ? grupo.nome : '', ...btCaminhoPasta(pasta).map((p) => p.nome)].some((n) => String(n).toLowerCase().replace(/[^a-z0-9]/g, '').includes('youtube'));
     }
 
     function renderizarEquilibrioConteudo() {

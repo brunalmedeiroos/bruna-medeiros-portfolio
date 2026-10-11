@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261011b">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261010d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -90,10 +90,6 @@
             <button class="nav-item" data-tab="portfolio" type="button">
               <i class="nav-icon-emoji" aria-hidden="true">📈</i>
               <span data-i18n="nav_portfolio">Portfólio</span>
-            </button>
-            <button class="nav-item" data-tab="equipe" type="button">
-              <i class="nav-icon-emoji" aria-hidden="true">🧑‍🤝‍🧑</i>
-              <span data-i18n="nav_equipe">Minha Equipe</span>
             </button>
           </div>
         </div>
@@ -209,16 +205,6 @@
             <button type="button" id="dash-atencao-ver-tudo" class="dash-atencao-ver-tudo" hidden></button>
           </div>
           </div>
-        </section>
-
-        <!-- ---------- Aba: Minha Equipe ----------
-             Só a apresentação das agentes e a página individual de cada uma. Ainda não há IA nem conversa. -->
-        <section id="panel-equipe" class="tab-panel" hidden>
-          <div id="eq-lista">
-            <p class="eq-subtitulo" data-i18n="equipe_subtitulo">Conheça suas especialistas e acesse o espaço de trabalho de cada uma.</p>
-            <div class="eq-grade" id="eq-grade"></div>
-          </div>
-          <div id="eq-agente" hidden></div>
         </section>
 
         <!-- ---------- Aba: Portfólio ---------- -->
@@ -3731,7 +3717,6 @@
     const TITULOS_ABA = {
       overview: 'titulo_dashboard',
       portfolio: 'titulo_portfolio',
-      equipe: 'titulo_equipe',
       calendario: 'titulo_calendario',
       email: 'titulo_email',
       ferramentas: 'titulo_ferramentas',
@@ -3762,14 +3747,6 @@
       pt: {
         titulo_dashboard: 'Dashboard',
         titulo_portfolio: 'Portfólio',
-        titulo_equipe: 'Minha equipe',
-        nav_equipe: 'Minha Equipe',
-        equipe_subtitulo: 'Conheça suas especialistas e acesse o espaço de trabalho de cada uma.',
-        equipe_conversar: 'Conversar',
-        equipe_voltar: '← Minha equipe',
-        equipe_o_que_faz: 'O que ela faz',
-        equipe_conversa_titulo: 'Espaço de conversa',
-        equipe_conversa_em_breve: 'O espaço de conversa será disponibilizado em uma próxima etapa.',
         titulo_calendario: 'Calendário',
         titulo_email: 'E-mail',
         titulo_ferramentas: 'Ferramentas',
@@ -4932,14 +4909,6 @@
       en: {
         titulo_dashboard: 'Dashboard',
         titulo_portfolio: 'Portfolio',
-        titulo_equipe: 'My team',
-        nav_equipe: 'My Team',
-        equipe_subtitulo: 'Meet your specialists and open the workspace of each one.',
-        equipe_conversar: 'Chat',
-        equipe_voltar: '← My team',
-        equipe_o_que_faz: 'What she does',
-        equipe_conversa_titulo: 'Chat space',
-        equipe_conversa_em_breve: 'The chat space will be available in a later stage.',
         titulo_calendario: 'Calendar',
         titulo_email: 'Email',
         titulo_ferramentas: 'Tools',
@@ -7020,7 +6989,7 @@
     // Capa azul no topo de cada página (menos Dashboard, que tem a saudação, e
     // E-mail, que tem a capa própria). O menu interno da página (UGC, Instagram,
     // Ferramentas) é levado pra dentro da capa e devolvido ao lugar quando sai.
-    const CAPA_MENUS = { ugc: '.ugc-subnav', instagram: '.instagram-subnav', ferramentas: '.ferr-modos', planejador: '#pl-hub', equipe: '.eq-subtitulo', financeiro: '.financeiro-subnav', metas: '.metas-subnav' };
+    const CAPA_MENUS = { ugc: '.ugc-subnav', instagram: '.instagram-subnav', ferramentas: '.ferr-modos', planejador: '#pl-hub', financeiro: '.financeiro-subnav', metas: '.metas-subnav' };
     const CAPA_SEM = ['overview', 'email'];
     // Abas que mostram o ícone da Nota rápida na capa (o Dashboard tem o dele).
     const NOTA_ABAS = ['ferramentas', 'clientes', 'produtos-digitais', 'planejador', 'instagram', 'financeiro', 'metas'];
@@ -7068,7 +7037,7 @@
       slot.hidden = !no;
       // Instagram esconde o menu quando a conta não está conectada; o Planejador
       // esconde o dele enquanto uma página (Banco de ideias, Achados) está aberta.
-      const vigiado = { instagram: 'instagram-layout', planejador: 'pl-hub', equipe: 'eq-lista' }[aba];
+      const vigiado = { instagram: 'instagram-layout', planejador: 'pl-hub' }[aba];
       if (no && vigiado) {
         const alvo = document.getElementById(vigiado);
         const sincronizar = () => (slot.hidden = alvo.hidden);
@@ -7136,7 +7105,6 @@
         financeiroAbaCarregada = true;
         carregarFinanceiroTransacoes();
       }
-      if (aba === 'equipe') equipeMostrarLista();
       if (aba === 'metas') {
         trocarSubAbaMetas('visao-geral');
         if (!metasAbaCarregada) {
@@ -7144,125 +7112,6 @@
           carregarMetas();
         }
       }
-    }
-
-    // ==========================================================================
-    // Aba: Minha Equipe — as seis agentes e a página individual de cada uma.
-    // Por enquanto é só estrutura visual: não há IA, conversa nem armazenamento.
-    // Cada agente já traz o que a conversa vai precisar depois (id, nome e a skill de origem),
-    // e a página individual tem um lugar reservado pro espaço de conversa.
-    // O avatar é um espaço: quando uma agente ganhar foto, é só preencher "foto".
-    // ==========================================================================
-
-    const EQUIPE_AGENTES = [
-      {
-        id: 'cecilia',
-        nome: 'Cecilia',
-        especialidade: 'Estrategista pessoal',
-        skill: 'bruna-creator',
-        foto: null,
-        descricao: 'Conhece você, seus objetivos e suas preferências. Ajuda a orientar a equipe para que as decisões respeitem sua identidade e a forma como você gosta de trabalhar.',
-        funcao: 'Cuida do contexto geral: seu posicionamento, seus objetivos, suas preferências, seus limites e a sua forma de trabalhar. Serve de referência para as outras especialistas quando isso importa para a tarefa, sem substituir nenhuma delas: ela dá o contexto para que cada uma trabalhe de maneira coerente com você.',
-      },
-      {
-        id: 'chloe',
-        nome: 'Chloe',
-        especialidade: 'Roteirista',
-        skill: 'roteiro-e-storytelling',
-        foto: null,
-        descricao: 'Transforma ideias em narrativas, desenvolve roteiros e ajuda a encontrar maneiras interessantes de contar uma história.',
-        funcao: 'Responsável pela construção narrativa de vídeos e outros conteúdos de roteiro. Trabalha com ganchos, desenvolvimento de ideias, estrutura narrativa, escrita da fala e sugestões de continuação para roteiros em andamento.',
-      },
-      {
-        id: 'pucca',
-        nome: 'Pucca',
-        especialidade: 'Copywriter',
-        skill: 'legendas-bruna',
-        foto: null,
-        descricao: 'Escreve legendas com a sua voz e ajuda a transformar ideias em textos naturais para suas publicações.',
-        funcao: 'Responsável pelas legendas que acompanham as suas publicações, respeitando o seu estilo de escrita, o seu tom, as suas preferências e as regras que você já definiu para as legendas.',
-      },
-      {
-        id: 'nala',
-        nome: 'Nala',
-        especialidade: 'Estrategista de conteúdo',
-        skill: 'estrategia-de-conteudo',
-        foto: null,
-        descricao: 'Ajuda a avaliar ideias, planejar conteúdos e conectar as publicações aos seus objetivos.',
-        funcao: 'Responsável pelo planejamento e pela estratégia de conteúdo. Avalia ideias, pensa nos objetivos de cada publicação, organiza pautas e analisa como os conteúdos contribuem para os seus projetos e as suas ofertas.',
-      },
-      {
-        id: 'jade',
-        nome: 'Jade',
-        especialidade: 'Especialista em UGC',
-        skill: 'ugc-conteudo-para-marcas',
-        foto: null,
-        descricao: 'Analisa briefings e propõe formatos e abordagens criativas para conteúdos de marcas.',
-        funcao: 'Responsável pela interpretação criativa de briefings e pela orientação de conteúdos UGC. Entende os objetivos da marca, identifica requisitos e restrições, sugere formatos e abordagens e avalia se uma ideia atende à proposta sem perder a sua naturalidade.',
-      },
-      {
-        id: 'nick',
-        nome: 'Nick',
-        especialidade: 'Diretora de produção',
-        skill: 'producao-de-conteudo',
-        foto: null,
-        descricao: 'Ajuda a transformar roteiros em vídeos bem executados, da gravação à edição.',
-        funcao: 'Responsável pela parte prática da produção audiovisual: preparação para a gravação, oratória, cenário, planos, ângulos, iluminação, áudio, A-roll, B-roll e edição.',
-      },
-    ];
-
-    let equipeAgenteAbertoId = null; // null = lista da equipe
-
-    function equipeAvatarHtml(agente, grande) {
-      const indice = EQUIPE_AGENTES.indexOf(agente) + 1;
-      const miolo = agente.foto ? `<img src="${escapeHtml(agente.foto)}" alt="">` : escapeHtml(agente.nome.charAt(0));
-      return `<span class="eq-avatar eq-avatar-${indice}${grande ? ' eq-avatar-grande' : ''}" aria-hidden="true">${miolo}</span>`;
-    }
-
-    function equipeMostrarLista() {
-      equipeAgenteAbertoId = null;
-      document.getElementById('eq-agente').hidden = true;
-      document.getElementById('eq-lista').hidden = false;
-      const grade = document.getElementById('eq-grade');
-      grade.innerHTML = EQUIPE_AGENTES.map(
-        (a) => `<button type="button" class="eq-card" data-agente="${escapeHtml(a.id)}">
-          ${equipeAvatarHtml(a, false)}
-          <span class="eq-card-nome">${escapeHtml(a.nome)}</span>
-          <span class="eq-card-especialidade">${escapeHtml(a.especialidade)}</span>
-          <span class="eq-card-descricao">${escapeHtml(a.descricao)}</span>
-          <span class="cal-btn cal-btn-primario eq-card-acao">${escapeHtml(tr('equipe_conversar'))}</span>
-        </button>`
-      ).join('');
-      grade.querySelectorAll('.eq-card').forEach((card) => card.addEventListener('click', () => equipeAbrirAgente(card.dataset.agente)));
-    }
-
-    function equipeAbrirAgente(id) {
-      const agente = EQUIPE_AGENTES.find((a) => a.id === id);
-      if (!agente) return;
-      equipeAgenteAbertoId = id;
-      const area = document.getElementById('eq-agente');
-      area.innerHTML = `
-        <button type="button" class="cal-btn eq-voltar" id="eq-voltar">${escapeHtml(tr('equipe_voltar'))}</button>
-        <div class="card eq-perfil">
-          ${equipeAvatarHtml(agente, true)}
-          <div class="eq-perfil-texto">
-            <h3 class="eq-perfil-nome">${escapeHtml(agente.nome)}</h3>
-            <span class="eq-card-especialidade">${escapeHtml(agente.especialidade)}</span>
-            <p class="eq-perfil-descricao">${escapeHtml(agente.descricao)}</p>
-          </div>
-        </div>
-        <div class="card eq-secao">
-          <h4 class="eq-secao-titulo">${escapeHtml(tr('equipe_o_que_faz'))}</h4>
-          <p class="eq-secao-texto">${escapeHtml(agente.funcao)}</p>
-        </div>
-        <div class="eq-conversa-reservada" id="eq-conversa">
-          <h4 class="eq-secao-titulo">${escapeHtml(tr('equipe_conversa_titulo'))}</h4>
-          <p>${escapeHtml(tr('equipe_conversa_em_breve'))}</p>
-        </div>`;
-      document.getElementById('eq-voltar').addEventListener('click', equipeMostrarLista);
-      document.getElementById('eq-lista').hidden = true;
-      area.hidden = false;
-      window.scrollTo({ top: 0 });
     }
 
     function trocarPeriodo(periodo, btn) {

@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261011c">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261012a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1035,6 +1035,19 @@
                 <div class="card-numero">
                   <span class="card-label" data-i18n="pl_vg_postados">Postados</span>
                   <span class="card-valor" id="pl-vg-postados">0</span>
+                </div>
+              </div>
+
+              <div class="pl-vg-equilibrio" id="pl-vg-equilibrio" hidden>
+                <div class="card pl-eq-card">
+                  <h3 class="card-titulo" data-i18n="pl_eq_pilares_titulo">Pilares de conteúdo</h3>
+                  <p class="cal-todas-resumo" data-i18n="pl_eq_pilares_desc">Quantos roteiros tem em cada pilar.</p>
+                  <div id="pl-eq-pilares"></div>
+                </div>
+                <div class="card pl-eq-card">
+                  <h3 class="card-titulo" data-i18n="pl_eq_publico_titulo">Marcas × Comunidade</h3>
+                  <p class="cal-todas-resumo" data-i18n="pl_eq_publico_desc">Pra quem são os seus roteiros.</p>
+                  <div id="pl-eq-publico"></div>
                 </div>
               </div>
 
@@ -4412,6 +4425,22 @@
         bt_publico_comunidade: 'Comunidade',
         bt_publico_ambos: 'Os dois',
         bt_classif_aviso: 'Pra marcar o pilar e o público, rode o arquivo banco-ideias-pilar-publico.sql no SQL Editor do Supabase.',
+        pl_eq_pilares_titulo: 'Pilares de conteúdo',
+        pl_eq_pilares_desc: 'Quantos roteiros tem em cada pilar. Um roteiro com mais de um pilar conta em todos.',
+        pl_eq_publico_titulo: 'Marcas × Comunidade',
+        pl_eq_publico_desc: 'Pra quem são os seus roteiros.',
+        pl_eq_vazio_pilares: 'Marque o pilar dos seus roteiros pra ver aqui qual está mais forte.',
+        pl_eq_vazio_publico: 'Marque pra quem é cada roteiro (marcas, comunidade ou os dois) pra ver o equilíbrio aqui.',
+        pl_eq_mais_forte: 'Mais forte',
+        pl_eq_precisa_mais: 'Precisa de mais',
+        pl_eq_pilares_equilibrados: '✨ Os pilares estão equilibrados.',
+        pl_eq_sem_pilar_um: 'roteiro ainda sem pilar',
+        pl_eq_sem_pilar_varios: 'roteiros ainda sem pilar',
+        pl_eq_sem_publico_um: 'roteiro ainda sem público definido',
+        pl_eq_sem_publico_varios: 'roteiros ainda sem público definido',
+        pl_eq_publico_equilibrado: '⚖️ Equilibrado entre marcas e comunidade.',
+        pl_eq_publico_mais_marcas: 'Mais voltado pra marcas. Falta conteúdo pra comunidade.',
+        pl_eq_publico_mais_comunidade: 'Mais voltado pra comunidade. Falta conteúdo pra marcas.',
 
         // Radar de Notícias
         radar_atualizar: 'Atualizar notícias',
@@ -5586,6 +5615,22 @@
         bt_publico_comunidade: 'Community',
         bt_publico_ambos: 'Both',
         bt_classif_aviso: 'To mark the pillar and audience, run banco-ideias-pilar-publico.sql in the Supabase SQL Editor.',
+        pl_eq_pilares_titulo: 'Content pillars',
+        pl_eq_pilares_desc: 'How many scripts are in each pillar. A script with more than one pillar counts in all of them.',
+        pl_eq_publico_titulo: 'Brands × Community',
+        pl_eq_publico_desc: 'Who your scripts are for.',
+        pl_eq_vazio_pilares: 'Mark the pillar of your scripts to see which one is strongest here.',
+        pl_eq_vazio_publico: 'Mark who each script is for (brands, community or both) to see the balance here.',
+        pl_eq_mais_forte: 'Strongest',
+        pl_eq_precisa_mais: 'Needs more',
+        pl_eq_pilares_equilibrados: '✨ The pillars are balanced.',
+        pl_eq_sem_pilar_um: 'script still without a pillar',
+        pl_eq_sem_pilar_varios: 'scripts still without a pillar',
+        pl_eq_sem_publico_um: 'script still without an audience',
+        pl_eq_sem_publico_varios: 'scripts still without an audience',
+        pl_eq_publico_equilibrado: '⚖️ Balanced between brands and community.',
+        pl_eq_publico_mais_marcas: 'Leaning toward brands. Needs more community content.',
+        pl_eq_publico_mais_comunidade: 'Leaning toward community. Needs more brand content.',
 
         // News Radar
         radar_atualizar: 'Refresh news',
@@ -12657,8 +12702,92 @@
 
     // ---- Visão geral + cronograma de postagem (calendário) ----
 
+    // Gráficos de equilíbrio da Visão geral: pilares e marcas × comunidade, a partir do que está marcado nos roteiros.
+    function renderizarEquilibrioConteudo() {
+      const bloco = document.getElementById('pl-vg-equilibrio');
+      bloco.hidden = !(btCarregado && btClassifOk);
+      if (bloco.hidden) return;
+      const plural = (n, um, varios) => `${n} ${n === 1 ? tr(um) : tr(varios)}`;
+
+      // --- pilares ---
+      const chavePilar = { Autoridade: 'bt_pilar_autoridade', Desejo: 'bt_pilar_desejo', Conexão: 'bt_pilar_conexao', Oferta: 'bt_pilar_oferta' };
+      const contagem = { Autoridade: 0, Desejo: 0, Conexão: 0, Oferta: 0 };
+      let semPilar = 0;
+      btConteudos.forEach((c) => {
+        const marcados = String(c.pilar_conteudo || '').split(',').filter((p) => p in contagem);
+        if (!marcados.length) semPilar++;
+        marcados.forEach((p) => contagem[p]++);
+      });
+      const valores = Object.values(contagem);
+      const maior = Math.max(...valores);
+      const menor = Math.min(...valores);
+      const totalMarcas = valores.reduce((s, v) => s + v, 0);
+      const areaPilares = document.getElementById('pl-eq-pilares');
+      if (totalMarcas === 0) {
+        areaPilares.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('pl_eq_vazio_pilares'))}</p>`;
+      } else {
+        const equilibrado = maior === menor;
+        const linhasPilares = Object.keys(contagem)
+          .map((p) => {
+            const v = contagem[p];
+            const classe = equilibrado ? '' : v === maior ? ' pl-eq-forte' : v === menor ? ' pl-eq-fraco' : '';
+            const pct = Math.round((v / totalMarcas) * 100);
+            return `<div class="pl-eq-linha">
+              <span class="pl-eq-rotulo">${escapeHtml(tr(chavePilar[p]))}</span>
+              <span class="pl-eq-trilho"><span class="pl-eq-barra${classe}" style="width:${maior ? Math.max((v / maior) * 100, v ? 4 : 0) : 0}%"></span></span>
+              <span class="pl-eq-valor">${v}<small>${pct}%</small></span>
+            </div>`;
+          })
+          .join('');
+        const nomes = (alvo) => Object.keys(contagem).filter((p) => contagem[p] === alvo).map((p) => tr(chavePilar[p])).join(', ');
+        const resumo = equilibrado
+          ? `<p class="pl-eq-resumo">${escapeHtml(tr('pl_eq_pilares_equilibrados'))}</p>`
+          : `<p class="pl-eq-resumo"><span class="pl-eq-selo pl-eq-selo-forte">${escapeHtml(tr('pl_eq_mais_forte'))}</span> ${escapeHtml(nomes(maior))}<br><span class="pl-eq-selo pl-eq-selo-fraco">${escapeHtml(tr('pl_eq_precisa_mais'))}</span> ${escapeHtml(nomes(menor))}</p>`;
+        const aviso = semPilar ? `<p class="pl-eq-nota">${escapeHtml(plural(semPilar, 'pl_eq_sem_pilar_um', 'pl_eq_sem_pilar_varios'))}</p>` : '';
+        areaPilares.innerHTML = linhasPilares + resumo + aviso;
+      }
+
+      // --- marcas × comunidade ---
+      let marcas = 0;
+      let comunidade = 0;
+      let ambos = 0;
+      let semPublico = 0;
+      btConteudos.forEach((c) => {
+        if (c.publico === 'marcas') marcas++;
+        else if (c.publico === 'comunidade') comunidade++;
+        else if (c.publico === 'ambos') ambos++;
+        else semPublico++;
+      });
+      const definidos = marcas + comunidade + ambos;
+      const areaPublico = document.getElementById('pl-eq-publico');
+      if (definidos === 0) {
+        areaPublico.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('pl_eq_vazio_publico'))}</p>`;
+        return;
+      }
+      const pctDe = (v) => (v / definidos) * 100;
+      const segmento = (v, classe, rotulo) =>
+        v ? `<span class="pl-eq-seg ${classe}" style="width:${pctDe(v)}%" title="${escapeHtml(rotulo)}: ${v}">${pctDe(v) >= 9 ? Math.round(pctDe(v)) + '%' : ''}</span>` : '';
+      const legenda = (v, classe, rotulo) =>
+        `<span class="pl-eq-leg"><i class="pl-eq-leg-cor ${classe}"></i>${escapeHtml(rotulo)} <strong>${v}</strong></span>`;
+      const rMarcas = tr('bt_publico_marcas');
+      const rComunidade = tr('bt_publico_comunidade');
+      const rAmbos = tr('bt_publico_ambos');
+      // quem fala com marcas (só marcas + os dois) contra quem fala com a comunidade (só comunidade + os dois)
+      const comMarcas = marcas + ambos;
+      const comComunidade = comunidade + ambos;
+      const parteMarcas = comMarcas / (comMarcas + comComunidade);
+      const veredito =
+        parteMarcas > 0.6 ? tr('pl_eq_publico_mais_marcas') : parteMarcas < 0.4 ? tr('pl_eq_publico_mais_comunidade') : tr('pl_eq_publico_equilibrado');
+      areaPublico.innerHTML = `
+        <div class="pl-eq-empilhada">${segmento(marcas, 'pl-eq-c-marcas', rMarcas)}${segmento(ambos, 'pl-eq-c-ambos', rAmbos)}${segmento(comunidade, 'pl-eq-c-comunidade', rComunidade)}</div>
+        <div class="pl-eq-legenda">${legenda(marcas, 'pl-eq-c-marcas', rMarcas)}${legenda(ambos, 'pl-eq-c-ambos', rAmbos)}${legenda(comunidade, 'pl-eq-c-comunidade', rComunidade)}</div>
+        <p class="pl-eq-resumo">${escapeHtml(veredito)}</p>
+        ${semPublico ? `<p class="pl-eq-nota">${escapeHtml(plural(semPublico, 'pl_eq_sem_publico_um', 'pl_eq_sem_publico_varios'))}</p>` : ''}`;
+    }
+
     // Contadores por etapa do roteiro, do Banco de ideias & Roteiros (todas as pastas).
     function atualizarContadorVisaoGeral() {
+      renderizarEquilibrioConteudo();
       const conta = (...etapas) => btConteudos.filter((c) => etapas.includes(plEstagio(c))).length;
       [
         ['pl-vg-roteiros-prontos', ['Roteiro pronto']],

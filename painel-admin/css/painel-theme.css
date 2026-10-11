@@ -10828,3 +10828,171 @@
   outline: 2px solid var(--grafite);
   outline-offset: 2px;
 }
+
+/* ---- Visão geral de Meus conteúdos: gráficos de pilares e marcas × comunidade ---- */
+
+.painel-body .pl-vg-equilibrio {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.painel-body .pl-vg-equilibrio[hidden] {
+  display: none;
+}
+
+.painel-body .pl-eq-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.painel-body .pl-eq-linha {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) 62px;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.painel-body .pl-eq-rotulo {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .pl-eq-trilho {
+  display: block;
+  height: 16px;
+  border-radius: 999px;
+  background: rgba(var(--grafite-rgb), 0.07);
+  overflow: hidden;
+}
+
+.painel-body .pl-eq-barra {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--coral);
+  transition: width 0.4s ease;
+}
+
+.painel-body .pl-eq-barra.pl-eq-forte {
+  background: var(--grafite);
+}
+
+.painel-body .pl-eq-barra.pl-eq-fraco {
+  background: #F2D675;
+}
+
+.painel-body .pl-eq-valor {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grafite);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.painel-body .pl-eq-valor small {
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
+.painel-body .pl-eq-resumo {
+  margin: 16px 0 0;
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--grafite);
+}
+
+.painel-body .pl-eq-selo {
+  display: inline-block;
+  padding: 2px 10px;
+  margin-right: 4px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.painel-body .pl-eq-selo-forte {
+  background: var(--grafite);
+  color: var(--branco);
+}
+
+.painel-body .pl-eq-selo-fraco {
+  background: #FFF7C5;
+  color: var(--grafite);
+}
+
+.painel-body .pl-eq-nota {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.painel-body .pl-eq-empilhada {
+  display: flex;
+  height: 40px;
+  margin-top: 16px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(var(--grafite-rgb), 0.07);
+}
+
+.painel-body .pl-eq-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--branco);
+  transition: width 0.4s ease;
+}
+
+.painel-body .pl-eq-c-marcas {
+  background: var(--grafite);
+}
+
+.painel-body .pl-eq-c-ambos {
+  background: #2B7391;
+}
+
+.painel-body .pl-eq-c-comunidade {
+  background: var(--coral);
+}
+
+.painel-body .pl-eq-seg.pl-eq-c-comunidade {
+  color: var(--grafite);
+}
+
+.painel-body .pl-eq-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 14px;
+}
+
+.painel-body .pl-eq-leg {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--grafite);
+}
+
+.painel-body .pl-eq-leg-cor {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+@media (max-width: 900px) {
+  .painel-body .pl-vg-equilibrio {
+    grid-template-columns: 1fr;
+  }
+}

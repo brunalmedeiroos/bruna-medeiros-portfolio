@@ -10775,3 +10775,56 @@
 .painel-body .ugc-pacote-v2-campos[hidden] {
   display: none;
 }
+
+/* ---- Editor de roteiro: pilares (dá pra marcar mais de um) ---- */
+
+.painel-body .bt-pilares-campo {
+  flex: 2 1 340px;
+}
+
+.painel-body .bt-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.painel-body .bt-chips .bt-chip {
+  position: relative;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  cursor: pointer;
+}
+
+.painel-body .bt-chip input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.painel-body .bt-chip span {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--grafite);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.painel-body .bt-chip:hover span {
+  border-color: var(--coral);
+}
+
+.painel-body .bt-chip input:checked + span {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .bt-chip input:focus-visible + span {
+  outline: 2px solid var(--grafite);
+  outline-offset: 2px;
+}

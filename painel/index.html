@@ -6570,6 +6570,7 @@
           document.getElementById('pl-modal-gravado').checked = true;
         }
       });
+      document.getElementById('pl-modal-pasta').addEventListener('change', btAtualizarClassifVisivel);
       document.getElementById('pl-modal-gravado').addEventListener('change', (e) => {
         const status = document.getElementById('pl-modal-status');
         if (btConteudoAbertoId && e.target.checked && (status.value === 'Não iniciado' || status.value === 'Roteiro pronto')) status.value = 'Pronto para postar';
@@ -12103,8 +12104,14 @@
           return `<optgroup label="${escapeHtml(btInfoGrupo(chave).rotulo)}">${opcoes}</optgroup>`;
         })
         .join('');
+      btAtualizarClassifVisivel();
       document.getElementById('pl-modal-overlay').hidden = false;
       ideiaSnapshotInicial = capturarEstadoIdeia();
+    }
+
+    // Pilares e "Conteúdo para" não fazem sentido na pasta Youtube (é tudo pra comunidade e sem pilar): somem do editor.
+    function btAtualizarClassifVisivel() {
+      document.getElementById('bt-classif-linha').hidden = !(btClassifOk && !btPastaFicaFora(document.getElementById('pl-modal-pasta').value));
     }
 
     async function btSalvarConteudo() {
@@ -12705,7 +12712,11 @@
     // Gráficos de equilíbrio da Visão geral: pilares e marcas × comunidade, a partir do que está marcado nos roteiros.
     // Conteúdos de qualquer pasta com "Youtube" no nome (ou dentro de uma) ficam de fora: são pra comunidade e não levam pilar.
     function btForaDosGraficos(c) {
-      const pasta = btPastas.find((p) => p.id === c.pasta_id);
+      return btPastaFicaFora(c.pasta_id);
+    }
+
+    function btPastaFicaFora(pastaId) {
+      const pasta = btPastas.find((p) => p.id === pastaId);
       if (!pasta) return false;
       const grupo = btGrupos.find((g) => g.chave === pasta.grupo);
       return [grupo ? grupo.nome : '', ...btCaminhoPasta(pasta).map((p) => p.nome)].some((n) => String(n).toLowerCase().replace(/[^a-z0-9]/g, '').includes('youtube'));

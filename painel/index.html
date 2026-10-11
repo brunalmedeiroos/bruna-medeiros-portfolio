@@ -1997,6 +1997,29 @@
           </div>
         </div>
 
+        <div class="pl-modal-linha" id="bt-classif-linha" hidden>
+          <div class="cal-form-campo">
+            <label for="pl-modal-pilar-conteudo" data-i18n="bt_pilar_conteudo">Pilar</label>
+            <select id="pl-modal-pilar-conteudo">
+              <option value="" data-i18n="bt_pilar_nenhum">Sem pilar</option>
+              <option value="Autoridade" data-i18n="bt_pilar_autoridade">Autoridade</option>
+              <option value="Desejo" data-i18n="bt_pilar_desejo">Desejo</option>
+              <option value="Conexão" data-i18n="bt_pilar_conexao">Conexão</option>
+              <option value="Oferta" data-i18n="bt_pilar_oferta">Oferta</option>
+            </select>
+          </div>
+          <div class="cal-form-campo">
+            <label for="pl-modal-publico" data-i18n="bt_publico">Conteúdo para</label>
+            <select id="pl-modal-publico">
+              <option value="" data-i18n="bt_publico_nenhum">Não definido</option>
+              <option value="marcas" data-i18n="bt_publico_marcas">Marcas</option>
+              <option value="comunidade" data-i18n="bt_publico_comunidade">Comunidade</option>
+              <option value="ambos" data-i18n="bt_publico_ambos">Os dois</option>
+            </select>
+          </div>
+        </div>
+        <p class="dash-aviso" id="bt-classif-aviso" hidden data-i18n="bt_classif_aviso">Pra marcar o pilar e o público, rode o arquivo banco-ideias-pilar-publico.sql no SQL Editor do Supabase.</p>
+
         <label class="pl-checkbox-linha">
           <input type="checkbox" id="pl-modal-gravado">
           <span id="pl-modal-gravado-txt" data-i18n="pl_ja_gravado">Já foi gravado (some do Banco de Ideias, continua no Cronograma)</span>
@@ -4379,6 +4402,18 @@
         pl_visao_geral: 'Visão geral',
         pl_cronograma: '📅 Cronograma de postagem',
         pl_pilar: 'Pilar',
+        bt_pilar_conteudo: 'Pilar',
+        bt_pilar_nenhum: 'Sem pilar',
+        bt_pilar_autoridade: 'Autoridade',
+        bt_pilar_desejo: 'Desejo',
+        bt_pilar_conexao: 'Conexão',
+        bt_pilar_oferta: 'Oferta',
+        bt_publico: 'Conteúdo para',
+        bt_publico_nenhum: 'Não definido',
+        bt_publico_marcas: 'Marcas',
+        bt_publico_comunidade: 'Comunidade',
+        bt_publico_ambos: 'Os dois',
+        bt_classif_aviso: 'Pra marcar o pilar e o público, rode o arquivo banco-ideias-pilar-publico.sql no SQL Editor do Supabase.',
 
         // Radar de Notícias
         radar_atualizar: 'Atualizar notícias',
@@ -5542,6 +5577,18 @@
         pl_visao_geral: 'Overview',
         pl_cronograma: '📅 Posting schedule',
         pl_pilar: 'Pillar',
+        bt_pilar_conteudo: 'Pillar',
+        bt_pilar_nenhum: 'No pillar',
+        bt_pilar_autoridade: 'Authority',
+        bt_pilar_desejo: 'Desire',
+        bt_pilar_conexao: 'Connection',
+        bt_pilar_oferta: 'Offer',
+        bt_publico: 'Content for',
+        bt_publico_nenhum: 'Not set',
+        bt_publico_marcas: 'Brands',
+        bt_publico_comunidade: 'Community',
+        bt_publico_ambos: 'Both',
+        bt_classif_aviso: 'To mark the pillar and audience, run banco-ideias-pilar-publico.sql in the Supabase SQL Editor.',
 
         // News Radar
         radar_atualizar: 'Refresh news',
@@ -10859,6 +10906,8 @@
         status: document.getElementById('pl-modal-status').value,
         pilar: document.getElementById('pl-modal-pilar').value,
         pasta: document.getElementById('pl-modal-pasta').value,
+        pilarConteudo: document.getElementById('pl-modal-pilar-conteudo').value,
+        publico: document.getElementById('pl-modal-publico').value,
         gravado: document.getElementById('pl-modal-gravado').checked,
         roteiroBreve: document.getElementById('pl-modal-roteiro-breve').value,
         roteiroCompleto: document.getElementById('pl-modal-roteiro-completo').innerHTML,
@@ -10999,6 +11048,7 @@
 
     let btGrupos = []; // pastas principais (linhas de ideias_grupos)
     let btAgendaOk = false; // a coluna data_agendada existe (SQL do cronograma rodado)
+    let btClassifOk = false; // as colunas pilar_conteudo e publico existem (banco-ideias-pilar-publico.sql rodado)
     let btGruposEditaveis = true;
 
     // Mensagens da pasta (BT_GRUPOS ou genérica) com o nome e a cor que estão no banco.
@@ -11061,6 +11111,7 @@
       }
       await btCarregarGrupos();
       await btCarregarAgenda();
+      await btCarregarClassif();
       await btCarregarSub();
       btCarregado = true;
     }
@@ -11503,6 +11554,8 @@
         status: dados.status || 'Não iniciado',
         roteiro_breve: dados.roteiro_breve || null,
         roteiro_completo: dados.roteiro_completo || null,
+        pilar_conteudo: dados.pilar_conteudo || null,
+        publico: dados.publico || null,
         pastaId,
       };
       btRenderizar();
@@ -11521,6 +11574,8 @@
           status: document.getElementById('pl-modal-status').value,
           roteiro_breve: document.getElementById('pl-modal-roteiro-breve').value.trim(),
           roteiro_completo: conteudoRoteiroVazio(area) ? null : area.innerHTML,
+          pilar_conteudo: document.getElementById('pl-modal-pilar-conteudo').value,
+          publico: document.getElementById('pl-modal-publico').value,
         },
         original.pasta_id
       );
@@ -11543,6 +11598,7 @@
             roteiro_completo: btCopiado.roteiro_completo,
             gravado: false,
             ordem: proxima,
+            ...(btClassifOk ? { pilar_conteudo: btCopiado.pilar_conteudo, publico: btCopiado.publico } : {}),
           })
           .select();
         if (error) throw error;
@@ -11970,6 +12026,12 @@
       document.getElementById('pl-modal-gravado-txt').hidden = teste;
       document.getElementById('pl-modal-gravado-txt-teste').hidden = !teste;
       document.getElementById('pl-modal-copiar').hidden = !teste;
+      document.getElementById('bt-classif-linha').hidden = !(teste && btClassifOk);
+      document.getElementById('bt-classif-aviso').hidden = !(teste && !btClassifOk);
+      if (!teste) {
+        document.getElementById('pl-modal-pilar-conteudo').value = '';
+        document.getElementById('pl-modal-publico').value = '';
+      }
     }
 
     function btAbrirConteudo(c) {
@@ -11985,6 +12047,8 @@
       areaRoteiroCompleto.setAttribute('data-placeholder', tr('pl_roteiro_completo_placeholder'));
       prepararEstiloPadraoRoteiro(areaRoteiroCompleto);
       document.getElementById('pl-modal-gravado').checked = !!c.gravado;
+      document.getElementById('pl-modal-pilar-conteudo').value = c.pilar_conteudo || '';
+      document.getElementById('pl-modal-publico').value = c.publico || '';
 
       document.getElementById('pl-modal-pasta').innerHTML = btOrdenar(btGrupos)
         .map((gr) => gr.chave)
@@ -12013,6 +12077,12 @@
           const area = document.getElementById('pl-modal-roteiro-completo');
           return conteudoRoteiroVazio(area) ? null : area.innerHTML;
         })(),
+        ...(btClassifOk
+          ? {
+              pilar_conteudo: document.getElementById('pl-modal-pilar-conteudo').value || null,
+              publico: document.getElementById('pl-modal-publico').value || null,
+            }
+          : {}),
       };
       if (!linha.titulo || !linha.pasta_id) return;
       try {
@@ -12054,6 +12124,15 @@
       if (!pasta) return '';
       const grupo = btGrupos.find((g) => g.chave === pasta.grupo);
       return [grupo ? grupo.nome : null, ...btCaminhoPasta(pasta).map((p) => p.nome)].filter(Boolean).join(' › ');
+    }
+
+    async function btCarregarClassif() {
+      try {
+        const { error } = await Auth.sb.from('ideias_conteudos').select('pilar_conteudo,publico').limit(1);
+        btClassifOk = !error;
+      } catch (err) {
+        btClassifOk = false;
+      }
     }
 
     async function btCarregarAgenda() {

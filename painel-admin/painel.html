@@ -11273,7 +11273,7 @@
       if (!btArrasto || btArrasto.id === el.dataset.chave) return null;
       if (btArrasto.tipo === tipo) {
         if (lote !== undefined && btArrasto.lote !== lote) return null; // só reordena dentro do mesmo grupo
-        if (aceitaDentro && tipo === 'pasta' && btZonaDoCartao(e, el) === 'meio') return 'dentro';
+        if (aceitaDentro && (tipo === 'pasta' || tipo === 'grupo') && btZonaDoCartao(e, el) === 'meio') return 'dentro';
         return 'ordem';
       }
       if (aceitaDentro && tipo === 'pasta' && btArrasto.tipo === 'conteudo') return 'dentro';
@@ -11316,7 +11316,8 @@
     }
 
     function btSoltarDentro(arrastado, pastaDestinoId) {
-      if (arrastado.tipo === 'pasta') btMoverPastaPara(arrastado.id, pastaDestinoId, null);
+      if (arrastado.tipo === 'grupo') btMoverGrupoParaDentro(arrastado.id, pastaDestinoId);
+      else if (arrastado.tipo === 'pasta') btMoverPastaPara(arrastado.id, pastaDestinoId, null);
       else if (arrastado.tipo === 'conteudo') btMoverConteudoPara(arrastado.id, pastaDestinoId);
     }
 
@@ -11394,6 +11395,61 @@
       } catch (err) {
         console.error('Erro ao mover pasta:', err);
         alert('Não consegui mover a pasta. Tente de novo.');
+        await btCarregar();
+        btRenderizar();
+      }
+    }
+
+    // Pasta principal arrastada pra dentro de outra pasta principal: ela vira uma pasta comum lá dentro
+    // (com o mesmo nome, emoji e cor), levando junto tudo o que tinha. A pasta principal antiga deixa de existir.
+    async function btMoverGrupoParaDentro(origemChave, destinoChave) {
+      const origem = btGrupos.find((g) => g.chave === origemChave);
+      const destino = btGrupos.find((g) => g.chave === destinoChave);
+      if (!origem || !destino || origem.chave === destino.chave || !origem.id) return;
+      if (!btSubOk) {
+        alert('Pra colocar uma pasta dentro de outra, rode o arquivo banco-ideias-teste-subpastas.sql no SQL Editor do Supabase.');
+        return;
+      }
+      const pastasDe = btPastasDoGrupo(origem.chave);
+      const diretas = pastasDe.filter((p) => !p.pai_id);
+      const dentro = [];
+      if (pastasDe.length) dentro.push(btPlural(pastasDe.length, 'pasta', 'pastas'));
+      const qtd = btConteudos.filter((c) => pastasDe.some((p) => p.id === c.pasta_id)).length;
+      if (qtd) dentro.push(btPlural(qtd, 'conteúdo', 'conteúdos'));
+      const jeito = BT_GRUPOS[origem.chave] && origem.chave !== destino.chave && pastasDe.length ? ` As pastas passam a funcionar como as de "${destino.nome}".` : '';
+      const aviso =
+        `Colocar "${origem.nome}" dentro de "${destino.nome}"?${dentro.length ? ` Tudo o que tem nela (${dentro.join(' e ')}) vai junto.` : ''}${jeito}`;
+      if (!(await confirmarAcao(aviso, { textoConfirmar: 'Colocar dentro' }))) return;
+
+      const ordem = btFilhas(destino.chave, null).reduce((max, p) => Math.max(max, p.ordem || 0), -1) + 1;
+      let novaId = null;
+      let moveu = false;
+      try {
+        const { data, error } = await Auth.sb
+          .from('ideias_pastas')
+          .insert({ grupo: destino.chave, nome: origem.nome, ordem, pai_id: null, emoji: origem.emoji || null, cor: origem.cor || null })
+          .select();
+        if (error) throw error;
+        novaId = data[0].id;
+        if (pastasDe.length) {
+          const { error: erroGrupo } = await Auth.sb.from('ideias_pastas').update({ grupo: destino.chave }).eq('grupo', origem.chave).neq('id', novaId);
+          if (erroGrupo) throw erroGrupo;
+          moveu = true;
+          if (diretas.length) {
+            const { error: erroPai } = await Auth.sb.from('ideias_pastas').update({ pai_id: novaId }).in('id', diretas.map((p) => p.id));
+            if (erroPai) throw erroPai;
+          }
+        }
+        const { error: erroExcluir } = await Auth.sb.from('ideias_grupos').delete().eq('id', origem.id);
+        if (erroExcluir) throw erroExcluir;
+        await btCarregar();
+        btToast(`"${origem.nome}" foi pra dentro de ${destino.nome}.`);
+        btRenderizar();
+      } catch (err) {
+        console.error('Erro ao colocar pasta principal dentro de outra:', err);
+        // se nada tinha sido movido ainda, desfaz a pasta criada
+        if (novaId && !moveu) await Auth.sb.from('ideias_pastas').delete().eq('id', novaId);
+        alert('Não consegui mover a pasta. Vou recarregar pra conferir como ficou.');
         await btCarregar();
         btRenderizar();
       }
@@ -11620,6 +11676,7 @@
             <button type="button" class="cal-btn cal-btn-primario" id="bt-nova-grupo" ${btGruposEditaveis ? '' : 'disabled'}>+ Nova pasta</button>
           </div>
         </div>
+        ${btGruposEditaveis && btGrupos.length > 1 ? '<p class="bt-dica">Dica: arraste uma pasta pro meio de outra pra colocar dentro dela, ou pelas pontas pra mudar a ordem.</p>' : ''}
         ${
           btGrupos.length === 0
             ? '<div class="ferr-vazio"><p>Você ainda não tem nenhuma pasta.</p></div>'
@@ -11638,10 +11695,16 @@
         }
       });
       if (btGruposEditaveis) {
-        btLigarArrasto(area, '.ferr-pasta', 'grupo', (origem, destino) => {
-          btGrupos = btReordenarLista(btOrdenar(btGrupos), 'chave', origem, destino);
-          btPersistirOrdem(btGrupos, 'ideias_grupos');
-        });
+        btLigarArrasto(
+          area,
+          '.ferr-pasta',
+          'grupo',
+          (origem, destino) => {
+            btGrupos = btReordenarLista(btOrdenar(btGrupos), 'chave', origem, destino);
+            btPersistirOrdem(btGrupos, 'ideias_grupos');
+          },
+          true
+        );
       }
     }
 

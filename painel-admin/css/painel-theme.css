@@ -5998,6 +5998,21 @@
   padding-top: 8px;
 }
 
+/* Banco de ideias: uma linha por cor de pasta */
+.painel-body .bt-pastas-linhas {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.painel-body .bt-pastas-linhas .bt-subpastas {
+  margin-bottom: 0;
+}
+
+.painel-body .bt-pastas-linhas:has(.bt-subpastas) {
+  margin-bottom: 28px;
+}
+
 .painel-body .ferr-pastas-grade-busca {
   margin-bottom: 22px;
 }

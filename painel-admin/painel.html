@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261010c">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261010d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -11622,6 +11622,19 @@
 
     // ---------- pastas (mesmo desenho das pastas da aba Ferramentas) ----------
 
+    // Cada cor de pasta numa linha só dela: as cores aparecem na ordem em que surgem, e dentro de cada linha vale a ordem das pastas.
+    // itens: [{ cor, html }]
+    function btGradesPorCor(itens, classeExtra) {
+      const porCor = new Map();
+      itens.forEach((it) => {
+        const chave = String(it.cor || '').toLowerCase();
+        if (!porCor.has(chave)) porCor.set(chave, []);
+        porCor.get(chave).push(it.html);
+      });
+      const classe = 'ferr-pastas-grade' + (classeExtra ? ' ' + classeExtra : '');
+      return `<div class="bt-pastas-linhas">${[...porCor.values()].map((htmls) => `<div class="${classe}">${htmls.join('')}</div>`).join('')}</div>`;
+    }
+
     function btHtmlPasta(chave, nome, cor, subtitulo, editavel) {
       return `
         <article class="ferr-pasta" data-chave="${escapeHtml(chave)}" style="--pc:${cor};--pd:${ferrCorEscura(cor)};--pt:${ferrTextoSobre(cor)}">
@@ -11642,9 +11655,8 @@
           const g = btInfoGrupo(gr.chave);
           const n = btFilhas(gr.chave, null).length;
           const nome = (g.emoji ? g.emoji + ' ' : '') + g.rotulo;
-          return btHtmlPasta(gr.chave, nome, g.cor, btPlural(n, g.um, g.plural), btGruposEditaveis);
-        })
-        .join('');
+          return { cor: g.cor, html: btHtmlPasta(gr.chave, nome, g.cor, btPlural(n, g.um, g.plural), btGruposEditaveis) };
+        });
       const prontos = btConteudos.filter((c) => plEstagio(c) === 'Roteiro pronto').length;
       const ideias = btConteudos.filter((c) => btEtiquetaRoteiro(c) === tr('pl_ideia_criada')).length;
       const emConstrucao = btConteudos.filter((c) => plEstagio(c) === 'Roteiro em construção').length;
@@ -11680,7 +11692,7 @@
         ${
           btGrupos.length === 0
             ? '<div class="ferr-vazio"><p>Você ainda não tem nenhuma pasta.</p></div>'
-            : `<div class="ferr-pastas-grade">${cartoes}</div>`
+            : btGradesPorCor(cartoes)
         }`;
       document.getElementById('bt-nova-grupo').addEventListener('click', () => btAbrirModalGrupo(null, false));
       area.querySelectorAll('.ferr-pasta').forEach((el) => {
@@ -11727,9 +11739,7 @@
         ${
           pastas.length === 0
             ? `<div class="ferr-vazio"><p>${escapeHtml(g.vazio)}</p></div>`
-            : `<div class="ferr-pastas-grade">${pastas
-                .map((p) => btHtmlPasta(p.id, btNomePasta(p), btCorPasta(p), btSubtituloPasta(p, g), true))
-                .join('')}</div>`
+            : btGradesPorCor(pastas.map((p) => ({ cor: btCorPasta(p), html: btHtmlPasta(p.id, btNomePasta(p), btCorPasta(p), btSubtituloPasta(p, g), true) })))
         }`;
       document.getElementById('bt-voltar').addEventListener('click', () => btIr(null, null));
       document.getElementById('bt-nova-pasta').addEventListener('click', () => btAbrirModalPasta(null));
@@ -11785,9 +11795,10 @@
         ${subpastas.length || conteudos.length ? '<p class="bt-dica">Dica: arraste uma pasta ou um conteúdo pro meio de uma pasta pra colocar dentro dela, ou pelas pontas pra mudar a ordem. Pra subir de nível, solte sobre o caminho lá em cima.</p>' : ''}
         ${
           subpastas.length
-            ? `<div class="ferr-pastas-grade bt-subpastas">${subpastas
-                .map((p) => btHtmlPasta(p.id, btNomePasta(p), btCorPasta(p), btSubtituloPasta(p, g), true))
-                .join('')}</div>`
+            ? btGradesPorCor(
+                subpastas.map((p) => ({ cor: btCorPasta(p), html: btHtmlPasta(p.id, btNomePasta(p), btCorPasta(p), btSubtituloPasta(p, g), true) })),
+                'bt-subpastas'
+              )
             : ''
         }
         <div id="bt-novo-item-area"></div>

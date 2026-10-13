@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261019a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261020a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1014,8 +1014,8 @@
             <button class="pl-hub-card ativo" data-pagina="visao-geral" type="button" data-i18n="pl_visao_geral">Visão geral</button>
             <button class="pl-hub-card" data-pagina="banco-teste" type="button" data-i18n="pl_banco_ideias_teste">Banco de ideias &amp; Roteiros</button>
             <button class="pl-hub-card" data-pagina="achados" type="button" data-i18n="pl_achados">Achados</button>
+            <button class="pl-hub-card" data-pagina="roteiros" type="button">📜 Transcrição de Vídeos</button>
             <button class="pl-hub-card" data-pagina="radar" type="button" data-i18n="pl_radar">Radar de Notícias</button>
-            <button class="pl-hub-card" data-pagina="roteiros" type="button">📜 Roteiros</button>
           </div>
 
           <div id="pl-pagina-visao-geral" class="pl-pagina">
@@ -1091,12 +1091,12 @@
 
           <div id="pl-pagina-roteiros" class="pl-pagina" hidden>
             <div class="card email-vazio" id="rt-aviso-tabelas" hidden>
-              <h3 class="card-titulo">Os Roteiros ainda não estão prontos no banco</h3>
+              <h3 class="card-titulo">A Transcrição de Vídeos ainda não está pronta no banco</h3>
               <p class="cal-todas-resumo">Falta rodar o arquivo sql-roteiros.sql no SQL Editor do Supabase.</p>
             </div>
             <div id="rt-conteudo">
               <div class="card rt-topo">
-                <h3 class="card-titulo pl-pagina-titulo">📜 Roteiros</h3>
+                <h3 class="card-titulo pl-pagina-titulo">📜 Transcrição de Vídeos</h3>
                 <p class="cal-todas-resumo">Cole o link de um reel e eu transcrevo. Serve pros seus e pros das outras, com etiqueta pra você separar.</p>
                 <div class="rt-entrada">
                   <input type="url" id="rt-link" placeholder="Cole aqui: instagram.com/reel/... · tiktok.com/... · youtube.com/..." autocomplete="off">
@@ -3807,7 +3807,7 @@
     let ugcPacoteItensEdit = []; // itens do pacote aberto, editáveis no modal
     let ugcPacoteUrgenciaPct = 0;
     let ugcPacoteSugerido = 0; // último valor calculado a partir dos itens (o campo de valor acompanha enquanto não for mexido na mão)
-    let rtRoteiros = []; // biblioteca de Roteiros (transcrições)
+    let rtRoteiros = []; // biblioteca da Transcrição de Vídeos
     let rtOk = true; // as tabelas roteiros e configuracoes existem (sql-roteiros.sql já rodado)
     let rtChave = ''; // chave da Supadata, lida da tabela configuracoes
     let rtTrocandoChave = false;

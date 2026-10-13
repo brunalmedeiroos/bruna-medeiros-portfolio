@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261018a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261019a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1126,7 +1126,7 @@
 
               <div class="rt-barra">
                 <input type="search" id="rt-busca" class="rt-busca" placeholder="🔎 Buscar na transcrição, no perfil, no título e nas notas" autocomplete="off">
-                <button type="button" id="rt-btn-estudar" class="cal-btn cal-btn-primario">🧠 Estudar com o Claude</button>
+                <button type="button" id="rt-btn-estudar" class="cal-btn cal-btn-primario" title="Copia um pedido com as transcrições das outras creators. Cola no Claude pra descobrir assuntos em alta, expressões e tipos de gancho, e receber 5 roteiros novos no seu assunto">🧠 Estudar com o Claude</button>
               </div>
               <div id="rt-chips" class="rt-chips"></div>
               <div id="rt-lista" class="rt-lista"></div>
@@ -3424,6 +3424,19 @@
     </div>
 
     <!-- Modal: roteiro da biblioteca (editar, ou escrever na mão): formulário de um lado, o vídeo do outro -->
+    <div id="rt-video-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal rt-video-janela">
+        <div class="rt-video-topo">
+          <strong id="rt-video-titulo" class="rt-video-titulo"></strong>
+          <button id="rt-video-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div id="rt-video-player" class="rt-video-player"></div>
+        <a id="rt-video-abrir" class="rt-video-abrir" href="#" target="_blank" rel="noopener noreferrer">abrir ↗</a>
+      </div>
+    </div>
+
     <div id="rt-modal-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal rt-modal-largo">
         <div class="pl-modal-topo rt-m-topo">
@@ -3800,6 +3813,7 @@
     let rtTrocandoChave = false;
     let rtLigado = false;
     let rtModalFicha = 0; // muda a cada abertura/fechamento do editor (pra IA não escrever no roteiro errado)
+    let rtCapaOk = false; // a coluna capa existe (sql-roteiros-capa.sql já rodado)
     let rtEstruturaOk = false; // a coluna estrutura existe (sql-roteiros-estrutura.sql já rodado)
     let rtFiltro = 'todos';
     let rtBusca = '';
@@ -7525,12 +7539,15 @@
         rtOk = true;
         const colunaEstrutura = await Auth.sb.from('roteiros').select('estrutura').limit(1);
         rtEstruturaOk = !colunaEstrutura.error;
+        const colunaCapa = await Auth.sb.from('roteiros').select('capa').limit(1);
+        rtCapaOk = !colunaCapa.error;
       } catch (err) {
         console.warn('Roteiros indisponível:', err);
         rtRoteiros = [];
         rtChave = '';
         rtOk = false;
         rtEstruturaOk = false;
+        rtCapaOk = false;
       }
     }
 
@@ -7653,6 +7670,7 @@
           const atualizado = await rtAtualizar(roteiro.id, { transcricao: res.texto, segmentos: res.segmentos, status: 'pronto', erro: null });
           rtAviso('ok', '✅ Pronto. Revisa, dá um nome e salva.');
           rtAbrirModal(atualizado, '✅ Pronto. Revisa, dá um nome e salva.');
+          rtGuardarCapa(roteiro.id);
         } else {
           const msg = 'Não achei fala nesse vídeo. Costuma ser reel só com música ou só com texto na tela.';
           await rtAtualizar(roteiro.id, { status: 'falhou', erro: msg });
@@ -7682,6 +7700,7 @@
         const atualizado = await rtAtualizar(id, { status: 'pronto', erro: null });
         rtRenderizarLista();
         rtAbrirModal(atualizado, 'Link guardado. Escreve o texto na mão, dá um nome e salva.');
+        rtGuardarCapa(id);
         rtEscondeAviso();
       } catch (err) {
         console.error('Erro ao guardar assim mesmo:', err);
@@ -7691,14 +7710,8 @@
 
     // ---- biblioteca ----
 
-    function rtTodasAsTags() {
-      const mapa = new Map();
-      rtRoteiros.forEach((r) => (r.tags || []).forEach((t) => mapa.set(rtNorm(t), t)));
-      return [...mapa.values()].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-    }
-
     function rtRenderizarChips() {
-      const chips = [['todos', 'Todos'], ['minha', 'Meus'], ['outra', 'De outras'], ...rtTodasAsTags().map((t) => ['tag:' + t, '#' + t])];
+      const chips = [['todos', 'Todos'], ['minha', 'Meus'], ['outra', 'De outras']];
       document.getElementById('rt-chips').innerHTML = chips
         .map(([chave, rotulo]) => `<button type="button" class="rt-chip${rtFiltro === chave ? ' ativo' : ''}" data-filtro="${escapeHtml(chave)}">${escapeHtml(rotulo)}</button>`)
         .join('');
@@ -7707,12 +7720,7 @@
     function rtFiltrados() {
       const busca = rtNorm(rtBusca).trim();
       return rtRoteiros.filter((r) => {
-        if (rtFiltro === 'minha' || rtFiltro === 'outra') {
-          if (r.de_quem !== rtFiltro) return false;
-        } else if (rtFiltro.startsWith('tag:')) {
-          const t = rtNorm(rtFiltro.slice(4));
-          if (!(r.tags || []).some((x) => rtNorm(x) === t)) return false;
-        }
+        if ((rtFiltro === 'minha' || rtFiltro === 'outra') && r.de_quem !== rtFiltro) return false;
         if (!busca) return true;
         const palheiro = rtNorm([r.transcricao, r.perfil, r.titulo, r.obs, r.legenda, (r.tags || []).join(' ')].join(' '));
         return palheiro.includes(busca);
@@ -7727,48 +7735,60 @@
       return 'Guardado em ' + new Date(r.created_at).toLocaleDateString(loc, { day: '2-digit', month: 'short', year: 'numeric' });
     }
 
+    // Capa do vídeo: a que foi guardada (Instagram e TikTok) ou a do YouTube, que o próprio YouTube entrega.
+    function rtCapaUrl(r) {
+      if (r.capa) return r.capa;
+      if (r.fonte === 'youtube') {
+        const e = rtEmbed(r);
+        const m = e && e.match(/\/embed\/([A-Za-z0-9_-]+)/);
+        if (m) return `https://i.ytimg.com/vi/${m[1]}/hqdefault.jpg`;
+      }
+      return '';
+    }
+
     function rtHtmlCard(r) {
       const fonte = RT_FONTES[r.fonte] || RT_FONTES.manual;
       const embed = rtEmbed(r);
       const ativo = rtAtivoId === r.id;
       const processando = r.status === 'processando';
       const falhou = r.status === 'falhou';
-      let midia;
-      if (embed) midia = `<button type="button" class="rt-ver" data-a="ver">▶ ver vídeo</button>`;
-      else if (r.url) midia = `<a class="rt-ver" href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">↗ abrir link</a>`;
-      else midia = '';
-      const tags = (r.tags || []).map((t) => `<span class="rt-tag">#${escapeHtml(t)}</span>`).join('');
-      let corpoTexto;
+      const capaUrl = rtCapaUrl(r);
+      const podeBuscarCapa = rtCapaOk && !!rtChave && !capaUrl && !processando && !!r.url && (r.fonte === 'instagram' || r.fonte === 'tiktok');
+      const capa = `<div class="rt-capa">
+          ${capaUrl ? `<img src="${escapeHtml(capaUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="rt-capa-emoji" aria-hidden="true">${fonte.emoji}</span>`}
+          ${embed && !processando && !falhou ? '<button type="button" class="rt-capa-play" data-a="ver" aria-label="Ver vídeo" title="Ver vídeo">▶</button>' : ''}
+          <button type="button" class="rt-capa-apagar" data-a="apagar" aria-label="Apagar" title="Apagar">🗑️</button>
+          ${podeBuscarCapa ? '<button type="button" class="cal-btn rt-capa-buscar" data-a="capa">🖼️ Buscar capa</button>' : ''}
+        </div>`;
+      let estado = '';
       if (processando) {
-        corpoTexto = `<p class="rt-estado"><span class="rt-relogio" aria-hidden="true">⏳</span> ${ativo ? 'Transcrevendo agora, pode deixar a aba aberta.' : 'Ficou esperando a transcrição. Se a aba foi fechada, tenta de novo.'}</p>`;
+        estado = `<p class="rt-estado"><span class="rt-relogio" aria-hidden="true">⏳</span> ${ativo ? 'Transcrevendo agora, pode deixar a aba aberta.' : 'Ficou esperando a transcrição. Se a aba foi fechada, tenta de novo.'}</p>`;
       } else if (falhou) {
-        corpoTexto = `<p class="rt-estado rt-estado-erro">⚠️ ${escapeHtml(r.erro || 'Não consegui transcrever esse vídeo.')}</p>`;
-      } else {
-        corpoTexto = r.transcricao ? `<p class="rt-trecho">${escapeHtml(r.transcricao)}</p>` : `<p class="rt-trecho rt-trecho-vazio">Sem transcrição ainda.</p>`;
+        estado = `<p class="rt-estado rt-estado-erro">⚠️ ${escapeHtml(r.erro || 'Não consegui transcrever esse vídeo.')}</p>`;
       }
       const botoes = [];
-      if (processando && !ativo && r.url) botoes.push('<button type="button" class="cal-btn" data-a="retentar">🔄 Tentar de novo</button>');
-      if (falhou) {
+      if (processando) {
+        if (!ativo && r.url) botoes.push('<button type="button" class="cal-btn" data-a="retentar">🔄 Tentar de novo</button>');
+      } else if (falhou) {
         botoes.push('<button type="button" class="cal-btn" data-a="editar">📂 Abrir mesmo assim</button>');
         if (r.url) botoes.push('<button type="button" class="cal-btn" data-a="retentar">🔄 Tentar de novo</button>');
-      } else if (!processando) {
+      } else {
+        if (embed) botoes.push('<button type="button" class="cal-btn cal-btn-primario rt-acao-larga" data-a="ver">▶ Ver vídeo</button>');
+        else if (r.url) botoes.push(`<a class="cal-btn cal-btn-primario rt-acao-larga" href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">↗ Abrir link</a>`);
         botoes.push('<button type="button" class="cal-btn" data-a="copiar">📋 Copiar transcrição</button>');
         botoes.push('<button type="button" class="cal-btn" data-a="editar">✏️ Editar</button>');
       }
-      botoes.push('<button type="button" class="cal-btn rt-apagar" data-a="apagar">🗑️ Apagar</button>');
       return `<article class="rt-card" data-id="${escapeHtml(r.id)}">
-        <div class="rt-midia"><span class="rt-midia-emoji" aria-hidden="true">${fonte.emoji}</span>${midia}</div>
+        ${capa}
         <div class="rt-corpo">
+          <h4 class="rt-titulo">${escapeHtml(r.titulo || 'Sem título')}</h4>
           <div class="rt-etiquetas">
             <span class="rt-etq ${r.de_quem === 'minha' ? 'rt-etq-minha' : 'rt-etq-outra'}">${r.de_quem === 'minha' ? 'Meu' : 'De outra'}</span>
             <span class="rt-fonte">${fonte.emoji} ${escapeHtml(fonte.nome)}</span>
           </div>
-          <h4 class="rt-titulo">${escapeHtml(r.titulo || 'Sem título')}</h4>
           ${r.perfil ? `<p class="rt-perfil">@${escapeHtml(String(r.perfil).replace(/^@/, ''))}</p>` : ''}
-          ${tags ? `<div class="rt-tags">${tags}</div>` : ''}
-          <p class="rt-data">${escapeHtml(rtDataBonita(r))}</p>
-          ${corpoTexto}
-          <div class="rt-acoes">${botoes.join('')}</div>
+          ${estado}
+          ${botoes.length ? `<div class="rt-acoes">${botoes.join('')}</div>` : ''}
         </div>
       </article>`;
     }
@@ -7798,19 +7818,16 @@
       if (!roteiro) return;
       const acao = botao.dataset.a;
       if (acao === 'ver') {
-        const embed = rtEmbed(roteiro);
-        if (!embed) return;
-        const midia = card.querySelector('.rt-midia');
-        card.classList.add('rt-tocando');
-        const quadro = document.createElement('iframe');
-        quadro.className = 'rt-player';
-        quadro.src = embed;
-        quadro.loading = 'lazy';
-        quadro.allowFullscreen = true;
-        quadro.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
-        quadro.title = roteiro.titulo || 'Vídeo';
-        midia.innerHTML = '';
-        midia.appendChild(quadro);
+        rtAbrirVideo(roteiro);
+      } else if (acao === 'capa') {
+        botao.disabled = true;
+        botao.textContent = '⏳ Buscando…';
+        const ok = await rtGuardarCapa(roteiro.id);
+        if (!ok) {
+          botao.disabled = false;
+          botao.textContent = '🖼️ Buscar capa';
+          rtAviso('erro', 'Não consegui buscar a capa desse vídeo agora. Tenta de novo daqui a pouco.');
+        }
       } else if (acao === 'copiar') {
         try {
           await navigator.clipboard.writeText(roteiro.transcricao || '');
@@ -7837,6 +7854,78 @@
           rtAviso('erro', 'Não consegui apagar. Tenta de novo.');
         }
       }
+    }
+
+    // ---- capa do vídeo (Instagram e TikTok) ----
+    // A Supadata devolve o endereço da imagem, mas esse endereço vence em poucos dias. Por isso a imagem é
+    // reduzida aqui no navegador e guardada junto do roteiro (coluna capa, sql-roteiros-capa.sql).
+
+    async function rtBuscarCapa(url) {
+      const pedir = async (endereco, opcoes) => {
+        const ctrl = new AbortController();
+        const parar = setTimeout(() => ctrl.abort(), 20000);
+        try {
+          return await fetch(endereco, { ...opcoes, signal: ctrl.signal });
+        } finally {
+          clearTimeout(parar);
+        }
+      };
+      const r = await pedir(`${RT_SUPADATA}/metadata?url=${encodeURIComponent(url)}`, { headers: { 'x-api-key': rtChave } });
+      if (!r.ok) return null;
+      const dados = await r.json();
+      const imagem = dados && dados.media && dados.media.thumbnailUrl;
+      if (!imagem) return null;
+      const arquivo = await (await pedir(imagem, {})).blob();
+      const bitmap = await createImageBitmap(arquivo);
+      const largura = Math.min(360, bitmap.width);
+      const altura = Math.round((bitmap.height * largura) / bitmap.width);
+      const tela = document.createElement('canvas');
+      tela.width = largura;
+      tela.height = altura;
+      tela.getContext('2d').drawImage(bitmap, 0, 0, largura, altura);
+      return tela.toDataURL('image/jpeg', 0.78);
+    }
+
+    // Busca e guarda a capa de um roteiro. Devolve true se conseguiu. Nunca atrapalha o resto: falha em silêncio.
+    async function rtGuardarCapa(id) {
+      const r = rtRoteiros.find((x) => x.id === id);
+      if (!rtCapaOk || !rtChave || !r || !r.url || r.capa || (r.fonte !== 'instagram' && r.fonte !== 'tiktok')) return false;
+      try {
+        const capa = await rtBuscarCapa(r.url);
+        if (!capa) return false;
+        await rtAtualizar(id, { capa });
+        rtRenderizarLista();
+        return true;
+      } catch (err) {
+        console.warn('Não consegui guardar a capa:', err);
+        return false;
+      }
+    }
+
+    // ---- ver o vídeo numa janela ----
+
+    function rtAbrirVideo(roteiro) {
+      const embed = rtEmbed(roteiro);
+      if (!embed) return;
+      const fonte = RT_FONTES[roteiro.fonte] || RT_FONTES.manual;
+      document.getElementById('rt-video-titulo').textContent = roteiro.titulo || (roteiro.perfil ? '@' + String(roteiro.perfil).replace(/^@/, '') : 'Vídeo');
+      const quadro = document.createElement('iframe');
+      quadro.src = embed;
+      quadro.allowFullscreen = true;
+      quadro.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+      quadro.title = roteiro.titulo || 'Vídeo';
+      const caixa = document.getElementById('rt-video-player');
+      caixa.innerHTML = '';
+      caixa.appendChild(quadro);
+      const abrir = document.getElementById('rt-video-abrir');
+      abrir.href = roteiro.url;
+      abrir.textContent = `abrir no ${fonte.nome} ↗`;
+      document.getElementById('rt-video-overlay').hidden = false;
+    }
+
+    function rtFecharVideo() {
+      document.getElementById('rt-video-player').innerHTML = '';
+      document.getElementById('rt-video-overlay').hidden = true;
     }
 
     // ---- editar e escrever na mão ----
@@ -8260,6 +8349,8 @@
       }
       const blocos = outras.map((r, i) => `--- ${i + 1}. ${r.perfil ? '@' + String(r.perfil).replace(/^@/, '') : 'perfil não informado'}${r.titulo ? ' | ' + r.titulo : ''} ---\n${r.transcricao.trim()}`);
       const prompt = [
+        'Use as minhas skills bruna-creator e roteiro-e-storytelling como base.',
+        '',
         `Quero estudar o que está funcionando no meu nicho. Abaixo estão as transcrições dos ${outras.length} reels mais recentes de outras creators que eu guardei. Analisa tudo e me entrega:`,
         '',
         '1. Assuntos em alta: sobre o que essas creators estão falando e o que se repete entre elas.',
@@ -8314,6 +8405,13 @@
         if (b) rtAcaoDoCard(b);
       });
       document.getElementById('rt-btn-estudar').addEventListener('click', rtEstudar);
+      document.getElementById('rt-video-fechar').addEventListener('click', rtFecharVideo);
+      document.getElementById('rt-video-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'rt-video-overlay') rtFecharVideo();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !document.getElementById('rt-video-overlay').hidden) rtFecharVideo();
+      });
       document.getElementById('rt-m-salvar').addEventListener('click', rtSalvarModal);
       document.getElementById('rt-m-cancelar').addEventListener('click', rtFecharModal);
       document.getElementById('rt-m-fechar').addEventListener('click', rtFecharModal);

@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261023a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261025a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -3772,12 +3772,14 @@
     let achadoSnapshotInicial = '';
     let achadoNovo = false; // o modal está criando uma referência nova
     let achFiltro = 'todos';
+    let achPreenchido = null; // dados que vieram de um vídeo da transcrição pro modal de nova referência
+    let achAoSalvar = null; // o que fazer depois de salvar (avisar na página da transcrição)
     let achOrigem = ''; // '', 'ideia' (sem link) ou 'ref' (com link)
     let achBusca = '';
     let achColunasOk = null; // as colunas novas existem (achados-referencias.sql já rodado); null = ainda não conferi
     let achCategoriaModal = 'Gancho';
     let dataAgendarAtual = null; // data (ISO) do dia clicado no "+" do calendário do cronograma
-    const ACHADOS_COLUNAS = ['Gancho', 'Frase', 'Formato', 'Música', 'CTA'];
+    const ACHADOS_COLUNAS = ['Gancho', 'Frase', 'Formato', 'Música', 'CTA', 'Avulso'];
     // Nome da coluna é gravado em achados.coluna em português (é o "código");
     // aqui só traduz o rótulo mostrado, sem tocar no valor salvo.
     const ACHADOS_COLUNA_CHAVE = {
@@ -3786,6 +3788,7 @@
       'Formato': 'achados_col_formato',
       'Música': 'achados_col_musica',
       'CTA': 'achados_col_cta',
+      'Avulso': 'achados_col_avulso',
     };
     function traduzirColunaAchado(coluna) {
       const chave = ACHADOS_COLUNA_CHAVE[coluna];
@@ -4766,6 +4769,7 @@
         achados_col_formato: 'Formato',
         achados_col_musica: 'Música',
         achados_col_cta: 'CTA',
+        achados_col_avulso: 'Avulso',
         pl_excluir_pilar: 'Excluir pilar',
         pl_renomear_pilar: 'Renomear pilar',
         pl_novo_pilar_curto: '+ Novo pilar',
@@ -5956,6 +5960,7 @@
         achados_col_formato: 'Format',
         achados_col_musica: 'Music',
         achados_col_cta: 'CTA',
+        achados_col_avulso: 'Misc',
         pl_excluir_pilar: 'Delete pillar',
         pl_renomear_pilar: 'Rename pillar',
         pl_novo_pilar_curto: '+ New pillar',
@@ -7850,6 +7855,7 @@
         if (embed) botoes.push('<button type="button" class="cal-btn cal-btn-primario rt-acao-larga" data-a="ver">▶ Ver vídeo</button>');
         else if (r.url) botoes.push(`<a class="cal-btn cal-btn-primario rt-acao-larga" href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">↗ Abrir link</a>`);
         botoes.push('<button type="button" class="cal-btn" data-a="copiar" title="Copia o roteiro organizado em gancho, desenvolvimento e CTA. Se ainda não foi organizado, copia o texto corrido">📋 Copiar transcrição</button>');
+        botoes.push('<button type="button" class="cal-btn" data-a="enviar" title="Guarda este vídeo no banco de Achados e você escolhe se é gancho, frase, formato, música, CTA ou avulso">🔍 Enviar para Achados</button>');
         botoes.push('<button type="button" class="cal-btn" data-a="editar">✏️ Editar</button>');
       }
       return `<article class="rt-card" data-id="${escapeHtml(r.id)}">
@@ -7916,6 +7922,8 @@
         }
       } else if (acao === 'editar') {
         rtAbrirModal(roteiro);
+      } else if (acao === 'enviar') {
+        rtEnviarParaAchados(roteiro);
       } else if (acao === 'achados') {
         achBusca = String(roteiro.url || '').replace(/^https?:\/\/(www\.)?/, '');
         achFiltro = 'todos';
@@ -7936,6 +7944,22 @@
           rtAviso('erro', 'Não consegui apagar. Tenta de novo.');
         }
       }
+    }
+
+    // Manda o vídeo pro banco de Achados: abre o cadastro já preenchido e ela escolhe a categoria.
+    async function rtEnviarParaAchados(r) {
+      if (!(await achVerColunas())) {
+        rtAviso('erro', 'Pra enviar pros Achados falta rodar o arquivo achados-referencias.sql no Supabase.');
+        return;
+      }
+      const perfil = r.perfil ? String(r.perfil).replace(/^@/, '') : '';
+      abrirModalAchado(null, {
+        url: r.url || '',
+        conteudo: r.titulo || (perfil ? '@' + perfil : ''),
+        observacoes: 'Do vídeo transcrito' + (r.titulo ? ': ' + r.titulo : '') + (perfil ? ' (@' + perfil + ')' : ''),
+        capa: r.capa || '',
+      });
+      achAoSalvar = (categoria) => rtAviso('ok', `🔍 Vídeo enviado pros Achados, em ${traduzirColunaAchado(categoria)}. Você acha na aba Achados.`);
     }
 
     // ---- capa do vídeo (Instagram e TikTok) ----
@@ -14043,7 +14067,7 @@
     // Cada achado é uma referência: título, link opcional (com capa), o que viu, como usar e como adaptar.
     // As colunas url, capa, como_usar e como_adaptar vêm do achados-referencias.sql.
 
-    const ACH_EMOJI = { 'Gancho': '🪝', 'Frase': '💬', 'Formato': '🎞️', 'Música': '🎵', 'CTA': '📣' };
+    const ACH_EMOJI = { 'Gancho': '🪝', 'Frase': '💬', 'Formato': '🎞️', 'Música': '🎵', 'CTA': '📣', 'Avulso': '📌' };
 
     async function achVerColunas() {
       if (achColunasOk !== null) return achColunasOk;
@@ -14077,6 +14101,7 @@
     }
 
     function achAbrir() {
+      rtLigarEventos();
       renderizarAchados();
       // os roteiros (e a chave da Supadata) ajudam nos botões Transcrever e Buscar capa
       const pronto = rtOk ? Promise.resolve() : rtCarregar();
@@ -14288,15 +14313,17 @@
     }
 
     // achado = null abre uma referência nova.
-    async function abrirModalAchado(achado) {
+    async function abrirModalAchado(achado, preencher) {
       await achVerColunas();
       achadoAbertoId = achado ? achado.id : null;
       achadoNovo = !achado;
-      achCategoriaModal = achado ? achado.coluna : ACHADOS_COLUNAS.includes(achFiltro) ? achFiltro : 'Gancho';
-      document.getElementById('pl-modal-achado-coluna').textContent = achado ? 'Editar referência' : 'Nova referência';
-      document.getElementById('pl-modal-achado-url').value = (achado && achado.url) || '';
-      document.getElementById('pl-modal-achado-texto').value = (achado && achado.conteudo) || '';
-      document.getElementById('pl-modal-achado-observacoes').value = (achado && achado.observacoes) || '';
+      // vindo de um vídeo da transcrição, a categoria fica sem escolha: é ela que classifica
+      achCategoriaModal = achado ? achado.coluna : preencher ? '' : ACHADOS_COLUNAS.includes(achFiltro) ? achFiltro : 'Gancho';
+      achPreenchido = preencher || null;
+      document.getElementById('pl-modal-achado-coluna').textContent = achado ? 'Editar referência' : preencher ? 'Enviar para os Achados' : 'Nova referência';
+      document.getElementById('pl-modal-achado-url').value = (achado && achado.url) || (preencher && preencher.url) || '';
+      document.getElementById('pl-modal-achado-texto').value = (achado && achado.conteudo) || (preencher && preencher.conteudo) || '';
+      document.getElementById('pl-modal-achado-observacoes').value = (achado && achado.observacoes) || (preencher && preencher.observacoes) || '';
       document.getElementById('pl-modal-achado-como-usar').value = (achado && achado.como_usar) || '';
       document.getElementById('pl-modal-achado-como-adaptar').value = (achado && achado.como_adaptar) || '';
       document.getElementById('pl-modal-achado-excluir').hidden = !achado;
@@ -14304,7 +14331,7 @@
       achDesenharCategorias();
       document.getElementById('pl-modal-achado-overlay').hidden = false;
       achadoSnapshotInicial = capturarEstadoAchado();
-      document.getElementById(achado ? 'pl-modal-achado-texto' : 'pl-modal-achado-url').focus();
+      document.getElementById(achado || preencher ? 'pl-modal-achado-texto' : 'pl-modal-achado-url').focus();
     }
 
     function capturarEstadoAchado() {
@@ -14333,12 +14360,18 @@
     function fecharModalAchadoForcado() {
       achadoAbertoId = null;
       achadoNovo = false;
+      achPreenchido = null;
+      achAoSalvar = null;
       document.getElementById('pl-modal-achado-overlay').hidden = true;
     }
 
     async function salvarModalAchado() {
       if (!achadoAbertoId && !achadoNovo) return;
       const valor = (id) => document.getElementById(id).value.trim();
+      if (!achCategoriaModal) {
+        alert('Escolhe a categoria: Gancho, Frase, Formato, Música, CTA ou Avulso.');
+        return;
+      }
 
       // link: aceita sem https:// e limpa o que é rastreio
       let url = valor('pl-modal-achado-url');
@@ -14374,6 +14407,8 @@
         campos.como_adaptar = valor('pl-modal-achado-como-adaptar') || null;
         const antes = achadoAbertoId ? achadosCache.find((x) => x.id === achadoAbertoId) : null;
         if (antes && (antes.url || null) !== (url || null)) campos.capa = null; // link novo: a capa velha não vale mais
+        // vindo de um vídeo da transcrição: leva a capa que já foi buscada, sem gastar outro crédito
+        if (achadoNovo && achPreenchido && achPreenchido.capa && url && url === achPreenchido.url) campos.capa = achPreenchido.capa;
       }
       const botao = document.getElementById('pl-modal-achado-salvar');
       botao.disabled = true;
@@ -14387,8 +14422,11 @@
           const { error } = await Auth.sb.from('planejador_achados').update(campos).eq('id', achadoAbertoId);
           if (error) throw error;
         }
+        const aoSalvar = achAoSalvar;
+        const categoriaSalva = achCategoriaModal;
         fecharModalAchadoForcado();
         await carregarPlanejador();
+        if (aoSalvar) aoSalvar(categoriaSalva);
         // capa em segundo plano (Instagram e TikTok): se não vier, o card mostra o botão Buscar capa
         if (id && url && achColunasOk) rtGarantirChave().then((ok) => ok && achGuardarCapa(id));
       } catch (err) {

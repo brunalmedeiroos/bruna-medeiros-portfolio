@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261014a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261015a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1121,6 +1121,18 @@
                     <button type="button" id="rt-chave-salvar" class="cal-btn cal-btn-primario">Salvar chave</button>
                   </div>
                   <p id="rt-config-ajuda" class="cal-todas-resumo">Ainda não tem? Crie uma conta grátis em supadata.ai (100 créditos por mês, sem cartão), copie a API key e cole aqui.</p>
+                </div>
+                <div class="rt-config">
+                  <div class="rt-config-linha">
+                    <span class="rt-config-titulo">✨ Chave da IA (Gemini)</span>
+                    <span id="rt-ia-salva" class="rt-chave-salva" hidden></span>
+                    <button type="button" id="rt-ia-trocar" class="cal-btn" hidden>Trocar chave</button>
+                  </div>
+                  <div id="rt-ia-campo" class="rt-chave-campo">
+                    <input type="password" id="rt-ia-input" placeholder="Cole aqui a chave do Gemini" autocomplete="new-password">
+                    <button type="button" id="rt-ia-salvar" class="cal-btn cal-btn-primario">Salvar chave</button>
+                  </div>
+                  <p id="rt-ia-ajuda" class="cal-todas-resumo">É ela que analisa a estrutura dos vídeos aqui dentro. Pegue uma grátis em aistudio.google.com/apikey (entra com a conta Google, sem cartão) e cole aqui.</p>
                 </div>
               </div>
 
@@ -3488,15 +3500,21 @@
               <section class="rt-m-estrutura">
                 <div class="rt-m-estrutura-topo">
                   <span class="rt-m-estrutura-titulo">🧩 A estrutura</span>
-                  <span class="rt-m-estrutura-botoes">
-                    <button type="button" id="rt-m-pedir-analise" class="cal-btn" title="Copia um pedido pronto pra você colar no Claude">🧠 Copiar pedido pro Claude</button>
-                    <button type="button" id="rt-m-colar-analise" class="cal-btn" title="Cola aqui a resposta do Claude pra preencher os campos">📥 Colar a resposta</button>
+                  <span class="rt-m-estrutura-botoes" id="rt-m-botoes-estrutura">
+                    <button type="button" id="rt-m-analisar-ia" class="cal-btn cal-btn-primario" title="A IA lê a transcrição e preenche os campos abaixo">✨ Analisar com IA</button>
                   </span>
                 </div>
-                <div id="rt-m-analise-area" class="rt-m-analise-area" hidden>
-                  <textarea id="rt-m-analise-texto" rows="6" placeholder="Cole aqui a resposta do Claude, no formato que o pedido mostra"></textarea>
-                  <button type="button" id="rt-m-analise-aplicar" class="cal-btn cal-btn-primario">Preencher os campos</button>
-                </div>
+                <details class="rt-m-manual" id="rt-m-manual">
+                  <summary>Prefere usar o Claude do site? Dá pra fazer na mão</summary>
+                  <div class="rt-m-estrutura-botoes">
+                    <button type="button" id="rt-m-pedir-analise" class="cal-btn" title="Copia um pedido pronto pra você colar no Claude">🧠 Copiar pedido pro Claude</button>
+                    <button type="button" id="rt-m-colar-analise" class="cal-btn" title="Cola aqui a resposta do Claude pra preencher os campos">📥 Colar a resposta</button>
+                  </div>
+                  <div id="rt-m-analise-area" class="rt-m-analise-area" hidden>
+                    <textarea id="rt-m-analise-texto" rows="6" placeholder="Cole aqui a resposta do Claude, no formato que o pedido mostra"></textarea>
+                    <button type="button" id="rt-m-analise-aplicar" class="cal-btn cal-btn-primario">Preencher os campos</button>
+                  </div>
+                </details>
                 <p class="dash-aviso" id="rt-m-estrutura-aviso" hidden>Pra guardar a estrutura e o "por que prende", rode o arquivo sql-roteiros-estrutura.sql no SQL Editor do Supabase.</p>
                 <div id="rt-m-estrutura-campos">
                   <div class="pl-modal-linha">
@@ -3785,6 +3803,10 @@
     let rtChave = ''; // chave da Supadata, lida da tabela configuracoes
     let rtTrocandoChave = false;
     let rtLigado = false;
+    let rtIaChave = ''; // chave do Gemini, lida da tabela configuracoes
+    let rtTrocandoIa = false;
+    let rtAnalisando = false;
+    let rtModalFicha = 0; // muda a cada abertura/fechamento do editor (pra IA não escrever no roteiro errado)
     let rtEstruturaOk = false; // a coluna estrutura existe (sql-roteiros-estrutura.sql já rodado)
     let rtFiltro = 'todos';
     let rtBusca = '';
@@ -7497,12 +7519,17 @@
       try {
         const [lista, config] = await Promise.all([
           Auth.sb.from('roteiros').select('*').order('created_at', { ascending: false }),
-          Auth.sb.from('configuracoes').select('valor').eq('chave', RT_CHAVE_CONFIG).maybeSingle(),
+          Auth.sb.from('configuracoes').select('chave,valor').in('chave', [RT_CHAVE_CONFIG, RT_IA_CONFIG]),
         ]);
         if (lista.error) throw lista.error;
         if (config.error) throw config.error;
         rtRoteiros = lista.data || [];
-        rtChave = config.data && config.data.valor ? String(config.data.valor) : '';
+        const valorDe = (k) => {
+          const linha = (config.data || []).find((c) => c.chave === k);
+          return linha && linha.valor ? String(linha.valor) : '';
+        };
+        rtChave = valorDe(RT_CHAVE_CONFIG);
+        rtIaChave = valorDe(RT_IA_CONFIG);
         rtOk = true;
         const colunaEstrutura = await Auth.sb.from('roteiros').select('estrutura').limit(1);
         rtEstruturaOk = !colunaEstrutura.error;
@@ -7510,6 +7537,7 @@
         console.warn('Roteiros indisponível:', err);
         rtRoteiros = [];
         rtChave = '';
+        rtIaChave = '';
         rtOk = false;
         rtEstruturaOk = false;
       }
@@ -7543,6 +7571,19 @@
         campo.hidden = false;
       }
       document.getElementById('rt-config-ajuda').hidden = !!rtChave;
+
+      const iaSalva = document.getElementById('rt-ia-salva');
+      if (rtIaChave) {
+        iaSalva.hidden = false;
+        iaSalva.textContent = `🔑 Chave salva: ••••${rtIaChave.slice(-4)}`;
+        document.getElementById('rt-ia-trocar').hidden = false;
+        document.getElementById('rt-ia-campo').hidden = !rtTrocandoIa;
+      } else {
+        iaSalva.hidden = true;
+        document.getElementById('rt-ia-trocar').hidden = true;
+        document.getElementById('rt-ia-campo').hidden = false;
+      }
+      document.getElementById('rt-ia-ajuda').hidden = !!rtIaChave;
     }
 
     async function rtSalvarChave() {
@@ -7634,6 +7675,7 @@
           const atualizado = await rtAtualizar(roteiro.id, { transcricao: res.texto, segmentos: res.segmentos, status: 'pronto', erro: null });
           rtAviso('ok', '✅ Pronto. Revisa, dá um nome e salva.');
           rtAbrirModal(atualizado, '✅ Pronto. Revisa, dá um nome e salva.');
+          if (rtIaChave && rtEstruturaOk && !rtLerEstrutura()) rtAnalisarComIa(true);
         } else {
           const msg = 'Não achei fala nesse vídeo. Costuma ser reel só com música ou só com texto na tela.';
           await rtAtualizar(roteiro.id, { status: 'falhou', erro: msg });
@@ -7894,8 +7936,9 @@
       rtEscreverEstrutura(r.estrutura);
       document.getElementById('rt-m-estrutura-campos').hidden = !rtEstruturaOk;
       document.getElementById('rt-m-estrutura-aviso').hidden = rtEstruturaOk;
-      document.getElementById('rt-m-pedir-analise').hidden = !rtEstruturaOk;
-      document.getElementById('rt-m-colar-analise').hidden = !rtEstruturaOk;
+      document.getElementById('rt-m-botoes-estrutura').hidden = !rtEstruturaOk;
+      document.getElementById('rt-m-manual').hidden = !rtEstruturaOk;
+      rtModalFicha++;
       document.getElementById('rt-m-analise-area').hidden = true;
       document.getElementById('rt-m-analise-texto').value = '';
       document.querySelector('.rt-m-legenda-bloco').open = !!r.legenda;
@@ -7907,6 +7950,7 @@
 
     function rtFecharModal() {
       rtEditandoId = null;
+      rtModalFicha++;
       document.getElementById('rt-m-player').innerHTML = '';
       document.getElementById('rt-modal-overlay').hidden = true;
     }
@@ -7969,7 +8013,162 @@
       }
     }
 
-    // ---- a estrutura do vídeo: pedido pro Claude e leitura da resposta (sem chave de IA no painel) ----
+    // ---- análise da estrutura com a IA (Gemini), direto do painel ----
+    // A chave fica na tabela configuracoes, igual à da Supadata. O Gemini tem plano grátis.
+
+    const RT_IA_CONFIG = 'gemini_api_key';
+    const RT_GEMINI_MODELOS = ['gemini-3.6-flash', 'gemini-2.5-flash'];
+
+    const RT_ESQUEMA_ANALISE = {
+      type: 'OBJECT',
+      properties: {
+        tags: { type: 'ARRAY', items: { type: 'STRING' }, description: 'De 3 a 5 palavras-chave curtas, em minúsculas.' },
+        gancho_tipo: { type: 'STRING', description: 'O tipo do gancho em uma ou duas palavras (pergunta, promessa, curiosidade, história, polêmica, dado).' },
+        gancho: { type: 'STRING', description: 'A frase de abertura do vídeo, como foi dita.' },
+        desenvolvimento: { type: 'ARRAY', items: { type: 'STRING' }, description: 'Os passos do vídeo na ordem, um item por passo, frases curtas, sem numeração.' },
+        cta: { type: 'STRING', description: 'O que o vídeo pede pra pessoa fazer no final. Vazio se não houver.' },
+        expressoes: { type: 'ARRAY', items: { type: 'STRING' }, description: 'De 3 a 6 expressões ou jeitos de falar marcantes, como foram ditos.' },
+        por_que_prende: { type: 'STRING', description: 'Explicação curta e prática de por que o vídeo segura a atenção.' },
+      },
+      required: ['tags', 'gancho_tipo', 'gancho', 'desenvolvimento', 'cta', 'expressoes', 'por_que_prende'],
+    };
+
+    async function rtChamarGemini(prompt) {
+      for (const modelo of RT_GEMINI_MODELOS) {
+        for (let tentativa = 1; tentativa <= 3; tentativa++) {
+          let r;
+          try {
+            r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'x-goog-api-key': rtIaChave },
+              body: JSON.stringify({
+                contents: [{ role: 'user', parts: [{ text: prompt }] }],
+                generationConfig: { responseMimeType: 'application/json', responseSchema: RT_ESQUEMA_ANALISE },
+              }),
+            });
+          } catch (err) {
+            throw rtErro('rede', 'Não consegui falar com a IA. Confere a internet e tenta de novo.');
+          }
+          let corpo = null;
+          try {
+            corpo = await r.json();
+          } catch (e) {
+            corpo = null;
+          }
+          if (r.ok) {
+            const texto = corpo && corpo.candidates && corpo.candidates[0] && corpo.candidates[0].content && corpo.candidates[0].content.parts && corpo.candidates[0].content.parts[0] ? corpo.candidates[0].content.parts[0].text : '';
+            if (!texto) throw rtErro('vazio', 'A IA não devolveu nada dessa vez. Tenta de novo.');
+            try {
+              return JSON.parse(texto);
+            } catch (e) {
+              throw rtErro('vazio', 'A IA respondeu de um jeito que eu não consegui ler. Tenta de novo.');
+            }
+          }
+          const msg = JSON.stringify((corpo && corpo.error) || '').toLowerCase();
+          if (r.status === 404) break; // esse modelo não existe pra essa chave: tenta o próximo
+          if (r.status === 401 || r.status === 403 || (r.status === 400 && /api key|api_key/.test(msg))) {
+            throw rtErro('chave', 'A chave da IA não foi aceita. Confere se colou inteira, ou cola uma nova.');
+          }
+          if ((r.status === 503 || r.status === 429) && tentativa < 3) {
+            await rtEsperar(tentativa * 3000);
+            continue;
+          }
+          if (r.status === 429) throw rtErro('limite', 'A IA grátis chegou no limite por agora. Espera um minuto e tenta de novo.');
+          throw rtErro('outro', 'A IA não conseguiu analisar agora. Tenta de novo daqui a pouco.');
+        }
+      }
+      throw rtErro('modelo', 'Não achei um modelo da IA disponível pra essa chave. Me avisa pra eu ajustar.');
+    }
+
+    // auto = true quando roda sozinha logo depois da transcrição (aí nunca substitui o que já está preenchido).
+    async function rtAnalisarComIa(auto) {
+      if (rtAnalisando) return;
+      const avisoEl = document.getElementById('rt-m-aviso');
+      const mostrar = (txt) => {
+        avisoEl.hidden = false;
+        avisoEl.textContent = txt;
+      };
+      if (!rtIaChave) {
+        mostrar('Pra analisar aqui dentro falta a chave da IA. Pega uma grátis em aistudio.google.com/apikey, fecha este editor e cola no campo "Chave da IA" da página Roteiros.');
+        return;
+      }
+      const transcricao = document.getElementById('rt-m-transcricao').value.trim();
+      if (!transcricao) {
+        mostrar('Ainda não tem transcrição pra analisar. Cola ou escreve o texto do vídeo primeiro.');
+        return;
+      }
+      if (!auto && rtLerEstrutura() && !(await confirmarAcao('Já tem estrutura preenchida. Quer substituir pela análise nova?', { textoConfirmar: 'Substituir' }))) return;
+      const perfil = document.getElementById('rt-m-perfil').value.trim().replace(/^@/, '');
+      const legenda = document.getElementById('rt-m-legenda').value.trim();
+      const prompt = [
+        'Você analisa vídeos curtos de redes sociais para uma criadora de conteúdo brasileira que trabalha com UGC e conteúdo para marcas. Leia a transcrição abaixo e descreva a estrutura do vídeo em português do Brasil, usando só o que aparece na transcrição.',
+        '',
+        perfil ? `Perfil: @${perfil}` : '',
+        legenda ? `Legenda do post: ${legenda}` : '',
+        '',
+        'Transcrição:',
+        transcricao,
+      ].join('\n');
+      const ficha = rtModalFicha;
+      const btn = document.getElementById('rt-m-analisar-ia');
+      btn.disabled = true;
+      rtAnalisando = true;
+      const inicio = Date.now();
+      const desenhar = () => mostrar(`✨ Analisando o vídeo… ${rtTempoCurto(Date.now() - inicio)}`);
+      desenhar();
+      const relogio = setInterval(desenhar, 1000);
+      try {
+        const r = await rtChamarGemini(prompt);
+        if (ficha !== rtModalFicha) return; // o editor foi fechado ou trocado enquanto a IA pensava
+        rtEscreverEstrutura({
+          gancho_tipo: r.gancho_tipo,
+          gancho: r.gancho,
+          desenvolvimento: (r.desenvolvimento || []).map((p, i) => `${i + 1}. ${String(p).replace(/^\s*\d+[.)]\s*/, '')}`).join('\n'),
+          cta: r.cta,
+          expressoes: r.expressoes,
+          por_que_prende: r.por_que_prende,
+        });
+        const campoTags = document.getElementById('rt-m-tags');
+        campoTags.value = rtLerTags(campoTags.value + ',' + (r.tags || []).join(',')).join(', ');
+        mostrar('✅ Análise pronta. Confere e clica em Salvar.');
+      } catch (err) {
+        console.error('Erro na análise com a IA:', err);
+        if (ficha === rtModalFicha) mostrar(err && err.tipo ? err.message : 'Algo deu errado e eu não consegui analisar. Tenta de novo.');
+      } finally {
+        clearInterval(relogio);
+        rtAnalisando = false;
+        btn.disabled = false;
+      }
+    }
+
+    async function rtSalvarChaveIa() {
+      const entrada = document.getElementById('rt-ia-input');
+      const valor = entrada.value.trim();
+      if (!valor) {
+        rtAviso('erro', 'Cole a chave da IA no campo antes de salvar.');
+        return;
+      }
+      const btn = document.getElementById('rt-ia-salvar');
+      btn.disabled = true;
+      try {
+        const { error } = await Auth.sb
+          .from('configuracoes')
+          .upsert({ chave: RT_IA_CONFIG, valor, updated_at: new Date().toISOString() }, { onConflict: 'chave' });
+        if (error) throw error;
+        rtIaChave = valor;
+        rtTrocandoIa = false;
+        entrada.value = '';
+        rtRenderizarConfig();
+        rtAviso('ok', '✅ Chave da IA salva. Agora a estrutura dos vídeos vem pronta.');
+      } catch (err) {
+        console.error('Erro ao salvar a chave da IA:', err);
+        rtAviso('erro', 'Não consegui salvar a chave da IA. Tenta de novo.');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // ---- a estrutura do vídeo, jeito manual: pedido pro Claude do site e leitura da resposta ----
 
     async function rtPedirAnalise() {
       const transcricao = document.getElementById('rt-m-transcricao').value.trim();
@@ -8133,6 +8332,13 @@
           if (!perfil.value.trim() && a.perfil) perfil.value = a.perfil;
         }
         rtAtualizarPlayer();
+      });
+      document.getElementById('rt-m-analisar-ia').addEventListener('click', () => rtAnalisarComIa(false));
+      document.getElementById('rt-ia-salvar').addEventListener('click', rtSalvarChaveIa);
+      document.getElementById('rt-ia-trocar').addEventListener('click', () => {
+        rtTrocandoIa = true;
+        rtRenderizarConfig();
+        document.getElementById('rt-ia-input').focus();
       });
       document.getElementById('rt-m-pedir-analise').addEventListener('click', rtPedirAnalise);
       document.getElementById('rt-m-colar-analise').addEventListener('click', () => {

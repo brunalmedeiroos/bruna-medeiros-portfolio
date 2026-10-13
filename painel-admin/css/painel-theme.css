@@ -11616,3 +11616,31 @@
     padding-right: 18px;
   }
 }
+
+/* ---- Roteiros: análise com IA e chave da IA ---- */
+
+.painel-body .rt-chave-campo[hidden],
+.painel-body #rt-ia-ajuda[hidden] {
+  display: none;
+}
+
+.painel-body .rt-m-manual {
+  font-size: 13px;
+}
+
+.painel-body .rt-m-manual summary {
+  cursor: pointer;
+  color: var(--texto-suave);
+  font-weight: 600;
+}
+
+.painel-body .rt-m-manual[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.painel-body .rt-m-manual[hidden],
+.painel-body #rt-m-botoes-estrutura[hidden] {
+  display: none;
+}

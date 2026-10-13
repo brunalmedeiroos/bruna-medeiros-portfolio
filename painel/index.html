@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261022b">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261023a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1145,7 +1145,7 @@
               <button type="button" id="ach-btn-nova" class="cal-btn cal-btn-primario">+ Nova referência</button>
             </div>
             <div id="ach-chips" class="rt-chips"></div>
-            <div id="ach-lista" class="rt-lista"></div>
+            <div id="ach-lista" class="ach-lista"></div>
           </div>
 
           <div id="pl-pagina-radar" class="pl-pagina" hidden>
@@ -3550,7 +3550,10 @@
                     </div>
                   </div>
                   <div class="cal-form-campo">
-                    <label for="rt-m-gancho">🪝 Gancho</label>
+                    <div class="rt-m-label-linha">
+                      <label for="rt-m-gancho">🪝 Gancho</label>
+                      <button type="button" class="cal-btn rt-m-guardar" data-guardar="gancho" title="Guarda o gancho como achado do tipo Gancho, com o link e a capa deste vídeo">🔍 Guardar nos Achados</button>
+                    </div>
                     <textarea id="rt-m-gancho" rows="2" placeholder="A frase de abertura do vídeo"></textarea>
                   </div>
                   <div class="cal-form-campo">
@@ -3558,11 +3561,17 @@
                     <textarea id="rt-m-desenvolvimento" rows="4" placeholder="Os passos do vídeo, um por linha"></textarea>
                   </div>
                   <div class="cal-form-campo">
-                    <label for="rt-m-cta">📣 CTA</label>
+                    <div class="rt-m-label-linha">
+                      <label for="rt-m-cta">📣 CTA</label>
+                      <button type="button" class="cal-btn rt-m-guardar" data-guardar="cta" title="Guarda o CTA como achado do tipo CTA, com o link e a capa deste vídeo">🔍 Guardar nos Achados</button>
+                    </div>
                     <textarea id="rt-m-cta" rows="2" placeholder="O que o vídeo pede pra pessoa fazer no final"></textarea>
                   </div>
                   <div class="cal-form-campo">
-                    <label for="rt-m-expressoes">💬 Expressões que ela usa <small>separadas por ponto e vírgula</small></label>
+                    <div class="rt-m-label-linha">
+                      <label for="rt-m-expressoes">💬 Expressões que ela usa <small>separadas por ponto e vírgula</small></label>
+                      <button type="button" class="cal-btn rt-m-guardar" data-guardar="expressoes" title="Guarda cada expressão como achado do tipo Frase, com o link e a capa deste vídeo">🔍 Guardar nos Achados</button>
+                    </div>
                     <input type="text" id="rt-m-expressoes" autocomplete="off" placeholder="jeitos de falar que marcam">
                   </div>
                   <div class="cal-form-campo">
@@ -3763,6 +3772,7 @@
     let achadoSnapshotInicial = '';
     let achadoNovo = false; // o modal está criando uma referência nova
     let achFiltro = 'todos';
+    let achOrigem = ''; // '', 'ideia' (sem link) ou 'ref' (com link)
     let achBusca = '';
     let achColunasOk = null; // as colunas novas existem (achados-referencias.sql já rodado); null = ainda não conferi
     let achCategoriaModal = 'Gancho';
@@ -6853,7 +6863,8 @@
       document.getElementById('ach-chips').addEventListener('click', (e) => {
         const b = e.target.closest('.rt-chip');
         if (!b) return;
-        achFiltro = b.dataset.filtro;
+        if (b.dataset.origem) achOrigem = achOrigem === b.dataset.origem ? '' : b.dataset.origem;
+        else achFiltro = b.dataset.filtro;
         renderizarAchados();
       });
       document.getElementById('ach-lista').addEventListener('click', (e) => {
@@ -7815,6 +7826,7 @@
       const processando = r.status === 'processando';
       const falhou = r.status === 'falhou';
       const capaUrl = rtCapaUrl(r);
+      const nAchados = r.url ? achadosCache.filter((a) => a.url === r.url).length : 0;
       const podeBuscarCapa = rtCapaOk && !!rtChave && !capaUrl && !processando && !!r.url && (r.fonte === 'instagram' || r.fonte === 'tiktok');
       const capa = `<div class="rt-capa">
           ${capaUrl ? `<img src="${escapeHtml(capaUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="rt-capa-emoji" aria-hidden="true">${fonte.emoji}</span>`}
@@ -7847,6 +7859,7 @@
           <div class="rt-etiquetas">
             <span class="rt-etq ${r.de_quem === 'minha' ? 'rt-etq-minha' : 'rt-etq-outra'}">${r.de_quem === 'minha' ? 'Meu' : 'De outra'}</span>
             <span class="rt-fonte">${fonte.emoji} ${escapeHtml(fonte.nome)}</span>
+            ${nAchados ? `<button type="button" class="rt-fonte rt-link-achados" data-a="achados" title="Ver os achados guardados deste vídeo">🔍 ${nAchados} ${nAchados === 1 ? 'achado' : 'achados'}</button>` : ''}
           </div>
           ${r.perfil ? `<p class="rt-perfil">@${escapeHtml(String(r.perfil).replace(/^@/, ''))}</p>` : ''}
           ${estado}
@@ -7903,6 +7916,12 @@
         }
       } else if (acao === 'editar') {
         rtAbrirModal(roteiro);
+      } else if (acao === 'achados') {
+        achBusca = String(roteiro.url || '').replace(/^https?:\/\/(www\.)?/, '');
+        achFiltro = 'todos';
+        achOrigem = '';
+        document.getElementById('ach-busca').value = achBusca;
+        abrirPaginaPlanejador('achados');
       } else if (acao === 'retentar') {
         rtExecutar(roteiro);
       } else if (acao === 'apagar') {
@@ -8493,6 +8512,10 @@
       });
       document.getElementById('rt-m-pedir-analise').addEventListener('click', rtPedirAnalise);
       document.getElementById('rt-m-traduzir').addEventListener('click', rtTraduzir);
+      document.getElementById('rt-m-estrutura-campos').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-guardar]');
+        if (b) rtGuardarNosAchados(b.dataset.guardar);
+      });
       document.getElementById('rt-m-traducao-copiar').addEventListener('click', rtCopiarTraducao);
       document.getElementById('rt-m-traducao-fechar').addEventListener('click', rtEsconderTraducao);
       document.getElementById('rt-m-colar-analise').addEventListener('click', rtColarResposta);
@@ -14055,7 +14078,9 @@
 
     function achAbrir() {
       renderizarAchados();
-      if (!rtChave) rtGarantirChave().then((ok) => ok && renderizarAchados());
+      // os roteiros (e a chave da Supadata) ajudam nos botões Transcrever e Buscar capa
+      const pronto = rtOk ? Promise.resolve() : rtCarregar();
+      pronto.then(() => rtGarantirChave()).then(() => renderizarAchados());
     }
 
     function achFiltrados() {
@@ -14063,6 +14088,8 @@
       return achadosCache
         .filter((a) => {
           if (achFiltro !== 'todos' && a.coluna !== achFiltro) return false;
+          if (achOrigem === 'ideia' && a.url) return false;
+          if (achOrigem === 'ref' && !a.url) return false;
           if (!busca) return true;
           const f = achFonte(a);
           return rtNorm([a.conteudo, a.observacoes, a.como_usar, a.como_adaptar, a.url, f && f.perfil].join(' ')).includes(busca);
@@ -14076,10 +14103,15 @@
       if (achColunasOk === null) achVerColunas().then(renderizarAchados);
       document.getElementById('ach-aviso-colunas').hidden = achColunasOk !== false;
 
-      const chips = [['todos', 'Todos', achadosCache.length], ...ACHADOS_COLUNAS.map((c) => [c, traduzirColunaAchado(c), achadosCache.filter((a) => a.coluna === c).length])];
-      document.getElementById('ach-chips').innerHTML = chips
-        .map(([chave, rotulo, n]) => `<button type="button" class="rt-chip${achFiltro === chave ? ' ativo' : ''}" data-filtro="${escapeHtml(chave)}">${escapeHtml(rotulo)} (${n})</button>`)
-        .join('');
+      const chip = (atributo, chave, rotulo, n, ativo) => `<button type="button" class="rt-chip${ativo ? ' ativo' : ''}" data-${atributo}="${escapeHtml(chave)}">${escapeHtml(rotulo)} (${n})</button>`;
+      const categorias = [chip('filtro', 'todos', 'Todos', achadosCache.length, achFiltro === 'todos')].concat(
+        ACHADOS_COLUNAS.map((c) => chip('filtro', c, traduzirColunaAchado(c), achadosCache.filter((a) => a.coluna === c).length, achFiltro === c))
+      );
+      const origens = [
+        chip('origem', 'ideia', '💡 Minhas ideias', achadosCache.filter((a) => !a.url).length, achOrigem === 'ideia'),
+        chip('origem', 'ref', '🔗 Referências', achadosCache.filter((a) => !!a.url).length, achOrigem === 'ref'),
+      ];
+      document.getElementById('ach-chips').innerHTML = categorias.join('') + '<span class="ach-chips-sep" aria-hidden="true"></span>' + origens.join('');
 
       if (achadosCache.length === 0) {
         lista.innerHTML = '<p class="texto-vazio">Nenhuma referência ainda. Clique em + Nova referência pra guardar a primeira.</p>';
@@ -14095,48 +14127,62 @@
       const embed = f && f.chave !== 'instagram' ? rtEmbed({ url: a.url }) : null;
       const podeBuscarCapa = achColunasOk === true && !!rtChave && !capaUrl && !!f && (f.chave === 'instagram' || f.chave === 'tiktok');
       const emojiCategoria = ACH_EMOJI[a.coluna] || '🔍';
-      let jogar = '';
-      if (embed) jogar = '<button type="button" class="rt-capa-play" data-a="ver" aria-label="Ver vídeo" title="Ver vídeo">▶</button>';
-      else if (f) jogar = `<a class="rt-capa-play" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir o link" title="Abrir o link">↗</a>`;
-      let capa;
-      if (f) {
-        capa = `<div class="rt-capa">
-          ${capaUrl ? `<img src="${escapeHtml(capaUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="rt-capa-emoji" aria-hidden="true">${f.emoji}</span>`}
-          ${jogar}
-          ${podeBuscarCapa ? '<button type="button" class="cal-btn rt-capa-buscar" data-a="capa">🖼️ Buscar capa</button>' : ''}
-        </div>`;
-      } else {
-        capa = `<div class="rt-capa ach-capa-curta"><span class="rt-capa-emoji" aria-hidden="true">${emojiCategoria}</span></div>`;
-      }
+      const conteudoThumb = `${capaUrl ? `<img src="${escapeHtml(capaUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="ach-thumb-emoji" aria-hidden="true">${f ? f.emoji : emojiCategoria}</span>`}${f ? `<span class="ach-thumb-play" aria-hidden="true">${embed ? '▶' : '↗'}</span>` : ''}`;
+      let thumb;
+      if (embed) thumb = `<button type="button" class="ach-thumb" data-a="ver" aria-label="Ver vídeo" title="Ver vídeo">${conteudoThumb}</button>`;
+      else if (f) thumb = `<a class="ach-thumb" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir o link" title="Abrir o link">${conteudoThumb}</a>`;
+      else thumb = `<div class="ach-thumb">${conteudoThumb}</div>`;
+
       const botoes = [];
-      if (embed) botoes.push('<button type="button" class="cal-btn cal-btn-primario rt-acao-larga" data-a="ver">▶ Ver vídeo</button>');
-      else if (f) botoes.push(`<a class="cal-btn cal-btn-primario rt-acao-larga" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer">↗ Abrir link</a>`);
-      botoes.push('<button type="button" class="cal-btn rt-acao-larga" data-a="editar">✏️ Editar</button>');
-      return `<article class="rt-card${f ? '' : ' ach-card-texto'}" data-id="${escapeHtml(a.id)}">
-        ${capa}
-        <div class="rt-corpo">
-          <h4 class="rt-titulo">${escapeHtml(a.conteudo)}</h4>
+      if (embed) botoes.push('<button type="button" class="cal-btn cal-btn-primario" data-a="ver">▶ Ver</button>');
+      else if (f) botoes.push(`<a class="cal-btn cal-btn-primario" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer">↗ Abrir</a>`);
+      if (f && f.chave !== 'outro') {
+        const roteiro = rtRoteiros.find((r) => r.url === f.url);
+        botoes.push(roteiro ? '<button type="button" class="cal-btn" data-a="ver-transc">📜 Ver transcrição</button>' : '<button type="button" class="cal-btn" data-a="transcrever">📜 Transcrever</button>');
+      }
+      if (podeBuscarCapa) botoes.push('<button type="button" class="cal-btn" data-a="capa">🖼️ Capa</button>');
+      botoes.push('<button type="button" class="cal-btn" data-a="editar">✏️ Editar</button>');
+
+      return `<article class="ach-card" data-id="${escapeHtml(a.id)}">
+        ${thumb}
+        <div class="ach-corpo">
+          <h4 class="ach-titulo${f ? '' : ' ach-titulo-longo'}">${escapeHtml(a.conteudo)}</h4>
           <div class="rt-etiquetas">
             <span class="rt-etq ach-etq">${emojiCategoria} ${escapeHtml(traduzirColunaAchado(a.coluna))}</span>
-            ${f ? `<span class="rt-fonte">${f.emoji} ${escapeHtml(f.nome)}</span>` : ''}
+            ${f ? `<span class="rt-fonte">${f.emoji} ${escapeHtml(f.nome)}</span>` : '<span class="rt-fonte">💡 Minha ideia</span>'}
           </div>
           ${f && f.perfil ? `<p class="rt-perfil">@${escapeHtml(String(f.perfil).replace(/^@/, ''))}</p>` : ''}
           ${a.como_usar ? `<p class="ach-resumo">💡 ${escapeHtml(a.como_usar)}</p>` : ''}
-          <div class="rt-acoes">${botoes.join('')}</div>
+          <div class="ach-acoes">${botoes.join('')}</div>
         </div>
       </article>`;
     }
 
     async function achAcaoDoCard(botao) {
-      const card = botao.closest('.rt-card');
+      const card = botao.closest('.ach-card');
       const a = card && achadosCache.find((x) => x.id === card.dataset.id);
       if (!a) return;
       const acao = botao.dataset.a;
+      const f = achFonte(a);
       if (acao === 'ver') {
-        const f = achFonte(a);
         rtAbrirVideo({ url: a.url, titulo: a.conteudo, fonte: f ? f.chave : 'manual', perfil: f ? f.perfil : null });
       } else if (acao === 'editar') {
         abrirModalAchado(a);
+      } else if (acao === 'ver-transc') {
+        const roteiro = f && rtRoteiros.find((r) => r.url === f.url);
+        if (!roteiro) return;
+        abrirPaginaPlanejador('roteiros');
+        await rtAbrir();
+        const atual = rtRoteiros.find((r) => r.id === roteiro.id);
+        if (atual) rtAbrirModal(atual);
+      } else if (acao === 'transcrever') {
+        if (!f) return;
+        abrirPaginaPlanejador('roteiros');
+        await rtAbrir();
+        document.getElementById('rt-link').value = f.url;
+        document.getElementById('rt-de-quem').value = 'outra';
+        document.getElementById('rt-link').focus();
+        rtAviso('ok', 'Link colocado. Se quiser mesmo transcrever, clica em Transcrever (gasta 1 crédito da Supadata).');
       } else if (acao === 'capa') {
         botao.disabled = true;
         botao.textContent = '⏳ Buscando…';
@@ -14144,9 +14190,72 @@
         const ok = await achGuardarCapa(a.id);
         if (!ok) {
           botao.disabled = false;
-          botao.textContent = '🖼️ Buscar capa';
+          botao.textContent = '🖼️ Capa';
           alert('Não consegui buscar a capa desse vídeo agora. Tenta de novo daqui a pouco.');
         }
+      }
+    }
+
+    // Do editor da Transcrição de Vídeos: guarda o gancho, o CTA ou as expressões do vídeo nos Achados,
+    // já com o link e a capa. As expressões viram um achado do tipo Frase cada uma.
+    async function rtGuardarNosAchados(tipo) {
+      const avisoEl = document.getElementById('rt-m-aviso');
+      const dizer = (txt) => {
+        avisoEl.hidden = false;
+        avisoEl.textContent = txt;
+        avisoEl.scrollIntoView({ block: 'nearest' });
+      };
+      if (!(await achVerColunas())) {
+        dizer('Pra guardar nos Achados falta rodar o arquivo achados-referencias.sql no Supabase.');
+        return;
+      }
+      const v = (id) => document.getElementById(id).value.trim();
+      const tira = (s) => s.replace(/^[“"'‘\s]+|[”"'’\s]+$/g, '');
+      let coluna;
+      let itens;
+      if (tipo === 'gancho') {
+        coluna = 'Gancho';
+        itens = [v('rt-m-gancho')];
+      } else if (tipo === 'cta') {
+        coluna = 'CTA';
+        itens = [v('rt-m-cta')];
+      } else {
+        coluna = 'Frase';
+        itens = v('rt-m-expressoes').split(/[;\n]/).map(tira);
+      }
+      itens = itens.filter(Boolean);
+      if (!itens.length) {
+        dizer('Esse campo está vazio. Preenche ou cola a resposta do Claude primeiro.');
+        return;
+      }
+      const link = v('rt-m-link');
+      const an = link ? rtAnalisarLink(link) : null;
+      const url = an ? an.url : link || null;
+      const roteiro = rtEditandoId ? rtRoteiros.find((r) => r.id === rtEditandoId) : null;
+      const capa = (roteiro && roteiro.capa) || null;
+      const perfil = v('rt-m-perfil').replace(/^@/, '');
+      const titulo = v('rt-m-titulo');
+      const origem = 'Do vídeo' + (titulo ? ': ' + titulo : '') + (perfil ? ' (@' + perfil + ')' : '');
+
+      const chave = (c, t) => c + '|' + (url || '') + '|' + rtNorm(t).trim();
+      const jaTem = new Set(achadosCache.map((a) => chave(a.coluna, a.conteudo)));
+      const novos = itens.filter((t, i) => !jaTem.has(chave(coluna, t)) && itens.findIndex((x) => rtNorm(x) === rtNorm(t)) === i);
+      if (!novos.length) {
+        dizer('Isso já está nos Achados.');
+        return;
+      }
+      if (novos.length > 1 && !(await confirmarAcao(`Guardar as ${novos.length} expressões nos Achados, um card de Frase para cada?`, { textoConfirmar: 'Guardar' }))) return;
+      try {
+        const linhas = novos.map((t, i) => ({ coluna, conteudo: t, observacoes: origem, url, capa, ordem: achadosCache.length + i }));
+        const { error } = await Auth.sb.from('planejador_achados').insert(linhas);
+        if (error) throw error;
+        await carregarPlanejador();
+        const quantos = novos.length === 1 ? '1 achado guardado' : `${novos.length} achados guardados`;
+        const repetidos = itens.length - novos.length;
+        dizer(`🔍 ${quantos} em ${traduzirColunaAchado(coluna)}.${repetidos > 0 ? ` ${repetidos} já estava${repetidos > 1 ? 'm' : ''} lá.` : ''} Você acha na aba Achados.`);
+      } catch (err) {
+        console.error('Erro ao guardar nos Achados:', err);
+        dizer('Não consegui guardar nos Achados. Tenta de novo.');
       }
     }
 

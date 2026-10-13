@@ -11784,6 +11784,7 @@
 
 .painel-body .dash-btn-nova-ref {
   margin-left: auto;
+  margin-right: 62px; /* deixa livre o ícone da Nota rápida, que fica no canto */
   flex-shrink: 0;
   padding: 11px 20px;
   border: none;
@@ -11808,7 +11809,8 @@
   }
 
   .painel-body .dash-btn-nova-ref {
-    width: 100%;
+    width: calc(100% - 62px);
     margin-left: 0;
+    margin-right: 0;
   }
 }

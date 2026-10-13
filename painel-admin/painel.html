@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261026b">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261027a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -2181,6 +2181,7 @@
         <div class="cal-form-campo">
           <label for="pl-modal-achado-url">Link do vídeo ou post <small>opcional</small></label>
           <input type="text" id="pl-modal-achado-url" inputmode="url" autocomplete="off" placeholder="Cole aqui o link (Instagram, TikTok, YouTube...)">
+          <label id="ach-post-linha" class="ach-check" hidden><input type="checkbox" id="pl-modal-achado-post"> 🖼️ É um post (foto ou carrossel) <small>não mostra o botão Transcrever</small></label>
         </div>
 
         <div class="cal-form-campo">
@@ -3807,6 +3808,7 @@
     let achFiltro = 'todos';
     let achPreenchido = null; // dados que vieram de um vídeo da transcrição pro modal de nova referência
     let achAoSalvar = null; // o que fazer depois de salvar (avisar na página da transcrição)
+    let achPostOk = null; // a coluna post existe (achados-post.sql já rodado); null = ainda não conferi
     let achImagensOk = null; // a coluna imagens e o bucket existem (achados-imagens.sql já rodado); null = ainda não conferi
     let achImgs = []; // imagens do modal: { id, url (já guardada) ou blob (nova), preview }
     let achImgsOriginais = []; // endereços que o achado tinha quando o modal abriu (pra apagar do armazenamento as que ela tirar)
@@ -8055,6 +8057,12 @@
     // reduzida aqui no navegador e guardada junto do roteiro (coluna capa, sql-roteiros-capa.sql).
 
     async function rtBuscarCapa(url) {
+      const info = await rtBuscarCapaInfo(url);
+      return info ? info.capa : null;
+    }
+
+    // Devolve a capa (imagem reduzida) e se o link é de um post (foto ou carrossel) em vez de vídeo.
+    async function rtBuscarCapaInfo(url) {
       const pedir = async (endereco, opcoes) => {
         const ctrl = new AbortController();
         const parar = setTimeout(() => ctrl.abort(), 20000);
@@ -8072,6 +8080,8 @@
       const primeiro = Array.isArray(midia.items) && midia.items[0] ? midia.items[0] : null;
       const imagem = midia.thumbnailUrl || (primeiro && (primeiro.thumbnailUrl || primeiro.url)) || (midia.type === 'image' ? midia.url : '');
       if (!imagem) return null;
+      const adicional = (dados && dados.additionalData) || {};
+      const post = midia.type === 'carousel' || midia.type === 'image' || adicional.isCarousel === true || adicional.isVideo === false;
       const arquivo = await (await pedir(imagem, {})).blob();
       const bitmap = await createImageBitmap(arquivo);
       const largura = Math.min(360, bitmap.width);
@@ -8080,7 +8090,7 @@
       tela.width = largura;
       tela.height = altura;
       tela.getContext('2d').drawImage(bitmap, 0, 0, largura, altura);
-      return tela.toDataURL('image/jpeg', 0.78);
+      return { capa: tela.toDataURL('image/jpeg', 0.78), post };
     }
 
     // Busca e guarda a capa de um roteiro. Devolve true se conseguiu. Nunca atrapalha o resto: falha em silêncio.
@@ -14206,7 +14216,7 @@
           if (achFiltro !== 'todos' && a.coluna !== achFiltro) return false;
           if (achOrigem === 'ideia' && (a.url || achTemImagens(a))) return false;
           if (achOrigem === 'ref' && !a.url) return false;
-          if (achOrigem === 'post' && !achTemImagens(a)) return false;
+          if (achOrigem === 'post' && !achEhPost(a)) return false;
           if (!busca) return true;
           const f = achFonte(a);
           return rtNorm([a.conteudo, a.observacoes, a.como_usar, a.como_adaptar, a.url, f && f.perfil].join(' ')).includes(busca);
@@ -14227,7 +14237,7 @@
       const origens = [
         chip('origem', 'ideia', '💡 Minhas ideias', achadosCache.filter((a) => !a.url && !achTemImagens(a)).length, achOrigem === 'ideia'),
         chip('origem', 'ref', '🔗 Referências', achadosCache.filter((a) => !!a.url).length, achOrigem === 'ref'),
-        chip('origem', 'post', '🖼️ Posts', achadosCache.filter((a) => achTemImagens(a)).length, achOrigem === 'post'),
+        chip('origem', 'post', '🖼️ Posts', achadosCache.filter((a) => achEhPost(a)).length, achOrigem === 'post'),
       ];
       document.getElementById('ach-chips').innerHTML = categorias.join('') + '<span class="ach-chips-sep" aria-hidden="true"></span>' + origens.join('');
 
@@ -14242,6 +14252,11 @@
     // Um achado "post" é o que tem imagens subidas (carrossel ou foto).
     function achTemImagens(a) {
       return Array.isArray(a.imagens) && a.imagens.length > 0;
+    }
+
+    // Post = tem imagens subidas ou foi marcado como foto/carrossel.
+    function achEhPost(a) {
+      return achTemImagens(a) || a.post === true;
     }
 
     function achHtmlCard(a) {
@@ -14267,7 +14282,7 @@
       } else {
         if (embed) botoes.push('<button type="button" class="cal-btn cal-btn-primario" data-a="ver">▶ Ver</button>');
         else if (f) botoes.push(`<a class="cal-btn cal-btn-primario" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer">↗ Abrir</a>`);
-        if (f && f.chave !== 'outro') {
+        if (f && f.chave !== 'outro' && !a.post) {
           const roteiro = rtRoteiros.find((r) => r.url === f.url);
           botoes.push(roteiro ? '<button type="button" class="cal-btn" data-a="ver-transc">📜 Ver transcrição</button>' : '<button type="button" class="cal-btn" data-a="transcrever">📜 Transcrever</button>');
         }
@@ -14283,7 +14298,7 @@
           <div class="rt-etiquetas">
             <span class="rt-etq ach-etq">${emojiCategoria} ${escapeHtml(traduzirColunaAchado(a.coluna))}</span>
             ${origem}
-            ${temImagens ? '<span class="rt-fonte">🖼️ Post</span>' : ''}
+            ${temImagens || a.post ? '<span class="rt-fonte">🖼️ Post</span>' : ''}
           </div>
           ${f && f.perfil ? `<p class="rt-perfil">@${escapeHtml(String(f.perfil).replace(/^@/, ''))}</p>` : ''}
           ${a.como_usar ? `<p class="ach-resumo">💡 ${escapeHtml(a.como_usar)}</p>` : ''}
@@ -14339,6 +14354,14 @@
 
     const ACH_BUCKET = 'achados-imagens';
     const ACH_MAX_IMAGENS = 20;
+
+    // A coluna post marca o achado que é foto ou carrossel (esses não oferecem Transcrever). Vem do achados-post.sql.
+    async function achVerPost() {
+      if (achPostOk !== null) return achPostOk;
+      const { error } = await Auth.sb.from('planejador_achados').select('post').limit(1);
+      achPostOk = !error;
+      return achPostOk;
+    }
 
     async function achVerImagens() {
       if (achImagensOk !== null) return achImagensOk;
@@ -14552,12 +14575,16 @@
       const f = a && achFonte(a);
       if (achColunasOk !== true || !rtChave || !a || a.capa || !f || (f.chave !== 'instagram' && f.chave !== 'tiktok')) return false;
       try {
-        const capa = await rtBuscarCapa(f.url);
-        if (!capa) return false;
-        const { error } = await Auth.sb.from('planejador_achados').update({ capa }).eq('id', id);
+        const info = await rtBuscarCapaInfo(f.url);
+        if (!info) return false;
+        const marcaPost = info.post && (await achVerPost());
+        const { error } = await Auth.sb.from('planejador_achados').update({ capa: info.capa, ...(marcaPost ? { post: true } : {}) }).eq('id', id);
         if (error) throw error;
         const atual = achadosCache.find((x) => x.id === id);
-        if (atual) atual.capa = capa;
+        if (atual) {
+          atual.capa = info.capa;
+          if (marcaPost) atual.post = true;
+        }
         renderizarAchados();
         return true;
       } catch (err) {
@@ -14578,6 +14605,7 @@
     async function abrirModalAchado(achado, preencher) {
       await achVerColunas();
       await achVerImagens();
+      await achVerPost();
       achadoAbertoId = achado ? achado.id : null;
       achadoNovo = !achado;
       // vindo de um vídeo da transcrição, a categoria fica sem escolha: é ela que classifica
@@ -14591,6 +14619,8 @@
       document.getElementById('pl-modal-achado-como-adaptar').value = (achado && achado.como_adaptar) || '';
       document.getElementById('pl-modal-achado-excluir').hidden = !achado;
       document.getElementById('ach-aviso-modal').hidden = achColunasOk !== false;
+      document.getElementById('pl-modal-achado-post').checked = !!(achado && achado.post);
+      document.getElementById('ach-post-linha').hidden = !achPostOk;
       achLimparImagensDoModal();
       achImgs = ((achado && achado.imagens) || []).map((u) => ({ id: ++achImgsContador, url: u, blob: null, preview: null }));
       achImgsOriginais = achImgs.map((i) => i.url);
@@ -14611,6 +14641,7 @@
         comoUsar: document.getElementById('pl-modal-achado-como-usar').value,
         comoAdaptar: document.getElementById('pl-modal-achado-como-adaptar').value,
         imagens: achImgs.map((i) => i.url || 'nova' + i.id).join('|'),
+        post: document.getElementById('pl-modal-achado-post').checked,
       });
     }
 
@@ -14675,6 +14706,7 @@
         campos.url = url || null;
         campos.como_usar = valor('pl-modal-achado-como-usar') || null;
         campos.como_adaptar = valor('pl-modal-achado-como-adaptar') || null;
+        if (achPostOk) campos.post = document.getElementById('pl-modal-achado-post').checked;
         const antes = achadoAbertoId ? achadosCache.find((x) => x.id === achadoAbertoId) : null;
         if (antes && (antes.url || null) !== (url || null)) campos.capa = null; // link novo: a capa velha não vale mais
         // vindo de um vídeo da transcrição: leva a capa que já foi buscada, sem gastar outro crédito

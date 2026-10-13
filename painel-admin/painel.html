@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261023a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261024a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1015,7 +1015,6 @@
             <button class="pl-hub-card ativo" data-pagina="visao-geral" type="button" data-i18n="pl_visao_geral">Visão geral</button>
             <button class="pl-hub-card" data-pagina="banco-teste" type="button" data-i18n="pl_banco_ideias_teste">Banco de ideias &amp; Roteiros</button>
             <button class="pl-hub-card" data-pagina="achados" type="button" data-i18n="pl_achados">Achados</button>
-            <button class="pl-hub-card" data-pagina="roteiros" type="button">📜 Transcrição de Vídeos</button>
             <button class="pl-hub-card" data-pagina="radar" type="button" data-i18n="pl_radar">Radar de Notícias</button>
           </div>
 
@@ -1090,62 +1089,43 @@
             <div id="bt-conteudo"></div>
           </div>
 
-          <div id="pl-pagina-roteiros" class="pl-pagina" hidden>
-            <div class="card email-vazio" id="rt-aviso-tabelas" hidden>
-              <h3 class="card-titulo">A Transcrição de Vídeos ainda não está pronta no banco</h3>
-              <p class="cal-todas-resumo">Falta rodar o arquivo sql-roteiros.sql no SQL Editor do Supabase.</p>
-            </div>
-            <div id="rt-conteudo">
-              <div class="card rt-topo">
-                <h3 class="card-titulo pl-pagina-titulo">📜 Transcrição de Vídeos</h3>
-                <p class="cal-todas-resumo">Cole o link de um reel e eu transcrevo. Serve pros seus e pros das outras, com etiqueta pra você separar.</p>
-                <div class="rt-entrada">
-                  <input type="url" id="rt-link" placeholder="Cole aqui: instagram.com/reel/... · tiktok.com/... · youtube.com/..." autocomplete="off">
-                  <select id="rt-de-quem" aria-label="De quem é o vídeo">
-                    <option value="outra">De outra pessoa</option>
-                    <option value="minha">Meu</option>
-                  </select>
-                  <button type="button" id="rt-btn-transcrever" class="cal-btn cal-btn-primario">🎧 Transcrever</button>
-                  <button type="button" id="rt-btn-manual" class="cal-btn">+ Escrever na mão</button>
-                </div>
-                <div id="rt-aviso" class="rt-aviso" hidden></div>
-                <div class="rt-config">
-                  <div class="rt-config-linha">
-                    <span class="rt-config-titulo">🔑 Chave da Supadata</span>
-                    <span id="rt-chave-salva" class="rt-chave-salva" hidden></span>
-                    <button type="button" id="rt-chave-trocar" class="cal-btn" hidden>Trocar chave</button>
-                    <span id="rt-saldo" class="rt-saldo"></span>
-                    <button type="button" id="rt-saldo-atualizar" class="cal-btn" title="Atualizar o saldo de créditos" aria-label="Atualizar o saldo de créditos">↻</button>
-                  </div>
-                  <div id="rt-chave-campo" class="rt-chave-campo">
-                    <input type="password" id="rt-chave-input" placeholder="Cole aqui a API key da Supadata" autocomplete="new-password">
-                    <button type="button" id="rt-chave-salvar" class="cal-btn cal-btn-primario">Salvar chave</button>
-                  </div>
-                  <p id="rt-config-ajuda" class="cal-todas-resumo">Ainda não tem? Crie uma conta grátis em supadata.ai (100 créditos por mês, sem cartão), copie a API key e cole aqui.</p>
-                </div>
-              </div>
-
-              <div class="rt-barra">
-                <input type="search" id="rt-busca" class="rt-busca" placeholder="🔎 Buscar na transcrição, no perfil, no título e nas notas" autocomplete="off">
-                <button type="button" id="rt-btn-estudar" class="cal-btn cal-btn-primario" title="Copia um pedido com as transcrições das outras creators. Cola no Claude pra descobrir assuntos em alta, expressões e tipos de gancho, e receber 5 roteiros novos no seu assunto">🧠 Estudar com o Claude</button>
-              </div>
-              <div id="rt-chips" class="rt-chips"></div>
-              <div id="rt-lista" class="rt-lista"></div>
-            </div>
-          </div>
-
           <div id="pl-pagina-achados" class="pl-pagina" hidden>
             <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_achados">Achados</h3>
             <div class="card email-vazio" id="ach-aviso-colunas" hidden>
               <h3 class="card-titulo">Os Achados ainda não estão prontos pra guardar link e capa</h3>
               <p class="cal-todas-resumo">Falta rodar o arquivo achados-referencias.sql no SQL Editor do Supabase.</p>
             </div>
+            <div class="card email-vazio" id="rt-aviso-tabelas" hidden>
+              <h3 class="card-titulo">Os vídeos transcritos ainda não estão prontos no banco</h3>
+              <p class="cal-todas-resumo">Falta rodar o arquivo sql-roteiros.sql no SQL Editor do Supabase.</p>
+            </div>
+            <div id="rt-aviso" class="rt-aviso" hidden></div>
             <div class="rt-barra">
-              <input type="search" id="ach-busca" class="rt-busca" placeholder="🔎 Buscar por título, perfil, o que viu, como usar..." autocomplete="off">
+              <input type="search" id="ach-busca" class="rt-busca" placeholder="🔎 Buscar por título, perfil, transcrição, o que viu, como usar..." autocomplete="off">
               <button type="button" id="ach-btn-nova" class="cal-btn cal-btn-primario">+ Nova referência</button>
+              <button type="button" id="rt-btn-estudar" class="cal-btn" title="Copia um pedido com as transcrições dos vídeos de outras creators. Cola no Claude pra descobrir assuntos em alta, expressões e tipos de gancho, e receber 5 roteiros novos no seu assunto">🧠 Estudar com o Claude</button>
             </div>
             <div id="ach-chips" class="rt-chips"></div>
+            <div id="ach-chips-video" class="rt-chips" hidden></div>
             <div id="ach-lista" class="ach-lista"></div>
+
+            <details id="rt-config-bloco" class="ach-config">
+              <summary>⚙️ Transcrição de vídeos: chave da Supadata e créditos</summary>
+              <div class="rt-config">
+                <div class="rt-config-linha">
+                  <span class="rt-config-titulo">🔑 Chave da Supadata</span>
+                  <span id="rt-chave-salva" class="rt-chave-salva" hidden></span>
+                  <button type="button" id="rt-chave-trocar" class="cal-btn" hidden>Trocar chave</button>
+                  <span id="rt-saldo" class="rt-saldo"></span>
+                  <button type="button" id="rt-saldo-atualizar" class="cal-btn" title="Atualizar o saldo de créditos" aria-label="Atualizar o saldo de créditos">↻</button>
+                </div>
+                <div id="rt-chave-campo" class="rt-chave-campo">
+                  <input type="password" id="rt-chave-input" placeholder="Cole aqui a API key da Supadata" autocomplete="new-password">
+                  <button type="button" id="rt-chave-salvar" class="cal-btn cal-btn-primario">Salvar chave</button>
+                </div>
+                <p id="rt-config-ajuda" class="cal-todas-resumo">Ainda não tem? Crie uma conta grátis em supadata.ai (100 créditos por mês, sem cartão), copie a API key e cole aqui.</p>
+              </div>
+            </details>
           </div>
 
           <div id="pl-pagina-radar" class="pl-pagina" hidden>
@@ -2183,24 +2163,38 @@
           <input type="text" id="pl-modal-achado-url" inputmode="url" autocomplete="off" placeholder="Cole aqui o link (Instagram, TikTok, YouTube...)">
         </div>
 
-        <div class="cal-form-campo">
-          <label for="pl-modal-achado-texto">Título</label>
-          <textarea id="pl-modal-achado-texto" rows="2" placeholder="Um nome pra achar depois, ou a própria frase ou gancho"></textarea>
+        <div id="ach-modal-video" hidden>
+          <div class="cal-form-campo">
+            <label for="pl-modal-achado-dequem">De quem é o vídeo</label>
+            <select id="pl-modal-achado-dequem">
+              <option value="outra">De outra pessoa</option>
+              <option value="minha">Meu</option>
+            </select>
+          </div>
+          <label class="ach-check"><input type="checkbox" id="pl-modal-achado-transcrever"> 🎧 Transcrever o vídeo agora <small>gasta 1 crédito da Supadata</small></label>
+          <p class="ach-dica">Sem a caixinha marcada, o vídeo só é guardado, com a capa (1 crédito no Instagram e no TikTok, grátis no YouTube), e você transcreve depois pelo card. Sem link, é só salvar pra escrever o roteiro na mão.</p>
         </div>
 
-        <div class="cal-form-campo">
-          <label for="pl-modal-achado-observacoes">O que você viu <small>opcional</small></label>
-          <textarea id="pl-modal-achado-observacoes" rows="3" placeholder="Contexto, o que chamou atenção..."></textarea>
-        </div>
+        <div id="ach-modal-comuns">
+          <div class="cal-form-campo">
+            <label for="pl-modal-achado-texto">Título</label>
+            <textarea id="pl-modal-achado-texto" rows="2" placeholder="Um nome pra achar depois, ou a própria frase ou gancho"></textarea>
+          </div>
 
-        <div class="cal-form-campo">
-          <label for="pl-modal-achado-como-usar">💡 Como posso usar <small>opcional</small></label>
-          <textarea id="pl-modal-achado-como-usar" rows="3" placeholder="Em que tipo de conteúdo isso funciona pra mim"></textarea>
-        </div>
+          <div class="cal-form-campo">
+            <label for="pl-modal-achado-observacoes">O que você viu <small>opcional</small></label>
+            <textarea id="pl-modal-achado-observacoes" rows="3" placeholder="Contexto, o que chamou atenção..."></textarea>
+          </div>
 
-        <div class="cal-form-campo">
-          <label for="pl-modal-achado-como-adaptar">✂️ Como adaptar <small>opcional</small></label>
-          <textarea id="pl-modal-achado-como-adaptar" rows="3" placeholder="O que eu mudaria pra ficar com a minha cara"></textarea>
+          <div class="cal-form-campo">
+            <label for="pl-modal-achado-como-usar">💡 Como posso usar <small>opcional</small></label>
+            <textarea id="pl-modal-achado-como-usar" rows="3" placeholder="Em que tipo de conteúdo isso funciona pra mim"></textarea>
+          </div>
+
+          <div class="cal-form-campo">
+            <label for="pl-modal-achado-como-adaptar">✂️ Como adaptar <small>opcional</small></label>
+            <textarea id="pl-modal-achado-como-adaptar" rows="3" placeholder="O que eu mudaria pra ficar com a minha cara"></textarea>
+          </div>
         </div>
 
         <div class="cal-form-acoes">
@@ -3772,6 +3766,8 @@
     let achadoSnapshotInicial = '';
     let achadoNovo = false; // o modal está criando uma referência nova
     let achFiltro = 'todos';
+    let achDeQuem = ''; // dentro de 🎬 Vídeo: '', 'minha' ou 'outra'
+    let achCatManual = false; // ela escolheu a categoria no modal (aí o link colado não troca mais sozinho)
     let achOrigem = ''; // '', 'ideia' (sem link) ou 'ref' (com link)
     let achBusca = '';
     let achColunasOk = null; // as colunas novas existem (achados-referencias.sql já rodado); null = ainda não conferi
@@ -3864,8 +3860,6 @@
     let rtModalFicha = 0; // muda a cada abertura/fechamento do editor (pra IA não escrever no roteiro errado)
     let rtCapaOk = false; // a coluna capa existe (sql-roteiros-capa.sql já rodado)
     let rtEstruturaOk = false; // a coluna estrutura existe (sql-roteiros-estrutura.sql já rodado)
-    let rtFiltro = 'todos';
-    let rtBusca = '';
     let rtEditandoId = null;
     let rtAtivoId = null; // roteiro que está sendo transcrito agora
     let rtTimer = null;
@@ -6875,8 +6869,19 @@
         const b = e.target.closest('[data-cat]');
         if (!b) return;
         achCategoriaModal = b.dataset.cat;
+        achCatManual = true;
         achDesenharCategorias();
+        achAtualizarModoModal();
       });
+      document.getElementById('pl-modal-achado-url').addEventListener('input', (e) => {
+        // colou um link de vídeo numa referência nova: já troca pra 🎬 Vídeo, a não ser que ela tenha escolhido a categoria
+        if (achadoNovo && !achCatManual && achCategoriaModal !== 'video' && achLinkVideo(e.target.value)) {
+          achCategoriaModal = 'video';
+          achDesenharCategorias();
+          achAtualizarModoModal();
+        }
+      });
+      document.getElementById('pl-modal-achado-transcrever').addEventListener('change', achAtualizarModoModal);
       document.getElementById('dash-btn-nova-ref').addEventListener('click', irParaNovaReferencia);
       document.getElementById('pl-modal-achado-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'pl-modal-achado-overlay') fecharModalAchado();
@@ -7350,7 +7355,6 @@
       }
       if (pagina === 'banco-teste') btAbrir();
       if (pagina === 'radar') abrirRadarNoPlanejador();
-      if (pagina === 'roteiros') rtAbrir();
       if (pagina === 'achados') achAbrir();
     }
 
@@ -7691,37 +7695,69 @@
         'erro',
         'Falta a chave da Supadata. Pra conseguir: crie uma conta grátis em supadata.ai (100 créditos por mês, sem cartão), copie a API key e cole no campo de chave aqui embaixo.'
       );
+      document.getElementById('rt-config-bloco').open = true;
       document.getElementById('rt-chave-input').focus();
     }
 
-    async function rtTranscrever() {
-      if (rtAtivoId) return;
+    // Cria o vídeo (tabela roteiros) e transcreve. O link já vem limpo (rtAnalisarLink).
+    async function rtIniciarTranscricao(a, deQuem) {
+      if (rtAtivoId) {
+        rtAviso('erro', 'Já tem um vídeo sendo transcrito. Espera ele terminar pra começar outro.');
+        return;
+      }
       if (!rtChave) {
         rtAvisoSemChave();
         return;
       }
-      const a = rtAnalisarLink(document.getElementById('rt-link').value);
-      if (!a) {
-        rtAviso('erro', 'Esse link não parece ser de um vídeo do Instagram, TikTok ou YouTube. Confere se copiou o link inteiro, começando com https://.');
-        return;
-      }
-      const repetido = rtRoteiros.find((r) => r.url === a.url);
-      if (repetido) {
-        const de_novo = await confirmarAcao('Esse link já está na biblioteca. Quer transcrever de novo mesmo assim?', { textoConfirmar: 'Transcrever de novo' });
-        if (!de_novo) return;
-      }
       try {
         const { data, error } = await Auth.sb
           .from('roteiros')
-          .insert({ fonte: a.fonte, url: a.url, perfil: a.perfil, de_quem: document.getElementById('rt-de-quem').value, status: 'processando' })
+          .insert({ fonte: a.fonte, url: a.url, perfil: a.perfil, de_quem: deQuem, status: 'processando' })
           .select();
         if (error) throw error;
         rtRoteiros.unshift(data[0]);
-        document.getElementById('rt-link').value = '';
         rtExecutar(data[0]);
       } catch (err) {
         console.error('Erro ao criar o roteiro:', err);
         rtAviso('erro', 'Não consegui guardar esse link. Tenta de novo.');
+      }
+    }
+
+    // Salvar de "Nova referência" com a categoria 🎬 Vídeo: só guarda o vídeo ou já transcreve.
+    async function achSalvarVideo() {
+      const bruto = document.getElementById('pl-modal-achado-url').value.trim();
+      if (!bruto) {
+        // sem link: vai direto pro editor, pra escrever o roteiro na mão
+        fecharModalAchadoForcado();
+        rtAbrirModal(null);
+        return;
+      }
+      const a = achLinkVideo(bruto);
+      if (!a) {
+        alert('Esse link não parece ser de um vídeo do Instagram, TikTok ou YouTube. Confere se copiou o link inteiro.');
+        return;
+      }
+      if (!rtOk) {
+        alert('Os vídeos transcritos ainda não estão prontos no banco. Falta rodar o arquivo sql-roteiros.sql no Supabase.');
+        return;
+      }
+      const deQuem = document.getElementById('pl-modal-achado-dequem').value;
+      const transcrever = document.getElementById('pl-modal-achado-transcrever').checked;
+      if (rtRoteiros.some((r) => r.url === a.url) && !(await confirmarAcao('Esse vídeo já está nos Achados. Guardar de novo mesmo assim?', { textoConfirmar: 'Guardar de novo' }))) return;
+      fecharModalAchadoForcado();
+      if (transcrever) {
+        await rtIniciarTranscricao(a, deQuem);
+        return;
+      }
+      try {
+        const { data, error } = await Auth.sb.from('roteiros').insert({ fonte: a.fonte, url: a.url, perfil: a.perfil, de_quem: deQuem, status: 'pronto' }).select();
+        if (error) throw error;
+        rtRoteiros.unshift(data[0]);
+        renderizarAchados();
+        rtGarantirChave().then((ok) => ok && rtGuardarCapa(data[0].id));
+      } catch (err) {
+        console.error('Erro ao guardar o vídeo:', err);
+        rtAviso('erro', 'Não consegui guardar esse vídeo. Tenta de novo.');
       }
     }
 
@@ -7732,7 +7768,6 @@
         return;
       }
       rtAtivoId = roteiro.id;
-      document.getElementById('rt-btn-transcrever').disabled = true;
       rtRenderizarLista();
       rtIniciarRelogio();
       try {
@@ -7762,7 +7797,6 @@
       } finally {
         rtPararRelogio();
         rtAtivoId = null;
-        document.getElementById('rt-btn-transcrever').disabled = false;
         rtRenderizarLista();
         rtAtualizarSaldo();
       }
@@ -7781,114 +7815,13 @@
       }
     }
 
-    // ---- biblioteca ----
-
-    function rtRenderizarChips() {
-      const chips = [['todos', 'Todos'], ['minha', 'Meus'], ['outra', 'De outras']];
-      document.getElementById('rt-chips').innerHTML = chips
-        .map(([chave, rotulo]) => `<button type="button" class="rt-chip${rtFiltro === chave ? ' ativo' : ''}" data-filtro="${escapeHtml(chave)}">${escapeHtml(rotulo)}</button>`)
-        .join('');
-    }
-
-    function rtFiltrados() {
-      const busca = rtNorm(rtBusca).trim();
-      return rtRoteiros.filter((r) => {
-        if ((rtFiltro === 'minha' || rtFiltro === 'outra') && r.de_quem !== rtFiltro) return false;
-        if (!busca) return true;
-        const palheiro = rtNorm([r.transcricao, r.perfil, r.titulo, r.obs, r.legenda, (r.tags || []).join(' ')].join(' '));
-        return palheiro.includes(busca);
-      });
-    }
-
-    function rtDataBonita(r) {
-      const loc = localeAtual();
-      if (r.postado_em) {
-        return 'Postado em ' + new Date(r.postado_em + 'T00:00:00').toLocaleDateString(loc, { day: '2-digit', month: 'short', year: 'numeric' });
-      }
-      return 'Guardado em ' + new Date(r.created_at).toLocaleDateString(loc, { day: '2-digit', month: 'short', year: 'numeric' });
-    }
-
-    // Capa do vídeo: a que foi guardada (Instagram e TikTok) ou a do YouTube, que o próprio YouTube entrega.
-    function rtCapaUrl(r) {
-      if (r.capa) return r.capa;
-      if (r.fonte === 'youtube') {
-        const e = rtEmbed(r);
-        const m = e && e.match(/\/embed\/([A-Za-z0-9_-]+)/);
-        if (m) return `https://i.ytimg.com/vi/${m[1]}/hqdefault.jpg`;
-      }
-      return '';
-    }
-
-    function rtHtmlCard(r) {
-      const fonte = RT_FONTES[r.fonte] || RT_FONTES.manual;
-      const embed = rtEmbed(r);
-      const ativo = rtAtivoId === r.id;
-      const processando = r.status === 'processando';
-      const falhou = r.status === 'falhou';
-      const capaUrl = rtCapaUrl(r);
-      const nAchados = r.url ? achadosCache.filter((a) => a.url === r.url).length : 0;
-      const podeBuscarCapa = rtCapaOk && !!rtChave && !capaUrl && !processando && !!r.url && (r.fonte === 'instagram' || r.fonte === 'tiktok');
-      const capa = `<div class="rt-capa">
-          ${capaUrl ? `<img src="${escapeHtml(capaUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="rt-capa-emoji" aria-hidden="true">${fonte.emoji}</span>`}
-          ${embed && !processando && !falhou ? '<button type="button" class="rt-capa-play" data-a="ver" aria-label="Ver vídeo" title="Ver vídeo">▶</button>' : ''}
-          <button type="button" class="rt-capa-apagar" data-a="apagar" aria-label="Apagar" title="Apagar">🗑️</button>
-          ${podeBuscarCapa ? '<button type="button" class="cal-btn rt-capa-buscar" data-a="capa">🖼️ Buscar capa</button>' : ''}
-        </div>`;
-      let estado = '';
-      if (processando) {
-        estado = `<p class="rt-estado"><span class="rt-relogio" aria-hidden="true">⏳</span> ${ativo ? 'Transcrevendo agora, pode deixar a aba aberta.' : 'Ficou esperando a transcrição. Se a aba foi fechada, tenta de novo.'}</p>`;
-      } else if (falhou) {
-        estado = `<p class="rt-estado rt-estado-erro">⚠️ ${escapeHtml(r.erro || 'Não consegui transcrever esse vídeo.')}</p>`;
-      }
-      const botoes = [];
-      if (processando) {
-        if (!ativo && r.url) botoes.push('<button type="button" class="cal-btn" data-a="retentar">🔄 Tentar de novo</button>');
-      } else if (falhou) {
-        botoes.push('<button type="button" class="cal-btn" data-a="editar">📂 Abrir mesmo assim</button>');
-        if (r.url) botoes.push('<button type="button" class="cal-btn" data-a="retentar">🔄 Tentar de novo</button>');
-      } else {
-        if (embed) botoes.push('<button type="button" class="cal-btn cal-btn-primario rt-acao-larga" data-a="ver">▶ Ver vídeo</button>');
-        else if (r.url) botoes.push(`<a class="cal-btn cal-btn-primario rt-acao-larga" href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">↗ Abrir link</a>`);
-        botoes.push('<button type="button" class="cal-btn" data-a="copiar" title="Copia o roteiro organizado em gancho, desenvolvimento e CTA. Se ainda não foi organizado, copia o texto corrido">📋 Copiar transcrição</button>');
-        botoes.push('<button type="button" class="cal-btn" data-a="editar">✏️ Editar</button>');
-      }
-      return `<article class="rt-card" data-id="${escapeHtml(r.id)}">
-        ${capa}
-        <div class="rt-corpo">
-          <h4 class="rt-titulo">${escapeHtml(r.titulo || 'Sem título')}</h4>
-          <div class="rt-etiquetas">
-            <span class="rt-etq ${r.de_quem === 'minha' ? 'rt-etq-minha' : 'rt-etq-outra'}">${r.de_quem === 'minha' ? 'Meu' : 'De outra'}</span>
-            <span class="rt-fonte">${fonte.emoji} ${escapeHtml(fonte.nome)}</span>
-            ${nAchados ? `<button type="button" class="rt-fonte rt-link-achados" data-a="achados" title="Ver os achados guardados deste vídeo">🔍 ${nAchados} ${nAchados === 1 ? 'achado' : 'achados'}</button>` : ''}
-          </div>
-          ${r.perfil ? `<p class="rt-perfil">@${escapeHtml(String(r.perfil).replace(/^@/, ''))}</p>` : ''}
-          ${estado}
-          ${botoes.length ? `<div class="rt-acoes">${botoes.join('')}</div>` : ''}
-        </div>
-      </article>`;
-    }
-
+    // A lista dos vídeos é a mesma dos Achados (cada vídeo é um card 🎬).
     function rtRenderizarLista() {
-      const lista = document.getElementById('rt-lista');
-      rtRenderizarChips();
-      if (!rtOk) {
-        lista.innerHTML = '';
-        return;
-      }
-      const itens = rtFiltrados();
-      if (rtRoteiros.length === 0) {
-        lista.innerHTML = '<p class="texto-vazio">Nenhum roteiro ainda. Cole um link lá em cima pra começar, ou escreva um na mão.</p>';
-        return;
-      }
-      if (itens.length === 0) {
-        lista.innerHTML = '<p class="texto-vazio">Nada encontrado com esse filtro.</p>';
-        return;
-      }
-      lista.innerHTML = itens.map(rtHtmlCard).join('');
+      renderizarAchados();
     }
 
     async function rtAcaoDoCard(botao) {
-      const card = botao.closest('.rt-card');
+      const card = botao.closest('.ach-card');
       const roteiro = card && rtRoteiros.find((r) => r.id === card.dataset.id);
       if (!roteiro) return;
       const acao = botao.dataset.a;
@@ -8074,7 +8007,7 @@
       avisoEl.textContent = aviso || '';
       const r = roteiro || {};
       document.getElementById('rt-m-titulo').value = r.titulo || '';
-      document.getElementById('rt-m-de-quem').value = r.de_quem || document.getElementById('rt-de-quem').value || 'outra';
+      document.getElementById('rt-m-de-quem').value = r.de_quem || 'outra';
       document.getElementById('rt-m-perfil').value = r.perfil || '';
       document.getElementById('rt-m-link').value = r.url || '';
       document.getElementById('rt-m-origem').value = r.fonte || 'manual';
@@ -8464,11 +8397,6 @@
     function rtLigarEventos() {
       if (rtLigado) return;
       rtLigado = true;
-      document.getElementById('rt-btn-transcrever').addEventListener('click', rtTranscrever);
-      document.getElementById('rt-link').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') rtTranscrever();
-      });
-      document.getElementById('rt-btn-manual').addEventListener('click', () => rtAbrirModal(null));
       document.getElementById('rt-chave-salvar').addEventListener('click', rtSalvarChave);
       document.getElementById('rt-chave-trocar').addEventListener('click', () => {
         rtTrocandoChave = true;
@@ -8476,20 +8404,6 @@
         document.getElementById('rt-chave-input').focus();
       });
       document.getElementById('rt-saldo-atualizar').addEventListener('click', rtAtualizarSaldo);
-      document.getElementById('rt-busca').addEventListener('input', (e) => {
-        rtBusca = e.target.value;
-        rtRenderizarLista();
-      });
-      document.getElementById('rt-chips').addEventListener('click', (e) => {
-        const b = e.target.closest('.rt-chip');
-        if (!b) return;
-        rtFiltro = b.dataset.filtro;
-        rtRenderizarLista();
-      });
-      document.getElementById('rt-lista').addEventListener('click', (e) => {
-        const b = e.target.closest('[data-a]');
-        if (b) rtAcaoDoCard(b);
-      });
       document.getElementById('rt-btn-estudar').addEventListener('click', rtEstudar);
       document.getElementById('rt-video-fechar').addEventListener('click', rtFecharVideo);
       document.getElementById('rt-video-overlay').addEventListener('click', (e) => {
@@ -8522,14 +8436,12 @@
       document.getElementById('rt-m-analise-aplicar').addEventListener('click', rtAplicarAnalise);
     }
 
+    // Carrega os vídeos e a chave da Supadata (a lista é desenhada pelos Achados).
     async function rtAbrir() {
       rtLigarEventos();
-      document.getElementById('rt-lista').innerHTML = '<p class="texto-vazio">Carregando...</p>';
       await rtCarregar();
       document.getElementById('rt-aviso-tabelas').hidden = rtOk;
-      document.getElementById('rt-conteudo').hidden = !rtOk;
       rtRenderizarConfig();
-      rtRenderizarLista();
       if (rtOk && rtChave) rtAtualizarSaldo();
     }
 
@@ -14077,24 +13989,44 @@
     }
 
     function achAbrir() {
+      rtLigarEventos();
       renderizarAchados();
-      // os roteiros (e a chave da Supadata) ajudam nos botões Transcrever e Buscar capa
-      const pronto = rtOk ? Promise.resolve() : rtCarregar();
-      pronto.then(() => rtGarantirChave()).then(() => renderizarAchados());
+      // vídeos transcritos (tabela roteiros) e a chave da Supadata entram na mesma página
+      rtAbrir().then(() => renderizarAchados());
     }
 
-    function achFiltrados() {
+    // Link de vídeo reconhecido (Instagram, TikTok ou YouTube), mesmo sem o https:// na frente.
+    function achLinkVideo(bruto) {
+      const v = String(bruto || '').trim();
+      return v ? rtAnalisarLink(/^https?:\/\//i.test(v) ? v : 'https://' + v) : null;
+    }
+
+    // Tudo que aparece na página: achados comuns e vídeos transcritos (🎬), do mais novo pro mais antigo.
+    function achItens() {
       const busca = rtNorm(achBusca).trim();
-      return achadosCache
-        .filter((a) => {
-          if (achFiltro !== 'todos' && a.coluna !== achFiltro) return false;
-          if (achOrigem === 'ideia' && a.url) return false;
-          if (achOrigem === 'ref' && !a.url) return false;
-          if (!busca) return true;
-          const f = achFonte(a);
-          return rtNorm([a.conteudo, a.observacoes, a.como_usar, a.como_adaptar, a.url, f && f.perfil].join(' ')).includes(busca);
-        })
-        .sort((x, y) => String(y.created_at || '').localeCompare(String(x.created_at || '')));
+      const itens = [];
+      if (achFiltro === 'todos' || achFiltro === 'video') {
+        rtRoteiros.forEach((r) => {
+          if (achDeQuem && r.de_quem !== achDeQuem) return;
+          if (achOrigem === 'ideia' && r.url) return;
+          if (achOrigem === 'ref' && !r.url) return;
+          if (busca && !rtNorm([r.transcricao, r.perfil, r.titulo, r.obs, r.legenda, r.url, (r.tags || []).join(' ')].join(' ')).includes(busca)) return;
+          itens.push({ tipo: 'video', obj: r });
+        });
+      }
+      if (achFiltro !== 'video') {
+        achadosCache.forEach((a) => {
+          if (achFiltro !== 'todos' && a.coluna !== achFiltro) return;
+          if (achOrigem === 'ideia' && a.url) return;
+          if (achOrigem === 'ref' && !a.url) return;
+          if (busca) {
+            const f = achFonte(a);
+            if (!rtNorm([a.conteudo, a.observacoes, a.como_usar, a.como_adaptar, a.url, f && f.perfil].join(' ')).includes(busca)) return;
+          }
+          itens.push({ tipo: 'achado', obj: a });
+        });
+      }
+      return itens.sort((x, y) => String(y.obj.created_at || '').localeCompare(String(x.obj.created_at || '')));
     }
 
     function renderizarAchados() {
@@ -14104,21 +14036,36 @@
       document.getElementById('ach-aviso-colunas').hidden = achColunasOk !== false;
 
       const chip = (atributo, chave, rotulo, n, ativo) => `<button type="button" class="rt-chip${ativo ? ' ativo' : ''}" data-${atributo}="${escapeHtml(chave)}">${escapeHtml(rotulo)} (${n})</button>`;
-      const categorias = [chip('filtro', 'todos', 'Todos', achadosCache.length, achFiltro === 'todos')].concat(
-        ACHADOS_COLUNAS.map((c) => chip('filtro', c, traduzirColunaAchado(c), achadosCache.filter((a) => a.coluna === c).length, achFiltro === c))
-      );
-      const origens = [
-        chip('origem', 'ideia', '💡 Minhas ideias', achadosCache.filter((a) => !a.url).length, achOrigem === 'ideia'),
-        chip('origem', 'ref', '🔗 Referências', achadosCache.filter((a) => !!a.url).length, achOrigem === 'ref'),
-      ];
+      const categorias = [
+        chip('filtro', 'todos', 'Todos', achadosCache.length + rtRoteiros.length, achFiltro === 'todos'),
+        chip('filtro', 'video', '🎬 Vídeo', rtRoteiros.length, achFiltro === 'video'),
+      ].concat(ACHADOS_COLUNAS.map((c) => chip('filtro', c, traduzirColunaAchado(c), achadosCache.filter((a) => a.coluna === c).length, achFiltro === c)));
+      const comLink = achadosCache.filter((a) => !!a.url).length + rtRoteiros.filter((r) => !!r.url).length;
+      const semLink = achadosCache.length + rtRoteiros.length - comLink;
+      const origens = [chip('origem', 'ideia', '💡 Minhas ideias', semLink, achOrigem === 'ideia'), chip('origem', 'ref', '🔗 Referências', comLink, achOrigem === 'ref')];
       document.getElementById('ach-chips').innerHTML = categorias.join('') + '<span class="ach-chips-sep" aria-hidden="true"></span>' + origens.join('');
 
-      if (achadosCache.length === 0) {
+      // dentro de 🎬 Vídeo: separar os seus dos de outras creators
+      const subVideo = document.getElementById('ach-chips-video');
+      subVideo.hidden = achFiltro !== 'video';
+      subVideo.innerHTML = [['', 'Todos os vídeos', rtRoteiros.length], ['minha', 'Meus', rtRoteiros.filter((r) => r.de_quem === 'minha').length], ['outra', 'De outras', rtRoteiros.filter((r) => r.de_quem !== 'minha').length]]
+        .map(([chave, rotulo, n]) => chip('dequem', chave, rotulo, n, achDeQuem === chave))
+        .join('');
+
+      if (achadosCache.length === 0 && rtRoteiros.length === 0) {
         lista.innerHTML = '<p class="texto-vazio">Nenhuma referência ainda. Clique em + Nova referência pra guardar a primeira.</p>';
         return;
       }
-      const itens = achFiltrados();
-      lista.innerHTML = itens.length ? itens.map(achHtmlCard).join('') : '<p class="texto-vazio">Nada encontrado com esse filtro.</p>';
+      const itens = achItens();
+      lista.innerHTML = itens.length ? itens.map((i) => (i.tipo === 'video' ? achHtmlVideo(i.obj) : achHtmlCard(i.obj))).join('') : '<p class="texto-vazio">Nada encontrado com esse filtro.</p>';
+    }
+
+    // Miniatura quadrada: botão que abre o vídeo, link que abre a rede, ou só o enfeite quando não tem link.
+    function achHtmlThumb(f, capaUrl, embed, emojiPadrao) {
+      const conteudo = `${capaUrl ? `<img src="${escapeHtml(capaUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="ach-thumb-emoji" aria-hidden="true">${f ? f.emoji : emojiPadrao}</span>`}${f ? `<span class="ach-thumb-play" aria-hidden="true">${embed ? '▶' : '↗'}</span>` : ''}`;
+      if (embed) return `<button type="button" class="ach-thumb" data-a="ver" aria-label="Ver vídeo" title="Ver vídeo">${conteudo}</button>`;
+      if (f) return `<a class="ach-thumb" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir o link" title="Abrir o link">${conteudo}</a>`;
+      return `<div class="ach-thumb">${conteudo}</div>`;
     }
 
     function achHtmlCard(a) {
@@ -14127,11 +14074,6 @@
       const embed = f && f.chave !== 'instagram' ? rtEmbed({ url: a.url }) : null;
       const podeBuscarCapa = achColunasOk === true && !!rtChave && !capaUrl && !!f && (f.chave === 'instagram' || f.chave === 'tiktok');
       const emojiCategoria = ACH_EMOJI[a.coluna] || '🔍';
-      const conteudoThumb = `${capaUrl ? `<img src="${escapeHtml(capaUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="ach-thumb-emoji" aria-hidden="true">${f ? f.emoji : emojiCategoria}</span>`}${f ? `<span class="ach-thumb-play" aria-hidden="true">${embed ? '▶' : '↗'}</span>` : ''}`;
-      let thumb;
-      if (embed) thumb = `<button type="button" class="ach-thumb" data-a="ver" aria-label="Ver vídeo" title="Ver vídeo">${conteudoThumb}</button>`;
-      else if (f) thumb = `<a class="ach-thumb" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir o link" title="Abrir o link">${conteudoThumb}</a>`;
-      else thumb = `<div class="ach-thumb">${conteudoThumb}</div>`;
 
       const botoes = [];
       if (embed) botoes.push('<button type="button" class="cal-btn cal-btn-primario" data-a="ver">▶ Ver</button>');
@@ -14143,8 +14085,8 @@
       if (podeBuscarCapa) botoes.push('<button type="button" class="cal-btn" data-a="capa">🖼️ Capa</button>');
       botoes.push('<button type="button" class="cal-btn" data-a="editar">✏️ Editar</button>');
 
-      return `<article class="ach-card" data-id="${escapeHtml(a.id)}">
-        ${thumb}
+      return `<article class="ach-card" data-tipo="achado" data-id="${escapeHtml(a.id)}">
+        ${achHtmlThumb(f, capaUrl, embed, emojiCategoria)}
         <div class="ach-corpo">
           <h4 class="ach-titulo${f ? '' : ' ach-titulo-longo'}">${escapeHtml(a.conteudo)}</h4>
           <div class="rt-etiquetas">
@@ -14158,9 +14100,68 @@
       </article>`;
     }
 
+    // Card de um vídeo transcrito (🎬): mesma cara dos outros, com os botões da transcrição.
+    function achHtmlVideo(r) {
+      const fonte = RT_FONTES[r.fonte] || RT_FONTES.manual;
+      const f = r.url ? { ...fonte, chave: r.fonte, url: r.url } : null;
+      const embed = r.fonte === 'instagram' ? null : rtEmbed(r);
+      const ativo = rtAtivoId === r.id;
+      const processando = r.status === 'processando';
+      const falhou = r.status === 'falhou';
+      const capaUrl = rtCapaUrl(r);
+      const nPartes = r.url ? achadosCache.filter((a) => a.url === r.url).length : 0;
+      const podeBuscarCapa = rtCapaOk && !!rtChave && !capaUrl && !processando && !!r.url && (r.fonte === 'instagram' || r.fonte === 'tiktok');
+
+      let estado = '';
+      if (processando) {
+        estado = `<p class="rt-estado"><span class="rt-relogio" aria-hidden="true">⏳</span> ${ativo ? 'Transcrevendo agora, pode deixar a aba aberta.' : 'Ficou esperando a transcrição. Se a aba foi fechada, tenta de novo.'}</p>`;
+      } else if (falhou) {
+        estado = `<p class="rt-estado rt-estado-erro">⚠️ ${escapeHtml(r.erro || 'Não consegui transcrever esse vídeo.')}</p>`;
+      } else if (!r.transcricao) {
+        estado = '<p class="ach-resumo">Ainda sem transcrição.</p>';
+      }
+
+      const botoes = [];
+      if (processando) {
+        if (!ativo && r.url) botoes.push('<button type="button" class="cal-btn" data-a="retentar">🔄 Tentar de novo</button>');
+      } else if (falhou) {
+        botoes.push('<button type="button" class="cal-btn" data-a="editar">📂 Abrir mesmo assim</button>');
+        if (r.url) botoes.push('<button type="button" class="cal-btn" data-a="retentar">🔄 Tentar de novo</button>');
+      } else {
+        if (embed) botoes.push('<button type="button" class="cal-btn cal-btn-primario" data-a="ver">▶ Ver</button>');
+        else if (r.url) botoes.push(`<a class="cal-btn cal-btn-primario" href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">↗ Abrir</a>`);
+        if (r.transcricao) botoes.push('<button type="button" class="cal-btn" data-a="copiar" title="Copia o roteiro organizado em gancho, desenvolvimento e CTA. Se ainda não foi organizado, copia o texto corrido">📋 Copiar</button>');
+        else if (r.url) botoes.push('<button type="button" class="cal-btn" data-a="retentar">📜 Transcrever</button>');
+        if (podeBuscarCapa) botoes.push('<button type="button" class="cal-btn" data-a="capa">🖼️ Capa</button>');
+        botoes.push('<button type="button" class="cal-btn" data-a="editar">✏️ Editar</button>');
+      }
+      botoes.push('<button type="button" class="cal-btn rt-apagar" data-a="apagar" title="Apagar" aria-label="Apagar">🗑️</button>');
+
+      return `<article class="ach-card" data-tipo="video" data-id="${escapeHtml(r.id)}">
+        ${achHtmlThumb(f, capaUrl, embed, fonte.emoji)}
+        <div class="ach-corpo">
+          <h4 class="ach-titulo">${escapeHtml(r.titulo || 'Sem título')}</h4>
+          <div class="rt-etiquetas">
+            <span class="rt-etq ach-etq">🎬 Vídeo</span>
+            <span class="rt-etq ${r.de_quem === 'minha' ? 'rt-etq-minha' : 'rt-etq-outra'}">${r.de_quem === 'minha' ? 'Meu' : 'De outra'}</span>
+            <span class="rt-fonte">${fonte.emoji} ${escapeHtml(fonte.nome)}</span>
+          </div>
+          ${r.perfil ? `<p class="rt-perfil">@${escapeHtml(String(r.perfil).replace(/^@/, ''))}</p>` : ''}
+          ${nPartes ? `<button type="button" class="rt-fonte rt-link-achados" data-a="achados" title="Ver as partes deste vídeo guardadas nos Achados">🔍 ${nPartes} ${nPartes === 1 ? 'parte guardada' : 'partes guardadas'}</button>` : ''}
+          ${estado}
+          <div class="ach-acoes">${botoes.join('')}</div>
+        </div>
+      </article>`;
+    }
+
     async function achAcaoDoCard(botao) {
       const card = botao.closest('.ach-card');
-      const a = card && achadosCache.find((x) => x.id === card.dataset.id);
+      if (!card) return;
+      if (card.dataset.tipo === 'video') {
+        rtAcaoDoCard(botao);
+        return;
+      }
+      const a = achadosCache.find((x) => x.id === card.dataset.id);
       if (!a) return;
       const acao = botao.dataset.a;
       const f = achFonte(a);
@@ -14170,19 +14171,11 @@
         abrirModalAchado(a);
       } else if (acao === 'ver-transc') {
         const roteiro = f && rtRoteiros.find((r) => r.url === f.url);
-        if (!roteiro) return;
-        abrirPaginaPlanejador('roteiros');
-        await rtAbrir();
-        const atual = rtRoteiros.find((r) => r.id === roteiro.id);
-        if (atual) rtAbrirModal(atual);
+        if (roteiro) rtAbrirModal(roteiro);
       } else if (acao === 'transcrever') {
         if (!f) return;
-        abrirPaginaPlanejador('roteiros');
-        await rtAbrir();
-        document.getElementById('rt-link').value = f.url;
-        document.getElementById('rt-de-quem').value = 'outra';
-        document.getElementById('rt-link').focus();
-        rtAviso('ok', 'Link colocado. Se quiser mesmo transcrever, clica em Transcrever (gasta 1 crédito da Supadata).');
+        if (!(await confirmarAcao('Transcrever este vídeo? Gasta 1 crédito da Supadata e guarda o vídeo aqui nos Achados, como 🎬 Vídeo.', { textoConfirmar: 'Transcrever' }))) return;
+        rtIniciarTranscricao({ fonte: f.chave, url: f.url, perfil: f.perfil }, 'outra');
       } else if (acao === 'capa') {
         botao.disabled = true;
         botao.textContent = '⏳ Buscando…';
@@ -14282,9 +14275,19 @@
     // ---- modal: criar e editar uma referência ----
 
     function achDesenharCategorias() {
-      document.getElementById('pl-modal-achado-categorias').innerHTML = ACHADOS_COLUNAS.map(
-        (c) => `<button type="button" class="rt-chip${achCategoriaModal === c ? ' ativo' : ''}" data-cat="${escapeHtml(c)}">${ACH_EMOJI[c]} ${escapeHtml(traduzirColunaAchado(c))}</button>`
-      ).join('');
+      const categorias = (achadoNovo ? [['video', '🎬 Vídeo']] : []).concat(ACHADOS_COLUNAS.map((c) => [c, `${ACH_EMOJI[c]} ${traduzirColunaAchado(c)}`]));
+      document.getElementById('pl-modal-achado-categorias').innerHTML = categorias
+        .map(([c, rotulo]) => `<button type="button" class="rt-chip${achCategoriaModal === c ? ' ativo' : ''}" data-cat="${escapeHtml(c)}">${escapeHtml(rotulo)}</button>`)
+        .join('');
+    }
+
+    // Categoria 🎬 Vídeo: some o que é de achado comum e aparecem "de quem" e "transcrever agora".
+    function achAtualizarModoModal() {
+      const video = achCategoriaModal === 'video';
+      document.getElementById('ach-modal-comuns').hidden = video;
+      document.getElementById('ach-modal-video').hidden = !video;
+      const salvar = document.getElementById('pl-modal-achado-salvar');
+      salvar.textContent = video && document.getElementById('pl-modal-achado-transcrever').checked ? '🎧 Salvar e transcrever' : 'Salvar';
     }
 
     // achado = null abre uma referência nova.
@@ -14292,7 +14295,8 @@
       await achVerColunas();
       achadoAbertoId = achado ? achado.id : null;
       achadoNovo = !achado;
-      achCategoriaModal = achado ? achado.coluna : ACHADOS_COLUNAS.includes(achFiltro) ? achFiltro : 'Gancho';
+      achCategoriaModal = achado ? achado.coluna : achFiltro === 'video' ? 'video' : ACHADOS_COLUNAS.includes(achFiltro) ? achFiltro : 'Gancho';
+      achCatManual = false;
       document.getElementById('pl-modal-achado-coluna').textContent = achado ? 'Editar referência' : 'Nova referência';
       document.getElementById('pl-modal-achado-url').value = (achado && achado.url) || '';
       document.getElementById('pl-modal-achado-texto').value = (achado && achado.conteudo) || '';
@@ -14300,8 +14304,11 @@
       document.getElementById('pl-modal-achado-como-usar').value = (achado && achado.como_usar) || '';
       document.getElementById('pl-modal-achado-como-adaptar').value = (achado && achado.como_adaptar) || '';
       document.getElementById('pl-modal-achado-excluir').hidden = !achado;
+      document.getElementById('pl-modal-achado-dequem').value = 'outra';
+      document.getElementById('pl-modal-achado-transcrever').checked = false;
       document.getElementById('ach-aviso-modal').hidden = achColunasOk !== false;
       achDesenharCategorias();
+      achAtualizarModoModal();
       document.getElementById('pl-modal-achado-overlay').hidden = false;
       achadoSnapshotInicial = capturarEstadoAchado();
       document.getElementById(achado ? 'pl-modal-achado-texto' : 'pl-modal-achado-url').focus();
@@ -14338,6 +14345,10 @@
 
     async function salvarModalAchado() {
       if (!achadoAbertoId && !achadoNovo) return;
+      if (achadoNovo && achCategoriaModal === 'video') {
+        await achSalvarVideo();
+        return;
+      }
       const valor = (id) => document.getElementById(id).value.trim();
 
       // link: aceita sem https:// e limpa o que é rastreio

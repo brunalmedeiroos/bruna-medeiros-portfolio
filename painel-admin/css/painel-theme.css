@@ -11941,3 +11941,57 @@
     margin-right: 0;
   }
 }
+
+/* ---- Achados: vídeos transcritos juntos, config da Supadata e modal de vídeo ---- */
+
+.painel-body .ach-config {
+  margin-top: 28px;
+  font-size: 13px;
+}
+
+.painel-body .ach-config summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--texto-suave);
+}
+
+.painel-body .ach-config .rt-config {
+  margin-top: 10px;
+}
+
+.painel-body .ach-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--grafite);
+  cursor: pointer;
+}
+
+.painel-body .ach-check small {
+  font-weight: 500;
+  color: var(--texto-suave);
+}
+
+.painel-body .ach-dica {
+  margin: 8px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--texto-suave);
+}
+
+.painel-body #ach-modal-video[hidden],
+.painel-body #ach-modal-comuns[hidden] {
+  display: none;
+}
+
+.painel-body #ach-modal-comuns {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.painel-body .ach-card .rt-apagar {
+  color: #B3402F;
+}

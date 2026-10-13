@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261021a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261022a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -179,6 +179,7 @@
                 <h2 class="saudacao" id="dash-saudacao">Bom dia, Bru!</h2>
                 <p class="dash-data" id="dash-data">Hoje</p>
               </div>
+              <button type="button" id="dash-btn-nova-ref" class="dash-btn-nova-ref">🔍 Nova referência</button>
             </div>
           </div>
 
@@ -1135,9 +1136,16 @@
 
           <div id="pl-pagina-achados" class="pl-pagina" hidden>
             <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_achados">Achados</h3>
-            <div class="pl-colunas-scroll">
-              <div id="pl-colunas-achados" class="pl-colunas"></div>
+            <div class="card email-vazio" id="ach-aviso-colunas" hidden>
+              <h3 class="card-titulo">Os Achados ainda não estão prontos pra guardar link e capa</h3>
+              <p class="cal-todas-resumo">Falta rodar o arquivo achados-referencias.sql no SQL Editor do Supabase.</p>
             </div>
+            <div class="rt-barra">
+              <input type="search" id="ach-busca" class="rt-busca" placeholder="🔎 Buscar por título, perfil, o que viu, como usar..." autocomplete="off">
+              <button type="button" id="ach-btn-nova" class="cal-btn cal-btn-primario">+ Nova referência</button>
+            </div>
+            <div id="ach-chips" class="rt-chips"></div>
+            <div id="ach-lista" class="rt-lista"></div>
           </div>
 
           <div id="pl-pagina-radar" class="pl-pagina" hidden>
@@ -2153,24 +2161,46 @@
       </div>
     </div>
 
-    <!-- Modal: detalhe de um achado -->
+    <!-- Modal: criar e editar uma referência dos Achados -->
     <div id="pl-modal-achado-overlay" class="pl-modal-overlay" hidden>
-      <div class="pl-modal pl-modal-pequeno">
+      <div class="pl-modal ach-modal">
         <div class="pl-modal-topo">
-          <span class="pl-modal-titulo-fixo" id="pl-modal-achado-coluna">Gancho</span>
+          <span class="pl-modal-titulo-fixo" id="pl-modal-achado-coluna">Nova referência</span>
           <button id="pl-modal-achado-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
 
+        <p class="dash-aviso" id="ach-aviso-modal" hidden>Link, capa, como usar e como adaptar só são guardados depois de rodar o achados-referencias.sql no Supabase.</p>
+
         <div class="cal-form-campo">
-          <label for="pl-modal-achado-texto" data-i18n="pl_achado_label">Achado</label>
-          <textarea id="pl-modal-achado-texto" class="pl-textarea-grande" data-i18n-placeholder="pl_achado_placeholder" placeholder="Escreva o que você encontrou..."></textarea>
+          <label>Categoria</label>
+          <div id="pl-modal-achado-categorias" class="rt-chips ach-modal-chips"></div>
         </div>
 
         <div class="cal-form-campo">
-          <label for="pl-modal-achado-observacoes" data-i18n="pl_oque_viu">O que você viu</label>
-          <textarea id="pl-modal-achado-observacoes" class="pl-textarea-grande" data-i18n-placeholder="pl_oque_viu_placeholder" placeholder="Escreva com mais detalhes, contexto, onde viu, link..."></textarea>
+          <label for="pl-modal-achado-url">Link do vídeo ou post <small>opcional</small></label>
+          <input type="text" id="pl-modal-achado-url" inputmode="url" autocomplete="off" placeholder="Cole aqui o link (Instagram, TikTok, YouTube...)">
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="pl-modal-achado-texto">Título</label>
+          <textarea id="pl-modal-achado-texto" rows="2" placeholder="Um nome pra achar depois, ou a própria frase ou gancho"></textarea>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="pl-modal-achado-observacoes">O que você viu <small>opcional</small></label>
+          <textarea id="pl-modal-achado-observacoes" rows="3" placeholder="Contexto, o que chamou atenção..."></textarea>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="pl-modal-achado-como-usar">💡 Como posso usar <small>opcional</small></label>
+          <textarea id="pl-modal-achado-como-usar" rows="3" placeholder="Em que tipo de conteúdo isso funciona pra mim"></textarea>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="pl-modal-achado-como-adaptar">✂️ Como adaptar <small>opcional</small></label>
+          <textarea id="pl-modal-achado-como-adaptar" rows="3" placeholder="O que eu mudaria pra ficar com a minha cara"></textarea>
         </div>
 
         <div class="cal-form-acoes">
@@ -3731,6 +3761,11 @@
     let ideiaSnapshotInicial = '';
     let achadoAbertoId = null;
     let achadoSnapshotInicial = '';
+    let achadoNovo = false; // o modal está criando uma referência nova
+    let achFiltro = 'todos';
+    let achBusca = '';
+    let achColunasOk = null; // as colunas novas existem (achados-referencias.sql já rodado); null = ainda não conferi
+    let achCategoriaModal = 'Gancho';
     let dataAgendarAtual = null; // data (ISO) do dia clicado no "+" do calendário do cronograma
     const ACHADOS_COLUNAS = ['Gancho', 'Frase', 'Formato', 'Música', 'CTA'];
     // Nome da coluna é gravado em achados.coluna em português (é o "código");
@@ -6810,6 +6845,28 @@
       document.getElementById('pl-modal-achado-fechar').addEventListener('click', fecharModalAchado);
       document.getElementById('pl-modal-achado-salvar').addEventListener('click', salvarModalAchado);
       document.getElementById('pl-modal-achado-excluir').addEventListener('click', excluirModalAchado);
+      document.getElementById('ach-btn-nova').addEventListener('click', () => abrirModalAchado(null));
+      document.getElementById('ach-busca').addEventListener('input', (e) => {
+        achBusca = e.target.value;
+        renderizarAchados();
+      });
+      document.getElementById('ach-chips').addEventListener('click', (e) => {
+        const b = e.target.closest('.rt-chip');
+        if (!b) return;
+        achFiltro = b.dataset.filtro;
+        renderizarAchados();
+      });
+      document.getElementById('ach-lista').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-a]');
+        if (b) achAcaoDoCard(b);
+      });
+      document.getElementById('pl-modal-achado-categorias').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-cat]');
+        if (!b) return;
+        achCategoriaModal = b.dataset.cat;
+        achDesenharCategorias();
+      });
+      document.getElementById('dash-btn-nova-ref').addEventListener('click', irParaNovaReferencia);
       document.getElementById('pl-modal-achado-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'pl-modal-achado-overlay') fecharModalAchado();
       });
@@ -7283,6 +7340,7 @@
       if (pagina === 'banco-teste') btAbrir();
       if (pagina === 'radar') abrirRadarNoPlanejador();
       if (pagina === 'roteiros') rtAbrir();
+      if (pagina === 'achados') achAbrir();
     }
 
     // ==========================================================================
@@ -13958,95 +14016,196 @@
       btRenderizar();
     }
 
-    // ---- Achados (pilares fixos: Gancho, Frase, Formato, Música, CTA) ----
+    // ---- Achados: banco de referências (categorias fixas: Gancho, Frase, Formato, Música, CTA) ----
+    // Cada achado é uma referência: título, link opcional (com capa), o que viu, como usar e como adaptar.
+    // As colunas url, capa, como_usar e como_adaptar vêm do achados-referencias.sql.
+
+    const ACH_EMOJI = { 'Gancho': '🪝', 'Frase': '💬', 'Formato': '🎞️', 'Música': '🎵', 'CTA': '📣' };
+
+    async function achVerColunas() {
+      if (achColunasOk !== null) return achColunasOk;
+      const { error } = await Auth.sb.from('planejador_achados').select('url,capa,como_usar,como_adaptar').limit(1);
+      achColunasOk = !error;
+      return achColunasOk;
+    }
+
+    // A chave da Supadata normalmente só é lida ao abrir a Transcrição de Vídeos; aqui ela é lida na hora.
+    async function rtGarantirChave() {
+      if (rtChave) return true;
+      try {
+        const { data } = await Auth.sb.from('configuracoes').select('valor').eq('chave', RT_CHAVE_CONFIG).maybeSingle();
+        if (data && data.valor) rtChave = String(data.valor);
+      } catch (err) {
+        console.warn('Não consegui ler a chave da Supadata:', err);
+      }
+      return !!rtChave;
+    }
+
+    // Plataforma e @ saem do link (instagram, tiktok, youtube ou outro site qualquer).
+    function achFonte(a) {
+      if (!a.url) return null;
+      const an = rtAnalisarLink(a.url);
+      if (an) return { ...RT_FONTES[an.fonte], chave: an.fonte, perfil: an.perfil, url: an.url };
+      try {
+        return { emoji: '🔗', nome: new URL(a.url).hostname.replace(/^www\./, ''), chave: 'outro', perfil: null, url: a.url };
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function achAbrir() {
+      renderizarAchados();
+      if (!rtChave) rtGarantirChave().then((ok) => ok && renderizarAchados());
+    }
+
+    function achFiltrados() {
+      const busca = rtNorm(achBusca).trim();
+      return achadosCache
+        .filter((a) => {
+          if (achFiltro !== 'todos' && a.coluna !== achFiltro) return false;
+          if (!busca) return true;
+          const f = achFonte(a);
+          return rtNorm([a.conteudo, a.observacoes, a.como_usar, a.como_adaptar, a.url, f && f.perfil].join(' ')).includes(busca);
+        })
+        .sort((x, y) => String(y.created_at || '').localeCompare(String(x.created_at || '')));
+    }
 
     function renderizarAchados() {
-      const container = document.getElementById('pl-colunas-achados');
-      container.innerHTML = '';
+      const lista = document.getElementById('ach-lista');
+      if (!lista) return;
+      if (achColunasOk === null) achVerColunas().then(renderizarAchados);
+      document.getElementById('ach-aviso-colunas').hidden = achColunasOk !== false;
 
-      ACHADOS_COLUNAS.forEach((coluna) => {
-        const itensDaColuna = achadosCache.filter((a) => a.coluna === coluna);
-        container.appendChild(criarColunaAchados(coluna, itensDaColuna));
-      });
+      const chips = [['todos', 'Todos', achadosCache.length], ...ACHADOS_COLUNAS.map((c) => [c, traduzirColunaAchado(c), achadosCache.filter((a) => a.coluna === c).length])];
+      document.getElementById('ach-chips').innerHTML = chips
+        .map(([chave, rotulo, n]) => `<button type="button" class="rt-chip${achFiltro === chave ? ' ativo' : ''}" data-filtro="${escapeHtml(chave)}">${escapeHtml(rotulo)} (${n})</button>`)
+        .join('');
+
+      if (achadosCache.length === 0) {
+        lista.innerHTML = '<p class="texto-vazio">Nenhuma referência ainda. Clique em + Nova referência pra guardar a primeira.</p>';
+        return;
+      }
+      const itens = achFiltrados();
+      lista.innerHTML = itens.length ? itens.map(achHtmlCard).join('') : '<p class="texto-vazio">Nada encontrado com esse filtro.</p>';
     }
 
-    function criarColunaAchados(coluna, itens) {
-      const el = document.createElement('div');
-      el.className = 'pl-coluna';
-      el.innerHTML = `
-        <div class="pl-coluna-topo">
-          <span class="pl-coluna-titulo">${escapeHtml(traduzirColunaAchado(coluna))}</span>
+    function achHtmlCard(a) {
+      const f = achFonte(a);
+      const capaUrl = f ? rtCapaUrl({ capa: a.capa, fonte: f.chave, url: a.url }) : '';
+      const embed = f && f.chave !== 'instagram' ? rtEmbed({ url: a.url }) : null;
+      const podeBuscarCapa = achColunasOk === true && !!rtChave && !capaUrl && !!f && (f.chave === 'instagram' || f.chave === 'tiktok');
+      const emojiCategoria = ACH_EMOJI[a.coluna] || '🔍';
+      let jogar = '';
+      if (embed) jogar = '<button type="button" class="rt-capa-play" data-a="ver" aria-label="Ver vídeo" title="Ver vídeo">▶</button>';
+      else if (f) jogar = `<a class="rt-capa-play" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir o link" title="Abrir o link">↗</a>`;
+      let capa;
+      if (f) {
+        capa = `<div class="rt-capa">
+          ${capaUrl ? `<img src="${escapeHtml(capaUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="rt-capa-emoji" aria-hidden="true">${f.emoji}</span>`}
+          ${jogar}
+          ${podeBuscarCapa ? '<button type="button" class="cal-btn rt-capa-buscar" data-a="capa">🖼️ Buscar capa</button>' : ''}
+        </div>`;
+      } else {
+        capa = `<div class="rt-capa ach-capa-curta"><span class="rt-capa-emoji" aria-hidden="true">${emojiCategoria}</span></div>`;
+      }
+      const botoes = [];
+      if (embed) botoes.push('<button type="button" class="cal-btn cal-btn-primario rt-acao-larga" data-a="ver">▶ Ver vídeo</button>');
+      else if (f) botoes.push(`<a class="cal-btn cal-btn-primario rt-acao-larga" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer">↗ Abrir link</a>`);
+      botoes.push('<button type="button" class="cal-btn rt-acao-larga" data-a="editar">✏️ Editar</button>');
+      return `<article class="rt-card${f ? '' : ' ach-card-texto'}" data-id="${escapeHtml(a.id)}">
+        ${capa}
+        <div class="rt-corpo">
+          <h4 class="rt-titulo">${escapeHtml(a.conteudo)}</h4>
+          <div class="rt-etiquetas">
+            <span class="rt-etq ach-etq">${emojiCategoria} ${escapeHtml(traduzirColunaAchado(a.coluna))}</span>
+            ${f ? `<span class="rt-fonte">${f.emoji} ${escapeHtml(f.nome)}</span>` : ''}
+          </div>
+          ${f && f.perfil ? `<p class="rt-perfil">@${escapeHtml(String(f.perfil).replace(/^@/, ''))}</p>` : ''}
+          ${a.como_usar ? `<p class="ach-resumo">💡 ${escapeHtml(a.como_usar)}</p>` : ''}
+          <div class="rt-acoes">${botoes.join('')}</div>
         </div>
-        <div class="pl-coluna-cards"></div>
-        <button class="pl-coluna-add" type="button">${escapeHtml(tr('pl_novo_achado'))}</button>
-      `;
-
-      const lista = el.querySelector('.pl-coluna-cards');
-      itens.forEach((item) => lista.appendChild(criarCardAchado(item)));
-
-      el.querySelector('.pl-coluna-add').addEventListener('click', () => mostrarFormNovoAchado(el, coluna));
-
-      return el;
+      </article>`;
     }
 
-    function criarCardAchado(achado) {
-      const card = document.createElement('button');
-      card.type = 'button';
-      card.className = 'pl-card';
-      card.innerHTML = `<span class="pl-card-titulo">${escapeHtml(achado.conteudo)}</span>`;
-      card.addEventListener('click', () => abrirModalAchado(achado));
-      return card;
-    }
-
-    function mostrarFormNovoAchado(coluna, nomeColuna) {
-      if (coluna.querySelector('.pl-novo-card-form')) return;
-
-      const form = document.createElement('div');
-      form.className = 'pl-novo-card-form';
-      form.innerHTML = `
-        <textarea placeholder="${escapeHtml(tr('pl_achado_novo_placeholder'))}" rows="2"></textarea>
-        <div class="pl-novo-card-acoes">
-          <button type="button" class="cal-btn cal-btn-primario pl-novo-card-salvar">${escapeHtml(tr('adicionar'))}</button>
-          <button type="button" class="cal-btn pl-novo-card-cancelar">${escapeHtml(tr('confirm_cancelar'))}</button>
-        </div>
-      `;
-      coluna.querySelector('.pl-coluna-add').before(form);
-
-      const textarea = form.querySelector('textarea');
-      textarea.focus();
-
-      form.querySelector('.pl-novo-card-cancelar').addEventListener('click', () => form.remove());
-      form.querySelector('.pl-novo-card-salvar').addEventListener('click', async () => {
-        const conteudo = textarea.value.trim();
-        if (!conteudo) return;
-        try {
-          const { error } = await Auth.sb.from('planejador_achados').insert({
-            coluna: nomeColuna,
-            conteudo,
-            ordem: achadosCache.length,
-          });
-          if (error) throw error;
-          await carregarPlanejador();
-        } catch (err) {
-          console.error('Erro ao criar achado:', err);
-          alert(tr('erro_criar_generico'));
+    async function achAcaoDoCard(botao) {
+      const card = botao.closest('.rt-card');
+      const a = card && achadosCache.find((x) => x.id === card.dataset.id);
+      if (!a) return;
+      const acao = botao.dataset.a;
+      if (acao === 'ver') {
+        const f = achFonte(a);
+        rtAbrirVideo({ url: a.url, titulo: a.conteudo, fonte: f ? f.chave : 'manual', perfil: f ? f.perfil : null });
+      } else if (acao === 'editar') {
+        abrirModalAchado(a);
+      } else if (acao === 'capa') {
+        botao.disabled = true;
+        botao.textContent = '⏳ Buscando…';
+        await rtGarantirChave();
+        const ok = await achGuardarCapa(a.id);
+        if (!ok) {
+          botao.disabled = false;
+          botao.textContent = '🖼️ Buscar capa';
+          alert('Não consegui buscar a capa desse vídeo agora. Tenta de novo daqui a pouco.');
         }
-      });
+      }
     }
 
-    function abrirModalAchado(achado) {
-      achadoAbertoId = achado.id;
-      document.getElementById('pl-modal-achado-coluna').textContent = traduzirColunaAchado(achado.coluna);
-      document.getElementById('pl-modal-achado-texto').value = achado.conteudo || '';
-      document.getElementById('pl-modal-achado-observacoes').value = achado.observacoes || '';
+    // Busca e guarda a capa (Instagram e TikTok). Devolve true se conseguiu; falha em silêncio.
+    async function achGuardarCapa(id) {
+      const a = achadosCache.find((x) => x.id === id);
+      const f = a && achFonte(a);
+      if (achColunasOk !== true || !rtChave || !a || a.capa || !f || (f.chave !== 'instagram' && f.chave !== 'tiktok')) return false;
+      try {
+        const capa = await rtBuscarCapa(f.url);
+        if (!capa) return false;
+        const { error } = await Auth.sb.from('planejador_achados').update({ capa }).eq('id', id);
+        if (error) throw error;
+        const atual = achadosCache.find((x) => x.id === id);
+        if (atual) atual.capa = capa;
+        renderizarAchados();
+        return true;
+      } catch (err) {
+        console.warn('Não consegui guardar a capa do achado:', err);
+        return false;
+      }
+    }
+
+    // ---- modal: criar e editar uma referência ----
+
+    function achDesenharCategorias() {
+      document.getElementById('pl-modal-achado-categorias').innerHTML = ACHADOS_COLUNAS.map(
+        (c) => `<button type="button" class="rt-chip${achCategoriaModal === c ? ' ativo' : ''}" data-cat="${escapeHtml(c)}">${ACH_EMOJI[c]} ${escapeHtml(traduzirColunaAchado(c))}</button>`
+      ).join('');
+    }
+
+    // achado = null abre uma referência nova.
+    async function abrirModalAchado(achado) {
+      await achVerColunas();
+      achadoAbertoId = achado ? achado.id : null;
+      achadoNovo = !achado;
+      achCategoriaModal = achado ? achado.coluna : ACHADOS_COLUNAS.includes(achFiltro) ? achFiltro : 'Gancho';
+      document.getElementById('pl-modal-achado-coluna').textContent = achado ? 'Editar referência' : 'Nova referência';
+      document.getElementById('pl-modal-achado-url').value = (achado && achado.url) || '';
+      document.getElementById('pl-modal-achado-texto').value = (achado && achado.conteudo) || '';
+      document.getElementById('pl-modal-achado-observacoes').value = (achado && achado.observacoes) || '';
+      document.getElementById('pl-modal-achado-como-usar').value = (achado && achado.como_usar) || '';
+      document.getElementById('pl-modal-achado-como-adaptar').value = (achado && achado.como_adaptar) || '';
+      document.getElementById('pl-modal-achado-excluir').hidden = !achado;
+      document.getElementById('ach-aviso-modal').hidden = achColunasOk !== false;
+      achDesenharCategorias();
       document.getElementById('pl-modal-achado-overlay').hidden = false;
       achadoSnapshotInicial = capturarEstadoAchado();
+      document.getElementById(achado ? 'pl-modal-achado-texto' : 'pl-modal-achado-url').focus();
     }
 
     function capturarEstadoAchado() {
       return JSON.stringify({
+        categoria: achCategoriaModal,
+        url: document.getElementById('pl-modal-achado-url').value,
         texto: document.getElementById('pl-modal-achado-texto').value,
         observacoes: document.getElementById('pl-modal-achado-observacoes').value,
+        comoUsar: document.getElementById('pl-modal-achado-como-usar').value,
+        comoAdaptar: document.getElementById('pl-modal-achado-como-adaptar').value,
       });
     }
 
@@ -14056,7 +14215,7 @@
 
     async function fecharModalAchado() {
       if (achadoTemAlteracoes()) {
-        const sair = await confirmarAcao('Você tem alterações não salvas nesse achado. Sair sem salvar?', { textoConfirmar: 'Sair sem salvar', perigo: true });
+        const sair = await confirmarAcao('Você tem alterações não salvas nessa referência. Sair sem salvar?', { textoConfirmar: 'Sair sem salvar', perigo: true });
         if (!sair) return;
       }
       fecharModalAchadoForcado();
@@ -14064,25 +14223,70 @@
 
     function fecharModalAchadoForcado() {
       achadoAbertoId = null;
+      achadoNovo = false;
       document.getElementById('pl-modal-achado-overlay').hidden = true;
     }
 
     async function salvarModalAchado() {
-      if (!achadoAbertoId) return;
-      const conteudo = document.getElementById('pl-modal-achado-texto').value.trim();
-      if (!conteudo) return;
-      const observacoes = document.getElementById('pl-modal-achado-observacoes').value.trim();
+      if (!achadoAbertoId && !achadoNovo) return;
+      const valor = (id) => document.getElementById(id).value.trim();
+
+      // link: aceita sem https:// e limpa o que é rastreio
+      let url = valor('pl-modal-achado-url');
+      if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
+      if (url) {
+        const an = rtAnalisarLink(url);
+        if (an) url = an.url;
+        else {
+          try {
+            new URL(url);
+          } catch (e) {
+            alert('Esse link não parece válido. Confere se copiou inteiro.');
+            return;
+          }
+        }
+      }
+
+      // título: se ficou vazio mas tem link, usa o @ ou o site
+      let conteudo = valor('pl-modal-achado-texto');
+      if (!conteudo && url) {
+        const f = achFonte({ url });
+        conteudo = f ? (f.perfil ? '@' + f.perfil : f.nome) : '';
+      }
+      if (!conteudo) {
+        document.getElementById('pl-modal-achado-texto').focus();
+        return;
+      }
+
+      const campos = { coluna: achCategoriaModal, conteudo, observacoes: valor('pl-modal-achado-observacoes') || null };
+      if (achColunasOk) {
+        campos.url = url || null;
+        campos.como_usar = valor('pl-modal-achado-como-usar') || null;
+        campos.como_adaptar = valor('pl-modal-achado-como-adaptar') || null;
+        const antes = achadoAbertoId ? achadosCache.find((x) => x.id === achadoAbertoId) : null;
+        if (antes && (antes.url || null) !== (url || null)) campos.capa = null; // link novo: a capa velha não vale mais
+      }
+      const botao = document.getElementById('pl-modal-achado-salvar');
+      botao.disabled = true;
       try {
-        const { error } = await Auth.sb
-          .from('planejador_achados')
-          .update({ conteudo, observacoes: observacoes || null })
-          .eq('id', achadoAbertoId);
-        if (error) throw error;
+        let id = achadoAbertoId;
+        if (achadoNovo) {
+          const { data, error } = await Auth.sb.from('planejador_achados').insert({ ...campos, ordem: achadosCache.length }).select();
+          if (error) throw error;
+          id = data && data[0] && data[0].id;
+        } else {
+          const { error } = await Auth.sb.from('planejador_achados').update(campos).eq('id', achadoAbertoId);
+          if (error) throw error;
+        }
         fecharModalAchadoForcado();
         await carregarPlanejador();
+        // capa em segundo plano (Instagram e TikTok): se não vier, o card mostra o botão Buscar capa
+        if (id && url && achColunasOk) rtGarantirChave().then((ok) => ok && achGuardarCapa(id));
       } catch (err) {
         console.error('Erro ao salvar achado:', err);
         alert(tr('erro_salvar_generico'));
+      } finally {
+        botao.disabled = false;
       }
     }
 
@@ -14098,6 +14302,13 @@
         console.error('Erro ao excluir achado:', err);
         alert(tr('erro_excluir_generico'));
       }
+    }
+
+    // Botão "Nova referência" do Dashboard: vai direto pra Achados com a referência nova aberta.
+    function irParaNovaReferencia() {
+      trocarAba('planejador');
+      abrirPaginaPlanejador('achados');
+      abrirModalAchado(null);
     }
 
     // ---- Visão geral + cronograma de postagem (calendário) ----

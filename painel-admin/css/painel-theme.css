@@ -11731,3 +11731,84 @@
   color: var(--texto-suave);
   font-size: 13px;
 }
+
+/* ---- Achados: banco de referências ---- */
+
+.painel-body .ach-capa-curta {
+  aspect-ratio: auto;
+  min-height: 84px;
+}
+
+.painel-body .ach-capa-curta .rt-capa-emoji {
+  font-size: 34px;
+}
+
+.painel-body a.rt-capa-play {
+  text-decoration: none;
+}
+
+.painel-body .ach-card-texto .rt-titulo {
+  -webkit-line-clamp: 6;
+}
+
+.painel-body .ach-etq {
+  background: rgba(var(--coral-rgb), 0.22);
+  color: var(--grafite);
+}
+
+.painel-body .ach-resumo {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--texto-suave);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: pre-line;
+}
+
+.painel-body .ach-modal {
+  max-width: 620px;
+}
+
+.painel-body .ach-modal .rt-chips {
+  margin-bottom: 0;
+}
+
+.painel-body .ach-modal label small {
+  margin-left: 4px;
+  font-weight: 500;
+  color: var(--texto-suave);
+}
+
+.painel-body .dash-btn-nova-ref {
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 11px 20px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--grafite);
+  font-family: var(--fonte-corpo);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: var(--sombra);
+  cursor: pointer;
+}
+
+.painel-body .dash-btn-nova-ref:hover {
+  background: var(--branco);
+}
+
+@media (max-width: 600px) {
+  .painel-body .dash-capa-rodape {
+    flex-wrap: wrap;
+  }
+
+  .painel-body .dash-btn-nova-ref {
+    width: 100%;
+    margin-left: 0;
+  }
+}

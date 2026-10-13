@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261017a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261018a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -3530,8 +3530,21 @@
               </section>
 
               <div class="cal-form-campo">
-                <label for="rt-m-transcricao">Roteiro / transcrição</label>
+                <div class="rt-m-label-linha">
+                  <label for="rt-m-transcricao">Roteiro / transcrição</label>
+                  <button type="button" id="rt-m-traduzir" class="cal-btn" title="Mostra o texto traduzido pra português logo abaixo, sem mexer no original">🌐 Traduzir para português</button>
+                </div>
                 <textarea id="rt-m-transcricao" class="rt-m-grande"></textarea>
+                <div id="rt-m-traducao" class="rt-m-traducao" hidden>
+                  <div class="rt-m-traducao-topo">
+                    <strong id="rt-m-traducao-titulo">🇧🇷 Tradução</strong>
+                    <span class="rt-m-traducao-acoes">
+                      <button type="button" id="rt-m-traducao-copiar" class="cal-btn" hidden>Copiar</button>
+                      <button type="button" id="rt-m-traducao-fechar" class="cal-btn">Fechar</button>
+                    </span>
+                  </div>
+                  <div id="rt-m-traducao-texto" class="rt-m-traducao-texto"></div>
+                </div>
               </div>
 
               <div class="cal-form-campo">
@@ -7902,6 +7915,7 @@
       document.getElementById('rt-m-estrutura-aviso').hidden = rtEstruturaOk;
       document.getElementById('rt-m-botoes-estrutura').hidden = !rtEstruturaOk;
       rtModalFicha++;
+      rtEsconderTraducao();
       document.getElementById('rt-m-analise-area').hidden = true;
       document.getElementById('rt-m-analise-texto').value = '';
       document.querySelector('.rt-m-legenda-bloco').open = !!r.legenda;
@@ -7914,6 +7928,7 @@
     function rtFecharModal() {
       rtEditandoId = null;
       rtModalFicha++;
+      rtEsconderTraducao();
       document.getElementById('rt-m-player').innerHTML = '';
       document.getElementById('rt-modal-overlay').hidden = true;
     }
@@ -7974,6 +7989,150 @@
       } finally {
         btn.disabled = false;
       }
+    }
+
+    // ---- tradução da transcrição pra português ----
+    // Usa o tradutor do Google, que não pede chave. A tradução só aparece na tela: o que é salvo continua sendo
+    // o texto original. Fica guardada em memória enquanto o painel está aberto, pra reabrir sem traduzir de novo.
+
+    const rtTraducoes = {};
+
+    // Parte o texto em trechos de até "max" letras, cortando de preferência no fim de uma frase.
+    function rtPartirTexto(texto, max) {
+      const pedacos = texto.match(/[^.!?…\n]+[.!?…]*\s*|\n+|[.!?…]+\s*/g) || [texto];
+      const partes = [];
+      let atual = '';
+      const guardar = () => {
+        if (atual.trim()) partes.push(atual);
+        atual = '';
+      };
+      pedacos.forEach((pedaco) => {
+        let p = pedaco;
+        while (p.length > max) {
+          // frase sem pontuação maior que o limite (comum em legenda automática): corta numa palavra
+          let corte = p.lastIndexOf(' ', max);
+          if (corte < max / 2) corte = max;
+          if ((atual + p.slice(0, corte)).length > max) guardar();
+          atual += p.slice(0, corte);
+          guardar();
+          p = p.slice(corte);
+        }
+        if ((atual + p).length > max) guardar();
+        atual += p;
+      });
+      guardar();
+      return partes;
+    }
+
+    async function rtTraduzirTrecho(trecho) {
+      for (let tentativa = 1; tentativa <= 3; tentativa++) {
+        const ctrl = new AbortController();
+        const parar = setTimeout(() => ctrl.abort(), 20000);
+        try {
+          const r = await fetch('https://translate.googleapis.com/translate_a/single', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: new URLSearchParams({ client: 'gtx', sl: 'auto', tl: 'pt', dt: 't', q: trecho }).toString(),
+            signal: ctrl.signal,
+          });
+          if (r.ok) {
+            const dados = await r.json();
+            if (Array.isArray(dados) && Array.isArray(dados[0])) {
+              return {
+                texto: dados[0].map((seg) => (seg && seg[0]) || '').join(''),
+                idioma: typeof dados[2] === 'string' ? dados[2] : '',
+              };
+            }
+          }
+        } catch (err) {
+          // sem internet ou demorou demais: tenta de novo
+        } finally {
+          clearTimeout(parar);
+        }
+        if (tentativa < 3) await rtEsperar(tentativa * 1500);
+      }
+      throw rtErro('traducao', 'Não consegui traduzir agora. Confere a internet e tenta de novo daqui a pouco.');
+    }
+
+    function rtNomeIdioma(codigo) {
+      try {
+        return new Intl.DisplayNames(['pt-BR'], { type: 'language' }).of(codigo) || codigo;
+      } catch (e) {
+        return codigo;
+      }
+    }
+
+    function rtEsconderTraducao() {
+      document.getElementById('rt-m-traducao').hidden = true;
+      document.getElementById('rt-m-traducao-texto').textContent = '';
+      document.getElementById('rt-m-traduzir').disabled = false;
+    }
+
+    async function rtTraduzir() {
+      const caixa = document.getElementById('rt-m-traducao');
+      const texto = document.getElementById('rt-m-traducao-texto');
+      const titulo = document.getElementById('rt-m-traducao-titulo');
+      const copiar = document.getElementById('rt-m-traducao-copiar');
+      const btn = document.getElementById('rt-m-traduzir');
+      const original = document.getElementById('rt-m-transcricao').value.trim();
+      const mostrar = (txt, comoAviso) => {
+        caixa.hidden = false;
+        caixa.classList.toggle('rt-m-traducao-aviso', !!comoAviso);
+        texto.textContent = txt;
+      };
+      if (!original) {
+        titulo.textContent = '🇧🇷 Tradução';
+        copiar.hidden = true;
+        mostrar('Ainda não tem texto pra traduzir. Cola ou escreve a transcrição primeiro.', true);
+        return;
+      }
+      const ficha = rtModalFicha;
+      let res = rtTraducoes[original];
+      if (!res) {
+        titulo.textContent = '🇧🇷 Tradução';
+        copiar.hidden = true;
+        mostrar('⏳ Traduzindo…', true);
+        btn.disabled = true;
+        try {
+          const saidas = [];
+          let idioma = '';
+          for (const parte of rtPartirTexto(original, 1500)) {
+            const t = await rtTraduzirTrecho(parte);
+            if (!idioma) idioma = t.idioma;
+            saidas.push(t.texto.trim());
+          }
+          res = { texto: saidas.join('\n\n').trim(), idioma };
+          rtTraducoes[original] = res;
+        } catch (err) {
+          console.error('Erro ao traduzir a transcrição:', err);
+          if (ficha === rtModalFicha) mostrar(err && err.tipo ? err.message : 'Não consegui traduzir agora. Tenta de novo.', true);
+          return;
+        } finally {
+          if (ficha === rtModalFicha) btn.disabled = false;
+        }
+      }
+      if (ficha !== rtModalFicha) return; // o editor foi fechado ou trocado enquanto traduzia
+      if (res.idioma === 'pt' || !res.texto) {
+        mostrar(res.texto ? 'Esse texto já está em português.' : 'Não veio nenhuma tradução. Tenta de novo.', true);
+        return;
+      }
+      titulo.textContent = res.idioma ? `🇧🇷 Tradução (do ${rtNomeIdioma(res.idioma)})` : '🇧🇷 Tradução';
+      copiar.hidden = false;
+      copiar.textContent = 'Copiar';
+      mostrar(res.texto, false);
+    }
+
+    async function rtCopiarTraducao() {
+      const btn = document.getElementById('rt-m-traducao-copiar');
+      try {
+        await navigator.clipboard.writeText(document.getElementById('rt-m-traducao-texto').textContent);
+        btn.textContent = 'Copiado ✓';
+      } catch (err) {
+        btn.textContent = 'Não consegui copiar';
+      }
+      setTimeout(() => {
+        btn.textContent = 'Copiar';
+      }, 2000);
     }
 
     // ---- a estrutura do vídeo, jeito manual: pedido pro Claude do site e leitura da resposta ----
@@ -8168,6 +8327,9 @@
         rtAtualizarPlayer();
       });
       document.getElementById('rt-m-pedir-analise').addEventListener('click', rtPedirAnalise);
+      document.getElementById('rt-m-traduzir').addEventListener('click', rtTraduzir);
+      document.getElementById('rt-m-traducao-copiar').addEventListener('click', rtCopiarTraducao);
+      document.getElementById('rt-m-traducao-fechar').addEventListener('click', rtEsconderTraducao);
       document.getElementById('rt-m-colar-analise').addEventListener('click', rtColarResposta);
       document.getElementById('rt-m-analise-aplicar').addEventListener('click', rtAplicarAnalise);
     }

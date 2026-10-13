@@ -11630,3 +11630,61 @@
   line-height: 1.5;
   color: var(--texto-suave);
 }
+
+/* ---- Roteiros: tradução da transcrição ---- */
+
+.painel-body .rt-m-label-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.painel-body .rt-m-label-linha label {
+  margin: 0;
+}
+
+.painel-body .rt-m-traducao {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: var(--raio-sm);
+  border: 1px solid var(--borda);
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.painel-body .rt-m-traducao[hidden],
+.painel-body .rt-m-traducao .cal-btn[hidden] {
+  display: none;
+}
+
+.painel-body .rt-m-traducao-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--grafite);
+}
+
+.painel-body .rt-m-traducao-acoes {
+  display: flex;
+  gap: 6px;
+}
+
+.painel-body .rt-m-traducao-texto {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--grafite);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.painel-body .rt-m-traducao-aviso .rt-m-traducao-texto {
+  color: var(--texto-suave);
+  font-size: 13px;
+}

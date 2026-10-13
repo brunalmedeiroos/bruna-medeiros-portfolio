@@ -11941,3 +11941,182 @@
     margin-right: 0;
   }
 }
+
+/* ---- Achados: imagens de posts (carrossel e foto) ---- */
+
+.painel-body .ach-imagens-zona {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1.5px dashed var(--borda);
+  border-radius: var(--raio-sm);
+  background: rgba(255, 255, 255, 0.5);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.painel-body .ach-imagens-zona.ach-arrastando {
+  border-color: var(--coral);
+  background: rgba(var(--coral-rgb), 0.12);
+}
+
+.painel-body .ach-imagens-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.painel-body .ach-imagens-lista:empty {
+  display: none;
+}
+
+.painel-body .ach-img-item {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #D6E8EE;
+}
+
+.painel-body .ach-img-item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.painel-body .ach-img-tirar {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--grafite);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.painel-body .ach-img-capa {
+  position: absolute;
+  left: 3px;
+  bottom: 3px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--grafite);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.painel-body .ach-imagens-rodape {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.painel-body .ach-imagens-dica {
+  font-size: 12.5px;
+  color: var(--texto-suave);
+}
+
+.painel-body .ach-thumb-qtd {
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--grafite);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.painel-body .ach-viewer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(760px, 94vw);
+  max-width: none;
+  max-height: 94vh;
+  padding: 14px 16px 16px;
+  overflow: hidden;
+}
+
+.painel-body .ach-viewer-contador {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--texto-suave);
+}
+
+.painel-body .ach-viewer-palco {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  border-radius: 14px;
+  background: #0b2530;
+  overflow: hidden;
+}
+
+.painel-body .ach-viewer-img {
+  display: block;
+  max-width: 100%;
+  max-height: 68vh;
+  object-fit: contain;
+}
+
+.painel-body .ach-viewer-seta {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin-top: -19px;
+  padding: 0 0 3px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--grafite);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.painel-body #ach-viewer-ant {
+  left: 10px;
+}
+
+.painel-body #ach-viewer-prox {
+  right: 10px;
+}
+
+.painel-body .ach-viewer-seta[hidden],
+.painel-body #ach-viewer-abrir[hidden] {
+  display: none;
+}
+
+.painel-body .ach-viewer-nota {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--grafite);
+  white-space: pre-line;
+}
+
+.painel-body .ach-viewer-nota:empty {
+  display: none;
+}

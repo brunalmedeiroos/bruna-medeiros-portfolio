@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261025b">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261026a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -2184,6 +2184,19 @@
         </div>
 
         <div class="cal-form-campo">
+          <label>🖼️ Imagens do post <small>opcional: carrossel ou foto</small></label>
+          <p class="dash-aviso" id="ach-imagens-aviso" hidden>Pra subir imagens falta rodar o arquivo achados-imagens.sql no SQL Editor do Supabase.</p>
+          <div id="ach-imagens-zona" class="ach-imagens-zona">
+            <div id="ach-imagens-lista" class="ach-imagens-lista"></div>
+            <div class="ach-imagens-rodape">
+              <button type="button" id="ach-imagens-add" class="cal-btn">+ Adicionar imagens</button>
+              <span id="ach-imagens-dica" class="ach-imagens-dica"></span>
+            </div>
+            <input type="file" id="ach-imagens-input" accept="image/*" multiple hidden>
+          </div>
+        </div>
+
+        <div class="cal-form-campo">
           <label for="pl-modal-achado-texto">Título</label>
           <textarea id="pl-modal-achado-texto" rows="2" placeholder="Um nome pra achar depois, ou a própria frase ou gancho"></textarea>
         </div>
@@ -3467,6 +3480,26 @@
       </div>
     </div>
 
+    <!-- Visualizador das imagens de um post (carrossel ou foto) dos Achados -->
+    <div id="ach-viewer-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal ach-viewer">
+        <div class="rt-video-topo">
+          <strong id="ach-viewer-titulo" class="rt-video-titulo"></strong>
+          <span id="ach-viewer-contador" class="ach-viewer-contador"></span>
+          <button id="ach-viewer-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="ach-viewer-palco">
+          <button type="button" id="ach-viewer-ant" class="ach-viewer-seta" aria-label="Imagem anterior">‹</button>
+          <img id="ach-viewer-img" class="ach-viewer-img" alt="">
+          <button type="button" id="ach-viewer-prox" class="ach-viewer-seta" aria-label="Próxima imagem">›</button>
+        </div>
+        <p id="ach-viewer-nota" class="ach-viewer-nota"></p>
+        <a id="ach-viewer-abrir" class="rt-video-abrir" href="#" target="_blank" rel="noopener noreferrer" hidden>abrir post original ↗</a>
+      </div>
+    </div>
+
     <div id="rt-modal-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal rt-modal-largo">
         <div class="pl-modal-topo rt-m-topo">
@@ -3774,6 +3807,12 @@
     let achFiltro = 'todos';
     let achPreenchido = null; // dados que vieram de um vídeo da transcrição pro modal de nova referência
     let achAoSalvar = null; // o que fazer depois de salvar (avisar na página da transcrição)
+    let achImagensOk = null; // a coluna imagens e o bucket existem (achados-imagens.sql já rodado); null = ainda não conferi
+    let achImgs = []; // imagens do modal: { id, url (já guardada) ou blob (nova), preview }
+    let achImgsOriginais = []; // endereços que o achado tinha quando o modal abriu (pra apagar do armazenamento as que ela tirar)
+    let achImgsContador = 0;
+    let achViewerLista = [];
+    let achViewerIndice = 0;
     let achOrigem = ''; // '', 'ideia' (sem link) ou 'ref' (com link)
     let achBusca = '';
     let achColunasOk = null; // as colunas novas existem (achados-referencias.sql já rodado); null = ainda não conferi
@@ -6883,6 +6922,51 @@
         achDesenharCategorias();
       });
       document.getElementById('dash-btn-nova-ref').addEventListener('click', irParaNovaReferencia);
+      // imagens do post: escolher, arrastar, colar e tirar
+      const zonaImagens = document.getElementById('ach-imagens-zona');
+      document.getElementById('ach-imagens-add').addEventListener('click', () => document.getElementById('ach-imagens-input').click());
+      document.getElementById('ach-imagens-input').addEventListener('change', (e) => {
+        achAdicionarImagens(e.target.files);
+        e.target.value = '';
+      });
+      zonaImagens.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        zonaImagens.classList.add('ach-arrastando');
+      });
+      zonaImagens.addEventListener('dragleave', () => zonaImagens.classList.remove('ach-arrastando'));
+      zonaImagens.addEventListener('drop', (e) => {
+        e.preventDefault();
+        zonaImagens.classList.remove('ach-arrastando');
+        achAdicionarImagens(e.dataTransfer.files);
+      });
+      document.getElementById('ach-imagens-lista').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-rm]');
+        if (!b) return;
+        const i = Number(b.dataset.rm);
+        const item = achImgs[i];
+        if (item && item.blob && item.preview) URL.revokeObjectURL(item.preview);
+        achImgs.splice(i, 1);
+        achDesenharImagens();
+      });
+      document.getElementById('pl-modal-achado-overlay').addEventListener('paste', (e) => {
+        const arquivos = [...((e.clipboardData && e.clipboardData.files) || [])].filter((f) => /^image\//.test(f.type));
+        if (!arquivos.length) return;
+        e.preventDefault();
+        achAdicionarImagens(arquivos);
+      });
+      // visualizador
+      document.getElementById('ach-viewer-fechar').addEventListener('click', achFecharImagens);
+      document.getElementById('ach-viewer-ant').addEventListener('click', () => achNavegarImagem(-1));
+      document.getElementById('ach-viewer-prox').addEventListener('click', () => achNavegarImagem(1));
+      document.getElementById('ach-viewer-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'ach-viewer-overlay') achFecharImagens();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (document.getElementById('ach-viewer-overlay').hidden) return;
+        if (e.key === 'Escape') achFecharImagens();
+        else if (e.key === 'ArrowLeft') achNavegarImagem(-1);
+        else if (e.key === 'ArrowRight') achNavegarImagem(1);
+      });
       document.getElementById('pl-modal-achado-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'pl-modal-achado-overlay') fecharModalAchado();
       });
@@ -14117,8 +14201,9 @@
       return achadosCache
         .filter((a) => {
           if (achFiltro !== 'todos' && a.coluna !== achFiltro) return false;
-          if (achOrigem === 'ideia' && a.url) return false;
+          if (achOrigem === 'ideia' && (a.url || achTemImagens(a))) return false;
           if (achOrigem === 'ref' && !a.url) return false;
+          if (achOrigem === 'post' && !achTemImagens(a)) return false;
           if (!busca) return true;
           const f = achFonte(a);
           return rtNorm([a.conteudo, a.observacoes, a.como_usar, a.como_adaptar, a.url, f && f.perfil].join(' ')).includes(busca);
@@ -14137,8 +14222,9 @@
         ACHADOS_COLUNAS.map((c) => chip('filtro', c, traduzirColunaAchado(c), achadosCache.filter((a) => a.coluna === c).length, achFiltro === c))
       );
       const origens = [
-        chip('origem', 'ideia', '💡 Minhas ideias', achadosCache.filter((a) => !a.url).length, achOrigem === 'ideia'),
+        chip('origem', 'ideia', '💡 Minhas ideias', achadosCache.filter((a) => !a.url && !achTemImagens(a)).length, achOrigem === 'ideia'),
         chip('origem', 'ref', '🔗 Referências', achadosCache.filter((a) => !!a.url).length, achOrigem === 'ref'),
+        chip('origem', 'post', '🖼️ Posts', achadosCache.filter((a) => achTemImagens(a)).length, achOrigem === 'post'),
       ];
       document.getElementById('ach-chips').innerHTML = categorias.join('') + '<span class="ach-chips-sep" aria-hidden="true"></span>' + origens.join('');
 
@@ -14150,35 +14236,51 @@
       lista.innerHTML = itens.length ? itens.map(achHtmlCard).join('') : '<p class="texto-vazio">Nada encontrado com esse filtro.</p>';
     }
 
+    // Um achado "post" é o que tem imagens subidas (carrossel ou foto).
+    function achTemImagens(a) {
+      return Array.isArray(a.imagens) && a.imagens.length > 0;
+    }
+
     function achHtmlCard(a) {
       const f = achFonte(a);
-      const capaUrl = f ? rtCapaUrl({ capa: a.capa, fonte: f.chave, url: a.url }) : '';
-      const embed = f && f.chave !== 'instagram' ? rtEmbed({ url: a.url }) : null;
-      const podeBuscarCapa = achColunasOk === true && !!rtChave && !capaUrl && !!f && (f.chave === 'instagram' || f.chave === 'tiktok');
+      const imagens = achTemImagens(a) ? a.imagens : [];
+      const temImagens = imagens.length > 0;
+      const capaUrl = temImagens ? imagens[0] : f ? rtCapaUrl({ capa: a.capa, fonte: f.chave, url: a.url }) : '';
+      const embed = !temImagens && f && f.chave !== 'instagram' ? rtEmbed({ url: a.url }) : null;
+      const podeBuscarCapa = !temImagens && achColunasOk === true && !!rtChave && !capaUrl && !!f && (f.chave === 'instagram' || f.chave === 'tiktok');
       const emojiCategoria = ACH_EMOJI[a.coluna] || '🔍';
-      const conteudoThumb = `${capaUrl ? `<img src="${escapeHtml(capaUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="ach-thumb-emoji" aria-hidden="true">${f ? f.emoji : emojiCategoria}</span>`}${f ? `<span class="ach-thumb-play" aria-hidden="true">${embed ? '▶' : '↗'}</span>` : ''}`;
+      const mostraSelo = f || temImagens;
+      const conteudoThumb = `${capaUrl ? `<img src="${escapeHtml(capaUrl)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="ach-thumb-emoji" aria-hidden="true">${f ? f.emoji : emojiCategoria}</span>`}${temImagens && imagens.length > 1 ? `<span class="ach-thumb-qtd" aria-hidden="true">🖼️ ${imagens.length}</span>` : ''}${!temImagens && f ? `<span class="ach-thumb-play" aria-hidden="true">${embed ? '▶' : '↗'}</span>` : ''}`;
       let thumb;
-      if (embed) thumb = `<button type="button" class="ach-thumb" data-a="ver" aria-label="Ver vídeo" title="Ver vídeo">${conteudoThumb}</button>`;
+      if (temImagens) thumb = `<button type="button" class="ach-thumb" data-a="imagens" aria-label="Ver as imagens" title="Ver as imagens">${conteudoThumb}</button>`;
+      else if (embed) thumb = `<button type="button" class="ach-thumb" data-a="ver" aria-label="Ver vídeo" title="Ver vídeo">${conteudoThumb}</button>`;
       else if (f) thumb = `<a class="ach-thumb" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer" aria-label="Abrir o link" title="Abrir o link">${conteudoThumb}</a>`;
       else thumb = `<div class="ach-thumb">${conteudoThumb}</div>`;
 
       const botoes = [];
-      if (embed) botoes.push('<button type="button" class="cal-btn cal-btn-primario" data-a="ver">▶ Ver</button>');
-      else if (f) botoes.push(`<a class="cal-btn cal-btn-primario" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer">↗ Abrir</a>`);
-      if (f && f.chave !== 'outro') {
-        const roteiro = rtRoteiros.find((r) => r.url === f.url);
-        botoes.push(roteiro ? '<button type="button" class="cal-btn" data-a="ver-transc">📜 Ver transcrição</button>' : '<button type="button" class="cal-btn" data-a="transcrever">📜 Transcrever</button>');
+      if (temImagens) {
+        botoes.push(`<button type="button" class="cal-btn cal-btn-primario" data-a="imagens">🖼️ Ver ${imagens.length === 1 ? 'imagem' : imagens.length + ' imagens'}</button>`);
+        if (f) botoes.push(`<a class="cal-btn" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer">↗ Abrir post</a>`);
+      } else {
+        if (embed) botoes.push('<button type="button" class="cal-btn cal-btn-primario" data-a="ver">▶ Ver</button>');
+        else if (f) botoes.push(`<a class="cal-btn cal-btn-primario" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer">↗ Abrir</a>`);
+        if (f && f.chave !== 'outro') {
+          const roteiro = rtRoteiros.find((r) => r.url === f.url);
+          botoes.push(roteiro ? '<button type="button" class="cal-btn" data-a="ver-transc">📜 Ver transcrição</button>' : '<button type="button" class="cal-btn" data-a="transcrever">📜 Transcrever</button>');
+        }
       }
       if (podeBuscarCapa) botoes.push('<button type="button" class="cal-btn" data-a="capa">🖼️ Capa</button>');
       botoes.push('<button type="button" class="cal-btn" data-a="editar">✏️ Editar</button>');
 
+      const origem = f ? `<span class="rt-fonte">${f.emoji} ${escapeHtml(f.nome)}</span>` : temImagens ? '' : '<span class="rt-fonte">💡 Minha ideia</span>';
       return `<article class="ach-card" data-id="${escapeHtml(a.id)}">
         ${thumb}
         <div class="ach-corpo">
-          <h4 class="ach-titulo${f ? '' : ' ach-titulo-longo'}">${escapeHtml(a.conteudo)}</h4>
+          <h4 class="ach-titulo${mostraSelo ? '' : ' ach-titulo-longo'}">${escapeHtml(a.conteudo)}</h4>
           <div class="rt-etiquetas">
             <span class="rt-etq ach-etq">${emojiCategoria} ${escapeHtml(traduzirColunaAchado(a.coluna))}</span>
-            ${f ? `<span class="rt-fonte">${f.emoji} ${escapeHtml(f.nome)}</span>` : '<span class="rt-fonte">💡 Minha ideia</span>'}
+            ${origem}
+            ${temImagens ? '<span class="rt-fonte">🖼️ Post</span>' : ''}
           </div>
           ${f && f.perfil ? `<p class="rt-perfil">@${escapeHtml(String(f.perfil).replace(/^@/, ''))}</p>` : ''}
           ${a.como_usar ? `<p class="ach-resumo">💡 ${escapeHtml(a.como_usar)}</p>` : ''}
@@ -14193,7 +14295,9 @@
       if (!a) return;
       const acao = botao.dataset.a;
       const f = achFonte(a);
-      if (acao === 'ver') {
+      if (acao === 'imagens') {
+        achAbrirImagens(a, 0);
+      } else if (acao === 'ver') {
         rtAbrirVideo({ url: a.url, titulo: a.conteudo, fonte: f ? f.chave : 'manual', perfil: f ? f.perfil : null });
       } else if (acao === 'editar') {
         abrirModalAchado(a);
@@ -14223,6 +14327,157 @@
           alert('Não consegui buscar a capa desse vídeo agora. Tenta de novo daqui a pouco.');
         }
       }
+    }
+
+    // ---- imagens do post (carrossel ou foto estática) ----
+    // As imagens são reduzidas aqui no navegador (largura máxima 1400px, JPEG) e guardadas no bucket
+    // achados-imagens do Supabase. Os endereços ficam na coluna imagens (achados-imagens.sql).
+    // A primeira imagem é a capa do card.
+
+    const ACH_BUCKET = 'achados-imagens';
+    const ACH_MAX_IMAGENS = 20;
+
+    async function achVerImagens() {
+      if (achImagensOk !== null) return achImagensOk;
+      const { error } = await Auth.sb.from('planejador_achados').select('imagens').limit(1);
+      achImagensOk = !error;
+      return achImagensOk;
+    }
+
+    async function achRedimensionar(arquivo) {
+      const bitmap = await createImageBitmap(arquivo);
+      const largura = Math.min(1400, bitmap.width);
+      const altura = Math.round((bitmap.height * largura) / bitmap.width);
+      const tela = document.createElement('canvas');
+      tela.width = largura;
+      tela.height = altura;
+      const ctx = tela.getContext('2d');
+      ctx.fillStyle = '#fff'; // PNG com fundo transparente fica com fundo branco
+      ctx.fillRect(0, 0, largura, altura);
+      ctx.drawImage(bitmap, 0, 0, largura, altura);
+      return new Promise((resolve, reject) => tela.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob'))), 'image/jpeg', 0.85));
+    }
+
+    // Aceita imagens coladas, arrastadas ou escolhidas. Só guarda de verdade quando ela clica em Salvar.
+    async function achAdicionarImagens(arquivos) {
+      const imagens = [...(arquivos || [])].filter((f) => f && /^image\//.test(f.type));
+      if (!imagens.length) return;
+      if (!(await achVerImagens())) {
+        alert('Pra subir imagens falta rodar o arquivo achados-imagens.sql no Supabase.');
+        return;
+      }
+      let falhas = 0;
+      for (const f of imagens) {
+        if (achImgs.length >= ACH_MAX_IMAGENS) {
+          alert(`O máximo é ${ACH_MAX_IMAGENS} imagens por post.`);
+          break;
+        }
+        try {
+          const blob = await achRedimensionar(f);
+          achImgs.push({ id: ++achImgsContador, url: null, blob, preview: URL.createObjectURL(blob) });
+        } catch (err) {
+          falhas++;
+        }
+      }
+      achDesenharImagens();
+      if (falhas) alert(`Não consegui ler ${falhas === 1 ? 'uma imagem' : falhas + ' imagens'}. Se for foto do iPhone em HEIC, tira um print dela ou salva como JPG.`);
+    }
+
+    function achDesenharImagens() {
+      document.getElementById('ach-imagens-lista').innerHTML = achImgs
+        .map(
+          (it, i) => `<div class="ach-img-item"><img src="${escapeHtml(it.preview || it.url)}" alt="">${i === 0 ? '<span class="ach-img-capa">capa</span>' : ''}<button type="button" class="ach-img-tirar" data-rm="${i}" aria-label="Tirar esta imagem" title="Tirar esta imagem">✕</button></div>`
+        )
+        .join('');
+      document.getElementById('ach-imagens-dica').textContent = achImgs.length
+        ? `${achImgs.length} ${achImgs.length === 1 ? 'imagem' : 'imagens'}. A primeira é a capa.`
+        : 'Arraste aqui, cole um print (Ctrl+V) ou escolha do computador ou do celular.';
+    }
+
+    // Sobe as imagens novas (as que já estavam guardadas ficam como estão). Devolve todos os endereços, na ordem.
+    async function achEnviarImagens() {
+      const urls = [];
+      const novas = [];
+      try {
+        for (const it of achImgs) {
+          if (it.url) {
+            urls.push(it.url);
+            continue;
+          }
+          const nome = `${crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(16).slice(2)}.jpg`;
+          const { error } = await Auth.sb.storage.from(ACH_BUCKET).upload(nome, it.blob, { contentType: 'image/jpeg' });
+          if (error) throw error;
+          const url = Auth.sb.storage.from(ACH_BUCKET).getPublicUrl(nome).data.publicUrl;
+          novas.push(url);
+          urls.push(url);
+        }
+      } catch (err) {
+        await achRemoverDoStorage(novas);
+        throw err;
+      }
+      return { urls, novas };
+    }
+
+    async function achRemoverDoStorage(urls) {
+      const marca = `/${ACH_BUCKET}/`;
+      const caminhos = (urls || [])
+        .map((u) => {
+          const i = String(u).indexOf(marca);
+          return i < 0 ? null : decodeURIComponent(String(u).slice(i + marca.length).split('?')[0]);
+        })
+        .filter(Boolean);
+      if (!caminhos.length) return;
+      try {
+        await Auth.sb.storage.from(ACH_BUCKET).remove(caminhos);
+      } catch (err) {
+        console.warn('Não consegui apagar imagens antigas do armazenamento:', err);
+      }
+    }
+
+    function achLimparImagensDoModal() {
+      achImgs.forEach((it) => it.preview && it.blob && URL.revokeObjectURL(it.preview));
+      achImgs = [];
+      achImgsOriginais = [];
+    }
+
+    // ---- visualizador das imagens do post ----
+
+    function achAbrirImagens(a, indice) {
+      const lista = Array.isArray(a.imagens) ? a.imagens : [];
+      if (!lista.length) return;
+      achViewerLista = lista;
+      achViewerIndice = indice || 0;
+      document.getElementById('ach-viewer-titulo').textContent = a.conteudo || 'Post';
+      document.getElementById('ach-viewer-nota').textContent = a.observacoes || a.como_usar || '';
+      const f = achFonte(a);
+      const abrir = document.getElementById('ach-viewer-abrir');
+      abrir.hidden = !f;
+      if (f) {
+        abrir.href = f.url;
+        abrir.textContent = `abrir post original no ${f.nome} ↗`;
+      }
+      achMostrarImagem();
+      document.getElementById('ach-viewer-overlay').hidden = false;
+    }
+
+    function achMostrarImagem() {
+      const n = achViewerLista.length;
+      document.getElementById('ach-viewer-img').src = achViewerLista[achViewerIndice];
+      document.getElementById('ach-viewer-contador').textContent = `${achViewerIndice + 1}/${n}`;
+      document.getElementById('ach-viewer-ant').hidden = n < 2;
+      document.getElementById('ach-viewer-prox').hidden = n < 2;
+    }
+
+    function achNavegarImagem(passo) {
+      const n = achViewerLista.length;
+      if (n < 2) return;
+      achViewerIndice = (achViewerIndice + passo + n) % n;
+      achMostrarImagem();
+    }
+
+    function achFecharImagens() {
+      document.getElementById('ach-viewer-overlay').hidden = true;
+      document.getElementById('ach-viewer-img').removeAttribute('src');
     }
 
     // Do editor da Transcrição de Vídeos: guarda o gancho, o CTA ou as expressões do vídeo nos Achados,
@@ -14319,6 +14574,7 @@
     // achado = null abre uma referência nova.
     async function abrirModalAchado(achado, preencher) {
       await achVerColunas();
+      await achVerImagens();
       achadoAbertoId = achado ? achado.id : null;
       achadoNovo = !achado;
       // vindo de um vídeo da transcrição, a categoria fica sem escolha: é ela que classifica
@@ -14332,6 +14588,11 @@
       document.getElementById('pl-modal-achado-como-adaptar').value = (achado && achado.como_adaptar) || '';
       document.getElementById('pl-modal-achado-excluir').hidden = !achado;
       document.getElementById('ach-aviso-modal').hidden = achColunasOk !== false;
+      achLimparImagensDoModal();
+      achImgs = ((achado && achado.imagens) || []).map((u) => ({ id: ++achImgsContador, url: u, blob: null, preview: null }));
+      achImgsOriginais = achImgs.map((i) => i.url);
+      document.getElementById('ach-imagens-aviso').hidden = achImagensOk !== false;
+      achDesenharImagens();
       achDesenharCategorias();
       document.getElementById('pl-modal-achado-overlay').hidden = false;
       achadoSnapshotInicial = capturarEstadoAchado();
@@ -14346,6 +14607,7 @@
         observacoes: document.getElementById('pl-modal-achado-observacoes').value,
         comoUsar: document.getElementById('pl-modal-achado-como-usar').value,
         comoAdaptar: document.getElementById('pl-modal-achado-como-adaptar').value,
+        imagens: achImgs.map((i) => i.url || 'nova' + i.id).join('|'),
       });
     }
 
@@ -14366,6 +14628,7 @@
       achadoNovo = false;
       achPreenchido = null;
       achAoSalvar = null;
+      achLimparImagensDoModal();
       document.getElementById('pl-modal-achado-overlay').hidden = true;
     }
 
@@ -14416,8 +14679,17 @@
       }
       const botao = document.getElementById('pl-modal-achado-salvar');
       botao.disabled = true;
+      let enviadas = [];
+      let finais = null;
       try {
         let id = achadoAbertoId;
+        // imagens do post: sobe as novas e guarda a lista na ordem em que estão no modal
+        if (achImagensOk) {
+          const r = await achEnviarImagens();
+          enviadas = r.novas;
+          finais = r.urls;
+          campos.imagens = finais;
+        }
         if (achadoNovo) {
           const { data, error } = await Auth.sb.from('planejador_achados').insert({ ...campos, ordem: achadosCache.length }).select();
           if (error) throw error;
@@ -14428,13 +14700,16 @@
         }
         const aoSalvar = achAoSalvar;
         const categoriaSalva = achCategoriaModal;
+        // as imagens que ela tirou do achado saem do armazenamento
+        if (finais) achRemoverDoStorage(achImgsOriginais.filter((u) => !finais.includes(u)));
         fecharModalAchadoForcado();
         await carregarPlanejador();
         if (aoSalvar) aoSalvar(categoriaSalva);
         // capa em segundo plano (Instagram e TikTok): se não vier, o card mostra o botão Buscar capa
-        if (id && url && achColunasOk) rtGarantirChave().then((ok) => ok && achGuardarCapa(id));
+        if (id && url && achColunasOk && !(finais && finais.length)) rtGarantirChave().then((ok) => ok && achGuardarCapa(id));
       } catch (err) {
         console.error('Erro ao salvar achado:', err);
+        achRemoverDoStorage(enviadas);
         alert(tr('erro_salvar_generico'));
       } finally {
         botao.disabled = false;
@@ -14444,9 +14719,11 @@
     async function excluirModalAchado() {
       if (!achadoAbertoId) return;
       if (!(await confirmarAcao(tr('pl_excluir_achado_confirmar')))) return;
+      const apagado = achadosCache.find((x) => x.id === achadoAbertoId);
       try {
         const { error } = await Auth.sb.from('planejador_achados').delete().eq('id', achadoAbertoId);
         if (error) throw error;
+        if (apagado && achTemImagens(apagado)) achRemoverDoStorage(apagado.imagens);
         fecharModalAchadoForcado();
         await carregarPlanejador();
       } catch (err) {

@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261020a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261021a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -3538,6 +3538,10 @@
                   <div class="cal-form-campo">
                     <label for="rt-m-porque">✅ Por que prende</label>
                     <textarea id="rt-m-porque" rows="3" placeholder="Por que esse vídeo segura a atenção"></textarea>
+                  </div>
+                  <div class="cal-form-campo">
+                    <label for="rt-m-organizado">📄 Roteiro organizado <small>o texto todo dividido em gancho, desenvolvimento e CTA. É esse que o botão Copiar transcrição copia</small></label>
+                    <textarea id="rt-m-organizado" class="rt-m-grande" placeholder="Vem pronto quando você cola a resposta do Claude"></textarea>
                   </div>
                 </div>
               </section>
@@ -7775,7 +7779,7 @@
       } else {
         if (embed) botoes.push('<button type="button" class="cal-btn cal-btn-primario rt-acao-larga" data-a="ver">▶ Ver vídeo</button>');
         else if (r.url) botoes.push(`<a class="cal-btn cal-btn-primario rt-acao-larga" href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">↗ Abrir link</a>`);
-        botoes.push('<button type="button" class="cal-btn" data-a="copiar">📋 Copiar transcrição</button>');
+        botoes.push('<button type="button" class="cal-btn" data-a="copiar" title="Copia o roteiro organizado em gancho, desenvolvimento e CTA. Se ainda não foi organizado, copia o texto corrido">📋 Copiar transcrição</button>');
         botoes.push('<button type="button" class="cal-btn" data-a="editar">✏️ Editar</button>');
       }
       return `<article class="rt-card" data-id="${escapeHtml(r.id)}">
@@ -7830,7 +7834,8 @@
         }
       } else if (acao === 'copiar') {
         try {
-          await navigator.clipboard.writeText(roteiro.transcricao || '');
+          const organizado = roteiro.estrutura && roteiro.estrutura.organizado ? String(roteiro.estrutura.organizado).trim() : '';
+          await navigator.clipboard.writeText(organizado || roteiro.transcricao || '');
           const antes = botao.textContent;
           botao.textContent = 'copiado ✓';
           setTimeout(() => (botao.textContent = antes), 1800);
@@ -7967,8 +7972,9 @@
         cta: v('rt-m-cta'),
         expressoes: document.getElementById('rt-m-expressoes').value.split(/[;\n]/).map((x) => x.trim()).filter(Boolean),
         por_que_prende: v('rt-m-porque'),
+        organizado: v('rt-m-organizado'),
       };
-      const vazia = !e.gancho_tipo && !e.gancho && !e.desenvolvimento && !e.cta && !e.expressoes.length && !e.por_que_prende;
+      const vazia = !e.gancho_tipo && !e.gancho && !e.desenvolvimento && !e.cta && !e.expressoes.length && !e.por_que_prende && !e.organizado;
       return vazia ? null : e;
     }
 
@@ -7980,6 +7986,7 @@
       document.getElementById('rt-m-cta').value = x.cta || '';
       document.getElementById('rt-m-expressoes').value = (x.expressoes || []).join('; ');
       document.getElementById('rt-m-porque').value = x.por_que_prende || '';
+      document.getElementById('rt-m-organizado').value = x.organizado || '';
     }
 
     function rtAbrirModal(roteiro, aviso) {
@@ -8251,6 +8258,7 @@
         'CTA: o que o vídeo pede pra pessoa fazer no final',
         'EXPRESSÕES: jeitos de falar e expressões marcantes, separados por ponto e vírgula',
         'POR QUE PRENDE: uma explicação curta de por que esse vídeo segura a atenção',
+        'ROTEIRO ORGANIZADO: a transcrição inteira, sem cortar, resumir nem inventar nada, só com a pontuação arrumada. Divide em três blocos, cada título sozinho numa linha: [GANCHO], [DESENVOLVIMENTO] e [CTA]. Dentro de cada bloco, uma ideia por parágrafo curto, com uma linha em branco entre os parágrafos. Se a transcrição estiver em outro idioma, escreve este campo em português, fiel ao que foi dito.',
         '',
         legenda ? `Legenda do post: ${legenda}\n` : '',
         'Transcrição:',
@@ -8293,7 +8301,7 @@
 
     // Lê a resposta do Claude: cada campo começa com o nome dele e dois pontos.
     function rtLerAnalise(texto) {
-      const chaves = { tags: 'tags', 'gancho tipo': 'gancho_tipo', gancho: 'gancho', desenvolvimento: 'desenvolvimento', cta: 'cta', expressoes: 'expressoes', 'por que prende': 'por_que_prende' };
+      const chaves = { tags: 'tags', 'gancho tipo': 'gancho_tipo', gancho: 'gancho', desenvolvimento: 'desenvolvimento', cta: 'cta', expressoes: 'expressoes', 'por que prende': 'por_que_prende', 'roteiro organizado': 'organizado' };
       const campos = {};
       let atual = null;
       String(texto || '')
@@ -8328,6 +8336,7 @@
         cta: campos.cta !== undefined ? campos.cta : atual.cta,
         expressoes: campos.expressoes !== undefined ? campos.expressoes.split(/[;\n]/).map((x) => x.trim()).filter(Boolean) : atual.expressoes,
         por_que_prende: campos.por_que_prende !== undefined ? campos.por_que_prende : atual.por_que_prende,
+        organizado: campos.organizado !== undefined ? campos.organizado : atual.organizado,
       });
       if (campos.tags) {
         const campoTags = document.getElementById('rt-m-tags');

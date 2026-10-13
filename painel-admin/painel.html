@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261015b">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261015c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -3536,7 +3536,7 @@
                     <textarea id="rt-m-cta" rows="2" placeholder="O que o vídeo pede pra pessoa fazer no final"></textarea>
                   </div>
                   <div class="cal-form-campo">
-                    <label for="rt-m-expressoes">💬 Expressões que ela usa <small>separadas por vírgula</small></label>
+                    <label for="rt-m-expressoes">💬 Expressões que ela usa <small>separadas por ponto e vírgula</small></label>
                     <input type="text" id="rt-m-expressoes" autocomplete="off" placeholder="jeitos de falar que marcam">
                   </div>
                   <div class="cal-form-campo">
@@ -7899,7 +7899,8 @@
         gancho: v('rt-m-gancho'),
         desenvolvimento: v('rt-m-desenvolvimento'),
         cta: v('rt-m-cta'),
-        expressoes: rtLerTags(document.getElementById('rt-m-expressoes').value),
+        expressoes: document.getElementById('rt-m-expressoes').value.split(/[;
+]/).map((x) => x.trim()).filter(Boolean),
         por_que_prende: v('rt-m-porque'),
       };
       const vazia = !e.gancho_tipo && !e.gancho && !e.desenvolvimento && !e.cta && !e.expressoes.length && !e.por_que_prende;
@@ -7912,7 +7913,7 @@
       document.getElementById('rt-m-gancho').value = x.gancho || '';
       document.getElementById('rt-m-desenvolvimento').value = x.desenvolvimento || '';
       document.getElementById('rt-m-cta').value = x.cta || '';
-      document.getElementById('rt-m-expressoes').value = (x.expressoes || []).join(', ');
+      document.getElementById('rt-m-expressoes').value = (x.expressoes || []).join('; ');
       document.getElementById('rt-m-porque').value = x.por_que_prende || '';
     }
 
@@ -8261,7 +8262,8 @@
         gancho: campos.gancho !== undefined ? campos.gancho : atual.gancho,
         desenvolvimento: campos.desenvolvimento !== undefined ? campos.desenvolvimento : atual.desenvolvimento,
         cta: campos.cta !== undefined ? campos.cta : atual.cta,
-        expressoes: campos.expressoes !== undefined ? rtLerTags(campos.expressoes.replace(/;/g, ',')) : atual.expressoes,
+        expressoes: campos.expressoes !== undefined ? campos.expressoes.split(/[;
+]/).map((x) => x.trim()).filter(Boolean) : atual.expressoes,
         por_que_prende: campos.por_que_prende !== undefined ? campos.por_que_prende : atual.por_que_prende,
       });
       if (campos.tags) {

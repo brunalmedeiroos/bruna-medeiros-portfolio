@@ -11644,3 +11644,51 @@
 .painel-body #rt-m-botoes-estrutura[hidden] {
   display: none;
 }
+
+/* ---- Roteiros: chave do Claude e skills ---- */
+
+.painel-body .rt-chave-campo[hidden],
+.painel-body #rt-cl-ajuda[hidden] {
+  display: none;
+}
+
+.painel-body .rt-skills {
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+.painel-body .rt-skills summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .rt-skills[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.painel-body .rt-skills label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .rt-skills textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 160px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 10px 12px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  font-family: var(--fonte-corpo);
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--grafite);
+}
+
+.painel-body .rt-skills .cal-btn {
+  align-self: flex-start;
+}

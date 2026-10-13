@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261025c">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261025b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -7703,7 +7703,7 @@
       document.getElementById('rt-chave-input').focus();
     }
 
-    async function rtTranscrever(extra) {
+    async function rtTranscrever() {
       if (rtAtivoId) return;
       if (!rtChave) {
         rtAvisoSemChave();
@@ -7722,7 +7722,7 @@
       try {
         const { data, error } = await Auth.sb
           .from('roteiros')
-          .insert({ fonte: a.fonte, url: a.url, perfil: a.perfil, de_quem: document.getElementById('rt-de-quem').value, status: 'processando', ...(extra && extra.capa && rtCapaOk ? { capa: extra.capa } : {}) })
+          .insert({ fonte: a.fonte, url: a.url, perfil: a.perfil, de_quem: document.getElementById('rt-de-quem').value, status: 'processando' })
           .select();
         if (error) throw error;
         rtRoteiros.unshift(data[0]);
@@ -14206,12 +14206,12 @@
         if (atual) rtAbrirModal(atual);
       } else if (acao === 'transcrever') {
         if (!f) return;
-        if (!(await confirmarAcao('Levar este vídeo pra Transcrição de Vídeos e transcrever agora? Gasta 1 crédito da Supadata.', { textoConfirmar: 'Transcrever' }))) return;
         abrirPaginaPlanejador('roteiros');
         await rtAbrir();
         document.getElementById('rt-link').value = f.url;
         document.getElementById('rt-de-quem').value = 'outra';
-        rtTranscrever({ capa: a.capa || null }); // já começa a transcrever; a capa do achado vai junto, sem gastar outro crédito
+        document.getElementById('rt-link').focus();
+        rtAviso('ok', 'Link colocado. Se quiser mesmo transcrever, clica em Transcrever (gasta 1 crédito da Supadata).');
       } else if (acao === 'capa') {
         botao.disabled = true;
         botao.textContent = '⏳ Buscando…';

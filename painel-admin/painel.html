@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261015c">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261015d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -8017,7 +8017,7 @@
     // A chave fica na tabela configuracoes, igual à da Supadata. O Gemini tem plano grátis.
 
     const RT_IA_CONFIG = 'gemini_api_key';
-    const RT_GEMINI_MODELOS = ['gemini-3.6-flash', 'gemini-3.8-flash'];
+    const RT_GEMINI_MODELOS = ['gemini-3.1-flash-lite', 'gemini-3.6-flash', 'gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-3.5-flash', 'gemini-3.5-flash-lite'];
 
     const RT_ESQUEMA_ANALISE = {
       type: 'OBJECT',
@@ -8033,12 +8033,21 @@
       required: ['tags', 'gancho_tipo', 'gancho', 'desenvolvimento', 'cta', 'expressoes', 'por_que_prende'],
     };
 
+    // Vários modelos do Gemini, do mais leve pro mais pesado: no plano grátis cada um tem a sua cota e
+    // qualquer um pode ficar sobrecarregado (503) ou sem cota (429) na hora. Se um falha, vai pro próximo.
     async function rtChamarGemini(prompt) {
-      let ultimo = null;
-      for (const modelo of RT_GEMINI_MODELOS) {
-        for (let tentativa = 1; tentativa <= 2; tentativa++) {
+      const ruins = new Set(); // modelos que não existem ou estão sem cota: não adianta tentar de novo
+      let ocupado = false;
+      let semCota = false;
+      for (let rodada = 1; rodada <= 2; rodada++) {
+        if (rodada === 2) {
+          if (!ocupado) break;
+          await rtEsperar(4000);
+        }
+        for (const modelo of RT_GEMINI_MODELOS) {
+          if (ruins.has(modelo)) continue;
           const ctrl = new AbortController();
-          const parar = setTimeout(() => ctrl.abort(), 60000);
+          const parar = setTimeout(() => ctrl.abort(), 30000);
           let r;
           let corpo = null;
           try {
@@ -8059,42 +8068,44 @@
           } catch (err) {
             clearTimeout(parar);
             if (err && err.name === 'AbortError') {
-              ultimo = rtErro('tempo', 'A IA demorou demais pra responder. Tenta de novo daqui a pouco.');
-              if (tentativa < 2) continue;
-              break;
+              ocupado = true;
+              continue;
             }
             throw rtErro('rede', 'Não consegui falar com a IA. Confere a internet e tenta de novo.');
           }
           clearTimeout(parar);
           if (r.ok) {
             const texto = corpo && corpo.candidates && corpo.candidates[0] && corpo.candidates[0].content && corpo.candidates[0].content.parts && corpo.candidates[0].content.parts[0] ? corpo.candidates[0].content.parts[0].text : '';
-            if (!texto) throw rtErro('vazio', 'A IA não devolveu nada dessa vez. Tenta de novo.');
+            if (!texto) {
+              ocupado = true;
+              continue;
+            }
             try {
               return JSON.parse(texto);
             } catch (e) {
-              throw rtErro('vazio', 'A IA respondeu de um jeito que eu não consegui ler. Tenta de novo.');
+              ocupado = true;
+              continue;
             }
           }
           const msg = JSON.stringify((corpo && corpo.error) || '').toLowerCase();
-          if (r.status === 404) break; // esse modelo não existe pra essa chave: tenta o próximo
           if (r.status === 401 || r.status === 403 || (r.status === 400 && /api key|api_key/.test(msg))) {
             throw rtErro('chave', 'A chave da IA não foi aceita. Confere se colou inteira, ou cola uma nova.');
           }
-          if (r.status === 503 || r.status === 429) {
-            ultimo =
-              r.status === 429
-                ? rtErro('limite', 'A IA grátis chegou no limite por agora. Espera um minuto e tenta de novo.')
-                : rtErro('ocupada', 'A IA está muito ocupada agora. Tenta de novo daqui a um minuto.');
-            if (tentativa < 2) {
-              await rtEsperar(3000);
-              continue;
-            }
-            break; // segue pro próximo modelo
+          if (r.status === 404) {
+            ruins.add(modelo);
+          } else if (r.status === 429) {
+            ruins.add(modelo);
+            semCota = true;
+          } else if (r.status === 503 || r.status >= 500) {
+            ocupado = true;
+          } else {
+            ruins.add(modelo);
           }
-          throw rtErro('outro', 'A IA não conseguiu analisar agora. Tenta de novo daqui a pouco.');
         }
       }
-      throw ultimo || rtErro('modelo', 'Não achei um modelo da IA disponível pra essa chave. Me avisa pra eu ajustar.');
+      if (ocupado) throw rtErro('ocupada', 'A IA está muito ocupada agora. Tenta de novo daqui a um minuto.');
+      if (semCota) throw rtErro('limite', 'A cota grátis da IA acabou por agora. Ela volta sozinha, tenta de novo mais tarde ou amanhã.');
+      throw rtErro('modelo', 'Não achei um modelo da IA disponível pra essa chave. Me avisa pra eu ajustar.');
     }
 
     // auto = true quando roda sozinha logo depois da transcrição (aí nunca substitui o que já está preenchido).

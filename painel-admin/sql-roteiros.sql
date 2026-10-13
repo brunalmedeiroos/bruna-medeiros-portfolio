@@ -23,8 +23,12 @@ create table if not exists public.roteiros (
   obs text,
   status text not null default 'pronto' check (status in ('processando', 'pronto', 'falhou')),
   erro text,
-  segmentos jsonb
+  segmentos jsonb,
+  estrutura jsonb
 );
+
+-- (a coluna estrutura guarda gancho, desenvolvimento, CTA, expressões e por que prende)
+alter table public.roteiros add column if not exists estrutura jsonb;
 
 create index if not exists roteiros_created_at_idx on public.roteiros (created_at desc);
 

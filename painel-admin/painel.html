@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261013e">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261014a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -3423,69 +3423,138 @@
       </div>
     </div>
 
-    <!-- Modal: roteiro da biblioteca (editar, ou escrever na mão) -->
+    <!-- Modal: roteiro da biblioteca (editar, ou escrever na mão): formulário de um lado, o vídeo do outro -->
     <div id="rt-modal-overlay" class="pl-modal-overlay" hidden>
-      <div class="pl-modal">
-        <div class="pl-modal-topo">
-          <span class="pl-modal-titulo-fixo" id="rt-m-titulo-janela">✏️ Editar roteiro</span>
+      <div class="pl-modal rt-modal-largo">
+        <div class="pl-modal-topo rt-m-topo">
+          <div>
+            <span class="rt-m-kicker" id="rt-m-titulo-janela">Editar roteiro</span>
+            <h3 class="rt-m-titulo-grande">📜 Roteiro</h3>
+          </div>
           <button id="rt-m-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
 
-        <p class="rt-m-aviso" id="rt-m-aviso" hidden></p>
+        <div class="rt-m-corpo">
+          <div class="rt-m-grade">
+            <div class="rt-m-form">
+              <p class="rt-m-aviso" id="rt-m-aviso" hidden></p>
 
-        <div class="cal-form-campo">
-          <label for="rt-m-titulo">Título</label>
-          <input type="text" id="rt-m-titulo" maxlength="160" autocomplete="off" placeholder="Dê um nome pra achar depois">
-        </div>
+              <div class="cal-form-campo">
+                <label for="rt-m-titulo">Título</label>
+                <input type="text" id="rt-m-titulo" maxlength="160" autocomplete="off" placeholder="Dê um nome pra achar depois">
+              </div>
 
-        <div class="pl-modal-linha">
-          <div class="cal-form-campo">
-            <label for="rt-m-de-quem">De quem</label>
-            <select id="rt-m-de-quem">
-              <option value="outra">De outra pessoa</option>
-              <option value="minha">Meu</option>
-            </select>
+              <div class="pl-modal-linha">
+                <div class="cal-form-campo">
+                  <label for="rt-m-de-quem">De quem é</label>
+                  <select id="rt-m-de-quem">
+                    <option value="outra">De outra pessoa</option>
+                    <option value="minha">Meu</option>
+                  </select>
+                </div>
+                <div class="cal-form-campo">
+                  <label for="rt-m-perfil">Perfil <small>sem @</small></label>
+                  <input type="text" id="rt-m-perfil" maxlength="80" autocomplete="off">
+                </div>
+                <div class="cal-form-campo">
+                  <label for="rt-m-postado">Data do post</label>
+                  <input type="date" id="rt-m-postado">
+                </div>
+              </div>
+
+              <div class="pl-modal-linha">
+                <div class="cal-form-campo">
+                  <label for="rt-m-origem">Origem</label>
+                  <select id="rt-m-origem">
+                    <option value="instagram">Instagram</option>
+                    <option value="tiktok">TikTok</option>
+                    <option value="youtube">YouTube</option>
+                    <option value="manual">Escrito na mão</option>
+                  </select>
+                </div>
+                <div class="cal-form-campo rt-m-campo-largo">
+                  <label for="rt-m-link">Link do vídeo</label>
+                  <input type="url" id="rt-m-link" autocomplete="off" placeholder="https://...">
+                </div>
+              </div>
+
+              <div class="cal-form-campo">
+                <label for="rt-m-tags">Tags <small>separadas por vírgula</small></label>
+                <input type="text" id="rt-m-tags" autocomplete="off" placeholder="gancho, ugc, bastidores">
+              </div>
+
+              <section class="rt-m-estrutura">
+                <div class="rt-m-estrutura-topo">
+                  <span class="rt-m-estrutura-titulo">🧩 A estrutura</span>
+                  <span class="rt-m-estrutura-botoes">
+                    <button type="button" id="rt-m-pedir-analise" class="cal-btn" title="Copia um pedido pronto pra você colar no Claude">🧠 Copiar pedido pro Claude</button>
+                    <button type="button" id="rt-m-colar-analise" class="cal-btn" title="Cola aqui a resposta do Claude pra preencher os campos">📥 Colar a resposta</button>
+                  </span>
+                </div>
+                <div id="rt-m-analise-area" class="rt-m-analise-area" hidden>
+                  <textarea id="rt-m-analise-texto" rows="6" placeholder="Cole aqui a resposta do Claude, no formato que o pedido mostra"></textarea>
+                  <button type="button" id="rt-m-analise-aplicar" class="cal-btn cal-btn-primario">Preencher os campos</button>
+                </div>
+                <p class="dash-aviso" id="rt-m-estrutura-aviso" hidden>Pra guardar a estrutura e o "por que prende", rode o arquivo sql-roteiros-estrutura.sql no SQL Editor do Supabase.</p>
+                <div id="rt-m-estrutura-campos">
+                  <div class="pl-modal-linha">
+                    <div class="cal-form-campo">
+                      <label for="rt-m-gancho-tipo">Tipo do gancho</label>
+                      <input type="text" id="rt-m-gancho-tipo" maxlength="60" autocomplete="off" placeholder="pergunta, promessa, curiosidade...">
+                    </div>
+                  </div>
+                  <div class="cal-form-campo">
+                    <label for="rt-m-gancho">🪝 Gancho</label>
+                    <textarea id="rt-m-gancho" rows="2" placeholder="A frase de abertura do vídeo"></textarea>
+                  </div>
+                  <div class="cal-form-campo">
+                    <label for="rt-m-desenvolvimento">📑 Desenvolvimento</label>
+                    <textarea id="rt-m-desenvolvimento" rows="4" placeholder="Os passos do vídeo, um por linha"></textarea>
+                  </div>
+                  <div class="cal-form-campo">
+                    <label for="rt-m-cta">📣 CTA</label>
+                    <textarea id="rt-m-cta" rows="2" placeholder="O que o vídeo pede pra pessoa fazer no final"></textarea>
+                  </div>
+                  <div class="cal-form-campo">
+                    <label for="rt-m-expressoes">💬 Expressões que ela usa <small>separadas por vírgula</small></label>
+                    <input type="text" id="rt-m-expressoes" autocomplete="off" placeholder="jeitos de falar que marcam">
+                  </div>
+                  <div class="cal-form-campo">
+                    <label for="rt-m-porque">✅ Por que prende</label>
+                    <textarea id="rt-m-porque" rows="3" placeholder="Por que esse vídeo segura a atenção"></textarea>
+                  </div>
+                </div>
+              </section>
+
+              <div class="cal-form-campo">
+                <label for="rt-m-transcricao">Roteiro / transcrição</label>
+                <textarea id="rt-m-transcricao" class="rt-m-grande"></textarea>
+              </div>
+
+              <div class="cal-form-campo">
+                <label for="rt-m-obs">Suas notas <small>o que te chamou atenção</small></label>
+                <textarea id="rt-m-obs" rows="3" placeholder="Ex: abre com pergunta, corta a cada 2s, CTA só no final"></textarea>
+              </div>
+
+              <details class="rt-m-legenda-bloco">
+                <summary>Legenda do post</summary>
+                <textarea id="rt-m-legenda" rows="3"></textarea>
+              </details>
+            </div>
+
+            <aside class="rt-m-lado">
+              <p class="rt-m-lado-titulo">O vídeo</p>
+              <div id="rt-m-player" class="rt-m-player"></div>
+              <a id="rt-m-abrir" class="rt-m-abrir" href="#" target="_blank" rel="noopener noreferrer" hidden>abrir no Instagram ↗</a>
+            </aside>
           </div>
-          <div class="cal-form-campo">
-            <label for="rt-m-perfil">Perfil</label>
-            <input type="text" id="rt-m-perfil" maxlength="80" autocomplete="off" placeholder="sem o @">
-          </div>
-          <div class="cal-form-campo">
-            <label for="rt-m-postado">Data de postagem</label>
-            <input type="date" id="rt-m-postado">
-          </div>
         </div>
 
-        <div class="cal-form-campo">
-          <label for="rt-m-link">Link</label>
-          <input type="url" id="rt-m-link" autocomplete="off" placeholder="https://...">
-        </div>
-
-        <div class="cal-form-campo">
-          <label for="rt-m-tags">Tags (separadas por vírgula)</label>
-          <input type="text" id="rt-m-tags" autocomplete="off" placeholder="gancho, ugc, bastidores">
-        </div>
-
-        <div class="cal-form-campo">
-          <label for="rt-m-legenda">Legenda do post</label>
-          <textarea id="rt-m-legenda" rows="3"></textarea>
-        </div>
-
-        <div class="cal-form-campo">
-          <label for="rt-m-transcricao">Transcrição</label>
-          <textarea id="rt-m-transcricao" class="rt-m-grande"></textarea>
-        </div>
-
-        <div class="cal-form-campo">
-          <label for="rt-m-obs">Minhas notas</label>
-          <textarea id="rt-m-obs" rows="3"></textarea>
-        </div>
-
-        <div class="cal-form-acoes">
+        <div class="cal-form-acoes rt-m-rodape">
           <button type="button" id="rt-m-cancelar" class="cal-btn">Cancelar</button>
-          <button type="button" id="rt-m-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+          <button type="button" id="rt-m-salvar" class="cal-btn cal-btn-primario">✓ Salvar</button>
         </div>
       </div>
     </div>
@@ -3716,6 +3785,7 @@
     let rtChave = ''; // chave da Supadata, lida da tabela configuracoes
     let rtTrocandoChave = false;
     let rtLigado = false;
+    let rtEstruturaOk = false; // a coluna estrutura existe (sql-roteiros-estrutura.sql já rodado)
     let rtFiltro = 'todos';
     let rtBusca = '';
     let rtEditandoId = null;
@@ -7434,11 +7504,14 @@
         rtRoteiros = lista.data || [];
         rtChave = config.data && config.data.valor ? String(config.data.valor) : '';
         rtOk = true;
+        const colunaEstrutura = await Auth.sb.from('roteiros').select('estrutura').limit(1);
+        rtEstruturaOk = !colunaEstrutura.error;
       } catch (err) {
         console.warn('Roteiros indisponível:', err);
         rtRoteiros = [];
         rtChave = '';
         rtOk = false;
+        rtEstruturaOk = false;
       }
     }
 
@@ -7749,28 +7822,92 @@
 
     // ---- editar e escrever na mão ----
 
+    // O vídeo ao lado do formulário: carrega o player do link que está no campo e mostra "abrir no ...".
+    function rtAtualizarPlayer() {
+      const caixa = document.getElementById('rt-m-player');
+      const abrir = document.getElementById('rt-m-abrir');
+      const a = rtAnalisarLink(document.getElementById('rt-m-link').value);
+      const embed = a ? rtEmbed({ url: a.url }) : null;
+      caixa.innerHTML = '';
+      if (embed) {
+        const quadro = document.createElement('iframe');
+        quadro.className = 'rt-m-quadro';
+        quadro.src = embed;
+        quadro.allowFullscreen = true;
+        quadro.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+        quadro.title = 'Vídeo';
+        caixa.appendChild(quadro);
+      } else {
+        const vazio = document.createElement('p');
+        vazio.className = 'rt-m-sem-player';
+        vazio.textContent = a ? 'Esse link não tem player aqui, mas dá pra abrir no site.' : 'Cole o link do vídeo pra ele aparecer aqui.';
+        caixa.appendChild(vazio);
+      }
+      abrir.hidden = !a;
+      if (a) {
+        abrir.href = a.url;
+        abrir.textContent = `abrir no ${(RT_FONTES[a.fonte] || RT_FONTES.manual).nome} ↗`;
+      }
+    }
+
+    function rtLerEstrutura() {
+      const v = (id) => document.getElementById(id).value.trim();
+      const e = {
+        gancho_tipo: v('rt-m-gancho-tipo'),
+        gancho: v('rt-m-gancho'),
+        desenvolvimento: v('rt-m-desenvolvimento'),
+        cta: v('rt-m-cta'),
+        expressoes: rtLerTags(document.getElementById('rt-m-expressoes').value),
+        por_que_prende: v('rt-m-porque'),
+      };
+      const vazia = !e.gancho_tipo && !e.gancho && !e.desenvolvimento && !e.cta && !e.expressoes.length && !e.por_que_prende;
+      return vazia ? null : e;
+    }
+
+    function rtEscreverEstrutura(e) {
+      const x = e || {};
+      document.getElementById('rt-m-gancho-tipo').value = x.gancho_tipo || '';
+      document.getElementById('rt-m-gancho').value = x.gancho || '';
+      document.getElementById('rt-m-desenvolvimento').value = x.desenvolvimento || '';
+      document.getElementById('rt-m-cta').value = x.cta || '';
+      document.getElementById('rt-m-expressoes').value = (x.expressoes || []).join(', ');
+      document.getElementById('rt-m-porque').value = x.por_que_prende || '';
+    }
+
     function rtAbrirModal(roteiro, aviso) {
       rtEditandoId = roteiro ? roteiro.id : null;
-      document.getElementById('rt-m-titulo-janela').textContent = roteiro ? '✏️ Editar roteiro' : '✍️ Novo roteiro na mão';
-      const aviso_el = document.getElementById('rt-m-aviso');
-      aviso_el.hidden = !aviso;
-      aviso_el.textContent = aviso || '';
+      document.getElementById('rt-m-titulo-janela').textContent = roteiro ? 'Editar roteiro' : 'Novo roteiro escrito na mão';
+      const avisoEl = document.getElementById('rt-m-aviso');
+      avisoEl.hidden = !aviso;
+      avisoEl.textContent = aviso || '';
       const r = roteiro || {};
       document.getElementById('rt-m-titulo').value = r.titulo || '';
       document.getElementById('rt-m-de-quem').value = r.de_quem || document.getElementById('rt-de-quem').value || 'outra';
       document.getElementById('rt-m-perfil').value = r.perfil || '';
       document.getElementById('rt-m-link').value = r.url || '';
+      document.getElementById('rt-m-origem').value = r.fonte || 'manual';
       document.getElementById('rt-m-postado').value = r.postado_em || '';
       document.getElementById('rt-m-tags').value = (r.tags || []).join(', ');
       document.getElementById('rt-m-legenda').value = r.legenda || '';
       document.getElementById('rt-m-transcricao').value = r.transcricao || '';
       document.getElementById('rt-m-obs').value = r.obs || '';
+      rtEscreverEstrutura(r.estrutura);
+      document.getElementById('rt-m-estrutura-campos').hidden = !rtEstruturaOk;
+      document.getElementById('rt-m-estrutura-aviso').hidden = rtEstruturaOk;
+      document.getElementById('rt-m-pedir-analise').hidden = !rtEstruturaOk;
+      document.getElementById('rt-m-colar-analise').hidden = !rtEstruturaOk;
+      document.getElementById('rt-m-analise-area').hidden = true;
+      document.getElementById('rt-m-analise-texto').value = '';
+      document.querySelector('.rt-m-legenda-bloco').open = !!r.legenda;
+      rtAtualizarPlayer();
       document.getElementById('rt-modal-overlay').hidden = false;
+      document.querySelector('#rt-modal-overlay .rt-m-corpo').scrollTop = 0;
       document.getElementById('rt-m-titulo').focus();
     }
 
     function rtFecharModal() {
       rtEditandoId = null;
+      document.getElementById('rt-m-player').innerHTML = '';
       document.getElementById('rt-modal-overlay').hidden = true;
     }
 
@@ -7800,7 +7937,7 @@
         de_quem: document.getElementById('rt-m-de-quem').value,
         perfil: texto('rt-m-perfil').replace(/^@/, '') || (analise && analise.perfil) || null,
         url: analise ? analise.url : linkBruto || null,
-        fonte: analise ? analise.fonte : linkBruto ? 'manual' : 'manual',
+        fonte: document.getElementById('rt-m-origem').value || (analise ? analise.fonte : 'manual'),
         postado_em: document.getElementById('rt-m-postado').value || null,
         tags: rtLerTags(document.getElementById('rt-m-tags').value),
         legenda: texto('rt-m-legenda') || null,
@@ -7808,6 +7945,7 @@
         obs: texto('rt-m-obs') || null,
         status: 'pronto',
         erro: null,
+        ...(rtEstruturaOk ? { estrutura: rtLerEstrutura() } : {}),
       };
       const btn = document.getElementById('rt-m-salvar');
       btn.disabled = true;
@@ -7829,6 +7967,95 @@
       } finally {
         btn.disabled = false;
       }
+    }
+
+    // ---- a estrutura do vídeo: pedido pro Claude e leitura da resposta (sem chave de IA no painel) ----
+
+    async function rtPedirAnalise() {
+      const transcricao = document.getElementById('rt-m-transcricao').value.trim();
+      if (!transcricao) {
+        const avisoEl = document.getElementById('rt-m-aviso');
+        avisoEl.hidden = false;
+        avisoEl.textContent = 'Ainda não tem transcrição pra analisar. Cola ou escreve o texto do vídeo primeiro.';
+        return;
+      }
+      const perfil = document.getElementById('rt-m-perfil').value.trim().replace(/^@/, '');
+      const legenda = document.getElementById('rt-m-legenda').value.trim();
+      const pedido = [
+        `Analisa este vídeo${perfil ? ' de @' + perfil : ''} e me devolve a análise EXATAMENTE neste formato, um campo por vez, sem texto antes nem depois:`,
+        '',
+        'TAGS: três a cinco palavras-chave separadas por vírgula',
+        'GANCHO TIPO: o tipo do gancho em uma ou duas palavras (ex: pergunta, promessa, curiosidade, história)',
+        'GANCHO: a frase de abertura do vídeo, como foi dita',
+        'DESENVOLVIMENTO:',
+        '1. primeiro passo do vídeo',
+        '2. segundo passo',
+        '3. e assim por diante',
+        'CTA: o que o vídeo pede pra pessoa fazer no final',
+        'EXPRESSÕES: jeitos de falar e expressões marcantes, separados por ponto e vírgula',
+        'POR QUE PRENDE: uma explicação curta de por que esse vídeo segura a atenção',
+        '',
+        legenda ? `Legenda do post: ${legenda}\n` : '',
+        'Transcrição:',
+        transcricao,
+      ].join('\n');
+      const avisoEl = document.getElementById('rt-m-aviso');
+      try {
+        await navigator.clipboard.writeText(pedido);
+        avisoEl.textContent = '🧠 Pedido copiado. Cola no Claude, depois volta aqui e clica em "Colar a resposta".';
+      } catch (err) {
+        console.error('Erro ao copiar o pedido:', err);
+        avisoEl.textContent = 'Não consegui copiar o pedido. Tenta de novo.';
+      }
+      avisoEl.hidden = false;
+    }
+
+    // Lê a resposta do Claude: cada campo começa com o nome dele e dois pontos.
+    function rtLerAnalise(texto) {
+      const chaves = { tags: 'tags', 'gancho tipo': 'gancho_tipo', gancho: 'gancho', desenvolvimento: 'desenvolvimento', cta: 'cta', expressoes: 'expressoes', 'por que prende': 'por_que_prende' };
+      const campos = {};
+      let atual = null;
+      String(texto || '')
+        .split('\n')
+        .forEach((linha) => {
+          const m = linha.match(/^\s*[*#>\-\s]*([A-Za-zÀ-ÿ ]{2,20}?)\s*\**\s*:\s*\**\s*(.*)$/);
+          const nome = m ? chaves[rtNorm(m[1]).trim()] : null;
+          if (nome) {
+            atual = nome;
+            campos[atual] = m[2] || '';
+          } else if (atual) {
+            campos[atual] += '\n' + linha;
+          }
+        });
+      Object.keys(campos).forEach((k) => (campos[k] = campos[k].replace(/\*\*/g, '').trim()));
+      return campos;
+    }
+
+    function rtAplicarAnalise() {
+      const campos = rtLerAnalise(document.getElementById('rt-m-analise-texto').value);
+      const avisoEl = document.getElementById('rt-m-aviso');
+      if (!Object.keys(campos).length) {
+        avisoEl.hidden = false;
+        avisoEl.textContent = 'Não reconheci essa resposta. Confere se o Claude usou os nomes do pedido (GANCHO, CTA, POR QUE PRENDE...).';
+        return;
+      }
+      const atual = rtLerEstrutura() || {};
+      rtEscreverEstrutura({
+        gancho_tipo: campos.gancho_tipo !== undefined ? campos.gancho_tipo : atual.gancho_tipo,
+        gancho: campos.gancho !== undefined ? campos.gancho : atual.gancho,
+        desenvolvimento: campos.desenvolvimento !== undefined ? campos.desenvolvimento : atual.desenvolvimento,
+        cta: campos.cta !== undefined ? campos.cta : atual.cta,
+        expressoes: campos.expressoes !== undefined ? rtLerTags(campos.expressoes.replace(/;/g, ',')) : atual.expressoes,
+        por_que_prende: campos.por_que_prende !== undefined ? campos.por_que_prende : atual.por_que_prende,
+      });
+      if (campos.tags) {
+        const campoTags = document.getElementById('rt-m-tags');
+        campoTags.value = rtLerTags(campoTags.value + ',' + campos.tags).join(', ');
+      }
+      document.getElementById('rt-m-analise-area').hidden = true;
+      document.getElementById('rt-m-analise-texto').value = '';
+      avisoEl.hidden = false;
+      avisoEl.textContent = '✅ Campos preenchidos. Confere e clica em Salvar.';
     }
 
     // ---- estudar com o Claude ----
@@ -7898,6 +8125,22 @@
       document.getElementById('rt-m-salvar').addEventListener('click', rtSalvarModal);
       document.getElementById('rt-m-cancelar').addEventListener('click', rtFecharModal);
       document.getElementById('rt-m-fechar').addEventListener('click', rtFecharModal);
+      document.getElementById('rt-m-link').addEventListener('change', () => {
+        const a = rtAnalisarLink(document.getElementById('rt-m-link').value);
+        if (a) {
+          document.getElementById('rt-m-origem').value = a.fonte;
+          const perfil = document.getElementById('rt-m-perfil');
+          if (!perfil.value.trim() && a.perfil) perfil.value = a.perfil;
+        }
+        rtAtualizarPlayer();
+      });
+      document.getElementById('rt-m-pedir-analise').addEventListener('click', rtPedirAnalise);
+      document.getElementById('rt-m-colar-analise').addEventListener('click', () => {
+        const area = document.getElementById('rt-m-analise-area');
+        area.hidden = !area.hidden;
+        if (!area.hidden) document.getElementById('rt-m-analise-texto').focus();
+      });
+      document.getElementById('rt-m-analise-aplicar').addEventListener('click', rtAplicarAnalise);
     }
 
     async function rtAbrir() {

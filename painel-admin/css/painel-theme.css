@@ -11995,3 +11995,7 @@
 .painel-body .ach-card .rt-apagar {
   color: #B3402F;
 }
+
+.painel-body .rt-chips[hidden] {
+  display: none;
+}

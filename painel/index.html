@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261027a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261028a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -3820,7 +3820,7 @@
     let achColunasOk = null; // as colunas novas existem (achados-referencias.sql já rodado); null = ainda não conferi
     let achCategoriaModal = 'Gancho';
     let dataAgendarAtual = null; // data (ISO) do dia clicado no "+" do calendário do cronograma
-    const ACHADOS_COLUNAS = ['Gancho', 'Frase', 'Formato', 'Música', 'CTA', 'Avulso'];
+    const ACHADOS_COLUNAS = ['Gancho', 'Frase', 'Formato', 'Carrossel', 'Música', 'CTA', 'Avulso'];
     // Nome da coluna é gravado em achados.coluna em português (é o "código");
     // aqui só traduz o rótulo mostrado, sem tocar no valor salvo.
     const ACHADOS_COLUNA_CHAVE = {
@@ -3829,6 +3829,7 @@
       'Formato': 'achados_col_formato',
       'Música': 'achados_col_musica',
       'CTA': 'achados_col_cta',
+      'Carrossel': 'achados_col_carrossel',
       'Avulso': 'achados_col_avulso',
     };
     function traduzirColunaAchado(coluna) {
@@ -4810,6 +4811,7 @@
         achados_col_formato: 'Formato',
         achados_col_musica: 'Música',
         achados_col_cta: 'CTA',
+        achados_col_carrossel: 'Carrossel',
         achados_col_avulso: 'Avulso',
         pl_excluir_pilar: 'Excluir pilar',
         pl_renomear_pilar: 'Renomear pilar',
@@ -6001,6 +6003,7 @@
         achados_col_formato: 'Format',
         achados_col_musica: 'Music',
         achados_col_cta: 'CTA',
+        achados_col_carrossel: 'Carousel',
         achados_col_avulso: 'Misc',
         pl_excluir_pilar: 'Delete pillar',
         pl_renomear_pilar: 'Rename pillar',
@@ -14168,7 +14171,7 @@
     // Cada achado é uma referência: título, link opcional (com capa), o que viu, como usar e como adaptar.
     // As colunas url, capa, como_usar e como_adaptar vêm do achados-referencias.sql.
 
-    const ACH_EMOJI = { 'Gancho': '🪝', 'Frase': '💬', 'Formato': '🎞️', 'Música': '🎵', 'CTA': '📣', 'Avulso': '📌' };
+    const ACH_EMOJI = { 'Gancho': '🪝', 'Frase': '💬', 'Formato': '🎞️', 'Carrossel': '🎠', 'Música': '🎵', 'CTA': '📣', 'Avulso': '📌' };
 
     async function achVerColunas() {
       if (achColunasOk !== null) return achColunasOk;
@@ -14256,7 +14259,7 @@
 
     // Post = tem imagens subidas ou foi marcado como foto/carrossel.
     function achEhPost(a) {
-      return achTemImagens(a) || a.post === true;
+      return achTemImagens(a) || a.post === true || a.coluna === 'Carrossel';
     }
 
     function achHtmlCard(a) {
@@ -14282,7 +14285,7 @@
       } else {
         if (embed) botoes.push('<button type="button" class="cal-btn cal-btn-primario" data-a="ver">▶ Ver</button>');
         else if (f) botoes.push(`<a class="cal-btn cal-btn-primario" href="${escapeHtml(f.url)}" target="_blank" rel="noopener noreferrer">↗ Abrir</a>`);
-        if (f && f.chave !== 'outro' && !a.post) {
+        if (f && f.chave !== 'outro' && !achEhPost(a)) {
           const roteiro = rtRoteiros.find((r) => r.url === f.url);
           botoes.push(roteiro ? '<button type="button" class="cal-btn" data-a="ver-transc">📜 Ver transcrição</button>' : '<button type="button" class="cal-btn" data-a="transcrever">📜 Transcrever</button>');
         }
@@ -14670,7 +14673,7 @@
       if (!achadoAbertoId && !achadoNovo) return;
       const valor = (id) => document.getElementById(id).value.trim();
       if (!achCategoriaModal) {
-        alert('Escolhe a categoria: Gancho, Frase, Formato, Música, CTA ou Avulso.');
+        alert('Escolhe a categoria: Gancho, Frase, Formato, Carrossel, Música, CTA ou Avulso.');
         return;
       }
 

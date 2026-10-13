@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261025a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261025b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -7537,10 +7537,14 @@
 
     // ---- avisos, relógio e saldo ----
 
+    let rtAvisoTimer = null;
     function rtAviso(tipo, texto, acoes) {
       const el = document.getElementById('rt-aviso');
       el.className = 'rt-aviso rt-aviso-' + tipo;
       el.hidden = false;
+      // aviso de sucesso some sozinho depois de uns segundos; erro e andamento ficam até resolver
+      if (rtAvisoTimer) clearTimeout(rtAvisoTimer);
+      rtAvisoTimer = tipo === 'ok' ? setTimeout(() => { el.hidden = true; }, 8000) : null;
       el.innerHTML = '';
       const p = document.createElement('span');
       p.textContent = texto;

@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261012a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261013e">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1015,6 +1015,7 @@
             <button class="pl-hub-card" data-pagina="banco-teste" type="button" data-i18n="pl_banco_ideias_teste">Banco de ideias &amp; Roteiros</button>
             <button class="pl-hub-card" data-pagina="achados" type="button" data-i18n="pl_achados">Achados</button>
             <button class="pl-hub-card" data-pagina="radar" type="button" data-i18n="pl_radar">Radar de Notícias</button>
+            <button class="pl-hub-card" data-pagina="roteiros" type="button">📜 Roteiros</button>
           </div>
 
           <div id="pl-pagina-visao-geral" class="pl-pagina">
@@ -1086,6 +1087,50 @@
               <p class="cal-todas-resumo">Falta rodar o arquivo banco-ideias-teste.sql no SQL Editor do Supabase.</p>
             </div>
             <div id="bt-conteudo"></div>
+          </div>
+
+          <div id="pl-pagina-roteiros" class="pl-pagina" hidden>
+            <div class="card email-vazio" id="rt-aviso-tabelas" hidden>
+              <h3 class="card-titulo">Os Roteiros ainda não estão prontos no banco</h3>
+              <p class="cal-todas-resumo">Falta rodar o arquivo sql-roteiros.sql no SQL Editor do Supabase.</p>
+            </div>
+            <div id="rt-conteudo">
+              <div class="card rt-topo">
+                <h3 class="card-titulo pl-pagina-titulo">📜 Roteiros</h3>
+                <p class="cal-todas-resumo">Cole o link de um reel e eu transcrevo. Serve pros seus e pros das outras, com etiqueta pra você separar.</p>
+                <div class="rt-entrada">
+                  <input type="url" id="rt-link" placeholder="Cole aqui: instagram.com/reel/... · tiktok.com/... · youtube.com/..." autocomplete="off">
+                  <select id="rt-de-quem" aria-label="De quem é o vídeo">
+                    <option value="outra">De outra pessoa</option>
+                    <option value="minha">Meu</option>
+                  </select>
+                  <button type="button" id="rt-btn-transcrever" class="cal-btn cal-btn-primario">🎧 Transcrever</button>
+                  <button type="button" id="rt-btn-manual" class="cal-btn">+ Escrever na mão</button>
+                </div>
+                <div id="rt-aviso" class="rt-aviso" hidden></div>
+                <div class="rt-config">
+                  <div class="rt-config-linha">
+                    <span class="rt-config-titulo">🔑 Chave da Supadata</span>
+                    <span id="rt-chave-salva" class="rt-chave-salva" hidden></span>
+                    <button type="button" id="rt-chave-trocar" class="cal-btn" hidden>Trocar chave</button>
+                    <span id="rt-saldo" class="rt-saldo"></span>
+                    <button type="button" id="rt-saldo-atualizar" class="cal-btn" title="Atualizar o saldo de créditos" aria-label="Atualizar o saldo de créditos">↻</button>
+                  </div>
+                  <div id="rt-chave-campo" class="rt-chave-campo">
+                    <input type="password" id="rt-chave-input" placeholder="Cole aqui a API key da Supadata" autocomplete="new-password">
+                    <button type="button" id="rt-chave-salvar" class="cal-btn cal-btn-primario">Salvar chave</button>
+                  </div>
+                  <p id="rt-config-ajuda" class="cal-todas-resumo">Ainda não tem? Crie uma conta grátis em supadata.ai (100 créditos por mês, sem cartão), copie a API key e cole aqui.</p>
+                </div>
+              </div>
+
+              <div class="rt-barra">
+                <input type="search" id="rt-busca" class="rt-busca" placeholder="🔎 Buscar na transcrição, no perfil, no título e nas notas" autocomplete="off">
+                <button type="button" id="rt-btn-estudar" class="cal-btn cal-btn-primario">🧠 Estudar com o Claude</button>
+              </div>
+              <div id="rt-chips" class="rt-chips"></div>
+              <div id="rt-lista" class="rt-lista"></div>
+            </div>
           </div>
 
           <div id="pl-pagina-achados" class="pl-pagina" hidden>
@@ -3378,6 +3423,73 @@
       </div>
     </div>
 
+    <!-- Modal: roteiro da biblioteca (editar, ou escrever na mão) -->
+    <div id="rt-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo" id="rt-m-titulo-janela">✏️ Editar roteiro</span>
+          <button id="rt-m-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <p class="rt-m-aviso" id="rt-m-aviso" hidden></p>
+
+        <div class="cal-form-campo">
+          <label for="rt-m-titulo">Título</label>
+          <input type="text" id="rt-m-titulo" maxlength="160" autocomplete="off" placeholder="Dê um nome pra achar depois">
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="rt-m-de-quem">De quem</label>
+            <select id="rt-m-de-quem">
+              <option value="outra">De outra pessoa</option>
+              <option value="minha">Meu</option>
+            </select>
+          </div>
+          <div class="cal-form-campo">
+            <label for="rt-m-perfil">Perfil</label>
+            <input type="text" id="rt-m-perfil" maxlength="80" autocomplete="off" placeholder="sem o @">
+          </div>
+          <div class="cal-form-campo">
+            <label for="rt-m-postado">Data de postagem</label>
+            <input type="date" id="rt-m-postado">
+          </div>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="rt-m-link">Link</label>
+          <input type="url" id="rt-m-link" autocomplete="off" placeholder="https://...">
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="rt-m-tags">Tags (separadas por vírgula)</label>
+          <input type="text" id="rt-m-tags" autocomplete="off" placeholder="gancho, ugc, bastidores">
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="rt-m-legenda">Legenda do post</label>
+          <textarea id="rt-m-legenda" rows="3"></textarea>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="rt-m-transcricao">Transcrição</label>
+          <textarea id="rt-m-transcricao" class="rt-m-grande"></textarea>
+        </div>
+
+        <div class="cal-form-campo">
+          <label for="rt-m-obs">Minhas notas</label>
+          <textarea id="rt-m-obs" rows="3"></textarea>
+        </div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="rt-m-cancelar" class="cal-btn">Cancelar</button>
+          <button type="button" id="rt-m-salvar" class="cal-btn cal-btn-primario">Salvar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: pacote (proposta da calculadora guardada com nome e valor) -->
     <div id="ugc-modal-pacote-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal">
@@ -3599,6 +3711,16 @@
     let ugcPacoteItensEdit = []; // itens do pacote aberto, editáveis no modal
     let ugcPacoteUrgenciaPct = 0;
     let ugcPacoteSugerido = 0; // último valor calculado a partir dos itens (o campo de valor acompanha enquanto não for mexido na mão)
+    let rtRoteiros = []; // biblioteca de Roteiros (transcrições)
+    let rtOk = true; // as tabelas roteiros e configuracoes existem (sql-roteiros.sql já rodado)
+    let rtChave = ''; // chave da Supadata, lida da tabela configuracoes
+    let rtTrocandoChave = false;
+    let rtLigado = false;
+    let rtFiltro = 'todos';
+    let rtBusca = '';
+    let rtEditandoId = null;
+    let rtAtivoId = null; // roteiro que está sendo transcrito agora
+    let rtTimer = null;
     let ugcSubAbaAtual = 'visao-geral';
     let filtroRoteirosTexto = '';
     let filtroRoteirosStatus = '';
@@ -7057,6 +7179,736 @@
       }
       if (pagina === 'banco-teste') btAbrir();
       if (pagina === 'radar') abrirRadarNoPlanejador();
+      if (pagina === 'roteiros') rtAbrir();
+    }
+
+    // ==========================================================================
+    // Meus conteúdos > Roteiros: transcreve vídeos do Instagram, TikTok e YouTube pelo link e guarda numa
+    // biblioteca (tabela roteiros), com etiqueta pra separar os meus dos de outras creators.
+    // A transcrição vem da Supadata, chamada direto do navegador. A chave dela fica na tabela
+    // configuracoes (nunca no código) e só aparece na tela pelos 4 últimos caracteres.
+    // ==========================================================================
+
+    const RT_SUPADATA = 'https://api.supadata.ai/v1';
+    const RT_CHAVE_CONFIG = 'supadata_api_key';
+    const RT_LIMITE_MS = 6 * 60 * 1000;
+    const RT_FONTES = {
+      instagram: { emoji: '📸', nome: 'Instagram' },
+      tiktok: { emoji: '🎵', nome: 'TikTok' },
+      youtube: { emoji: '▶️', nome: 'YouTube' },
+      manual: { emoji: '✍️', nome: 'Escrito na mão' },
+    };
+
+    function rtNorm(s) {
+      return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    }
+
+    // Limpa o link e descobre a fonte e o perfil (o @ só existe em alguns formatos de link).
+    function rtAnalisarLink(bruto) {
+      let u;
+      try {
+        u = new URL(String(bruto || '').trim());
+      } catch (e) {
+        return null;
+      }
+      if (!/^https?:$/.test(u.protocol)) return null;
+      const host = u.hostname.toLowerCase().replace(/^www\./, '').replace(/^m\./, '');
+      let fonte = null;
+      if (host === 'instagram.com' || host.endsWith('.instagram.com')) fonte = 'instagram';
+      else if (host === 'tiktok.com' || host.endsWith('.tiktok.com')) fonte = 'tiktok';
+      else if (host === 'youtube.com' || host.endsWith('.youtube.com') || host === 'youtu.be') fonte = 'youtube';
+      if (!fonte) return null;
+      [...u.searchParams.keys()].forEach((k) => {
+        if (/^utm_/i.test(k) || k === 'igsh' || k === 'igshid' || k === 'si') u.searchParams.delete(k);
+      });
+      u.hash = '';
+      if (fonte === 'instagram') u.pathname = u.pathname.replace('/reels/', '/reel/');
+      const partes = u.pathname.split('/').filter(Boolean);
+      let perfil = null;
+      if (fonte === 'instagram' && partes.length >= 3 && ['reel', 'p', 'tv'].includes(partes[1])) perfil = partes[0];
+      if (fonte === 'tiktok' && partes[0] && partes[0].startsWith('@')) perfil = partes[0].slice(1);
+      return { url: u.toString(), fonte, perfil };
+    }
+
+    // Endereço do player de cada rede. Só ids conferidos entram no endereço.
+    function rtEmbed(roteiro) {
+      const a = rtAnalisarLink(roteiro.url);
+      if (!a) return null;
+      const u = new URL(a.url);
+      const partes = u.pathname.split('/').filter(Boolean);
+      if (a.fonte === 'instagram') {
+        const m = u.pathname.match(/\/(reel|p|tv)\/([A-Za-z0-9_-]+)/);
+        return m ? `https://www.instagram.com/${m[1]}/${m[2]}/embed` : null;
+      }
+      if (a.fonte === 'youtube') {
+        const host = u.hostname.replace(/^www\./, '');
+        const id = host === 'youtu.be' ? partes[0] : ['shorts', 'embed', 'live'].includes(partes[0]) ? partes[1] : u.searchParams.get('v');
+        return id && /^[A-Za-z0-9_-]{6,20}$/.test(id) ? `https://www.youtube.com/embed/${id}` : null;
+      }
+      if (a.fonte === 'tiktok') {
+        const m = u.pathname.match(/\/video\/(\d+)/);
+        return m ? `https://www.tiktok.com/embed/v2/${m[1]}` : null;
+      }
+      return null;
+    }
+
+    // ---- chamada à Supadata ----
+
+    function rtErro(tipo, mensagem) {
+      const e = new Error(mensagem);
+      e.tipo = tipo;
+      return e;
+    }
+
+    function rtEsperar(ms) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    async function rtRequisitar(caminho, sinal) {
+      let r;
+      try {
+        r = await fetch(RT_SUPADATA + caminho, { headers: { 'x-api-key': rtChave }, signal: sinal });
+      } catch (err) {
+        if (err && err.name === 'AbortError') throw rtErro('tempo', 'Demorou mais de 6 minutos e eu parei de esperar. Tenta de novo mais tarde.');
+        throw rtErro('rede', 'Não consegui falar com o serviço de transcrição. Confere a internet e tenta de novo.');
+      }
+      let corpo = null;
+      try {
+        corpo = await r.json();
+      } catch (e) {
+        corpo = null;
+      }
+      return { status: r.status, corpo };
+    }
+
+    // O erro limit-exceeded vem com a mesma mensagem pros dois casos: só o campo details separa créditos de ritmo.
+    function rtInterpretarErro(status, corpo) {
+      const obj = corpo && typeof corpo.error === 'object' && corpo.error ? corpo.error : corpo || {};
+      const codigo = String((obj && (typeof obj.error === 'string' ? obj.error : obj.code)) || (corpo && typeof corpo.error === 'string' ? corpo.error : '') || '');
+      const junto = `${codigo} ${obj.details || ''} ${obj.message || ''}`.toLowerCase();
+      if (codigo === 'limit-exceeded' || status === 429) {
+        if (junto.includes('plan usage')) {
+          return rtErro('creditos', 'Acabaram os créditos do mês na Supadata. Eles voltam no começo do próximo mês, ou você pode trocar de plano no site deles.');
+        }
+        return rtErro('ritmo', 'Muitas transcrições seguidas. Espera 1 minuto e tenta de novo.');
+      }
+      if (status === 401 || status === 403 || /unauthorized|forbidden|api.?key/.test(junto)) {
+        return rtErro('chave', 'A chave da Supadata não foi aceita. Confere se colou inteira, ou cola uma nova.');
+      }
+      if (status === 404 || /not-found|video-not-found/.test(junto)) {
+        return rtErro('video', 'Não encontrei esse vídeo. Ele pode ser privado, ter sido apagado ou o link está incompleto.');
+      }
+      return rtErro('outro', 'Não consegui transcrever esse vídeo agora. Tenta de novo daqui a pouco.');
+    }
+
+    function rtSemFala(status, corpo) {
+      if (status === 206) return true;
+      const e = corpo && corpo.error;
+      return e === 'transcript-unavailable' || (e && typeof e === 'object' && e.error === 'transcript-unavailable');
+    }
+
+    // Aceita o conteúdo como texto ou como lista de trechos {text, offset, duration}.
+    function rtExtrairConteudo(corpo) {
+      const c = corpo ? corpo.content : null;
+      let texto = '';
+      let segmentos = null;
+      if (typeof c === 'string') texto = c;
+      else if (Array.isArray(c)) {
+        segmentos = c;
+        texto = c.map((s) => (s && s.text ? s.text : '')).join(' ');
+      }
+      texto = texto.replace(/[ \t]+/g, ' ').trim();
+      if (corpo && corpo.lang === 'none') texto = '';
+      return { texto, segmentos };
+    }
+
+    async function rtTranscreverUrl(url) {
+      const inicio = Date.now();
+      const ctrl = new AbortController();
+      const parar = setTimeout(() => ctrl.abort(), RT_LIMITE_MS);
+      try {
+        const q = new URLSearchParams({ url, mode: 'auto', text: 'true', lang: 'pt' });
+        let { status, corpo } = await rtRequisitar('/transcript?' + q.toString(), ctrl.signal);
+        if (status === 202 && corpo && corpo.jobId) {
+          const jobId = corpo.jobId;
+          for (;;) {
+            if (Date.now() - inicio > RT_LIMITE_MS) throw rtErro('tempo', 'Demorou mais de 6 minutos e eu parei de esperar. Tenta de novo mais tarde.');
+            await rtEsperar(5000);
+            const r = await rtRequisitar('/transcript/' + encodeURIComponent(jobId), ctrl.signal);
+            const st = r.corpo && r.corpo.status;
+            if (st === 'completed') {
+              status = 200;
+              corpo = r.corpo;
+              break;
+            }
+            if (st === 'failed') {
+              if (rtSemFala(0, { error: r.corpo.error })) return { texto: '', segmentos: null };
+              throw rtInterpretarErro(r.status, r.corpo);
+            }
+            if (r.status >= 400) throw rtInterpretarErro(r.status, r.corpo);
+          }
+        } else if (rtSemFala(status, corpo)) {
+          return { texto: '', segmentos: null };
+        } else if (status >= 400) {
+          throw rtInterpretarErro(status, corpo);
+        }
+        return rtExtrairConteudo(corpo);
+      } finally {
+        clearTimeout(parar);
+      }
+    }
+
+    // ---- avisos, relógio e saldo ----
+
+    function rtAviso(tipo, texto, acoes) {
+      const el = document.getElementById('rt-aviso');
+      el.className = 'rt-aviso rt-aviso-' + tipo;
+      el.hidden = false;
+      el.innerHTML = '';
+      const p = document.createElement('span');
+      p.textContent = texto;
+      el.appendChild(p);
+      (acoes || []).forEach((a) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'cal-btn';
+        b.textContent = a.texto;
+        b.addEventListener('click', a.aoClicar);
+        el.appendChild(b);
+      });
+    }
+
+    function rtEscondeAviso() {
+      document.getElementById('rt-aviso').hidden = true;
+    }
+
+    function rtTempoCurto(ms) {
+      const s = Math.floor(ms / 1000);
+      return s < 60 ? `${s}s` : `${Math.floor(s / 60)}min ${String(s % 60).padStart(2, '0')}s`;
+    }
+
+    function rtIniciarRelogio() {
+      const inicio = Date.now();
+      const desenhar = () => rtAviso('info', `⏳ Ouvindo o vídeo… ${rtTempoCurto(Date.now() - inicio)}. Costuma levar de 3 a 4 minutos, pode deixar a aba aberta.`);
+      desenhar();
+      rtTimer = setInterval(desenhar, 1000);
+    }
+
+    function rtPararRelogio() {
+      if (rtTimer) clearInterval(rtTimer);
+      rtTimer = null;
+    }
+
+    async function rtAtualizarSaldo() {
+      const el = document.getElementById('rt-saldo');
+      if (!rtChave) {
+        el.textContent = '';
+        return;
+      }
+      try {
+        const r = await rtRequisitar('/me');
+        if (r.status === 200 && r.corpo) {
+          const usados = Number(r.corpo.usedCredits) || 0;
+          const maximo = Number(r.corpo.maxCredits) || 0;
+          el.textContent = `💳 ${usados} de ${maximo} créditos usados este mês`;
+        } else if (r.status === 401 || r.status === 403) {
+          el.textContent = '⚠️ A Supadata não aceitou essa chave';
+        } else {
+          el.textContent = '';
+        }
+      } catch (err) {
+        el.textContent = '';
+      }
+    }
+
+    // ---- dados ----
+
+    async function rtCarregar() {
+      try {
+        const [lista, config] = await Promise.all([
+          Auth.sb.from('roteiros').select('*').order('created_at', { ascending: false }),
+          Auth.sb.from('configuracoes').select('valor').eq('chave', RT_CHAVE_CONFIG).maybeSingle(),
+        ]);
+        if (lista.error) throw lista.error;
+        if (config.error) throw config.error;
+        rtRoteiros = lista.data || [];
+        rtChave = config.data && config.data.valor ? String(config.data.valor) : '';
+        rtOk = true;
+      } catch (err) {
+        console.warn('Roteiros indisponível:', err);
+        rtRoteiros = [];
+        rtChave = '';
+        rtOk = false;
+      }
+    }
+
+    async function rtAtualizar(id, campos) {
+      const { data, error } = await Auth.sb
+        .from('roteiros')
+        .update({ ...campos, updated_at: new Date().toISOString() })
+        .eq('id', id)
+        .select();
+      if (error) throw error;
+      const i = rtRoteiros.findIndex((r) => r.id === id);
+      if (i >= 0 && data && data[0]) rtRoteiros[i] = data[0];
+      return i >= 0 ? rtRoteiros[i] : null;
+    }
+
+    // ---- chave da Supadata ----
+
+    function rtRenderizarConfig() {
+      const salva = document.getElementById('rt-chave-salva');
+      const campo = document.getElementById('rt-chave-campo');
+      if (rtChave) {
+        salva.hidden = false;
+        salva.textContent = `🔑 Chave salva: ••••${rtChave.slice(-4)}`;
+        document.getElementById('rt-chave-trocar').hidden = false;
+        campo.hidden = !rtTrocandoChave;
+      } else {
+        salva.hidden = true;
+        document.getElementById('rt-chave-trocar').hidden = true;
+        campo.hidden = false;
+      }
+      document.getElementById('rt-config-ajuda').hidden = !!rtChave;
+    }
+
+    async function rtSalvarChave() {
+      const entrada = document.getElementById('rt-chave-input');
+      const valor = entrada.value.trim();
+      if (!valor) {
+        rtAviso('erro', 'Cole a chave da Supadata no campo antes de salvar.');
+        return;
+      }
+      const btn = document.getElementById('rt-chave-salvar');
+      btn.disabled = true;
+      try {
+        const { error } = await Auth.sb
+          .from('configuracoes')
+          .upsert({ chave: RT_CHAVE_CONFIG, valor, updated_at: new Date().toISOString() }, { onConflict: 'chave' });
+        if (error) throw error;
+        rtChave = valor;
+        rtTrocandoChave = false;
+        entrada.value = '';
+        rtRenderizarConfig();
+        rtAviso('ok', '✅ Chave salva. Agora é só colar um link e transcrever.');
+        rtAtualizarSaldo();
+      } catch (err) {
+        console.error('Erro ao salvar a chave da Supadata:', err);
+        rtAviso('erro', 'Não consegui salvar a chave. Tenta de novo.');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // ---- transcrever ----
+
+    function rtAvisoSemChave() {
+      rtTrocandoChave = true;
+      rtRenderizarConfig();
+      rtAviso(
+        'erro',
+        'Falta a chave da Supadata. Pra conseguir: crie uma conta grátis em supadata.ai (100 créditos por mês, sem cartão), copie a API key e cole no campo de chave aqui embaixo.'
+      );
+      document.getElementById('rt-chave-input').focus();
+    }
+
+    async function rtTranscrever() {
+      if (rtAtivoId) return;
+      if (!rtChave) {
+        rtAvisoSemChave();
+        return;
+      }
+      const a = rtAnalisarLink(document.getElementById('rt-link').value);
+      if (!a) {
+        rtAviso('erro', 'Esse link não parece ser de um vídeo do Instagram, TikTok ou YouTube. Confere se copiou o link inteiro, começando com https://.');
+        return;
+      }
+      const repetido = rtRoteiros.find((r) => r.url === a.url);
+      if (repetido) {
+        const de_novo = await confirmarAcao('Esse link já está na biblioteca. Quer transcrever de novo mesmo assim?', { textoConfirmar: 'Transcrever de novo' });
+        if (!de_novo) return;
+      }
+      try {
+        const { data, error } = await Auth.sb
+          .from('roteiros')
+          .insert({ fonte: a.fonte, url: a.url, perfil: a.perfil, de_quem: document.getElementById('rt-de-quem').value, status: 'processando' })
+          .select();
+        if (error) throw error;
+        rtRoteiros.unshift(data[0]);
+        document.getElementById('rt-link').value = '';
+        rtExecutar(data[0]);
+      } catch (err) {
+        console.error('Erro ao criar o roteiro:', err);
+        rtAviso('erro', 'Não consegui guardar esse link. Tenta de novo.');
+      }
+    }
+
+    async function rtExecutar(roteiro) {
+      if (rtAtivoId) return;
+      if (!rtChave) {
+        rtAvisoSemChave();
+        return;
+      }
+      rtAtivoId = roteiro.id;
+      document.getElementById('rt-btn-transcrever').disabled = true;
+      rtRenderizarLista();
+      rtIniciarRelogio();
+      try {
+        if (roteiro.status !== 'processando') await rtAtualizar(roteiro.id, { status: 'processando', erro: null });
+        const res = await rtTranscreverUrl(roteiro.url);
+        rtPararRelogio();
+        if (res.texto) {
+          const atualizado = await rtAtualizar(roteiro.id, { transcricao: res.texto, segmentos: res.segmentos, status: 'pronto', erro: null });
+          rtAviso('ok', '✅ Pronto. Revisa, dá um nome e salva.');
+          rtAbrirModal(atualizado, '✅ Pronto. Revisa, dá um nome e salva.');
+        } else {
+          const msg = 'Não achei fala nesse vídeo. Costuma ser reel só com música ou só com texto na tela.';
+          await rtAtualizar(roteiro.id, { status: 'falhou', erro: msg });
+          rtAviso('erro', msg, [{ texto: 'Guardar assim mesmo', aoClicar: () => rtGuardarAssimMesmo(roteiro.id) }]);
+        }
+      } catch (err) {
+        rtPararRelogio();
+        const msg = err && err.tipo ? err.message : 'Algo deu errado e eu não consegui transcrever. Tenta de novo.';
+        console.error('Erro na transcrição:', err);
+        try {
+          await rtAtualizar(roteiro.id, { status: 'falhou', erro: msg });
+        } catch (e2) {
+          console.error('Erro ao registrar a falha:', e2);
+        }
+        rtAviso('erro', msg);
+      } finally {
+        rtPararRelogio();
+        rtAtivoId = null;
+        document.getElementById('rt-btn-transcrever').disabled = false;
+        rtRenderizarLista();
+        rtAtualizarSaldo();
+      }
+    }
+
+    async function rtGuardarAssimMesmo(id) {
+      try {
+        const atualizado = await rtAtualizar(id, { status: 'pronto', erro: null });
+        rtRenderizarLista();
+        rtAbrirModal(atualizado, 'Link guardado. Escreve o texto na mão, dá um nome e salva.');
+        rtEscondeAviso();
+      } catch (err) {
+        console.error('Erro ao guardar assim mesmo:', err);
+        rtAviso('erro', 'Não consegui guardar. Tenta de novo.');
+      }
+    }
+
+    // ---- biblioteca ----
+
+    function rtTodasAsTags() {
+      const mapa = new Map();
+      rtRoteiros.forEach((r) => (r.tags || []).forEach((t) => mapa.set(rtNorm(t), t)));
+      return [...mapa.values()].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+    }
+
+    function rtRenderizarChips() {
+      const chips = [['todos', 'Todos'], ['minha', 'Meus'], ['outra', 'De outras'], ...rtTodasAsTags().map((t) => ['tag:' + t, '#' + t])];
+      document.getElementById('rt-chips').innerHTML = chips
+        .map(([chave, rotulo]) => `<button type="button" class="rt-chip${rtFiltro === chave ? ' ativo' : ''}" data-filtro="${escapeHtml(chave)}">${escapeHtml(rotulo)}</button>`)
+        .join('');
+    }
+
+    function rtFiltrados() {
+      const busca = rtNorm(rtBusca).trim();
+      return rtRoteiros.filter((r) => {
+        if (rtFiltro === 'minha' || rtFiltro === 'outra') {
+          if (r.de_quem !== rtFiltro) return false;
+        } else if (rtFiltro.startsWith('tag:')) {
+          const t = rtNorm(rtFiltro.slice(4));
+          if (!(r.tags || []).some((x) => rtNorm(x) === t)) return false;
+        }
+        if (!busca) return true;
+        const palheiro = rtNorm([r.transcricao, r.perfil, r.titulo, r.obs, r.legenda, (r.tags || []).join(' ')].join(' '));
+        return palheiro.includes(busca);
+      });
+    }
+
+    function rtDataBonita(r) {
+      const loc = localeAtual();
+      if (r.postado_em) {
+        return 'Postado em ' + new Date(r.postado_em + 'T00:00:00').toLocaleDateString(loc, { day: '2-digit', month: 'short', year: 'numeric' });
+      }
+      return 'Guardado em ' + new Date(r.created_at).toLocaleDateString(loc, { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function rtHtmlCard(r) {
+      const fonte = RT_FONTES[r.fonte] || RT_FONTES.manual;
+      const embed = rtEmbed(r);
+      const ativo = rtAtivoId === r.id;
+      const processando = r.status === 'processando';
+      const falhou = r.status === 'falhou';
+      let midia;
+      if (embed) midia = `<button type="button" class="rt-ver" data-a="ver">▶ ver vídeo</button>`;
+      else if (r.url) midia = `<a class="rt-ver" href="${escapeHtml(r.url)}" target="_blank" rel="noopener noreferrer">↗ abrir link</a>`;
+      else midia = '';
+      const tags = (r.tags || []).map((t) => `<span class="rt-tag">#${escapeHtml(t)}</span>`).join('');
+      let corpoTexto;
+      if (processando) {
+        corpoTexto = `<p class="rt-estado"><span class="rt-relogio" aria-hidden="true">⏳</span> ${ativo ? 'Transcrevendo agora, pode deixar a aba aberta.' : 'Ficou esperando a transcrição. Se a aba foi fechada, tenta de novo.'}</p>`;
+      } else if (falhou) {
+        corpoTexto = `<p class="rt-estado rt-estado-erro">⚠️ ${escapeHtml(r.erro || 'Não consegui transcrever esse vídeo.')}</p>`;
+      } else {
+        corpoTexto = r.transcricao ? `<p class="rt-trecho">${escapeHtml(r.transcricao)}</p>` : `<p class="rt-trecho rt-trecho-vazio">Sem transcrição ainda.</p>`;
+      }
+      const botoes = [];
+      if (processando && !ativo && r.url) botoes.push('<button type="button" class="cal-btn" data-a="retentar">🔄 Tentar de novo</button>');
+      if (falhou) {
+        botoes.push('<button type="button" class="cal-btn" data-a="editar">📂 Abrir mesmo assim</button>');
+        if (r.url) botoes.push('<button type="button" class="cal-btn" data-a="retentar">🔄 Tentar de novo</button>');
+      } else if (!processando) {
+        botoes.push('<button type="button" class="cal-btn" data-a="copiar">📋 Copiar transcrição</button>');
+        botoes.push('<button type="button" class="cal-btn" data-a="editar">✏️ Editar</button>');
+      }
+      botoes.push('<button type="button" class="cal-btn rt-apagar" data-a="apagar">🗑️ Apagar</button>');
+      return `<article class="rt-card" data-id="${escapeHtml(r.id)}">
+        <div class="rt-midia"><span class="rt-midia-emoji" aria-hidden="true">${fonte.emoji}</span>${midia}</div>
+        <div class="rt-corpo">
+          <div class="rt-etiquetas">
+            <span class="rt-etq ${r.de_quem === 'minha' ? 'rt-etq-minha' : 'rt-etq-outra'}">${r.de_quem === 'minha' ? 'Meu' : 'De outra'}</span>
+            <span class="rt-fonte">${fonte.emoji} ${escapeHtml(fonte.nome)}</span>
+          </div>
+          <h4 class="rt-titulo">${escapeHtml(r.titulo || 'Sem título')}</h4>
+          ${r.perfil ? `<p class="rt-perfil">@${escapeHtml(String(r.perfil).replace(/^@/, ''))}</p>` : ''}
+          ${tags ? `<div class="rt-tags">${tags}</div>` : ''}
+          <p class="rt-data">${escapeHtml(rtDataBonita(r))}</p>
+          ${corpoTexto}
+          <div class="rt-acoes">${botoes.join('')}</div>
+        </div>
+      </article>`;
+    }
+
+    function rtRenderizarLista() {
+      const lista = document.getElementById('rt-lista');
+      rtRenderizarChips();
+      if (!rtOk) {
+        lista.innerHTML = '';
+        return;
+      }
+      const itens = rtFiltrados();
+      if (rtRoteiros.length === 0) {
+        lista.innerHTML = '<p class="texto-vazio">Nenhum roteiro ainda. Cole um link lá em cima pra começar, ou escreva um na mão.</p>';
+        return;
+      }
+      if (itens.length === 0) {
+        lista.innerHTML = '<p class="texto-vazio">Nada encontrado com esse filtro.</p>';
+        return;
+      }
+      lista.innerHTML = itens.map(rtHtmlCard).join('');
+    }
+
+    async function rtAcaoDoCard(botao) {
+      const card = botao.closest('.rt-card');
+      const roteiro = card && rtRoteiros.find((r) => r.id === card.dataset.id);
+      if (!roteiro) return;
+      const acao = botao.dataset.a;
+      if (acao === 'ver') {
+        const embed = rtEmbed(roteiro);
+        if (!embed) return;
+        const midia = card.querySelector('.rt-midia');
+        card.classList.add('rt-tocando');
+        const quadro = document.createElement('iframe');
+        quadro.className = 'rt-player';
+        quadro.src = embed;
+        quadro.loading = 'lazy';
+        quadro.allowFullscreen = true;
+        quadro.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+        quadro.title = roteiro.titulo || 'Vídeo';
+        midia.innerHTML = '';
+        midia.appendChild(quadro);
+      } else if (acao === 'copiar') {
+        try {
+          await navigator.clipboard.writeText(roteiro.transcricao || '');
+          const antes = botao.textContent;
+          botao.textContent = 'copiado ✓';
+          setTimeout(() => (botao.textContent = antes), 1800);
+        } catch (err) {
+          console.error('Erro ao copiar a transcrição:', err);
+          rtAviso('erro', 'Não consegui copiar. Abre o roteiro em Editar e copia de lá.');
+        }
+      } else if (acao === 'editar') {
+        rtAbrirModal(roteiro);
+      } else if (acao === 'retentar') {
+        rtExecutar(roteiro);
+      } else if (acao === 'apagar') {
+        if (!(await confirmarAcao('Apagar este roteiro da biblioteca?', { textoConfirmar: 'Apagar', perigo: true }))) return;
+        try {
+          const { error } = await Auth.sb.from('roteiros').delete().eq('id', roteiro.id);
+          if (error) throw error;
+          rtRoteiros = rtRoteiros.filter((r) => r.id !== roteiro.id);
+          rtRenderizarLista();
+        } catch (err) {
+          console.error('Erro ao apagar o roteiro:', err);
+          rtAviso('erro', 'Não consegui apagar. Tenta de novo.');
+        }
+      }
+    }
+
+    // ---- editar e escrever na mão ----
+
+    function rtAbrirModal(roteiro, aviso) {
+      rtEditandoId = roteiro ? roteiro.id : null;
+      document.getElementById('rt-m-titulo-janela').textContent = roteiro ? '✏️ Editar roteiro' : '✍️ Novo roteiro na mão';
+      const aviso_el = document.getElementById('rt-m-aviso');
+      aviso_el.hidden = !aviso;
+      aviso_el.textContent = aviso || '';
+      const r = roteiro || {};
+      document.getElementById('rt-m-titulo').value = r.titulo || '';
+      document.getElementById('rt-m-de-quem').value = r.de_quem || document.getElementById('rt-de-quem').value || 'outra';
+      document.getElementById('rt-m-perfil').value = r.perfil || '';
+      document.getElementById('rt-m-link').value = r.url || '';
+      document.getElementById('rt-m-postado').value = r.postado_em || '';
+      document.getElementById('rt-m-tags').value = (r.tags || []).join(', ');
+      document.getElementById('rt-m-legenda').value = r.legenda || '';
+      document.getElementById('rt-m-transcricao').value = r.transcricao || '';
+      document.getElementById('rt-m-obs').value = r.obs || '';
+      document.getElementById('rt-modal-overlay').hidden = false;
+      document.getElementById('rt-m-titulo').focus();
+    }
+
+    function rtFecharModal() {
+      rtEditandoId = null;
+      document.getElementById('rt-modal-overlay').hidden = true;
+    }
+
+    function rtLerTags(texto) {
+      const vistos = new Set();
+      const saida = [];
+      String(texto || '')
+        .split(/[,;\n]/)
+        .map((t) => t.trim().replace(/^#+/, '').trim())
+        .filter(Boolean)
+        .forEach((t) => {
+          const k = rtNorm(t);
+          if (!vistos.has(k)) {
+            vistos.add(k);
+            saida.push(t);
+          }
+        });
+      return saida;
+    }
+
+    async function rtSalvarModal() {
+      const texto = (id) => document.getElementById(id).value.trim();
+      const linkBruto = texto('rt-m-link');
+      const analise = linkBruto ? rtAnalisarLink(linkBruto) : null;
+      const linha = {
+        titulo: texto('rt-m-titulo') || null,
+        de_quem: document.getElementById('rt-m-de-quem').value,
+        perfil: texto('rt-m-perfil').replace(/^@/, '') || (analise && analise.perfil) || null,
+        url: analise ? analise.url : linkBruto || null,
+        fonte: analise ? analise.fonte : linkBruto ? 'manual' : 'manual',
+        postado_em: document.getElementById('rt-m-postado').value || null,
+        tags: rtLerTags(document.getElementById('rt-m-tags').value),
+        legenda: texto('rt-m-legenda') || null,
+        transcricao: texto('rt-m-transcricao') || null,
+        obs: texto('rt-m-obs') || null,
+        status: 'pronto',
+        erro: null,
+      };
+      const btn = document.getElementById('rt-m-salvar');
+      btn.disabled = true;
+      try {
+        if (rtEditandoId) {
+          await rtAtualizar(rtEditandoId, linha);
+        } else {
+          const { data, error } = await Auth.sb.from('roteiros').insert(linha).select();
+          if (error) throw error;
+          rtRoteiros.unshift(data[0]);
+        }
+        rtFecharModal();
+        rtEscondeAviso();
+        rtRenderizarLista();
+      } catch (err) {
+        console.error('Erro ao salvar o roteiro:', err);
+        document.getElementById('rt-m-aviso').hidden = false;
+        document.getElementById('rt-m-aviso').textContent = 'Não consegui salvar. Tenta de novo.';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // ---- estudar com o Claude ----
+
+    async function rtEstudar() {
+      const outras = rtRoteiros.filter((r) => r.de_quem === 'outra' && r.transcricao && r.transcricao.trim()).slice(0, 10);
+      if (outras.length === 0) {
+        rtAviso('erro', 'Ainda não tem nenhum roteiro de outra pessoa com transcrição. Transcreve alguns antes de estudar.');
+        return;
+      }
+      const blocos = outras.map((r, i) => `--- ${i + 1}. ${r.perfil ? '@' + String(r.perfil).replace(/^@/, '') : 'perfil não informado'}${r.titulo ? ' | ' + r.titulo : ''} ---\n${r.transcricao.trim()}`);
+      const prompt = [
+        `Quero estudar o que está funcionando no meu nicho. Abaixo estão as transcrições dos ${outras.length} reels mais recentes de outras creators que eu guardei. Analisa tudo e me entrega:`,
+        '',
+        '1. Assuntos em alta: sobre o que essas creators estão falando e o que se repete entre elas.',
+        '2. Expressões que estão prendendo: frases, jeitos de falar e palavras que aparecem e parecem segurar a atenção.',
+        '3. Padrões de gancho: os tipos de abertura que aparecem, cada um com um exemplo real tirado das transcrições abaixo.',
+        '4. 5 roteiros novos no MEU assunto, reaproveitando a estrutura dos que funcionam (não o conteúdo). Com a minha voz, natural, sem parecer robô.',
+        '',
+        'Meu assunto: UGC e criação de conteúdo para marcas (ajusta se eu tiver mudado o foco).',
+        '',
+        'TRANSCRIÇÕES',
+        '',
+        blocos.join('\n\n'),
+      ].join('\n');
+      try {
+        await navigator.clipboard.writeText(prompt);
+        rtAviso('ok', `🧠 Prompt copiado com ${outras.length} ${outras.length === 1 ? 'roteiro' : 'roteiros'} de outras creators. É só colar no Claude.`);
+      } catch (err) {
+        console.error('Erro ao copiar o prompt:', err);
+        rtAviso('erro', 'Não consegui copiar o prompt. Tenta de novo.');
+      }
+    }
+
+    // ---- abrir a página ----
+
+    function rtLigarEventos() {
+      if (rtLigado) return;
+      rtLigado = true;
+      document.getElementById('rt-btn-transcrever').addEventListener('click', rtTranscrever);
+      document.getElementById('rt-link').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') rtTranscrever();
+      });
+      document.getElementById('rt-btn-manual').addEventListener('click', () => rtAbrirModal(null));
+      document.getElementById('rt-chave-salvar').addEventListener('click', rtSalvarChave);
+      document.getElementById('rt-chave-trocar').addEventListener('click', () => {
+        rtTrocandoChave = true;
+        rtRenderizarConfig();
+        document.getElementById('rt-chave-input').focus();
+      });
+      document.getElementById('rt-saldo-atualizar').addEventListener('click', rtAtualizarSaldo);
+      document.getElementById('rt-busca').addEventListener('input', (e) => {
+        rtBusca = e.target.value;
+        rtRenderizarLista();
+      });
+      document.getElementById('rt-chips').addEventListener('click', (e) => {
+        const b = e.target.closest('.rt-chip');
+        if (!b) return;
+        rtFiltro = b.dataset.filtro;
+        rtRenderizarLista();
+      });
+      document.getElementById('rt-lista').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-a]');
+        if (b) rtAcaoDoCard(b);
+      });
+      document.getElementById('rt-btn-estudar').addEventListener('click', rtEstudar);
+      document.getElementById('rt-m-salvar').addEventListener('click', rtSalvarModal);
+      document.getElementById('rt-m-cancelar').addEventListener('click', rtFecharModal);
+      document.getElementById('rt-m-fechar').addEventListener('click', rtFecharModal);
+    }
+
+    async function rtAbrir() {
+      rtLigarEventos();
+      document.getElementById('rt-lista').innerHTML = '<p class="texto-vazio">Carregando...</p>';
+      await rtCarregar();
+      document.getElementById('rt-aviso-tabelas').hidden = rtOk;
+      document.getElementById('rt-conteudo').hidden = !rtOk;
+      rtRenderizarConfig();
+      rtRenderizarLista();
+      if (rtOk && rtChave) rtAtualizarSaldo();
     }
 
     // O Radar de Notícias agora é uma página do Meus conteúdos (antes era uma aba).

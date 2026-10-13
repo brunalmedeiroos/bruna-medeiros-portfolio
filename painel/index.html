@@ -7899,8 +7899,7 @@
         gancho: v('rt-m-gancho'),
         desenvolvimento: v('rt-m-desenvolvimento'),
         cta: v('rt-m-cta'),
-        expressoes: document.getElementById('rt-m-expressoes').value.split(/[;
-]/).map((x) => x.trim()).filter(Boolean),
+        expressoes: document.getElementById('rt-m-expressoes').value.split(/[;\n]/).map((x) => x.trim()).filter(Boolean),
         por_que_prende: v('rt-m-porque'),
       };
       const vazia = !e.gancho_tipo && !e.gancho && !e.desenvolvimento && !e.cta && !e.expressoes.length && !e.por_que_prende;
@@ -8262,8 +8261,7 @@
         gancho: campos.gancho !== undefined ? campos.gancho : atual.gancho,
         desenvolvimento: campos.desenvolvimento !== undefined ? campos.desenvolvimento : atual.desenvolvimento,
         cta: campos.cta !== undefined ? campos.cta : atual.cta,
-        expressoes: campos.expressoes !== undefined ? campos.expressoes.split(/[;
-]/).map((x) => x.trim()).filter(Boolean) : atual.expressoes,
+        expressoes: campos.expressoes !== undefined ? campos.expressoes.split(/[;\n]/).map((x) => x.trim()).filter(Boolean) : atual.expressoes,
         por_que_prende: campos.por_que_prende !== undefined ? campos.por_que_prende : atual.por_que_prende,
       });
       if (campos.tags) {

@@ -11,7 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261026a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261026b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -8067,7 +8067,10 @@
       const r = await pedir(`${RT_SUPADATA}/metadata?url=${encodeURIComponent(url)}`, { headers: { 'x-api-key': rtChave } });
       if (!r.ok) return null;
       const dados = await r.json();
-      const imagem = dados && dados.media && dados.media.thumbnailUrl;
+      // vídeo: thumbnailUrl. Carrossel: lista de imagens em items (a capa é a primeira). Foto: a própria url.
+      const midia = (dados && dados.media) || {};
+      const primeiro = Array.isArray(midia.items) && midia.items[0] ? midia.items[0] : null;
+      const imagem = midia.thumbnailUrl || (primeiro && (primeiro.thumbnailUrl || primeiro.url)) || (midia.type === 'image' ? midia.url : '');
       if (!imagem) return null;
       const arquivo = await (await pedir(imagem, {})).blob();
       const bitmap = await createImageBitmap(arquivo);

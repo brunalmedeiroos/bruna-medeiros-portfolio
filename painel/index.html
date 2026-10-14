@@ -6,12 +6,19 @@
 <meta name="robots" content="noindex">
 <title>Bru | Painel</title>
 <link rel="icon" type="image/svg+xml" href="../painel-admin/favicon.svg">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icone-180.png">
+<meta name="theme-color" content="#7DB7CE">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Painel">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261028a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261029a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -205,6 +212,30 @@
             <p class="texto-vazio" id="dash-atencao-vazio" hidden data-i18n="dash_atencao_tudo_em_dia">✨ Tudo em dia por aqui!</p>
             <button type="button" id="dash-atencao-ver-tudo" class="dash-atencao-ver-tudo" hidden></button>
           </div>
+          </div>
+          <!-- Avisos no celular: notificações push dos itens marcados com o 🔔 (avisos-push.sql) -->
+          <div class="card aviso-card" id="dash-card-avisos">
+            <h3 class="dash-hoje-titulo">🔔 Avisos no celular</h3>
+            <p class="aviso-status" id="aviso-push-status">Conferindo...</p>
+            <div class="aviso-botoes">
+              <button type="button" id="aviso-btn-ativar" class="cal-btn cal-btn-primario">Ativar notificações</button>
+              <button type="button" id="aviso-btn-testar" class="cal-btn" disabled>Testar notificação</button>
+              <button type="button" id="aviso-btn-desativar" class="cal-btn aviso-btn-discreto" hidden>Desativar neste aparelho</button>
+            </div>
+            <p class="aviso-msg" id="aviso-msg" hidden></p>
+            <details class="aviso-ajuda" id="aviso-ajuda-ios">
+              <summary>📱 Como instalar no iPhone</summary>
+              <ol>
+                <li>Abra o painel no <strong>Safari</strong> do iPhone.</li>
+                <li>Toque em <strong>Compartilhar</strong> (o quadrado com a seta pra cima), depois em <strong>Adicionar à Tela de Início</strong> e <strong>Adicionar</strong>.</li>
+                <li>Abra o painel pelo <strong>ícone da tela inicial</strong> (não pelo Safari), entre com seu e-mail e senha de novo, toque em <strong>Ativar notificações</strong> e aceite.</li>
+                <li>Toque em <strong>Testar notificação</strong>. Precisa do iOS 16.4 ou mais novo.</li>
+              </ol>
+            </details>
+            <h4 class="aviso-subtitulo">Próximos avisos</h4>
+            <div id="aviso-lista" class="aviso-lista"></div>
+            <p class="texto-vazio" id="aviso-vazio" hidden>Nenhum aviso agendado. Toque no 🔔 de qualquer item do Dashboard pra marcar como importante.</p>
+            <p class="dash-aviso" id="aviso-aviso-tabelas" hidden>Falta rodar o arquivo avisos-push.sql no Supabase pra usar os avisos no celular.</p>
           </div>
         </section>
 
@@ -2220,6 +2251,47 @@
         <div class="cal-form-acoes">
           <button type="button" id="pl-modal-achado-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
           <button type="button" id="pl-modal-achado-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: marcar um item do Dashboard como "Importante – notificar" -->
+    <div id="aviso-modal-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal aviso-modal">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo">🔔 Importante – notificar</span>
+          <button id="aviso-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <p class="aviso-modal-item" id="aviso-modal-item"></p>
+        <p class="dash-aviso" id="aviso-modal-sem-tabelas" hidden>Falta rodar o arquivo avisos-push.sql no Supabase pra salvar avisos.</p>
+
+        <div class="aviso-modal-quando">
+          <div class="cal-form-campo">
+            <label for="aviso-modal-data">Dia</label>
+            <input type="date" id="aviso-modal-data">
+          </div>
+          <div class="cal-form-campo">
+            <label for="aviso-modal-hora">Horário</label>
+            <input type="time" id="aviso-modal-hora">
+          </div>
+        </div>
+
+        <div class="aviso-modal-atalhos">
+          <button type="button" class="cal-btn" data-min="5">Daqui 5 min</button>
+          <button type="button" class="cal-btn" data-min="60">Daqui 1 h</button>
+          <button type="button" class="cal-btn" id="aviso-atalho-hoje" data-dias="0" data-hora="18">Hoje 18h</button>
+          <button type="button" class="cal-btn" data-dias="1" data-hora="9">Amanhã 9h</button>
+        </div>
+
+        <p class="aviso-msg aviso-msg-erro" id="aviso-modal-erro" hidden></p>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="aviso-modal-excluir" class="cal-btn pl-btn-excluir" hidden>Excluir</button>
+          <button type="button" id="aviso-modal-desligar" class="cal-btn" hidden>Desligar</button>
+          <button type="button" id="aviso-modal-salvar" class="cal-btn cal-btn-primario">Salvar aviso</button>
         </div>
       </div>
     </div>
@@ -8888,7 +8960,7 @@
           <span class="dash-compromisso-hora">${escapeHtml(horario || 'Dia todo')}</span>
           <span class="dash-compromisso-titulo">${escapeHtml(t.titulo)}</span>`;
         item.addEventListener('click', () => trocarAba('calendario'));
-        lista.appendChild(item);
+        lista.appendChild(avisoLinha(item, 'tarefa:' + t.id, t.titulo));
       });
       dashAtualizarVazio();
     }
@@ -9004,7 +9076,7 @@
           <span class="dash-compromisso-titulo">${escapeHtml(item.texto)}</span>
           <span class="dash-compromisso-hora dash-atencao-detalhe">${escapeHtml(item.detalhe)}</span>`;
         botao.addEventListener('click', item.onClick);
-        return botao;
+        return avisoLinha(botao, 'atencao:' + item.texto, item.texto);
       };
 
       if (dashAtencaoExpandido) {
@@ -22438,7 +22510,7 @@
     const NOTA_RASCUNHOS_KEY = 'painel_nota_rascunhos';
 
     async function dashCarregar() {
-      await Promise.all([dashCarregarChecklist(), notasCarregar()]);
+      await Promise.all([dashCarregarChecklist(), notasCarregar(), avisosCarregar()]);
     }
 
     // Só mostra "Nada marcado" quando não há compromisso nem tarefa hoje.
@@ -22485,6 +22557,7 @@
           <span class="dash-check-texto">${escapeHtml(tarefa.texto)}</span>
           <button type="button" class="dash-check-excluir" title="Excluir" aria-label="Excluir tarefa">&times;</button>`;
         linha.querySelector('input').addEventListener('change', (e) => dashAlternarTarefa(tarefa, e.target.checked));
+        linha.insertBefore(avisoCriarSino('check:' + tarefa.id, tarefa.texto), linha.querySelector('.dash-check-excluir'));
         linha.querySelector('.dash-check-excluir').addEventListener('click', (e) => {
           e.preventDefault();
           dashExcluirTarefa(tarefa);
@@ -22525,6 +22598,456 @@
       }
       dashCheckCache = dashCheckCache.filter((t) => t.id !== tarefa.id);
       dashRenderizarChecklist();
+      avisoExcluirPorChave('check:' + tarefa.id);
+    }
+
+    // ==========================================================================
+    // Avisos no celular (notificações push). Tabelas e agendamento em avisos-push.sql;
+    // quem envia é a Edge Function push-avisos (supabase/functions/push-avisos), que o
+    // pg_cron chama a cada minuto. Cada item do Dashboard pode ter um aviso
+    // (painel_avisos, identificado por "chave") e cada aparelho que ativou as
+    // notificações fica em painel_push_assinaturas. O service worker é painel/sw.js.
+    // ==========================================================================
+
+    const PUSH_VAPID_PUBLICA = 'BCKPjX3kXRY8Eylh3WFQ5z3WLhpuYfup0u48xO203W3P_eHIWxsKHYEQVM-eUQk6oLldHU9o3KBWYG3ELUKkl6c';
+    const PUSH_SW_URL = '/painel/sw.js';
+    const PUSH_SW_ESCOPO = '/painel/';
+    let avisosCache = [];
+    let avisosTabelasOk = true;
+    let avisoEmEdicao = null; // { chave, titulo }
+    let avisoMsgTimer = null;
+
+    async function avisosCarregar() {
+      const { data, error } = await Auth.sb.from('painel_avisos').select('*').order('quando', { ascending: true });
+      if (error) {
+        console.error('Avisos (avisos-push.sql) ainda não disponíveis:', error);
+        avisosTabelasOk = false;
+        avisosCache = [];
+      } else {
+        avisosTabelasOk = true;
+        avisosCache = data || [];
+      }
+      avisosRenderizar();
+      avisosAtualizarSinos();
+      pushAtualizarStatus();
+    }
+
+    function avisoDaChave(chave) {
+      return avisosCache.find((a) => a.chave === chave);
+    }
+
+    // Aviso que ainda vai disparar (ligado e não enviado).
+    function avisoPendente(a) {
+      return !!a && a.ativo && !a.enviado_em;
+    }
+
+    function avisoHora(iso) {
+      const d = new Date(iso);
+      return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    }
+
+    function avisoQuandoTexto(iso) {
+      const d = new Date(iso);
+      const dia = dataParaISO(d);
+      if (dia === dataParaISO(new Date())) return `hoje às ${avisoHora(iso)}`;
+      if (dia === dataParaISO(new Date(Date.now() + 86400000))) return `amanhã às ${avisoHora(iso)}`;
+      return `${formatarDataCurta(d)} às ${avisoHora(iso)}`;
+    }
+
+    function avisosMsg(texto, tipo) {
+      const el = document.getElementById('aviso-msg');
+      if (!el) return;
+      clearTimeout(avisoMsgTimer);
+      el.hidden = !texto;
+      el.textContent = texto || '';
+      el.className = 'aviso-msg' + (tipo === 'erro' ? ' aviso-msg-erro' : '');
+      if (texto && tipo !== 'erro') avisoMsgTimer = setTimeout(() => { el.hidden = true; }, 8000);
+    }
+
+    // ---- O sininho de cada item do Dashboard ----
+
+    function avisoAplicarSino(botao) {
+      const a = avisoDaChave(botao.dataset.avisoChave);
+      const ligado = avisoPendente(a);
+      botao.classList.toggle('ativo', ligado);
+      botao.textContent = ligado ? `🔔 ${avisoHora(a.quando)}` : '🔔';
+      botao.title = ligado ? `Aviso ${avisoQuandoTexto(a.quando)}. Clique pra editar ou desligar.` : 'Importante – notificar no celular';
+      botao.setAttribute('aria-label', botao.title);
+    }
+
+    function avisoCriarSino(chave, titulo) {
+      const botao = document.createElement('button');
+      botao.type = 'button';
+      botao.className = 'dash-sino';
+      botao.dataset.avisoChave = chave;
+      botao.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        avisoAbrirModal(chave, titulo);
+      });
+      avisoAplicarSino(botao);
+      return botao;
+    }
+
+    // Envolve a linha do Dashboard (que já é um botão que leva pra outra aba) junto com o sininho.
+    function avisoLinha(botao, chave, titulo) {
+      const linha = document.createElement('div');
+      linha.className = 'dash-linha';
+      linha.appendChild(botao);
+      linha.appendChild(avisoCriarSino(chave, titulo));
+      return linha;
+    }
+
+    function avisosAtualizarSinos() {
+      document.querySelectorAll('.dash-sino').forEach(avisoAplicarSino);
+    }
+
+    // ---- Janela de criar e editar o aviso ----
+
+    function avisoAbrirModal(chave, titulo) {
+      avisoEmEdicao = { chave, titulo };
+      const existente = avisoDaChave(chave);
+      let quando = existente ? new Date(existente.quando) : null;
+      if (!quando || quando.getTime() <= Date.now()) {
+        quando = new Date(Date.now() + 60 * 60000);
+        quando.setSeconds(0, 0);
+      }
+      document.getElementById('aviso-modal-item').textContent = titulo;
+      document.getElementById('aviso-modal-data').value = dataParaISO(quando);
+      document.getElementById('aviso-modal-hora').value = avisoHora(quando.toISOString());
+      document.getElementById('aviso-modal-erro').hidden = true;
+      document.getElementById('aviso-modal-sem-tabelas').hidden = avisosTabelasOk;
+      document.getElementById('aviso-modal-salvar').disabled = !avisosTabelasOk;
+      document.getElementById('aviso-modal-excluir').hidden = !existente;
+      document.getElementById('aviso-modal-desligar').hidden = !avisoPendente(existente);
+      document.getElementById('aviso-atalho-hoje').hidden = new Date().getHours() >= 18;
+      document.getElementById('aviso-modal-overlay').hidden = false;
+    }
+
+    function avisoFecharModal() {
+      document.getElementById('aviso-modal-overlay').hidden = true;
+      avisoEmEdicao = null;
+    }
+
+    function avisoUsarAtalho(botao) {
+      let d;
+      if (botao.dataset.min) {
+        d = new Date(Date.now() + Number(botao.dataset.min) * 60000);
+      } else {
+        d = new Date();
+        d.setDate(d.getDate() + Number(botao.dataset.dias));
+        d.setHours(Number(botao.dataset.hora), 0, 0, 0);
+      }
+      document.getElementById('aviso-modal-data').value = dataParaISO(d);
+      document.getElementById('aviso-modal-hora').value = avisoHora(d.toISOString());
+      document.getElementById('aviso-modal-erro').hidden = true;
+    }
+
+    function avisoGuardarNoCache(linha) {
+      const i = avisosCache.findIndex((a) => a.id === linha.id);
+      if (i >= 0) avisosCache[i] = linha;
+      else avisosCache.push(linha);
+      avisosCache.sort((a, b) => a.quando.localeCompare(b.quando));
+    }
+
+    async function avisoSalvar() {
+      if (!avisoEmEdicao) return;
+      const erro = document.getElementById('aviso-modal-erro');
+      const mostrarErro = (texto) => {
+        erro.textContent = texto;
+        erro.hidden = false;
+      };
+      const data = document.getElementById('aviso-modal-data').value;
+      const hora = document.getElementById('aviso-modal-hora').value;
+      const quando = data && hora ? new Date(`${data}T${hora}`) : null;
+      if (!quando || Number.isNaN(quando.getTime())) return mostrarErro('Escolha o dia e o horário.');
+      if (quando.getTime() <= Date.now()) return mostrarErro('Esse horário já passou. Escolha um horário daqui pra frente.');
+
+      const { chave, titulo } = avisoEmEdicao;
+      const existente = avisoDaChave(chave);
+      const campos = { titulo, quando: quando.toISOString(), ativo: true, enviado_em: null };
+      const resposta = existente
+        ? await Auth.sb.from('painel_avisos').update(campos).eq('id', existente.id).select()
+        : await Auth.sb.from('painel_avisos').insert({ chave, ...campos }).select();
+      if (resposta.error || !resposta.data || !resposta.data[0]) {
+        console.error('Erro ao salvar aviso:', resposta.error);
+        return mostrarErro('Não consegui salvar o aviso. Tente de novo.');
+      }
+      avisoGuardarNoCache(resposta.data[0]);
+      avisoFecharModal();
+      avisosRenderizar();
+      avisosAtualizarSinos();
+      const ativo = await pushAtivoNesteAparelho();
+      avisosMsg(
+        ativo
+          ? `Aviso salvo pra ${avisoQuandoTexto(campos.quando)}.`
+          : `Aviso salvo pra ${avisoQuandoTexto(campos.quando)}, mas as notificações ainda não estão ativadas neste aparelho. Toque em "Ativar notificações".`,
+        ativo ? 'ok' : 'erro'
+      );
+    }
+
+    async function avisoDesligar(chave) {
+      const a = avisoDaChave(chave);
+      if (!a) return;
+      const { data, error } = await Auth.sb.from('painel_avisos').update({ ativo: false }).eq('id', a.id).select();
+      if (error || !data || !data[0]) {
+        console.error('Erro ao desligar aviso:', error);
+        avisosMsg('Não consegui desligar o aviso. Tente de novo.', 'erro');
+        return;
+      }
+      avisoGuardarNoCache(data[0]);
+      avisosRenderizar();
+      avisosAtualizarSinos();
+    }
+
+    async function avisoExcluirPorChave(chave) {
+      const a = avisoDaChave(chave);
+      if (!a) return;
+      const { error } = await Auth.sb.from('painel_avisos').delete().eq('id', a.id);
+      if (error) {
+        console.error('Erro ao excluir aviso:', error);
+        avisosMsg('Não consegui excluir o aviso. Tente de novo.', 'erro');
+        return;
+      }
+      avisosCache = avisosCache.filter((x) => x.id !== a.id);
+      avisosRenderizar();
+      avisosAtualizarSinos();
+    }
+
+    // ---- Lista "Próximos avisos" no card do Dashboard ----
+
+    function avisosRenderizar() {
+      const lista = document.getElementById('aviso-lista');
+      if (!lista) return;
+      document.getElementById('aviso-aviso-tabelas').hidden = avisosTabelasOk;
+      // Os já enviados saem da lista; ficam só os agendados e os desligados.
+      const itens = avisosCache.filter((a) => !a.enviado_em);
+      document.getElementById('aviso-vazio').hidden = !avisosTabelasOk || itens.length > 0;
+      lista.innerHTML = '';
+      itens.forEach((a) => {
+        const passou = new Date(a.quando).getTime() <= Date.now();
+        const linha = document.createElement('div');
+        linha.className = 'aviso-linha' + (a.ativo ? '' : ' aviso-linha-desligado');
+        linha.innerHTML = `
+          <span class="aviso-linha-info">
+            <strong>${escapeHtml(a.titulo)}</strong>
+            <small>${escapeHtml(avisoQuandoTexto(a.quando))}${passou ? ' (já passou)' : ''}${a.ativo ? '' : ' · desligado'}</small>
+          </span>
+          <label class="aviso-switch" title="${a.ativo ? 'Desligar' : 'Ligar'}">
+            <input type="checkbox" ${a.ativo ? 'checked' : ''} aria-label="Aviso ligado">
+            <span></span>
+          </label>
+          <button type="button" class="aviso-icone" data-acao="editar" title="Editar" aria-label="Editar aviso">✏️</button>
+          <button type="button" class="aviso-icone" data-acao="excluir" title="Excluir" aria-label="Excluir aviso">&times;</button>`;
+        linha.querySelector('input').addEventListener('change', (e) => {
+          if (!e.target.checked) {
+            avisoDesligar(a.chave);
+          } else {
+            // Ligar de novo precisa de um horário que ainda não passou: abre a janela pra escolher.
+            e.target.checked = false;
+            avisoAbrirModal(a.chave, a.titulo);
+          }
+        });
+        linha.querySelector('[data-acao="editar"]').addEventListener('click', () => avisoAbrirModal(a.chave, a.titulo));
+        linha.querySelector('[data-acao="excluir"]').addEventListener('click', () => avisoExcluirPorChave(a.chave));
+        lista.appendChild(linha);
+      });
+    }
+
+    // ---- Notificações push no aparelho ----
+
+    function pushSuportado() {
+      return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+    }
+
+    function pushEhIOS() {
+      return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    }
+
+    // No iPhone as notificações só existem quando o painel foi instalado na Tela de Início.
+    function pushEhApp() {
+      return window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    }
+
+    function pushChaveParaBytes(base64) {
+      const preenchida = (base64 + '='.repeat((4 - (base64.length % 4)) % 4)).replace(/-/g, '+').replace(/_/g, '/');
+      const bruto = atob(preenchida);
+      return Uint8Array.from(bruto, (c) => c.charCodeAt(0));
+    }
+
+    async function pushAssinaturaAtual() {
+      try {
+        const reg = await navigator.serviceWorker.getRegistration(PUSH_SW_ESCOPO);
+        return reg ? await reg.pushManager.getSubscription() : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function pushAtivoNesteAparelho() {
+      if (!pushSuportado() || Notification.permission !== 'granted') return false;
+      return !!(await pushAssinaturaAtual());
+    }
+
+    // Registra o service worker e espera ele ficar ativo (o "ready" padrão só funciona dentro do escopo).
+    async function pushRegistroPronto() {
+      const reg = await navigator.serviceWorker.register(PUSH_SW_URL, { scope: PUSH_SW_ESCOPO });
+      if (reg.active) return reg;
+      const sw = reg.installing || reg.waiting;
+      await new Promise((ok) => {
+        if (!sw) return ok();
+        const limite = setTimeout(ok, 10000);
+        sw.addEventListener('statechange', () => {
+          if (sw.state === 'activated') {
+            clearTimeout(limite);
+            ok();
+          }
+        });
+      });
+      return reg;
+    }
+
+    function pushNomeAparelho() {
+      if (pushEhIOS()) return 'iPhone';
+      if (/android/i.test(navigator.userAgent)) return 'Android';
+      return 'Computador';
+    }
+
+    async function pushGuardarAssinatura(sub) {
+      const j = sub.toJSON();
+      const { error } = await Auth.sb
+        .from('painel_push_assinaturas')
+        .upsert({ endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth, aparelho: pushNomeAparelho() }, { onConflict: 'endpoint' });
+      return !error;
+    }
+
+    async function pushAtualizarStatus() {
+      const status = document.getElementById('aviso-push-status');
+      if (!status) return;
+      const ios = pushEhIOS();
+      let texto;
+      let ativo = false;
+      if (ios && !pushEhApp()) {
+        texto = '📱 No iPhone, as notificações só funcionam com o painel instalado na Tela de Início. Siga os passos abaixo.';
+        document.getElementById('aviso-ajuda-ios').open = true;
+      } else if (!pushSuportado()) {
+        texto = 'Este navegador não suporta notificações.';
+      } else if (Notification.permission === 'denied') {
+        texto = ios
+          ? '🚫 As notificações estão bloqueadas. No iPhone, vá em Ajustes > Notificações > Painel e ative Permitir notificações.'
+          : '🚫 As notificações estão bloqueadas neste navegador. Libere nas configurações do site e tente de novo.';
+      } else {
+        const sub = Notification.permission === 'granted' ? await pushAssinaturaAtual() : null;
+        if (sub) {
+          ativo = true;
+          texto = '✅ Notificações ativadas neste aparelho.';
+          if (avisosTabelasOk) pushGuardarAssinatura(sub); // garante que o aparelho está cadastrado
+        } else {
+          texto = 'Ainda não ativadas neste aparelho. Toque em "Ativar notificações".';
+        }
+      }
+      status.textContent = texto;
+      document.getElementById('aviso-btn-ativar').hidden = ativo;
+      document.getElementById('aviso-btn-desativar').hidden = !ativo;
+      document.getElementById('aviso-btn-testar').disabled = !ativo;
+    }
+
+    async function pushAtivar() {
+      avisosMsg('');
+      if (pushEhIOS() && !pushEhApp()) {
+        avisosMsg('No iPhone, primeiro adicione o painel à Tela de Início (passos abaixo) e abra o painel por lá.', 'erro');
+        document.getElementById('aviso-ajuda-ios').open = true;
+        return;
+      }
+      if (!pushSuportado()) {
+        avisosMsg('Este navegador não suporta notificações.', 'erro');
+        return;
+      }
+      if (!avisosTabelasOk) {
+        avisosMsg('Falta rodar o arquivo avisos-push.sql no Supabase antes de ativar.', 'erro');
+        return;
+      }
+      // O pedido de permissão tem que vir direto do toque, antes de qualquer outra espera.
+      let permissao = 'default';
+      try {
+        permissao = await Notification.requestPermission();
+      } catch (e) {
+        console.error('Erro ao pedir permissão de notificação:', e);
+      }
+      if (permissao !== 'granted') {
+        avisosMsg(permissao === 'denied' ? 'Você bloqueou as notificações. Libere nas configurações do aparelho e tente de novo.' : 'Sem a permissão não dá pra avisar. Toque em Ativar de novo e escolha Permitir.', 'erro');
+        pushAtualizarStatus();
+        return;
+      }
+      try {
+        const reg = await pushRegistroPronto();
+        const sub = (await reg.pushManager.getSubscription()) || (await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: pushChaveParaBytes(PUSH_VAPID_PUBLICA) }));
+        if (!(await pushGuardarAssinatura(sub))) throw new Error('não consegui guardar o aparelho');
+        avisosMsg('Notificações ativadas! Toque em "Testar notificação" pra conferir.', 'ok');
+      } catch (e) {
+        console.error('Erro ao ativar notificações:', e);
+        avisosMsg('Não consegui ativar as notificações. Tente de novo.', 'erro');
+      }
+      pushAtualizarStatus();
+    }
+
+    async function pushTestar() {
+      const botao = document.getElementById('aviso-btn-testar');
+      botao.disabled = true;
+      avisosMsg('Enviando...', 'ok');
+      try {
+        const r = await chamarFuncao('push-avisos', { method: 'POST', body: { acao: 'testar' } });
+        if (!r.ok) avisosMsg('Não consegui enviar o teste. Tente de novo em instantes.', 'erro');
+        else if (!r.aparelhos) avisosMsg('Nenhum aparelho com notificação ativada ainda.', 'erro');
+        else if (r.enviadas > 0) avisosMsg('Teste enviado! A notificação deve chegar em alguns segundos.', 'ok');
+        else avisosMsg('O envio não chegou no aparelho. Desative e ative as notificações de novo.', 'erro');
+      } catch (e) {
+        console.error('Erro ao testar notificação:', e);
+        avisosMsg('Não consegui enviar o teste. Tente de novo em instantes.', 'erro');
+      }
+      botao.disabled = false;
+    }
+
+    async function pushDesativar() {
+      const sub = await pushAssinaturaAtual();
+      if (sub) {
+        const endpoint = sub.endpoint;
+        try {
+          await sub.unsubscribe();
+        } catch (e) {
+          console.error('Erro ao cancelar assinatura:', e);
+        }
+        await Auth.sb.from('painel_push_assinaturas').delete().eq('endpoint', endpoint);
+      }
+      avisosMsg('Notificações desativadas neste aparelho.', 'ok');
+      pushAtualizarStatus();
+    }
+
+    function avisosLigarEventos() {
+      document.getElementById('aviso-btn-ativar').addEventListener('click', pushAtivar);
+      document.getElementById('aviso-btn-testar').addEventListener('click', pushTestar);
+      document.getElementById('aviso-btn-desativar').addEventListener('click', pushDesativar);
+      document.getElementById('aviso-modal-fechar').addEventListener('click', avisoFecharModal);
+      document.getElementById('aviso-modal-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'aviso-modal-overlay') avisoFecharModal();
+      });
+      document.getElementById('aviso-modal-salvar').addEventListener('click', avisoSalvar);
+      document.getElementById('aviso-modal-desligar').addEventListener('click', async () => {
+        if (!avisoEmEdicao) return;
+        const { chave } = avisoEmEdicao;
+        avisoFecharModal();
+        await avisoDesligar(chave);
+      });
+      document.getElementById('aviso-modal-excluir').addEventListener('click', async () => {
+        if (!avisoEmEdicao) return;
+        const { chave } = avisoEmEdicao;
+        avisoFecharModal();
+        await avisoExcluirPorChave(chave);
+      });
+      document.querySelectorAll('.aviso-modal-atalhos .cal-btn').forEach((b) => b.addEventListener('click', () => avisoUsarAtalho(b)));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !document.getElementById('aviso-modal-overlay').hidden) avisoFecharModal();
+      });
     }
 
     // ---- Nota rápida ----
@@ -22742,6 +23265,7 @@
     }
 
     function dashLigarEventos() {
+      avisosLigarEventos();
       document.getElementById('dash-atencao-ver-tudo').addEventListener('click', () => {
         dashAtencaoExpandido = !dashAtencaoExpandido;
         renderizarPrecisaAtencao();

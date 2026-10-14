@@ -12144,3 +12144,260 @@
   font-weight: 500;
   color: var(--texto-suave);
 }
+
+
+/* Avisos no celular: sininho nas linhas do Dashboard, card de notificações e janela do aviso. */
+.painel-body .dash-linha {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.painel-body .dash-linha > .dash-compromisso {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+}
+
+.painel-body .dash-sino {
+  flex: 0 0 auto;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-family: var(--fonte-corpo);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--grafite);
+  opacity: 0.4;
+  cursor: pointer;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.painel-body .dash-sino:hover,
+.painel-body .dash-sino:focus-visible {
+  opacity: 1;
+  background: rgba(var(--coral-rgb), 0.18);
+}
+
+.painel-body .dash-sino.ativo {
+  opacity: 1;
+  font-size: 12px;
+  background: rgba(var(--coral-rgb), 0.28);
+}
+
+@media (hover: none) {
+  .painel-body .dash-sino:not(.ativo) {
+    opacity: 0.6;
+  }
+}
+
+.painel-body .aviso-card {
+  margin-top: 16px;
+}
+
+.painel-body .aviso-status {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--grafite);
+}
+
+.painel-body .aviso-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.painel-body .aviso-btn-discreto {
+  background: transparent;
+  color: var(--texto-suave);
+}
+
+.painel-body .aviso-msg {
+  margin: 12px 0 0;
+  padding: 9px 12px;
+  border-radius: var(--raio-sm);
+  background: rgba(var(--coral-rgb), 0.16);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--grafite);
+}
+
+.painel-body .aviso-msg[hidden] {
+  display: none;
+}
+
+.painel-body .aviso-msg-erro {
+  background: rgba(214, 120, 90, 0.16);
+}
+
+.painel-body .aviso-ajuda {
+  margin-top: 14px;
+  font-size: 13.5px;
+  color: var(--grafite);
+}
+
+.painel-body .aviso-ajuda summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.painel-body .aviso-ajuda ol {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--texto-suave);
+}
+
+.painel-body .aviso-subtitulo {
+  margin: 18px 0 8px;
+  font-family: var(--fonte-titulo);
+  font-size: 16px;
+  color: var(--grafite);
+}
+
+.painel-body .aviso-lista {
+  display: flex;
+  flex-direction: column;
+}
+
+.painel-body .aviso-linha {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 4px;
+  border-top: 1px solid var(--borda);
+}
+
+.painel-body .aviso-linha:first-child {
+  border-top: none;
+}
+
+.painel-body .aviso-linha-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.painel-body .aviso-linha-info strong {
+  font-size: 14px;
+  color: var(--grafite);
+  overflow-wrap: anywhere;
+}
+
+.painel-body .aviso-linha-info small {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
+.painel-body .aviso-linha-desligado .aviso-linha-info {
+  opacity: 0.55;
+}
+
+.painel-body .aviso-icone {
+  border: none;
+  background: transparent;
+  color: var(--texto-suave);
+  font-size: 16px;
+  line-height: 1;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.painel-body .aviso-switch {
+  position: relative;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.painel-body .aviso-switch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.painel-body .aviso-switch span {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: rgba(var(--grafite-rgb), 0.22);
+  transition: background 0.15s ease;
+  pointer-events: none;
+}
+
+.painel-body .aviso-switch span::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.15s ease;
+}
+
+.painel-body .aviso-switch input:checked + span {
+  background: var(--coral);
+}
+
+.painel-body .aviso-switch input:checked + span::after {
+  transform: translateX(16px);
+}
+
+.painel-body .aviso-modal {
+  max-width: 440px;
+}
+
+.painel-body .aviso-modal-item {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: var(--raio-sm);
+  background: rgba(var(--coral-rgb), 0.14);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--grafite);
+  overflow-wrap: anywhere;
+}
+
+.painel-body .aviso-modal-quando {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.painel-body .aviso-modal input[type='date'],
+.painel-body .aviso-modal input[type='time'] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  background: #fff;
+  font-family: var(--fonte-corpo);
+  font-size: 15px;
+  color: var(--grafite);
+}
+
+.painel-body .aviso-modal-atalhos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.painel-body .aviso-modal-atalhos .cal-btn[hidden] {
+  display: none;
+}

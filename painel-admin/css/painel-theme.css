@@ -12401,3 +12401,36 @@
 .painel-body .aviso-modal-atalhos .cal-btn[hidden] {
   display: none;
 }
+
+/* Avisos: caixinha de check nos compromissos, etiqueta de pendente e card dentro de Ver perfil. */
+.painel-body .dash-caixa {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 0 4px 0 6px;
+  accent-color: var(--coral);
+  cursor: pointer;
+}
+
+.painel-body .dash-check-atraso {
+  flex: 0 0 auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(214, 120, 90, 0.18);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--grafite);
+  white-space: nowrap;
+}
+
+.painel-body .dash-check-feito .dash-check-atraso {
+  opacity: 0.5;
+}
+
+.painel-body #aviso-nota-movido {
+  margin: 16px 0 0;
+}
+
+.painel-body .config-pagina .aviso-card {
+  margin: 0;
+}

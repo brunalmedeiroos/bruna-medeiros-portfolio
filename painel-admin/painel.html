@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261029a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261030a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -213,29 +213,9 @@
             <button type="button" id="dash-atencao-ver-tudo" class="dash-atencao-ver-tudo" hidden></button>
           </div>
           </div>
-          <!-- Avisos no celular: notificações push dos itens marcados com o 🔔 (avisos-push.sql) -->
-          <div class="card aviso-card" id="dash-card-avisos">
-            <h3 class="dash-hoje-titulo">🔔 Avisos no celular</h3>
-            <p class="aviso-status" id="aviso-push-status">Conferindo...</p>
-            <div class="aviso-botoes">
-              <button type="button" id="aviso-btn-ativar" class="cal-btn cal-btn-primario">Ativar notificações</button>
-              <button type="button" id="aviso-btn-testar" class="cal-btn" disabled>Testar notificação</button>
-              <button type="button" id="aviso-btn-desativar" class="cal-btn aviso-btn-discreto" hidden>Desativar neste aparelho</button>
-            </div>
-            <p class="aviso-msg" id="aviso-msg" hidden></p>
-            <details class="aviso-ajuda" id="aviso-ajuda-ios">
-              <summary>📱 Como instalar no iPhone</summary>
-              <ol>
-                <li>Abra o painel no <strong>Safari</strong> do iPhone.</li>
-                <li>Toque em <strong>Compartilhar</strong> (o quadrado com a seta pra cima), depois em <strong>Adicionar à Tela de Início</strong> e <strong>Adicionar</strong>.</li>
-                <li>Abra o painel pelo <strong>ícone da tela inicial</strong> (não pelo Safari), entre com seu e-mail e senha de novo, toque em <strong>Ativar notificações</strong> e aceite.</li>
-                <li>Toque em <strong>Testar notificação</strong>. Precisa do iOS 16.4 ou mais novo.</li>
-              </ol>
-            </details>
-            <h4 class="aviso-subtitulo">Próximos avisos</h4>
-            <div id="aviso-lista" class="aviso-lista"></div>
-            <p class="texto-vazio" id="aviso-vazio" hidden>Nenhum aviso agendado. Toque no 🔔 de qualquer item do Dashboard pra marcar como importante.</p>
-            <p class="dash-aviso" id="aviso-aviso-tabelas" hidden>Falta rodar o arquivo avisos-push.sql no Supabase pra usar os avisos no celular.</p>
+          <!-- O card "Avisos no celular" só aparece aqui enquanto as notificações não estiverem ativadas neste aparelho; depois fica em Ver perfil > Notificação. -->
+          <div id="aviso-host-dash">
+            <p class="aviso-msg" id="aviso-nota-movido" hidden>✅ Notificações ativadas! Pra testar ou ver os próximos avisos, vá em Ver perfil &gt; Notificação.</p>
           </div>
         </section>
 
@@ -1949,6 +1929,7 @@
         <div class="config-subnav">
           <button class="config-subnav-btn ativo" data-config-pagina="geral" data-i18n="config_geral" type="button">Geral</button>
           <button class="config-subnav-btn" data-config-pagina="perfil" data-i18n="config_perfil" type="button">Perfil</button>
+          <button class="config-subnav-btn" data-config-pagina="notificacoes" type="button">Notificação</button>
         </div>
 
         <div id="config-pagina-geral" class="config-pagina">
@@ -1993,6 +1974,33 @@
           <p class="config-erro" id="config-senha-erro" hidden></p>
           <div class="cal-form-acoes">
             <button class="cal-btn cal-btn-primario" id="config-salvar-senha" data-i18n="config_alterar_senha" type="button">Alterar senha</button>
+          </div>
+        </div>
+
+        <div id="config-pagina-notificacoes" class="config-pagina" hidden>
+          <!-- Avisos no celular: notificações push dos itens marcados com o 🔔 (avisos-push.sql) -->
+          <div class="card aviso-card" id="dash-card-avisos">
+            <h3 class="dash-hoje-titulo">🔔 Avisos no celular</h3>
+            <p class="aviso-status" id="aviso-push-status">Conferindo...</p>
+            <div class="aviso-botoes">
+              <button type="button" id="aviso-btn-ativar" class="cal-btn cal-btn-primario">Ativar notificações</button>
+              <button type="button" id="aviso-btn-testar" class="cal-btn" disabled>Testar notificação</button>
+              <button type="button" id="aviso-btn-desativar" class="cal-btn aviso-btn-discreto" hidden>Desativar neste aparelho</button>
+            </div>
+            <p class="aviso-msg" id="aviso-msg" hidden></p>
+            <details class="aviso-ajuda" id="aviso-ajuda-ios">
+              <summary>📱 Como instalar no iPhone</summary>
+              <ol>
+                <li>Abra o painel no <strong>Safari</strong> do iPhone.</li>
+                <li>Toque em <strong>Compartilhar</strong> (o quadrado com a seta pra cima), depois em <strong>Adicionar à Tela de Início</strong> e <strong>Adicionar</strong>.</li>
+                <li>Abra o painel pelo <strong>ícone da tela inicial</strong> (não pelo Safari), entre com seu e-mail e senha de novo, toque em <strong>Ativar notificações</strong> e aceite.</li>
+                <li>Toque em <strong>Testar notificação</strong>. Precisa do iOS 16.4 ou mais novo.</li>
+              </ol>
+            </details>
+            <h4 class="aviso-subtitulo">Próximos avisos</h4>
+            <div id="aviso-lista" class="aviso-lista"></div>
+            <p class="texto-vazio" id="aviso-vazio" hidden>Nenhum aviso agendado. Toque no 🔔 de qualquer item do Dashboard pra marcar como importante.</p>
+            <p class="dash-aviso" id="aviso-aviso-tabelas" hidden>Falta rodar o arquivo avisos-push.sql no Supabase pra usar os avisos no celular.</p>
           </div>
         </div>
       </div>
@@ -8960,7 +8968,15 @@
           <span class="dash-compromisso-hora">${escapeHtml(horario || 'Dia todo')}</span>
           <span class="dash-compromisso-titulo">${escapeHtml(t.titulo)}</span>`;
         item.addEventListener('click', () => trocarAba('calendario'));
-        lista.appendChild(avisoLinha(item, 'tarefa:' + t.id, t.titulo));
+        const linha = avisoLinha(item, 'tarefa:' + t.id, t.titulo, t.feito ? '' : dashQuandoAutomatico(t));
+        const caixa = document.createElement('input');
+        caixa.type = 'checkbox';
+        caixa.className = 'dash-caixa';
+        caixa.checked = !!t.feito;
+        caixa.setAttribute('aria-label', 'Marcar como feito');
+        caixa.addEventListener('change', (e) => dashAlternarCompromisso(t, e.target.checked));
+        linha.insertBefore(caixa, linha.firstChild);
+        lista.appendChild(linha);
       });
       dashAtualizarVazio();
     }
@@ -22526,7 +22542,14 @@
 
     async function dashCarregarChecklist() {
       const hojeISO = dataParaISO(new Date());
-      const { data, error } = await Auth.sb.from('painel_checklist_dia').select('*').eq('data', hojeISO).order('created_at', { ascending: true });
+      // Traz as de hoje e também as dos dias anteriores que ficaram sem check.
+      const { data, error } = await Auth.sb
+        .from('painel_checklist_dia')
+        .select('*')
+        .lte('data', hojeISO)
+        .or(`data.eq.${hojeISO},feito.eq.false`)
+        .order('data', { ascending: true })
+        .order('created_at', { ascending: true });
       if (error) {
         console.error('Checklist do dia (dashboard.sql) ainda não disponível:', error);
         dashTabelasOk = false;
@@ -22539,6 +22562,14 @@
       dashRenderizarChecklist();
     }
 
+    // Etiqueta das tarefas de dias anteriores que ainda estão pendentes ("de ontem", "há 3 dias").
+    function dashEtiquetaAtraso(tarefa) {
+      const hoje = dataParaISO(new Date());
+      if (!tarefa.data || tarefa.data >= hoje) return '';
+      const dias = Math.round((new Date(hoje + 'T00:00:00') - new Date(tarefa.data + 'T00:00:00')) / 86400000);
+      return `<span class="dash-check-atraso">${dias === 1 ? 'de ontem' : `há ${dias} dias`}</span>`;
+    }
+
     function dashRenderizarChecklist() {
       const lista = document.getElementById('dash-check-lista');
       lista.innerHTML = '';
@@ -22548,13 +22579,14 @@
       }
       dashAtualizarVazio();
       if (dashCheckCache.length === 0) return;
-      const ordenados = [...dashCheckCache].sort((a, b) => Number(!!a.feito) - Number(!!b.feito));
+      const ordenados = [...dashCheckCache].sort((a, b) => Number(!!a.feito) - Number(!!b.feito) || a.data.localeCompare(b.data));
       ordenados.forEach((tarefa) => {
         const linha = document.createElement('label');
         linha.className = 'dash-check-item' + (tarefa.feito ? ' dash-check-feito' : '');
         linha.innerHTML = `
           <input type="checkbox" ${tarefa.feito ? 'checked' : ''}>
           <span class="dash-check-texto">${escapeHtml(tarefa.texto)}</span>
+          ${dashEtiquetaAtraso(tarefa)}
           <button type="button" class="dash-check-excluir" title="Excluir" aria-label="Excluir tarefa">&times;</button>`;
         linha.querySelector('input').addEventListener('change', (e) => dashAlternarTarefa(tarefa, e.target.checked));
         linha.insertBefore(avisoCriarSino('check:' + tarefa.id, tarefa.texto), linha.querySelector('.dash-check-excluir'));
@@ -22666,35 +22698,64 @@
 
     // ---- O sininho de cada item do Dashboard ----
 
+    // Compromisso do Calendário que ainda vai avisar sozinho (a função push-avisos cria o aviso na hora de começar).
+    function avisoAutomaticoPendente(botao, a) {
+      const auto = botao.dataset.autoQuando;
+      return !a && !!auto && new Date(auto).getTime() > Date.now();
+    }
+
+    // Horário em que o compromisso avisa sozinho: a hora de início, ou 8h quando é de dia todo (horário de Fortaleza, igual ao servidor).
+    function dashQuandoAutomatico(t) {
+      return new Date(`${t.data}T${(t.hora_inicio || '08:00').slice(0, 5)}:00-03:00`).toISOString();
+    }
+
+    async function dashAlternarCompromisso(t, feito) {
+      t.feito = feito;
+      renderizarHojeDashboard();
+      const { error } = await Auth.sb.from('painel_tarefas').update({ feito }).eq('id', t.id);
+      if (error) {
+        console.error('Erro ao atualizar compromisso:', error);
+        t.feito = !feito;
+        renderizarHojeDashboard();
+      }
+    }
+
     function avisoAplicarSino(botao) {
       const a = avisoDaChave(botao.dataset.avisoChave);
-      const ligado = avisoPendente(a);
+      const auto = avisoAutomaticoPendente(botao, a);
+      const ligado = auto || avisoPendente(a);
+      const quando = auto ? botao.dataset.autoQuando : a && a.quando;
       botao.classList.toggle('ativo', ligado);
-      botao.textContent = ligado ? `🔔 ${avisoHora(a.quando)}` : '🔔';
-      botao.title = ligado ? `Aviso ${avisoQuandoTexto(a.quando)}. Clique pra editar ou desligar.` : 'Importante – notificar no celular';
+      botao.textContent = ligado ? `🔔 ${avisoHora(quando)}` : '🔔';
+      botao.title = auto
+        ? `Aviso automático às ${avisoHora(quando)}. Clique pra mudar ou desligar.`
+        : ligado
+          ? `Aviso ${avisoQuandoTexto(quando)}. Clique pra editar ou desligar.`
+          : 'Importante – notificar no celular';
       botao.setAttribute('aria-label', botao.title);
     }
 
-    function avisoCriarSino(chave, titulo) {
+    function avisoCriarSino(chave, titulo, autoQuando) {
       const botao = document.createElement('button');
       botao.type = 'button';
       botao.className = 'dash-sino';
       botao.dataset.avisoChave = chave;
+      if (autoQuando) botao.dataset.autoQuando = autoQuando;
       botao.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
-        avisoAbrirModal(chave, titulo);
+        avisoAbrirModal(chave, titulo, autoQuando);
       });
       avisoAplicarSino(botao);
       return botao;
     }
 
     // Envolve a linha do Dashboard (que já é um botão que leva pra outra aba) junto com o sininho.
-    function avisoLinha(botao, chave, titulo) {
+    function avisoLinha(botao, chave, titulo, autoQuando) {
       const linha = document.createElement('div');
       linha.className = 'dash-linha';
       linha.appendChild(botao);
-      linha.appendChild(avisoCriarSino(chave, titulo));
+      linha.appendChild(avisoCriarSino(chave, titulo, autoQuando));
       return linha;
     }
 
@@ -22704,10 +22765,11 @@
 
     // ---- Janela de criar e editar o aviso ----
 
-    function avisoAbrirModal(chave, titulo) {
-      avisoEmEdicao = { chave, titulo };
+    function avisoAbrirModal(chave, titulo, autoQuando) {
+      avisoEmEdicao = { chave, titulo, autoQuando };
       const existente = avisoDaChave(chave);
-      let quando = existente ? new Date(existente.quando) : null;
+      const automatico = !existente && !!autoQuando && new Date(autoQuando).getTime() > Date.now();
+      let quando = existente ? new Date(existente.quando) : automatico ? new Date(autoQuando) : null;
       if (!quando || quando.getTime() <= Date.now()) {
         quando = new Date(Date.now() + 60 * 60000);
         quando.setSeconds(0, 0);
@@ -22719,7 +22781,8 @@
       document.getElementById('aviso-modal-sem-tabelas').hidden = avisosTabelasOk;
       document.getElementById('aviso-modal-salvar').disabled = !avisosTabelasOk;
       document.getElementById('aviso-modal-excluir').hidden = !existente;
-      document.getElementById('aviso-modal-desligar').hidden = !avisoPendente(existente);
+      document.getElementById('aviso-modal-desligar').hidden = !(avisoPendente(existente) || automatico);
+      document.getElementById('aviso-modal-desligar').textContent = automatico ? 'Desligar aviso automático' : 'Desligar';
       document.getElementById('aviso-atalho-hoje').hidden = new Date().getHours() >= 18;
       document.getElementById('aviso-modal-overlay').hidden = false;
     }
@@ -22786,10 +22849,13 @@
       );
     }
 
-    async function avisoDesligar(chave) {
+    async function avisoDesligar(chave, titulo, autoQuando) {
       const a = avisoDaChave(chave);
-      if (!a) return;
-      const { data, error } = await Auth.sb.from('painel_avisos').update({ ativo: false }).eq('id', a.id).select();
+      if (!a && !autoQuando) return;
+      // Compromisso com aviso automático ainda sem linha: cria a linha já desligada, e o servidor respeita.
+      const { data, error } = a
+        ? await Auth.sb.from('painel_avisos').update({ ativo: false }).eq('id', a.id).select()
+        : await Auth.sb.from('painel_avisos').insert({ chave, titulo, quando: autoQuando, ativo: false }).select();
       if (error || !data || !data[0]) {
         console.error('Erro ao desligar aviso:', error);
         avisosMsg('Não consegui desligar o aviso. Tente de novo.', 'erro');
@@ -22803,6 +22869,19 @@
     async function avisoExcluirPorChave(chave) {
       const a = avisoDaChave(chave);
       if (!a) return;
+      // Aviso de compromisso do Calendário não é apagado: vira "já enviado e desligado", senão o servidor criaria de novo.
+      if (chave.startsWith('tarefa:')) {
+        const { data, error } = await Auth.sb.from('painel_avisos').update({ ativo: false, enviado_em: new Date().toISOString() }).eq('id', a.id).select();
+        if (error || !data || !data[0]) {
+          console.error('Erro ao remover aviso:', error);
+          avisosMsg('Não consegui excluir o aviso. Tente de novo.', 'erro');
+          return;
+        }
+        avisoGuardarNoCache(data[0]);
+        avisosRenderizar();
+        avisosAtualizarSinos();
+        return;
+      }
       const { error } = await Auth.sb.from('painel_avisos').delete().eq('id', a.id);
       if (error) {
         console.error('Erro ao excluir aviso:', error);
@@ -22950,6 +23029,21 @@
       document.getElementById('aviso-btn-ativar').hidden = ativo;
       document.getElementById('aviso-btn-desativar').hidden = !ativo;
       document.getElementById('aviso-btn-testar').disabled = !ativo;
+      avisosPosicionarCard(ativo);
+    }
+
+    // Com as notificações ativadas neste aparelho o card sai do Dashboard e fica em Ver perfil > Notificação.
+    function avisosPosicionarCard(ativo) {
+      const card = document.getElementById('dash-card-avisos');
+      const destino = document.getElementById(ativo ? 'config-pagina-notificacoes' : 'aviso-host-dash');
+      if (!card || !destino || card.parentElement === destino) return;
+      const veioDoDashboard = card.parentElement.id === 'aviso-host-dash';
+      destino.appendChild(card);
+      if (ativo && veioDoDashboard) {
+        const nota = document.getElementById('aviso-nota-movido');
+        nota.hidden = false;
+        setTimeout(() => { nota.hidden = true; }, 10000);
+      }
     }
 
     async function pushAtivar() {
@@ -23034,9 +23128,9 @@
       document.getElementById('aviso-modal-salvar').addEventListener('click', avisoSalvar);
       document.getElementById('aviso-modal-desligar').addEventListener('click', async () => {
         if (!avisoEmEdicao) return;
-        const { chave } = avisoEmEdicao;
+        const { chave, titulo, autoQuando } = avisoEmEdicao;
         avisoFecharModal();
-        await avisoDesligar(chave);
+        await avisoDesligar(chave, titulo, autoQuando);
       });
       document.getElementById('aviso-modal-excluir').addEventListener('click', async () => {
         if (!avisoEmEdicao) return;

@@ -15,6 +15,7 @@ import "@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "@supabase/server";
 import webpush from "web-push";
 import { ehDono } from "../_shared/dono.ts";
+import { criarAvisosAutomaticos } from "../_shared/avisos-automaticos.ts";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -112,6 +113,8 @@ export default {
       if (lista.length === 0) return jsonResponse({ ok: true, aparelhos: 0, avisos: 0 });
 
       const agora = new Date();
+      // Cria os avisos automáticos desta hora (compromissos do Calendário e pendências das 8h).
+      const criados = await criarAvisosAutomaticos(admin, agora);
       // Reserva os avisos vencidos num UPDATE só (evita duplicar se duas rodadas se cruzarem).
       const { data: devidos, error: erroAvisos } = await admin
         .from("painel_avisos")
@@ -120,14 +123,14 @@ export default {
         .is("enviado_em", null)
         .lte("quando", agora.toISOString())
         .gte("quando", new Date(agora.getTime() - JANELA_MS).toISOString())
-        .select("id, titulo, quando");
+        .select("id, titulo, quando, corpo");
       if (erroAvisos) throw erroAvisos;
 
       let enviados = 0;
       for (const aviso of devidos || []) {
         const r = await enviarParaTodos(admin, lista, {
           titulo: aviso.titulo,
-          corpo: `Importante · aviso das ${textoHora(aviso.quando)}`,
+          corpo: aviso.corpo || `Importante · aviso das ${textoHora(aviso.quando)}`,
           tag: `aviso-${aviso.id}`,
           url: "/painel/",
         });
@@ -136,7 +139,7 @@ export default {
         else if (r.falhas > 0) await admin.from("painel_avisos").update({ enviado_em: null }).eq("id", aviso.id);
       }
 
-      return jsonResponse({ ok: true, aparelhos: lista.length, avisos: (devidos || []).length, enviados });
+      return jsonResponse({ ok: true, aparelhos: lista.length, avisos: (devidos || []).length, enviados, criados });
     } catch (e) {
       console.error("Erro no push-avisos:", e);
       return jsonResponse({ ok: false, error: (e as Error).message }, 500);

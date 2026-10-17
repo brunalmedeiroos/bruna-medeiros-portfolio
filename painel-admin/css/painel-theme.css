@@ -12729,3 +12729,74 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---- Gerador de Carrossel: biblioteca visual de referências ---- */
+.painel-body .car-zona {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border: 1.5px dashed var(--borda);
+  border-radius: var(--raio-sm);
+  background: rgba(255, 255, 255, 0.5);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.painel-body .car-zona-ativa {
+  border-color: var(--coral);
+  background: rgba(var(--coral-rgb), 0.12);
+}
+
+.painel-body .car-zona .car-imgs {
+  margin-bottom: 0;
+}
+
+.painel-body .car-zona-rodape {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.painel-body .car-zona-dica {
+  font-size: 12.5px;
+  color: var(--texto-suave);
+}
+
+.painel-body .car-biblioteca-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.painel-body .car-biblioteca-topo .card-titulo {
+  margin: 0;
+}
+
+.painel-body .car-biblioteca-topo .rt-chips[hidden] {
+  display: none;
+}
+
+.painel-body button.car-ref-capa {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+}
+
+.painel-body .car-ref-etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.painel-body .car-ref-sem-nota {
+  font-style: italic;
+}
+
+.painel-body .car-ref-editando {
+  outline: 2px solid var(--coral);
+}

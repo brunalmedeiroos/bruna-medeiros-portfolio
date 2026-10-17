@@ -3,7 +3,7 @@
 -- Não apaga nada: só cria tabelas novas e um espaço pra guardar as imagens de referência.
 --
 -- carrossel_preferencias : uma linha só, com seu tom de voz, identidade, design e instruções pra IA.
--- carrossel_referencias  : referências (links e imagens) que a IA consulta toda vez que cria algo.
+-- carrossel_referencias  : biblioteca visual de imagens de design que a IA consulta toda vez que cria algo.
 -- carrossel_carrosseis   : os carrosséis criados (pedido, slides, nota e feedback).
 -- carrossel_aprendizados : o que o sistema aprendeu com o seu feedback e usa nas próximas criações.
 
@@ -22,12 +22,9 @@ create table if not exists public.carrossel_preferencias (
 create table if not exists public.carrossel_referencias (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
-  tipo text not null default 'link' check (tipo in ('link', 'imagem')),
-  titulo text not null default '',
-  url text,
   imagens text[] not null default '{}',
   nota text not null default '',
-  etiqueta text not null default 'visual' check (etiqueta in ('visual', 'estrutura', 'tom', 'gancho'))
+  etiquetas text[] not null default '{visual}'
 );
 
 create table if not exists public.carrossel_carrosseis (

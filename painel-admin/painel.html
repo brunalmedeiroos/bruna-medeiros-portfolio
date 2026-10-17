@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261033a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261034a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -934,52 +934,47 @@
                 </div>
               </div>
 
-              <!-- Referências -->
+              <!-- Referências: biblioteca visual de estilos de design -->
               <div class="car-secao" id="car-secao-referencias" hidden>
                 <div class="card car-card">
-                  <h3 class="card-titulo">Adicionar referência</h3>
-                  <p class="car-ajuda">Links e imagens de carrosséis que você gosta. A IA consulta tudo isso toda vez que cria algo, então explique o que chamou sua atenção.</p>
-
-                  <div class="rt-chips" id="car-ref-tipo">
-                    <button type="button" class="rt-chip ativo" data-valor="link">🔗 Link</button>
-                    <button type="button" class="rt-chip" data-valor="imagem">🖼️ Imagens</button>
-                  </div>
+                  <h3 class="card-titulo" id="car-ref-titulo-form">Adicionar referência</h3>
+                  <p class="car-ajuda">Sua biblioteca de estilos de design que você gosta. As imagens ficam guardadas pra sempre aqui, e a IA consulta tudo isso toda vez que cria um carrossel.</p>
 
                   <div class="cal-form-campo">
-                    <label for="car-ref-titulo">Nome</label>
-                    <input type="text" id="car-ref-titulo" maxlength="120" placeholder="Ex.: Carrossel do @perfil sobre rotina">
-                  </div>
-
-                  <div class="cal-form-campo" id="car-ref-campo-link">
-                    <label for="car-ref-url">Link</label>
-                    <input type="text" id="car-ref-url" inputmode="url" autocomplete="off" placeholder="Cole o link do post, do perfil ou da página">
-                  </div>
-
-                  <div class="cal-form-campo" id="car-ref-campo-img" hidden>
-                    <label>Imagens <small>os slides do carrossel, em ordem (até 8)</small></label>
-                    <div class="car-imgs" id="car-ref-imgs"></div>
-                    <button type="button" id="car-ref-add-img" class="cal-btn">+ Adicionar imagens</button>
-                    <input type="file" id="car-ref-input-img" accept="image/*" multiple hidden>
+                    <label>Imagens <small>até 8 por referência</small></label>
+                    <div class="car-zona" id="car-ref-zona">
+                      <div class="car-imgs" id="car-ref-imgs"></div>
+                      <div class="car-zona-rodape">
+                        <button type="button" id="car-ref-add-img" class="cal-btn">+ Adicionar imagens</button>
+                        <span class="car-zona-dica" id="car-ref-dica"></span>
+                      </div>
+                      <input type="file" id="car-ref-input-img" accept="image/*" multiple hidden>
+                    </div>
                   </div>
 
                   <div class="cal-form-campo">
                     <label for="car-ref-nota">O que eu gosto nessa referência</label>
-                    <textarea id="car-ref-nota" rows="3" placeholder="O gancho, as cores, o jeito de explicar, o tamanho do texto..."></textarea>
+                    <textarea id="car-ref-nota" rows="3" placeholder="As cores, a fonte, o jeito de organizar o texto, o tamanho das letras..."></textarea>
                   </div>
 
                   <div class="cal-form-campo">
-                    <label>Serve de referência para</label>
+                    <label>Serve de referência para <small>pode marcar mais de uma</small></label>
                     <div class="rt-chips" id="car-ref-etiqueta"></div>
                   </div>
 
                   <div class="cal-form-acoes car-acoes">
                     <span class="car-status" id="car-status-ref"></span>
-                    <button type="button" id="car-ref-salvar" class="cal-btn cal-btn-primario">Salvar referência</button>
+                    <button type="button" id="car-ref-cancelar" class="cal-btn" hidden>Cancelar edição</button>
+                    <button type="button" id="car-ref-salvar" class="cal-btn cal-btn-primario">Salvar na biblioteca</button>
                   </div>
                 </div>
 
+                <div class="car-biblioteca-topo">
+                  <h3 class="card-titulo">Biblioteca visual <span class="car-contador" id="car-ref-resumo"></span></h3>
+                  <div class="rt-chips" id="car-ref-filtros"></div>
+                </div>
                 <div class="car-grade" id="car-ref-lista"></div>
-                <p class="texto-vazio" id="car-ref-vazio" hidden>Nenhuma referência ainda. Adicione a primeira acima.</p>
+                <p class="texto-vazio" id="car-ref-vazio" hidden>Sua biblioteca está vazia. Adicione as primeiras imagens de design que você gosta.</p>
               </div>
 
               <!-- Preferências -->
@@ -11621,9 +11616,10 @@
     let carAprendizados = [];
     let carObjetivo = '';
     let carEstilo = '';
-    let carRefTipo = 'link';
-    let carRefEtiqueta = 'visual';
-    let carRefImgs = []; // { blob, previa }
+    let carRefEtiquetas = ['visual'];
+    let carRefImgs = []; // imagens do formulário: { url } (já guardada) ou { blob, previa } (nova)
+    let carRefEditandoId = null;
+    let carRefFiltro = '';
     let carRascunhoId = null;
     let carTimers = {};
 
@@ -11705,12 +11701,30 @@
       });
     }
 
+    // Chips em que dá pra marcar mais de um.
+    function carMontarChipsMulti(idContainer, itens, selecionados, aoMudar) {
+      const box = document.getElementById(idContainer);
+      box.innerHTML = '';
+      itens.forEach((item) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'rt-chip' + (selecionados.includes(item.valor) ? ' ativo' : '');
+        b.textContent = item.rotulo;
+        b.addEventListener('click', () => {
+          const novo = selecionados.includes(item.valor) ? selecionados.filter((v) => v !== item.valor) : [...selecionados, item.valor];
+          aoMudar(novo);
+          carMontarChipsMulti(idContainer, itens, novo, aoMudar);
+        });
+        box.appendChild(b);
+      });
+    }
+
     function carMontarOpcoes() {
       carMontarChips('car-objetivos', CAR_OBJETIVOS.map((o) => ({ valor: o.chave, rotulo: o.chave, dica: o.dica })), carObjetivo, (v) => { carObjetivo = v; }, true);
       carMontarChips('car-estilos', CAR_ESTILOS.map((e) => ({ valor: e, rotulo: e })), carEstilo, (v) => { carEstilo = v; }, true);
-      carMontarChips('car-ref-etiqueta', CAR_ETIQUETAS.map((e) => ({ valor: e.chave, rotulo: e.nome })), carRefEtiqueta, (v) => { carRefEtiqueta = v || 'visual'; }, false);
+      carMontarChipsMulti('car-ref-etiqueta', CAR_ETIQUETAS.map((e) => ({ valor: e.chave, rotulo: e.nome })), carRefEtiquetas, (v) => { carRefEtiquetas = v; });
       const qtd = document.getElementById('car-qtd');
-      qtd.innerHTML = '';
+      if (qtd.options.length) return;
       for (let n = 5; n <= 12; n++) {
         const o = document.createElement('option');
         o.value = String(n);
@@ -11772,7 +11786,27 @@
       carStatus('car-status-rascunho', 'Rascunho salvo em "Meus carrosséis".');
     }
 
-    // ---- Referências ----
+    // ---- Referências: biblioteca visual de estilos de design (só imagens) ----
+    function carNomeEtiqueta(chave) {
+      const e = CAR_ETIQUETAS.find((x) => x.chave === chave);
+      return e ? e.nome : chave;
+    }
+
+    function carEtiquetasDe(r) {
+      return Array.isArray(r.etiquetas) ? r.etiquetas : [];
+    }
+
+    function carTextoEtiquetas(r) {
+      return carEtiquetasDe(r).map(carNomeEtiqueta).join(', ');
+    }
+
+    // Nome que aparece no seletor de "Referência" ao criar um carrossel.
+    function carRotuloReferencia(r) {
+      const resumo = (r.nota || '').trim().slice(0, 36);
+      const partes = [carData(r.created_at), carTextoEtiquetas(r), `${(r.imagens || []).length} imagens`].filter(Boolean);
+      return resumo ? `${resumo}${r.nota.trim().length > 36 ? '...' : ''} (${partes.join(' · ')})` : `Referência de ${partes.join(' · ')}`;
+    }
+
     function carRenderizarSelectReferencia() {
       const sel = document.getElementById('car-ref');
       const atual = sel.value;
@@ -11780,56 +11814,68 @@
       carRefs.forEach((r) => {
         const o = document.createElement('option');
         o.value = r.id;
-        o.textContent = r.titulo || (r.tipo === 'link' ? r.url : 'Referência sem nome');
+        o.textContent = carRotuloReferencia(r);
         sel.appendChild(o);
       });
       sel.value = carRefs.some((r) => r.id === atual) ? atual : '';
     }
 
-    function carNomeEtiqueta(chave) {
-      const e = CAR_ETIQUETAS.find((x) => x.chave === chave);
-      return e ? e.nome : chave;
-    }
-
-    function carHost(url) {
-      try {
-        return new URL(/^https?:/i.test(url) ? url : 'https://' + url).hostname.replace(/^www\./, '');
-      } catch (e) {
-        return url;
-      }
-    }
-
     function carRenderizarReferencias() {
+      const totalImgs = carRefs.reduce((soma, r) => soma + (r.imagens || []).length, 0);
       document.getElementById('car-cont-ref').textContent = carRefs.length ? `(${carRefs.length})` : '';
+      document.getElementById('car-ref-resumo').textContent = carRefs.length
+        ? `${carRefs.length} ${carRefs.length === 1 ? 'referência' : 'referências'}, ${totalImgs} ${totalImgs === 1 ? 'imagem' : 'imagens'}`
+        : '';
+
+      // Filtro por "serve para"
+      const itensFiltro = [{ valor: '', rotulo: 'Todas' }, ...CAR_ETIQUETAS.map((e) => ({ valor: e.chave, rotulo: e.nome }))];
+      const boxFiltro = document.getElementById('car-ref-filtros');
+      boxFiltro.hidden = carRefs.length === 0;
+      boxFiltro.innerHTML = '';
+      itensFiltro.forEach((item) => {
+        const qtd = item.valor ? carRefs.filter((r) => carEtiquetasDe(r).includes(item.valor)).length : carRefs.length;
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'rt-chip' + (item.valor === carRefFiltro ? ' ativo' : '');
+        b.textContent = `${item.rotulo} (${qtd})`;
+        b.addEventListener('click', () => {
+          carRefFiltro = item.valor;
+          carRenderizarReferencias();
+        });
+        boxFiltro.appendChild(b);
+      });
+
+      const visiveis = carRefFiltro ? carRefs.filter((r) => carEtiquetasDe(r).includes(carRefFiltro)) : carRefs;
       document.getElementById('car-ref-vazio').hidden = carRefs.length > 0;
       const lista = document.getElementById('car-ref-lista');
       lista.innerHTML = '';
-      carRefs.forEach((r) => {
+      visiveis.forEach((r) => {
+        const imgs = r.imagens || [];
         const card = document.createElement('div');
-        card.className = 'card car-ref-card';
-        const capa = r.tipo === 'imagem' && r.imagens && r.imagens[0]
-          ? `<div class="car-ref-capa"><img src="${escapeHtml(r.imagens[0])}" alt="" loading="lazy">${r.imagens.length > 1 ? `<span class="car-ref-qtd">1/${r.imagens.length}</span>` : ''}</div>`
-          : `<div class="car-ref-capa car-ref-capa-link">🔗<small>${escapeHtml(carHost(r.url || ''))}</small></div>`;
-        const abrir = r.tipo === 'link' && r.url
-          ? `<a class="cal-btn" href="${escapeHtml(/^https?:/i.test(r.url) ? r.url : 'https://' + r.url)}" target="_blank" rel="noopener">Abrir ↗</a>`
-          : '';
+        card.className = 'card car-ref-card' + (r.id === carRefEditandoId ? ' car-ref-editando' : '');
         card.innerHTML = `
-          ${capa}
+          <button type="button" class="car-ref-capa" data-ver aria-label="Ver as imagens">
+            <img src="${escapeHtml(imgs[0] || '')}" alt="" loading="lazy">
+            ${imgs.length > 1 ? `<span class="car-ref-qtd">${imgs.length} imagens</span>` : ''}
+          </button>
           <div class="car-ref-corpo">
-            <span class="car-ref-etiqueta">${escapeHtml(carNomeEtiqueta(r.etiqueta))}</span>
-            <strong>${escapeHtml(r.titulo || 'Referência sem nome')}</strong>
-            ${r.nota ? `<p>${escapeHtml(r.nota)}</p>` : ''}
-            <div class="car-ref-acoes">${abrir}<button type="button" class="cal-btn pl-btn-excluir" data-excluir>Excluir</button></div>
+            <div class="car-ref-etiquetas">${carEtiquetasDe(r).map((e) => `<span class="car-ref-etiqueta">${escapeHtml(carNomeEtiqueta(e))}</span>`).join('')}</div>
+            ${r.nota ? `<p>${escapeHtml(r.nota)}</p>` : '<p class="car-ref-sem-nota">Sem anotação.</p>'}
+            <div class="car-ref-acoes">
+              <button type="button" class="cal-btn" data-editar>Editar</button>
+              <button type="button" class="cal-btn pl-btn-excluir" data-excluir>Excluir</button>
+            </div>
           </div>`;
+        card.querySelector('[data-ver]').addEventListener('click', () => carVerReferencia(r));
+        card.querySelector('[data-editar]').addEventListener('click', () => carEditarReferencia(r));
         card.querySelector('[data-excluir]').addEventListener('click', () => carExcluirReferencia(r));
         lista.appendChild(card);
       });
     }
 
-    function carMostrarTipoReferencia() {
-      document.getElementById('car-ref-campo-link').hidden = carRefTipo !== 'link';
-      document.getElementById('car-ref-campo-img').hidden = carRefTipo !== 'imagem';
-      document.querySelectorAll('#car-ref-tipo .rt-chip').forEach((b) => b.classList.toggle('ativo', b.dataset.valor === carRefTipo));
+    // Abre as imagens da referência no visualizador grande que os Achados já usam.
+    function carVerReferencia(r) {
+      achAbrirImagens({ conteudo: carTextoEtiquetas(r) || 'Referência', imagens: r.imagens || [], observacoes: r.nota || '' }, 0);
     }
 
     function carRenderizarMiniaturas() {
@@ -11838,18 +11884,23 @@
       carRefImgs.forEach((img, i) => {
         const m = document.createElement('div');
         m.className = 'car-mini';
-        m.innerHTML = `<img src="${img.previa}" alt=""><button type="button" aria-label="Tirar imagem">&times;</button>`;
+        m.innerHTML = `<img src="${escapeHtml(img.url || img.previa)}" alt=""><button type="button" aria-label="Tirar imagem">&times;</button>`;
         m.querySelector('button').addEventListener('click', () => {
-          URL.revokeObjectURL(img.previa);
+          if (img.previa) URL.revokeObjectURL(img.previa);
           carRefImgs.splice(i, 1);
           carRenderizarMiniaturas();
         });
         box.appendChild(m);
       });
+      document.getElementById('car-ref-dica').textContent = carRefImgs.length
+        ? `${carRefImgs.length} de ${CAR_MAX_IMAGENS} imagens. Dá pra arrastar mais pra cá.`
+        : 'Escolha do seu dispositivo ou arraste pra cá. Até 8 imagens.';
+      document.getElementById('car-ref-add-img').disabled = carRefImgs.length >= CAR_MAX_IMAGENS;
     }
 
     async function carAdicionarImagens(arquivos) {
       const imagens = [...(arquivos || [])].filter((f) => f && /^image\//.test(f.type));
+      if (!imagens.length) return;
       for (const f of imagens) {
         if (carRefImgs.length >= CAR_MAX_IMAGENS) {
           carStatus('car-status-ref', `O máximo é ${CAR_MAX_IMAGENS} imagens por referência.`, true);
@@ -11866,47 +11917,88 @@
       carRenderizarMiniaturas();
     }
 
+    function carLimparFormularioReferencia() {
+      carRefImgs.forEach((i) => i.previa && URL.revokeObjectURL(i.previa));
+      carRefImgs = [];
+      carRefEditandoId = null;
+      carRefEtiquetas = ['visual'];
+      document.getElementById('car-ref-nota').value = '';
+      document.getElementById('car-ref-titulo-form').textContent = 'Adicionar referência';
+      document.getElementById('car-ref-salvar').textContent = 'Salvar na biblioteca';
+      document.getElementById('car-ref-cancelar').hidden = true;
+      carMontarOpcoes();
+      carRenderizarMiniaturas();
+    }
+
+    // Edita uma referência já guardada: troca as imagens, a anotação e o "serve para".
+    function carEditarReferencia(r) {
+      carLimparFormularioReferencia();
+      carRefEditandoId = r.id;
+      carRefImgs = (r.imagens || []).map((url) => ({ url }));
+      carRefEtiquetas = [...carEtiquetasDe(r)];
+      document.getElementById('car-ref-nota').value = r.nota || '';
+      document.getElementById('car-ref-titulo-form').textContent = 'Editar referência';
+      document.getElementById('car-ref-salvar').textContent = 'Salvar alterações';
+      document.getElementById('car-ref-cancelar').hidden = false;
+      carMontarOpcoes();
+      carRenderizarMiniaturas();
+      carRenderizarReferencias();
+      document.getElementById('car-ref-titulo-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function carCancelarEdicaoReferencia() {
+      carLimparFormularioReferencia();
+      carStatus('car-status-ref', '');
+      carRenderizarReferencias();
+    }
+
     async function carSalvarReferencia() {
-      if (!carTabelasOk) return alert('Falta rodar o arquivo gerador-carrossel.sql no Supabase.');
-      const titulo = document.getElementById('car-ref-titulo').value.trim();
-      const url = document.getElementById('car-ref-url').value.trim();
+      if (!carTabelasOk) return alert('Falta rodar o arquivo gerador-carrossel-biblioteca.sql no Supabase.');
       const nota = document.getElementById('car-ref-nota').value.trim();
-      if (carRefTipo === 'link' && !url) return carStatus('car-status-ref', 'Cole o link da referência.', true);
-      if (carRefTipo === 'imagem' && !carRefImgs.length) return carStatus('car-status-ref', 'Adicione pelo menos uma imagem.', true);
+      if (!carRefImgs.length) return carStatus('car-status-ref', 'Adicione pelo menos uma imagem.', true);
+      if (!carRefEtiquetas.length) return carStatus('car-status-ref', 'Marque pelo menos um "serve de referência para".', true);
 
       const botao = document.getElementById('car-ref-salvar');
       botao.disabled = true;
       carStatus('car-status-ref', 'Salvando...');
-      const enviadas = [];
+      const novas = [];
+      const editando = carRefs.find((r) => r.id === carRefEditandoId) || null;
+      const imagensAntigas = editando ? [...(editando.imagens || [])] : [];
       try {
-        if (carRefTipo === 'imagem') {
-          for (const img of carRefImgs) {
-            const nome = `${crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(16).slice(2)}.jpg`;
-            const { error } = await Auth.sb.storage.from(CAR_BUCKET).upload(nome, img.blob, { contentType: 'image/jpeg' });
-            if (error) throw error;
-            enviadas.push(Auth.sb.storage.from(CAR_BUCKET).getPublicUrl(nome).data.publicUrl);
+        const urls = [];
+        for (const img of carRefImgs) {
+          if (img.url) {
+            urls.push(img.url);
+            continue;
           }
+          const nome = `${crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(16).slice(2)}.jpg`;
+          const { error } = await Auth.sb.storage.from(CAR_BUCKET).upload(nome, img.blob, { contentType: 'image/jpeg' });
+          if (error) throw error;
+          const url = Auth.sb.storage.from(CAR_BUCKET).getPublicUrl(nome).data.publicUrl;
+          novas.push(url);
+          urls.push(url);
         }
-        const { data, error } = await Auth.sb
-          .from('carrossel_referencias')
-          .insert({ tipo: carRefTipo, titulo, url: carRefTipo === 'link' ? url : null, imagens: enviadas, nota, etiqueta: carRefEtiqueta })
-          .select()
-          .single();
-        if (error) throw error;
-        carRefs.unshift(data);
-        document.getElementById('car-ref-titulo').value = '';
-        document.getElementById('car-ref-url').value = '';
-        document.getElementById('car-ref-nota').value = '';
-        carRefImgs.forEach((i) => URL.revokeObjectURL(i.previa));
-        carRefImgs = [];
-        carRenderizarMiniaturas();
+        const dados = { imagens: urls, nota, etiquetas: carRefEtiquetas };
+        const resposta = editando
+          ? await Auth.sb.from('carrossel_referencias').update(dados).eq('id', editando.id).select().single()
+          : await Auth.sb.from('carrossel_referencias').insert(dados).select().single();
+        if (resposta.error) throw resposta.error;
+        if (editando) {
+          // Imagens que ela tirou do formulário saem também do armazenamento.
+          await carRemoverImagens(imagensAntigas.filter((u) => !urls.includes(u)));
+          carRefs = carRefs.map((r) => (r.id === editando.id ? resposta.data : r));
+        } else {
+          carRefs.unshift(resposta.data);
+        }
+        carLimparFormularioReferencia();
         carRenderizarReferencias();
         carRenderizarSelectReferencia();
-        carStatus('car-status-ref', 'Referência salva.');
+        carStatus('car-status-ref', editando ? 'Alterações salvas.' : 'Referência guardada na biblioteca.');
       } catch (err) {
         console.error('Erro ao salvar referência:', err);
-        await carRemoverImagens(enviadas);
-        carStatus('car-status-ref', 'Não consegui salvar a referência. Tente de novo.', true);
+        await carRemoverImagens(novas);
+        const faltaSql = err && (err.code === 'PGRST204' || /etiquetas/i.test(err.message || ''));
+        carStatus('car-status-ref', faltaSql ? 'Falta rodar o arquivo gerador-carrossel-biblioteca.sql no Supabase.' : 'Não consegui salvar a referência. Tente de novo.', true);
       }
       botao.disabled = false;
     }
@@ -11928,7 +12020,7 @@
     }
 
     async function carExcluirReferencia(r) {
-      const ok = await confirmarAcao(`Excluir a referência "${r.titulo || 'sem nome'}"? A IA deixa de consultar ela.`, { textoConfirmar: 'Excluir' });
+      const ok = await confirmarAcao('Excluir esta referência e as imagens dela da biblioteca? A IA deixa de consultar ela.', { textoConfirmar: 'Excluir' });
       if (!ok) return;
       const { error } = await Auth.sb.from('carrossel_referencias').delete().eq('id', r.id);
       if (error) {
@@ -11938,6 +12030,7 @@
       }
       await carRemoverImagens(r.imagens);
       carRefs = carRefs.filter((x) => x.id !== r.id);
+      if (carRefEditandoId === r.id) carLimparFormularioReferencia();
       carRenderizarReferencias();
       carRenderizarSelectReferencia();
     }
@@ -12028,18 +12121,24 @@
       document.querySelectorAll('#car-abas .rt-chip').forEach((b) => b.addEventListener('click', () => carTrocarAba(b.dataset.carAba)));
       document.getElementById('car-btn-rascunho').addEventListener('click', carSalvarRascunho);
       document.getElementById('car-btn-limpar').addEventListener('click', () => carPreencherFormulario(null));
-      document.querySelectorAll('#car-ref-tipo .rt-chip').forEach((b) =>
-        b.addEventListener('click', () => {
-          carRefTipo = b.dataset.valor;
-          carMostrarTipoReferencia();
-        })
-      );
       document.getElementById('car-ref-add-img').addEventListener('click', () => document.getElementById('car-ref-input-img').click());
       document.getElementById('car-ref-input-img').addEventListener('change', (e) => {
         carAdicionarImagens(e.target.files);
         e.target.value = '';
       });
       document.getElementById('car-ref-salvar').addEventListener('click', carSalvarReferencia);
+      document.getElementById('car-ref-cancelar').addEventListener('click', carCancelarEdicaoReferencia);
+      const zona = document.getElementById('car-ref-zona');
+      zona.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        zona.classList.add('car-zona-ativa');
+      });
+      zona.addEventListener('dragleave', () => zona.classList.remove('car-zona-ativa'));
+      zona.addEventListener('drop', (e) => {
+        e.preventDefault();
+        zona.classList.remove('car-zona-ativa');
+        carAdicionarImagens(e.dataTransfer && e.dataTransfer.files);
+      });
       document.getElementById('car-pref-salvar').addEventListener('click', carSalvarPreferencias);
     }
 

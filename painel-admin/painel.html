@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261034a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261035a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -939,6 +939,11 @@
                 <div class="card car-card">
                   <h3 class="card-titulo" id="car-ref-titulo-form">Adicionar referência</h3>
                   <p class="car-ajuda">Sua biblioteca de estilos de design que você gosta. As imagens ficam guardadas pra sempre aqui, e a IA consulta tudo isso toda vez que cria um carrossel.</p>
+
+                  <div class="cal-form-campo">
+                    <label for="car-ref-nome">Nome <small>opcional</small></label>
+                    <input type="text" id="car-ref-nome" maxlength="120" autocomplete="off" placeholder="Ex.: Minimalista azul com letras grandes">
+                  </div>
 
                   <div class="cal-form-campo">
                     <label>Imagens <small>até 8 por referência</small></label>
@@ -11802,9 +11807,9 @@
 
     // Nome que aparece no seletor de "Referência" ao criar um carrossel.
     function carRotuloReferencia(r) {
-      const resumo = (r.nota || '').trim().slice(0, 36);
-      const partes = [carData(r.created_at), carTextoEtiquetas(r), `${(r.imagens || []).length} imagens`].filter(Boolean);
-      return resumo ? `${resumo}${r.nota.trim().length > 36 ? '...' : ''} (${partes.join(' · ')})` : `Referência de ${partes.join(' · ')}`;
+      const partes = [carTextoEtiquetas(r), `${(r.imagens || []).length} imagens`].filter(Boolean);
+      const nome = (r.titulo || '').trim() || (r.nota || '').trim().slice(0, 36) || `Referência de ${carData(r.created_at)}`;
+      return `${nome} (${partes.join(' · ')})`;
     }
 
     function carRenderizarSelectReferencia() {
@@ -11859,6 +11864,7 @@
             ${imgs.length > 1 ? `<span class="car-ref-qtd">${imgs.length} imagens</span>` : ''}
           </button>
           <div class="car-ref-corpo">
+            ${r.titulo ? `<strong class="car-ref-nome">${escapeHtml(r.titulo)}</strong>` : ''}
             <div class="car-ref-etiquetas">${carEtiquetasDe(r).map((e) => `<span class="car-ref-etiqueta">${escapeHtml(carNomeEtiqueta(e))}</span>`).join('')}</div>
             ${r.nota ? `<p>${escapeHtml(r.nota)}</p>` : '<p class="car-ref-sem-nota">Sem anotação.</p>'}
             <div class="car-ref-acoes">
@@ -11875,7 +11881,7 @@
 
     // Abre as imagens da referência no visualizador grande que os Achados já usam.
     function carVerReferencia(r) {
-      achAbrirImagens({ conteudo: carTextoEtiquetas(r) || 'Referência', imagens: r.imagens || [], observacoes: r.nota || '' }, 0);
+      achAbrirImagens({ conteudo: (r.titulo || '').trim() || carTextoEtiquetas(r) || 'Referência', imagens: r.imagens || [], observacoes: r.nota || '' }, 0);
     }
 
     function carRenderizarMiniaturas() {
@@ -11923,6 +11929,7 @@
       carRefEditandoId = null;
       carRefEtiquetas = ['visual'];
       document.getElementById('car-ref-nota').value = '';
+      document.getElementById('car-ref-nome').value = '';
       document.getElementById('car-ref-titulo-form').textContent = 'Adicionar referência';
       document.getElementById('car-ref-salvar').textContent = 'Salvar na biblioteca';
       document.getElementById('car-ref-cancelar').hidden = true;
@@ -11937,6 +11944,7 @@
       carRefImgs = (r.imagens || []).map((url) => ({ url }));
       carRefEtiquetas = [...carEtiquetasDe(r)];
       document.getElementById('car-ref-nota').value = r.nota || '';
+      document.getElementById('car-ref-nome').value = r.titulo || '';
       document.getElementById('car-ref-titulo-form').textContent = 'Editar referência';
       document.getElementById('car-ref-salvar').textContent = 'Salvar alterações';
       document.getElementById('car-ref-cancelar').hidden = false;
@@ -11953,8 +11961,9 @@
     }
 
     async function carSalvarReferencia() {
-      if (!carTabelasOk) return alert('Falta rodar o arquivo gerador-carrossel-biblioteca.sql no Supabase.');
+      if (!carTabelasOk) return alert('Falta rodar o arquivo gerador-carrossel.sql no Supabase.');
       const nota = document.getElementById('car-ref-nota').value.trim();
+      const titulo = document.getElementById('car-ref-nome').value.trim();
       if (!carRefImgs.length) return carStatus('car-status-ref', 'Adicione pelo menos uma imagem.', true);
       if (!carRefEtiquetas.length) return carStatus('car-status-ref', 'Marque pelo menos um "serve de referência para".', true);
 
@@ -11978,7 +11987,7 @@
           novas.push(url);
           urls.push(url);
         }
-        const dados = { imagens: urls, nota, etiquetas: carRefEtiquetas };
+        const dados = { titulo, imagens: urls, nota, etiquetas: carRefEtiquetas };
         const resposta = editando
           ? await Auth.sb.from('carrossel_referencias').update(dados).eq('id', editando.id).select().single()
           : await Auth.sb.from('carrossel_referencias').insert(dados).select().single();
@@ -11997,8 +12006,8 @@
       } catch (err) {
         console.error('Erro ao salvar referência:', err);
         await carRemoverImagens(novas);
-        const faltaSql = err && (err.code === 'PGRST204' || /etiquetas/i.test(err.message || ''));
-        carStatus('car-status-ref', faltaSql ? 'Falta rodar o arquivo gerador-carrossel-biblioteca.sql no Supabase.' : 'Não consegui salvar a referência. Tente de novo.', true);
+        const faltaSql = err && (err.code === 'PGRST204' || /etiquetas|titulo/i.test(err.message || ''));
+        carStatus('car-status-ref', faltaSql ? 'Falta rodar o arquivo gerador-carrossel-nome.sql no Supabase.' : 'Não consegui salvar a referência. Tente de novo.', true);
       }
       botao.disabled = false;
     }

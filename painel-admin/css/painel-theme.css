@@ -12800,3 +12800,9 @@
 .painel-body .car-ref-editando {
   outline: 2px solid var(--coral);
 }
+
+.painel-body .car-ref-nome {
+  font-size: 15px;
+  color: var(--grafite);
+  overflow-wrap: anywhere;
+}

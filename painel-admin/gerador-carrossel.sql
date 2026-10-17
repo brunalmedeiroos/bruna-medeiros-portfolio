@@ -22,6 +22,7 @@ create table if not exists public.carrossel_preferencias (
 create table if not exists public.carrossel_referencias (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
+  titulo text not null default '',
   imagens text[] not null default '{}',
   nota text not null default '',
   etiquetas text[] not null default '{visual}'

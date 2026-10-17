@@ -265,9 +265,12 @@ section{ position:relative; }
   width:100%; height:100%; max-width:none;
   /* alinhada ao topo (e puxada pra direita) pra nunca cortar a cabeça */
   object-fit:cover; object-position: 70% top;
+  /* só aparece depois que o site decide qual é a foto de verdade (evita piscar a foto antiga) */
+  opacity:0; transition: opacity .5s ease;
   /* aumenta um pouco a foto a partir do canto de cima esquerdo: empurra ela pra direita, longe da frase, sem cortar a cabeça */
   transform: translateY(-5.5%) scale(1.14); transform-origin: left top;
 }
+.hero-cover-photo.is-pronta{ opacity:1; }
 .hero-cover-inner{
   position:absolute; inset:0; z-index:3; display:flex; align-items:center;
   padding: 60px 6% 70px; pointer-events:none;
@@ -1439,6 +1442,16 @@ a.info-value:hover{ text-decoration:underline; }
     });
   }
 
+  /* mostra a foto da capa quando ela termina de carregar (ou já na hora, se o painel não trocou a foto) */
+  function mostrarFotoCapa(){
+    var img = document.querySelector('img[data-foto="hero"]');
+    if (!img) return;
+    var ok = function(){ img.classList.add('is-pronta'); };
+    if (img.complete && img.naturalWidth) ok();
+    else { img.addEventListener('load', ok, { once: true }); img.addEventListener('error', ok, { once: true }); }
+  }
+  setTimeout(mostrarFotoCapa, 3500); /* segurança: se a internet estiver lenta, mostra a foto padrão mesmo assim */
+
   var portfolioExtras = {};
 
   var CONTATOS_PADRAO = { whatsapp: '5585992805861', whatsapp_msg: 'Oi, Bruna! quero solicitar uma proposta', email: 'brunamedeirosugc@gmail.com', instagram: 'brunalmedeiroos', tiktok: 'brunamedeiros' };
@@ -1570,7 +1583,8 @@ a.info-value:hover{ text-decoration:underline; }
       })
       .catch(function(err){
         console.error('Não foi possível carregar os trabalhos do painel no portfólio:', err);
-      });
+      })
+      .then(mostrarFotoCapa);
   }
 
   function getSessionId(){

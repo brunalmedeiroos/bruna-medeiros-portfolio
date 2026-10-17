@@ -52,6 +52,7 @@
   --shadow-soft: 0 20px 45px rgba(92,110,145,0.16);
   --shadow-hard: 0 10px 24px rgba(92,110,145,0.22);
   --promo-bar-h: 42px;
+  --nav-h: 70px;
   --promo-bar-space: 54px;
 
   /* ---------- FONTES (não trocar por outras) ---------- */
@@ -145,8 +146,10 @@ section{ position:relative; }
 .section--offwhite{ background: var(--offwhite); }
 .section--blue{ background: var(--blue-light); }
 .section--butter{ background: var(--butter); }
+.section--dark{ background: var(--blue-dark); }
 .section--gray{ background: var(--gray-light); }
 .section--blue .section-title, .section--butter .section-title{ color: var(--ink); }
+.section--dark .section-title{ color: var(--butter); }
 
 .section-kicker{
   font-weight:700; font-size:.78rem; letter-spacing:.14em; text-transform:uppercase;
@@ -170,98 +173,89 @@ section{ position:relative; }
 }
 
 /* =====================================================================
-   NAVBAR — largura total, linha branca embaixo, palavras em azul claro
+   NAVBAR — largura total, fundo azul claro, linha branca embaixo, palavras em branco off
 ===================================================================== */
 .navbar{
   position: fixed; top:0; left:0; right:0; z-index: 500; width:100%;
   font-family: var(--font-system);
-  background: transparent;
+  background: var(--blue-light);
   border-bottom: 1px solid #fff;
-  transition: top .35s ease, background .3s ease;
+  transition: top .35s ease;
 }
 /* com a faixa de aviso visível, o menu desce pra ficar embaixo dela */
 .promo-bar.is-visible:not(.is-past-hero) ~ .navbar{ top: var(--promo-bar-h); }
-.navbar.is-solid{ background: var(--blue-dark); }
 .nav-inner{
-  width:100%; margin:0 auto; padding: 10px 40px;
+  width:100%; height: var(--nav-h); margin:0 auto; padding: 0 40px;
   display:flex; align-items:center; justify-content:space-between; gap:24px;
 }
-.nav-logo{ font-family: var(--font-script); font-size:1.6rem; color: var(--blue-light); flex-shrink:0; }
+.nav-logo{ font-family: var(--font-script); font-size:1.6rem; color: var(--blue-dark); flex-shrink:0; }
 .nav-logo-img{ display:flex; align-items:center; }
-.nav-logo-img img{ height:50px; width:auto; display:block; filter: brightness(0) invert(1); }
+.nav-logo-img img{ height:50px; width:auto; display:block; filter: url(#logoAzul); }
 .nav-location{
   display:flex; align-items:center; gap:6px; flex-shrink:0; margin-left:6px;
-  font-family: var(--font-body); font-weight:700; font-size:.82rem; color: var(--blue-light);
+  font-family: var(--font-body); font-weight:700; font-size:.82rem; color: var(--offwhite);
+  text-shadow: 0 1px 2px rgba(59,74,107,0.3);
 }
-.nav-location svg{ width:15px; height:15px; flex-shrink:0; color: var(--blue-light); }
+.nav-location svg{ width:15px; height:15px; flex-shrink:0; color: var(--offwhite); }
 .nav-tabs{
   display:flex; align-items:center; gap:10px; margin-left:auto; min-width:0;
 }
 .nav-tab{
-  font-size:.94rem; font-weight:700; color: var(--blue-light);
+  font-size:.94rem; font-weight:700; color: var(--offwhite);
+  text-shadow: 0 1px 2px rgba(59,74,107,0.3);
   background: transparent; border:none; border-radius:10px;
   padding:9px 16px; white-space:nowrap; cursor:pointer; position:relative;
   transition: background .2s ease, color .2s ease;
 }
-.nav-tab:hover{ background: rgba(255,255,255,0.14); color:#fff; }
+.nav-tab:hover{ background: rgba(255,255,255,0.24); color:#fff; }
 .nav-tab.is-cta{
-  background: var(--butter); color: var(--blue-dark);
+  background: var(--butter); color: var(--blue-dark); text-shadow:none;
   font-weight:800; padding:10px 22px; border-radius:999px; margin-left:6px;
 }
 .nav-tab.is-cta:hover{ background: #fff; color: var(--blue-dark); }
 
-.nav-clock{
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  background: rgba(92,110,145,0.55); border:1px solid var(--blue-light);
-  color: #fff; border-radius:12px;
-  padding:6px 14px; line-height:1.2; flex-shrink:0; margin-left:6px;
-}
-.nav-clock-time{ font-weight:800; font-size:.92rem; letter-spacing:.5px; }
-.nav-clock-date{ font-weight:700; font-size:.58rem; letter-spacing:.08em; text-transform:uppercase; color: var(--blue-light); }
 .lang-toggle{
   flex-shrink:0; margin-left:6px; display:flex; align-items:center; gap:2px;
-  border:1.5px solid var(--blue-light); background: rgba(92,110,145,0.55);
+  border:1.5px solid var(--offwhite); background:transparent;
   padding:3px; border-radius:12px;
 }
 .lang-option{
-  border:none; background:transparent; color: var(--blue-light);
+  border:none; background:transparent; color: var(--offwhite);
   font-family: inherit; font-weight:800; font-size:.78rem; letter-spacing:.05em;
   padding:6px 11px; border-radius:9px; cursor:pointer; transition: background .2s ease, color .2s ease;
 }
-.lang-option:hover{ background: rgba(255,255,255,0.14); }
-.lang-option.is-active{ background: var(--blue-light); color: var(--blue-dark); }
-.lang-option.is-active:hover{ background: var(--blue-light); }
+.lang-option:hover{ background: rgba(255,255,255,0.24); }
+.lang-option.is-active{ background: var(--offwhite); color: var(--blue-dark); }
+.lang-option.is-active:hover{ background: var(--offwhite); }
 
 /* =====================================================================
-   FAIXA DE AVISO — linha azul escura em cima do menu, frase em amarelo manteiga
+   FAIXA DE AVISO — linha amarela em cima do menu, palavras em azul claro
 ===================================================================== */
 .promo-bar{
   position: fixed; top:0; left:0; right:0; z-index:600; height:var(--promo-bar-h);
   display:flex; align-items:center; justify-content:center; gap:12px; padding:0 40px;
-  background: var(--blue-dark); color: var(--butter);
+  background: var(--butter); color: var(--blue-light);
   text-decoration:none; cursor:pointer;
   transform: translateY(-100%);
   transition: transform .45s cubic-bezier(.2,.8,.2,1), background .2s ease;
 }
 .promo-bar.is-visible{ transform: translateY(0); }
 .promo-bar.is-past-hero{ transform: translateY(-100%) !important; pointer-events:none; }
-.promo-bar-icon{
-  width:24px; height:24px; border-radius:6px; overflow:hidden; flex-shrink:0;
-  display:flex; flex-direction:column; background: var(--butter);
-}
-.promo-bar-month{ background: var(--blue-light); color: var(--blue-dark); font-size:.4rem; font-weight:800; letter-spacing:.02em; text-align:center; line-height:1.5; }
-.promo-bar-day{ flex:1; display:flex; align-items:center; justify-content:center; font-size:.64rem; font-weight:800; color: var(--blue-dark); }
-.promo-bar-title{ font-size:.86rem; font-weight:800; color: var(--butter); white-space:nowrap; flex-shrink:0; }
-.promo-bar-dot{ color: var(--butter); opacity:.7; flex-shrink:0; }
-.promo-bar-sub{ font-size:.86rem; font-weight:500; color: var(--butter); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
-.promo-bar-reply{ flex-shrink:0; font-size:.82rem; font-weight:800; color: var(--butter); white-space:nowrap; margin-left:10px; text-decoration:underline; text-underline-offset:3px; }
+.promo-bar-title{ font-size:.88rem; font-weight:800; color: var(--blue-light); white-space:nowrap; flex-shrink:0; }
+.promo-bar-dot{ color: var(--blue-light); opacity:.8; flex-shrink:0; }
+.promo-bar-sub{ font-size:.88rem; font-weight:600; color: var(--blue-light); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+.promo-bar-reply{ flex-shrink:0; font-size:.84rem; font-weight:800; color: var(--blue-light); white-space:nowrap; margin-left:10px; text-decoration:underline; text-underline-offset:3px; }
 
 /* =====================================================================
    01 — HERO — a foto de capa é o fundo; frase à esquerda, rosto à direita
+   (a capa começa embaixo do menu, não passa por trás dele)
 ===================================================================== */
-.hero{ position:relative; overflow:hidden; }
+.hero{
+  position:relative; overflow:hidden; background: var(--blue-light);
+  padding-top: calc(var(--promo-bar-h) + var(--nav-h) + 1px);
+}
 .hero-cover{
-  position:relative; min-height: clamp(720px, 100vh, 960px); overflow:hidden;
+  position:relative; min-height: clamp(620px, calc(100vh - var(--promo-bar-h) - var(--nav-h)), 860px); overflow:hidden;
   background: var(--blue-light);
 }
 .hero-cover-photo{
@@ -272,13 +266,11 @@ section{ position:relative; }
 /* véu suave só do lado da frase, pra ela ler bem em cima de qualquer foto */
 .hero-scrim{
   position:absolute; inset:0; z-index:2; pointer-events:none;
-  background:
-    linear-gradient(180deg, rgba(92,110,145,0.78) 0px, rgba(92,110,145,0.5) 130px, rgba(92,110,145,0) 250px),
-    linear-gradient(90deg, rgba(92,110,145,0.80) 0%, rgba(92,110,145,0.58) 34%, rgba(92,110,145,0) 64%);
+  background: linear-gradient(90deg, rgba(92,110,145,0.80) 0%, rgba(92,110,145,0.58) 34%, rgba(92,110,145,0) 64%);
 }
 .hero-cover-inner{
   position:absolute; inset:0; z-index:3; display:flex; align-items:center;
-  padding: calc(var(--promo-bar-h) + 100px) 6% 70px; pointer-events:none;
+  padding: 60px 6% 70px; pointer-events:none;
 }
 .hero-cover-content{ max-width:760px; pointer-events:auto; }
 
@@ -312,12 +304,6 @@ section{ position:relative; }
 }
 .hero-link-arrow:hover{ gap:10px; }
 
-/* bolinhas coloridas do modal de vídeo */
-.file-dot{ width:9px; height:9px; border-radius:50%; }
-.file-dot.d1{ background: var(--blue-dark); }
-.file-dot.d2{ background: var(--blue-light); }
-.file-dot.d3{ background: var(--butter); }
-
 /* =====================================================================
    02 — SOBRE — texto solto à esquerda, foto simples à direita, fundo azul claro
 ===================================================================== */
@@ -327,22 +313,19 @@ section{ position:relative; }
   display:grid; grid-template-columns: 1.15fr 0.85fr; gap: 90px; align-items:center;
 }
 .about-title{
-  position:relative; display:inline-block; align-self:flex-start; padding:2px 6px; margin-bottom:30px;
+  position:relative; display:inline-block; align-self:flex-start; padding:0; margin-bottom:30px;
   font-family: var(--font-display); font-weight:800; letter-spacing:-0.5px;
-  font-size: clamp(2.6rem, 4.4vw, 4rem); line-height:1.08; color: var(--ink);
+  font-size: clamp(2.6rem, 4.4vw, 4rem); line-height:1.08; color: var(--butter);
 }
-.about-title .hl-box{
-  position:absolute; left:0; right:0; bottom:6%; height:44%; background: var(--butter);
-  border-radius:4px; z-index:0;
-}
+.about-title .hl-box{ display:none; }
 .about-title .hl-cursor{ display:none; }
 .about-title .hl-text{ position:relative; z-index:2; }
 .about-title .script{ font-style:italic; }
 #notesText{
-  font-size:1.2rem; line-height:1.85; color: var(--ink); font-weight:500; max-width:640px;
+  font-size:1.2rem; line-height:1.85; color: var(--butter); font-weight:500; max-width:640px;
 }
-.notes-highlight{ background: var(--butter); color: var(--ink); font-weight:600; padding:0 .22em; border-radius:3px; }
-.typing-cursor{ display:inline-block; width:2px; height:1em; background: var(--ink); vertical-align:text-bottom; animation: blink 1s step-end infinite; margin-left:2px; }
+.notes-highlight{ color: inherit; font-weight:inherit; }
+.typing-cursor{ display:inline-block; width:2px; height:1em; background: var(--butter); vertical-align:text-bottom; animation: blink 1s step-end infinite; margin-left:2px; }
 @keyframes blink{ 50%{ opacity:0; } }
 .about-photo{ justify-self:end; width:100%; max-width:440px; }
 .about-photo img{
@@ -383,17 +366,17 @@ section{ position:relative; }
 #portfolio .wrap{ max-width:1280px; }
 .portfolio-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:26px; }
 .portfolio-head .section-title{ margin-bottom:0; }
-.finder-count{ font-size:.9rem; font-weight:700; color: var(--ink); padding-bottom:8px; }
+.finder-count{ font-size:.9rem; font-weight:700; color: var(--butter); padding-bottom:8px; }
 
 .folder-tabs{ display:flex; flex-wrap:wrap; gap:12px; margin-bottom:34px; }
 .folder-tab{
-  background: rgba(255,255,255,0.6); border:2px solid transparent; color: var(--ink);
+  background: rgba(245,225,180,0.14); border:2px solid transparent; color: var(--butter);
   font-family: var(--font-body); font-weight:700; font-size:.96rem;
   padding:12px 26px; border-radius:999px; cursor:pointer;
   transition: background .25s ease, color .25s ease, transform .25s ease;
 }
-.folder-tab:hover{ background:#fff; transform: translateY(-2px); }
-.folder-tab.is-active{ background: var(--blue-dark); color:#fff; }
+.folder-tab:hover{ background: rgba(245,225,180,0.28); transform: translateY(-2px); }
+.folder-tab.is-active{ background: var(--butter); color: var(--blue-dark); }
 
 .catalog{ position:relative; }
 .catalog-arrow{
@@ -602,7 +585,7 @@ section{ position:relative; }
 ===================================================================== */
 .contact-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:90px; align-items:start; }
 .contact-cta h2{ font-family: var(--font-display); font-weight:700; letter-spacing:-0.5px; font-size: clamp(2rem,4vw,3rem); color: var(--ink); line-height:1.02; margin-bottom:20px; }
-.contact-cta h2 .script{ font-family: var(--font-script); letter-spacing:0; font-size:1.35em; color: var(--blue-dark); }
+.contact-cta h2 .script{ font-family: var(--font-script); letter-spacing:0; font-size:1.35em; color: var(--butter); text-shadow: 0 1px 3px rgba(59,74,107,0.3); }
 .contact-cta p{ font-size:1rem; color: var(--ink); font-weight:500; margin-bottom:30px; max-width: 420px; line-height:1.6; }
 
 .contact-info-card{
@@ -727,10 +710,6 @@ a.info-value:hover{ text-decoration:underline; }
 </svg>
 
 <a href="#contato" class="promo-bar" id="promoBar" aria-label="Datas comemorativas para contratar a Bruna">
-  <span class="promo-bar-icon" aria-hidden="true">
-    <span class="promo-bar-month" id="promoMonth">OUT</span>
-    <span class="promo-bar-day" id="promoDay">12</span>
-  </span>
   <span class="promo-bar-title" id="promoTitle"></span>
   <span class="promo-bar-dot" aria-hidden="true">·</span>
   <span class="promo-bar-sub" id="promoSub"></span>
@@ -758,10 +737,6 @@ a.info-value:hover{ text-decoration:underline; }
     <div class="lang-toggle" id="langToggle" role="group" aria-label="Switch language / Mudar idioma">
       <button type="button" class="lang-option" data-lang="pt">PT</button>
       <button type="button" class="lang-option" data-lang="en">EN</button>
-    </div>
-    <div class="nav-clock" id="navClock">
-      <span class="nav-clock-time" id="navClockTime">--:--</span>
-      <span class="nav-clock-date" id="navClockDate">-- DE ---</span>
     </div>
   </div>
 </header>
@@ -797,7 +772,7 @@ a.info-value:hover{ text-decoration:underline; }
 <!-- =========================================================
      02 — SOBRE (Notes estilo iPhone)
 ========================================================== -->
-<section class="section section--blue" id="sobre">
+<section class="section section--dark" id="sobre">
   <div class="wrap">
     <div class="about-panel">
       <div class="about-text">
@@ -865,7 +840,7 @@ a.info-value:hover{ text-decoration:underline; }
 <!-- =========================================================
      05 — PORTFÓLIO
 ========================================================== -->
-<section class="section section--blue" id="portfolio">
+<section class="section section--dark" id="portfolio">
   <div class="wrap">
     <div class="portfolio-head">
       <h2 class="section-title" data-pt="portfólio" data-en="portfolio">portfólio</h2>

@@ -6,7 +6,7 @@ Banco: `painel-admin/gerador-carrossel.sql` (rodar uma vez no SQL Editor do Supa
 
 ## Etapa 1: estrutura (feita)
 - Sub-aba nova com 4 áreas: **Criar carrossel**, **Referências**, **Preferências e tom de voz**, **Meus carrosséis**.
-- Funcionando de verdade, com dados no Supabase: referências (link ou até 8 imagens, com "o que eu gosto" e etiqueta visual/estrutura/tom/gancho), preferências (tom de voz, identidade, estrutura, design, sempre/nunca, instruções pra IA), rascunhos de pedido (tema, objetivo, nº de slides, referência, estilo, observações), lista de aprendizados.
+- Funcionando de verdade, com dados no Supabase: referências: biblioteca visual só de imagens (até 8 por referência, enviadas do dispositivo), com "o que eu gosto" e "serve para" (visual, estrutura, tom, gancho; pode marcar mais de uma), com editar, filtrar e visualizar, preferências (tom de voz, identidade, estrutura, design, sempre/nunca, instruções pra IA), rascunhos de pedido (tema, objetivo, nº de slides, referência, estilo, observações), lista de aprendizados.
 - Botão "Gerar com IA" ainda desligado de propósito.
 
 ## Etapa 2: IA que escreve os slides
@@ -18,7 +18,7 @@ Edge Function nova `carrossel-gerar` (padrão do `radar-atualizar`):
 5. Repete a chamada se der 503/429 (como o radar). Salva em `carrossel_carrosseis` com status `gerado`.
 6. O painel chama pelo `chamarFuncao('carrossel-gerar', { method: 'POST', body: { carrossel_id } })`.
 
-Limite conhecido: o Instagram não deixa a função ler o conteúdo de um link. Em referência de link, a IA usa o nome e a nota "o que eu gosto". Pra ela enxergar o design, suba as imagens.
+As referências são só imagens, então a IA enxerga o design de verdade. As imagens ficam guardadas no Supabase (pasta `carrossel-referencias`) e a função lê todas elas a cada geração.
 
 ## Etapa 3: design dos slides, edição e exportação
 - Renderizador de slides em HTML/CSS no formato 1080x1350 (4:5), usando as cores e fontes das preferências de design e layouts fixos (capa, texto, lista, citação, CTA).

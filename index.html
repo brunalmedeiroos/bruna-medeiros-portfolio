@@ -170,61 +170,6 @@ section{ position:relative; }
 }
 
 /* =====================================================================
-   TELA DE BLOQUEIO — abre o "computador" antes do hero
-===================================================================== */
-.lock-screen{
-  position: fixed; inset:0; z-index: 3000; overflow:hidden;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px;
-  transition: opacity .6s ease, visibility .6s ease;
-}
-.lock-screen.is-unlocking{ opacity:0; visibility:hidden; pointer-events:none; }
-.lock-screen::before{
-  content:""; position:absolute; inset:-20px;
-  background-image:url("fotos/fundo-hero.png");
-  background-size:cover; background-position:center;
-  filter: blur(22px) brightness(.82);
-  transform: scale(1.08);
-  z-index:0;
-}
-.lock-screen::after{
-  content:""; position:absolute; inset:0;
-  background: rgba(92,110,145,0.35);
-  z-index:0;
-}
-.lock-screen > *{ position:relative; z-index:1; }
-.lock-hint{
-  font-family: var(--font-body); font-weight:700; font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
-  color: rgba(241,241,241,0.55);
-  animation: lockFadeUp .55s cubic-bezier(.2,.8,.2,1) both;
-}
-.lock-avatar{
-  width:132px; height:132px; border-radius:50%; overflow:hidden;
-  border:3px solid rgba(255,255,255,0.85); box-shadow: 0 20px 45px rgba(92,110,145,0.3);
-  animation: lockFadeUp .55s cubic-bezier(.2,.8,.2,1) both;
-}
-.lock-avatar img{ width:100%; height:100%; object-fit:cover; object-position:center 22%; display:block; }
-.lock-name{
-  font-family: var(--font-script); font-size:2.2rem; color: var(--offwhite);
-  text-shadow: 0 2px 12px rgba(0,0,0,0.25);
-  animation: lockFadeUp .55s cubic-bezier(.2,.8,.2,1) both;
-}
-.lock-dots{
-  display:flex; align-items:center; gap:9px;
-  min-width:230px; padding:14px 20px; border-radius:8px;
-  background: rgba(92,110,145,0.45); border:1px solid rgba(255,255,255,0.3);
-  box-shadow: inset 0 2px 8px rgba(0,0,0,0.25);
-  animation: lockFadeUp .55s cubic-bezier(.2,.8,.2,1) both;
-}
-.lock-dot{
-  width:9px; height:9px; border-radius:50%;
-  background:transparent; transform: scale(0); transition: transform .12s ease;
-}
-.lock-dot.is-filled{ background: var(--offwhite); transform: scale(1); animation: lockDotPop .25s ease; }
-@keyframes lockFadeUp{ from{ opacity:0; transform: translateY(10px); } to{ opacity:1; transform: translateY(0); } }
-@keyframes lockDotPop{ 0%{ transform: scale(1); } 45%{ transform: scale(1.35); } 100%{ transform: scale(1); } }
-body.lock-active{ overflow:hidden; height:100vh; }
-
-/* =====================================================================
    NAVBAR — largura total, linha branca embaixo, palavras em azul claro
 ===================================================================== */
 .navbar{
@@ -697,7 +642,7 @@ a.info-value:hover{ text-decoration:underline; }
 .form-success.is-visible{ display:block; }
 
 /* =====================================================================
-   POP-UP NOTIFICAÇÃO — janela tipo app, centralizada
+   POP-UP DE PROPOSTA — card centralizado
 ===================================================================== */
 .popup-backdrop{
   position: fixed; inset:0; background: rgba(92,110,145,0.4); backdrop-filter: blur(3px);
@@ -713,29 +658,17 @@ a.info-value:hover{ text-decoration:underline; }
 }
 .popup-notification.is-visible{ transform: translate(-50%,-50%) scale(1); opacity:1; pointer-events:auto; }
 
-.popup-titlebar{
-  display:flex; align-items:center; gap:12px; padding:12px 14px;
-  background: var(--gray-light);
-}
-.popup-dots{ display:flex; align-items:center; gap:7px; }
-.popup-dot{ width:12px; height:12px; border-radius:50%; }
-.popup-dot.d-red{ background: #FF5F57; }
-.popup-dot.d-yellow{ background: #FEBC2E; }
-.popup-dot.d-green{ background: #28C840; }
-.popup-filename{
-  font-family: var(--font-body); font-weight:700; font-size:.8rem;
-  letter-spacing:.02em; color: var(--blue-dark-70);
-}
 .popup-close{
-  margin-left:auto; width:22px; height:22px; border-radius:6px;
-  background: transparent; border:1.5px solid rgba(92,110,145,0.25);
-  color: var(--blue-dark-70); font-size:.72rem; cursor:pointer; line-height:1;
-  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  position:absolute; top:16px; right:16px; z-index:2;
+  width:30px; height:30px; border-radius:50%;
+  background: var(--offwhite); border:none;
+  color: var(--blue-dark); font-size:.8rem; cursor:pointer; line-height:1;
+  display:flex; align-items:center; justify-content:center;
   transition: background .2s ease;
 }
-.popup-close:hover{ background: rgba(92,110,145,0.1); }
+.popup-close:hover{ background: rgba(92,110,145,0.18); }
 
-.popup-body{ padding: 32px 32px 34px; }
+.popup-body{ padding: 48px 34px 36px; }
 .popup-notification h4{
   font-family: var(--font-display); font-weight:700; letter-spacing:-0.5px; font-size:2.2rem;
   color: var(--blue-dark); line-height:1; margin-bottom:22px;
@@ -785,28 +718,13 @@ a.info-value:hover{ text-decoration:underline; }
 ===================================================================== */
 </style>
 </head>
-<body class="lock-active">
+<body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <!-- pinta de azul escuro (#5c6e91) os logos brancos das marcas -->
   <filter id="logoAzul" color-interpolation-filters="sRGB">
     <feColorMatrix type="matrix" values="0 0 0 0 0.361  0 0 0 0 0.431  0 0 0 0 0.569  0 0 0 1 0"/>
   </filter>
 </svg>
-
-<div class="lock-screen" id="lockScreen">
-  <div class="lock-avatar"><img data-foto="lock" src="fotos/lock-avatar.jpg" alt="Bruna Medeiros"></div>
-  <div class="lock-name font-script">Bruna Medeiros</div>
-  <div class="lock-dots" id="lockDots">
-    <span class="lock-dot"></span>
-    <span class="lock-dot"></span>
-    <span class="lock-dot"></span>
-    <span class="lock-dot"></span>
-    <span class="lock-dot"></span>
-    <span class="lock-dot"></span>
-    <span class="lock-dot"></span>
-  </div>
-  <div class="lock-hint" data-texto="lock_dica" data-pt="clique em qualquer lugar pra desbloquear" data-en="click anywhere to unlock">clique em qualquer lugar pra desbloquear</div>
-</div>
 
 <a href="#contato" class="promo-bar" id="promoBar" aria-label="Datas comemorativas para contratar a Bruna">
   <span class="promo-bar-icon" aria-hidden="true">
@@ -1340,15 +1258,7 @@ a.info-value:hover{ text-decoration:underline; }
 ========================================================== -->
 <div class="popup-backdrop" id="popupBackdrop"></div>
 <div class="popup-notification" id="popupNotif">
-  <div class="popup-titlebar">
-    <div class="popup-dots">
-      <span class="popup-dot d-red"></span>
-      <span class="popup-dot d-yellow"></span>
-      <span class="popup-dot d-green"></span>
-    </div>
-    <span class="popup-filename" data-texto="popup_arquivo" data-pt="proposta_rápida.exe" data-en="quick_proposal.exe">proposta_rápida.exe</span>
-    <button class="popup-close" id="popupClose" aria-label="Fechar">✕</button>
-  </div>
+  <button class="popup-close" id="popupClose" aria-label="Fechar">✕</button>
   <div class="popup-body">
     <h4 data-texto="popup_titulo" data-pt-html="me conta rapidinho o que você&amp;nbsp;precisa." data-en-html="quickly tell me what you&amp;nbsp;need.">me conta rapidinho o que você&nbsp;precisa.</h4>
     <form id="popupForm">
@@ -1740,38 +1650,11 @@ a.info-value:hover{ text-decoration:underline; }
     else if (href.indexOf('instagram.com') !== -1) trackEvento('contact_instagram');
   });
 
-  /* ---------------- Tela de bloqueio (senha em bolinhas) ---------------- */
-  var lockScreen = document.getElementById('lockScreen');
-  if (lockScreen && MODO_EDITOR){
-    lockScreen.style.display = 'none';
-    document.body.classList.remove('lock-active');
-    var promoEditor = document.getElementById('promoBar');
-    if (promoEditor) promoEditor.classList.add('is-visible');
-  } else if (lockScreen){
-    var lockDots = lockScreen.querySelectorAll('.lock-dot');
-    var lockUnlocked = false;
-    function unlockScreen(){
-      if (lockUnlocked) return;
-      lockUnlocked = true;
-      lockScreen.classList.add('is-unlocking');
-      document.body.classList.remove('lock-active');
-      setTimeout(function(){ lockScreen.style.display = 'none'; }, 650);
-      setTimeout(function(){
-        var notif = document.getElementById('promoBar');
-        if (notif) notif.classList.add('is-visible');
-      }, 900);
-    }
-    lockDots.forEach(function(dot, i){
-      setTimeout(function(){
-        dot.classList.add('is-filled');
-        if (i === lockDots.length - 1){ setTimeout(unlockScreen, 150); }
-      }, 70 + i * 65);
-    });
-    lockScreen.addEventListener('click', unlockScreen);
-  } else {
-    var promoBarFallback = document.getElementById('promoBar');
-    if (promoBarFallback) promoBarFallback.classList.add('is-visible');
-  }
+  /* ---------------- Faixa de aviso entra deslizando logo que a página abre ---------------- */
+  setTimeout(function(){
+    var faixaAviso = document.getElementById('promoBar');
+    if (faixaAviso) faixaAviso.classList.add('is-visible');
+  }, MODO_EDITOR ? 0 : 500);
 
   /* ---------------- Faixa de notificação só fica fixa enquanto o hero está visível ---------------- */
   (function(){

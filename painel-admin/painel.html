@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261032a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261033a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -753,6 +753,7 @@
             <div class="instagram-subnav">
               <button class="instagram-subnav-btn ativo" data-instagram-pagina="visao-geral" type="button" data-i18n="instagram_visao_geral">Visão Geral</button>
               <button class="instagram-subnav-btn" data-instagram-pagina="automacoes" type="button" data-i18n="instagram_automacoes">Automações</button>
+              <button class="instagram-subnav-btn" data-instagram-pagina="carrossel" type="button">✨ Gerador de Carrossel</button>
               <button class="instagram-subnav-btn" data-instagram-pagina="leads" type="button" data-i18n="instagram_interacoes">Interações</button>
               <button class="instagram-subnav-btn" data-instagram-pagina="analises" type="button" data-i18n="instagram_analises">Análises</button>
               <button class="instagram-subnav-btn" data-instagram-pagina="bio" type="button" data-i18n="bio_titulo">🔗 Link na bio</button>
@@ -872,6 +873,170 @@
                   <span data-i18n="instagram_col_ultima_vez">Última vez</span>
                 </div>
                 <div id="instagram-leads-lista" class="cal-todas-linhas"></div>
+              </div>
+            </div>
+
+            <!-- Gerador de Carrossel: criar, referências, preferências e carrosséis salvos (tabelas em gerador-carrossel.sql) -->
+            <div id="instagram-pagina-carrossel" class="instagram-pagina car-pagina" hidden>
+              <p class="dash-aviso car-aviso" id="car-aviso-tabelas" hidden>Falta rodar o arquivo gerador-carrossel.sql no SQL Editor do Supabase pra usar o Gerador de Carrossel.</p>
+
+              <div class="rt-chips car-abas" id="car-abas">
+                <button type="button" class="rt-chip ativo" data-car-aba="criar">✨ Criar carrossel</button>
+                <button type="button" class="rt-chip" data-car-aba="referencias">🖼️ Referências <span class="car-contador" id="car-cont-ref"></span></button>
+                <button type="button" class="rt-chip" data-car-aba="preferencias">🎨 Preferências e tom de voz</button>
+                <button type="button" class="rt-chip" data-car-aba="meus">📚 Meus carrosséis <span class="car-contador" id="car-cont-meus"></span></button>
+              </div>
+
+              <!-- Criar -->
+              <div class="car-secao" id="car-secao-criar">
+                <div class="card car-card">
+                  <h3 class="card-titulo">Novo carrossel</h3>
+                  <p class="car-ajuda">Conte o tema e o objetivo. A IA vai escrever os slides com o seu tom de voz, olhando as suas referências e preferências.</p>
+
+                  <div class="cal-form-campo">
+                    <label for="car-tema">Tema</label>
+                    <input type="text" id="car-tema" maxlength="200" placeholder="Ex.: 3 erros que eu cometia ao enviar proposta pra marca">
+                  </div>
+
+                  <div class="cal-form-campo">
+                    <label>Objetivo</label>
+                    <div class="rt-chips" id="car-objetivos"></div>
+                  </div>
+
+                  <div class="car-linha">
+                    <div class="cal-form-campo">
+                      <label for="car-qtd">Quantidade de slides</label>
+                      <select id="car-qtd"></select>
+                    </div>
+                    <div class="cal-form-campo">
+                      <label for="car-ref">Referência</label>
+                      <select id="car-ref"><option value="">Sem referência (usar só minhas preferências)</option></select>
+                    </div>
+                  </div>
+
+                  <div class="cal-form-campo">
+                    <label>Estilo visual</label>
+                    <div class="rt-chips" id="car-estilos"></div>
+                  </div>
+
+                  <div class="cal-form-campo">
+                    <label for="car-obs">Observações <small>opcional</small></label>
+                    <textarea id="car-obs" rows="3" placeholder="Algo que a IA precisa saber: um exemplo real, um dado, um CTA específico..."></textarea>
+                  </div>
+
+                  <div class="cal-form-acoes car-acoes">
+                    <span class="car-status" id="car-status-rascunho"></span>
+                    <button type="button" id="car-btn-limpar" class="cal-btn" hidden>Novo pedido em branco</button>
+                    <button type="button" id="car-btn-rascunho" class="cal-btn">Salvar rascunho</button>
+                    <button type="button" id="car-btn-gerar" class="cal-btn cal-btn-primario" disabled title="A geração com IA entra na próxima etapa">✨ Gerar com IA</button>
+                  </div>
+                  <p class="car-nota-etapa">A geração com IA ainda não está ligada: o pedido fica salvo como rascunho em "Meus carrosséis" e a IA entra na próxima etapa.</p>
+                </div>
+              </div>
+
+              <!-- Referências -->
+              <div class="car-secao" id="car-secao-referencias" hidden>
+                <div class="card car-card">
+                  <h3 class="card-titulo">Adicionar referência</h3>
+                  <p class="car-ajuda">Links e imagens de carrosséis que você gosta. A IA consulta tudo isso toda vez que cria algo, então explique o que chamou sua atenção.</p>
+
+                  <div class="rt-chips" id="car-ref-tipo">
+                    <button type="button" class="rt-chip ativo" data-valor="link">🔗 Link</button>
+                    <button type="button" class="rt-chip" data-valor="imagem">🖼️ Imagens</button>
+                  </div>
+
+                  <div class="cal-form-campo">
+                    <label for="car-ref-titulo">Nome</label>
+                    <input type="text" id="car-ref-titulo" maxlength="120" placeholder="Ex.: Carrossel do @perfil sobre rotina">
+                  </div>
+
+                  <div class="cal-form-campo" id="car-ref-campo-link">
+                    <label for="car-ref-url">Link</label>
+                    <input type="text" id="car-ref-url" inputmode="url" autocomplete="off" placeholder="Cole o link do post, do perfil ou da página">
+                  </div>
+
+                  <div class="cal-form-campo" id="car-ref-campo-img" hidden>
+                    <label>Imagens <small>os slides do carrossel, em ordem (até 8)</small></label>
+                    <div class="car-imgs" id="car-ref-imgs"></div>
+                    <button type="button" id="car-ref-add-img" class="cal-btn">+ Adicionar imagens</button>
+                    <input type="file" id="car-ref-input-img" accept="image/*" multiple hidden>
+                  </div>
+
+                  <div class="cal-form-campo">
+                    <label for="car-ref-nota">O que eu gosto nessa referência</label>
+                    <textarea id="car-ref-nota" rows="3" placeholder="O gancho, as cores, o jeito de explicar, o tamanho do texto..."></textarea>
+                  </div>
+
+                  <div class="cal-form-campo">
+                    <label>Serve de referência para</label>
+                    <div class="rt-chips" id="car-ref-etiqueta"></div>
+                  </div>
+
+                  <div class="cal-form-acoes car-acoes">
+                    <span class="car-status" id="car-status-ref"></span>
+                    <button type="button" id="car-ref-salvar" class="cal-btn cal-btn-primario">Salvar referência</button>
+                  </div>
+                </div>
+
+                <div class="car-grade" id="car-ref-lista"></div>
+                <p class="texto-vazio" id="car-ref-vazio" hidden>Nenhuma referência ainda. Adicione a primeira acima.</p>
+              </div>
+
+              <!-- Preferências -->
+              <div class="car-secao" id="car-secao-preferencias" hidden>
+                <div class="card car-card">
+                  <h3 class="card-titulo">Preferências e tom de voz</h3>
+                  <p class="car-ajuda">Essas instruções são lidas pela IA em todo carrossel. Quanto mais específico, mais com a sua cara ele sai.</p>
+
+                  <div class="cal-form-campo">
+                    <label for="car-pref-tom">Tom de voz</label>
+                    <textarea id="car-pref-tom" rows="3" placeholder="Ex.: direto, simples, sem enrolação, natural e jovem. Como conversa de verdade."></textarea>
+                  </div>
+                  <div class="cal-form-campo">
+                    <label for="car-pref-identidade">Identidade e público</label>
+                    <textarea id="car-pref-identidade" rows="3" placeholder="Quem eu sou, pra quem eu falo e o que eu quero que a pessoa sinta."></textarea>
+                  </div>
+                  <div class="cal-form-campo">
+                    <label for="car-pref-estrutura">Estrutura que eu gosto</label>
+                    <textarea id="car-pref-estrutura" rows="3" placeholder="Ex.: slide 1 com gancho forte, 1 ideia por slide, último slide com CTA."></textarea>
+                  </div>
+                  <div class="cal-form-campo">
+                    <label for="car-pref-design">Design</label>
+                    <textarea id="car-pref-design" rows="3" placeholder="Cores, fontes, tamanho do texto, uso de foto, estilo geral."></textarea>
+                  </div>
+                  <div class="car-linha">
+                    <div class="cal-form-campo">
+                      <label for="car-pref-sempre">Sempre fazer</label>
+                      <textarea id="car-pref-sempre" rows="3"></textarea>
+                    </div>
+                    <div class="cal-form-campo">
+                      <label for="car-pref-nunca">Nunca fazer</label>
+                      <textarea id="car-pref-nunca" rows="3"></textarea>
+                    </div>
+                  </div>
+                  <div class="cal-form-campo">
+                    <label for="car-pref-ia">Instruções extras pra IA <small>opcional</small></label>
+                    <textarea id="car-pref-ia" rows="3" placeholder="Qualquer regra que não coube nos campos de cima."></textarea>
+                  </div>
+
+                  <div class="cal-form-acoes car-acoes">
+                    <span class="car-status" id="car-status-pref"></span>
+                    <button type="button" id="car-pref-salvar" class="cal-btn cal-btn-primario">Salvar preferências</button>
+                  </div>
+                </div>
+
+                <div class="card car-card">
+                  <h3 class="card-titulo">O que a IA já aprendeu com seu feedback</h3>
+                  <p class="car-ajuda">Quando você avaliar um carrossel, o que ficar combinado aparece aqui e passa a valer nas próximas criações. Você pode apagar o que não faz mais sentido.</p>
+                  <div class="car-aprendizados" id="car-aprendizados"></div>
+                  <p class="texto-vazio" id="car-aprendizados-vazio" hidden>Ainda não aprendeu nada. Isso começa quando você der o primeiro feedback.</p>
+                </div>
+              </div>
+
+              <!-- Meus carrosséis -->
+              <div class="car-secao" id="car-secao-meus" hidden>
+                <div class="car-lista" id="car-lista"></div>
+                <p class="texto-vazio" id="car-lista-vazio" hidden>Nenhum carrossel ainda. Crie um em "Criar carrossel".</p>
               </div>
             </div>
 
@@ -7183,6 +7348,7 @@
       document.querySelectorAll('.instagram-subnav-btn').forEach((btn) => {
         btn.addEventListener('click', () => trocarSubAbaInstagram(btn.dataset.instagramPagina));
       });
+      carLigarEventos();
       document.getElementById('btn-instagram-nova-automacao').addEventListener('click', () => abrirModalAutomacao(null));
       document.getElementById('instagram-modal-automacao-fechar').addEventListener('click', () => tentarFecharModalAutomacao());
       document.getElementById('instagram-modal-automacao-excluir').addEventListener('click', excluirModalAutomacao);
@@ -11423,6 +11589,460 @@
       }
     }
 
+    // ==========================================================================
+    // Instagram > Gerador de Carrossel. Tabelas e armazenamento em gerador-carrossel.sql.
+    // Etapa 1 (esta): estrutura + o que a IA vai consultar já funcionando de verdade
+    // (referências, preferências, aprendizados e rascunhos de pedido). A geração com IA
+    // (Edge Function que lê tudo isso e chama o Gemini) entra na etapa 2.
+    // ==========================================================================
+
+    const CAR_BUCKET = 'carrossel-referencias';
+    const CAR_MAX_IMAGENS = 8;
+    const CAR_OBJETIVOS = [
+      { chave: 'Autoridade', dica: 'mostrar que eu sei do que falo' },
+      { chave: 'Conexão', dica: 'criar identificação e proximidade' },
+      { chave: 'Desejo', dica: 'fazer a pessoa querer o resultado' },
+      { chave: 'Oferta', dica: 'levar pra uma ação ou contratação' },
+    ];
+    const CAR_ESTILOS = ['Minimalista', 'Editorial', 'Colorido', 'Foto grande', 'Estilo notas'];
+    const CAR_ETIQUETAS = [
+      { chave: 'visual', nome: 'Visual' },
+      { chave: 'estrutura', nome: 'Estrutura' },
+      { chave: 'tom', nome: 'Tom de voz' },
+      { chave: 'gancho', nome: 'Gancho' },
+    ];
+
+    let carCarregado = false;
+    let carTabelasOk = true;
+    let carAba = 'criar';
+    let carPrefs = null;
+    let carRefs = [];
+    let carCarrosseis = [];
+    let carAprendizados = [];
+    let carObjetivo = '';
+    let carEstilo = '';
+    let carRefTipo = 'link';
+    let carRefEtiqueta = 'visual';
+    let carRefImgs = []; // { blob, previa }
+    let carRascunhoId = null;
+    let carTimers = {};
+
+    function carStatus(id, texto, erro) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      clearTimeout(carTimers[id]);
+      el.textContent = texto || '';
+      el.classList.toggle('car-status-erro', !!erro);
+      if (texto && !erro) carTimers[id] = setTimeout(() => { el.textContent = ''; }, 5000);
+    }
+
+    function carData(iso) {
+      return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    async function carIniciar() {
+      if (carCarregado) return;
+      carCarregado = true;
+      carMontarOpcoes();
+      await carCarregarTudo();
+    }
+
+    async function carCarregarTudo() {
+      const sb = Auth.sb;
+      const [prefs, refs, carrosseis, aprend] = await Promise.all([
+        sb.from('carrossel_preferencias').select('*').eq('id', 'principal').maybeSingle(),
+        sb.from('carrossel_referencias').select('*').order('created_at', { ascending: false }),
+        sb.from('carrossel_carrosseis').select('*').order('updated_at', { ascending: false }),
+        sb.from('carrossel_aprendizados').select('*').order('created_at', { ascending: false }),
+      ]);
+      const erro = prefs.error || refs.error || carrosseis.error || aprend.error;
+      carTabelasOk = !erro;
+      document.getElementById('car-aviso-tabelas').hidden = carTabelasOk;
+      if (erro) {
+        console.error('Gerador de Carrossel (gerador-carrossel.sql) ainda não disponível:', erro);
+        return;
+      }
+      carPrefs = prefs.data;
+      carRefs = refs.data || [];
+      carCarrosseis = carrosseis.data || [];
+      carAprendizados = aprend.data || [];
+      carPreencherPreferencias();
+      carRenderizarTudo();
+    }
+
+    function carRenderizarTudo() {
+      carRenderizarReferencias();
+      carRenderizarSelectReferencia();
+      carRenderizarAprendizados();
+      carRenderizarLista();
+    }
+
+    // ---- Abas internas ----
+    function carTrocarAba(nome) {
+      carAba = nome;
+      document.querySelectorAll('#car-abas .rt-chip').forEach((b) => b.classList.toggle('ativo', b.dataset.carAba === nome));
+      ['criar', 'referencias', 'preferencias', 'meus'].forEach((a) => {
+        document.getElementById('car-secao-' + a).hidden = a !== nome;
+      });
+    }
+
+    // ---- Chips (objetivo, estilo, tipo e etiqueta da referência) ----
+    function carMontarChips(idContainer, itens, atual, aoEscolher, permiteLimpar) {
+      const box = document.getElementById(idContainer);
+      box.innerHTML = '';
+      itens.forEach((item) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'rt-chip' + (item.valor === atual ? ' ativo' : '');
+        b.textContent = item.rotulo;
+        if (item.dica) b.title = item.dica;
+        b.addEventListener('click', () => {
+          const novo = permiteLimpar && item.valor === atual ? '' : item.valor;
+          aoEscolher(novo);
+          carMontarChips(idContainer, itens, novo, aoEscolher, permiteLimpar);
+        });
+        box.appendChild(b);
+      });
+    }
+
+    function carMontarOpcoes() {
+      carMontarChips('car-objetivos', CAR_OBJETIVOS.map((o) => ({ valor: o.chave, rotulo: o.chave, dica: o.dica })), carObjetivo, (v) => { carObjetivo = v; }, true);
+      carMontarChips('car-estilos', CAR_ESTILOS.map((e) => ({ valor: e, rotulo: e })), carEstilo, (v) => { carEstilo = v; }, true);
+      carMontarChips('car-ref-etiqueta', CAR_ETIQUETAS.map((e) => ({ valor: e.chave, rotulo: e.nome })), carRefEtiqueta, (v) => { carRefEtiqueta = v || 'visual'; }, false);
+      const qtd = document.getElementById('car-qtd');
+      qtd.innerHTML = '';
+      for (let n = 5; n <= 12; n++) {
+        const o = document.createElement('option');
+        o.value = String(n);
+        o.textContent = `${n} slides`;
+        if (n === 8) o.selected = true;
+        qtd.appendChild(o);
+      }
+    }
+
+    // ---- Criar: rascunho do pedido ----
+    function carLerFormulario() {
+      return {
+        tema: document.getElementById('car-tema').value.trim(),
+        objetivo: carObjetivo,
+        qtd_slides: Number(document.getElementById('car-qtd').value) || 8,
+        referencia_id: document.getElementById('car-ref').value || null,
+        estilo: carEstilo,
+        observacoes: document.getElementById('car-obs').value.trim(),
+      };
+    }
+
+    function carPreencherFormulario(c) {
+      document.getElementById('car-tema').value = c ? c.tema : '';
+      document.getElementById('car-qtd').value = String(c ? c.qtd_slides : 8);
+      document.getElementById('car-ref').value = c && c.referencia_id ? c.referencia_id : '';
+      document.getElementById('car-obs').value = c ? c.observacoes : '';
+      carObjetivo = c ? c.objetivo : '';
+      carEstilo = c ? c.estilo : '';
+      carRascunhoId = c ? c.id : null;
+      carMontarOpcoes();
+      document.getElementById('car-qtd').value = String(c ? c.qtd_slides : 8);
+      document.getElementById('car-btn-limpar').hidden = !c;
+      carStatus('car-status-rascunho', c ? 'Editando um rascunho salvo.' : '');
+    }
+
+    async function carSalvarRascunho() {
+      if (!carTabelasOk) return alert('Falta rodar o arquivo gerador-carrossel.sql no Supabase.');
+      const campos = carLerFormulario();
+      if (!campos.tema) {
+        carStatus('car-status-rascunho', 'Escreva o tema primeiro.', true);
+        document.getElementById('car-tema').focus();
+        return;
+      }
+      const dados = { ...campos, titulo: campos.tema.slice(0, 80), updated_at: new Date().toISOString() };
+      const resposta = carRascunhoId
+        ? await Auth.sb.from('carrossel_carrosseis').update(dados).eq('id', carRascunhoId).select().single()
+        : await Auth.sb.from('carrossel_carrosseis').insert(dados).select().single();
+      if (resposta.error) {
+        console.error('Erro ao salvar rascunho de carrossel:', resposta.error);
+        carStatus('car-status-rascunho', 'Não consegui salvar. Tente de novo.', true);
+        return;
+      }
+      carRascunhoId = resposta.data.id;
+      const i = carCarrosseis.findIndex((c) => c.id === resposta.data.id);
+      if (i >= 0) carCarrosseis[i] = resposta.data;
+      else carCarrosseis.unshift(resposta.data);
+      document.getElementById('car-btn-limpar').hidden = false;
+      carRenderizarLista();
+      carStatus('car-status-rascunho', 'Rascunho salvo em "Meus carrosséis".');
+    }
+
+    // ---- Referências ----
+    function carRenderizarSelectReferencia() {
+      const sel = document.getElementById('car-ref');
+      const atual = sel.value;
+      sel.innerHTML = '<option value="">Sem referência (usar só minhas preferências)</option>';
+      carRefs.forEach((r) => {
+        const o = document.createElement('option');
+        o.value = r.id;
+        o.textContent = r.titulo || (r.tipo === 'link' ? r.url : 'Referência sem nome');
+        sel.appendChild(o);
+      });
+      sel.value = carRefs.some((r) => r.id === atual) ? atual : '';
+    }
+
+    function carNomeEtiqueta(chave) {
+      const e = CAR_ETIQUETAS.find((x) => x.chave === chave);
+      return e ? e.nome : chave;
+    }
+
+    function carHost(url) {
+      try {
+        return new URL(/^https?:/i.test(url) ? url : 'https://' + url).hostname.replace(/^www\./, '');
+      } catch (e) {
+        return url;
+      }
+    }
+
+    function carRenderizarReferencias() {
+      document.getElementById('car-cont-ref').textContent = carRefs.length ? `(${carRefs.length})` : '';
+      document.getElementById('car-ref-vazio').hidden = carRefs.length > 0;
+      const lista = document.getElementById('car-ref-lista');
+      lista.innerHTML = '';
+      carRefs.forEach((r) => {
+        const card = document.createElement('div');
+        card.className = 'card car-ref-card';
+        const capa = r.tipo === 'imagem' && r.imagens && r.imagens[0]
+          ? `<div class="car-ref-capa"><img src="${escapeHtml(r.imagens[0])}" alt="" loading="lazy">${r.imagens.length > 1 ? `<span class="car-ref-qtd">1/${r.imagens.length}</span>` : ''}</div>`
+          : `<div class="car-ref-capa car-ref-capa-link">🔗<small>${escapeHtml(carHost(r.url || ''))}</small></div>`;
+        const abrir = r.tipo === 'link' && r.url
+          ? `<a class="cal-btn" href="${escapeHtml(/^https?:/i.test(r.url) ? r.url : 'https://' + r.url)}" target="_blank" rel="noopener">Abrir ↗</a>`
+          : '';
+        card.innerHTML = `
+          ${capa}
+          <div class="car-ref-corpo">
+            <span class="car-ref-etiqueta">${escapeHtml(carNomeEtiqueta(r.etiqueta))}</span>
+            <strong>${escapeHtml(r.titulo || 'Referência sem nome')}</strong>
+            ${r.nota ? `<p>${escapeHtml(r.nota)}</p>` : ''}
+            <div class="car-ref-acoes">${abrir}<button type="button" class="cal-btn pl-btn-excluir" data-excluir>Excluir</button></div>
+          </div>`;
+        card.querySelector('[data-excluir]').addEventListener('click', () => carExcluirReferencia(r));
+        lista.appendChild(card);
+      });
+    }
+
+    function carMostrarTipoReferencia() {
+      document.getElementById('car-ref-campo-link').hidden = carRefTipo !== 'link';
+      document.getElementById('car-ref-campo-img').hidden = carRefTipo !== 'imagem';
+      document.querySelectorAll('#car-ref-tipo .rt-chip').forEach((b) => b.classList.toggle('ativo', b.dataset.valor === carRefTipo));
+    }
+
+    function carRenderizarMiniaturas() {
+      const box = document.getElementById('car-ref-imgs');
+      box.innerHTML = '';
+      carRefImgs.forEach((img, i) => {
+        const m = document.createElement('div');
+        m.className = 'car-mini';
+        m.innerHTML = `<img src="${img.previa}" alt=""><button type="button" aria-label="Tirar imagem">&times;</button>`;
+        m.querySelector('button').addEventListener('click', () => {
+          URL.revokeObjectURL(img.previa);
+          carRefImgs.splice(i, 1);
+          carRenderizarMiniaturas();
+        });
+        box.appendChild(m);
+      });
+    }
+
+    async function carAdicionarImagens(arquivos) {
+      const imagens = [...(arquivos || [])].filter((f) => f && /^image\//.test(f.type));
+      for (const f of imagens) {
+        if (carRefImgs.length >= CAR_MAX_IMAGENS) {
+          carStatus('car-status-ref', `O máximo é ${CAR_MAX_IMAGENS} imagens por referência.`, true);
+          break;
+        }
+        try {
+          const blob = await achRedimensionar(f);
+          carRefImgs.push({ blob, previa: URL.createObjectURL(blob) });
+        } catch (err) {
+          console.error('Imagem não aceita:', err);
+          carStatus('car-status-ref', 'Não consegui ler uma das imagens.', true);
+        }
+      }
+      carRenderizarMiniaturas();
+    }
+
+    async function carSalvarReferencia() {
+      if (!carTabelasOk) return alert('Falta rodar o arquivo gerador-carrossel.sql no Supabase.');
+      const titulo = document.getElementById('car-ref-titulo').value.trim();
+      const url = document.getElementById('car-ref-url').value.trim();
+      const nota = document.getElementById('car-ref-nota').value.trim();
+      if (carRefTipo === 'link' && !url) return carStatus('car-status-ref', 'Cole o link da referência.', true);
+      if (carRefTipo === 'imagem' && !carRefImgs.length) return carStatus('car-status-ref', 'Adicione pelo menos uma imagem.', true);
+
+      const botao = document.getElementById('car-ref-salvar');
+      botao.disabled = true;
+      carStatus('car-status-ref', 'Salvando...');
+      const enviadas = [];
+      try {
+        if (carRefTipo === 'imagem') {
+          for (const img of carRefImgs) {
+            const nome = `${crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(16).slice(2)}.jpg`;
+            const { error } = await Auth.sb.storage.from(CAR_BUCKET).upload(nome, img.blob, { contentType: 'image/jpeg' });
+            if (error) throw error;
+            enviadas.push(Auth.sb.storage.from(CAR_BUCKET).getPublicUrl(nome).data.publicUrl);
+          }
+        }
+        const { data, error } = await Auth.sb
+          .from('carrossel_referencias')
+          .insert({ tipo: carRefTipo, titulo, url: carRefTipo === 'link' ? url : null, imagens: enviadas, nota, etiqueta: carRefEtiqueta })
+          .select()
+          .single();
+        if (error) throw error;
+        carRefs.unshift(data);
+        document.getElementById('car-ref-titulo').value = '';
+        document.getElementById('car-ref-url').value = '';
+        document.getElementById('car-ref-nota').value = '';
+        carRefImgs.forEach((i) => URL.revokeObjectURL(i.previa));
+        carRefImgs = [];
+        carRenderizarMiniaturas();
+        carRenderizarReferencias();
+        carRenderizarSelectReferencia();
+        carStatus('car-status-ref', 'Referência salva.');
+      } catch (err) {
+        console.error('Erro ao salvar referência:', err);
+        await carRemoverImagens(enviadas);
+        carStatus('car-status-ref', 'Não consegui salvar a referência. Tente de novo.', true);
+      }
+      botao.disabled = false;
+    }
+
+    async function carRemoverImagens(urls) {
+      const marca = `/${CAR_BUCKET}/`;
+      const caminhos = (urls || [])
+        .map((u) => {
+          const i = String(u).indexOf(marca);
+          return i < 0 ? null : decodeURIComponent(String(u).slice(i + marca.length).split('?')[0]);
+        })
+        .filter(Boolean);
+      if (!caminhos.length) return;
+      try {
+        await Auth.sb.storage.from(CAR_BUCKET).remove(caminhos);
+      } catch (err) {
+        console.warn('Não consegui apagar imagens do armazenamento:', err);
+      }
+    }
+
+    async function carExcluirReferencia(r) {
+      const ok = await confirmarAcao(`Excluir a referência "${r.titulo || 'sem nome'}"? A IA deixa de consultar ela.`, { textoConfirmar: 'Excluir' });
+      if (!ok) return;
+      const { error } = await Auth.sb.from('carrossel_referencias').delete().eq('id', r.id);
+      if (error) {
+        console.error('Erro ao excluir referência:', error);
+        alert(tr('erro_excluir_generico'));
+        return;
+      }
+      await carRemoverImagens(r.imagens);
+      carRefs = carRefs.filter((x) => x.id !== r.id);
+      carRenderizarReferencias();
+      carRenderizarSelectReferencia();
+    }
+
+    // ---- Preferências ----
+    const CAR_CAMPOS_PREF = { tom_de_voz: 'car-pref-tom', identidade: 'car-pref-identidade', estrutura: 'car-pref-estrutura', design: 'car-pref-design', sempre: 'car-pref-sempre', nunca: 'car-pref-nunca', instrucoes_ia: 'car-pref-ia' };
+
+    function carPreencherPreferencias() {
+      Object.entries(CAR_CAMPOS_PREF).forEach(([coluna, id]) => {
+        document.getElementById(id).value = (carPrefs && carPrefs[coluna]) || '';
+      });
+    }
+
+    async function carSalvarPreferencias() {
+      if (!carTabelasOk) return alert('Falta rodar o arquivo gerador-carrossel.sql no Supabase.');
+      const dados = { id: 'principal', updated_at: new Date().toISOString() };
+      Object.entries(CAR_CAMPOS_PREF).forEach(([coluna, id]) => {
+        dados[coluna] = document.getElementById(id).value.trim();
+      });
+      const { data, error } = await Auth.sb.from('carrossel_preferencias').upsert(dados, { onConflict: 'id' }).select().single();
+      if (error) {
+        console.error('Erro ao salvar preferências do carrossel:', error);
+        carStatus('car-status-pref', 'Não consegui salvar. Tente de novo.', true);
+        return;
+      }
+      carPrefs = data;
+      carStatus('car-status-pref', 'Preferências salvas.');
+    }
+
+    // ---- O que a IA aprendeu ----
+    function carRenderizarAprendizados() {
+      document.getElementById('car-aprendizados-vazio').hidden = carAprendizados.length > 0;
+      const box = document.getElementById('car-aprendizados');
+      box.innerHTML = '';
+      carAprendizados.forEach((a) => {
+        const linha = document.createElement('div');
+        linha.className = 'car-aprendizado';
+        linha.innerHTML = `<span>${escapeHtml(a.texto)}<small>${escapeHtml(carData(a.created_at))}</small></span><button type="button" class="aviso-icone" title="Apagar" aria-label="Apagar aprendizado">&times;</button>`;
+        linha.querySelector('button').addEventListener('click', async () => {
+          const { error } = await Auth.sb.from('carrossel_aprendizados').delete().eq('id', a.id);
+          if (error) return alert(tr('erro_excluir_generico'));
+          carAprendizados = carAprendizados.filter((x) => x.id !== a.id);
+          carRenderizarAprendizados();
+        });
+        box.appendChild(linha);
+      });
+    }
+
+    // ---- Meus carrosséis ----
+    function carRenderizarLista() {
+      document.getElementById('car-cont-meus').textContent = carCarrosseis.length ? `(${carCarrosseis.length})` : '';
+      document.getElementById('car-lista-vazio').hidden = carCarrosseis.length > 0;
+      const lista = document.getElementById('car-lista');
+      lista.innerHTML = '';
+      const rotulos = { rascunho: 'Rascunho', gerado: 'Gerado', pronto: 'Pronto' };
+      carCarrosseis.forEach((c) => {
+        const linha = document.createElement('div');
+        linha.className = 'card car-item';
+        const slides = Array.isArray(c.slides) ? c.slides.length : 0;
+        linha.innerHTML = `
+          <div class="car-item-info">
+            <strong>${escapeHtml(c.titulo || c.tema || 'Sem título')}</strong>
+            <small>${escapeHtml([c.objetivo, c.estilo, `${c.qtd_slides} slides`, carData(c.updated_at)].filter(Boolean).join(' · '))}</small>
+          </div>
+          <span class="car-selo car-selo-${escapeHtml(c.status)}">${escapeHtml(rotulos[c.status] || c.status)}${slides ? ` · ${slides} slides` : ''}</span>
+          <div class="car-item-acoes">
+            <button type="button" class="cal-btn" data-abrir>Abrir pedido</button>
+            <button type="button" class="cal-btn pl-btn-excluir" data-excluir>Excluir</button>
+          </div>`;
+        linha.querySelector('[data-abrir]').addEventListener('click', () => {
+          carPreencherFormulario(c);
+          carTrocarAba('criar');
+        });
+        linha.querySelector('[data-excluir]').addEventListener('click', async () => {
+          const ok = await confirmarAcao(`Excluir "${c.titulo || c.tema}"?`, { textoConfirmar: 'Excluir' });
+          if (!ok) return;
+          const { error } = await Auth.sb.from('carrossel_carrosseis').delete().eq('id', c.id);
+          if (error) return alert(tr('erro_excluir_generico'));
+          carCarrosseis = carCarrosseis.filter((x) => x.id !== c.id);
+          if (carRascunhoId === c.id) carPreencherFormulario(null);
+          carRenderizarLista();
+        });
+        lista.appendChild(linha);
+      });
+    }
+
+    function carLigarEventos() {
+      document.querySelectorAll('#car-abas .rt-chip').forEach((b) => b.addEventListener('click', () => carTrocarAba(b.dataset.carAba)));
+      document.getElementById('car-btn-rascunho').addEventListener('click', carSalvarRascunho);
+      document.getElementById('car-btn-limpar').addEventListener('click', () => carPreencherFormulario(null));
+      document.querySelectorAll('#car-ref-tipo .rt-chip').forEach((b) =>
+        b.addEventListener('click', () => {
+          carRefTipo = b.dataset.valor;
+          carMostrarTipoReferencia();
+        })
+      );
+      document.getElementById('car-ref-add-img').addEventListener('click', () => document.getElementById('car-ref-input-img').click());
+      document.getElementById('car-ref-input-img').addEventListener('change', (e) => {
+        carAdicionarImagens(e.target.files);
+        e.target.value = '';
+      });
+      document.getElementById('car-ref-salvar').addEventListener('click', carSalvarReferencia);
+      document.getElementById('car-pref-salvar').addEventListener('click', carSalvarPreferencias);
+    }
+
     // ---- Sub-abas (Visão Geral / Automações / Leads) ----
     function trocarSubAbaInstagram(pagina) {
       instagramSubAbaAtual = pagina;
@@ -11436,6 +12056,7 @@
         carregarInstagramAnalises();
       }
       if (pagina === 'bio') bioIniciar();
+      if (pagina === 'carrossel') carIniciar();
     }
 
     async function carregarInstagramAutomacoes() {

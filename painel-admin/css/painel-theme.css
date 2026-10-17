@@ -12442,3 +12442,290 @@
   transform: scale(0.27083);
   transform-origin: 0 0;
 }
+
+
+/* ---- Instagram > Gerador de Carrossel ---- */
+.painel-body .car-pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.painel-body .car-pagina[hidden],
+.painel-body .car-secao[hidden] {
+  display: none;
+}
+
+.painel-body .car-abas {
+  margin: 0;
+}
+
+.painel-body .car-contador {
+  font-weight: 700;
+  opacity: 0.75;
+}
+
+.painel-body .car-secao {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.painel-body .car-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.painel-body .car-card .card-titulo {
+  margin: 0;
+}
+
+.painel-body .car-ajuda {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--texto-suave);
+}
+
+.painel-body .car-linha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.painel-body .car-card select,
+.painel-body .car-card input[type='text'],
+.painel-body .car-card textarea {
+  width: 100%;
+}
+
+.painel-body .car-acoes {
+  align-items: center;
+}
+
+.painel-body .car-status {
+  margin-right: auto;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--grafite);
+}
+
+.painel-body .car-status-erro {
+  color: #b5533a;
+}
+
+.painel-body .car-nota-etapa {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--texto-suave);
+}
+
+.painel-body .car-imgs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.painel-body .car-imgs:empty {
+  display: none;
+}
+
+.painel-body .car-mini {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  border-radius: var(--raio-sm);
+  overflow: hidden;
+  background: var(--creme);
+}
+
+.painel-body .car-mini img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.painel-body .car-mini button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.painel-body .car-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 14px;
+}
+
+.painel-body .car-ref-card {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.painel-body .car-ref-capa {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--creme);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.painel-body .car-ref-capa img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.painel-body .car-ref-capa-link {
+  flex-direction: column;
+  gap: 6px;
+  font-size: 30px;
+}
+
+.painel-body .car-ref-capa-link small {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-suave);
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.painel-body .car-ref-qtd {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.painel-body .car-ref-corpo {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.painel-body .car-ref-corpo p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--texto-suave);
+}
+
+.painel-body .car-ref-etiqueta {
+  align-self: flex-start;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(var(--coral-rgb), 0.2);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .car-ref-acoes {
+  margin-top: auto;
+  padding-top: 8px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.painel-body .car-aprendizado {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-top: 1px solid var(--borda);
+}
+
+.painel-body .car-aprendizado:first-child {
+  border-top: none;
+}
+
+.painel-body .car-aprendizado span {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 14px;
+  color: var(--grafite);
+}
+
+.painel-body .car-aprendizado small {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.painel-body .car-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.painel-body .car-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.painel-body .car-item-info {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.painel-body .car-item-info small {
+  font-size: 12.5px;
+  color: var(--texto-suave);
+}
+
+.painel-body .car-item-acoes {
+  display: flex;
+  gap: 8px;
+}
+
+.painel-body .car-selo {
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: rgba(var(--grafite-rgb), 0.1);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .car-selo-gerado,
+.painel-body .car-selo-pronto {
+  background: rgba(var(--coral-rgb), 0.28);
+}
+
+@media (max-width: 700px) {
+  .painel-body .car-linha {
+    grid-template-columns: 1fr;
+  }
+}

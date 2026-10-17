@@ -235,7 +235,7 @@ section{ position:relative; }
 .promo-bar{
   position: fixed; top:0; left:0; right:0; z-index:600; height:var(--promo-bar-h);
   display:flex; align-items:center; justify-content:center; gap:12px; padding:0 40px;
-  background: var(--butter); color: var(--blue-light);
+  background: var(--brown); color: var(--blue-light);
   text-decoration:none; cursor:pointer;
   transform: translateY(-100%);
   transition: transform .45s cubic-bezier(.2,.8,.2,1), background .2s ease;
@@ -264,6 +264,8 @@ section{ position:relative; }
   width:100%; height:100%; max-width:none;
   /* alinhada ao topo (e puxada pra direita) pra nunca cortar a cabeça */
   object-fit:cover; object-position: 70% top;
+  /* aumenta um pouco a foto a partir do canto de cima esquerdo: empurra ela pra direita, longe da frase, sem cortar a cabeça */
+  transform: scale(1.14); transform-origin: left top;
 }
 .hero-cover-inner{
   position:absolute; inset:0; z-index:3; display:flex; align-items:center;
@@ -275,7 +277,7 @@ section{ position:relative; }
   font-family: var(--font-display); font-weight:800; letter-spacing:-0.5px;
   font-size: clamp(3rem, 6.2vw, 5.4rem); line-height:1.05; color: var(--offwhite); margin:0 0 34px;
 }
-.hero-cover-headline .accent{ color: var(--butter); font-style:italic; font-weight:700; }
+.hero-cover-headline .accent{ color: var(--blue-light); font-style:italic; font-weight:700; }
 .hero-cover-headline, .hero-link-arrow{ text-shadow: 0 2px 18px rgba(75,57,53,0.45); }
 
 .hero-badge{
@@ -363,17 +365,18 @@ section{ position:relative; }
 #portfolio .wrap{ max-width:1280px; }
 .portfolio-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:26px; }
 .portfolio-head .section-title{ margin-bottom:0; }
-.finder-count{ font-size:.9rem; font-weight:700; color: var(--butter); padding-bottom:8px; }
+#portfolio .section-title{ color: var(--butter); text-shadow: 0 1px 4px rgba(59,74,107,0.28); }
+.finder-count{ font-size:.9rem; font-weight:700; color: var(--blue-dark); padding-bottom:8px; }
 
 .folder-tabs{ display:flex; flex-wrap:wrap; gap:12px; margin-bottom:34px; }
 .folder-tab{
-  background: rgba(245,225,180,0.14); border:2px solid transparent; color: var(--butter);
+  background: var(--blue-dark); border:2px solid transparent; color: var(--butter);
   font-family: var(--font-body); font-weight:700; font-size:.96rem;
   padding:12px 26px; border-radius:999px; cursor:pointer;
   transition: background .25s ease, color .25s ease, transform .25s ease;
 }
-.folder-tab:hover{ background: rgba(245,225,180,0.28); transform: translateY(-2px); }
-.folder-tab.is-active{ background: var(--butter); color: var(--blue-dark); }
+.folder-tab:hover{ background: var(--ink); transform: translateY(-2px); }
+.folder-tab.is-active{ background: var(--butter); color: var(--blue-dark); box-shadow: 0 4px 12px rgba(59,74,107,0.25); }
 
 .catalog{ position:relative; }
 .catalog-arrow{
@@ -462,30 +465,34 @@ section{ position:relative; }
 /* =====================================================================
    05 — SERVIÇOS — frase em cima, serviços em caixinhas embaixo, fundo azul claro
 ===================================================================== */
-#servicos{ padding: 110px 0 120px; }
+#servicos{ padding: 110px 0 40px; }
 #servicos .wrap{ max-width:1280px; }
 .services-head{ text-align:center; margin-bottom:70px; }
 .services-head .section-title{ margin-bottom:16px; font-size: clamp(2.6rem, 5vw, 4.2rem); }
 .services-sub{ font-size:1.15rem; font-weight:600; color: var(--ink); }
-/* serviços: fundo amarelo e as frases de cima em azul claro */
-#servicos .section-title, #servicos .services-sub{ color: var(--blue-light); }
+/* serviços: fundo amarelo e as frases de cima em azul escuro */
+#servicos .section-title, #servicos .services-sub{ color: var(--blue-dark); }
 
 .widgets-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:34px; }
 .widget-glass{
   position:relative; background:#fff; border:1px solid rgba(59,74,107,0.12); border-radius:26px;
-  padding: 58px 34px 34px; min-height:320px;
+  padding: 40px 34px 34px; min-height:340px;
   display:flex; flex-direction:column; align-items:center; text-align:center;
   box-shadow: 0 14px 34px rgba(59,74,107,0.16);
   transition: transform .3s ease, box-shadow .3s ease;
 }
 .widget-glass:hover{ transform: translateY(-6px); box-shadow: 0 22px 44px rgba(59,74,107,0.24); }
+/* o nome do serviço fica dentro do card, como título (sem a pílula) */
 .widget-glass h3{
-  position:absolute; top:0; left:50%; transform: translate(-50%, -50%);
-  background: var(--blue-dark); color:#fff; font-family: var(--font-body);
-  font-size:.78rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
-  padding:11px 24px; border-radius:999px; white-space:nowrap;
+  color: var(--blue-dark); font-family: var(--font-body);
+  font-size:.9rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+  margin-bottom:6px; text-align:center;
 }
-.widget-glass p{ font-size:1.05rem; line-height:1.7; color: var(--ink); font-weight:500; margin-bottom:28px; }
+/* a frase fica centralizada no meio do card, entre o título e o botão */
+.widget-glass p{
+  flex:1; display:flex; align-items:center; justify-content:center; text-align:center;
+  font-size:1.05rem; line-height:1.7; color: var(--ink); font-weight:500; margin-bottom:24px;
+}
 .widget-cta{
   margin-top:auto; align-self:center;
   display:inline-flex; align-items:center; gap:9px;
@@ -546,7 +553,8 @@ section{ position:relative; }
 /* =====================================================================
    07 — FEEDBACKS — cartões na horizontal com setinhas, fundo amarelo manteiga
 ===================================================================== */
-#feedbacks{ padding: 110px 0 120px; }
+#feedbacks{ padding: 40px 0 120px; }
+#feedbacks .services-head{ margin-bottom:10px; }
 #feedbacks .wrap{ max-width:1280px; }
 .feedback-grid{
   display:flex; gap:30px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
@@ -565,11 +573,13 @@ section{ position:relative; }
 }
 .feedback-logo{
   position:absolute; top:-46px; left:50%; transform: translateX(-50%);
-  width:96px; height:96px; border-radius:50%; background: var(--blue-dark);
+  width:104px; height:104px; border-radius:50%; background: var(--blue-dark);
   border:7px solid var(--butter);
   display:flex; align-items:center; justify-content:center; overflow:hidden;
 }
 .feedback-logo img{ max-width:58%; max-height:46%; width:auto; height:auto; display:block; }
+/* foto quadrada da marca preenche o círculo inteiro; logo comprido fica menor no meio */
+.feedback-logo img.is-foto{ max-width:none; max-height:none; width:100%; height:100%; object-fit:cover; }
 .feedback-logo.feedback-logo--text{ color:#fff; font-size:.62rem; font-weight:700; line-height:1.25; padding:10px; text-align:center; }
 .feedback-peek{
   display:block; margin-bottom:16px;
@@ -838,7 +848,7 @@ a.info-value:hover{ text-decoration:underline; }
 <!-- =========================================================
      05 — PORTFÓLIO
 ========================================================== -->
-<section class="section section--dark" id="portfolio">
+<section class="section section--blue" id="portfolio">
   <div class="wrap">
     <div class="portfolio-head">
       <h2 class="section-title" data-pt="portfólio" data-en="portfolio">portfólio</h2>
@@ -1117,7 +1127,6 @@ a.info-value:hover{ text-decoration:underline; }
   <div class="wrap">
     <div class="services-head">
       <h2 class="section-title" data-texto="feedbacks_titulo" data-pt="o que as marcas acham do meu trabalho" data-en="what brands think of my work">o que as marcas acham do meu trabalho</h2>
-      <p class="services-sub" data-texto="feedbacks_sub" data-pt="arraste pro lado pra ler mais." data-en="drag sideways to read more.">arraste pro lado pra ler mais.</p>
     </div>
 
     <div class="catalog catalog--feedback">
@@ -1128,14 +1137,14 @@ a.info-value:hover{ text-decoration:underline; }
       <div class="feedback-logo"><img src="logos/Labotrat.png" alt="Labotrat"></div>
       <span class="feedback-peek" data-pt="Labotrat" data-en="Labotrat">Labotrat</span>
       <div class="feedback-note">
-        <p data-pt="&quot;Realizou uma ótima entrega, com um conteúdo bem alinhado à proposta da campanha e executado com qualidade.&quot;" data-en="&quot;Delivered great work, with content well aligned to the campaign's brief and executed with quality.&quot;">"Realizou uma ótima entrega, com um conteúdo bem alinhado à proposta da campanha e executado com qualidade."</p>
+        <p data-pt="Realizou uma ótima entrega, com um conteúdo bem alinhado à proposta da campanha e executado com qualidade." data-en="Delivered great work, with content well aligned to the campaign's brief and executed with quality.">"Realizou uma ótima entrega, com um conteúdo bem alinhado à proposta da campanha e executado com qualidade."</p>
       </div>
     </div>
     <div class="feedback-folder">
       <div class="feedback-logo feedback-logo--text" data-pt="Imersão Porfólio Claude - Lara" data-en="Claude Portfolio Immersion - Lara">Imersão Porfólio Claude - Lara</div>
       <span class="feedback-peek" data-pt="Imersão Porfólio Claude - Lara" data-en="Claude Portfolio Immersion - Lara">Imersão Porfólio Claude - Lara</span>
       <div class="feedback-note">
-        <p data-pt="&quot;OIEEE DIVA, eu amei amei amei o vídeo, ficou muto bom, obrigadaaaaa.&quot;" data-en="&quot;HEEY DIVA, I loved loved loved the video, it turned out so good, thank youuuu.&quot;">"OIEEE DIVA, eu amei amei amei o vídeo, ficou muto bom, obrigadaaaaa."</p>
+        <p data-pt="OIEEE DIVA, eu amei amei amei o vídeo, ficou muto bom, obrigadaaaaa." data-en="HEEY DIVA, I loved loved loved the video, it turned out so good, thank youuuu.">"OIEEE DIVA, eu amei amei amei o vídeo, ficou muto bom, obrigadaaaaa."</p>
       </div>
     </div>
       </div>
@@ -1329,10 +1338,18 @@ a.info-value:hover{ text-decoration:underline; }
     });
   }
 
-  function comAspas(texto){
-    var t = (texto || '').trim();
-    if (!t) return '';
-    return /^["“]/.test(t) ? t : '"' + t + '"';
+  /* o feedback aparece sem as aspas, mesmo que venham escritas no painel */
+  function semAspas(texto){
+    return (texto || '').trim().replace(/^["“”]+|["“”]+$/g, '').trim();
+  }
+
+  /* foto quadrada da marca preenche o círculo; logo comprido (largo) fica menor no meio */
+  function ajustarLogoFeedback(img){
+    function marcar(){
+      var r = img.naturalWidth / img.naturalHeight;
+      img.classList.toggle('is-foto', r > 0.75 && r < 1.34);
+    }
+    if (img.complete && img.naturalWidth) marcar(); else img.addEventListener('load', marcar);
   }
 
   function aplicarFeedbacks(feedbacks){
@@ -1342,8 +1359,8 @@ a.info-value:hover{ text-decoration:underline; }
     if (!validos.length || !grid) return;
     grid.innerHTML = '';
     validos.forEach(function(f){
-      var pt = comAspas(f.texto_pt);
-      var en = comAspas(f.texto_en) || pt;
+      var pt = semAspas(f.texto_pt);
+      var en = semAspas(f.texto_en) || pt;
 
       var pasta = document.createElement('div');
       pasta.className = 'feedback-folder';
@@ -1354,6 +1371,7 @@ a.info-value:hover{ text-decoration:underline; }
         var img = document.createElement('img');
         img.src = f.logo_url;
         img.alt = f.titulo;
+        ajustarLogoFeedback(img);
         logo.appendChild(img);
       } else {
         logo.className = 'feedback-logo feedback-logo--text';
@@ -1864,6 +1882,8 @@ a.info-value:hover{ text-decoration:underline; }
   document.getElementById('modalClose').addEventListener('click', closeModal);
   modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape'){ closeModal(); hidePopup(); } });
+
+  document.querySelectorAll('.feedback-logo img').forEach(ajustarLogoFeedback);
 
   /* ---------------- Setas dos carrosséis (vídeos e feedbacks) ---------------- */
   function ligarSetas(trilho, anterior, proximo){

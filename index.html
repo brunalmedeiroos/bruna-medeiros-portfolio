@@ -150,6 +150,7 @@ section{ position:relative; }
 .section--dark{ background: var(--blue-dark); }
 .section--gray{ background: var(--gray-light); }
 .section--blue .section-title, .section--butter .section-title{ color: var(--ink); }
+#feedbacks .section-title{ color: var(--blue-dark); }
 .section--dark .section-title{ color: var(--butter); }
 
 .section-kicker{
@@ -277,18 +278,18 @@ section{ position:relative; }
   font-family: var(--font-display); font-weight:800; letter-spacing:-0.5px;
   font-size: clamp(3rem, 6.2vw, 5.4rem); line-height:1.05; color: var(--offwhite); margin:0 0 34px;
 }
-.hero-cover-headline .accent{ color: var(--brown); font-style:italic; font-weight:700; text-shadow:none; }
+.hero-cover-headline .accent{ color: var(--offwhite); font-style:italic; font-weight:700; }
 .hero-cover-headline, .hero-link-arrow{ text-shadow: 0 2px 18px rgba(75,57,53,0.45); }
 
 .hero-badge{
   display:inline-flex; align-items:center; gap:8px;
-  background: var(--blue-dark); color: var(--offwhite); border:none;
+  background: var(--blue-light); color: var(--blue-dark); border:none;
   font-family: var(--font-body); font-weight:700; font-size:.74rem; letter-spacing:.04em;
   padding:7px 16px 7px 7px; border-radius:999px; margin-bottom:24px;
 }
 .hero-badge-check{
-  width:22px; height:22px; border-radius:50%; background: var(--blue-light);
-  display:flex; align-items:center; justify-content:center; flex-shrink:0; color: var(--blue-dark);
+  width:22px; height:22px; border-radius:50%; background: var(--blue-dark);
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; color: var(--brown);
 }
 .hero-badge-check svg{ width:12px; height:12px; }
 
@@ -594,7 +595,7 @@ section{ position:relative; }
    08 — CONTATO
 ===================================================================== */
 .contact-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:90px; align-items:start; }
-.contact-cta h2{ font-family: var(--font-display); font-weight:700; letter-spacing:-0.5px; font-size: clamp(2rem,4vw,3rem); color: var(--ink); line-height:1.02; margin-bottom:20px; }
+.contact-cta h2{ font-family: var(--font-display); font-weight:700; letter-spacing:-0.5px; font-size: clamp(2rem,4vw,3rem); color: var(--blue-dark); line-height:1.02; margin-bottom:20px; }
 .contact-cta h2 .script{ font-family: var(--font-script); letter-spacing:0; font-size:1.35em; color: var(--butter); text-shadow: 0 1px 3px rgba(59,74,107,0.3); }
 .contact-cta p{ font-size:1rem; color: var(--ink); font-weight:500; margin-bottom:30px; max-width: 420px; line-height:1.6; }
 

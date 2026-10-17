@@ -683,27 +683,26 @@ a.info-value:hover{ text-decoration:underline; }
 .popup-notification .btn:active{ transform: scale(.96); }
 
 /* =====================================================================
-   FOOTER
+   RODAPÉ — nome e profissão à esquerda; e-mail e ano à direita
 ===================================================================== */
-.site-footer{ background: var(--blue-dark); color: var(--offwhite); padding: 64px 0 0; }
-.footer-grid{ display:grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap:40px; padding-bottom:44px; }
-.footer-brand .script{ font-family: var(--font-script); font-size:2rem; color: var(--butter); display:block; margin-bottom:14px; }
-.footer-brand p{ font-size:.86rem; color: rgba(241,241,241,0.7); line-height:1.6; max-width:280px; }
-.footer-col h5{
-  font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
-  color: var(--butter); margin-bottom:16px;
+.site-footer{ background: var(--blue-dark); color: var(--offwhite); border-top:1px solid rgba(241,241,241,0.18); }
+.footer-row{
+  display:flex; align-items:center; justify-content:space-between; gap:30px;
+  padding-top:44px; padding-bottom:44px;
 }
-.footer-col a{
-  display:block; font-size:.86rem; font-weight:500; color: rgba(241,241,241,0.75);
-  margin-bottom:12px; transition: color .2s ease;
+.footer-name{
+  display:block; font-family: var(--font-display); font-weight:800; font-size:1.7rem; line-height:1.1;
+  letter-spacing:.01em; text-transform:uppercase; color: var(--offwhite); margin-bottom:8px;
 }
-.footer-col a:hover{ color: var(--offwhite); }
-.footer-bottom{
-  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
-  border-top:1px solid rgba(241,241,241,0.15); padding:20px 0; font-size:.74rem;
-  color: rgba(241,241,241,0.55);
+.footer-dot{ color: var(--butter); }
+.footer-brand p{ font-size:.82rem; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color: rgba(241,241,241,0.78); }
+.footer-meta{
+  display:flex; align-items:center; gap:26px;
+  font-size:.82rem; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color: rgba(241,241,241,0.78);
 }
-.footer-bottom .footer-tag{ color: var(--butter); font-weight:600; }
+.footer-meta a{ color: inherit; transition: color .2s ease; }
+.footer-meta a:hover{ color: var(--butter); }
+.footer-sep{ opacity:.6; }
 
 /* =====================================================================
    RESPONSIVIDADE — no celular o site fica igual ao do computador (viewport width=1440),
@@ -1202,36 +1201,15 @@ a.info-value:hover{ text-decoration:underline; }
 </section>
 
 <footer class="site-footer">
-  <div class="wrap">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <span class="script">Bruna Medeiros.</span>
-        <p data-texto="rodape_texto" data-pt-html="criadora de conteúdo &amp; UGC creator · Eusébio, CE.&lt;br&gt;conteúdo que conecta marcas e pessoas." data-en-html="content creator &amp; UGC creator · Eusébio, CE.&lt;br&gt;content that connects brands and people.">criadora de conteúdo &amp; UGC creator · Eusébio, CE.<br>conteúdo que conecta marcas e pessoas.</p>
-      </div>
-      <div class="footer-col">
-        <h5 data-pt="navegar" data-en="navigate">navegar</h5>
-        <a href="#sobre" data-pt="sobre" data-en="about">sobre</a>
-        <a href="#portfolio" data-pt="portfólio" data-en="portfolio">portfólio</a>
-        <a href="#servicos" data-pt="serviços" data-en="services">serviços</a>
-        <a href="#resultados" data-pt="resultados" data-en="results" style="display:none">resultados</a>
-        <a href="#feedbacks" data-pt="feedbacks" data-en="feedback">feedbacks</a>
-      </div>
-      <div class="footer-col">
-        <h5 data-pt="contato" data-en="contact">contato</h5>
-        <a href="https://wa.me/5585992805861" target="_blank" rel="noopener" data-contato="whatsapp">whatsapp</a>
-        <a href="mailto:brunamedeirosugc@gmail.com" data-contato="email">email</a>
-        <a href="#contato" data-pt="solicitar proposta" data-en="request a proposal">solicitar proposta</a>
-      </div>
-      <div class="footer-col">
-        <h5 data-pt="redes" data-en="social">redes</h5>
-        <a href="https://instagram.com/brunalmedeiroos" target="_blank" rel="noopener" data-contato="instagram">instagram</a>
-        <a href="https://www.tiktok.com/@brunamedeiros" target="_blank" rel="noopener" data-contato="tiktok">tiktok</a>
-      </div>
+  <div class="wrap footer-row">
+    <div class="footer-brand">
+      <span class="footer-name">Bruna Medeiros<span class="footer-dot">.</span></span>
+      <p data-texto="rodape_texto" data-pt="criadora de conteúdo e UGC creator" data-en="content creator and UGC creator">criadora de conteúdo e UGC creator</p>
     </div>
-    <div class="footer-bottom">
-      <span data-texto="rodape_copy" data-pt="© 2026 Bruna Medeiros · todos os direitos reservados" data-en="© 2026 Bruna Medeiros · all rights reserved">© 2026 Bruna Medeiros · todos os direitos reservados</span>
-      <span class="footer-tag">handcrafted in BRUNA/OS</span>
-      <span data-texto="rodape_local" data-pt="Eusébio, CE · Brasil" data-en="Eusébio, CE · Brazil">Eusébio, CE · Brasil</span>
+    <div class="footer-meta">
+      <a href="mailto:brunamedeirosugc@gmail.com" data-contato="email" data-contato-texto="1">brunamedeirosugc@gmail.com</a>
+      <span class="footer-sep" aria-hidden="true">·</span>
+      <span data-texto="rodape_copy" data-pt="© 2026" data-en="© 2026">© 2026</span>
     </div>
   </div>
 </footer>

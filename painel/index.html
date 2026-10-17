@@ -24265,7 +24265,36 @@
       document.getElementById('pf-modal-overlay').hidden = true;
     }
 
+    // Fotos grandes (capa, sobre) são reduzidas antes de subir: ficam leves e o site abre mais rápido.
+    // Só vira JPEG se a foto não tiver transparência; recorte com fundo transparente continua PNG.
+    async function pfOtimizarFoto(arquivo) {
+      if (!/^image\/(png|jpeg|webp)$/.test(arquivo.type) || arquivo.size < 400 * 1024) return arquivo;
+      try {
+        const bitmap = await createImageBitmap(arquivo);
+        const escala = Math.min(1, 2000 / bitmap.width);
+        const larg = Math.round(bitmap.width * escala);
+        const alt = Math.round(bitmap.height * escala);
+        const tela = document.createElement('canvas');
+        tela.width = larg;
+        tela.height = alt;
+        const ctx = tela.getContext('2d');
+        ctx.drawImage(bitmap, 0, 0, larg, alt);
+        const amostra = ctx.getImageData(0, 0, larg, alt).data;
+        let temTransparencia = false;
+        for (let i = 3; i < amostra.length; i += 4 * 97) {
+          if (amostra[i] < 250) { temTransparencia = true; break; }
+        }
+        const tipo = temTransparencia ? 'image/png' : 'image/jpeg';
+        const blob = await new Promise((ok) => tela.toBlob(ok, tipo, 0.86));
+        if (!blob || blob.size >= arquivo.size) return arquivo;
+        return new File([blob], arquivo.name.replace(/\.[^.]+$/, '') + (temTransparencia ? '.png' : '.jpg'), { type: tipo });
+      } catch (e) {
+        return arquivo;
+      }
+    }
+
     async function pfUploadImagem(prefixo, arquivo) {
+      if (prefixo.startsWith('foto')) arquivo = await pfOtimizarFoto(arquivo);
       const ext = (arquivo.name.split('.').pop() || 'png').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 5) || 'png';
       const nome = prefixo + '-' + Date.now() + '.' + ext;
       const { error } = await Auth.sb.storage.from('portfolio-imagens').upload(nome, arquivo, { contentType: arquivo.type });

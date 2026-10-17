@@ -265,7 +265,7 @@ section{ position:relative; }
   /* alinhada ao topo (e puxada pra direita) pra nunca cortar a cabeça */
   object-fit:cover; object-position: 70% top;
   /* aumenta um pouco a foto a partir do canto de cima esquerdo: empurra ela pra direita, longe da frase, sem cortar a cabeça */
-  transform: scale(1.14); transform-origin: left top;
+  transform: translateY(-5.5%) scale(1.14); transform-origin: left top;
 }
 .hero-cover-inner{
   position:absolute; inset:0; z-index:3; display:flex; align-items:center;
@@ -277,7 +277,7 @@ section{ position:relative; }
   font-family: var(--font-display); font-weight:800; letter-spacing:-0.5px;
   font-size: clamp(3rem, 6.2vw, 5.4rem); line-height:1.05; color: var(--offwhite); margin:0 0 34px;
 }
-.hero-cover-headline .accent{ color: var(--blue-light); font-style:italic; font-weight:700; }
+.hero-cover-headline .accent{ color: var(--blue-dark); font-style:italic; font-weight:700; text-shadow:none; }
 .hero-cover-headline, .hero-link-arrow{ text-shadow: 0 2px 18px rgba(75,57,53,0.45); }
 
 .hero-badge{
@@ -484,24 +484,25 @@ section{ position:relative; }
 .widget-glass:hover{ transform: translateY(-6px); box-shadow: 0 22px 44px rgba(59,74,107,0.24); }
 /* o nome do serviço fica dentro do card, como título (sem a pílula) */
 .widget-glass h3{
-  color: var(--blue-dark); font-family: var(--font-body);
-  font-size:.9rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
-  margin-bottom:6px; text-align:center;
+  color: var(--blue-dark); font-family: var(--font-display);
+  font-size:2.1rem; font-weight:800; letter-spacing:-0.5px; line-height:1.1;
+  margin-bottom:10px; text-align:center; text-wrap: balance;
 }
 /* a frase fica centralizada no meio do card, entre o título e o botão */
 .widget-glass p{
   flex:1; display:flex; align-items:center; justify-content:center; text-align:center;
   font-size:1.05rem; line-height:1.7; color: var(--ink); font-weight:500; margin-bottom:24px;
+  text-wrap: balance; /* equilibra as linhas: nunca sobra uma palavra sozinha embaixo */
 }
 .widget-cta{
   margin-top:auto; align-self:center;
   display:inline-flex; align-items:center; gap:9px;
   padding:14px 28px; border-radius:999px; border:none;
-  background: var(--blue-dark); color:#fff; font-size:.94rem; font-weight:700;
+  background: var(--blue-light); color: var(--blue-dark); font-size:.94rem; font-weight:800;
   transition: background .2s ease, color .2s ease, transform .2s ease;
 }
 .widget-cta svg{ width:18px; height:18px; }
-.widget-cta:hover{ background: var(--butter); color: var(--blue-dark); transform: translateY(-2px); }
+.widget-cta:hover{ background: var(--blue-dark); color: #fff; transform: translateY(-2px); }
 
 /* =====================================================================
    06 — RESULTADOS
@@ -663,7 +664,7 @@ a.info-value:hover{ text-decoration:underline; }
 .popup-body{ padding: 48px 34px 36px; }
 .popup-notification h4{
   font-family: var(--font-display); font-weight:700; letter-spacing:-0.5px; font-size:2.2rem;
-  color: var(--blue-dark); line-height:1; margin-bottom:22px;
+  color: var(--blue-light); line-height:1; margin-bottom:22px;
 }
 .popup-notification .form-field{ margin-bottom:14px; }
 .popup-notification .form-field label{
@@ -1126,7 +1127,7 @@ a.info-value:hover{ text-decoration:underline; }
 <section class="section section--butter" id="feedbacks">
   <div class="wrap">
     <div class="services-head">
-      <h2 class="section-title" data-texto="feedbacks_titulo" data-pt="o que as marcas acham do meu trabalho" data-en="what brands think of my work">o que as marcas acham do meu trabalho</h2>
+      <h2 class="section-title" data-texto="feedbacks_titulo" data-pt="o que as marcas acham do meu trabalho" data-en="what brands think of my work">o que as marcas acham do meu trabalho</h2>
     </div>
 
     <div class="catalog catalog--feedback">

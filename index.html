@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=1440">
 <title>Bruna Medeiros</title>
 <meta name="description" content="Portfólio digital de Bruna Medeiros, criadora de conteúdo audiovisual.">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -37,20 +37,21 @@
 
 :root{
   /* ---------- PALETA DE CORES (editar aqui muda o site inteiro) ---------- */
-  --blue-light: #7DB7CE;
+  --blue-light: #9cbbd8;
   --gray-light: #F1F1F1;
-  --blue-dark:  #04465D;
-  --butter:     #FFF7C5;
+  --blue-dark:  #5c6e91;
+  --butter:     #f5e1b4;
   --white:      #FFFFFF;
-  --offwhite:   #FAF9F4;
-  --blue-dark-70: rgba(4,70,93,0.7);
-  --blue-dark-15: rgba(4,70,93,0.12);
+  --offwhite:   #F1F1F1;
+  --ink:        #3b4a6b; /* versão mais escura do azul escuro, só pra texto corrido ficar legível sobre o azul claro */
+  --blue-dark-70: rgba(59,74,107,0.82);
+  --blue-dark-15: rgba(92,110,145,0.12);
   --glass-bg:   rgba(255,255,255,0.38);
   --glass-brd:  rgba(255,255,255,0.55);
   --bezel:      #0B2733;
-  --shadow-soft: 0 20px 45px rgba(4,70,93,0.16);
-  --shadow-hard: 0 10px 24px rgba(4,70,93,0.22);
-  --promo-bar-h: 44px;
+  --shadow-soft: 0 20px 45px rgba(92,110,145,0.16);
+  --shadow-hard: 0 10px 24px rgba(92,110,145,0.22);
+  --promo-bar-h: 42px;
   --promo-bar-space: 54px;
 
   /* ---------- FONTES (não trocar por outras) ---------- */
@@ -75,11 +76,6 @@ body{
    recalcula o "cover" para a altura de CADA seção e cria uma linha visível onde uma
    termina e a outra começa), só essa camada é fixa; as seções ficam transparentes por
    cima dela, garantindo que seja sempre o mesmo recorte da imagem, sem emenda. */
-.site-backdrop{
-  position:fixed; inset:0; z-index:-1;
-  background-image: url("fotos/fundo-hero.png");
-  background-size: cover; background-position: center;
-}
 img{ max-width:100%; display:block; }
 button, input, textarea{ font-family: inherit; }
 a{ color: inherit; text-decoration:none; }
@@ -116,7 +112,7 @@ section{ position:relative; }
   white-space:nowrap;
 }
 .btn-primary{ background: var(--blue-dark); color: var(--offwhite); box-shadow: var(--shadow-hard); }
-.btn-primary:hover{ transform: translateY(-4px); box-shadow: 0 16px 30px rgba(4,70,93,0.3); }
+.btn-primary:hover{ transform: translateY(-4px); box-shadow: 0 16px 30px rgba(92,110,145,0.3); }
 .btn-outline{ background: transparent; color: var(--blue-dark); }
 .btn-outline:hover{ background: var(--blue-dark); color: var(--offwhite); transform: translateY(-4px); }
 .btn-butter{ background: var(--blue-light); border-color: var(--blue-light); color: var(--offwhite); }
@@ -132,7 +128,7 @@ section{ position:relative; }
 }
 .placeholder::after{
   content:""; position:absolute; inset:0;
-  background: repeating-linear-gradient(45deg, rgba(4,70,93,0.03) 0 2px, transparent 2px 14px);
+  background: repeating-linear-gradient(45deg, rgba(92,110,145,0.03) 0 2px, transparent 2px 14px);
 }
 .about-photo .placeholder::after{ display:none; }
 .placeholder span{
@@ -147,18 +143,11 @@ section{ position:relative; }
 --------------------------------------------------------------- */
 .section{ padding: 110px 0; position:relative; }
 .section--offwhite{ background: var(--offwhite); }
-.section--blue{
-  background: var(--blue-light);
-  box-shadow: inset 0 18px 40px rgba(4,70,93,0.12), inset 0 -18px 40px rgba(4,70,93,0.12);
-}
+.section--blue{ background: var(--blue-light); }
+.section--butter{ background: var(--butter); }
 .section--gray{ background: var(--gray-light); }
+.section--blue .section-title, .section--butter .section-title{ color: var(--ink); }
 
-/* mesma família de fundo do hero/tela de bloqueio, pra dar continuidade ao "desktop" */
-#sobre.section--blue{
-  background: transparent;
-  box-shadow: none;
-  padding-bottom:30px;
-}
 .section-kicker{
   font-weight:700; font-size:.78rem; letter-spacing:.14em; text-transform:uppercase;
   color: var(--blue-dark-70); margin-bottom:14px; display:flex; align-items:center; gap:10px;
@@ -199,18 +188,18 @@ section{ position:relative; }
 }
 .lock-screen::after{
   content:""; position:absolute; inset:0;
-  background: rgba(4,70,93,0.35);
+  background: rgba(92,110,145,0.35);
   z-index:0;
 }
 .lock-screen > *{ position:relative; z-index:1; }
 .lock-hint{
   font-family: var(--font-body); font-weight:700; font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
-  color: rgba(250,249,244,0.55);
+  color: rgba(241,241,241,0.55);
   animation: lockFadeUp .55s cubic-bezier(.2,.8,.2,1) both;
 }
 .lock-avatar{
   width:132px; height:132px; border-radius:50%; overflow:hidden;
-  border:3px solid rgba(255,255,255,0.85); box-shadow: 0 20px 45px rgba(4,70,93,0.3);
+  border:3px solid rgba(255,255,255,0.85); box-shadow: 0 20px 45px rgba(92,110,145,0.3);
   animation: lockFadeUp .55s cubic-bezier(.2,.8,.2,1) both;
 }
 .lock-avatar img{ width:100%; height:100%; object-fit:cover; object-position:center 22%; display:block; }
@@ -222,7 +211,7 @@ section{ position:relative; }
 .lock-dots{
   display:flex; align-items:center; gap:9px;
   min-width:230px; padding:14px 20px; border-radius:8px;
-  background: rgba(4,70,93,0.45); border:1px solid rgba(255,255,255,0.3);
+  background: rgba(92,110,145,0.45); border:1px solid rgba(255,255,255,0.3);
   box-shadow: inset 0 2px 8px rgba(0,0,0,0.25);
   animation: lockFadeUp .55s cubic-bezier(.2,.8,.2,1) both;
 }
@@ -236,234 +225,200 @@ section{ position:relative; }
 body.lock-active{ overflow:hidden; height:100vh; }
 
 /* =====================================================================
-   NAVBAR — abas tipo pastas de arquivo
+   NAVBAR — largura total, linha branca embaixo, palavras em azul claro
 ===================================================================== */
 .navbar{
-  position: fixed; top:18px; left:50%; transform: translateX(-50%); z-index: 500;
-  width: calc(100% - 40px); max-width:1360px;
+  position: fixed; top:0; left:0; right:0; z-index: 500; width:100%;
   font-family: var(--font-system);
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(4px) saturate(120%); -webkit-backdrop-filter: blur(4px) saturate(120%);
-  border: 1px solid rgba(255,255,255,0.22); border-radius: 999px;
-  box-shadow: var(--shadow-soft);
+  background: transparent;
+  border-bottom: 1px solid #fff;
+  transition: top .35s ease, background .3s ease;
 }
+/* com a faixa de aviso visível, o menu desce pra ficar embaixo dela */
+.promo-bar.is-visible:not(.is-past-hero) ~ .navbar{ top: var(--promo-bar-h); }
+.navbar.is-solid{ background: var(--blue-dark); }
 .nav-inner{
-  margin:0 auto; padding: 8px 10px 8px 22px;
-  display:flex; align-items:center; justify-content:space-between; gap:18px;
+  width:100%; margin:0 auto; padding: 10px 40px;
+  display:flex; align-items:center; justify-content:space-between; gap:24px;
 }
-.nav-logo{ font-family: var(--font-script); font-size:1.6rem; color: var(--blue-dark); flex-shrink:0; }
+.nav-logo{ font-family: var(--font-script); font-size:1.6rem; color: var(--blue-light); flex-shrink:0; }
 .nav-logo-img{ display:flex; align-items:center; }
-.nav-logo-img img{ height:54px; width:auto; display:block; }
+.nav-logo-img img{ height:50px; width:auto; display:block; filter: brightness(0) invert(1); }
 .nav-location{
-  display:flex; align-items:center; gap:5px; flex-shrink:0; margin-left:6px;
-  font-family: var(--font-body); font-weight:700; font-size:.78rem; color: var(--blue-dark);
+  display:flex; align-items:center; gap:6px; flex-shrink:0; margin-left:6px;
+  font-family: var(--font-body); font-weight:700; font-size:.82rem; color: var(--blue-light);
 }
 .nav-location svg{ width:15px; height:15px; flex-shrink:0; color: var(--blue-light); }
 .nav-tabs{
-  display:flex; align-items:center; gap:26px; overflow-x:auto; scrollbar-width:none;
-  padding-bottom:2px; margin-left:auto; min-width:0;
+  display:flex; align-items:center; gap:10px; margin-left:auto; min-width:0;
 }
-.nav-tabs::-webkit-scrollbar{ display:none; }
 .nav-tab{
-  font-size:.86rem; font-weight:600; color: var(--blue-dark);
+  font-size:.94rem; font-weight:700; color: var(--blue-light);
   background: transparent; border:none; border-radius:10px;
-  padding:9px 14px; white-space:nowrap; cursor:pointer; position:relative;
-  transition: background .2s ease;
+  padding:9px 16px; white-space:nowrap; cursor:pointer; position:relative;
+  transition: background .2s ease, color .2s ease;
 }
-.nav-tab:hover{ background: rgba(4,70,93,0.12); }
+.nav-tab:hover{ background: rgba(255,255,255,0.14); color:#fff; }
 .nav-tab.is-cta{
-  background: var(--blue-light); color: var(--offwhite);
-  font-weight:700; padding:10px 20px; border-radius:14px;
+  background: var(--butter); color: var(--blue-dark);
+  font-weight:800; padding:10px 22px; border-radius:999px; margin-left:6px;
 }
-.nav-tab.is-cta:hover{ background: var(--blue-light); color: var(--butter); }
+.nav-tab.is-cta:hover{ background: #fff; color: var(--blue-dark); }
 
 .nav-clock{
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  background: rgba(4,70,93,0.32); border:1px solid rgba(125,183,206,0.4);
-  color: var(--offwhite); border-radius:12px;
-  padding:6px 14px; line-height:1.2; flex-shrink:0; margin-left:14px;
+  background: rgba(92,110,145,0.55); border:1px solid var(--blue-light);
+  color: #fff; border-radius:12px;
+  padding:6px 14px; line-height:1.2; flex-shrink:0; margin-left:6px;
 }
 .nav-clock-time{ font-weight:800; font-size:.92rem; letter-spacing:.5px; }
-.nav-clock-date{ font-weight:700; font-size:.58rem; letter-spacing:.08em; text-transform:uppercase; color: rgba(250,249,244,0.7); }
+.nav-clock-date{ font-weight:700; font-size:.58rem; letter-spacing:.08em; text-transform:uppercase; color: var(--blue-light); }
 .lang-toggle{
-  flex-shrink:0; margin-left:14px; display:flex; align-items:center; gap:2px;
-  border:1.5px solid rgba(125,183,206,0.6); background:transparent;
+  flex-shrink:0; margin-left:6px; display:flex; align-items:center; gap:2px;
+  border:1.5px solid var(--blue-light); background: rgba(92,110,145,0.55);
   padding:3px; border-radius:12px;
 }
 .lang-option{
-  border:none; background:transparent; color: var(--blue-dark);
+  border:none; background:transparent; color: var(--blue-light);
   font-family: inherit; font-weight:800; font-size:.78rem; letter-spacing:.05em;
   padding:6px 11px; border-radius:9px; cursor:pointer; transition: background .2s ease, color .2s ease;
 }
-.lang-option:hover{ background: rgba(125,183,206,0.18); }
-.lang-option.is-active{ background: rgba(125,183,206,0.55); color: var(--blue-dark); }
-.lang-option.is-active:hover{ background: rgba(125,183,206,0.55); }
+.lang-option:hover{ background: rgba(255,255,255,0.14); }
+.lang-option.is-active{ background: var(--blue-light); color: var(--blue-dark); }
+.lang-option.is-active:hover{ background: var(--blue-light); }
 
 /* =====================================================================
-   DOCK — barra de apps, presa na base do hero (estilo macOS)
-===================================================================== */
-.mac-dock{
-  position: absolute; left:50%; bottom:14px; transform: translateX(-50%); z-index: 4;
-  display:flex; align-items:flex-end; gap:12px; overflow:hidden;
-  padding:20px 16px 12px; border-radius:26px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(18px) saturate(150%); -webkit-backdrop-filter: blur(18px) saturate(150%);
-  border:1px solid var(--glass-brd); box-shadow: var(--shadow-soft);
-}
-.dock-icon{
-  position:relative; display:flex; flex-direction:column; align-items:center;
-  text-decoration:none; cursor:pointer; flex-shrink:0;
-}
-.dock-icon-bg{
-  width:50px; height:50px; border-radius:24%; overflow:hidden; display:flex; align-items:center; justify-content:center;
-  box-shadow: 0 4px 10px rgba(4,70,93,0.18), inset 0 1px 0 rgba(255,255,255,0.3);
-  transition: transform .18s cubic-bezier(.2,.8,.2,1);
-}
-.dock-icon-bg img{ width:100%; height:100%; object-fit:cover; display:block; }
-.dock-icon:hover .dock-icon-bg, .dock-icon:focus-visible .dock-icon-bg{ transform: translateY(-6px) scale(1.08); }
-@media (max-width: 768px){
-  .mac-dock{ bottom:16px; gap:8px; padding:15px 12px 9px; border-radius:22px; max-width:calc(100% - 24px); overflow-x:auto; scrollbar-width:none; }
-  .mac-dock::-webkit-scrollbar{ display:none; }
-  .dock-icon-bg{ width:40px; height:40px; }
-}
-
-/* =====================================================================
-   FAIXA DE NOTIFICAÇÃO — estilo notificação da Apple, faixa única abaixo do menu
+   FAIXA DE AVISO — linha azul escura em cima do menu, frase em amarelo manteiga
 ===================================================================== */
 .promo-bar{
-  position: fixed; top:100px; left:50%; transform: translateX(-50%) translateY(-160%); z-index:600;
-  width: calc(100% - 40px); max-width:1360px; height:var(--promo-bar-h);
-  display:flex; align-items:center; gap:10px; padding:0 22px;
-  background: rgba(255,255,255,0.86);
-  backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border:1px solid rgba(0,0,0,0.06); border-radius:999px;
-  box-shadow: var(--shadow-soft);
-  text-decoration:none; color:inherit; cursor:pointer;
-  transition: background .2s ease, opacity .3s ease, transform .3s ease;
+  position: fixed; top:0; left:0; right:0; z-index:600; height:var(--promo-bar-h);
+  display:flex; align-items:center; justify-content:center; gap:12px; padding:0 40px;
+  background: var(--blue-dark); color: var(--butter);
+  text-decoration:none; cursor:pointer;
+  transform: translateY(-100%);
+  transition: transform .45s cubic-bezier(.2,.8,.2,1), background .2s ease;
 }
-.promo-bar.is-visible{ animation: promoBarIn .5s cubic-bezier(.2,.8,.2,1) forwards; }
-.promo-bar.is-past-hero{ opacity:0; pointer-events:none; transform: translateX(-50%) translateY(-160%) !important; }
-.promo-bar:hover{ background: rgba(255,255,255,0.97); }
-@keyframes promoBarIn{ from{ transform: translateX(-50%) translateY(-160%); } to{ transform: translateX(-50%) translateY(0); } }
+.promo-bar.is-visible{ transform: translateY(0); }
+.promo-bar.is-past-hero{ transform: translateY(-100%) !important; pointer-events:none; }
 .promo-bar-icon{
-  width:26px; height:26px; border-radius:7px; overflow:hidden; flex-shrink:0;
-  display:flex; flex-direction:column; background:#fff; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+  width:24px; height:24px; border-radius:6px; overflow:hidden; flex-shrink:0;
+  display:flex; flex-direction:column; background: var(--butter);
 }
-.promo-bar-month{ background:#FF3B30; color:#fff; font-size:.4rem; font-weight:800; letter-spacing:.02em; text-align:center; line-height:1.5; }
-.promo-bar-day{ flex:1; display:flex; align-items:center; justify-content:center; font-size:.66rem; font-weight:700; color:#1c1c1e; }
-.promo-bar-title{ font-size:.82rem; font-weight:700; color:#1c1c1e; white-space:nowrap; flex-shrink:0; }
-.promo-bar-dot{ color:#8e8e93; flex-shrink:0; }
-.promo-bar-sub{ font-size:.82rem; font-weight:500; color:#3a3a3c; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; flex:1; }
-.promo-bar-reply{ flex-shrink:0; font-size:.78rem; font-weight:700; color:#0A84FF; white-space:nowrap; }
-@media (max-width: 768px){
-  .promo-bar{ top:86px; }
-}
-@media (max-width: 640px){
-  .promo-bar-sub{ display:none; }
-  .promo-bar-dot{ display:none; }
-  .promo-bar{ padding:0 16px; gap:8px; }
-}
+.promo-bar-month{ background: var(--blue-light); color: var(--blue-dark); font-size:.4rem; font-weight:800; letter-spacing:.02em; text-align:center; line-height:1.5; }
+.promo-bar-day{ flex:1; display:flex; align-items:center; justify-content:center; font-size:.64rem; font-weight:800; color: var(--blue-dark); }
+.promo-bar-title{ font-size:.86rem; font-weight:800; color: var(--butter); white-space:nowrap; flex-shrink:0; }
+.promo-bar-dot{ color: var(--butter); opacity:.7; flex-shrink:0; }
+.promo-bar-sub{ font-size:.86rem; font-weight:500; color: var(--butter); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+.promo-bar-reply{ flex-shrink:0; font-size:.82rem; font-weight:800; color: var(--butter); white-space:nowrap; margin-left:10px; text-decoration:underline; text-underline-offset:3px; }
 
 /* =====================================================================
-   01 — HERO — capa com foto de fundo em tela cheia
+   01 — HERO — a foto de capa é o fundo; frase à esquerda, rosto à direita
 ===================================================================== */
 .hero{ position:relative; overflow:hidden; }
-
 .hero-cover{
   position:relative; min-height: clamp(720px, 100vh, 960px); overflow:hidden;
-  background: transparent;
-}
-
-/* moldura em volta da foto — o tamanho/posição fica AQUI, no div, porque um <img>
-   posicionado com top+bottom junto ignora o bottom (é elemento substituído) e
-   estoura a altura real, cortando a base da foto no overflow:hidden da capa. */
-.hero-cover-photo-frame{
-  position:absolute; z-index:2; right:9%; top: calc(10% + var(--promo-bar-space)); bottom:0; width:36%;
+  background: var(--blue-light);
 }
 .hero-cover-photo{
-  display:block; width:100%; height:100%;
-  object-fit:contain; object-position:50% 100%;
-  /* leve realce de nitidez — o arquivo de origem é pequeno e fica ampliado aqui */
-  filter: url(#heroSharpen);
+  position:absolute; inset:0; z-index:1; display:block;
+  width:100%; height:100%; max-width:none;
+  object-fit:cover; object-position: center right;
 }
-.file-window{
-  background: var(--white); border-radius:16px;
-  box-shadow: var(--shadow-soft); border: 6px solid var(--white);
-  overflow:hidden;
+/* véu suave só do lado da frase, pra ela ler bem em cima de qualquer foto */
+.hero-scrim{
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(92,110,145,0.78) 0px, rgba(92,110,145,0.5) 130px, rgba(92,110,145,0) 250px),
+    linear-gradient(90deg, rgba(92,110,145,0.80) 0%, rgba(92,110,145,0.58) 34%, rgba(92,110,145,0) 64%);
 }
-.file-window .file-titlebar{
-  display:flex; align-items:center; gap:8px; justify-content:space-between;
-  padding:9px 12px; background: var(--gray-light);
+.hero-cover-inner{
+  position:absolute; inset:0; z-index:3; display:flex; align-items:center;
+  padding: calc(var(--promo-bar-h) + 100px) 6% 70px; pointer-events:none;
 }
-.file-titlebar-left{ display:flex; align-items:center; gap:8px; }
-.file-dot{ width:9px; height:9px; border-radius:50%; }
-.file-dot.d1{ background: var(--blue-dark); }
-.file-dot.d2{ background: var(--blue-light); }
-.file-dot.d3{ background: var(--butter); }
-.file-titlebar .fname{ margin-left:6px; font-size:.68rem; font-weight:700; color: var(--blue-dark-70); }
-.titlebar-tools{ display:flex; gap:5px; align-items:center; }
-.titlebar-tools span{ width:12px; height:12px; border-radius:50%; background: rgba(4,70,93,0.15); }
-.titlebar-tools span:nth-child(3){ width:16px; border-radius:5px; }
+.hero-cover-content{ max-width:760px; pointer-events:auto; }
 
 .hero-cover-headline{
   font-family: var(--font-display); font-weight:800; letter-spacing:-0.5px;
-  font-size: clamp(3rem, 6.2vw, 5.4rem); line-height:1.05; color: var(--blue-light); margin:0 0 34px;
+  font-size: clamp(3rem, 6.2vw, 5.4rem); line-height:1.05; color: var(--offwhite); margin:0 0 34px;
 }
-.hero-cover-headline .accent{ color: var(--blue-dark); font-style:italic; font-weight:700; }
+.hero-cover-headline .accent{ color: var(--butter); font-style:italic; font-weight:700; }
 
-/* tag / headline / widget / cta do hero */
-.hero-cover-content{
-  position:absolute; z-index:3; left:0; top: calc(150px + var(--promo-bar-space)); width:100%;
-  max-width:1400px; margin:0 auto; padding: 0 32px;
-}
-
-/* cartão em vidro estilo widget, com o crachá + frase + nichos + cta */
-.hero-widget-card{
-  background: var(--glass-bg);
-  backdrop-filter: blur(18px) saturate(150%); -webkit-backdrop-filter: blur(18px) saturate(150%);
-  border:1px solid var(--glass-brd);
-  border-radius:36px; padding:64px 64px 56px;
-  box-shadow: var(--shadow-soft);
-  max-width:900px;
-}
 .hero-badge{
   display:inline-flex; align-items:center; gap:8px;
   background: var(--blue-dark); color: var(--offwhite); border:none;
-  font-family: var(--font-body); font-weight:700; font-size:.72rem; letter-spacing:.04em;
-  padding:6px 14px 6px 6px; border-radius:999px; margin-bottom:22px;
+  font-family: var(--font-body); font-weight:700; font-size:.74rem; letter-spacing:.04em;
+  padding:7px 16px 7px 7px; border-radius:999px; margin-bottom:24px;
 }
 .hero-badge-check{
-  width:20px; height:20px; border-radius:50%; background: var(--blue-light);
+  width:22px; height:22px; border-radius:50%; background: var(--blue-light);
   display:flex; align-items:center; justify-content:center; flex-shrink:0; color: var(--blue-dark);
 }
 .hero-badge-check svg{ width:12px; height:12px; }
 
-.hero-actions{ display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+.hero-actions{ display:flex; align-items:center; gap:24px; flex-wrap:wrap; }
 .hero-actions .btn-primary{
-  background: var(--blue-dark); border:none; box-shadow: var(--shadow-soft);
+  background: var(--butter); color: var(--blue-dark); border:none; box-shadow: var(--shadow-soft);
 }
-.hero-actions .btn-primary:hover{ background: var(--blue-dark); transform: scale(0.96); }
+.hero-actions .btn-primary:hover{ background:#fff; transform: scale(0.96); }
 .hero-actions .btn-primary:active{ transform: scale(0.92); }
 .hero-link-arrow{
-  display:inline-flex; align-items:center; gap:6px; font-weight:700; color: var(--blue-dark);
-  font-size:.9rem; text-decoration:none; transition: gap .2s ease;
+  display:inline-flex; align-items:center; gap:6px; font-weight:700; color: var(--offwhite);
+  font-size:.94rem; text-decoration:none; transition: gap .2s ease;
 }
 .hero-link-arrow:hover{ gap:10px; }
 
+/* bolinhas coloridas do modal de vídeo */
+.file-dot{ width:9px; height:9px; border-radius:50%; }
+.file-dot.d1{ background: var(--blue-dark); }
+.file-dot.d2{ background: var(--blue-light); }
+.file-dot.d3{ background: var(--butter); }
+
 /* =====================================================================
-   02 — FAIXA DE MARCAS
+   02 — SOBRE — texto solto à esquerda, foto simples à direita, fundo azul claro
 ===================================================================== */
-.brands-strip{ padding: 22px 0; background: var(--blue-dark); overflow:hidden; }
+#sobre{ padding: 120px 0; }
+#sobre .wrap{ max-width:1280px; }
+.about-panel{
+  display:grid; grid-template-columns: 1.15fr 0.85fr; gap: 90px; align-items:center;
+}
+.about-title{
+  position:relative; display:inline-block; align-self:flex-start; padding:2px 6px; margin-bottom:30px;
+  font-family: var(--font-display); font-weight:800; letter-spacing:-0.5px;
+  font-size: clamp(2.6rem, 4.4vw, 4rem); line-height:1.08; color: var(--ink);
+}
+.about-title .hl-box{
+  position:absolute; left:0; right:0; bottom:6%; height:44%; background: var(--butter);
+  border-radius:4px; z-index:0;
+}
+.about-title .hl-cursor{ display:none; }
+.about-title .hl-text{ position:relative; z-index:2; }
+.about-title .script{ font-style:italic; }
+#notesText{
+  font-size:1.2rem; line-height:1.85; color: var(--ink); font-weight:500; max-width:640px;
+}
+.notes-highlight{ background: var(--butter); color: var(--ink); font-weight:600; padding:0 .22em; border-radius:3px; }
+.typing-cursor{ display:inline-block; width:2px; height:1em; background: var(--ink); vertical-align:text-bottom; animation: blink 1s step-end infinite; margin-left:2px; }
+@keyframes blink{ 50%{ opacity:0; } }
+.about-photo{ justify-self:end; width:100%; max-width:440px; }
+.about-photo img{
+  width:100%; aspect-ratio: 4 / 5; object-fit:cover; object-position:center 82%; display:block;
+  border-radius:4px; box-shadow: 0 24px 50px rgba(59,74,107,0.28);
+}
+
+/* =====================================================================
+   03 — FAIXA DE MARCAS — fundo amarelo manteiga
+===================================================================== */
+.brands-strip{ padding: 34px 0 30px; background: var(--butter); overflow:hidden; }
 .brands-title{
-  text-align:center; color: var(--butter); font-size:.78rem; font-weight:700;
-  letter-spacing:.14em; text-transform:uppercase; margin-bottom: 10px;
+  text-align:center; color: var(--ink); font-size:.84rem; font-weight:800;
+  letter-spacing:.14em; text-transform:uppercase; margin-bottom: 12px;
 }
 .marquee-wrap{ overflow:hidden; position:relative; }
 .marquee-wrap::before, .marquee-wrap::after{
   content:""; position:absolute; top:0; bottom:0; width:80px; z-index:2;
 }
-.marquee-wrap::before{ left:0; background: linear-gradient(90deg, var(--blue-dark), transparent); }
-.marquee-wrap::after{ right:0; background: linear-gradient(-90deg, var(--blue-dark), transparent); }
+.marquee-wrap::before{ left:0; background: linear-gradient(90deg, var(--butter), transparent); }
+.marquee-wrap::after{ right:0; background: linear-gradient(-90deg, var(--butter), transparent); }
 .marquee-track{
   display:flex; align-items:center; gap:22px; width:max-content; animation: marquee 52s linear infinite;
 }
@@ -471,185 +426,71 @@ body.lock-active{ overflow:hidden; height:100vh; }
   display:flex; align-items:center; justify-content:center; flex-shrink:0;
   width:180px; height:76px;
 }
-.brand-tile img{ max-height:45px; max-width:115px; width:auto; height:auto; opacity:.95; }
+/* os logos são brancos: o filtro pinta eles de azul escuro pra aparecerem no fundo amarelo */
+.brand-tile img{ max-height:45px; max-width:115px; width:auto; height:auto; filter: url(#logoAzul); }
 .marquee-track img[alt="Sucré"]{ height: clamp(62px,7.6vw,90px); }
 @keyframes marquee{ from{ transform: translateX(0); } to{ transform: translateX(-50%); } }
 
 /* =====================================================================
-   03 — SOBRE (Notes estilo iPhone)
+   04 — PORTFÓLIO — nichos em botões e vídeos em catálogo (setinhas)
 ===================================================================== */
-#sobre .wrap{ max-width:1960px; padding:0 90px; }
-#sobre.section--blue{ padding-top:40px; position:relative; }
-/* a janela fica encostada à direita da seção */
-.about-panel{ display:flex; align-items:center; justify-content:center; gap:64px; padding:80px 0 20px; flex-wrap:wrap; }
-.about-photo-frame{ width:100%; max-width:420px; flex-shrink:0; border-width:0; box-shadow: 0 24px 50px rgba(4,70,93,0.28), 0 8px 20px rgba(4,70,93,0.16); }
-.about-photo-frame img{ width:100%; height:420px; object-fit:cover; object-position:center 90%; display:block; }
-.about-photo-frame .file-dot.d1{ background:#FF5F57; }
-.about-photo-frame .file-dot.d2{ background:#FEBC2E; }
-.about-photo-frame .file-dot.d3{ background:#28C840; }
+#portfolio{ padding: 110px 0 100px; }
+#portfolio .wrap{ max-width:1280px; }
+.portfolio-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:26px; }
+.portfolio-head .section-title{ margin-bottom:0; }
+.finder-count{ font-size:.9rem; font-weight:700; color: var(--ink); padding-bottom:8px; }
 
-.notes-window{
-  --open: 1;
-  background: var(--white); box-shadow: 0 calc(10px + var(--open) * 40px) calc(20px + var(--open) * 70px) rgba(4,70,93, calc(0.08 + var(--open) * 0.3));
-  border-radius: calc(14px + (1 - var(--open)) * 40px);
-  opacity: var(--open);
-  transform: scale(calc(0.72 + var(--open) * 0.28)) translateY(calc((1 - var(--open)) * 70px));
-  transform-origin: 50% 100%;
-  padding: 40px 84px 44px 56px; display:flex; flex-direction:column;
-  width:100%; max-width:800px;
-}
-.notes-appbar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
-.notes-back, .notes-done{ display:flex; align-items:center; gap:5px; color: #D6A419; font-weight:800; font-size:1rem; }
-.notes-back svg{ width:16px; height:16px; }
-.notes-done svg{ width:21px; height:21px; }
-.notes-title{
-  position:relative; display:inline-block; align-self:flex-start; padding:2px 4px;
-  font-family: var(--font-display); font-weight:700; letter-spacing:-0.5px; font-size: clamp(1.9rem,2.6vw,2.5rem); color: var(--blue-dark); margin-bottom:8px;
-}
-.notes-title .hl-box{
-  position:absolute; left:0; top:2%; bottom:2%; width:100%; background: var(--butter);
-  border-radius:4px; z-index:0;
-}
-.notes-title .hl-text{ position:relative; z-index:2; }
-.notes-title .script{ font-style:italic; }
-.notes-title .hl-cursor{ display:none; }
-.notes-body{ flex:1; }
-#notesText{
-  font-size:1.12rem; line-height:1.75; color: var(--blue-dark-70); font-weight:500;
-}
-.notes-highlight{ color: #D6A419; font-weight:500; }
-.typing-cursor{ display:inline-block; width:2px; height:1em; background: var(--blue-dark-70); vertical-align:text-bottom; animation: blink 1s step-end infinite; margin-left:2px; }
-@keyframes blink{ 50%{ opacity:0; } }
-.notes-icons{ display:flex; gap:26px; margin-top:26px; padding-top:22px; border-top:1px solid rgba(4,70,93,0.1); }
-.notes-icons span{ color:#D6A419; display:flex; }
-.notes-icons svg{ width:28px; height:28px; }
-
-/* =====================================================================
-   04 — SERVIÇOS (widgets vidro)
-===================================================================== */
-/* fundo em continuidade com a seção "Sobre" */
-#servicos.section--offwhite{
-  background: transparent;
-  padding-top:60px;
-}
-#servicos .wrap{ max-width:1560px; }
-#feedbacks .wrap{ max-width:1560px; }
-
-.services-window{
-  background: var(--white); border-radius:22px; overflow:hidden;
-  box-shadow: var(--shadow-soft); border:1px solid rgba(4,70,93,0.06);
-}
-.services-window-body{ padding: 72px 30px; text-align:center; }
-.services-window-body .section-title{ margin-bottom:16px; font-size: clamp(2.6rem, 5.6vw, 4.6rem); }
-.services-sub{ font-size:1.2rem; font-weight:600; color: var(--blue-dark-70); }
-
-.widgets-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap:30px; margin-top:44px; }
-.widget-glass{
-  position:relative; background: var(--glass-bg); border:1px solid var(--glass-brd);
-  backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%);
-  border-radius:26px; padding: 50px 40px; min-height: 380px;
-  box-shadow: var(--shadow-soft); overflow:hidden;
-  display:flex; flex-direction:column;
-  transition: transform .35s ease, box-shadow .35s ease;
-}
-.widget-glass:hover{ transform: translateY(-10px); box-shadow: 0 26px 50px rgba(4,70,93,0.28); }
-.widget-num{
-  position:absolute; top:22px; right:22px; z-index:2;
-  display:inline-flex; align-items:center; justify-content:center;
-  width:44px; height:44px; border-radius:13px;
-  background: linear-gradient(155deg, #FFFCE9 0%, var(--butter) 55%, #F3D67A 100%);
-  color: var(--blue-dark); box-shadow: 0 2px 6px rgba(4,70,93,0.18), inset 0 1px 0 rgba(255,255,255,0.6);
-  font-family: var(--font-body); font-weight:800; font-size:1.1rem;
-}
-.widget-glass h3{ font-family: var(--font-display); font-weight:700; letter-spacing:-0.5px; font-size:2.4rem; color: var(--blue-dark); margin-bottom:20px; }
-.widget-glass p{ font-size:1.12rem; line-height:1.68; color: var(--blue-dark-70); font-weight:500; margin-bottom:30px; }
-.widget-cta{
-  margin-top:auto; align-self:flex-start;
-  display:inline-flex; align-items:center; gap:9px;
-  padding:15px 26px; border-radius:32px; border:1.5px solid var(--blue-dark);
-  font-size:.94rem; font-weight:700; color: var(--blue-dark);
-  transition: background .2s ease, color .2s ease, transform .2s ease;
-}
-.widget-cta svg{ width:18px; height:18px; }
-.widget-cta:hover{ background: var(--blue-dark); color: var(--offwhite); transform: translateY(-2px); }
-
-/* =====================================================================
-   05 — PORTFÓLIO — janela única tipo app, nichos na lateral
-===================================================================== */
-#portfolio .wrap{ max-width:1560px; }
-#portfolio{ padding-top:60px; padding-bottom:30px; background:transparent; }
-#resultados{ padding-top:30px; padding-bottom:30px; background:transparent; }
-#feedbacks{ padding-top:30px; background:transparent; }
-.section-title--center{
-  text-align:center; font-size: clamp(2.8rem, 6vw, 4.8rem); margin-bottom:0;
-}
-
-.finder-app{
-  background: var(--white); border-radius:22px; overflow:hidden;
-  box-shadow: var(--shadow-soft); border:1px solid rgba(4,70,93,0.06);
-  transition: transform .25s ease;
-}
-.finder-app.is-closing{ animation: shakeClose .4s ease; }
-@keyframes shakeClose{ 0%,100%{ transform: scale(1); } 50%{ transform: scale(.985); } }
-
-.finder-titlebar{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 22px; background: var(--gray-light);
-}
-.finder-titlebar .fname{ font-size:.8rem; font-weight:700; color: var(--blue-dark-70); }
-.win-controls{ display:flex; align-items:center; gap:10px; }
-.win-btn{
-  width:26px; height:26px; border-radius:50%; border:none; cursor:pointer;
-  display:flex; align-items:center; justify-content:center; font-size:.85rem; font-weight:700;
-  transition: transform .2s ease;
-}
-.win-btn:hover{ transform: scale(1.12); }
-.win-min{ background: var(--blue-light); color: var(--blue-dark); }
-.win-min span{ width:10px; height:2px; background: var(--blue-dark); border-radius:2px; display:block; }
-.win-close{ background: var(--butter); color: var(--blue-dark); line-height:1; }
-
-.finder-app-body{ display:grid; grid-template-columns: 260px 1fr; }
-
-.finder-sidebar{
-  background: var(--white); border-right: 1px solid rgba(4,70,93,0.08);
-  padding: 30px 0; display:flex; flex-direction:column; gap:6px;
-}
-.finder-sidebar-label{
-  font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em;
-  color: var(--blue-dark-70); padding: 0 26px 14px;
-}
+.folder-tabs{ display:flex; flex-wrap:wrap; gap:12px; margin-bottom:34px; }
 .folder-tab{
-  text-align:left; background: transparent; border:none; border-left:4px solid transparent;
-  border-radius: 0 14px 14px 0; padding: 14px 22px; margin-right:16px;
-  font-weight:700; font-size:.94rem; color: var(--blue-dark-70); cursor:pointer;
-  transition: all .25s ease;
+  background: rgba(255,255,255,0.6); border:2px solid transparent; color: var(--ink);
+  font-family: var(--font-body); font-weight:700; font-size:.96rem;
+  padding:12px 26px; border-radius:999px; cursor:pointer;
+  transition: background .25s ease, color .25s ease, transform .25s ease;
 }
-.folder-tab:hover{ background: var(--gray-light); color: var(--blue-dark); transform: translateX(4px); }
-.folder-tab.is-active{ background: var(--butter); border-left-color: var(--blue-dark); color: var(--blue-dark); transform: translateX(6px); }
+.folder-tab:hover{ background:#fff; transform: translateY(-2px); }
+.folder-tab.is-active{ background: var(--blue-dark); color:#fff; }
 
-.finder-main{ padding: 34px 34px 40px; background: var(--gray-light); }
-.finder-count{ font-size:.86rem; font-weight:700; color: var(--blue-dark-70); margin-bottom:22px; }
+.catalog{ position:relative; }
+.catalog-arrow{
+  position:absolute; top:45%; z-index:5; width:54px; height:54px; border-radius:50%;
+  background:#fff; border:none; color: var(--ink); cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow: 0 8px 22px rgba(59,74,107,0.28);
+  transition: transform .2s ease, opacity .2s ease;
+}
+.catalog-arrow svg{ width:22px; height:22px; }
+.catalog-arrow:hover{ transform: scale(1.08); }
+.catalog-arrow--prev{ left:-26px; }
+.catalog-arrow--next{ right:-26px; }
+.catalog-arrow:disabled{ opacity:0; pointer-events:none; }
 
 .files-grid{
-  display:grid; grid-template-columns: repeat(4, 1fr); gap:26px;
+  display:flex; gap:22px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
+  padding:10px 4px 34px; scrollbar-width:none;
 }
+.files-grid::-webkit-scrollbar{ display:none; }
 .file-card{
-  background: var(--white); border-radius:16px; overflow:hidden; cursor:pointer;
-  box-shadow: var(--shadow-hard); border:1px solid rgba(4,70,93,0.06);
-  transition: transform .3s ease, box-shadow .3s ease, opacity .35s ease;
-  opacity:1; transform: scale(1);
+  position:relative; flex:0 0 250px; aspect-ratio: 9 / 16; border-radius:24px; overflow:hidden;
+  background: var(--blue-dark); cursor:pointer; scroll-snap-align:start;
+  box-shadow: 0 10px 22px rgba(59,74,107,0.26);
+  transition: transform .3s ease, box-shadow .3s ease;
 }
 .file-card.is-hidden{ display:none; }
-.file-card:hover{ transform: translateY(-8px) scale(1.02); box-shadow: 0 22px 40px rgba(4,70,93,0.28); }
-.file-thumb{ position:relative; aspect-ratio: 9/16; background: var(--gray-light); }
-.file-thumb .placeholder span{ font-size:.68rem; }
+.file-card:hover{ transform: translateY(-6px) scale(1.02); box-shadow: 0 16px 30px rgba(59,74,107,0.36); }
+.file-card[data-nicho]::before{
+  content: attr(data-nicho); position:absolute; top:16px; left:16px; z-index:3;
+  background: rgba(241,241,241,0.95); color: var(--ink);
+  font-size:.7rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+  padding:8px 14px; border-radius:999px;
+}
+.file-thumb{ position:absolute; inset:0; }
 .file-thumb-img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .play-badge{
-  position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .25s ease;
+  position:absolute; inset:0; z-index:2; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .25s ease;
 }
 .file-card:hover .play-badge{ opacity:1; }
 .play-badge .circle{
-  width:60px; height:60px; border-radius:50%; background: rgba(4,70,93,0.75);
+  width:62px; height:62px; border-radius:50%; background: rgba(92,110,145,0.82);
   display:flex; align-items:center; justify-content:center;
 }
 .play-triangle{
@@ -657,35 +498,76 @@ body.lock-active{ overflow:hidden; height:100vh; }
   border-top:11px solid transparent; border-bottom:11px solid transparent;
   border-left:17px solid var(--butter);
 }
-.file-meta{ padding:16px 18px; display:flex; align-items:center; justify-content:space-between; gap:8px; }
-.file-meta .fname{ font-size:.84rem; font-weight:700; color: var(--blue-dark); }
-.file-meta .ftag{ font-size:.68rem; font-weight:700; color: var(--blue-dark-70); background: var(--gray-light); padding:4px 10px; border-radius:8px; text-transform:uppercase; }
+.file-meta{
+  position:absolute; left:0; right:0; bottom:0; z-index:3;
+  display:flex; flex-direction:column; align-items:flex-start; gap:6px;
+  padding:96px 22px 22px;
+  background: linear-gradient(180deg, rgba(40,50,75,0) 0%, rgba(40,50,75,0.82) 100%);
+}
+.file-meta .fname{ font-family: var(--font-display); font-weight:700; font-size:1.5rem; line-height:1.1; color:#fff; }
+.file-meta .ftag{ font-size:.7rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color: rgba(255,255,255,0.8); background:none; padding:0; }
 
-/* modal de arquivo */
+/* modal de vídeo */
 .file-modal-overlay{
-  position: fixed; inset:0; background: rgba(4,70,93,0.55); backdrop-filter: blur(6px);
+  position: fixed; inset:0; background: rgba(59,74,107,0.6); backdrop-filter: blur(6px);
   display:flex; align-items:center; justify-content:center; z-index:1000; padding:24px;
   opacity:0; pointer-events:none; transition: opacity .3s ease;
 }
 .file-modal-overlay.is-open{ opacity:1; pointer-events:auto; }
 .file-modal-window{
-  background: var(--white); border-radius:18px; width:min(640px,92vw); overflow:hidden;
+  background: var(--offwhite); border-radius:22px; width:min(640px,92vw); overflow:hidden;
   box-shadow: 0 30px 70px rgba(0,0,0,0.4); transform: translateY(24px) scale(.97); transition: transform .3s ease;
 }
 .file-modal-overlay.is-open .file-modal-window{ transform: translateY(0) scale(1); }
-.file-modal-titlebar{ display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background: var(--gray-light); }
+.file-modal-titlebar{ display:flex; align-items:center; justify-content:space-between; padding:14px 18px 14px 22px; background: var(--offwhite); }
 .file-modal-titlebar .left{ display:flex; align-items:center; gap:8px; }
+.file-modal-titlebar .fname{ font-family: var(--font-display); font-weight:700; font-size:1.15rem; color: var(--ink); }
 .modal-close{
-  width:26px; height:26px; border-radius:50%; border:none; background: var(--blue-dark); color:var(--butter);
+  width:30px; height:30px; border-radius:50%; border:none; background: var(--blue-dark); color:#fff;
   font-size:.85rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
 }
-.file-modal-body{ aspect-ratio: 16/10; position:relative; }
+.file-modal-body{ aspect-ratio: 16/10; position:relative; background:#000; }
 .modal-video-frame{ position:absolute; inset:0; width:100%; height:100%; border:0; display:block; }
 .modal-video-frame[hidden]{ display:none; }
 .file-modal-body .placeholder[hidden]{ display:none; }
 .file-modal-window.is-video{ width:min(400px, 90vw, calc((88vh - 96px) * 9 / 16)); }
 .file-modal-window.is-video .file-modal-body{ aspect-ratio: 9/16; }
-.file-modal-caption{ padding:16px 20px; font-size:.85rem; color: var(--blue-dark-70); font-weight:600; }
+.file-modal-caption{ padding:14px 22px 18px; font-size:.85rem; color: var(--blue-dark-70); font-weight:600; }
+
+/* =====================================================================
+   05 — SERVIÇOS — frase em cima, serviços em caixinhas embaixo, fundo azul claro
+===================================================================== */
+#servicos{ padding: 110px 0 120px; }
+#servicos .wrap{ max-width:1280px; }
+.services-head{ text-align:center; margin-bottom:70px; }
+.services-head .section-title{ margin-bottom:16px; font-size: clamp(2.6rem, 5vw, 4.2rem); }
+.services-sub{ font-size:1.15rem; font-weight:600; color: var(--ink); }
+
+.widgets-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:34px; }
+.widget-glass{
+  position:relative; background:#fff; border:1px solid rgba(59,74,107,0.12); border-radius:26px;
+  padding: 58px 34px 34px; min-height:320px;
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  box-shadow: 0 14px 34px rgba(59,74,107,0.16);
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.widget-glass:hover{ transform: translateY(-6px); box-shadow: 0 22px 44px rgba(59,74,107,0.24); }
+.widget-glass h3{
+  position:absolute; top:0; left:50%; transform: translate(-50%, -50%);
+  background: var(--blue-dark); color:#fff; font-family: var(--font-body);
+  font-size:.78rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+  padding:11px 24px; border-radius:999px; white-space:nowrap;
+}
+.widget-glass p{ font-size:1.05rem; line-height:1.7; color: var(--ink); font-weight:500; margin-bottom:28px; }
+.widget-cta{
+  margin-top:auto; align-self:center;
+  display:inline-flex; align-items:center; gap:9px;
+  padding:14px 28px; border-radius:999px; border:none;
+  background: var(--blue-dark); color:#fff; font-size:.94rem; font-weight:700;
+  transition: background .2s ease, color .2s ease, transform .2s ease;
+}
+.widget-cta svg{ width:18px; height:18px; }
+.widget-cta:hover{ background: var(--butter); color: var(--blue-dark); transform: translateY(-2px); }
 
 /* =====================================================================
    06 — RESULTADOS
@@ -705,7 +587,7 @@ body.lock-active{ overflow:hidden; height:100vh; }
 .result-card{
   display:grid; grid-template-columns: 1.2fr .8fr; gap:0; background: var(--white);
   border-radius:20px; overflow:hidden; box-shadow: var(--shadow-soft); margin-bottom:28px;
-  border:1px solid rgba(4,70,93,0.06);
+  border:1px solid rgba(92,110,145,0.06);
 }
 .result-card:nth-child(even){ grid-template-columns: .8fr 1.2fr; }
 .result-card:nth-child(even) .result-info{ order:2; }
@@ -735,70 +617,48 @@ body.lock-active{ overflow:hidden; height:100vh; }
 .metric-note{ grid-column: 1 / -1; font-size:.62rem; color: var(--blue-dark-70); font-style:italic; margin-top:2px; }
 
 /* =====================================================================
-   07 — FEEDBACKS (pastas ffoscas)
+   07 — FEEDBACKS — cartões na horizontal com setinhas, fundo amarelo manteiga
 ===================================================================== */
+#feedbacks{ padding: 110px 0 120px; }
+#feedbacks .wrap{ max-width:1280px; }
 .feedback-grid{
-  display:flex; gap:40px; margin-top:8px; justify-content:center;
-  margin-left: max(24px, calc((100vw - 1560px) / 2 + 24px));
-  margin-right: max(50px, calc((100vw - 1560px) / 2 + 50px));
-  padding: 10px 0 40px;
-  overflow-x:auto; overflow-y:visible; scroll-snap-type:x proximity; cursor:grab;
-  scrollbar-width:thin; scrollbar-color: var(--blue-dark) var(--gray-light);
+  display:flex; gap:30px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
+  padding: 64px 6px 32px; cursor:grab; scrollbar-width:none;
 }
-.feedback-grid.is-dragging{ cursor:grabbing; scroll-snap-type:none; }
-.feedback-grid::-webkit-scrollbar{ height:9px; }
-.feedback-grid::-webkit-scrollbar-track{ background: var(--gray-light); border-radius:10px; }
-.feedback-grid::-webkit-scrollbar-thumb{ background: var(--blue-dark); border-radius:10px; }
+.feedback-grid::-webkit-scrollbar{ display:none; }
+.feedback-grid.is-dragging{ cursor:grabbing; scroll-snap-type:none; scroll-behavior:auto; }
+/* poucos cartões ficam centralizados; com muitos, rola normal pro lado */
+.feedback-folder:first-child{ margin-left:auto; }
+.feedback-folder:last-child{ margin-right:auto; }
 .feedback-folder{
-  position:relative; flex:0 0 380px; height: 380px; display:flex; align-items:flex-end; justify-content:center;
-  cursor:pointer; scroll-snap-align:start;
+  position:relative; flex:0 0 400px; scroll-snap-align:start;
+  background: var(--offwhite); border-radius:26px; padding: 70px 34px 36px; text-align:center;
+  box-shadow: 0 12px 30px rgba(59,74,107,0.14); cursor:pointer;
+  display:flex; flex-direction:column; align-items:center;
 }
-.folder-shape{
-  position:absolute; bottom:0; width:100%; height:210px;
-  background: linear-gradient(155deg, #D6EEFA 0%, #6FB3E0 48%, #2E7DBF 100%);
-  border: 1px solid rgba(255,255,255,0.5);
-  border-radius: 4px 16px 16px 16px; box-shadow: var(--shadow-hard); z-index:2;
-  transition: transform .3s ease;
+.feedback-logo{
+  position:absolute; top:-46px; left:50%; transform: translateX(-50%);
+  width:96px; height:96px; border-radius:50%; background: var(--blue-dark);
+  border:7px solid var(--butter);
+  display:flex; align-items:center; justify-content:center; overflow:hidden;
 }
-.folder-shape::before{
-  content:""; position:absolute; top:-16px; left:0; width:46%; height:20px;
-  background: #6FB3E0;
-  border-radius: 8px 8px 0 0;
-}
+.feedback-logo img{ max-width:58%; max-height:46%; width:auto; height:auto; display:block; }
+.feedback-logo.feedback-logo--text{ color:#fff; font-size:.62rem; font-weight:700; line-height:1.25; padding:10px; text-align:center; }
 .feedback-peek{
-  position:absolute; bottom:93px; left:50%; z-index:3;
-  font-family: var(--font-display); font-weight:700; letter-spacing:-0.3px; font-size:1.35rem;
-  color: var(--blue-dark); transform: translateX(-50%);
-  transition: transform .3s ease;
+  display:block; margin-bottom:16px;
+  font-family: var(--font-display); font-weight:700; letter-spacing:-0.3px; font-size:1.4rem; color: var(--ink);
 }
-.feedback-folder:hover .feedback-peek, .feedback-folder.is-open .feedback-peek{
-  transform: translateX(-50%) translateY(10px) rotate(1deg);
-}
-.feedback-note{
-  position:absolute; bottom: 121px; width:88%; background: var(--white); border-radius:14px;
-  box-shadow: var(--shadow-soft); padding:20px; z-index:1; text-align:left;
-  border:1px solid rgba(4,70,93,0.08);
-  opacity:.3; transform: translateY(84px) scale(.94); filter: blur(1px);
-  transition: transform .4s ease, opacity .4s ease, filter .4s ease;
-}
-.feedback-folder:hover .feedback-note, .feedback-folder.is-open .feedback-note{
-  transform: translateY(-75px) scale(1); opacity:1; filter:none;
-}
-.feedback-folder:hover .folder-shape, .feedback-folder.is-open .folder-shape{ transform: translateY(10px) rotate(1deg); }
-.feedback-logo{ display:inline-block; background: var(--blue-dark); border-radius:8px; padding:8px 14px; margin-bottom:12px; }
-.feedback-logo img{ height:18px; width:auto; display:block; }
-.feedback-logo.feedback-logo--text{ color:#fff; font-size:.78rem; font-weight:700; line-height:1.3; }
-.feedback-note p{ font-size:.82rem; line-height:1.55; color: var(--blue-dark); font-weight:600; margin-bottom:10px; }
-.feedback-note .brand{ font-size:.7rem; font-weight:700; color: var(--blue-dark-70); }
-.feedback-note .brand::before{ content:"— "; }
+.feedback-note{ width:100%; }
+.feedback-note p{ font-size:.98rem; line-height:1.7; color: var(--ink); font-weight:500; }
+.catalog--feedback .catalog-arrow{ top:50%; }
 
 /* =====================================================================
    08 — CONTATO
 ===================================================================== */
 .contact-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:90px; align-items:start; }
-.contact-cta h2{ font-family: var(--font-display); font-weight:700; letter-spacing:-0.5px; font-size: clamp(2rem,4vw,3rem); color: var(--offwhite); line-height:1.02; margin-bottom:20px; }
-.contact-cta h2 .script{ font-family: var(--font-script); letter-spacing:0; font-size:1.35em; color: var(--butter); }
-.contact-cta p{ font-size:1rem; color: var(--offwhite); font-weight:500; margin-bottom:30px; max-width: 420px; line-height:1.6; }
+.contact-cta h2{ font-family: var(--font-display); font-weight:700; letter-spacing:-0.5px; font-size: clamp(2rem,4vw,3rem); color: var(--ink); line-height:1.02; margin-bottom:20px; }
+.contact-cta h2 .script{ font-family: var(--font-script); letter-spacing:0; font-size:1.35em; color: var(--blue-dark); }
+.contact-cta p{ font-size:1rem; color: var(--ink); font-weight:500; margin-bottom:30px; max-width: 420px; line-height:1.6; }
 
 .contact-info-card{
   margin-top:24px; background: var(--white); border-radius:20px; overflow:hidden;
@@ -806,7 +666,7 @@ body.lock-active{ overflow:hidden; height:100vh; }
 }
 .info-row{
   display:flex; align-items:center; justify-content:space-between; gap:16px;
-  padding:22px 30px; border-bottom:1px solid rgba(4,70,93,0.1);
+  padding:22px 30px; border-bottom:1px solid rgba(92,110,145,0.1);
 }
 .info-row:last-child{ border-bottom:none; }
 .info-label{
@@ -819,7 +679,6 @@ body.lock-active{ overflow:hidden; height:100vh; }
 }
 a.info-value:hover{ text-decoration:underline; }
 
-
 .contact-form-glass{
   background: var(--glass-bg); border:1px solid var(--glass-brd); backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px); border-radius:24px; padding: 34px; box-shadow: var(--shadow-soft);
@@ -828,7 +687,7 @@ a.info-value:hover{ text-decoration:underline; }
 .form-field{ margin-bottom:16px; }
 .form-field label{ display:block; font-size:.76rem; font-weight:700; color: var(--blue-dark); margin-bottom:6px; }
 .form-field input, .form-field textarea{
-  width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(4,70,93,0.18);
+  width:100%; padding:12px 14px; border-radius:10px; border:1px solid rgba(92,110,145,0.18);
   background: rgba(255,255,255,0.7); font-size:.88rem; color: var(--blue-dark); font-weight:500;
 }
 .form-field textarea{ min-height:90px; resize:vertical; }
@@ -841,16 +700,16 @@ a.info-value:hover{ text-decoration:underline; }
    POP-UP NOTIFICAÇÃO — janela tipo app, centralizada
 ===================================================================== */
 .popup-backdrop{
-  position: fixed; inset:0; background: rgba(4,70,93,0.4); backdrop-filter: blur(3px);
+  position: fixed; inset:0; background: rgba(92,110,145,0.4); backdrop-filter: blur(3px);
   z-index: 899; opacity:0; pointer-events:none; transition: opacity .4s ease;
 }
 .popup-backdrop.is-visible{ opacity:1; pointer-events:auto; }
 .popup-notification{
   position: fixed; top:50%; left:50%; width: min(480px, 92vw);
-  background: var(--white); border-radius:18px; box-shadow: 0 30px 60px rgba(4,70,93,0.3);
+  background: var(--white); border-radius:18px; box-shadow: 0 30px 60px rgba(92,110,145,0.3);
   z-index: 901; overflow:hidden; transform: translate(-50%,-50%) scale(.92); opacity:0; pointer-events:none;
   transition: transform .4s cubic-bezier(.2,.8,.2,1), opacity .35s ease;
-  border: 1px solid rgba(4,70,93,0.08);
+  border: 1px solid rgba(92,110,145,0.08);
 }
 .popup-notification.is-visible{ transform: translate(-50%,-50%) scale(1); opacity:1; pointer-events:auto; }
 
@@ -869,12 +728,12 @@ a.info-value:hover{ text-decoration:underline; }
 }
 .popup-close{
   margin-left:auto; width:22px; height:22px; border-radius:6px;
-  background: transparent; border:1.5px solid rgba(4,70,93,0.25);
+  background: transparent; border:1.5px solid rgba(92,110,145,0.25);
   color: var(--blue-dark-70); font-size:.72rem; cursor:pointer; line-height:1;
   display:flex; align-items:center; justify-content:center; flex-shrink:0;
   transition: background .2s ease;
 }
-.popup-close:hover{ background: rgba(4,70,93,0.1); }
+.popup-close:hover{ background: rgba(92,110,145,0.1); }
 
 .popup-body{ padding: 32px 32px 34px; }
 .popup-notification h4{
@@ -903,119 +762,34 @@ a.info-value:hover{ text-decoration:underline; }
 .site-footer{ background: var(--blue-dark); color: var(--offwhite); padding: 64px 0 0; }
 .footer-grid{ display:grid; grid-template-columns: 1.3fr 1fr 1fr 1fr; gap:40px; padding-bottom:44px; }
 .footer-brand .script{ font-family: var(--font-script); font-size:2rem; color: var(--butter); display:block; margin-bottom:14px; }
-.footer-brand p{ font-size:.86rem; color: rgba(250,249,244,0.7); line-height:1.6; max-width:280px; }
+.footer-brand p{ font-size:.86rem; color: rgba(241,241,241,0.7); line-height:1.6; max-width:280px; }
 .footer-col h5{
   font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
   color: var(--butter); margin-bottom:16px;
 }
 .footer-col a{
-  display:block; font-size:.86rem; font-weight:500; color: rgba(250,249,244,0.75);
+  display:block; font-size:.86rem; font-weight:500; color: rgba(241,241,241,0.75);
   margin-bottom:12px; transition: color .2s ease;
 }
 .footer-col a:hover{ color: var(--offwhite); }
 .footer-bottom{
   display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
-  border-top:1px solid rgba(250,249,244,0.15); padding:20px 0; font-size:.74rem;
-  color: rgba(250,249,244,0.55);
+  border-top:1px solid rgba(241,241,241,0.15); padding:20px 0; font-size:.74rem;
+  color: rgba(241,241,241,0.55);
 }
 .footer-bottom .footer-tag{ color: var(--butter); font-weight:600; }
 
 /* =====================================================================
-   RESPONSIVIDADE
+   RESPONSIVIDADE — no celular o site fica igual ao do computador (viewport width=1440),
+   então não há layout separado pra tela pequena.
 ===================================================================== */
-@media (max-width: 1280px){
-  .hero-cover-content{ top: calc(150px + var(--promo-bar-space)); padding:0 24px; }
-  .hero-cover-photo-frame{ width:40%; right:5%; }
-  .hero-widget-card{ padding:44px 40px 40px; max-width:680px; }
-  .hero-actions{ flex-wrap:nowrap; gap:8px; }
-  .hero-actions .btn{ flex:1; min-width:0; padding:12px 10px; font-size:.78rem; white-space:normal; }
-  .widgets-grid{ grid-template-columns: repeat(2,1fr); }
-  .files-grid{ grid-template-columns: repeat(3,1fr); }
-  .contact-grid{ grid-template-columns:1fr; }
-  .finder-app-body{ grid-template-columns: 190px 1fr; }
-}
-
-@media (max-width: 768px){
-  .wrap{ padding:0 20px; }
-  .section{ padding:70px 0; }
-  #sobre .wrap{ padding:0 20px; }
-  .about-panel{ padding:40px 0 16px; gap:28px; }
-  .about-photo-frame{ max-width:320px; }
-  .about-photo-frame img{ height:320px; }
-  .notes-window{ padding:28px 24px 30px; max-width:none; }
-  .footer-grid{ grid-template-columns: 1fr 1fr; gap:32px; }
-  .footer-bottom{ justify-content:center; text-align:center; }
-  .desktop-only{ display:none; }
-  .mobile-only{ display:block; }
-  .hero-cover{ min-height:auto; display:flex; flex-direction:column; padding-top: calc(96px + var(--promo-bar-space)); }
-  .hero-cover .hero-location{
-    display:flex; align-items:center; gap:6px; position:absolute; z-index:3;
-    left:20px; top: calc(78px + var(--promo-bar-space)); font-size:.76rem; font-weight:700;
-    font-family: var(--font-body); color: var(--blue-dark);
-  }
-  .hero-cover .hero-location svg{ width:14px; height:14px; flex-shrink:0; color: var(--blue-light); }
-  .hero-cover-headline{ font-size: clamp(2.2rem, 9vw, 3.2rem); margin-bottom:24px; }
-  .hero-cover-photo-frame{ position:relative; z-index:1; width:100%; height:64vw; top:auto; right:auto; bottom:auto; margin-top:20px; }
-  .hero-cover-photo{ border-radius:0; box-shadow:none; }
-  .hero-cover-content{ position:relative; z-index:1; top:auto; padding: 24px 20px 0; max-width:none; }
-  .hero-widget-card{ padding:30px 26px 26px; border-radius:24px; max-width:none; }
-  .hero-actions{ flex-wrap:nowrap; gap:8px; }
-  .hero-actions .btn{ flex:1; min-width:0; padding:12px 10px; font-size:.78rem; white-space:normal; }
-  .result-card, .result-card:nth-child(even){ grid-template-columns: 1fr; }
-  .result-card:nth-child(even) .result-info, .result-card:nth-child(even) .result-chart{ order:initial; }
-  .results-track{
-    display:flex; gap:18px; overflow-x:auto; scroll-snap-type:x mandatory;
-    padding-bottom:10px; margin:0 -20px; padding-left:20px; padding-right:20px; scrollbar-width:none;
-  }
-  .results-track::-webkit-scrollbar{ display:none; }
-  .results-track .result-card{ flex:0 0 84%; scroll-snap-align:start; margin-bottom:0; }
-  .widgets-grid{
-    display:flex; grid-template-columns:none; overflow-x:auto; scroll-snap-type:x mandatory;
-    gap:18px; padding-bottom:10px; margin:44px -20px 0; padding-left:20px; padding-right:20px; scrollbar-width:none;
-  }
-  .widgets-grid::-webkit-scrollbar{ display:none; }
-  .widget-glass{ flex:0 0 82%; scroll-snap-align:start; min-height:340px; padding:38px 30px; }
-  .files-grid{ grid-template-columns: repeat(2,1fr); }
-  .feedback-grid{ gap:26px; margin-top:12px; }
-  .feedback-folder{ flex-basis:260px; height:300px; }
-  .nav-logo{ font-size:1.3rem; }
-  .nav-logo-img img{ height:34px; }
-  .nav-location{ display:none; }
-  .nav-clock{ display:none; }
-  .lang-toggle{ margin-left:8px; }
-  .lang-option{ padding:5px 8px; font-size:.7rem; }
-  .nav-clock-date{ display:none; }
-  .results-bubble-wrap{ margin-left:0; padding-left:20px; }
-
-  .finder-app-body{ grid-template-columns: 1fr; }
-  .finder-sidebar{
-    flex-direction:row; overflow-x:auto; gap:8px; padding:14px 14px 12px;
-    border-right:none; border-bottom:1px solid rgba(4,70,93,0.08); scrollbar-width:none;
-  }
-  .finder-sidebar::-webkit-scrollbar{ display:none; }
-  .finder-sidebar-label{ display:none; }
-  .folder-tab{ width:auto; flex:0 0 auto; border-left:none; border-bottom:3px solid transparent; border-radius:10px; margin-right:0; white-space:nowrap; }
-  .folder-tab.is-active, .folder-tab:hover{ transform:none; border-bottom-color: var(--blue-dark); }
-}
-
-@media (max-width: 480px){
-  .files-grid{ grid-template-columns: repeat(2,1fr); gap:14px; }
-  .feedback-folder{ flex-basis:230px; }
-  .btn{ justify-content:center; }
-  .contact-info-card{ max-width:100%; }
-  .lock-avatar{ width:104px; height:104px; }
-  .lock-name{ font-size:1.8rem; }
-}
 </style>
 </head>
 <body class="lock-active">
-<div class="site-backdrop" aria-hidden="true"></div>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <filter id="heroSharpen">
-    <feConvolveMatrix order="3" preserveAlpha="true"
-      kernelMatrix="0 -0.12 0
-                    -0.12 1.48 -0.12
-                    0 -0.12 0" />
+  <!-- pinta de azul escuro (#5c6e91) os logos brancos das marcas -->
+  <filter id="logoAzul" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0 0 0 0 0.361  0 0 0 0 0.431  0 0 0 0 0.569  0 0 0 1 0"/>
   </filter>
 </svg>
 
@@ -1033,6 +807,17 @@ a.info-value:hover{ text-decoration:underline; }
   </div>
   <div class="lock-hint" data-texto="lock_dica" data-pt="clique em qualquer lugar pra desbloquear" data-en="click anywhere to unlock">clique em qualquer lugar pra desbloquear</div>
 </div>
+
+<a href="#contato" class="promo-bar" id="promoBar" aria-label="Datas comemorativas para contratar a Bruna">
+  <span class="promo-bar-icon" aria-hidden="true">
+    <span class="promo-bar-month" id="promoMonth">OUT</span>
+    <span class="promo-bar-day" id="promoDay">12</span>
+  </span>
+  <span class="promo-bar-title" id="promoTitle"></span>
+  <span class="promo-bar-dot" aria-hidden="true">·</span>
+  <span class="promo-bar-sub" id="promoSub"></span>
+  <span class="promo-bar-reply" data-pt="Responder →" data-en="Reply →">Responder →</span>
+</a>
 
 <!-- =========================================================
      NAVBAR
@@ -1063,33 +848,16 @@ a.info-value:hover{ text-decoration:underline; }
   </div>
 </header>
 
-<a href="#contato" class="promo-bar" id="promoBar" aria-label="Datas comemorativas para contratar a Bruna">
-  <span class="promo-bar-icon" aria-hidden="true">
-    <span class="promo-bar-month" id="promoMonth">OUT</span>
-    <span class="promo-bar-day" id="promoDay">12</span>
-  </span>
-  <span class="promo-bar-title" id="promoTitle"></span>
-  <span class="promo-bar-dot" aria-hidden="true">·</span>
-  <span class="promo-bar-sub" id="promoSub"></span>
-  <span class="promo-bar-reply" data-pt="Responder →" data-en="Reply →">Responder →</span>
-</a>
-
 <!-- =========================================================
      01 — HERO
 ========================================================== -->
 <section class="hero" id="hero">
   <div class="hero-cover">
-    <div class="hero-location mobile-only">
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="2"/></svg>
-      <span>Eusébio, CE</span>
-    </div>
-
-    <div class="hero-cover-photo-frame">
-      <img class="hero-cover-photo" data-foto="hero" src="fotos/hero-capa.png" alt="Bruna Medeiros">
-    </div>
-
-    <div class="hero-cover-content">
-      <div class="hero-widget-card">
+    <!-- foto de capa: é o fundo da capa inteira. No painel (Portfólio > Hero) dá pra trocar clicando nela. -->
+    <img class="hero-cover-photo" data-foto="hero" src="fotos/hero-capa-fundo.jpg" alt="Bruna Medeiros">
+    <div class="hero-scrim" aria-hidden="true"></div>
+    <div class="hero-cover-inner">
+      <div class="hero-cover-content">
         <span class="hero-badge">
           <span class="hero-badge-check" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1105,36 +873,6 @@ a.info-value:hover{ text-decoration:underline; }
         </div>
       </div>
     </div>
-
-    <nav class="mac-dock" aria-label="Apps">
-      <a class="dock-icon" href="#sobre" aria-label="Notas">
-        <span class="dock-icon-bg"><img src="icons/notas.jpg" alt="" loading="lazy"></span>
-      </a>
-      <a class="dock-icon" href="mailto:brunamedeirosugc@gmail.com" aria-label="Email" data-contato="email">
-        <span class="dock-icon-bg"><img src="icons/email.jpg" alt="" loading="lazy"></span>
-      </a>
-      <a class="dock-icon" href="#portfolio" aria-label="Câmera">
-        <span class="dock-icon-bg"><img src="icons/camera.jpg" alt="" loading="lazy"></span>
-      </a>
-      <a class="dock-icon" href="https://www.tiktok.com/@brunamedeiros" target="_blank" rel="noopener" aria-label="TikTok" data-contato="tiktok">
-        <span class="dock-icon-bg"><img src="icons/tiktok.jpg" alt="" loading="lazy"></span>
-      </a>
-      <a class="dock-icon" href="https://instagram.com/brunalmedeiroos" target="_blank" rel="noopener" aria-label="Instagram" data-contato="instagram">
-        <span class="dock-icon-bg"><img src="icons/instagram.jpg" alt="" loading="lazy"></span>
-      </a>
-      <a class="dock-icon" href="#servicos" aria-label="Arquivos">
-        <span class="dock-icon-bg"><img src="icons/arquivos.jpg" alt="" loading="lazy"></span>
-      </a>
-      <a class="dock-icon" href="#portfolio" aria-label="CapCut">
-        <span class="dock-icon-bg"><img src="icons/capcut.jpg" alt="" loading="lazy"></span>
-      </a>
-      <a class="dock-icon" href="#feedbacks" aria-label="Chrome">
-        <span class="dock-icon-bg"><img src="icons/chrome.jpg" alt="" loading="lazy"></span>
-      </a>
-      <a class="dock-icon" href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20solicitar%20uma%20proposta" target="_blank" rel="noopener" aria-label="WhatsApp" data-contato="whatsapp" data-contato-msg="1">
-        <span class="dock-icon-bg"><img src="icons/whatsapp.jpg" alt="" loading="lazy"></span>
-      </a>
-    </nav>
   </div>
 </section>
 
@@ -1144,37 +882,13 @@ a.info-value:hover{ text-decoration:underline; }
 <section class="section section--blue" id="sobre">
   <div class="wrap">
     <div class="about-panel">
-      <div class="file-window about-photo-frame">
-        <div class="file-titlebar">
-          <div class="file-titlebar-left">
-            <span class="file-dot d1"></span><span class="file-dot d2"></span><span class="file-dot d3"></span>
-            <span class="fname">sobre.jpg</span>
-          </div>
-        </div>
+      <div class="about-text">
+        <h2 class="about-title" id="notesTitle"><span class="hl-box"></span><span class="hl-cursor"></span><span class="hl-text" data-texto="sobre_titulo" data-destaque="script" data-pt-html="Oii!! sou a &lt;span class=&quot;script&quot;&gt;Bruna&lt;/span&gt;," data-en-html="Hii!! I'm &lt;span class=&quot;script&quot;&gt;Bruna&lt;/span&gt;,">Oii!! sou a <span class="script">Bruna</span>,</span></h2>
+        <p id="notesText" data-texto="sobre_texto" data-destaque="notes-highlight" data-sufixo="cursor" data-pt-html="tenho 20 anos, criadora de conteúdo. Sempre fui apaixonada pelo audiovisual e meu olhar está em transformar produtos em experiências reais. Por isso, antes de criar qualquer conteúdo, penso em &lt;span class=&quot;notes-highlight&quot;&gt;como uma marca pode se conectar às pessoas de forma natural&lt;/span&gt;, respeitando sua comunicação e criando histórias que façam sentido. Hoje trabalho com marcas de diferentes nichos, desenvolvendo conteúdos estratégicos, autênticos e pensados para &lt;span class=&quot;notes-highlight&quot;&gt;gerar identificação e resultados&lt;/span&gt;.&lt;span class=&quot;typing-cursor&quot;&gt;&lt;/span&gt;" data-en-html="I'm 20 years old, a content creator. I've always been passionate about audiovisual work, and my focus is turning products into real experiences. That's why, before creating any content, I think about &lt;span class=&quot;notes-highlight&quot;&gt;how a brand can connect with people naturally&lt;/span&gt;, respecting their voice and telling stories that make sense. Today I work with brands across different niches, developing strategic, authentic content built to &lt;span class=&quot;notes-highlight&quot;&gt;create identification and results&lt;/span&gt;.&lt;span class=&quot;typing-cursor&quot;&gt;&lt;/span&gt;">tenho 20 anos, criadora de conteúdo. Sempre fui apaixonada pelo audiovisual e meu olhar está em transformar produtos em experiências reais. Por isso, antes de criar qualquer conteúdo, penso em <span class="notes-highlight">como uma marca pode se conectar às pessoas de forma natural</span>, respeitando sua comunicação e criando histórias que façam sentido. Hoje trabalho com marcas de diferentes nichos, desenvolvendo conteúdos estratégicos, autênticos e pensados para <span class="notes-highlight">gerar identificação e resultados</span>.<span class="typing-cursor"></span></p>
+      </div>
+      <div class="about-photo">
         <img data-foto="sobre" src="fotos/sobre.jpg" alt="Bruna Medeiros">
       </div>
-      <div class="notes-window" id="notesWindow">
-        <div class="notes-appbar">
-          <span class="notes-back">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
-            Notes
-          </span>
-          <span class="notes-done">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="8.7" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="15.3" cy="12" r="1" fill="currentColor" stroke="none"/></svg>
-          </span>
-        </div>
-        <h3 class="notes-title" id="notesTitle"><span class="hl-box"></span><span class="hl-cursor"></span><span class="hl-text" data-texto="sobre_titulo" data-destaque="script" data-pt-html="Oii!! sou a &lt;span class=&quot;script&quot;&gt;Bruna&lt;/span&gt;," data-en-html="Hii!! I'm &lt;span class=&quot;script&quot;&gt;Bruna&lt;/span&gt;,">Oii!! sou a <span class="script">Bruna</span>,</span></h3>
-        <div class="notes-body">
-          <p id="notesText" data-texto="sobre_texto" data-destaque="notes-highlight" data-sufixo="cursor" data-pt-html="tenho 20 anos, criadora de conteúdo. Sempre fui apaixonada pelo audiovisual e meu olhar está em transformar produtos em experiências reais. Por isso, antes de criar qualquer conteúdo, penso em &lt;span class=&quot;notes-highlight&quot;&gt;como uma marca pode se conectar às pessoas de forma natural&lt;/span&gt;, respeitando sua comunicação e criando histórias que façam sentido. Hoje trabalho com marcas de diferentes nichos, desenvolvendo conteúdos estratégicos, autênticos e pensados para &lt;span class=&quot;notes-highlight&quot;&gt;gerar identificação e resultados&lt;/span&gt;.&lt;span class=&quot;typing-cursor&quot;&gt;&lt;/span&gt;" data-en-html="I'm 20 years old, a content creator. I've always been passionate about audiovisual work, and my focus is turning products into real experiences. That's why, before creating any content, I think about &lt;span class=&quot;notes-highlight&quot;&gt;how a brand can connect with people naturally&lt;/span&gt;, respecting their voice and telling stories that make sense. Today I work with brands across different niches, developing strategic, authentic content built to &lt;span class=&quot;notes-highlight&quot;&gt;create identification and results&lt;/span&gt;.&lt;span class=&quot;typing-cursor&quot;&gt;&lt;/span&gt;">tenho 20 anos, criadora de conteúdo. Sempre fui apaixonada pelo audiovisual e meu olhar está em transformar produtos em experiências reais. Por isso, antes de criar qualquer conteúdo, penso em <span class="notes-highlight">como uma marca pode se conectar às pessoas de forma natural</span>, respeitando sua comunicação e criando histórias que façam sentido. Hoje trabalho com marcas de diferentes nichos, desenvolvendo conteúdos estratégicos, autênticos e pensados para <span class="notes-highlight">gerar identificação e resultados</span>.<span class="typing-cursor"></span></p>
-        </div>
-        <div class="notes-icons" aria-hidden="true">
-          <span title="autêntico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5L16 9.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-          <span title="conteúdo visual"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7l1.6-2.5h4.8L16 7"/><circle cx="12" cy="13.5" r="3.4"/></svg></span>
-          <span title="foco em resultado"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/></svg></span>
-          <span title="criação"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 15l-1.2 3L11 16.8z" fill="currentColor" stroke="none"/><path d="M9 15l6.5-6.5a1.4 1.4 0 0 1 2 2L11 17"/></svg></span>
-        </div>
-      </div>
-
     </div>
   </div>
 </section>
@@ -1183,7 +897,7 @@ a.info-value:hover{ text-decoration:underline; }
      03 — FAIXA DE MARCAS
 ========================================================== -->
 <section class="brands-strip">
-  <div class="brands-title" data-texto="marcas_titulo" data-pt="marcas que já passaram pelo meu computador" data-en="brands that have passed through my computer">marcas que já passaram pelo meu computador</div>
+  <div class="brands-title" data-texto="marcas_titulo" data-pt="marcas que confiaram no meu trabalho" data-en="brands that trusted my work">marcas que confiaram no meu trabalho</div>
   <div class="marquee-wrap">
     <div class="marquee-track">
       <!-- ADICIONE NOVOS LOGOS AQUI (e nas outras 3 cópias idênticas abaixo) conforme forem chegando.
@@ -1225,56 +939,7 @@ a.info-value:hover{ text-decoration:underline; }
   </div>
 </section>
 
-<!-- =========================================================
-     04 — SERVIÇOS
-========================================================== -->
-<section class="section section--offwhite" id="servicos">
-  <div class="wrap">
-    <div class="services-window">
-      <div class="finder-titlebar">
-        <span class="fname" data-texto="servicos_janela" data-pt="serviços.app" data-en="services.app">serviços.app</span>
-        <div class="win-controls">
-          <button class="win-btn win-min" type="button" aria-label="Minimizar"><span></span></button>
-          <button class="win-btn win-close" type="button" aria-label="Fechar">×</button>
-        </div>
-      </div>
-      <div class="services-window-body">
-        <h2 class="section-title" data-texto="servicos_titulo" data-pt="como podemos trabalhar juntos" data-en="how we can work together">como podemos trabalhar juntos</h2>
-        <p class="services-sub" data-texto="servicos_sub" data-pt="todos os botões abaixo levam direto pro meu whatsapp." data-en="all the buttons below go straight to my whatsapp.">todos os botões abaixo levam direto pro meu whatsapp.</p>
-      </div>
-    </div>
 
-    <div class="widgets-grid" id="widgetsGrid">
-      <div class="widget-glass">
-        <span class="widget-num">01</span>
-        <h3>UGC</h3>
-        <p data-texto="servicos_1_texto" data-pt="Vídeos no estilo depoimento real para gerar conexão orgânica. Roteiro próprio + variações por entrega." data-en="Testimonial-style videos to build organic connection. Original script, with variations per delivery.">Vídeos no estilo depoimento real para gerar conexão orgânica. Roteiro próprio + variações por entrega.</p>
-        <a href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20solicitar%20uma%20proposta" target="_blank" rel="noopener" class="widget-cta" data-contato="whatsapp" data-contato-msg="1">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
-          <span data-pt="solicitar proposta" data-en="request a proposal">solicitar proposta</span>
-        </a>
-      </div>
-      <div class="widget-glass">
-        <span class="widget-num">02</span>
-        <h3 data-texto="servicos_2_titulo" data-pt="Publicidade no meu perfil" data-en="Advertising on my profile">Publicidade no meu perfil</h3>
-        <p data-texto="servicos_2_texto" data-pt="Conteúdo publicado para minha audiência com alcance orgânico real." data-en="Content published to my audience with real organic reach.">Conteúdo publicado para minha audiência com alcance orgânico real.</p>
-        <a href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20solicitar%20uma%20proposta" target="_blank" rel="noopener" class="widget-cta" data-contato="whatsapp" data-contato-msg="1">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
-          <span data-pt="solicitar proposta" data-en="request a proposal">solicitar proposta</span>
-        </a>
-      </div>
-      <div class="widget-glass">
-        <span class="widget-num">03</span>
-        <h3 data-texto="servicos_3_titulo" data-pt="Fotos UGC" data-en="UGC Photos">Fotos UGC</h3>
-        <p data-texto="servicos_3_texto" data-pt="Fotografia de produto e lifestyle com direção de estética, imagens prontas pra feed, ads e catálogo." data-en="Product and lifestyle photography with art direction — images ready for feed, ads, and catalog.">Fotografia de produto e lifestyle com direção de estética, imagens prontas pra feed, ads e catálogo.</p>
-        <a href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20solicitar%20uma%20proposta" target="_blank" rel="noopener" class="widget-cta" data-contato="whatsapp" data-contato-msg="1">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
-          <span data-pt="solicitar proposta" data-en="request a proposal">solicitar proposta</span>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
 
 <!-- =========================================================
      FAIXA — ESTRATÉGIA + PERFORMANCE
@@ -1282,33 +947,27 @@ a.info-value:hover{ text-decoration:underline; }
 <!-- =========================================================
      05 — PORTFÓLIO
 ========================================================== -->
-<section class="section section--gray" id="portfolio">
+<section class="section section--blue" id="portfolio">
   <div class="wrap">
-    <div class="finder-app">
-      <div class="finder-titlebar">
-        <span class="fname" data-texto="portfolio_janela" data-pt="meus-arquivos.finder" data-en="my-files.finder">meus-arquivos.finder</span>
-        <div class="win-controls">
-          <button class="win-btn win-min" id="finderMinBtn" aria-label="Minimizar"><span></span></button>
-          <button class="win-btn win-close" id="finderCloseBtn" aria-label="Fechar" title="essa aba é permanente">×</button>
-        </div>
-      </div>
+    <div class="portfolio-head">
+      <h2 class="section-title" data-pt="portfólio" data-en="portfolio">portfólio</h2>
+      <span class="finder-count" id="finderCount">11 vídeos</span>
+    </div>
 
-      <div class="finder-app-body" id="finderAppBody">
-        <nav class="finder-sidebar" id="folderTabs">
-          <div class="finder-sidebar-label" data-texto="portfolio_nichos" data-pt="nichos" data-en="niches">nichos</div>
-          <button class="folder-tab is-active" data-filter="tech" data-pt="Tech" data-en="Tech">Tech</button>
+    <!-- nichos em botões; o primeiro (Tech) já abre ativo -->
+    <nav class="folder-tabs" id="folderTabs">
+      <button class="folder-tab is-active" data-filter="tech" data-pt="Tech" data-en="Tech">Tech</button>
           <button class="folder-tab" data-filter="beleza" data-pt="Beleza" data-en="Beauty">Beleza</button>
           <button class="folder-tab" data-filter="entretenimento" data-pt="Entretenimento" data-en="Entertainment">Entretenimento</button>
           <button class="folder-tab" data-filter="experiencia" data-pt="Experiência" data-en="Experience">Experiência</button>
-        </nav>
+    </nav>
 
-        <div class="finder-main">
-          <div class="finder-count" id="finderCount">11 arquivos</div>
+    <!-- catálogo: vídeos do nicho escolhido, passa de lado nas setinhas -->
+    <div class="catalog">
+      <button type="button" class="catalog-arrow catalog-arrow--prev" id="videosPrev" aria-label="Vídeos anteriores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <div class="files-grid" id="filesGrid">
 
-          <!-- Vídeos reais da usuária (YouTube Shorts), nome do card = marca gravada -->
-          <div class="files-grid" id="filesGrid">
-
-            <div class="file-card" data-cat="tech" data-type="video" data-title="Hollyland Lark A1" data-youtube="lMDEHNtGsSs">
+        <div class="file-card" data-cat="tech" data-type="video" data-title="Hollyland Lark A1" data-youtube="lMDEHNtGsSs">
               <div class="file-thumb">
                 <img class="file-thumb-img" src="https://i.ytimg.com/vi/lMDEHNtGsSs/maxresdefault.jpg" alt="" loading="lazy">
                 <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
@@ -1420,9 +1079,8 @@ a.info-value:hover{ text-decoration:underline; }
               <div class="file-meta"><span class="fname">Imersão Portfólio Claude</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
             </div>
 
-          </div>
-        </div>
       </div>
+      <button type="button" class="catalog-arrow catalog-arrow--next" id="videosNext" aria-label="Próximos vídeos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
     </div>
   </div>
 </section>
@@ -1432,7 +1090,6 @@ a.info-value:hover{ text-decoration:underline; }
   <div class="file-modal-window">
     <div class="file-modal-titlebar">
       <div class="left">
-        <span class="file-dot d1"></span><span class="file-dot d2"></span><span class="file-dot d3"></span>
         <span class="fname" id="modalFname">arquivo.mp4</span>
       </div>
       <button class="modal-close" id="modalClose" aria-label="Fechar">✕</button>
@@ -1445,6 +1102,45 @@ a.info-value:hover{ text-decoration:underline; }
     <div class="file-modal-caption" data-pt="Clique fora da janela ou em ✕ para fechar." data-en="Click outside the window or on ✕ to close.">Clique fora da janela ou em ✕ para fechar.</div>
   </div>
 </div>
+
+<!-- =========================================================
+     05 — SERVIÇOS (depois dos vídeos)
+========================================================== -->
+<section class="section section--blue" id="servicos">
+  <div class="wrap">
+    <div class="services-head">
+      <h2 class="section-title" data-texto="servicos_titulo" data-pt="como podemos trabalhar juntos" data-en="how we can work together">como podemos trabalhar juntos</h2>
+      <p class="services-sub" data-texto="servicos_sub" data-pt="todos os botões abaixo levam direto pro meu whatsapp." data-en="all the buttons below go straight to my whatsapp.">todos os botões abaixo levam direto pro meu whatsapp.</p>
+    </div>
+
+    <div class="widgets-grid" id="widgetsGrid">
+      <div class="widget-glass">
+        <h3>UGC</h3>
+        <p data-texto="servicos_1_texto" data-pt="Vídeos no estilo depoimento real para gerar conexão orgânica. Roteiro próprio + variações por entrega." data-en="Testimonial-style videos to build organic connection. Original script, with variations per delivery.">Vídeos no estilo depoimento real para gerar conexão orgânica. Roteiro próprio + variações por entrega.</p>
+        <a href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20solicitar%20uma%20proposta" target="_blank" rel="noopener" class="widget-cta" data-contato="whatsapp" data-contato-msg="1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
+          <span data-pt="solicitar proposta" data-en="request a proposal">solicitar proposta</span>
+        </a>
+      </div>
+      <div class="widget-glass">
+        <h3 data-texto="servicos_2_titulo" data-pt="Publicidade no meu perfil" data-en="Advertising on my profile">Publicidade no meu perfil</h3>
+        <p data-texto="servicos_2_texto" data-pt="Conteúdo publicado para minha audiência com alcance orgânico real." data-en="Content published to my audience with real organic reach.">Conteúdo publicado para minha audiência com alcance orgânico real.</p>
+        <a href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20solicitar%20uma%20proposta" target="_blank" rel="noopener" class="widget-cta" data-contato="whatsapp" data-contato-msg="1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
+          <span data-pt="solicitar proposta" data-en="request a proposal">solicitar proposta</span>
+        </a>
+      </div>
+      <div class="widget-glass">
+        <h3 data-texto="servicos_3_titulo" data-pt="Fotos UGC" data-en="UGC Photos">Fotos UGC</h3>
+        <p data-texto="servicos_3_texto" data-pt="Fotografia de produto e lifestyle com direção de estética, imagens prontas pra feed, ads e catálogo." data-en="Product and lifestyle photography with art direction — images ready for feed, ads, and catalog.">Fotografia de produto e lifestyle com direção de estética, imagens prontas pra feed, ads e catálogo.</p>
+        <a href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20solicitar%20uma%20proposta" target="_blank" rel="noopener" class="widget-cta" data-contato="whatsapp" data-contato-msg="1">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
+          <span data-pt="solicitar proposta" data-en="request a proposal">solicitar proposta</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- =========================================================
      06 — RESULTADOS
@@ -1526,40 +1222,33 @@ a.info-value:hover{ text-decoration:underline; }
 <!-- =========================================================
      07 — FEEDBACKS
 ========================================================== -->
-<section class="section section--gray" id="feedbacks">
+<section class="section section--butter" id="feedbacks">
   <div class="wrap">
-    <div class="services-window">
-      <div class="finder-titlebar">
-        <span class="fname">feedbacks.app</span>
-        <div class="win-controls">
-          <button class="win-btn win-min" type="button" aria-label="Minimizar"><span></span></button>
-          <button class="win-btn win-close" type="button" aria-label="Fechar">×</button>
-        </div>
-      </div>
-      <div class="services-window-body">
-        <h2 class="section-title" data-texto="feedbacks_titulo" data-pt="o que as marcas acham do meu trabalho" data-en="what brands think of my work">o que as marcas acham do meu trabalho</h2>
-        <p class="services-sub" data-texto="feedbacks_sub" data-pt="arraste pro lado e toque nas pastas pra ler." data-en="drag sideways and tap the folders to read.">arraste pro lado e toque nas pastas pra ler.</p>
-      </div>
+    <div class="services-head">
+      <h2 class="section-title" data-texto="feedbacks_titulo" data-pt="o que as marcas acham do meu trabalho" data-en="what brands think of my work">o que as marcas acham do meu trabalho</h2>
+      <p class="services-sub" data-texto="feedbacks_sub" data-pt="arraste pro lado pra ler mais." data-en="drag sideways to read more.">arraste pro lado pra ler mais.</p>
     </div>
-  </div>
 
-  <!-- SUBSTITUA os textos e nomes de marca pelos feedbacks reais -->
-  <div class="feedback-grid" id="feedbackGrid">
+    <div class="catalog catalog--feedback">
+      <button type="button" class="catalog-arrow catalog-arrow--prev" id="feedbackPrev" aria-label="Feedbacks anteriores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <!-- SUBSTITUA os textos e nomes de marca pelos feedbacks reais -->
+      <div class="feedback-grid" id="feedbackGrid">
     <div class="feedback-folder">
-      <div class="folder-shape"></div>
+      <div class="feedback-logo"><img src="logos/Labotrat.png" alt="Labotrat"></div>
       <span class="feedback-peek" data-pt="Labotrat" data-en="Labotrat">Labotrat</span>
       <div class="feedback-note">
-        <div class="feedback-logo"><img src="logos/Labotrat.png" alt="Labotrat"></div>
         <p data-pt="&quot;Realizou uma ótima entrega, com um conteúdo bem alinhado à proposta da campanha e executado com qualidade.&quot;" data-en="&quot;Delivered great work, with content well aligned to the campaign's brief and executed with quality.&quot;">"Realizou uma ótima entrega, com um conteúdo bem alinhado à proposta da campanha e executado com qualidade."</p>
       </div>
     </div>
     <div class="feedback-folder">
-      <div class="folder-shape"></div>
+      <div class="feedback-logo feedback-logo--text" data-pt="Imersão Porfólio Claude - Lara" data-en="Claude Portfolio Immersion - Lara">Imersão Porfólio Claude - Lara</div>
       <span class="feedback-peek" data-pt="Imersão Porfólio Claude - Lara" data-en="Claude Portfolio Immersion - Lara">Imersão Porfólio Claude - Lara</span>
       <div class="feedback-note">
-        <div class="feedback-logo feedback-logo--text" data-pt="Imersão Porfólio Claude - Lara" data-en="Claude Portfolio Immersion - Lara">Imersão Porfólio Claude - Lara</div>
         <p data-pt="&quot;OIEEE DIVA, eu amei amei amei o vídeo, ficou muto bom, obrigadaaaaa.&quot;" data-en="&quot;HEEY DIVA, I loved loved loved the video, it turned out so good, thank youuuu.&quot;">"OIEEE DIVA, eu amei amei amei o vídeo, ficou muto bom, obrigadaaaaa."</p>
       </div>
+    </div>
+      </div>
+      <button type="button" class="catalog-arrow catalog-arrow--next" id="feedbackNext" aria-label="Próximos feedbacks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
     </div>
   </div>
 </section>
@@ -1775,15 +1464,6 @@ a.info-value:hover{ text-decoration:underline; }
 
       var pasta = document.createElement('div');
       pasta.className = 'feedback-folder';
-      var forma = document.createElement('div');
-      forma.className = 'folder-shape';
-      var peek = document.createElement('span');
-      peek.className = 'feedback-peek';
-      peek.setAttribute('data-pt', f.titulo);
-      peek.setAttribute('data-en', f.titulo);
-      peek.textContent = f.titulo;
-      var nota = document.createElement('div');
-      nota.className = 'feedback-note';
 
       var logo = document.createElement('div');
       if (f.logo_url){
@@ -1799,14 +1479,21 @@ a.info-value:hover{ text-decoration:underline; }
         logo.textContent = f.titulo;
       }
 
+      var peek = document.createElement('span');
+      peek.className = 'feedback-peek';
+      peek.setAttribute('data-pt', f.titulo);
+      peek.setAttribute('data-en', f.titulo);
+      peek.textContent = f.titulo;
+
+      var nota = document.createElement('div');
+      nota.className = 'feedback-note';
       var texto = document.createElement('p');
       texto.setAttribute('data-pt', pt);
       texto.setAttribute('data-en', en);
       texto.textContent = currentLang === 'en' ? en : pt;
-
-      nota.appendChild(logo);
       nota.appendChild(texto);
-      pasta.appendChild(forma);
+
+      pasta.appendChild(logo);
       pasta.appendChild(peek);
       pasta.appendChild(nota);
       grid.appendChild(pasta);
@@ -1820,10 +1507,11 @@ a.info-value:hover{ text-decoration:underline; }
     var nav = document.getElementById('folderTabs');
     if (!nav) return;
     nav.querySelectorAll('.folder-tab').forEach(function(b){ b.remove(); });
+    var catAtiva = (nichos.filter(function(n){ return n.categoria === 'tech'; })[0] || nichos[0]).categoria;
     nichos.forEach(function(n, i){
       if (!n.categoria || !n.titulo) return;
       var b = document.createElement('button');
-      b.className = 'folder-tab' + (i === 0 ? ' is-active' : '');
+      b.className = 'folder-tab' + (n.categoria === catAtiva ? ' is-active' : '');
       b.setAttribute('data-filter', n.categoria);
       b.setAttribute('data-pt', n.titulo);
       b.setAttribute('data-en', n.texto_en || n.titulo);
@@ -1910,9 +1598,6 @@ a.info-value:hover{ text-decoration:underline; }
       if (!sv.titulo) return;
       var card = document.createElement('div');
       card.className = 'widget-glass';
-      var num = document.createElement('span');
-      num.className = 'widget-num';
-      num.textContent = String(i + 1).padStart(2, '0');
       var h3 = document.createElement('h3');
       h3.setAttribute('data-pt', sv.titulo);
       h3.setAttribute('data-en', sv.titulo_en || sv.titulo);
@@ -1930,7 +1615,6 @@ a.info-value:hover{ text-decoration:underline; }
       a.setAttribute('data-contato', 'whatsapp');
       a.setAttribute('data-contato-msg', '1');
       a.innerHTML = ctaIcone + '<span data-pt="solicitar proposta" data-en="request a proposal">' + (currentLang === 'en' ? 'request a proposal' : 'solicitar proposta') + '</span>';
-      card.appendChild(num);
       card.appendChild(h3);
       card.appendChild(p);
       card.appendChild(a);
@@ -2241,15 +1925,16 @@ a.info-value:hover{ text-decoration:underline; }
   await carregarPortfolioPublicavel();
   iniciarPromo(portfolioExtras);
 
+  var atualizarSetasVideos;
   var tabs = document.querySelectorAll('.folder-tab');
   var cards = document.querySelectorAll('.file-card');
   var countEl = document.getElementById('finderCount');
 
   function updateFinderCount(visible){
     if (currentLang === 'en'){
-      countEl.textContent = visible + (visible === 1 ? ' file' : ' files');
+      countEl.textContent = visible + (visible === 1 ? ' video' : ' videos');
     } else {
-      countEl.textContent = visible + (visible === 1 ? ' arquivo' : ' arquivos');
+      countEl.textContent = visible + (visible === 1 ? ' vídeo' : ' vídeos');
     }
   }
 
@@ -2261,6 +1946,9 @@ a.info-value:hover{ text-decoration:underline; }
       if (match) visible++;
     });
     updateFinderCount(visible);
+    var trilhoVideos = document.getElementById('filesGrid');
+    if (trilhoVideos) trilhoVideos.scrollLeft = 0;
+    if (typeof atualizarSetasVideos === 'function') atualizarSetasVideos();
   }
 
   applyFilter(document.querySelector('.folder-tab.is-active').getAttribute('data-filter'));
@@ -2271,13 +1959,6 @@ a.info-value:hover{ text-decoration:underline; }
       tab.classList.add('is-active');
       applyFilter(tab.getAttribute('data-filter'));
     });
-  });
-
-  /* ---------------- Controles da janela do Finder (decorativos) ---------------- */
-  var finderApp = document.querySelector('.finder-app');
-  document.getElementById('finderCloseBtn').addEventListener('click', function(){
-    finderApp.classList.add('is-closing');
-    setTimeout(function(){ finderApp.classList.remove('is-closing'); }, 400);
   });
 
   /* ---------------- Modal de arquivo (portfólio) ---------------- */
@@ -2328,16 +2009,42 @@ a.info-value:hover{ text-decoration:underline; }
   modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape'){ closeModal(); hidePopup(); } });
 
-  /* ---------------- Pastas de feedback (toque no mobile) ---------------- */
-  var feedbackMoved = false;
-  document.querySelectorAll('.feedback-folder').forEach(function(folder){
-    folder.addEventListener('click', function(){
-      if (feedbackMoved) return;
-      var wasOpen = folder.classList.contains('is-open');
-      document.querySelectorAll('.feedback-folder').forEach(function(f){ f.classList.remove('is-open'); });
-      if (!wasOpen) folder.classList.add('is-open');
+  /* ---------------- Setas dos carrosséis (vídeos e feedbacks) ---------------- */
+  function ligarSetas(trilho, anterior, proximo){
+    if (!trilho || !anterior || !proximo) return function(){};
+    function atualizar(){
+      anterior.disabled = trilho.scrollLeft <= 4;
+      proximo.disabled = trilho.scrollLeft + trilho.clientWidth >= trilho.scrollWidth - 4;
+    }
+    anterior.addEventListener('click', function(){ trilho.scrollBy({ left: -trilho.clientWidth * 0.8, behavior: 'smooth' }); });
+    proximo.addEventListener('click', function(){ trilho.scrollBy({ left: trilho.clientWidth * 0.8, behavior: 'smooth' }); });
+    trilho.addEventListener('scroll', atualizar, { passive: true });
+    window.addEventListener('resize', atualizar);
+    atualizar();
+    return atualizar;
+  }
+  atualizarSetasVideos = ligarSetas(document.getElementById('filesGrid'), document.getElementById('videosPrev'), document.getElementById('videosNext'));
+  ligarSetas(document.getElementById('feedbackGrid'), document.getElementById('feedbackPrev'), document.getElementById('feedbackNext'));
+  atualizarSetasVideos();
+
+  /* ---------------- Etiqueta do nicho em cada vídeo ---------------- */
+  function rotularCards(){
+    document.querySelectorAll('.file-card').forEach(function(card){
+      var tab = document.querySelector('.folder-tab[data-filter="' + card.getAttribute('data-cat') + '"]');
+      if (tab) card.setAttribute('data-nicho', tab.textContent.trim());
     });
-  });
+  }
+
+  /* ---------------- Menu ganha fundo sólido depois que a capa passa ---------------- */
+  (function(){
+    var nav = document.querySelector('.navbar');
+    if (!nav) return;
+    var atualizarMenu = function(){ nav.classList.toggle('is-solid', window.scrollY > 40); };
+    window.addEventListener('scroll', atualizarMenu, { passive: true });
+    atualizarMenu();
+  })();
+
+  var feedbackMoved = false;
 
   /* ---------------- Esteira de feedbacks (arrastar com o mouse) ---------------- */
   var feedbackGrid = document.getElementById('feedbackGrid');
@@ -2456,6 +2163,7 @@ a.info-value:hover{ text-decoration:underline; }
       var val = lang === 'en' ? el.getAttribute('data-en') : el.getAttribute('data-pt');
       if (val != null) el.textContent = val;
     });
+    rotularCards();
     document.querySelectorAll('[data-pt-placeholder]').forEach(function(el){
       var val = lang === 'en' ? el.getAttribute('data-en-placeholder') : el.getAttribute('data-pt-placeholder');
       if (val != null) el.placeholder = val;

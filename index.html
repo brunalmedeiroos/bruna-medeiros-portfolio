@@ -8,6 +8,7 @@
 <link rel="icon" type="image/png" href="favicon.png">
 <!-- a foto da capa começa a baixar já, antes de o resto da página carregar -->
 <link rel="preload" as="image" href="fotos/hero-capa-fundo.jpg">
+<link rel="preload" as="font" type="font/woff2" href="fonts/open-sauce-sans-900.woff2" crossorigin>
 
 <!-- ============================================================
      FONTES DO GOOGLE (Montserrat + Pinyon Script)
@@ -19,7 +20,7 @@
 ============================================================= -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Pinyon+Script&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&family=Bitter:ital,wght@0,600;0,700;0,800&family=Playfair+Display:ital,wght@0,700;1,600&family=Newsreader:ital,wght@0,800;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Pinyon+Script&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&family=Bitter:ital,wght@0,600;0,700;0,800&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
 
 <style>
 
@@ -34,6 +35,22 @@
   src: url('fonts/BootzyTM.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
+}
+
+/* Open Sauce Sans no peso Preto (Black, 900): fonte dos títulos. Licença OFL, livre pra uso comercial. */
+@font-face {
+  font-family: 'Open Sauce Sans';
+  src: url('fonts/open-sauce-sans-900.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Open Sauce Sans';
+  src: url('fonts/open-sauce-sans-900-italic.woff') format('woff');
+  font-weight: 900;
+  font-style: italic;
   font-display: swap;
 }
 
@@ -59,7 +76,7 @@
   --promo-bar-space: 54px;
 
   /* ---------- FONTES (não trocar por outras) ---------- */
-  --font-display: 'Newsreader', Georgia, serif;
+  --font-display: 'Open Sauce Sans', 'Montserrat', sans-serif;
   --font-bootzy: 'Bootzy TM', 'Fraunces', Georgia, serif;
   --font-body: 'Montserrat', sans-serif;
   --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -710,49 +727,21 @@ a.info-value:hover{ text-decoration:underline; }
    então não há layout separado pra tela pequena.
 ===================================================================== */
 /* =====================================================================
-   TESTE DE FONTE nos títulos (no lugar da Newsreader). Só liga com ?fonte=playfair ou ?fonte=opensauce no endereço.
-   O site normal não muda: a fonte é carregada pelo script logo abaixo, só nesse modo.
-   Pra valer pra todo mundo: trocar --font-display lá em cima por 'Playfair Display' e apagar este bloco.
+   TÍTULOS EM OPEN SAUCE SANS PRETO
+   Ela é larga e pesada: tamanhos um pouco menores que os da fonte antiga pra as frases não quebrarem demais.
 ===================================================================== */
-html.fonte-playfair{ --font-display: 'Playfair Display', Georgia, serif; }
-html.fonte-playfair :is(.hero-cover-headline, .section-title, .about-title, .contact-cta h2, .popup-notification h4){ font-weight:500; letter-spacing:-0.01em; }
-html.fonte-playfair :is(.widget-glass h3, .file-meta .fname, .file-modal-titlebar .fname, .feedback-peek){ font-weight:600; letter-spacing:0; }
-html.fonte-playfair .hero-cover-headline{ font-size: clamp(2.9rem, 5.8vw, 5.2rem); line-height:1.08; }
-html.fonte-playfair .widget-glass h3{ font-size:1.9rem; }
-html.fonte-playfair .popup-notification h4{ font-size:2rem; }
-
-/* Open Sauce Sans no peso Preto (Black, 900). Licença OFL: grátis e liberada pra uso comercial. */
-html.fonte-opensauce{ --font-display: 'Open Sauce Sans', 'Montserrat', sans-serif; }
-html.fonte-opensauce :is(.hero-cover-headline, .section-title, .about-title, .widget-glass h3, .file-meta .fname, .file-modal-titlebar .fname, .feedback-peek, .contact-cta h2, .popup-notification h4){ font-weight:900; letter-spacing:-0.02em; }
-/* ela é larga e pesada: tamanhos um pouco menores pra as frases não quebrarem demais */
-html.fonte-opensauce .hero-cover-headline{ font-size: clamp(2.6rem, 5.2vw, 4.6rem); line-height:1.08; }
-html.fonte-opensauce .section-title{ font-size: clamp(1.8rem, 3.6vw, 2.9rem); line-height:1.12; }
-html.fonte-opensauce .services-head .section-title{ font-size: clamp(2.3rem, 4.4vw, 3.6rem); }
-html.fonte-opensauce .about-title{ font-size: clamp(2.2rem, 3.8vw, 3.3rem); line-height:1.12; }
-html.fonte-opensauce .widget-glass h3{ font-size:1.7rem; }
-html.fonte-opensauce .file-meta .fname{ font-size:1.3rem; }
-html.fonte-opensauce .file-modal-titlebar .fname{ font-size:1.05rem; }
-html.fonte-opensauce .feedback-peek{ font-size:1.2rem; }
-html.fonte-opensauce .contact-cta h2{ font-size: clamp(1.8rem, 3.4vw, 2.6rem); line-height:1.1; }
-html.fonte-opensauce .popup-notification h4{ font-size:1.9rem; }
+.hero-cover-headline, .section-title, .about-title, .widget-glass h3, .file-meta .fname, .file-modal-titlebar .fname, .feedback-peek, .contact-cta h2, .popup-notification h4{ font-weight:900; letter-spacing:-0.02em; }
+.hero-cover-headline{ font-size: clamp(2.6rem, 5.2vw, 4.6rem); line-height:1.08; }
+.section-title{ font-size: clamp(1.8rem, 3.6vw, 2.9rem); line-height:1.12; }
+.services-head .section-title{ font-size: clamp(2.3rem, 4.4vw, 3.6rem); }
+.about-title{ font-size: clamp(2.2rem, 3.8vw, 3.3rem); line-height:1.12; }
+.widget-glass h3{ font-size:1.7rem; }
+.file-meta .fname{ font-size:1.3rem; }
+.file-modal-titlebar .fname{ font-size:1.05rem; }
+.feedback-peek{ font-size:1.2rem; }
+.contact-cta h2{ font-size: clamp(1.8rem, 3.4vw, 2.6rem); line-height:1.1; }
+.popup-notification h4{ font-size:1.9rem; }
 </style>
-<script>
-(function(){
-  var m = /[?&]fonte=(playfair|opensauce)(&|$)/.exec(location.search);
-  if (!m) return;
-  var folhas = {
-    playfair: ['https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap'],
-    opensauce: ['https://cdn.jsdelivr.net/npm/@fontsource/open-sauce-sans@5.3.0/900.css', 'https://cdn.jsdelivr.net/npm/@fontsource/open-sauce-sans@5.3.0/900-italic.css']
-  };
-  document.documentElement.classList.add('fonte-' + m[1]);
-  folhas[m[1]].forEach(function(url){
-    var l = document.createElement('link');
-    l.rel = 'stylesheet';
-    l.href = url;
-    document.head.appendChild(l);
-  });
-})();
-</script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">

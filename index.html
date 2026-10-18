@@ -710,7 +710,7 @@ a.info-value:hover{ text-decoration:underline; }
    então não há layout separado pra tela pequena.
 ===================================================================== */
 /* =====================================================================
-   TESTE DE FONTE nos títulos (no lugar da Newsreader). Só liga com ?fonte=playfair no endereço.
+   TESTE DE FONTE nos títulos (no lugar da Newsreader). Só liga com ?fonte=playfair ou ?fonte=opensauce no endereço.
    O site normal não muda: a fonte é carregada pelo script logo abaixo, só nesse modo.
    Pra valer pra todo mundo: trocar --font-display lá em cima por 'Playfair Display' e apagar este bloco.
 ===================================================================== */
@@ -720,15 +720,37 @@ html.fonte-playfair :is(.widget-glass h3, .file-meta .fname, .file-modal-titleba
 html.fonte-playfair .hero-cover-headline{ font-size: clamp(2.9rem, 5.8vw, 5.2rem); line-height:1.08; }
 html.fonte-playfair .widget-glass h3{ font-size:1.9rem; }
 html.fonte-playfair .popup-notification h4{ font-size:2rem; }
+
+/* Open Sauce Sans no peso Preto (Black, 900). Licença OFL: grátis e liberada pra uso comercial. */
+html.fonte-opensauce{ --font-display: 'Open Sauce Sans', 'Montserrat', sans-serif; }
+html.fonte-opensauce :is(.hero-cover-headline, .section-title, .about-title, .widget-glass h3, .file-meta .fname, .file-modal-titlebar .fname, .feedback-peek, .contact-cta h2, .popup-notification h4){ font-weight:900; letter-spacing:-0.02em; }
+/* ela é larga e pesada: tamanhos um pouco menores pra as frases não quebrarem demais */
+html.fonte-opensauce .hero-cover-headline{ font-size: clamp(2.6rem, 5.2vw, 4.6rem); line-height:1.08; }
+html.fonte-opensauce .section-title{ font-size: clamp(1.8rem, 3.6vw, 2.9rem); line-height:1.12; }
+html.fonte-opensauce .services-head .section-title{ font-size: clamp(2.3rem, 4.4vw, 3.6rem); }
+html.fonte-opensauce .about-title{ font-size: clamp(2.2rem, 3.8vw, 3.3rem); line-height:1.12; }
+html.fonte-opensauce .widget-glass h3{ font-size:1.7rem; }
+html.fonte-opensauce .file-meta .fname{ font-size:1.3rem; }
+html.fonte-opensauce .file-modal-titlebar .fname{ font-size:1.05rem; }
+html.fonte-opensauce .feedback-peek{ font-size:1.2rem; }
+html.fonte-opensauce .contact-cta h2{ font-size: clamp(1.8rem, 3.4vw, 2.6rem); line-height:1.1; }
+html.fonte-opensauce .popup-notification h4{ font-size:1.9rem; }
 </style>
 <script>
 (function(){
-  if (!/[?&]fonte=playfair(&|$)/.test(location.search)) return;
-  document.documentElement.classList.add('fonte-playfair');
-  var l = document.createElement('link');
-  l.rel = 'stylesheet';
-  l.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap';
-  document.head.appendChild(l);
+  var m = /[?&]fonte=(playfair|opensauce)(&|$)/.exec(location.search);
+  if (!m) return;
+  var folhas = {
+    playfair: ['https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap'],
+    opensauce: ['https://cdn.jsdelivr.net/npm/@fontsource/open-sauce-sans@5.3.0/900.css', 'https://cdn.jsdelivr.net/npm/@fontsource/open-sauce-sans@5.3.0/900-italic.css']
+  };
+  document.documentElement.classList.add('fonte-' + m[1]);
+  folhas[m[1]].forEach(function(url){
+    var l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = url;
+    document.head.appendChild(l);
+  });
 })();
 </script>
 </head>

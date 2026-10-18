@@ -381,10 +381,11 @@ section{ position:relative; }
 ===================================================================== */
 #portfolio{ padding: 110px 0 100px; }
 #portfolio .wrap{ max-width:1280px; }
-.portfolio-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:26px; }
+/* título centralizado na tela; a contagem de vídeos fica no canto direito */
+.portfolio-head{ position:relative; display:flex; align-items:flex-end; justify-content:center; gap:20px; margin-bottom:30px; text-align:center; }
 .portfolio-head .section-title{ margin-bottom:0; }
 #portfolio .section-title{ color: var(--butter); text-shadow: 0 1px 4px rgba(59,74,107,0.28); }
-.finder-count{ font-size:.9rem; font-weight:700; color: var(--blue-dark); padding-bottom:8px; }
+.finder-count{ position:absolute; right:0; bottom:8px; font-size:.9rem; font-weight:700; color: var(--blue-dark); }
 
 .folder-tabs{ display:flex; flex-wrap:wrap; gap:12px; margin-bottom:34px; }
 .folder-tab{
@@ -881,7 +882,7 @@ a.info-value:hover{ text-decoration:underline; }
 <section class="section section--blue" id="portfolio">
   <div class="wrap">
     <div class="portfolio-head">
-      <h2 class="section-title" data-pt-html="conheça &lt;em&gt;meus trabalhos&lt;/em&gt;" data-en-html="see &lt;em&gt;my work&lt;/em&gt;">conheça <em>meus trabalhos</em></h2>
+      <h2 class="section-title" data-pt-html="Conheça &lt;em&gt;meus trabalhos&lt;/em&gt;" data-en-html="See &lt;em&gt;my work&lt;/em&gt;">Conheça <em>meus trabalhos</em></h2>
       <span class="finder-count" id="finderCount">11 vídeos</span>
     </div>
 

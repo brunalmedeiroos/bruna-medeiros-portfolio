@@ -710,31 +710,24 @@ a.info-value:hover{ text-decoration:underline; }
    então não há layout separado pra tela pequena.
 ===================================================================== */
 /* =====================================================================
-   TESTE DE FONTE nos títulos (no lugar da Newsreader). Só liga com ?fonte=poppins no endereço.
-   O site normal não muda e nem baixa essa fonte: ela é carregada pelo script logo abaixo.
-   Pra valer pra todo mundo: trocar --font-display lá em cima por 'Poppins' (peso 500) e apagar este bloco.
+   TESTE DE FONTE nos títulos (no lugar da Newsreader). Só liga com ?fonte=playfair no endereço.
+   O site normal não muda: a fonte é carregada pelo script logo abaixo, só nesse modo.
+   Pra valer pra todo mundo: trocar --font-display lá em cima por 'Playfair Display' e apagar este bloco.
 ===================================================================== */
-html.fonte-poppins{ --font-display: 'Poppins', 'Montserrat', sans-serif; }
-html.fonte-poppins :is(.hero-cover-headline, .section-title, .about-title, .widget-glass h3, .file-meta .fname, .file-modal-titlebar .fname, .feedback-peek, .contact-cta h2, .popup-notification h4){ font-weight:500; letter-spacing:-0.02em; }
-/* a Poppins é mais larga que a fonte atual: tamanhos um pouco menores pra a frase não quebrar demais */
-html.fonte-poppins .hero-cover-headline{ font-size: clamp(2.7rem, 5.4vw, 4.8rem); line-height:1.1; }
-html.fonte-poppins .section-title{ font-size: clamp(1.8rem, 3.6vw, 2.9rem); line-height:1.15; }
-html.fonte-poppins .services-head .section-title{ font-size: clamp(2.3rem, 4.4vw, 3.6rem); }
-html.fonte-poppins .about-title{ font-size: clamp(2.2rem, 3.8vw, 3.3rem); line-height:1.15; }
-html.fonte-poppins .widget-glass h3{ font-size:1.7rem; }
-html.fonte-poppins .file-meta .fname{ font-size:1.3rem; }
-html.fonte-poppins .file-modal-titlebar .fname{ font-size:1.05rem; }
-html.fonte-poppins .feedback-peek{ font-size:1.2rem; }
-html.fonte-poppins .contact-cta h2{ font-size: clamp(1.8rem, 3.4vw, 2.6rem); line-height:1.1; }
-html.fonte-poppins .popup-notification h4{ font-size:1.9rem; }
+html.fonte-playfair{ --font-display: 'Playfair Display', Georgia, serif; }
+html.fonte-playfair :is(.hero-cover-headline, .section-title, .about-title, .contact-cta h2, .popup-notification h4){ font-weight:500; letter-spacing:-0.01em; }
+html.fonte-playfair :is(.widget-glass h3, .file-meta .fname, .file-modal-titlebar .fname, .feedback-peek){ font-weight:600; letter-spacing:0; }
+html.fonte-playfair .hero-cover-headline{ font-size: clamp(2.9rem, 5.8vw, 5.2rem); line-height:1.08; }
+html.fonte-playfair .widget-glass h3{ font-size:1.9rem; }
+html.fonte-playfair .popup-notification h4{ font-size:2rem; }
 </style>
 <script>
 (function(){
-  if (!/[?&]fonte=poppins(&|$)/.test(location.search)) return;
-  document.documentElement.classList.add('fonte-poppins');
+  if (!/[?&]fonte=playfair(&|$)/.test(location.search)) return;
+  document.documentElement.classList.add('fonte-playfair');
   var l = document.createElement('link');
   l.rel = 'stylesheet';
-  l.href = 'https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;1,500&display=swap';
+  l.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap';
   document.head.appendChild(l);
 })();
 </script>

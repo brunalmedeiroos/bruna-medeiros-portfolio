@@ -484,7 +484,7 @@ section{ position:relative; }
 /* =====================================================================
    05 — SERVIÇOS — frase em cima, serviços em caixinhas embaixo, fundo azul claro
 ===================================================================== */
-#servicos{ padding: 110px 0 40px; }
+#servicos{ padding: 110px 0 80px; }
 #servicos .wrap{ max-width:1280px; }
 .services-head{ text-align:center; margin-bottom:70px; }
 .services-head .section-title{ margin-bottom:16px; font-size: clamp(2.6rem, 5vw, 4.2rem); }
@@ -573,7 +573,18 @@ section{ position:relative; }
 /* =====================================================================
    07 — FEEDBACKS — cartões na horizontal com setinhas, fundo amarelo manteiga
 ===================================================================== */
-#feedbacks{ padding: 40px 0 120px; }
+/* faixa que anda, entre Serviços e Feedbacks */
+.faixa-servicos{ background: var(--blue-dark); overflow:hidden; padding:20px 0; }
+.faixa-track{ display:flex; align-items:center; width:max-content; animation: marquee 60s linear infinite; }
+.faixa-item{
+  display:flex; align-items:center; flex-shrink:0; white-space:nowrap;
+  font-family: var(--font-display); font-weight:900; font-size:1rem; letter-spacing:.01em;
+  text-transform:uppercase; color: var(--offwhite);
+}
+.faixa-item::after{ content:"◆"; margin:0 30px; font-size:.7rem; color: var(--butter); }
+@media (prefers-reduced-motion: reduce){ .faixa-track{ animation:none; } }
+
+#feedbacks{ padding: 80px 0 120px; }
 #feedbacks .services-head{ margin-bottom:10px; }
 #feedbacks .wrap{ max-width:1280px; }
 .feedback-grid{
@@ -1149,6 +1160,38 @@ a.info-value:hover{ text-decoration:underline; }
     </div>
     </div>
 
+  </div>
+</section>
+
+<!-- =========================================================
+     FAIXA — o que eu faço (entre Serviços e Feedbacks)
+========================================================== -->
+<section class="faixa-servicos" aria-label="O que eu faço">
+  <div class="faixa-track">
+        <span class="faixa-item" data-pt="Roteiros estratégicos" data-en="Strategic scripts">Roteiros estratégicos</span>
+        <span class="faixa-item" data-pt="Direção criativa" data-en="Creative direction">Direção criativa</span>
+        <span class="faixa-item" data-pt="Storytelling visual" data-en="Visual storytelling">Storytelling visual</span>
+        <span class="faixa-item" data-pt="Estratégia de conteúdo" data-en="Content strategy">Estratégia de conteúdo</span>
+        <span class="faixa-item" data-pt="Criativos de alta performance" data-en="High-performance creatives">Criativos de alta performance</span>
+        <span class="faixa-item" data-pt="Fotos Lifestyle" data-en="Lifestyle photos">Fotos Lifestyle</span>
+        <span class="faixa-item" data-pt="Roteiros estratégicos" data-en="Strategic scripts">Roteiros estratégicos</span>
+        <span class="faixa-item" data-pt="Direção criativa" data-en="Creative direction">Direção criativa</span>
+        <span class="faixa-item" data-pt="Storytelling visual" data-en="Visual storytelling">Storytelling visual</span>
+        <span class="faixa-item" data-pt="Estratégia de conteúdo" data-en="Content strategy">Estratégia de conteúdo</span>
+        <span class="faixa-item" data-pt="Criativos de alta performance" data-en="High-performance creatives">Criativos de alta performance</span>
+        <span class="faixa-item" data-pt="Fotos Lifestyle" data-en="Lifestyle photos">Fotos Lifestyle</span>
+        <span class="faixa-item" data-pt="Roteiros estratégicos" data-en="Strategic scripts">Roteiros estratégicos</span>
+        <span class="faixa-item" data-pt="Direção criativa" data-en="Creative direction">Direção criativa</span>
+        <span class="faixa-item" data-pt="Storytelling visual" data-en="Visual storytelling">Storytelling visual</span>
+        <span class="faixa-item" data-pt="Estratégia de conteúdo" data-en="Content strategy">Estratégia de conteúdo</span>
+        <span class="faixa-item" data-pt="Criativos de alta performance" data-en="High-performance creatives">Criativos de alta performance</span>
+        <span class="faixa-item" data-pt="Fotos Lifestyle" data-en="Lifestyle photos">Fotos Lifestyle</span>
+        <span class="faixa-item" data-pt="Roteiros estratégicos" data-en="Strategic scripts">Roteiros estratégicos</span>
+        <span class="faixa-item" data-pt="Direção criativa" data-en="Creative direction">Direção criativa</span>
+        <span class="faixa-item" data-pt="Storytelling visual" data-en="Visual storytelling">Storytelling visual</span>
+        <span class="faixa-item" data-pt="Estratégia de conteúdo" data-en="Content strategy">Estratégia de conteúdo</span>
+        <span class="faixa-item" data-pt="Criativos de alta performance" data-en="High-performance creatives">Criativos de alta performance</span>
+        <span class="faixa-item" data-pt="Fotos Lifestyle" data-en="Lifestyle photos">Fotos Lifestyle</span>
   </div>
 </section>
 

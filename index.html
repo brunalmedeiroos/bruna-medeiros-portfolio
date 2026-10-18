@@ -356,24 +356,29 @@ section{ position:relative; }
 ===================================================================== */
 .brands-strip{ padding: 34px 0 30px; background: var(--brown); overflow:hidden; }
 .brands-title{
-  text-align:center; color: var(--blue-light); font-size:.84rem; font-weight:800;
-  letter-spacing:.14em; text-transform:uppercase; margin-bottom: 12px;
+  display:flex; align-items:center; justify-content:center; gap:22px;
+  color: var(--blue-light); font-size:.8rem; font-weight:700;
+  letter-spacing:.22em; text-transform:uppercase; margin-bottom: 18px;
 }
-.marquee-wrap{ overflow:hidden; position:relative; }
+.brands-title::before, .brands-title::after{ content:""; width:64px; height:1px; background: var(--blue-light); opacity:.55; }
+.marquee-wrap{ overflow:hidden; position:relative; padding:8px 0 14px; }
 .marquee-wrap::before, .marquee-wrap::after{
   content:""; position:absolute; top:0; bottom:0; width:80px; z-index:2;
 }
 .marquee-wrap::before{ left:0; background: linear-gradient(90deg, var(--brown), transparent); }
 .marquee-wrap::after{ right:0; background: linear-gradient(-90deg, var(--brown), transparent); }
 .marquee-track{
-  display:flex; align-items:center; gap:22px; width:max-content; animation: marquee 52s linear infinite;
+  display:flex; align-items:center; gap:16px; width:max-content; animation: marquee 52s linear infinite;
 }
+/* cada marca numa bolinha clara */
 .brand-tile{
   display:flex; align-items:center; justify-content:center; flex-shrink:0;
-  width:180px; height:76px;
+  width:108px; height:108px; border-radius:50%;
+  background: var(--offwhite); box-shadow: 0 8px 18px rgba(0,0,0,0.22);
 }
-.brand-tile img{ max-height:45px; max-width:115px; width:auto; height:auto; }
-.marquee-track img[alt="Sucré"]{ height: clamp(62px,7.6vw,90px); }
+.brand-tile img{ max-width:62%; max-height:46%; width:auto; height:auto; }
+/* logo branco some na bolinha clara: o site detecta e pinta de marrom. Logo colorido fica como está. */
+.brand-tile img.is-clara{ filter: url(#logoMarrom); }
 @keyframes marquee{ from{ transform: translateX(0); } to{ transform: translateX(-50%); } }
 
 /* =====================================================================
@@ -761,6 +766,10 @@ a.info-value:hover{ text-decoration:underline; }
   <!-- pinta o logo BM do menu na mesma cor das palavras (branco off, #F1F1F1) -->
   <filter id="logoBrancoOff" color-interpolation-filters="sRGB">
     <feColorMatrix type="matrix" values="0 0 0 0 0.945  0 0 0 0 0.945  0 0 0 0 0.945  0 0 0 1 0"/>
+  </filter>
+  <!-- pinta de marrom (#4b3935) os logos brancos das marcas, pra aparecerem na bolinha clara -->
+  <filter id="logoMarrom" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0 0 0 0 0.294  0 0 0 0 0.224  0 0 0 0 0.208  0 0 0 1 0"/>
   </filter>
 </svg>
 
@@ -1397,6 +1406,24 @@ a.info-value:hover{ text-decoration:underline; }
     return (texto || '').trim().replace(/^["“”]+|["“”]+$/g, '').trim();
   }
 
+  /* logo das marcas: se for branco/claro (some na bolinha clara), marca pra ser pintado de marrom */
+  function ajustarLogoMarca(img){
+    function medir(){
+      try {
+        var c = document.createElement('canvas');
+        c.width = 32; c.height = 32;
+        var ctx = c.getContext('2d');
+        ctx.drawImage(img, 0, 0, 32, 32);
+        var d = ctx.getImageData(0, 0, 32, 32).data, soma = 0, n = 0;
+        for (var i = 0; i < d.length; i += 4){
+          if (d[i + 3] > 40){ soma += (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255; n++; }
+        }
+        img.classList.toggle('is-clara', n > 0 && soma / n > 0.8);
+      } catch (e) { /* sem permissão pra ler essa imagem: fica como está */ }
+    }
+    if (img.complete && img.naturalWidth) medir(); else img.addEventListener('load', medir);
+  }
+
   /* foto quadrada da marca preenche o círculo; logo comprido (largo) fica menor no meio */
   function ajustarLogoFeedback(img){
     function marcar(){
@@ -1941,6 +1968,7 @@ a.info-value:hover{ text-decoration:underline; }
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape'){ closeModal(); hidePopup(); } });
 
   document.querySelectorAll('.feedback-logo img').forEach(ajustarLogoFeedback);
+  document.querySelectorAll('.brand-tile img').forEach(ajustarLogoMarca);
 
   /* ---------------- Setas dos carrosséis (vídeos e feedbacks) ---------------- */
   function ligarSetas(trilho, anterior, proximo){

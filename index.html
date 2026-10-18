@@ -19,7 +19,7 @@
 ============================================================= -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Pinyon+Script&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&family=Bitter:ital,wght@0,600;0,700;0,800&family=Playfair+Display:ital,wght@0,700;1,600&family=Newsreader:ital,wght@0,800;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Pinyon+Script&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&family=Bitter:ital,wght@0,600;0,700;0,800&family=Playfair+Display:ital,wght@0,700;1,600&family=Newsreader:ital,wght@0,800;1,700&family=Bebas+Neue&display=swap" rel="stylesheet">
 
 <style>
 
@@ -268,7 +268,7 @@ section{ position:relative; }
 /* sombra marrom suave só do lado esquerdo, pra frase branca ler bem por cima da foto */
 .hero-scrim{
   position:absolute; inset:0; z-index:2; pointer-events:none;
-  background: linear-gradient(90deg, rgba(75,57,53,0.52) 0%, rgba(75,57,53,0.36) 32%, rgba(75,57,53,0.13) 55%, rgba(75,57,53,0) 72%);
+  background: linear-gradient(90deg, rgba(75,57,53,0.70) 0%, rgba(75,57,53,0.52) 34%, rgba(75,57,53,0.27) 56%, rgba(75,57,53,0.09) 74%, rgba(75,57,53,0) 88%);
 }
 .hero-cover-inner{
   position:absolute; inset:0; z-index:3; display:flex; align-items:center;
@@ -709,7 +709,33 @@ a.info-value:hover{ text-decoration:underline; }
    RESPONSIVIDADE — no celular o site fica igual ao do computador (viewport width=1440),
    então não há layout separado pra tela pequena.
 ===================================================================== */
+/* =====================================================================
+   TESTE DE FONTE — Bebas Neue no lugar da Newsreader nos títulos.
+   Só liga com ?fonte=bebas no endereço (o site normal não muda).
+   Pra valer pra todo mundo: tirar o "html.fonte-bebas " dos seletores e trocar --font-display lá em cima.
+===================================================================== */
+html.fonte-bebas{ --font-display: 'Bebas Neue', Impact, 'Arial Narrow', sans-serif; }
+html.fonte-bebas .hero-cover-headline,
+html.fonte-bebas .section-title,
+html.fonte-bebas .about-title,
+html.fonte-bebas .widget-glass h3,
+html.fonte-bebas .file-meta .fname,
+html.fonte-bebas .file-modal-titlebar .fname,
+html.fonte-bebas .feedback-peek,
+html.fonte-bebas .contact-cta h2,
+html.fonte-bebas .popup-notification h4{ font-weight:400; letter-spacing:.02em; }
+html.fonte-bebas .hero-cover-headline{ font-size: clamp(3.6rem, 7.6vw, 6.6rem); line-height:.98; }
+html.fonte-bebas .section-title{ font-size: clamp(2.5rem, 5.2vw, 4.2rem); }
+html.fonte-bebas .services-head .section-title{ font-size: clamp(3.1rem, 6vw, 5rem); }
+html.fonte-bebas .about-title{ font-size: clamp(3.2rem, 5.4vw, 4.8rem); }
+html.fonte-bebas .widget-glass h3{ font-size:2.5rem; }
+html.fonte-bebas .file-meta .fname{ font-size:1.8rem; }
+html.fonte-bebas .file-modal-titlebar .fname{ font-size:1.4rem; }
+html.fonte-bebas .feedback-peek{ font-size:1.7rem; }
+html.fonte-bebas .contact-cta h2{ font-size: clamp(2.5rem, 5vw, 3.8rem); }
+html.fonte-bebas .popup-notification h4{ font-size:2.7rem; }
 </style>
+<script>if (/[?&]fonte=bebas(&|$)/.test(location.search)) document.documentElement.classList.add('fonte-bebas');</script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">

@@ -12447,7 +12447,7 @@
 /* ---- Portfólio: ajustar a imagem (arrastar, zoom e cor do fundo) antes de enviar ---- */
 /* abre por cima da janela de edição (Nova marca, foto etc.) */
 .painel-body #pf-ajuste-overlay {
-  z-index: 260;
+  z-index: 3000;
 }
 
 .painel-body .pf-ajuste-modal {

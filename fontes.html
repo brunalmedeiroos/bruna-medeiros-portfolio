@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<meta name="robots" content="noindex">
+<title>Escolher fonte</title>
+<!-- Página temporária só pra escolher a fonte dos títulos. Todas são do Google Fonts (grátis, liberadas pra uso comercial). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;1,500&family=Instrument+Serif:ital@0;1&family=Playfair+Display:ital,wght@0,500;1,500&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Yeseva+One&family=Bodoni+Moda:ital,wght@0,500;1,500&family=Prata&family=Caprasimo&family=Abril+Fatface&family=Bricolage+Grotesque:wght@500&family=Syne:wght@500&family=Shantell+Sans:ital,wght@0,500;1,500&family=Playpen+Sans:wght@500&family=Marcellus&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{ box-sizing:border-box; margin:0; padding:0; }
+:root{ --brown:#4b3935; --offwhite:#F1F1F1; --butter:#f5e1b4; --blue-light:#9cbbd8; --blue-dark:#5c6e91; }
+body{ font-family:'Montserrat',sans-serif; background:var(--brown); color:var(--offwhite); }
+.topo{ padding:36px 60px 10px; max-width:1440px; margin:0 auto; }
+.topo h1{ font-size:1.6rem; font-weight:700; margin-bottom:8px; }
+.topo p{ font-size:1rem; line-height:1.6; color:rgba(241,241,241,.8); max-width:760px; }
+.amostra{
+  position:relative; padding:70px 60px 80px; overflow:hidden;
+  background: linear-gradient(90deg, rgba(75,57,53,.72) 0%, rgba(75,57,53,.5) 40%, rgba(75,57,53,.25) 70%, rgba(75,57,53,.1) 100%), url("fotos/hero-capa-fundo.jpg") 70% top / cover;
+  border-top:1px solid rgba(255,255,255,.18);
+}
+.amostra-conteudo{ max-width:1320px; margin:0 auto; }
+.nome{
+  display:inline-block; margin-bottom:22px; padding:6px 16px; border-radius:999px;
+  background:var(--blue-light); color:var(--blue-dark); font-weight:700; font-size:.85rem; letter-spacing:.04em;
+}
+.nome small{ font-weight:500; opacity:.8; margin-left:6px; }
+.titulo{ font-size:clamp(3rem,6vw,5.2rem); line-height:1.05; color:var(--offwhite); max-width:880px; text-shadow:0 2px 16px rgba(75,57,53,.5); }
+.titulo em{ color:var(--offwhite); }
+.sub{ margin-top:26px; font-size:2rem; color:var(--butter); text-shadow:0 2px 12px rgba(75,57,53,.5); }
+.sub2{ margin-top:10px; font-size:1.5rem; color:var(--offwhite); text-shadow:0 2px 12px rgba(75,57,53,.5); }
+</style>
+</head>
+<body>
+<div class="topo">
+  <h1>Escolha a fonte dos títulos</h1>
+  <p>Todas são do Google Fonts: grátis e liberadas pra uso comercial. Cada uma mostra a frase da capa, um título de seção e um nome de serviço, em cima da sua foto. Me diga o nome da que você mais gostou (ou as duas ou três melhores).</p>
+</div>
+<div id="amostras"></div>
+<script>
+// nome, família no CSS, peso, se tem itálico de verdade, um comentário curto
+var FONTES = [
+  { nome: 'Fraunces', css: "'Fraunces', serif", peso: 500, italico: true, nota: 'serifada macia, com cara de desenhada à mão' },
+  { nome: 'Instrument Serif', css: "'Instrument Serif', serif", peso: 400, italico: true, nota: 'elegante e fina, bem atual' },
+  { nome: 'Playfair Display', css: "'Playfair Display', serif", peso: 500, italico: true, nota: 'clássica de revista, contraste forte' },
+  { nome: 'Cormorant Garamond', css: "'Cormorant Garamond', serif", peso: 500, italico: true, nota: 'delicada e sofisticada' },
+  { nome: 'Yeseva One', css: "'Yeseva One', serif", peso: 400, italico: false, nota: 'feminina e charmosa, com curvas' },
+  { nome: 'Bodoni Moda', css: "'Bodoni Moda', serif", peso: 500, italico: true, nota: 'moda e editorial' },
+  { nome: 'Prata', css: "'Prata', serif", peso: 400, italico: false, nota: 'serifada leve e elegante' },
+  { nome: 'Caprasimo', css: "'Caprasimo', serif", peso: 400, italico: false, nota: 'retrô, grossa e redondinha' },
+  { nome: 'Abril Fatface', css: "'Abril Fatface', serif", peso: 400, italico: false, nota: 'muito forte, estilo cartaz' },
+  { nome: 'Marcellus', css: "'Marcellus', serif", peso: 400, italico: false, nota: 'clássica, tipo letreiro, simples' },
+  { nome: 'Bricolage Grotesque', css: "'Bricolage Grotesque', sans-serif", peso: 500, italico: false, nota: 'sem serifa, mas com personalidade' },
+  { nome: 'Syne', css: "'Syne', sans-serif", peso: 500, italico: false, nota: 'sem serifa, larga e artística' },
+  { nome: 'Shantell Sans', css: "'Shantell Sans', sans-serif", peso: 500, italico: true, nota: 'parece escrita à mão, simples' },
+  { nome: 'Playpen Sans', css: "'Playpen Sans', sans-serif", peso: 500, italico: false, nota: 'escrita à mão arredondada, leve' }
+];
+var box = document.getElementById('amostras');
+FONTES.forEach(function(f){
+  var bloco = document.createElement('section');
+  bloco.className = 'amostra';
+  var estiloItalico = f.italico ? 'font-style:italic;' : 'font-style:normal;';
+  bloco.innerHTML =
+    '<div class="amostra-conteudo" style="font-family:' + f.css + ';font-weight:' + f.peso + ';">' +
+      '<span class="nome" style="font-family:Montserrat,sans-serif;">' + f.nome + '<small>' + f.nota + (f.italico ? '' : ' (sem itálico)') + '</small></span>' +
+      '<h2 class="titulo">Conteúdo que gera <em style="' + estiloItalico + '">identificação</em> de verdade.</h2>' +
+      '<p class="sub">como podemos trabalhar juntos</p>' +
+      '<p class="sub2">Publicidade no meu perfil</p>' +
+    '</div>';
+  box.appendChild(bloco);
+});
+</script>
+</body>
+</html>

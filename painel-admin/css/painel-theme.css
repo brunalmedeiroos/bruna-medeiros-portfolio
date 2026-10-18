@@ -12532,3 +12532,21 @@
   color: var(--grafite);
   cursor: pointer;
 }
+
+/* Vídeos mais vistos: miniatura vertical, só a capa (corta as faixas pretas dos lados do YouTube) */
+.painel-body .video-thumb-link {
+  display: block;
+  width: 56px;
+  height: 100px;
+  overflow: hidden;
+  border-radius: var(--raio-sm);
+}
+
+.painel-body .video-thumb {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  object-fit: cover;
+  transform: scale(1.03);
+}

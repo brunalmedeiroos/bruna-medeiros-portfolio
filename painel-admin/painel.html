@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261036a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261037a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -2200,6 +2200,43 @@
       </div>
     </div>
 
+    <!-- Modal: ajustar a imagem (arrastar, zoom e cor do fundo) antes de enviar pro portfólio -->
+    <div id="pf-ajuste-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pf-ajuste-modal">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo" id="pf-ajuste-titulo">Ajustar a imagem</span>
+          <button id="pf-ajuste-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <p class="pf-ajuste-ajuda" id="pf-ajuste-ajuda">Arraste a imagem pra posicionar e use o zoom. Só o que está dentro da moldura aparece no site.</p>
+
+        <div class="pf-ajuste-area" id="pf-ajuste-area">
+          <canvas id="pf-ajuste-canvas"></canvas>
+          <div class="pf-ajuste-mascara" id="pf-ajuste-mascara"></div>
+        </div>
+
+        <div class="pf-ajuste-linha">
+          <span class="pf-ajuste-rotulo" data-i18n="pfaj_zoom">Zoom</span>
+          <input type="range" id="pf-ajuste-zoom" min="0" max="1000" value="500" aria-label="Zoom">
+        </div>
+
+        <div class="pf-ajuste-linha">
+          <span class="pf-ajuste-rotulo" data-i18n="pfaj_fundo">Fundo</span>
+          <input type="color" id="pf-ajuste-cor" value="#ffffff" aria-label="Cor do fundo">
+          <button type="button" id="pf-ajuste-canto" class="cal-btn" data-i18n="pfaj_canto">Pegar a cor do canto</button>
+          <label class="pf-ajuste-transp"><input type="checkbox" id="pf-ajuste-transp"> <span data-i18n="pfaj_transp">Sem fundo (transparente)</span></label>
+        </div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="pf-ajuste-original" class="cal-btn" data-i18n="pfaj_sem_recortar">Usar sem recortar</button>
+          <button type="button" id="pf-ajuste-cancelar" class="cal-btn" data-i18n="confirm_cancelar">Cancelar</button>
+          <button type="button" id="pf-ajuste-ok" class="cal-btn cal-btn-primario" data-i18n="pfaj_usar">Usar essa imagem</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: criar e editar uma referência dos Achados -->
     <div id="pl-modal-achado-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal ach-modal">
@@ -4238,6 +4275,18 @@
         pf_lbl_ativo: 'Mostrar no site',
         pf_enviando: 'Enviando...',
         pf_imagem_grande: 'Imagem muito grande (máximo 5 MB).',
+        pfaj_titulo_circulo: 'Ajustar a imagem na bolinha',
+        pfaj_ajuda_circulo: 'Arraste a imagem pra posicionar e use o zoom. O que fica fora do círculo não aparece no site.',
+        pfaj_titulo_paisagem: 'Ajustar a foto da capa',
+        pfaj_ajuda_paisagem: 'Arraste a foto pra posicionar e use o zoom. Só o que está dentro da moldura aparece na capa.',
+        pfaj_titulo_retrato: 'Ajustar a foto do Sobre',
+        pfaj_ajuda_retrato: 'Arraste a foto pra posicionar e use o zoom. Só o que está dentro da moldura aparece no Sobre.',
+        pfaj_zoom: 'Zoom',
+        pfaj_fundo: 'Fundo',
+        pfaj_canto: 'Pegar a cor do canto',
+        pfaj_transp: 'Sem fundo (transparente)',
+        pfaj_sem_recortar: 'Usar sem recortar',
+        pfaj_usar: 'Usar essa imagem',
         pf_erro_upload: 'Não foi possível enviar a imagem. Tente de novo.',
         pf_preencha_nome: 'Preencha o nome.',
         pf_preencha_texto: 'Preencha o texto do feedback.',
@@ -5429,6 +5478,18 @@
         pf_lbl_ativo: 'Show on the site',
         pf_enviando: 'Uploading...',
         pf_imagem_grande: 'Image too large (5 MB max).',
+        pfaj_titulo_circulo: 'Adjust the image in the circle',
+        pfaj_ajuda_circulo: 'Drag the image to position it and use the zoom. Whatever falls outside the circle will not show on the site.',
+        pfaj_titulo_paisagem: 'Adjust the cover photo',
+        pfaj_ajuda_paisagem: 'Drag the photo to position it and use the zoom. Only what is inside the frame shows on the cover.',
+        pfaj_titulo_retrato: 'Adjust the About photo',
+        pfaj_ajuda_retrato: 'Drag the photo to position it and use the zoom. Only what is inside the frame shows in the About section.',
+        pfaj_zoom: 'Zoom',
+        pfaj_fundo: 'Background',
+        pfaj_canto: 'Pick the corner color',
+        pfaj_transp: 'No background (transparent)',
+        pfaj_sem_recortar: 'Use without cropping',
+        pfaj_usar: 'Use this image',
         pf_erro_upload: "Couldn't upload the image. Try again.",
         pf_preencha_nome: 'Fill in the name.',
         pf_preencha_texto: 'Fill in the feedback text.',
@@ -24265,6 +24326,188 @@
       document.getElementById('pf-modal-overlay').hidden = true;
     }
 
+    // ---- Ajustar a imagem (arrastar, zoom e cor do fundo) antes de enviar pro portfólio ----
+    // Formatos: circulo (marcas e logos dos feedbacks), paisagem (capa, 16:9) e retrato (foto do Sobre, 4:5).
+    const PF_AJUSTE_FORMATOS = {
+      circulo: { quadro: [340, 340], saida: [600, 600], redondo: true, titulo: 'pfaj_titulo_circulo', ajuda: 'pfaj_ajuda_circulo' },
+      paisagem: { quadro: [480, 270], saida: [1920, 1080], redondo: false, titulo: 'pfaj_titulo_paisagem', ajuda: 'pfaj_ajuda_paisagem' },
+      retrato: { quadro: [320, 400], saida: [880, 1100], redondo: false, titulo: 'pfaj_titulo_retrato', ajuda: 'pfaj_ajuda_retrato' },
+    };
+    let pfAjuste = null;
+
+    // Abre a janela e devolve { arquivo, ajustada } quando ela confirma, ou null se cancelar.
+    function pfAjustarImagem(arquivo, formato) {
+      return new Promise((resolver) => {
+        const cfg = PF_AJUSTE_FORMATOS[formato] || PF_AJUSTE_FORMATOS.circulo;
+        createImageBitmap(arquivo)
+          .then((bitmap) => pfAjusteAbrir(bitmap, arquivo, cfg, resolver))
+          .catch((err) => {
+            console.error('Não consegui abrir a imagem pra ajustar:', err);
+            resolver({ arquivo, ajustada: false });
+          });
+      });
+    }
+
+    function pfAjusteAbrir(bitmap, arquivo, cfg, resolver) {
+      // em tela estreita (celular) a moldura encolhe na mesma proporção; a imagem final continua do mesmo tamanho
+      const reduz = Math.min(1, (window.innerWidth - 80) / cfg.quadro[0]);
+      const fw = Math.round(cfg.quadro[0] * reduz);
+      const fh = Math.round(cfg.quadro[1] * reduz);
+      const contem = Math.min(fw / bitmap.width, fh / bitmap.height);
+      const cobre = Math.max(fw / bitmap.width, fh / bitmap.height);
+      pfAjuste = { bitmap, arquivo, cfg, resolver, fw, fh, escMin: contem * 0.5, escMax: cobre * 4, escala: cobre, cx: fw / 2, cy: fh / 2 };
+
+      const area = document.getElementById('pf-ajuste-area');
+      const tela = document.getElementById('pf-ajuste-canvas');
+      area.style.width = fw + 'px';
+      area.style.height = fh + 'px';
+      tela.width = fw;
+      tela.height = fh;
+      document.getElementById('pf-ajuste-mascara').classList.toggle('redonda', cfg.redondo);
+      document.getElementById('pf-ajuste-titulo').textContent = tr(cfg.titulo);
+      document.getElementById('pf-ajuste-ajuda').textContent = tr(cfg.ajuda);
+      document.getElementById('pf-ajuste-transp').checked = false;
+
+      // se o canto da imagem é uma cor lisa, já começa com ela de fundo (o logo se encaixa sem emenda)
+      document.getElementById('pf-ajuste-cor').value = pfAjusteCorDoCanto() || '#ffffff';
+      pfAjusteSincronizarZoom();
+      pfAjusteDesenhar();
+      document.getElementById('pf-ajuste-overlay').hidden = false;
+    }
+
+    function pfAjusteCorDoCanto() {
+      try {
+        const c = document.createElement('canvas');
+        c.width = 1;
+        c.height = 1;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(pfAjuste.bitmap, 0, 0, 1, 1, 0, 0, 1, 1);
+        const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+        if (a < 200) return null;
+        return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function pfAjusteSincronizarZoom() {
+      const { escala, escMin, escMax } = pfAjuste;
+      const t = Math.log(escala / escMin) / Math.log(escMax / escMin);
+      document.getElementById('pf-ajuste-zoom').value = String(Math.round(Math.min(1, Math.max(0, t)) * 1000));
+    }
+
+    function pfAjusteDesenhar() {
+      const { bitmap, fw, fh, escala, cx, cy } = pfAjuste;
+      const ctx = document.getElementById('pf-ajuste-canvas').getContext('2d');
+      ctx.clearRect(0, 0, fw, fh);
+      if (!document.getElementById('pf-ajuste-transp').checked) {
+        ctx.fillStyle = document.getElementById('pf-ajuste-cor').value;
+        ctx.fillRect(0, 0, fw, fh);
+      }
+      const w = bitmap.width * escala;
+      const h = bitmap.height * escala;
+      ctx.drawImage(bitmap, cx - w / 2, cy - h / 2, w, h);
+    }
+
+    function pfAjusteFechar(resultado) {
+      if (!pfAjuste) return;
+      const { resolver, bitmap } = pfAjuste;
+      pfAjuste = null;
+      document.getElementById('pf-ajuste-overlay').hidden = true;
+      if (bitmap.close) bitmap.close();
+      resolver(resultado);
+    }
+
+    function pfAjusteConfirmar() {
+      const { bitmap, cfg, fw, fh, escala, cx, cy, arquivo } = pfAjuste;
+      const [sw, sh] = cfg.saida;
+      const k = sw / fw;
+      const saida = document.createElement('canvas');
+      saida.width = sw;
+      saida.height = sh;
+      const ctx = saida.getContext('2d');
+      const transp = document.getElementById('pf-ajuste-transp').checked;
+      if (!transp) {
+        ctx.fillStyle = document.getElementById('pf-ajuste-cor').value;
+        ctx.fillRect(0, 0, sw, sh);
+      }
+      const w = bitmap.width * escala * k;
+      const h = bitmap.height * escala * k;
+      ctx.drawImage(bitmap, cx * k - w / 2, cy * k - h / 2, w, h);
+      const tipo = transp ? 'image/png' : 'image/jpeg';
+      saida.toBlob(
+        (blob) => {
+          if (!blob) return pfAjusteFechar({ arquivo, ajustada: false });
+          const nome = (arquivo.name || 'imagem').replace(/\.[^.]+$/, '') + (transp ? '-ajustada.png' : '-ajustada.jpg');
+          pfAjusteFechar({ arquivo: new File([blob], nome, { type: tipo }), ajustada: true });
+        },
+        tipo,
+        0.92
+      );
+    }
+
+    function pfAjusteLigarEventos() {
+      const area = document.getElementById('pf-ajuste-area');
+      let arrasto = null;
+      area.addEventListener('pointerdown', (e) => {
+        if (!pfAjuste) return;
+        arrasto = { x: e.clientX, y: e.clientY, cx: pfAjuste.cx, cy: pfAjuste.cy };
+        area.setPointerCapture(e.pointerId);
+        area.classList.add('arrastando');
+      });
+      area.addEventListener('pointermove', (e) => {
+        if (!arrasto || !pfAjuste) return;
+        pfAjuste.cx = Math.min(pfAjuste.fw, Math.max(0, arrasto.cx + e.clientX - arrasto.x));
+        pfAjuste.cy = Math.min(pfAjuste.fh, Math.max(0, arrasto.cy + e.clientY - arrasto.y));
+        pfAjusteDesenhar();
+      });
+      const soltar = () => {
+        arrasto = null;
+        area.classList.remove('arrastando');
+      };
+      area.addEventListener('pointerup', soltar);
+      area.addEventListener('pointercancel', soltar);
+      area.addEventListener(
+        'wheel',
+        (e) => {
+          if (!pfAjuste) return;
+          e.preventDefault();
+          const fator = Math.exp(-e.deltaY * 0.0015);
+          pfAjuste.escala = Math.min(pfAjuste.escMax, Math.max(pfAjuste.escMin, pfAjuste.escala * fator));
+          pfAjusteSincronizarZoom();
+          pfAjusteDesenhar();
+        },
+        { passive: false }
+      );
+      document.getElementById('pf-ajuste-zoom').addEventListener('input', (e) => {
+        if (!pfAjuste) return;
+        const t = Number(e.target.value) / 1000;
+        pfAjuste.escala = pfAjuste.escMin * Math.pow(pfAjuste.escMax / pfAjuste.escMin, t);
+        pfAjusteDesenhar();
+      });
+      document.getElementById('pf-ajuste-cor').addEventListener('input', () => {
+        document.getElementById('pf-ajuste-transp').checked = false;
+        if (pfAjuste) pfAjusteDesenhar();
+      });
+      document.getElementById('pf-ajuste-transp').addEventListener('change', () => pfAjuste && pfAjusteDesenhar());
+      document.getElementById('pf-ajuste-canto').addEventListener('click', () => {
+        if (!pfAjuste) return;
+        const cor = pfAjusteCorDoCanto();
+        if (cor) {
+          document.getElementById('pf-ajuste-cor').value = cor;
+          document.getElementById('pf-ajuste-transp').checked = false;
+          pfAjusteDesenhar();
+        }
+      });
+      document.getElementById('pf-ajuste-ok').addEventListener('click', () => pfAjuste && pfAjusteConfirmar());
+      document.getElementById('pf-ajuste-original').addEventListener('click', () => pfAjuste && pfAjusteFechar({ arquivo: pfAjuste.arquivo, ajustada: false }));
+      document.getElementById('pf-ajuste-cancelar').addEventListener('click', () => pfAjusteFechar(null));
+      document.getElementById('pf-ajuste-fechar').addEventListener('click', () => pfAjusteFechar(null));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && pfAjuste) pfAjusteFechar(null);
+      });
+    }
+
     // Fotos grandes (capa, sobre) são reduzidas antes de subir: ficam leves e o site abre mais rápido.
     // Só vira JPEG se a foto não tiver transparência; recorte com fundo transparente continua PNG.
     async function pfOtimizarFoto(arquivo) {
@@ -24305,13 +24548,21 @@
     async function pfEnviarLogo(arquivo) {
       if (!arquivo) return;
       const status = document.getElementById('pf-logo-status');
+      if (arquivo.size > 20 * 1024 * 1024) {
+        status.textContent = tr('pf_imagem_grande');
+        return;
+      }
+      // abre a janela pra ela arrastar, dar zoom e escolher o fundo antes de enviar
+      const ajuste = await pfAjustarImagem(arquivo, 'circulo');
+      if (!ajuste) return;
+      arquivo = ajuste.arquivo;
       if (arquivo.size > 5 * 1024 * 1024) {
         status.textContent = tr('pf_imagem_grande');
         return;
       }
       status.textContent = tr('pf_enviando');
       try {
-        pfLogoUrl = await pfUploadImagem(pfTipoAberto, arquivo);
+        pfLogoUrl = await pfUploadImagem(pfTipoAberto + (ajuste.ajustada ? '-aj' : ''), arquivo);
         status.textContent = '';
         pfAtualizarLogoPrevia();
       } catch (err) {
@@ -24323,6 +24574,14 @@
     async function pfEnviarFoto(chave, arquivo) {
       if (!arquivo) return;
       const status = document.getElementById('pf-foto-status');
+      if (arquivo.size > 20 * 1024 * 1024) {
+        status.textContent = tr('pf_imagem_grande');
+        return;
+      }
+      // abre a janela pra ela posicionar a foto antes de enviar (capa: paisagem, Sobre: retrato)
+      const ajuste = await pfAjustarImagem(arquivo, chave === 'hero' ? 'paisagem' : chave === 'sobre' ? 'retrato' : 'circulo');
+      if (!ajuste) return;
+      arquivo = ajuste.arquivo;
       if (arquivo.size > 5 * 1024 * 1024) {
         status.textContent = tr('pf_imagem_grande');
         return;
@@ -24600,6 +24859,7 @@
         pfFecharModal();
         await pfMover(id, 1);
       });
+      pfAjusteLigarEventos();
       pfLigarVisual();
       document.getElementById('pf-campo-link-tipo').addEventListener('change', pfAtualizarCampoLink);
       document.getElementById('pf-modal-salvar').addEventListener('click', pfSalvar);

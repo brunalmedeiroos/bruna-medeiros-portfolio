@@ -12442,3 +12442,88 @@
   transform: scale(0.27083);
   transform-origin: 0 0;
 }
+
+
+/* ---- Portfólio: ajustar a imagem (arrastar, zoom e cor do fundo) antes de enviar ---- */
+.painel-body .pf-ajuste-modal {
+  max-width: 440px;
+}
+
+.painel-body .pf-ajuste-ajuda {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--texto-suave);
+}
+
+.painel-body .pf-ajuste-area {
+  position: relative;
+  align-self: center;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: var(--raio-sm);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  /* xadrez que aparece quando o fundo é transparente */
+  background: conic-gradient(#d9d9d9 25%, #fff 0 50%, #d9d9d9 0 75%, #fff 0) 0 0 / 16px 16px;
+}
+
+.painel-body .pf-ajuste-area.arrastando {
+  cursor: grabbing;
+}
+
+.painel-body .pf-ajuste-area canvas {
+  display: block;
+}
+
+.painel-body .pf-ajuste-mascara {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.9);
+}
+
+/* círculo: escurece o que fica fora da bolinha */
+.painel-body .pf-ajuste-mascara.redonda {
+  border-radius: 50%;
+  box-shadow: 0 0 0 999px rgba(30, 30, 30, 0.55), inset 0 0 0 2px rgba(255, 255, 255, 0.9);
+}
+
+.painel-body .pf-ajuste-linha {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.painel-body .pf-ajuste-rotulo {
+  width: 48px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .pf-ajuste-linha input[type='range'] {
+  flex: 1;
+  accent-color: var(--coral);
+}
+
+.painel-body .pf-ajuste-linha input[type='color'] {
+  width: 40px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+}
+
+.painel-body .pf-ajuste-transp {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--grafite);
+  cursor: pointer;
+}

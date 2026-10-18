@@ -1457,7 +1457,11 @@ a.info-value:hover{ text-decoration:underline; }
       };
       copia.src = img.currentSrc || img.src;
     }
-    function rodar(){ porPixels(); }
+    // imagem já ajustada no painel (nome marca-aj-...): o que ela viu na janela é o que aparece, então só preenche a bolinha
+    function rodar(){
+      if ((img.currentSrc || img.src).indexOf('/marca-aj-') >= 0){ img.classList.remove('is-fundo', 'is-quadrada', 'is-clara'); img.classList.add('is-foto'); if (tile) tile.style.background = ''; return; }
+      porPixels();
+    }
     if (img.complete && img.naturalWidth) rodar(); else img.addEventListener('load', rodar);
   }
 

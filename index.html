@@ -265,10 +265,10 @@ section{ position:relative; }
   /* aumenta um pouco a foto a partir do canto de cima esquerdo: empurra ela pra direita, longe da frase, sem cortar a cabeça */
   transform: translateY(-5.5%) scale(1.14); transform-origin: left top;
 }
-/* degradê bem claro e suave só do lado esquerdo, pra frase marrom ler bem por cima da foto */
+/* sombra marrom suave só do lado esquerdo, pra frase branca ler bem por cima da foto */
 .hero-scrim{
   position:absolute; inset:0; z-index:2; pointer-events:none;
-  background: linear-gradient(90deg, rgba(241,241,241,0.62) 0%, rgba(241,241,241,0.42) 32%, rgba(241,241,241,0.16) 55%, rgba(241,241,241,0) 72%);
+  background: linear-gradient(90deg, rgba(75,57,53,0.52) 0%, rgba(75,57,53,0.36) 32%, rgba(75,57,53,0.13) 55%, rgba(75,57,53,0) 72%);
 }
 .hero-cover-inner{
   position:absolute; inset:0; z-index:3; display:flex; align-items:center;
@@ -278,9 +278,10 @@ section{ position:relative; }
 
 .hero-cover-headline{
   font-family: var(--font-display); font-weight:800; letter-spacing:-0.5px;
-  font-size: clamp(3rem, 6.2vw, 5.4rem); line-height:1.05; color: var(--brown); margin:0 0 34px;
+  font-size: clamp(3rem, 6.2vw, 5.4rem); line-height:1.05; color: var(--offwhite); margin:0 0 34px;
 }
-.hero-cover-headline .accent{ color: var(--brown); font-style:italic; font-weight:700; }
+.hero-cover-headline .accent{ color: var(--offwhite); font-style:italic; font-weight:700; }
+.hero-cover-headline, .hero-link-arrow{ text-shadow: 0 2px 16px rgba(75,57,53,0.5); }
 
 .hero-badge{
   display:inline-flex; align-items:center; gap:8px;
@@ -301,7 +302,7 @@ section{ position:relative; }
 .hero-actions .btn-primary:hover{ background:#fff; transform: scale(0.96); }
 .hero-actions .btn-primary:active{ transform: scale(0.92); }
 .hero-link-arrow{
-  display:inline-flex; align-items:center; gap:6px; font-weight:700; color: var(--brown);
+  display:inline-flex; align-items:center; gap:6px; font-weight:700; color: var(--offwhite);
   font-size:.94rem; text-decoration:none; transition: gap .2s ease;
 }
 .hero-link-arrow:hover{ gap:10px; }

@@ -1979,6 +1979,8 @@ a.info-value:hover{ text-decoration:underline; }
         modalVideoFrame.hidden = false;
         modalVideoFrame.src = 'https://www.youtube-nocookie.com/embed/' + youtubeId + '?autoplay=1&rel=0';
         modalWindow.classList.add('is-video');
+        // conta a visualização pro painel (aba Portfólio > Vídeos mais vistos)
+        enviarTrack('event', { event_type: 'video_view', event_name: youtubeId, session_id: getSessionId(), page_path: location.pathname, metadata: { title: title } });
       } else {
         modalVideoFrame.hidden = true;
         modalVideoFrame.src = '';

@@ -26,7 +26,7 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
-const TIPOS_EVENTO = ["page_view", "button_click", "video_view"];
+const TIPOS_EVENTO = ["page_view", "button_click", "video_view", "video_retention"];
 const ORIGENS_LEAD = ["contact", "popup"];
 
 // Data de hoje no fuso de Brasília — evita o desvio de toISOString() (UTC)

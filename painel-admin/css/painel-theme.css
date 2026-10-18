@@ -12550,3 +12550,33 @@
   object-fit: cover;
   transform: scale(1.03);
 }
+
+/* Vídeos mais vistos: retenção (média assistida e barrinha de onde as pessoas assistem) */
+.painel-body .video-ret-texto {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--texto-suave);
+}
+
+.painel-body .video-ret-texto strong {
+  color: var(--grafite);
+}
+
+.painel-body .video-ret-barra {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  height: 10px;
+}
+
+.painel-body .video-ret-barra span {
+  border-radius: 3px;
+}
+
+.painel-body .video-ret-eixo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--texto-suave);
+}

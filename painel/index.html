@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261038a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261038b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -4555,6 +4555,14 @@
         portfolio_responder_email: 'Responder por e-mail',
         portfolio_assunto_contato: 'Contato pelo portfólio',
         portfolio_nenhum_video: 'Nenhum vídeo visto ainda.',
+        portfolio_ret_vazio: 'Ainda sem dados de quanto assistiram.',
+        portfolio_ret_media: 'Média assistida:',
+        portfolio_ret_fim: 'Chegaram ao fim:',
+        portfolio_ret_sai: 'Mais gente sai em:',
+        portfolio_ret_base: 'Pessoas contadas:',
+        portfolio_ret_dica: 'das pessoas assistiram esse trecho',
+        portfolio_ret_inicio: 'início',
+        portfolio_ret_final: 'final',
         cal_erro_carregar_tarefas: 'Não foi possível carregar suas tarefas agora.',
         erro_carregar_dados_geral: 'Não foi possível carregar os dados agora. Verifique sua conexão e tente novamente em instantes.',
         portfolio_nenhuma_visita: 'Nenhuma visita registrada ainda.',
@@ -5759,6 +5767,14 @@
         portfolio_responder_email: 'Reply by email',
         portfolio_assunto_contato: 'Portfolio contact',
         portfolio_nenhum_video: 'No videos watched yet.',
+        portfolio_ret_vazio: 'No watch-time data yet.',
+        portfolio_ret_media: 'Average watched:',
+        portfolio_ret_fim: 'Watched to the end:',
+        portfolio_ret_sai: 'Most people leave at:',
+        portfolio_ret_base: 'People counted:',
+        portfolio_ret_dica: 'of people watched this part',
+        portfolio_ret_inicio: 'start',
+        portfolio_ret_final: 'end',
         cal_erro_carregar_tarefas: 'Could not load your tasks right now.',
         erro_carregar_dados_geral: 'Could not load the data right now. Check your connection and try again in a moment.',
         portfolio_nenhuma_visita: 'No visits recorded yet.',
@@ -9306,7 +9322,7 @@
       const buttonClicks = eventos.filter((e) => e.event_type === 'button_click');
       const contatoClicks = buttonClicks.filter((e) => e.event_name && e.event_name.startsWith('contact_'));
 
-      renderizarVideos(videoViews);
+      renderizarVideos(videoViews, eventos.filter((e) => e.event_type === 'video_retention'));
       renderizarBotoes(buttonClicks);
       renderizarContato(contatoClicks);
       renderizarMensagens(leads);
@@ -9327,7 +9343,51 @@
       return Array.from(mapa.values()).sort((a, b) => b.contagem - a.contagem);
     }
 
-    function renderizarVideos(videoViews) {
+    // Junta os avisos de retenção de cada vídeo: média assistida, quantos chegaram ao fim,
+    // onde mais gente parou e, pra barrinha, a parte de cada décimo do vídeo que foi vista.
+    function resumirRetencao(retencoes) {
+      const mapa = new Map();
+      retencoes.forEach((e) => {
+        const m = e.metadata || {};
+        const blocos = String(m.b || '').split('').map((c) => (c === '1' ? 1 : 0));
+        if (blocos.length !== 10 || !e.event_name) return;
+        if (!mapa.has(e.event_name)) mapa.set(e.event_name, { n: 0, soma: 0, fim: 0, vistos: new Array(10).fill(0), saidas: new Array(10).fill(0) });
+        const r = mapa.get(e.event_name);
+        r.n++;
+        r.soma += blocos.reduce((a, b) => a + b, 0) / 10;
+        blocos.forEach((b, i) => { r.vistos[i] += b; });
+        if (m.fim) {
+          r.fim++;
+        } else if (typeof m.sair === 'number') {
+          r.saidas[Math.max(0, Math.min(9, Math.floor(m.sair / 10)))]++;
+        }
+      });
+      return mapa;
+    }
+
+    function htmlRetencao(r) {
+      if (!r) return `<p class="video-ret-texto">${tr('portfolio_ret_vazio')}</p>`;
+      const media = Math.round((r.soma / r.n) * 100);
+      const fim = Math.round((r.fim / r.n) * 100);
+      const maisSaidas = Math.max(...r.saidas);
+      const ondeSai = maisSaidas > 0 ? r.saidas.indexOf(maisSaidas) : -1;
+      const partes = [
+        `${tr('portfolio_ret_media')} <strong>${media}%</strong>`,
+        `${tr('portfolio_ret_fim')} <strong>${fim}%</strong>`,
+      ];
+      if (ondeSai >= 0) partes.push(`${tr('portfolio_ret_sai')} <strong>${ondeSai * 10}–${ondeSai * 10 + 10}%</strong>`);
+      partes.push(`${tr('portfolio_ret_base')} ${formatarNumero(r.n)}`);
+      const barras = r.vistos.map((v, i) => {
+        const parte = v / r.n;
+        const dica = `${i * 10}–${i * 10 + 10}%: ${Math.round(parte * 100)}% ${tr('portfolio_ret_dica')}`;
+        return `<span style="background:rgba(var(--grafite-rgb), ${(0.1 + parte * 0.9).toFixed(2)})" title="${dica}"></span>`;
+      }).join('');
+      return `<p class="video-ret-texto">${partes.join(' · ')}</p>
+        <div class="video-ret-barra" aria-hidden="true">${barras}</div>
+        <div class="video-ret-eixo"><span>${tr('portfolio_ret_inicio')}</span><span>${tr('portfolio_ret_final')}</span></div>`;
+    }
+
+    function renderizarVideos(videoViews, retencoes = []) {
       const container = document.getElementById('lista-videos');
       container.innerHTML = '';
 
@@ -9338,6 +9398,7 @@
 
       const agrupados = agruparPorNome(videoViews);
       const maximo = agrupados[0].contagem;
+      const retencao = resumirRetencao(retencoes);
 
       agrupados.forEach((video) => {
         const id = video.nome;
@@ -9357,6 +9418,7 @@
             <div class="barra-horizontal-wrap">
               <div class="barra-horizontal" style="width:${largura}%"></div>
             </div>
+            ${htmlRetencao(retencao.get(id))}
           </div>
           <span class="video-contagem">${formatarNumero(video.contagem)}</span>
         `;

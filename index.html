@@ -1733,7 +1733,8 @@ a.info-value:hover{ text-decoration:underline; }
     return fetch(TRACK_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ kind: kind, data: data })
+      body: JSON.stringify({ kind: kind, data: data }),
+      keepalive: true // deixa o aviso sair mesmo se a pessoa fechar a página logo em seguida
     }).then(function(res){ return res.ok; }).catch(function(){ return false; });
   }
 
@@ -1977,7 +1978,9 @@ a.info-value:hover{ text-decoration:underline; }
       if (youtubeId) {
         modalPlaceholder.hidden = true;
         modalVideoFrame.hidden = false;
-        modalVideoFrame.src = 'https://www.youtube-nocookie.com/embed/' + youtubeId + '?autoplay=1&rel=0';
+        retEnviar();
+        retIniciar(youtubeId, title);
+        modalVideoFrame.src = 'https://www.youtube-nocookie.com/embed/' + youtubeId + '?autoplay=1&rel=0&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
         modalWindow.classList.add('is-video');
         // conta a visualização pro painel (aba Portfólio > Vídeos mais vistos)
         enviarTrack('event', { event_type: 'video_view', event_name: youtubeId, session_id: getSessionId(), page_path: location.pathname, metadata: { title: title } });
@@ -1999,7 +2002,57 @@ a.info-value:hover{ text-decoration:underline; }
     });
   });
 
+  /* ---------------- Retenção dos vídeos: até onde a pessoa assistiu ----------------
+     O player do YouTube avisa a posição do vídeo (a cada instante) pra esta página. O vídeo é dividido
+     em 10 pedaços; cada pedaço que a pessoa realmente assistiu é marcado. Quando ela fecha o vídeo
+     ou sai da página, vai um aviso só, com os pedaços vistos, o ponto onde parou e se chegou ao fim. */
+  var ret = null;
+  function retIniciar(id, title){
+    ret = { id: id, title: title, dur: 0, estado: -1, blocos: [0,0,0,0,0,0,0,0,0,0], ult: 0, fim: false, enviado: false };
+  }
+  function retEnviar(){
+    if (!ret || ret.enviado) return;
+    ret.enviado = true;
+    var viu = ret.blocos.some(function(b){ return b === 1; });
+    if (!viu || !ret.dur) return;
+    enviarTrack('event', {
+      event_type: 'video_retention',
+      event_name: ret.id,
+      session_id: getSessionId(),
+      page_path: location.pathname,
+      metadata: { title: ret.title, dur: Math.round(ret.dur), b: ret.blocos.join(''), sair: Math.min(100, Math.round(ret.ult / ret.dur * 100)), fim: ret.fim }
+    });
+  }
+  modalVideoFrame.addEventListener('load', function(){
+    if (!ret || !modalVideoFrame.contentWindow) return;
+    var avisar = function(){
+      try { modalVideoFrame.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: 1, channel: 'widget' }), '*'); } catch(e){}
+    };
+    avisar(); setTimeout(avisar, 600); setTimeout(avisar, 1800);
+  });
+  window.addEventListener('message', function(e){
+    if (!ret || e.source !== modalVideoFrame.contentWindow) return;
+    var d = e.data;
+    if (typeof d === 'string'){ try { d = JSON.parse(d); } catch(err){ return; } }
+    if (!d || d.event !== 'infoDelivery' || !d.info) return;
+    var i = d.info;
+    if (typeof i.duration === 'number' && i.duration > 0) ret.dur = i.duration;
+    if (typeof i.playerState === 'number'){
+      ret.estado = i.playerState;
+      if (i.playerState === 0 && ret.dur){ ret.fim = true; ret.blocos[9] = 1; ret.ult = ret.dur; }
+    }
+    if (typeof i.currentTime === 'number' && ret.dur){
+      if (!ret.fim || i.currentTime < ret.dur - 1) ret.ult = i.currentTime;
+      if (ret.estado === 1) ret.blocos[Math.max(0, Math.min(9, Math.floor(i.currentTime / ret.dur * 10)))] = 1;
+      if (i.currentTime >= ret.dur * 0.97) ret.fim = true;
+    }
+  });
+  window.addEventListener('pagehide', retEnviar);
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden') retEnviar(); });
+
   function closeModal(){
+    retEnviar();
+    ret = null;
     modal.classList.remove('is-open');
     modalVideoFrame.src = '';
     modalVideoFrame.hidden = true;

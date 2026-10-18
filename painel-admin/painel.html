@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261038b">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261039a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1637,6 +1637,7 @@
 
         <!-- ---------- Aba: Clientes ---------- -->
         <section id="panel-clientes" class="tab-panel" hidden>
+          <div id="clientes-principal">
           <div class="cal-todas-topo">
             <div>
               <h3 class="card-titulo" data-i18n="clientes_titulo">Clientes</h3>
@@ -1647,6 +1648,7 @@
                 <button class="cal-filtro-btn ativo" data-filtro-cliente="ativos" type="button" data-i18n="clientes_filtro_ativos">Ativos</button>
                 <button class="cal-filtro-btn" data-filtro-cliente="finalizados" type="button" data-i18n="clientes_filtro_finalizados">Finalizados</button>
               </div>
+              <button id="btn-minhas-coisas" class="cal-btn" type="button" data-i18n="mc_botao">Minhas coisas</button>
               <button id="btn-clientes-novo" class="cal-btn cal-btn-primario" type="button" data-i18n="clientes_novo">+ Novo cliente</button>
             </div>
           </div>
@@ -1661,6 +1663,60 @@
               <span data-i18n="clientes_col_entrega">Entrega</span>
             </div>
             <div id="clientes-lista" class="cal-todas-linhas"></div>
+          </div>
+          </div>
+
+          <!-- Minhas coisas: bloco de notas com arquivos, aberto pelo botão no topo da aba Clientes -->
+          <div id="minhas-coisas-pagina" hidden>
+            <div class="cal-todas-topo">
+              <div>
+                <button id="mc-voltar" class="cal-btn" type="button" data-i18n="mc_voltar">← Voltar aos clientes</button>
+                <h3 class="card-titulo mc-titulo-pagina" data-i18n="mc_botao">Minhas coisas</h3>
+                <p class="cal-todas-resumo" data-i18n="mc_sub">Seu bloco de notas: escreva, cole e anexe o que quiser.</p>
+              </div>
+              <button id="mc-nova" class="cal-btn cal-btn-primario" type="button" data-i18n="mc_nova">+ Nova nota</button>
+            </div>
+
+            <p class="dash-aviso" id="mc-aviso" hidden data-i18n="mc_aviso_sql">Pra usar o Minhas coisas, rode o arquivo minhas-coisas.sql no Supabase (uma vez só).</p>
+
+            <div class="mc-layout">
+              <aside class="mc-lateral">
+                <input type="search" id="mc-busca" class="mc-busca" data-i18n-placeholder="mc_busca" placeholder="Buscar nas notas">
+                <div id="mc-lista" class="mc-lista"></div>
+              </aside>
+
+              <div class="mc-editor" id="mc-editor" hidden>
+                <div class="mc-editor-topo">
+                  <input type="text" id="mc-titulo" class="mc-titulo" data-i18n-placeholder="mc_titulo_ph" placeholder="Título">
+                  <span class="mc-status" id="mc-status" aria-live="polite"></span>
+                  <button id="mc-excluir" class="cal-btn pl-btn-excluir" type="button" data-i18n="excluir">Excluir</button>
+                </div>
+
+                <div class="mc-barra" id="mc-barra">
+                  <button type="button" data-mc-cmd="bold" data-mc-titulo="mc_negrito"><b>N</b></button>
+                  <button type="button" data-mc-cmd="italic" data-mc-titulo="mc_italico"><i>I</i></button>
+                  <button type="button" data-mc-cmd="underline" data-mc-titulo="mc_sublinhado"><u>S</u></button>
+                  <button type="button" data-mc-cmd="formatBlock" data-mc-valor="H2" data-mc-titulo="mc_titulo_grande">T1</button>
+                  <button type="button" data-mc-cmd="formatBlock" data-mc-valor="H3" data-mc-titulo="mc_titulo_medio">T2</button>
+                  <button type="button" data-mc-cmd="formatBlock" data-mc-valor="P" data-mc-titulo="mc_texto_normal">¶</button>
+                  <button type="button" data-mc-cmd="insertUnorderedList" data-mc-titulo="mc_lista">• —</button>
+                  <button type="button" data-mc-cmd="insertOrderedList" data-mc-titulo="mc_lista_num">1. —</button>
+                </div>
+
+                <div id="mc-conteudo" class="mc-conteudo" contenteditable="true" data-placeholder="Escreva aqui, cole um texto ou arraste arquivos pra cá..."></div>
+
+                <div class="mc-anexos">
+                  <div class="mc-anexos-topo">
+                    <h4 class="ugc-modal-secao-titulo" data-i18n="mc_arquivos">Arquivos</h4>
+                    <button type="button" id="mc-anexar" class="cal-btn" data-i18n="mc_anexar">+ Anexar arquivos</button>
+                    <input type="file" id="mc-arquivo-input" multiple hidden>
+                  </div>
+                  <div id="mc-anexos-lista" class="mc-anexos-lista"></div>
+                </div>
+              </div>
+
+              <div class="mc-vazio" id="mc-vazio" data-i18n="mc_vazio">Escolha uma nota ou crie uma nova.</div>
+            </div>
           </div>
         </section>
 
@@ -5314,6 +5370,39 @@
         clientes_filtro_ativos: 'Ativos',
         clientes_filtro_finalizados: 'Finalizados',
         clientes_novo: '+ Novo cliente',
+        mc_botao: 'Minhas coisas',
+        mc_sub: 'Seu bloco de notas: escreva, cole e anexe o que quiser.',
+        mc_voltar: '← Voltar aos clientes',
+        mc_nova: '+ Nova nota',
+        mc_busca: 'Buscar nas notas',
+        mc_titulo_ph: 'Título',
+        mc_corpo_ph: 'Escreva aqui, cole um texto ou arraste arquivos pra cá...',
+        mc_arquivos: 'Arquivos',
+        mc_anexar: '+ Anexar arquivos',
+        mc_vazio: 'Escolha uma nota ou crie uma nova.',
+        mc_nenhuma: 'Nenhuma nota ainda. Clique em "+ Nova nota".',
+        mc_nada_achado: 'Nada encontrado.',
+        mc_sem_titulo: 'Sem título',
+        mc_sem_arquivos: 'Nenhum arquivo anexado.',
+        mc_salvando: 'Salvando...',
+        mc_salvo: 'Salvo',
+        mc_erro_salvar: 'Não consegui salvar. Tente de novo.',
+        mc_enviando: 'Enviando',
+        mc_erro_anexo: 'Algum arquivo não foi enviado.',
+        mc_arquivo_grande: 'arquivo maior que 50 MB, não foi enviado.',
+        mc_abrir: 'Abrir',
+        mc_remover: 'Remover arquivo',
+        mc_remover_conf: 'Remover este arquivo da nota?',
+        mc_excluir_conf: 'Excluir esta nota e todos os arquivos dela?',
+        mc_aviso_sql: 'Pra usar o Minhas coisas, rode o arquivo minhas-coisas.sql no Supabase (uma vez só).',
+        mc_negrito: 'Negrito',
+        mc_italico: 'Itálico',
+        mc_sublinhado: 'Sublinhado',
+        mc_titulo_grande: 'Título grande',
+        mc_titulo_medio: 'Título médio',
+        mc_texto_normal: 'Texto normal',
+        mc_lista: 'Lista com marcadores',
+        mc_lista_num: 'Lista numerada',
         clientes_col_nome: 'Nome',
         clientes_col_template: 'Modelo',
         clientes_col_valor: 'Valor',
@@ -6530,6 +6619,39 @@
         clientes_filtro_ativos: 'Active',
         clientes_filtro_finalizados: 'Finished',
         clientes_novo: '+ New client',
+        mc_botao: 'My stuff',
+        mc_sub: 'Your notepad: write, paste and attach whatever you want.',
+        mc_voltar: '← Back to clients',
+        mc_nova: '+ New note',
+        mc_busca: 'Search notes',
+        mc_titulo_ph: 'Title',
+        mc_corpo_ph: 'Write here, paste some text or drag files in...',
+        mc_arquivos: 'Files',
+        mc_anexar: '+ Attach files',
+        mc_vazio: 'Pick a note or create a new one.',
+        mc_nenhuma: 'No notes yet. Click "+ New note".',
+        mc_nada_achado: 'Nothing found.',
+        mc_sem_titulo: 'Untitled',
+        mc_sem_arquivos: 'No files attached.',
+        mc_salvando: 'Saving...',
+        mc_salvo: 'Saved',
+        mc_erro_salvar: 'Could not save. Try again.',
+        mc_enviando: 'Uploading',
+        mc_erro_anexo: 'Some file was not uploaded.',
+        mc_arquivo_grande: 'file is larger than 50 MB, not uploaded.',
+        mc_abrir: 'Open',
+        mc_remover: 'Remove file',
+        mc_remover_conf: 'Remove this file from the note?',
+        mc_excluir_conf: 'Delete this note and all its files?',
+        mc_aviso_sql: 'To use My stuff, run the minhas-coisas.sql file in Supabase (just once).',
+        mc_negrito: 'Bold',
+        mc_italico: 'Italic',
+        mc_sublinhado: 'Underline',
+        mc_titulo_grande: 'Large heading',
+        mc_titulo_medio: 'Medium heading',
+        mc_texto_normal: 'Normal text',
+        mc_lista: 'Bulleted list',
+        mc_lista_num: 'Numbered list',
         clientes_col_nome: 'Name',
         clientes_col_template: 'Template',
         clientes_col_valor: 'Value',
@@ -7218,6 +7340,7 @@
       });
 
       document.getElementById('btn-clientes-novo').addEventListener('click', () => abrirModalCliente(null));
+      minhasCoisasLigarEventos();
       document.getElementById('clientes-modal-fechar').addEventListener('click', fecharModalCliente);
       document.getElementById('clientes-modal-excluir').addEventListener('click', excluirModalCliente);
       document.getElementById('clientes-modal-salvar').addEventListener('click', salvarModalCliente);
@@ -20567,6 +20690,372 @@
       if (!/^[0-9a-fA-F]{6}$/.test(limpo)) return null;
       const num = parseInt(limpo, 16);
       return `${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}`;
+    }
+
+    // ==========================================================================
+    // Minhas coisas: bloco de notas dentro da aba Clientes (texto + arquivos).
+    // Os arquivos ficam no bucket privado ugc-arquivos (o mesmo dos contratos),
+    // na pasta minhas-coisas/; a tabela minhas_coisas guarda título, texto e a
+    // lista de anexos. A nota é salva sozinha, um instante depois de digitar.
+    // ==========================================================================
+    const MC_BUCKET = 'ugc-arquivos';
+    const MC_LIMITE_ARQUIVO = 50 * 1024 * 1024;
+    const MC_TAGS_OK = new Set(['B', 'STRONG', 'I', 'EM', 'U', 'S', 'STRIKE', 'H2', 'H3', 'UL', 'OL', 'LI', 'P', 'DIV', 'BR']);
+    let mcNotas = [];
+    let mcAbertaId = null;
+    let mcCarregada = false;
+    let mcTimerSalvar = null;
+    let mcFilaSalvar = Promise.resolve();
+
+    // Deixa só formatação simples (negrito, títulos, listas...). Tudo que vier
+    // de fora (colar de outro site, por exemplo) perde atributos e scripts.
+    function mcLimparHtml(html) {
+      const doc = new DOMParser().parseFromString(`<body>${html || ''}</body>`, 'text/html');
+      const limpar = (no) => {
+        let saida = '';
+        no.childNodes.forEach((filho) => {
+          if (filho.nodeType === 3) {
+            saida += escapeHtml(filho.textContent);
+          } else if (filho.nodeType === 1) {
+            const tag = filho.tagName;
+            if (tag === 'SCRIPT' || tag === 'STYLE') return;
+            const dentro = limpar(filho);
+            saida += MC_TAGS_OK.has(tag) ? `<${tag.toLowerCase()}>${dentro}</${tag.toLowerCase()}>` : dentro;
+          }
+        });
+        return saida;
+      };
+      return limpar(doc.body).replace(/<br><\/br>/g, '<br>');
+    }
+
+    function mcTextoPuro(html) {
+      // espaço entre os blocos, pra a prévia não grudar 'Título' + 'texto'
+      const doc = new DOMParser().parseFromString((html || '').replace(/<\/(p|div|h2|h3|li|ul|ol)>|<br>/gi, ' '), 'text/html');
+      return (doc.body.textContent || '').replace(/\s+/g, ' ').trim();
+    }
+
+    function mcNotaAberta() {
+      return mcNotas.find((n) => n.id === mcAbertaId) || null;
+    }
+
+    function mcDefinirStatus(texto) {
+      document.getElementById('mc-status').textContent = texto || '';
+    }
+
+    function mcFormatarTamanho(bytes) {
+      const n = Number(bytes) || 0;
+      if (n < 1024) return `${n} B`;
+      if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`;
+      return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
+    async function mcAbrirPagina() {
+      document.getElementById('clientes-principal').hidden = true;
+      document.getElementById('minhas-coisas-pagina').hidden = false;
+      if (!mcCarregada) await mcCarregar();
+    }
+
+    async function mcFecharPagina() {
+      await mcSalvarAgora();
+      document.getElementById('minhas-coisas-pagina').hidden = true;
+      document.getElementById('clientes-principal').hidden = false;
+    }
+
+    async function mcCarregar() {
+      try {
+        const { data, error } = await Auth.sb.from('minhas_coisas').select('*').order('atualizado_em', { ascending: false });
+        if (error) throw error;
+        mcNotas = data || [];
+        mcCarregada = true;
+        document.getElementById('mc-aviso').hidden = true;
+      } catch (err) {
+        console.error('Erro ao carregar Minhas coisas:', err);
+        document.getElementById('mc-aviso').hidden = false;
+        mcNotas = [];
+      }
+      mcRenderizarLista();
+      mcMostrarEditor();
+    }
+
+    function mcRenderizarLista() {
+      const lista = document.getElementById('mc-lista');
+      const busca = document.getElementById('mc-busca').value.trim().toLowerCase();
+      const visiveis = mcNotas.filter((n) => !busca || `${n.titulo} ${mcTextoPuro(n.conteudo)}`.toLowerCase().includes(busca));
+      if (visiveis.length === 0) {
+        lista.innerHTML = `<p class="mc-lista-vazia">${escapeHtml(tr(mcNotas.length ? 'mc_nada_achado' : 'mc_nenhuma'))}</p>`;
+        return;
+      }
+      lista.innerHTML = visiveis.map((n) => {
+        const previa = mcTextoPuro(n.conteudo).slice(0, 70);
+        const anexos = (n.arquivos || []).length;
+        return `<button type="button" class="mc-item${n.id === mcAbertaId ? ' ativo' : ''}" data-id="${n.id}">
+          <span class="mc-item-titulo">${escapeHtml(n.titulo || tr('mc_sem_titulo'))}</span>
+          <span class="mc-item-previa">${escapeHtml(previa)}</span>
+          <span class="mc-item-meta">${formatarDataCurta(new Date(n.atualizado_em))}${anexos ? ` · 📎 ${anexos}` : ''}</span>
+        </button>`;
+      }).join('');
+    }
+
+    function mcMostrarEditor() {
+      const nota = mcNotaAberta();
+      document.getElementById('mc-editor').hidden = !nota;
+      document.getElementById('mc-vazio').hidden = !!nota;
+      if (!nota) return;
+      document.getElementById('mc-titulo').value = nota.titulo || '';
+      document.getElementById('mc-conteudo').innerHTML = mcLimparHtml(nota.conteudo);
+      mcDefinirStatus('');
+      mcRenderizarAnexos();
+    }
+
+    async function mcAbrirNota(id) {
+      if (id === mcAbertaId) return;
+      await mcSalvarAgora();
+      mcAbertaId = id;
+      mcRenderizarLista();
+      mcMostrarEditor();
+    }
+
+    async function mcNovaNota() {
+      await mcSalvarAgora();
+      try {
+        const { data, error } = await Auth.sb.from('minhas_coisas').insert({ titulo: '', conteudo: '', arquivos: [] }).select();
+        if (error) throw error;
+        mcNotas.unshift(data[0]);
+        mcAbertaId = data[0].id;
+        document.getElementById('mc-busca').value = '';
+        mcRenderizarLista();
+        mcMostrarEditor();
+        document.getElementById('mc-titulo').focus();
+      } catch (err) {
+        console.error('Erro ao criar nota:', err);
+        document.getElementById('mc-aviso').hidden = false;
+      }
+    }
+
+    function mcAgendarSalvar() {
+      mcDefinirStatus(tr('mc_salvando'));
+      clearTimeout(mcTimerSalvar);
+      mcTimerSalvar = setTimeout(mcSalvarAgora, 800);
+    }
+
+    // Salva a nota aberta. Os salvamentos entram numa fila, pra nunca se atropelarem.
+    function mcSalvarAgora() {
+      clearTimeout(mcTimerSalvar);
+      mcTimerSalvar = null;
+      const nota = mcNotaAberta();
+      if (!nota) return mcFilaSalvar;
+      const titulo = document.getElementById('mc-titulo').value;
+      const conteudo = mcLimparHtml(document.getElementById('mc-conteudo').innerHTML);
+      if (titulo === nota.titulo && conteudo === mcLimparHtml(nota.conteudo)) return mcFilaSalvar;
+      const id = nota.id;
+      mcFilaSalvar = mcFilaSalvar.then(async () => {
+        try {
+          const agora = new Date().toISOString();
+          const { error } = await Auth.sb.from('minhas_coisas').update({ titulo, conteudo, atualizado_em: agora }).eq('id', id);
+          if (error) throw error;
+          const local = mcNotas.find((n) => n.id === id);
+          if (local) {
+            local.titulo = titulo;
+            local.conteudo = conteudo;
+            local.atualizado_em = agora;
+            mcNotas.sort((a, b) => new Date(b.atualizado_em) - new Date(a.atualizado_em));
+          }
+          if (id === mcAbertaId) mcDefinirStatus(tr('mc_salvo'));
+          mcRenderizarLista();
+        } catch (err) {
+          console.error('Erro ao salvar nota:', err);
+          if (id === mcAbertaId) mcDefinirStatus(tr('mc_erro_salvar'));
+        }
+      });
+      return mcFilaSalvar;
+    }
+
+    async function mcExcluirNota() {
+      const nota = mcNotaAberta();
+      if (!nota) return;
+      if (!(await confirmarAcao(tr('mc_excluir_conf')))) return;
+      clearTimeout(mcTimerSalvar);
+      try {
+        const caminhos = (nota.arquivos || []).map((a) => a.path);
+        if (caminhos.length) await Auth.sb.storage.from(MC_BUCKET).remove(caminhos);
+        const { error } = await Auth.sb.from('minhas_coisas').delete().eq('id', nota.id);
+        if (error) throw error;
+        mcNotas = mcNotas.filter((n) => n.id !== nota.id);
+        mcAbertaId = null;
+        mcRenderizarLista();
+        mcMostrarEditor();
+      } catch (err) {
+        console.error('Erro ao excluir nota:', err);
+        alert(tr('erro_excluir_generico'));
+      }
+    }
+
+    // ---- Arquivos anexados ----
+    function mcNomeSeguro(nome) {
+      return String(nome).normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(-80) || 'arquivo';
+    }
+
+    async function mcAnexar(arquivos) {
+      const nota = mcNotaAberta();
+      const lista = Array.from(arquivos || []);
+      if (!nota || lista.length === 0) return;
+      const id = nota.id;
+      const botao = document.getElementById('mc-anexar');
+      botao.disabled = true;
+      let falhou = false;
+      for (let i = 0; i < lista.length; i++) {
+        const arquivo = lista[i];
+        if (arquivo.size > MC_LIMITE_ARQUIVO) {
+          alert(`${arquivo.name}: ${tr('mc_arquivo_grande')}`);
+          continue;
+        }
+        mcDefinirStatus(`${tr('mc_enviando')} ${i + 1}/${lista.length}`);
+        try {
+          const caminho = `minhas-coisas/${id}/${Date.now()}-${i}-${mcNomeSeguro(arquivo.name)}`;
+          const { error } = await Auth.sb.storage.from(MC_BUCKET).upload(caminho, arquivo, { contentType: arquivo.type || undefined });
+          if (error) throw error;
+          const novos = [...(nota.arquivos || []), { path: caminho, nome: arquivo.name, tamanho: arquivo.size, tipo: arquivo.type || '' }];
+          const { error: erroNota } = await Auth.sb.from('minhas_coisas').update({ arquivos: novos, atualizado_em: new Date().toISOString() }).eq('id', id);
+          if (erroNota) {
+            await Auth.sb.storage.from(MC_BUCKET).remove([caminho]);
+            throw erroNota;
+          }
+          nota.arquivos = novos;
+          if (id === mcAbertaId) mcRenderizarAnexos();
+        } catch (err) {
+          console.error('Erro ao anexar arquivo:', err);
+          falhou = true;
+        }
+      }
+      botao.disabled = false;
+      document.getElementById('mc-arquivo-input').value = '';
+      mcDefinirStatus(falhou ? tr('mc_erro_anexo') : tr('mc_salvo'));
+      mcRenderizarLista();
+    }
+
+    async function mcRenderizarAnexos() {
+      const nota = mcNotaAberta();
+      const caixa = document.getElementById('mc-anexos-lista');
+      if (!nota) return;
+      const arquivos = nota.arquivos || [];
+      if (arquivos.length === 0) {
+        caixa.innerHTML = `<p class="mc-lista-vazia">${escapeHtml(tr('mc_sem_arquivos'))}</p>`;
+        return;
+      }
+      let urls = {};
+      try {
+        const { data } = await Auth.sb.storage.from(MC_BUCKET).createSignedUrls(arquivos.map((a) => a.path), 3600);
+        (data || []).forEach((u) => { if (u.signedUrl) urls[u.path] = u.signedUrl; });
+      } catch (err) {
+        console.error('Erro ao gerar links dos arquivos:', err);
+      }
+      if (nota.id !== mcAbertaId) return;
+      caixa.innerHTML = arquivos.map((a, i) => {
+        const url = urls[a.path];
+        const imagem = url && /^image\//.test(a.tipo || '');
+        const miniatura = imagem
+          ? `<img class="mc-anexo-mini" src="${url}" alt="" loading="lazy">`
+          : `<span class="mc-anexo-icone" aria-hidden="true">📄</span>`;
+        const nome = escapeHtml(a.nome);
+        return `<div class="mc-anexo">
+          ${url ? `<a href="${url}" target="_blank" rel="noopener noreferrer" class="mc-anexo-link">${miniatura}</a>` : miniatura}
+          <div class="mc-anexo-info">
+            <span class="mc-anexo-nome" title="${nome}">${nome}</span>
+            <span class="mc-anexo-tam">${mcFormatarTamanho(a.tamanho)}</span>
+          </div>
+          ${url ? `<a class="cal-btn" href="${url}" target="_blank" rel="noopener noreferrer">${escapeHtml(tr('mc_abrir'))}</a>` : ''}
+          <button type="button" class="cal-btn cal-btn-icon mc-anexo-remover" data-i="${i}" aria-label="${escapeHtml(tr('mc_remover'))}" title="${escapeHtml(tr('mc_remover'))}">✕</button>
+        </div>`;
+      }).join('');
+    }
+
+    async function mcRemoverAnexo(indice) {
+      const nota = mcNotaAberta();
+      if (!nota) return;
+      const arquivo = (nota.arquivos || [])[indice];
+      if (!arquivo) return;
+      if (!(await confirmarAcao(tr('mc_remover_conf')))) return;
+      try {
+        const novos = nota.arquivos.filter((_, i) => i !== indice);
+        const { error } = await Auth.sb.from('minhas_coisas').update({ arquivos: novos, atualizado_em: new Date().toISOString() }).eq('id', nota.id);
+        if (error) throw error;
+        nota.arquivos = novos;
+        await Auth.sb.storage.from(MC_BUCKET).remove([arquivo.path]);
+        mcRenderizarAnexos();
+        mcRenderizarLista();
+      } catch (err) {
+        console.error('Erro ao remover arquivo:', err);
+        alert(tr('erro_excluir_generico'));
+      }
+    }
+
+    function minhasCoisasLigarEventos() {
+      document.getElementById('btn-minhas-coisas').addEventListener('click', mcAbrirPagina);
+      document.getElementById('mc-voltar').addEventListener('click', mcFecharPagina);
+      document.getElementById('mc-nova').addEventListener('click', mcNovaNota);
+      document.getElementById('mc-excluir').addEventListener('click', mcExcluirNota);
+      document.getElementById('mc-busca').addEventListener('input', mcRenderizarLista);
+      document.getElementById('mc-titulo').addEventListener('input', mcAgendarSalvar);
+      document.getElementById('mc-lista').addEventListener('click', (e) => {
+        const item = e.target.closest('.mc-item');
+        if (item) mcAbrirNota(item.dataset.id);
+      });
+
+      const conteudo = document.getElementById('mc-conteudo');
+      conteudo.dataset.placeholder = tr('mc_corpo_ph');
+      conteudo.addEventListener('input', mcAgendarSalvar);
+      // colar: arquivo/imagem vira anexo; texto entra sem a formatação do lugar de onde veio
+      conteudo.addEventListener('paste', (e) => {
+        const dados = e.clipboardData;
+        if (!dados) return;
+        if (dados.files && dados.files.length) {
+          e.preventDefault();
+          mcAnexar(dados.files);
+          return;
+        }
+        e.preventDefault();
+        document.execCommand('insertText', false, dados.getData('text/plain'));
+      });
+
+      document.querySelectorAll('#mc-barra button').forEach((btn) => {
+        btn.title = tr(btn.dataset.mcTitulo);
+        btn.addEventListener('mousedown', (e) => e.preventDefault()); // não perde a seleção do texto
+        btn.addEventListener('click', () => {
+          conteudo.focus();
+          document.execCommand(btn.dataset.mcCmd, false, btn.dataset.mcValor || null);
+          mcAgendarSalvar();
+        });
+      });
+
+      document.getElementById('mc-anexar').addEventListener('click', () => document.getElementById('mc-arquivo-input').click());
+      document.getElementById('mc-arquivo-input').addEventListener('change', (e) => mcAnexar(e.target.files));
+      document.getElementById('mc-anexos-lista').addEventListener('click', (e) => {
+        const remover = e.target.closest('.mc-anexo-remover');
+        if (remover) mcRemoverAnexo(Number(remover.dataset.i));
+      });
+
+      // arrastar arquivos pra cima da nota
+      const editor = document.getElementById('mc-editor');
+      ['dragenter', 'dragover'].forEach((nome) => editor.addEventListener(nome, (e) => {
+        if (e.dataTransfer && Array.from(e.dataTransfer.types || []).includes('Files')) {
+          e.preventDefault();
+          editor.classList.add('arrastando');
+        }
+      }));
+      editor.addEventListener('dragleave', (e) => {
+        if (!editor.contains(e.relatedTarget)) editor.classList.remove('arrastando');
+      });
+      editor.addEventListener('drop', (e) => {
+        editor.classList.remove('arrastando');
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+          e.preventDefault();
+          mcAnexar(e.dataTransfer.files);
+        }
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') mcSalvarAgora();
+      });
     }
 
     // Substitui o confirm() nativo do navegador por um modal no estilo do

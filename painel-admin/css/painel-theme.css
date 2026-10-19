@@ -12909,3 +12909,17 @@
 .painel-body .ugc-orc-bloco-bf {
   margin-top: 12px;
 }
+
+/* Pacotes: observação (só texto) */
+.painel-body .ugc-precos-topo-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.painel-body .ugc-pacote-obs-previa {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--texto-suave);
+  overflow-wrap: anywhere;
+}

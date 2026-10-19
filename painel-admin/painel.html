@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261042a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261043a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1473,7 +1473,10 @@
                   <h3 class="card-titulo" data-i18n="ugc_pacotes">📦 Pacotes</h3>
                   <p class="cal-todas-resumo" data-i18n="ugc_pacotes_desc">Propostas que você guardou com nome e valor. Monte na calculadora e clique em "Criar pacote", ou crie um do zero.</p>
                 </div>
-                <button id="btn-ugc-novo-pacote-branco" class="cal-btn cal-btn-primario" type="button" data-i18n="ugc_novo_pacote_branco">+ Novo pacote ou serviço</button>
+                <div class="ugc-precos-topo-botoes">
+                  <button id="btn-ugc-nova-observacao" class="cal-btn" type="button" data-i18n="ugc_nova_observacao">+ Nova observação</button>
+                  <button id="btn-ugc-novo-pacote-branco" class="cal-btn cal-btn-primario" type="button" data-i18n="ugc_novo_pacote_branco">+ Novo pacote ou serviço</button>
+                </div>
               </div>
               <p class="dash-aviso" id="ugc-pacotes-aviso" hidden data-i18n="ugc_pacote_sem_tabela">Falta rodar o arquivo ugc-pacotes-tabela.sql no Supabase pra criar pacotes.</p>
               <p class="dash-aviso" id="ugc-orc-aviso" hidden data-i18n="ugc_orc_aviso_sem_sql">Falta rodar o arquivo ugc-orcamento-pagina.sql no Supabase pra ter a página de orçamento.</p>
@@ -3878,11 +3881,11 @@
         </div>
 
         <div class="cal-form-campo">
-          <label for="ugc-pacote-nome" data-i18n="ugc_nome_pacote">Nome do pacote</label>
+          <label for="ugc-pacote-nome" id="ugc-pacote-nome-rotulo" data-i18n="ugc_nome_pacote">Nome do pacote</label>
           <input type="text" id="ugc-pacote-nome" maxlength="80" autocomplete="off">
         </div>
 
-        <div class="cal-form-campo">
+        <div class="cal-form-campo" id="ugc-pacote-bloco-itens">
           <label data-i18n="ugc_itens_do_pacote">O que está no pacote</label>
           <div id="ugc-pacote-itens" class="ugc-pacote-itens-modal"></div>
           <datalist id="ugc-pacote-servicos-lista"></datalist>
@@ -3894,12 +3897,12 @@
           </div>
         </div>
 
-        <div class="cal-form-campo">
+        <div class="cal-form-campo" id="ugc-pacote-bloco-valor">
           <label for="ugc-pacote-valor" data-i18n="ugc_valor_do_pacote">Valor do pacote (R$)</label>
           <input type="number" step="0.01" min="0" id="ugc-pacote-valor">
         </div>
 
-        <div class="cal-form-campo">
+        <div class="cal-form-campo" id="ugc-pacote-bloco-obs">
           <label for="ugc-pacote-observacoes" data-i18n="ugc_observacoes">Observações</label>
           <textarea id="ugc-pacote-observacoes"></textarea>
         </div>
@@ -3907,7 +3910,7 @@
         <div class="cal-form-campo" id="ugc-pacote-publico-campo" hidden>
           <label class="ugc-orc-ativa"><input type="checkbox" id="ugc-pacote-publicado"><span data-i18n="ugc_pacote_mostrar_pagina">Mostrar na página de orçamento</span></label>
           <label class="ugc-orc-ativa" id="ugc-pacote-bf-campo" hidden><input type="checkbox" id="ugc-pacote-publicado-bf"><span data-i18n="ugc_pacote_mostrar_bf">Mostrar na página Black Friday</span></label>
-          <label for="ugc-pacote-descricao" data-i18n="ugc_pacote_descricao_pagina">Descrição na página (opcional)</label>
+          <label for="ugc-pacote-descricao" id="ugc-pacote-descricao-rotulo" data-i18n="ugc_pacote_descricao_pagina">Descrição na página (opcional)</label>
           <textarea id="ugc-pacote-descricao"></textarea>
           <div id="ugc-pacote-v2-campos" class="ugc-pacote-v2-campos">
             <label for="ugc-pacote-tipo" data-i18n="ugc_pacote_tipo">Aparece como</label>
@@ -3915,6 +3918,7 @@
               <option value="pacote" data-i18n="ugc_pacote_tipo_pacote">Pacote (card)</option>
               <option value="avulso" data-i18n="ugc_pacote_tipo_avulso">Serviço avulso (seção discreta)</option>
               <option value="adicional" data-i18n="ugc_pacote_tipo_adicional">Serviço adicional (cards lado a lado, sem botão)</option>
+              <option value="observacao" data-i18n="ugc_pacote_tipo_observacao">Observação (só texto, sem valor)</option>
             </select>
             <label for="ugc-pacote-destaque" data-i18n="ugc_pacote_destaque">Etiqueta de destaque (opcional)</label>
             <input type="text" id="ugc-pacote-destaque" maxlength="30" placeholder="Mais escolhido">
@@ -5145,6 +5149,14 @@
         ugc_nova_proposta: '+ Nova proposta',
         ugc_pacotes: '📦 Pacotes',
         ugc_pacotes_desc: 'Propostas que você guardou com nome e valor. Monte na calculadora e clique em "Criar pacote", ou crie um do zero.',
+        ugc_nova_observacao: '+ Nova observação',
+        ugc_pacote_tipo_observacao: 'Observação (só texto, sem valor)',
+        ugc_obs_modal_novo: 'Nova observação',
+        ugc_obs_modal_editar: 'Editar observação',
+        ugc_obs_nome: 'Título da observação',
+        ugc_obs_texto: 'Texto da observação (aparece na página)',
+        ugc_obs_preencha_texto: 'Escreva o texto da observação.',
+        ugc_obs_etiqueta: '📝 Observação',
         ugc_novo_pacote_branco: '+ Novo pacote ou serviço',
         ugc_nenhum_pacote: 'Nenhum pacote ainda. Monte uma proposta na calculadora e clique em "Criar pacote".',
         ugc_criar_pacote: '📦 Criar pacote',
@@ -6397,6 +6409,14 @@
         ugc_nova_proposta: '+ New proposal',
         ugc_pacotes: '📦 Packages',
         ugc_pacotes_desc: 'Proposals you saved with a name and price. Build one in the calculator and click "Create package", or start from scratch.',
+        ugc_nova_observacao: '+ New note',
+        ugc_pacote_tipo_observacao: 'Note (text only, no price)',
+        ugc_obs_modal_novo: 'New note',
+        ugc_obs_modal_editar: 'Edit note',
+        ugc_obs_nome: 'Note title',
+        ugc_obs_texto: 'Note text (shown on the page)',
+        ugc_obs_preencha_texto: 'Write the note text.',
+        ugc_obs_etiqueta: '📝 Note',
         ugc_novo_pacote_branco: '+ New package or service',
         ugc_nenhum_pacote: 'No packages yet. Build a proposal in the calculator and click "Create package".',
         ugc_criar_pacote: '📦 Create package',
@@ -7726,6 +7746,8 @@
       document.getElementById('ugc-pacote-copiar').addEventListener('click', copiarResumoPacote);
       document.getElementById('ugc-pacote-add-item').addEventListener('click', adicionarItemPacote);
       document.getElementById('btn-ugc-novo-pacote-branco').addEventListener('click', criarPacoteEmBranco);
+      document.getElementById('btn-ugc-nova-observacao').addEventListener('click', criarObservacao);
+      document.getElementById('ugc-pacote-tipo').addEventListener('change', aplicarModoObservacaoPacote);
       document.getElementById('ugc-pacote-desconto').addEventListener('input', () => atualizarResumoPacote(true));
       const contItensPacote = document.getElementById('ugc-pacote-itens');
       contItensPacote.addEventListener('input', (e) => {
@@ -20235,17 +20257,20 @@
       const desconto = Number(pacote.desconto_pct) > 0
         ? `<span class="ugc-pacote-desconto">${escapeHtml(formatarPercentual(pacote.desconto_pct))} ${escapeHtml(tr('ugc_pacote_de_desconto'))}</span>`
         : '<span></span>';
+      const ehObservacao = pacote.tipo === 'observacao';
       const card = document.createElement('button');
       card.type = 'button';
-      card.className = 'ugc-pacote-card';
+      card.className = 'ugc-pacote-card' + (ehObservacao ? ' ugc-pacote-card-obs' : '');
       card.innerHTML = `
         ${pacote.publicado || pacote.publicado_bf
           ? `<span class="ugc-pacote-badges">${pacote.publicado ? `<span class="ugc-pacote-na-pagina">🔗 ${escapeHtml(tr('ugc_pacote_na_pagina'))}</span>` : ''}${pacote.publicado_bf ? `<span class="ugc-pacote-na-pagina ugc-pacote-na-bf">🖤 ${escapeHtml(tr('ugc_pacote_na_bf'))}</span>` : ''}</span>`
           : ''}
         <span class="ugc-pacote-nome">${escapeHtml(pacote.nome)}</span>
         ${pacote.marca ? `<span class="ugc-pacote-marca">${escapeHtml(pacote.marca)}</span>` : ''}
-        <ul class="ugc-pacote-itens">${linhas}${mais}</ul>
-        <span class="ugc-pacote-rodape">${desconto}<span class="ugc-pacote-valor">${formatarMoeda(pacote.valor_final)}</span></span>`;
+        ${ehObservacao
+          ? `<span class="ugc-pacote-marca">${escapeHtml(tr('ugc_obs_etiqueta'))}</span><span class="ugc-pacote-obs-previa">${escapeHtml(String(pacote.descricao_publica || '').slice(0, 140))}</span>`
+          : `<ul class="ugc-pacote-itens">${linhas}${mais}</ul>
+        <span class="ugc-pacote-rodape">${desconto}<span class="ugc-pacote-valor">${formatarMoeda(pacote.valor_final)}</span></span>`}`;
       card.addEventListener('click', () => abrirModalPacote(pacote, null));
       return card;
     }
@@ -20309,6 +20334,29 @@
       if (campo) campo.focus();
     }
 
+    // Observação: um bloco só de texto na página de orçamento (sem serviços e sem valor), parecido com o serviço avulso.
+    function criarObservacao() {
+      if (!ugcPacotesOk) {
+        alert(tr('ugc_pacote_sem_tabela'));
+        return;
+      }
+      abrirModalPacote(null, { marca: '', itens: [], desconto_pct: 0, urgencia_pct: 0, valor_bruto: 0, valor_final: 0, tipo: 'observacao' });
+      document.getElementById('ugc-pacote-nome').focus();
+    }
+
+    // Quando o tipo é "Observação", o modal esconde serviços, valor e desconto: ficam só o título e o texto.
+    function aplicarModoObservacaoPacote() {
+      const obs = document.getElementById('ugc-pacote-tipo').value === 'observacao';
+      ['ugc-pacote-bloco-itens', 'ugc-pacote-bloco-valor', 'ugc-pacote-bloco-obs', 'ugc-pacote-copiar'].forEach((id) => {
+        document.getElementById(id).hidden = obs;
+      });
+      document.getElementById('ugc-pacote-nome-rotulo').textContent = tr(obs ? 'ugc_obs_nome' : 'ugc_nome_pacote');
+      document.getElementById('ugc-pacote-descricao-rotulo').textContent = tr(obs ? 'ugc_obs_texto' : 'ugc_pacote_descricao_pagina');
+      document.getElementById('ugc-pacote-modal-titulo').textContent = obs
+        ? tr(ugcPacoteAbertoId ? 'ugc_obs_modal_editar' : 'ugc_obs_modal_novo')
+        : tr(ugcPacoteAbertoId ? 'ugc_editar_pacote' : 'ugc_novo_pacote');
+    }
+
     // pacote: um já salvo; rascunho: o que veio da calculadora (pacote novo).
     function abrirModalPacote(pacote, rascunho) {
       ugcPacoteAbertoId = pacote ? pacote.id : null;
@@ -20324,7 +20372,7 @@
       document.getElementById('ugc-pacote-publicado-bf').checked = pacote ? !!pacote.publicado_bf : false;
       document.getElementById('ugc-pacote-descricao').value = pacote ? pacote.descricao_publica || '' : '';
       document.getElementById('ugc-pacote-v2-campos').hidden = !ugcOrcV2();
-      document.getElementById('ugc-pacote-tipo').value = pacote && pacote.tipo ? pacote.tipo : 'pacote';
+      document.getElementById('ugc-pacote-tipo').value = pacote && pacote.tipo ? pacote.tipo : (base && base.tipo) || 'pacote';
       document.getElementById('ugc-pacote-destaque').value = pacote ? pacote.destaque || '' : '';
 
       ugcPacoteItensEdit = itensDoPacote(base).map((i) => ({
@@ -20342,6 +20390,7 @@
       atualizarResumoPacote(false);
 
       document.getElementById('ugc-modal-pacote-excluir').hidden = !pacote;
+      aplicarModoObservacaoPacote();
       document.getElementById('ugc-modal-pacote-overlay').hidden = false;
       ugcPacoteSnapshotInicial = capturarEstadoPacote();
     }
@@ -20453,19 +20502,24 @@
         alert(tr('ugc_pacote_preencha_nome'));
         return;
       }
-      const itens = itensValidosPacote();
-      if (itens.length === 0) {
+      const ehObservacao = document.getElementById('ugc-pacote-tipo').value === 'observacao';
+      if (ehObservacao && !document.getElementById('ugc-pacote-descricao').value.trim()) {
+        alert(tr('ugc_obs_preencha_texto'));
+        return;
+      }
+      const itens = ehObservacao ? [] : itensValidosPacote();
+      if (!ehObservacao && itens.length === 0) {
         alert(tr('ugc_pacote_sem_itens'));
         return;
       }
       const valorTexto = document.getElementById('ugc-pacote-valor').value;
-      const valorFinal = valorTexto === '' ? finalSugeridoPacote() : Number(valorTexto);
+      const valorFinal = ehObservacao ? 0 : valorTexto === '' ? finalSugeridoPacote() : Number(valorTexto);
       const linha = {
         nome,
         itens,
-        desconto_pct: descontoPctPacote(),
-        valor_bruto: brutoPacoteEditado(),
-        observacoes: document.getElementById('ugc-pacote-observacoes').value.trim() || null,
+        desconto_pct: ehObservacao ? 0 : descontoPctPacote(),
+        valor_bruto: ehObservacao ? 0 : brutoPacoteEditado(),
+        observacoes: ehObservacao ? null : document.getElementById('ugc-pacote-observacoes').value.trim() || null,
         valor_final: valorFinal,
         ...(ugcOrcOk
           ? {

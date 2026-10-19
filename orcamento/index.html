@@ -444,6 +444,23 @@
 
   .adicional-valor { margin-top: auto; padding-top: 8px; font-family: var(--font-display); font-size: 24px; font-weight: 800; color: var(--navy); }
 
+  /* ---------- observações (só texto, sem valor) ---------- */
+  .observacoes { margin-top: 56px; }
+
+  .observacoes-lista { margin-top: 14px; display: flex; flex-direction: column; gap: 14px; }
+
+  .observacao {
+    padding: 22px 28px;
+    background: var(--white);
+    border: 1px solid var(--blue-pale-2);
+    border-radius: 18px;
+    box-shadow: 0 14px 34px rgba(125, 183, 206, .18);
+  }
+
+  .observacao-nome { font-family: var(--font-display); font-size: 21px; font-weight: 700; color: var(--navy); }
+
+  .observacao-texto { margin-top: 8px; font-size: 14.5px; line-height: 1.7; color: var(--ink-65); white-space: pre-line; }
+
   /* ---------- contato ---------- */
   .contato { padding: 96px 0 56px; }
 
@@ -668,7 +685,22 @@
   function desenhar(dados, marcaCliente) {
     raiz.innerHTML = '';
     const pacotesTodos = Array.isArray(dados.pacotes) ? dados.pacotes : [];
-    const pacotes = pacotesTodos.filter((p) => p.tipo !== 'avulso' && p.tipo !== 'adicional');
+    const pacotes = pacotesTodos.filter((p) => p.tipo !== 'avulso' && p.tipo !== 'adicional' && p.tipo !== 'observacao');
+    const observacoes = pacotesTodos.filter((p) => p.tipo === 'observacao');
+    // bloco de observações: título + texto livre, sem valor e sem botão
+    const blocoObservacoes = () => {
+      const bloco = el('div', 'observacoes');
+      bloco.appendChild(el('span', 'eyebrow', 'Observações'));
+      const lista = el('div', 'observacoes-lista');
+      observacoes.forEach((p) => {
+        const cartao = el('div', 'observacao');
+        cartao.appendChild(el('div', 'observacao-nome', p.nome));
+        if (p.descricao) cartao.appendChild(el('p', 'observacao-texto', p.descricao));
+        lista.appendChild(cartao);
+      });
+      bloco.appendChild(lista);
+      return bloco;
+    };
     const avulsos = pacotesTodos.filter((p) => p.tipo === 'avulso');
     const adicionais = pacotesTodos.filter((p) => p.tipo === 'adicional');
     const aMarca = marcaCliente ? ` (${marcaCliente})` : '';
@@ -800,11 +832,13 @@
         bloco.appendChild(grade2);
         wrap.appendChild(bloco);
       }
+      if (observacoes.length) wrap.appendChild(blocoObservacoes());
       secao.appendChild(wrap);
       raiz.appendChild(secao);
-    } else if (dados.condicoes) {
+    } else if (dados.condicoes || observacoes.length) {
       const wrap = el('div', 'wrap');
-      wrap.appendChild(el('p', 'condicoes', dados.condicoes));
+      if (dados.condicoes) wrap.appendChild(el('p', 'condicoes', dados.condicoes));
+      if (observacoes.length) wrap.appendChild(blocoObservacoes());
       raiz.appendChild(wrap);
     }
 

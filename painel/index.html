@@ -22859,6 +22859,7 @@
         textoSalvo: abordagem ? abordagem.conteudo || '' : '',
         tituloAuto: !abordagem,
         semModelo: false,
+        livre: !!(abordagem && abordagem.valores && abordagem.valores._livre), // "Modelo livre": texto escrito do zero
       };
       document.getElementById('abd-titulo').value = abordagem ? abordagem.titulo : '';
       document.getElementById('abd-marca').textContent = abdNomeMarcaAtual();
@@ -22866,7 +22867,7 @@
       document.getElementById('abd-modal-overlay').hidden = false;
       await modelos;
       const disponiveis = abdModelosDoCanal(abdEstado.canal);
-      if (abordagem && !abdModelos.some((m) => m.id === abdEstado.modeloId)) abdEstado.semModelo = true;
+      if (abordagem && !abdEstado.livre && !abdModelos.some((m) => m.id === abdEstado.modeloId)) abdEstado.semModelo = true;
       else if (!abordagem && disponiveis.length === 1) {
         abdEstado.modeloId = disponiveis[0].id;
         abdSugerirTitulo();
@@ -22887,6 +22888,7 @@
         versao: abdEstado.versao,
         valores: abdEstado.valores,
         textoSalvo: abdEstado.textoSalvo,
+        livre: abdEstado.livre,
       });
     }
 
@@ -22916,12 +22918,13 @@
       if (modeloAtual && !opcoes.includes(modeloAtual)) opcoes.push(modeloAtual);
       const sel = document.getElementById('abd-modelo');
       sel.innerHTML =
-        '<option value="">Escolha um modelo</option>' + opcoes.map((m) => `<option value="${escapeHtml(m.id)}">${escapeHtml(m.nome)}</option>`).join('');
-      sel.value = modeloAtual ? modeloAtual.id : '';
+        '<option value="">Escolha um modelo</option><option value="__livre__">✍️ Modelo livre (escrever do zero)</option>' + opcoes.map((m) => `<option value="${escapeHtml(m.id)}">${escapeHtml(m.nome)}</option>`).join('');
+      sel.value = estado.livre ? '__livre__' : modeloAtual ? modeloAtual.id : '';
 
       const aviso = document.getElementById('abd-aviso');
       let msg = '';
-      if (abdModelosErro && compat.length <= 1) msg = abdModelosErro + ' Crie os modelos em Ferramentas, numa pasta chamada Abordagem.';
+      if (estado.livre) msg = '';
+      else if (abdModelosErro && compat.length <= 1) msg = abdModelosErro + ' Crie os modelos em Ferramentas, numa pasta chamada Abordagem.';
       else if (estado.semModelo) msg = 'O modelo usado nessa abordagem não existe mais. Você pode editar o texto salvo abaixo.';
       else if (compat.length === 0) msg = 'Nenhum modelo de abordagem serve pra esse canal. Crie em Ferramentas > Abordagem (Prompt com campos).';
       aviso.textContent = msg;
@@ -22937,8 +22940,9 @@
       const cont = document.getElementById('abd-campos');
       const modelo = abdModeloAtual();
       if (!modelo) {
-        if (abdEstado.semModelo) {
-          cont.innerHTML = '<div class="abd-campo"><label for="abd-texto-livre">Texto salvo</label><textarea id="abd-texto-livre" rows="8" style="height:220px"></textarea></div>';
+        if (abdEstado.semModelo || abdEstado.livre) {
+          const livre = abdEstado.livre;
+          cont.innerHTML = `<div class="abd-campo"><label for="abd-texto-livre">${livre ? 'Seu texto' : 'Texto salvo'}</label>${livre ? '<span class="abd-leadin">Escreva do jeito que quiser. Use [colchetes] onde quiser lembrar de preencher depois.</span>' : ''}<textarea id="abd-texto-livre" rows="8" style="height:${livre ? 300 : 220}px"${livre ? ' placeholder="Oi, [nome da marca]! Tudo bem?..."' : ''}></textarea></div>`;
           const ta = document.getElementById('abd-texto-livre');
           ta.value = abdEstado.textoSalvo;
           ta.addEventListener('input', () => {
@@ -23037,7 +23041,8 @@
       } else {
         corpo = abdTextoFinal();
         faltando = [...new Set((corpo.match(/\{\{\s*[^}]+\}\}/g) || []).map((t) => t.replace(/[{}\s]/g, '')))].map((n) => ferrNomeVariavel(n));
-        rotulo = modelo ? modelo.nome : 'Abordagem';
+        rotulo = modelo ? modelo.nome : abdEstado.livre ? 'Modelo livre' : 'Abordagem';
+        if (abdEstado.livre) faltando = [...new Set(corpo.match(/\[[^\]\n]+\]/g) || [])];
       }
       const vazio = !corpo.trim();
       corpoEl.classList.toggle('vazio', vazio);
@@ -23065,14 +23070,22 @@
       if (modelo && !abdModelosDoCanal(canal).includes(modelo)) abdEstado.modeloId = null;
       if (!abdEstado.modeloId) {
         const compat = abdModelosDoCanal(canal);
-        if (compat.length === 1 && !abdEstado.id) abdEstado.modeloId = compat[0].id;
+        if (compat.length === 1 && !abdEstado.id && !abdEstado.livre) abdEstado.modeloId = compat[0].id;
       }
       abdSugerirTitulo();
       abdRenderizarModal();
     }
 
     function abdEscolherModelo(id) {
-      abdEstado.modeloId = id || null;
+      if (id === '__livre__') {
+        // começa do texto que já estava na tela (se tinha), pra ela só editar
+        if (!abdEstado.livre && !abdEstado.textoSalvo.trim() && (abdModeloAtual() || abdEstado.semModelo)) abdEstado.textoSalvo = abdTextoFinal();
+        abdEstado.livre = true;
+        abdEstado.modeloId = null;
+      } else {
+        abdEstado.livre = false;
+        abdEstado.modeloId = id || null;
+      }
       abdEstado.versao = 0;
       abdEstado.semModelo = false;
       abdSugerirTitulo();
@@ -23083,6 +23096,10 @@
     function abdSugerirTitulo() {
       if (!abdEstado.tituloAuto) return;
       const modelo = abdModeloAtual();
+      if (abdEstado.livre) {
+        document.getElementById('abd-titulo').value = `${ABD_CANAIS[abdEstado.canal].rotulo} · Modelo livre`;
+        return;
+      }
       document.getElementById('abd-titulo').value = modelo ? (modelo.nome === ABD_CANAIS[abdEstado.canal].rotulo ? modelo.nome : `${ABD_CANAIS[abdEstado.canal].rotulo} · ${modelo.nome}`) : '';
     }
 
@@ -23102,7 +23119,7 @@
     async function abdSalvar() {
       const estado = abdEstado;
       const modelo = abdModeloAtual();
-      if (!modelo && !estado.semModelo) {
+      if (!modelo && !estado.semModelo && !estado.livre) {
         alert('Escolha um modelo de abordagem.');
         return;
       }
@@ -23119,7 +23136,8 @@
       } else if (/\{\{\s*[^}]+\}\}/.test(texto) && !(await confirmarAcao('Ainda tem campo sem preencher (aparece entre {{ }}). Salvar assim mesmo?', { perigo: false, textoConfirmar: 'Salvar assim' }))) return;
 
       // O modelo E-mail não é uma linha de Ferramentas: guardo só a marca dele nos valores.
-      const valoresSalvos = { ...estado.valores };
+      const valoresSalvos = estado.livre ? { _livre: true } : { ...estado.valores };
+      if (!estado.livre) delete valoresSalvos._livre;
       delete valoresSalvos._modelo;
       delete valoresSalvos._versao;
       delete valoresSalvos._assunto;
@@ -23134,7 +23152,7 @@
         canal: estado.canal,
         titulo,
         modelo_id: modelo && !embutido ? modelo.id : embutido ? null : estado.modeloId,
-        modelo_nome: modelo ? modelo.nome : null,
+        modelo_nome: modelo ? modelo.nome : estado.livre ? 'Modelo livre' : null,
         valores: valoresSalvos,
         conteudo: texto,
         updated_at: new Date().toISOString(),

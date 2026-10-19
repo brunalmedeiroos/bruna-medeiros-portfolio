@@ -282,10 +282,10 @@ section{ position:relative; }
   /* aumenta um pouco a foto a partir do canto de cima esquerdo: empurra ela pra direita, longe da frase, sem cortar a cabeça */
   transform: translateY(-5.5%) scale(1.14); transform-origin: left top;
 }
-/* sombra marrom suave só do lado esquerdo, pra frase branca ler bem por cima da foto */
+/* sombra marrom só atrás da frase (lado esquerdo); termina antes do corpo dela, pra não escurecer a foto */
 .hero-scrim{
   position:absolute; inset:0; z-index:2; pointer-events:none;
-  background: linear-gradient(90deg, rgba(75,57,53,0.88) 0%, rgba(75,57,53,0.76) 36%, rgba(75,57,53,0.52) 58%, rgba(75,57,53,0.26) 74%, rgba(75,57,53,0.09) 88%, rgba(75,57,53,0) 98%);
+  background: linear-gradient(90deg, rgba(75,57,53,0.88) 0%, rgba(75,57,53,0.8) 26%, rgba(75,57,53,0.5) 40%, rgba(75,57,53,0.2) 50%, rgba(75,57,53,0.05) 58%, rgba(75,57,53,0) 64%);
 }
 .hero-cover-inner{
   position:absolute; inset:0; z-index:3; display:flex; align-items:center;

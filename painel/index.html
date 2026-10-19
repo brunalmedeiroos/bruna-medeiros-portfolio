@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261045a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261045b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1713,7 +1713,7 @@
 
             <div class="mc-layout">
               <aside class="mc-lateral">
-                <input type="search" id="mc-busca" class="mc-busca" data-i18n-placeholder="mc_busca" placeholder="Buscar nas notas">
+                <input type="search" id="mc-busca" class="mc-busca rt-busca" data-i18n-placeholder="mc_busca" placeholder="Buscar nas notas">
                 <div id="mc-lista" class="mc-lista"></div>
               </aside>
 
@@ -2444,6 +2444,9 @@
         </div>
 
         <div id="pl-agendar-roteiros-bloco">
+        <div class="cal-form-campo">
+          <input type="search" id="pl-agendar-busca" class="rt-busca" autocomplete="off" data-i18n-placeholder="pl_agendar_busca" placeholder="Buscar pelo nome...">
+        </div>
         <div class="cal-form-campo">
           <label data-i18n="pl_cron_etapa">Etapa</label>
           <div id="pl-agendar-pastas" class="pl-agendar-pastas"></div>
@@ -5118,6 +5121,8 @@
         pl_cron_nenhum_conteudo: 'Nenhum conteúdo sem data no Banco de ideias & Roteiros. Use "Ideia sem roteiro" pra criar um direto aqui.',
         pl_cron_escolha_etapa: 'Escolha uma etapa pra ver os conteúdos dela.',
         pl_cron_etapa_vazia: 'Nenhum conteúdo nessa etapa.',
+        pl_agendar_busca: 'Buscar pelo nome...',
+        pl_cron_busca_vazia: 'Nenhum conteúdo com esse nome.',
         pl_cron_pasta: 'Pasta',
         pl_cron_escolha_pasta: 'Escolha uma pasta pra ver os roteiros prontos dela.',
         pl_excluir_achado_confirmar: 'Excluir este achado?',
@@ -6393,6 +6398,8 @@
         pl_cron_nenhum_conteudo: 'No undated content in the Idea bank & Scripts. Use "Idea without a script" to create one right here.',
         pl_cron_escolha_etapa: 'Pick a stage to see its content.',
         pl_cron_etapa_vazia: 'No content in this stage.',
+        pl_agendar_busca: 'Search by name...',
+        pl_cron_busca_vazia: 'No content with that name.',
         pl_cron_pasta: 'Folder',
         pl_cron_escolha_pasta: 'Pick a folder to see its ready scripts.',
         pl_excluir_achado_confirmar: 'Delete this find?',
@@ -7389,6 +7396,10 @@
       document.getElementById('pl-modal-agendar-fechar').addEventListener('click', fecharModalAgendar);
       document.getElementById('pl-modal-agendar-confirmar').addEventListener('click', confirmarAgendamento);
       document.getElementById('pl-agendar-modo-livre').addEventListener('click', () => agendarMostrarLivre(true));
+      document.getElementById('pl-agendar-busca').addEventListener('input', (e) => {
+        agendarBusca = e.target.value;
+        agendarRenderizar();
+      });
       document.getElementById('pl-agendar-livre-voltar').addEventListener('click', () => agendarMostrarLivre(false));
       document.getElementById('pl-agendar-livre-salvar').addEventListener('click', salvarIdeiaSemRoteiro);
       document.getElementById('pl-modal-agendar-overlay').addEventListener('click', (e) => {
@@ -15509,6 +15520,7 @@
     // Editando, Editado, Pronto para postar, Publicado) e depois um dos conteúdos daquela etapa que ainda não têm data.
     const AGENDAR_ETAPAS = ['Não iniciado', 'Roteiro em construção', 'Roteiro pronto', 'Editando', 'Editado', 'Pronto para postar', 'Publicado'];
     let agendarEtapa = null;
+    let agendarBusca = '';
     let agendarSelecionadoId = null;
 
     // Todos os conteúdos do Banco de ideias & Roteiros que ainda não estão em nenhum dia do cronograma.
@@ -15519,6 +15531,8 @@
     async function abrirModalAgendar(diaISO) {
       dataAgendarAtual = diaISO;
       agendarSelecionadoId = null;
+      agendarBusca = '';
+      document.getElementById('pl-agendar-busca').value = '';
       document.getElementById('pl-modal-agendar-data').textContent =
         new Date(diaISO + 'T00:00:00').toLocaleDateString(localeAtual(), { day: '2-digit', month: 'long' });
 
@@ -15539,6 +15553,11 @@
       const confirmar = document.getElementById('pl-modal-agendar-confirmar');
       areaEtapas.innerHTML = '';
       areaConteudos.innerHTML = '';
+      // com texto na busca, procura em todas as etapas (pelo nome e pela pasta); sem texto, mostra só a etapa escolhida
+      const termo = normalizarTexto(agendarBusca.trim());
+      const achados = termo ? disponiveis.filter((c) => normalizarTexto(c.titulo + ' ' + (btCaminhoConteudo(c) || '')).includes(termo)) : disponiveis;
+      const lista = termo ? achados : disponiveis.filter((c) => plEstagio(c) === agendarEtapa);
+      if (agendarSelecionadoId && !lista.some((c) => c.id === agendarSelecionadoId)) agendarSelecionadoId = null;
       confirmar.disabled = !agendarSelecionadoId;
 
       if (disponiveis.length === 0) {
@@ -15549,26 +15568,29 @@
       document.getElementById('pl-agendar-roteiros-campo').hidden = false;
 
       AGENDAR_ETAPAS.forEach((etapa) => {
-        const qtd = disponiveis.filter((c) => plEstagio(c) === etapa).length;
+        const qtd = achados.filter((c) => plEstagio(c) === etapa).length;
         const botao = document.createElement('button');
         botao.type = 'button';
-        botao.className = 'pl-agendar-pasta' + (etapa === agendarEtapa ? ' selecionado' : '') + (qtd === 0 ? ' pl-agendar-etapa-vazia' : '');
+        botao.className = 'pl-agendar-pasta' + (!termo && etapa === agendarEtapa ? ' selecionado' : '') + (qtd === 0 ? ' pl-agendar-etapa-vazia' : '');
         botao.innerHTML = '<span>' + escapeHtml(traduzirStatusIdeia(etapa)) + '</span><span class="pl-agendar-pasta-qtd">' + qtd + '</span>';
         botao.addEventListener('click', () => {
+          // clicar numa etapa volta pra navegação por etapas (limpa a busca)
           agendarEtapa = etapa;
           agendarSelecionadoId = null;
+          agendarBusca = '';
+          document.getElementById('pl-agendar-busca').value = '';
           agendarRenderizar();
         });
         areaEtapas.appendChild(botao);
       });
 
-      if (!agendarEtapa) {
+      if (!termo && !agendarEtapa) {
         areaConteudos.innerHTML = '<p class="texto-vazio">' + escapeHtml(tr('pl_cron_escolha_etapa')) + '</p>';
         return;
       }
-      const daEtapa = btOrdenar(disponiveis.filter((c) => plEstagio(c) === agendarEtapa));
+      const daEtapa = btOrdenar(lista);
       if (daEtapa.length === 0) {
-        areaConteudos.innerHTML = '<p class="texto-vazio">' + escapeHtml(tr('pl_cron_etapa_vazia')) + '</p>';
+        areaConteudos.innerHTML = '<p class="texto-vazio">' + escapeHtml(tr(termo ? 'pl_cron_busca_vazia' : 'pl_cron_etapa_vazia')) + '</p>';
         return;
       }
       daEtapa.forEach((c) => {
@@ -15578,6 +15600,7 @@
         const caminho = btCaminhoConteudo(c);
         botao.innerHTML =
           '<span class="pl-agendar-roteiro-titulo">' + escapeHtml(c.titulo) + '</span>' +
+          (termo ? '<span class="pl-agendar-roteiro-formato">' + escapeHtml(traduzirStatusIdeia(plEstagio(c))) + '</span>' : '') +
           (c.formato && c.formato.trim() ? '<span class="pl-agendar-roteiro-formato">' + escapeHtml(c.formato) + '</span>' : '') +
           (caminho ? '<span class="pl-agendar-roteiro-pasta">' + escapeHtml(caminho) + '</span>' : '') +
           '<span class="pl-agendar-roteiro-check" aria-hidden="true">✓</span>';

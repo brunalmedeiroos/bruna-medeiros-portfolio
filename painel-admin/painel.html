@@ -1367,6 +1367,7 @@
                   <div class="cal-filtro-grupo">
                     <button class="cal-filtro-btn ativo" data-filtro-situacao="todas" type="button">Todas</button>
                     <button class="cal-filtro-btn" data-filtro-situacao="Lead" type="button">Lead</button>
+                    <button class="cal-filtro-btn" data-filtro-situacao="com-abordagem" type="button">Com abordagem</button>
                     <button class="cal-filtro-btn" data-filtro-situacao="Conversando" type="button">Conversando</button>
                     <button class="cal-filtro-btn" data-filtro-situacao="Cliente" type="button">Cliente</button>
                     <button class="cal-filtro-btn" data-filtro-situacao="Parada" type="button">Parada</button>
@@ -18242,7 +18243,9 @@
 
     function obterContatosFiltrados() {
       let filtrados = ugcBaseContatosCache;
-      if (filtroSituacaoContato !== 'todas') filtrados = filtrados.filter((c) => c.situacao === filtroSituacaoContato);
+      // "Com abordagem" não é uma situação: mostra as marcas que já têm alguma abordagem criada
+      if (filtroSituacaoContato === 'com-abordagem') filtrados = filtrados.filter((c) => abdDoContato(c.id).length > 0);
+      else if (filtroSituacaoContato !== 'todas') filtrados = filtrados.filter((c) => c.situacao === filtroSituacaoContato);
       if (filtroNichoContato === '__sem__') filtrados = filtrados.filter((c) => !c.nicho);
       else if (filtroNichoContato) filtrados = filtrados.filter((c) => c.nicho === filtroNichoContato);
       if (buscaContatos.trim()) {

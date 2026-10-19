@@ -3172,6 +3172,11 @@
   color: var(--grafite);
 }
 
+.painel-body .ugc-status-futura {
+  background: rgba(var(--grafite-rgb), 0.12);
+  color: var(--texto-suave);
+}
+
 .painel-body .ugc-status-pago {
   background: var(--sucesso);
   color: var(--branco);

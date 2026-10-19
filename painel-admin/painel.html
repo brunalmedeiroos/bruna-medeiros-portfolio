@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261040b">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261041a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1372,6 +1372,7 @@
                     <button class="cal-filtro-btn" data-filtro-situacao="Conversando" type="button">Conversando</button>
                     <button class="cal-filtro-btn" data-filtro-situacao="Cliente" type="button">Cliente</button>
                     <button class="cal-filtro-btn" data-filtro-situacao="Parada" type="button">Parada</button>
+                    <button class="cal-filtro-btn" data-filtro-situacao="Marca futura" type="button">Marcas futuras</button>
                   </div>
                   <div class="ugc-toolbar-acoes-direita">
                     <input type="text" id="contatos-busca" class="ugc-roteiros-busca" placeholder="Buscar por nome, @ ou e-mail">
@@ -3142,6 +3143,7 @@
               <option value="Conversando">Conversando</option>
               <option value="Cliente">Cliente</option>
               <option value="Parada">Parada</option>
+              <option value="Marca futura">Marca futura (disse que não agora)</option>
             </select>
           </div>
           <div class="cal-form-campo">
@@ -18201,7 +18203,7 @@
     }
 
     // ---- Base de contatos (dentro de Prospecção) ----
-    const SITUACOES_CONTATO = ['Lead', 'Abordagem enviada', 'Conversando', 'Cliente', 'Parada'];
+    const SITUACOES_CONTATO = ['Lead', 'Abordagem enviada', 'Conversando', 'Cliente', 'Parada', 'Marca futura'];
     // Os 4 primeiros são os mesmos nichos do portfólio público; o resto são
     // segmentos comuns de marcas que contratam UGC.
     const NICHOS_CONTATO = [
@@ -18227,6 +18229,7 @@
     function classeSituacaoContato(situacao) {
       if (situacao === 'Cliente') return 'ugc-status-pago';
       if (situacao === 'Parada') return 'ugc-status-cancelado';
+      if (situacao === 'Marca futura') return 'ugc-status-futura';
       if (situacao === 'Abordagem enviada') return 'ugc-status-enviada';
       if (situacao === 'Conversando') return 'ugc-status-producao';
       return 'ugc-status-inicial'; // Lead
@@ -18246,9 +18249,13 @@
 
     function obterContatosFiltrados() {
       let filtrados = ugcBaseContatosCache;
+      // "Marca futura" fica numa aba só dela: some de Todas e de Com abordagem (a não ser que ela esteja buscando pelo nome)
+      const buscando = buscaContatos.trim() !== '';
+      const semFuturas = (lista) => (buscando ? lista : lista.filter((c) => c.situacao !== 'Marca futura'));
       // "Com abordagem" não é uma situação: mostra as marcas que já têm alguma abordagem criada
-      if (filtroSituacaoContato === 'com-abordagem') filtrados = filtrados.filter((c) => abdDoContato(c.id).length > 0);
-      else if (filtroSituacaoContato !== 'todas') filtrados = filtrados.filter((c) => c.situacao === filtroSituacaoContato);
+      if (filtroSituacaoContato === 'com-abordagem') filtrados = semFuturas(filtrados).filter((c) => abdDoContato(c.id).length > 0);
+      else if (filtroSituacaoContato === 'todas') filtrados = semFuturas(filtrados);
+      else filtrados = filtrados.filter((c) => c.situacao === filtroSituacaoContato);
       if (filtroNichoContato === '__sem__') filtrados = filtrados.filter((c) => !c.nicho);
       else if (filtroNichoContato) filtrados = filtrados.filter((c) => c.nicho === filtroNichoContato);
       if (buscaContatos.trim()) {
@@ -18403,6 +18410,8 @@
 
       document.getElementById('contatos-resumo').textContent =
         ordenados.length === 0 ? 'Nenhum contato ainda.' : `${ordenados.length} ${ordenados.length === 1 ? 'contato' : 'contatos'}.`;
+      const futurasOcultas = filtroSituacaoContato === 'todas' && !buscaContatos.trim() ? ugcBaseContatosCache.filter((c) => c.situacao === 'Marca futura').length : 0;
+      if (futurasOcultas) document.getElementById('contatos-resumo').textContent += ` ${futurasOcultas} em Marcas futuras.`;
 
       const selecionados = ugcBaseContatosCache.filter((c) => c.selecionada).length;
       const comEmailNoFiltro = ordenados.filter((c) => c.email).length;
@@ -18891,7 +18900,7 @@
       const select = document.getElementById('email-destino-select');
       const valorAnterior = select.value;
       const selecionadas = ugcBaseContatosCache.filter((c) => c.selecionada && c.email && c.email.trim()).length;
-      const comEmail = ugcBaseContatosCache.filter((c) => c.email && c.email.trim()).length;
+      const comEmail = ugcBaseContatosCache.filter((c) => c.email && c.email.trim() && c.situacao !== 'Marca futura').length;
       const situacoes = [...new Set(ugcBaseContatosCache.map((c) => c.situacao).filter(Boolean))];
 
       const opcoes = [
@@ -18928,7 +18937,7 @@
       let base = ugcBaseContatosCache;
       if (exigirEmail) base = base.filter((c) => c.email && c.email.trim());
       if (valor === 'selecionadas') return base.filter((c) => c.selecionada);
-      if (valor === 'todas') return base;
+      if (valor === 'todas') return base.filter((c) => c.situacao !== 'Marca futura');
       if (valor.startsWith('situacao:')) return base.filter((c) => c.situacao === valor.slice('situacao:'.length));
       return [];
     }

@@ -10,7 +10,7 @@ create table if not exists public.ugc_base_contatos (
   instagram text,
   email text,
   telefone text,
-  situacao text not null default 'Lead' check (situacao in ('Lead', 'Abordagem enviada', 'Conversando', 'Cliente', 'Parada')),
+  situacao text not null default 'Lead' check (situacao in ('Lead', 'Abordagem enviada', 'Conversando', 'Cliente', 'Parada', 'Marca futura')),
   observacao text,
   ultimo_contato date
 );

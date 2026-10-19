@@ -12933,3 +12933,13 @@
   display: flex;
   margin-bottom: 14px;
 }
+
+/* Agendar: etapas sem conteúdo ficam apagadas, e cada conteúdo mostra a pasta dele */
+.painel-body .pl-agendar-etapa-vazia {
+  opacity: 0.5;
+}
+
+.painel-body .pl-agendar-roteiro-pasta {
+  font-size: 11px;
+  color: var(--texto-suave);
+}

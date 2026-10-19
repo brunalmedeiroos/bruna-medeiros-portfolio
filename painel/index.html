@@ -18252,8 +18252,9 @@
       // "Marca futura" fica numa aba só dela: some de Todas e de Com abordagem (a não ser que ela esteja buscando pelo nome)
       const buscando = buscaContatos.trim() !== '';
       const semFuturas = (lista) => (buscando ? lista : lista.filter((c) => c.situacao !== 'Marca futura'));
-      // "Com abordagem" não é uma situação: mostra as marcas que já têm abordagem criada e ainda não foi enviada (ao marcar "Abordagem enviada", sai daqui)
-      if (filtroSituacaoContato === 'com-abordagem') filtrados = semFuturas(filtrados).filter((c) => abdDoContato(c.id).length > 0 && c.situacao !== 'Abordagem enviada');
+      // "Com abordagem" não é uma situação: mostra o que falta enviar, ou seja, marcas com abordagem criada que ainda estão em Lead.
+      // Ao mudar a situação (Abordagem enviada, Conversando, Cliente, Parada ou Marca futura), a marca sai daqui.
+      if (filtroSituacaoContato === 'com-abordagem') filtrados = filtrados.filter((c) => abdDoContato(c.id).length > 0 && c.situacao === 'Lead');
       else if (filtroSituacaoContato === 'todas') filtrados = semFuturas(filtrados);
       else filtrados = filtrados.filter((c) => c.situacao === filtroSituacaoContato);
       if (filtroNichoContato === '__sem__') filtrados = filtrados.filter((c) => !c.nicho);

@@ -12893,3 +12893,19 @@
     flex-wrap: wrap;
   }
 }
+
+/* Pacotes: etiquetas lado a lado (página padrão e Black Friday) */
+.painel-body .ugc-pacote-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-self: flex-start;
+}
+
+.painel-body .ugc-pacote-na-bf {
+  background: #1c1c1c;
+}
+
+.painel-body .ugc-orc-bloco-bf {
+  margin-top: 12px;
+}

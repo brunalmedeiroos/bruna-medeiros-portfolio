@@ -1391,6 +1391,7 @@
                 <label for="contatos-filtro-nicho">Nicho</label>
                 <select id="contatos-filtro-nicho"></select>
                 <button type="button" id="btn-contatos-nicho-lote" class="cal-btn">Definir nicho em lote</button>
+                <button type="button" id="btn-contatos-excluir-lote" class="cal-btn">Excluir em lote</button>
               </div>
 
               <div class="contatos-nicho-lote" id="contatos-nicho-lote" hidden>
@@ -1400,6 +1401,14 @@
                 <select id="contatos-nicho-lote-select"></select>
                 <button type="button" id="btn-nicho-lote-aplicar" class="cal-btn cal-btn-primario">Aplicar nas marcadas</button>
                 <button type="button" id="btn-nicho-lote-sair" class="cal-btn">Sair do modo em lote</button>
+              </div>
+
+              <div class="contatos-nicho-lote" id="contatos-excluir-lote" hidden>
+                <span id="contatos-excluir-lote-resumo">0 marcas marcadas</span>
+                <button type="button" id="btn-excluir-lote-todas" class="cal-btn">Marcar todas as exibidas (0)</button>
+                <button type="button" id="btn-excluir-lote-limpar" class="cal-btn">Limpar</button>
+                <button type="button" id="btn-excluir-lote-aplicar" class="cal-btn pl-btn-excluir">Excluir marcadas</button>
+                <button type="button" id="btn-excluir-lote-sair" class="cal-btn">Sair do modo em lote</button>
               </div>
 
               <div class="cal-todas-tabela">
@@ -4053,6 +4062,8 @@
     let filtroNichoContato = ''; // '' = todos, '__sem__' = sem nicho, ou o nome do nicho
     let modoNichoLote = false;
     const nichoLoteIds = new Set();
+    let modoExcluirLote = false;
+    const excluirLoteIds = new Set();
     let emailProspAbaCarregada = false;
     let emailEnviosCache = [];
     let emailOptoutCache = [];
@@ -7538,6 +7549,17 @@
         renderizarBaseContatos();
       });
       document.getElementById('btn-nicho-lote-aplicar').addEventListener('click', aplicarNichoLote);
+      document.getElementById('btn-contatos-excluir-lote').addEventListener('click', () => alternarModoExcluirLote(true));
+      document.getElementById('btn-excluir-lote-sair').addEventListener('click', () => alternarModoExcluirLote(false));
+      document.getElementById('btn-excluir-lote-todas').addEventListener('click', () => {
+        obterContatosFiltrados().forEach((c) => excluirLoteIds.add(c.id));
+        renderizarBaseContatos();
+      });
+      document.getElementById('btn-excluir-lote-limpar').addEventListener('click', () => {
+        excluirLoteIds.clear();
+        renderizarBaseContatos();
+      });
+      document.getElementById('btn-excluir-lote-aplicar').addEventListener('click', excluirContatosLote);
       document.getElementById('contato-modal-fechar').addEventListener('click', fecharModalContato);
       document.getElementById('contato-modal-excluir').addEventListener('click', excluirModalContato);
       document.getElementById('contato-modal-salvar').addEventListener('click', salvarModalContato);
@@ -18269,7 +18291,58 @@
     function alternarModoNichoLote(ligado) {
       modoNichoLote = ligado;
       nichoLoteIds.clear();
+      if (ligado) {
+        modoExcluirLote = false;
+        excluirLoteIds.clear();
+      }
       renderizarBaseContatos();
+    }
+
+    function atualizarBarraExcluirLote(exibidas) {
+      const marcadas = excluirLoteIds.size;
+      document.getElementById('contatos-excluir-lote-resumo').textContent = `${marcadas} ${marcadas === 1 ? 'marca marcada' : 'marcas marcadas'}`;
+      document.getElementById('btn-excluir-lote-todas').textContent = `Marcar todas as exibidas (${exibidas.length})`;
+      document.getElementById('btn-excluir-lote-aplicar').disabled = marcadas === 0;
+    }
+
+    function alternarModoExcluirLote(ligado) {
+      modoExcluirLote = ligado;
+      excluirLoteIds.clear();
+      if (ligado) {
+        modoNichoLote = false;
+        nichoLoteIds.clear();
+      }
+      renderizarBaseContatos();
+    }
+
+    // Exclui de uma vez todos os contatos marcados na tabela (modo "Excluir em lote").
+    async function excluirContatosLote() {
+      const ids = [...excluirLoteIds];
+      if (ids.length === 0) {
+        alert('Marque pelo menos uma marca na tabela.');
+        return;
+      }
+      const texto = `Excluir ${ids.length} ${ids.length === 1 ? 'contato' : 'contatos'} de uma vez? Isso não dá pra desfazer.`;
+      if (!(await confirmarAcao(texto, { textoConfirmar: 'Excluir' }))) return;
+
+      const btn = document.getElementById('btn-excluir-lote-aplicar');
+      btn.disabled = true;
+      try {
+        const TAMANHO_LOTE = 100;
+        for (let i = 0; i < ids.length; i += TAMANHO_LOTE) {
+          const { error } = await Auth.sb.from('ugc_base_contatos').delete().in('id', ids.slice(i, i + TAMANHO_LOTE));
+          if (error) throw error;
+        }
+        modoExcluirLote = false;
+        excluirLoteIds.clear();
+        await carregarUGC();
+      } catch (err) {
+        console.error('Erro ao excluir contatos em lote:', err);
+        alert(tr('erro_excluir_generico'));
+        await carregarUGC();
+      } finally {
+        btn.disabled = false;
+      }
     }
 
     async function aplicarNichoLote() {
@@ -18313,11 +18386,14 @@
 
     function renderizarBaseContatos() {
       popularSelectsNicho();
-      document.getElementById('contatos-selecao-barra').hidden = modoNichoLote;
+      document.getElementById('contatos-selecao-barra').hidden = modoNichoLote || modoExcluirLote;
       document.getElementById('contatos-nicho-lote').hidden = !modoNichoLote;
-      document.getElementById('btn-contatos-nicho-lote').hidden = modoNichoLote;
+      document.getElementById('contatos-excluir-lote').hidden = !modoExcluirLote;
+      document.getElementById('btn-contatos-nicho-lote').hidden = modoNichoLote || modoExcluirLote;
+      document.getElementById('btn-contatos-excluir-lote').hidden = modoNichoLote || modoExcluirLote;
       const ordenados = obterContatosFiltrados();
       atualizarBarraNichoLote(ordenados);
+      atualizarBarraExcluirLote(ordenados);
 
       document.getElementById('contatos-resumo').textContent =
         ordenados.length === 0 ? 'Nenhum contato ainda.' : `${ordenados.length} ${ordenados.length === 1 ? 'contato' : 'contatos'}.`;
@@ -18395,7 +18471,9 @@
       linha.innerHTML = `
         <span class="contatos-checkbox-cel">
           ${
-            modoNichoLote
+            modoExcluirLote
+              ? `<input type="checkbox" class="contatos-checkbox" ${excluirLoteIds.has(contato.id) ? 'checked' : ''} title="Marcar pra excluir">`
+              : modoNichoLote
               ? `<input type="checkbox" class="contatos-checkbox" ${nichoLoteIds.has(contato.id) ? 'checked' : ''} title="Marcar pra definir nicho">`
               : `<input type="checkbox" class="contatos-checkbox" ${contato.selecionada ? 'checked' : ''} ${contato.email ? '' : 'disabled'} title="${contato.email ? 'Selecionar pra e-mail' : 'Sem e-mail cadastrado'}">`
           }
@@ -18413,7 +18491,11 @@
       const checkbox = linha.querySelector('.contatos-checkbox');
       checkbox.addEventListener('click', (e) => e.stopPropagation());
       checkbox.addEventListener('change', (e) => {
-        if (modoNichoLote) {
+        if (modoExcluirLote) {
+          if (e.target.checked) excluirLoteIds.add(contato.id);
+          else excluirLoteIds.delete(contato.id);
+          atualizarBarraExcluirLote(obterContatosFiltrados());
+        } else if (modoNichoLote) {
           if (e.target.checked) nichoLoteIds.add(contato.id);
           else nichoLoteIds.delete(contato.id);
           atualizarBarraNichoLote(obterContatosFiltrados());

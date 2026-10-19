@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261039a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261040a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1368,6 +1368,7 @@
                     <button class="cal-filtro-btn ativo" data-filtro-situacao="todas" type="button">Todas</button>
                     <button class="cal-filtro-btn" data-filtro-situacao="Lead" type="button">Lead</button>
                     <button class="cal-filtro-btn" data-filtro-situacao="com-abordagem" type="button">Com abordagem</button>
+                    <button class="cal-filtro-btn" data-filtro-situacao="Abordagem enviada" type="button">Abordagem enviada</button>
                     <button class="cal-filtro-btn" data-filtro-situacao="Conversando" type="button">Conversando</button>
                     <button class="cal-filtro-btn" data-filtro-situacao="Cliente" type="button">Cliente</button>
                     <button class="cal-filtro-btn" data-filtro-situacao="Parada" type="button">Parada</button>
@@ -3137,6 +3138,7 @@
             <label for="contato-situacao">Situação</label>
             <select id="contato-situacao">
               <option value="Lead">Lead</option>
+              <option value="Abordagem enviada">Abordagem enviada</option>
               <option value="Conversando">Conversando</option>
               <option value="Cliente">Cliente</option>
               <option value="Parada">Parada</option>
@@ -18199,7 +18201,7 @@
     }
 
     // ---- Base de contatos (dentro de Prospecção) ----
-    const SITUACOES_CONTATO = ['Lead', 'Conversando', 'Cliente', 'Parada'];
+    const SITUACOES_CONTATO = ['Lead', 'Abordagem enviada', 'Conversando', 'Cliente', 'Parada'];
     // Os 4 primeiros são os mesmos nichos do portfólio público; o resto são
     // segmentos comuns de marcas que contratam UGC.
     const NICHOS_CONTATO = [
@@ -18225,6 +18227,7 @@
     function classeSituacaoContato(situacao) {
       if (situacao === 'Cliente') return 'ugc-status-pago';
       if (situacao === 'Parada') return 'ugc-status-cancelado';
+      if (situacao === 'Abordagem enviada') return 'ugc-status-enviada';
       if (situacao === 'Conversando') return 'ugc-status-producao';
       return 'ugc-status-inicial'; // Lead
     }

@@ -3167,6 +3167,11 @@
   color: var(--branco);
 }
 
+.painel-body .ugc-status-enviada {
+  background: rgba(var(--coral-rgb), 0.22);
+  color: var(--grafite);
+}
+
 .painel-body .ugc-status-pago {
   background: var(--sucesso);
   color: var(--branco);

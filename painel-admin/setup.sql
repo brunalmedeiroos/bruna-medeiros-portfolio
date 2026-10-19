@@ -557,7 +557,7 @@ create table if not exists public.ugc_base_contatos (
   instagram text,
   email text,
   telefone text,
-  situacao text not null default 'Lead' check (situacao in ('Lead', 'Conversando', 'Cliente', 'Parada')),
+  situacao text not null default 'Lead' check (situacao in ('Lead', 'Abordagem enviada', 'Conversando', 'Cliente', 'Parada')),
   observacao text,
   ultimo_contato date,
   -- Segmento da marca (Tech, Beleza, Casa e Decoração...), escolhido no painel.

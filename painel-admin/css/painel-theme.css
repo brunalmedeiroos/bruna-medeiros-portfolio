@@ -3827,7 +3827,13 @@
 
 .painel-body .cal-todas-cabecalho.contatos-linha,
 .painel-body .cal-todas-linha.contatos-linha {
-  grid-template-columns: 28px 140px 130px 1fr 150px 110px 150px 110px 34px;
+  grid-template-columns: 28px 140px 130px 1fr 150px 165px 150px 110px 34px;
+}
+
+/* "Abordagem enviada" é comprida: se ainda assim faltar espaço, quebra em duas linhas em vez de passar por cima do nicho */
+.painel-body .contatos-linha .ugc-status-pill {
+  max-width: 100%;
+  white-space: normal;
 }
 
 .painel-body .contatos-checkbox-cel {

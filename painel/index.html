@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261043a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261044b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -2439,6 +2439,11 @@
           </button>
         </div>
 
+        <div class="pl-agendar-modos" id="pl-agendar-modos">
+          <button type="button" id="pl-agendar-modo-livre" class="cal-btn" data-i18n="pl_agendar_sem_roteiro">✍️ Ideia sem roteiro</button>
+        </div>
+
+        <div id="pl-agendar-roteiros-bloco">
         <div class="cal-form-campo">
           <label data-i18n="pl_cron_pasta">Pasta</label>
           <div id="pl-agendar-pastas" class="pl-agendar-pastas"></div>
@@ -2451,6 +2456,30 @@
 
         <div class="cal-form-acoes">
           <button type="button" id="pl-modal-agendar-confirmar" class="cal-btn cal-btn-primario" data-i18n="pl_agendar" disabled>Agendar</button>
+        </div>
+        </div>
+
+        <div id="pl-agendar-livre" hidden>
+          <div class="cal-form-campo">
+            <label for="pl-agendar-livre-ideia" data-i18n="pl_livre_ideia">Ideia</label>
+            <textarea id="pl-agendar-livre-ideia" rows="3" maxlength="300" data-i18n-placeholder="pl_livre_ideia_ph" placeholder="Escreva a ideia do conteúdo..."></textarea>
+          </div>
+          <div class="cal-form-campo">
+            <label for="pl-agendar-livre-pasta" data-i18n="pl_livre_pasta">Pasta (onde ela fica no Banco de ideias)</label>
+            <select id="pl-agendar-livre-pasta"></select>
+          </div>
+          <div class="cal-form-campo">
+            <label for="pl-agendar-livre-breve" data-i18n="pl_livre_breve">Roteiro breve (opcional)</label>
+            <textarea id="pl-agendar-livre-breve" rows="3"></textarea>
+          </div>
+          <div class="cal-form-campo">
+            <label for="pl-agendar-livre-completo" data-i18n="pl_livre_completo">Roteiro completo (opcional)</label>
+            <textarea id="pl-agendar-livre-completo" rows="6"></textarea>
+          </div>
+          <div class="cal-form-acoes">
+            <button type="button" id="pl-agendar-livre-voltar" class="cal-btn" data-i18n="pl_livre_voltar">Voltar</button>
+            <button type="button" id="pl-agendar-livre-salvar" class="cal-btn cal-btn-primario" data-i18n="pl_livre_agendar">Agendar ideia</button>
+          </div>
         </div>
       </div>
     </div>
@@ -5036,6 +5065,16 @@
         pl_oque_viu_placeholder: 'Escreva com mais detalhes, contexto, onde viu, link...',
         pl_agendar_ideia: 'Agendar ideia',
         pl_ideia_do_banco: 'Ideia do Banco de Ideias',
+        pl_agendar_sem_roteiro: '✍️ Ideia sem roteiro',
+        pl_livre_ideia: 'Ideia',
+        pl_livre_ideia_ph: 'Escreva a ideia do conteúdo...',
+        pl_livre_pasta: 'Pasta (onde ela fica no Banco de ideias)',
+        pl_livre_breve: 'Roteiro breve (opcional)',
+        pl_livre_completo: 'Roteiro completo (opcional)',
+        pl_livre_voltar: 'Voltar',
+        pl_livre_agendar: 'Agendar ideia',
+        pl_livre_preencha: 'Escreva a ideia primeiro.',
+        pl_livre_sem_pasta: 'Crie uma pasta no Banco de ideias & Roteiros primeiro, pra a ideia ter onde ficar.',
         pl_agendar: 'Agendar',
         pl_pilar_do_dia: 'Pilar do dia',
         escolher: 'Escolher',
@@ -6296,6 +6335,16 @@
         pl_oque_viu_placeholder: 'Write more details, context, where you saw it, link...',
         pl_agendar_ideia: 'Schedule idea',
         pl_ideia_do_banco: 'Idea from the Idea Bank',
+        pl_agendar_sem_roteiro: '✍️ Idea without a script',
+        pl_livre_ideia: 'Idea',
+        pl_livre_ideia_ph: 'Write the content idea...',
+        pl_livre_pasta: 'Folder (where it lives in the Idea bank)',
+        pl_livre_breve: 'Brief script (optional)',
+        pl_livre_completo: 'Full script (optional)',
+        pl_livre_voltar: 'Back',
+        pl_livre_agendar: 'Schedule idea',
+        pl_livre_preencha: 'Write the idea first.',
+        pl_livre_sem_pasta: 'Create a folder in the Idea bank & Scripts first, so the idea has a place to live.',
         pl_agendar: 'Schedule',
         pl_pilar_do_dia: "Day's pillar",
         escolher: 'Choose',
@@ -7329,6 +7378,9 @@
       document.querySelectorAll('.pl-cron-visao').forEach((b) => b.addEventListener('click', () => trocarVisaoCronograma(b.dataset.visao)));
       document.getElementById('pl-modal-agendar-fechar').addEventListener('click', fecharModalAgendar);
       document.getElementById('pl-modal-agendar-confirmar').addEventListener('click', confirmarAgendamento);
+      document.getElementById('pl-agendar-modo-livre').addEventListener('click', () => agendarMostrarLivre(true));
+      document.getElementById('pl-agendar-livre-voltar').addEventListener('click', () => agendarMostrarLivre(false));
+      document.getElementById('pl-agendar-livre-salvar').addEventListener('click', salvarIdeiaSemRoteiro);
       document.getElementById('pl-modal-agendar-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'pl-modal-agendar-overlay') fecharModalAgendar();
       });
@@ -15462,6 +15514,7 @@
       if (!btCarregado) await btCarregar();
       const pastas = agendarPastasComRoteiros();
       if (pastas.length === 1) agendarPastaId = pastas[0].id;
+      agendarMostrarLivre(false);
       agendarRenderizar();
       document.getElementById('pl-modal-agendar-overlay').hidden = false;
     }
@@ -15532,6 +15585,68 @@
         });
         areaRoteiros.appendChild(botao);
       });
+    }
+
+    // ---- "Ideia sem roteiro": escreve a ideia (e, se quiser, o roteiro breve e o completo) direto no dia do cronograma ----
+    let agendarLivrePastaUltima = null;
+
+    function agendarMostrarLivre(ligado) {
+      document.getElementById('pl-agendar-modos').hidden = ligado;
+      document.getElementById('pl-agendar-roteiros-bloco').hidden = ligado;
+      document.getElementById('pl-agendar-livre').hidden = !ligado;
+      if (!ligado) return;
+      document.getElementById('pl-agendar-livre-ideia').value = '';
+      document.getElementById('pl-agendar-livre-breve').value = '';
+      document.getElementById('pl-agendar-livre-completo').value = '';
+      const select = document.getElementById('pl-agendar-livre-pasta');
+      const opcoes = btOrdenar(btGrupos).flatMap((g) => btListaArvore(g.chave).map((p) => ({ id: p.id, rotulo: btInfoGrupo(g.chave).rotulo + ' › ' + p.rotulo })));
+      select.innerHTML = opcoes.map((o) => '<option value="' + escapeHtml(o.id) + '">' + escapeHtml(o.rotulo) + '</option>').join('');
+      // começa na última pasta usada; na primeira vez, na pasta "Avulso" (se existir)
+      const avulso = opcoes.find((o) => /avulso\s*$/i.test(o.rotulo));
+      const preferida = opcoes.find((o) => o.id === agendarLivrePastaUltima) || avulso || opcoes[0];
+      if (preferida) select.value = preferida.id;
+      document.getElementById('pl-agendar-livre-ideia').focus();
+    }
+
+    async function salvarIdeiaSemRoteiro() {
+      const ideia = document.getElementById('pl-agendar-livre-ideia').value.replace(/\s*\n\s*/g, ' ').trim();
+      if (!ideia) {
+        alert(tr('pl_livre_preencha'));
+        return;
+      }
+      const pastaId = document.getElementById('pl-agendar-livre-pasta').value;
+      if (!pastaId) {
+        alert(tr('pl_livre_sem_pasta'));
+        return;
+      }
+      if (!btAgendaOk || !dataAgendarAtual) {
+        alert(tr('pl_erro_agendar'));
+        return;
+      }
+      const breve = document.getElementById('pl-agendar-livre-breve').value.trim() || null;
+      const completoTexto = document.getElementById('pl-agendar-livre-completo').value.trim();
+      // o roteiro completo é um editor com formatação: cada linha vira uma linha dele
+      const completo = completoTexto ? completoTexto.split('\n').map((l) => '<div>' + (l.trim() ? escapeHtml(l) : '<br>') + '</div>').join('') : null;
+      const botao = document.getElementById('pl-agendar-livre-salvar');
+      botao.disabled = true;
+      try {
+        const proxima = btConteudosDaPasta(pastaId).reduce((max, c) => Math.max(max, c.ordem || 0), -1) + 1;
+        const { data, error } = await Auth.sb
+          .from('ideias_conteudos')
+          .insert({ pasta_id: pastaId, titulo: ideia, ordem: proxima, roteiro_breve: breve, roteiro_completo: completo, data_agendada: dataAgendarAtual })
+          .select();
+        if (error) throw error;
+        btConteudos.push(data[0]);
+        agendarLivrePastaUltima = pastaId;
+        fecharModalAgendar();
+        btRenderizar();
+        btAtualizarCronograma();
+      } catch (err) {
+        console.error('Erro ao criar a ideia sem roteiro:', err);
+        alert(tr('pl_erro_agendar'));
+      } finally {
+        botao.disabled = false;
+      }
     }
 
     function fecharModalAgendar() {

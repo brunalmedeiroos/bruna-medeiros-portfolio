@@ -12923,3 +12923,13 @@
   color: var(--texto-suave);
   overflow-wrap: anywhere;
 }
+
+/* Cronograma: botão "Ideia sem roteiro" no modal de agendar */
+.painel-body .pl-agendar-modos[hidden] {
+  display: none;
+}
+
+.painel-body .pl-agendar-modos {
+  display: flex;
+  margin-bottom: 14px;
+}

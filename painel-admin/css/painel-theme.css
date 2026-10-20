@@ -12999,3 +12999,33 @@
 .painel-body .pl-cron-dia-passado:not(.pl-cron-dia-fora) .pl-cron-etapa-publicado {
   opacity: 1;
 }
+
+/* Visão geral: nome dos roteiros que ainda estão sem público definido */
+.painel-body .pl-eq-nota-lista {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  font-size: 12px;
+  color: var(--grafite);
+}
+
+.painel-body .pl-eq-nota-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--grafite);
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: rgba(var(--grafite-rgb), 0.35);
+  cursor: pointer;
+}
+
+.painel-body .pl-eq-nota-link:hover {
+  text-decoration-color: var(--grafite);
+}
+
+.painel-body .pl-eq-nota-mais {
+  list-style: none;
+  margin-left: -18px;
+  color: var(--texto-suave);
+}

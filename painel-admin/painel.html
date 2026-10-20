@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261048b">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261049a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -15345,11 +15345,15 @@
       let comunidade = 0;
       let ambos = 0;
       let semPublico = 0;
+      const semPublicoItens = []; // os roteiros sem público, pra mostrar o nome de cada um
       conteudos.forEach((c) => {
         if (c.publico === 'marcas') marcas++;
         else if (c.publico === 'comunidade') comunidade++;
         else if (c.publico === 'ambos') ambos++;
-        else semPublico++;
+        else {
+          semPublico++;
+          semPublicoItens.push(c);
+        }
       });
       const definidos = marcas + comunidade + ambos;
       const areaPublico = document.getElementById('pl-eq-publico');
@@ -15375,7 +15379,17 @@
         <div class="pl-eq-empilhada">${segmento(marcas, 'pl-eq-c-marcas', rMarcas)}${segmento(ambos, 'pl-eq-c-ambos', rAmbos)}${segmento(comunidade, 'pl-eq-c-comunidade', rComunidade)}</div>
         <div class="pl-eq-legenda">${legenda(marcas, 'pl-eq-c-marcas', rMarcas)}${legenda(ambos, 'pl-eq-c-ambos', rAmbos)}${legenda(comunidade, 'pl-eq-c-comunidade', rComunidade)}</div>
         <p class="pl-eq-resumo">${escapeHtml(veredito)}</p>
-        ${semPublico ? `<p class="pl-eq-nota">${escapeHtml(plural(semPublico, 'pl_eq_sem_publico_um', 'pl_eq_sem_publico_varios'))}</p>` : ''}`;
+        ${semPublico
+          ? `<p class="pl-eq-nota">${escapeHtml(plural(semPublico, 'pl_eq_sem_publico_um', 'pl_eq_sem_publico_varios'))}:</p>
+        <ul class="pl-eq-nota-lista">${semPublicoItens.slice(0, 10).map((c) => `<li><button type="button" class="pl-eq-nota-link" data-id="${escapeHtml(c.id)}">${escapeHtml(c.titulo)}</button></li>`).join('')}${semPublicoItens.length > 10 ? `<li class="pl-eq-nota-mais">+ ${semPublicoItens.length - 10}</li>` : ''}</ul>`
+          : ''}`;
+      // clicar no nome abre o roteiro, pra definir o público
+      areaPublico.querySelectorAll('.pl-eq-nota-link').forEach((botao) => {
+        botao.addEventListener('click', () => {
+          const c = btConteudos.find((x) => x.id === botao.dataset.id);
+          if (c) btAbrirConteudo(c);
+        });
+      });
     }
 
     // Contadores por etapa do roteiro, do Banco de ideias & Roteiros (todas as pastas).

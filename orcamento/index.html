@@ -818,10 +818,11 @@
     capa.append(deco, capaInner);
     raiz.appendChild(capa);
 
-    // faixa entre a capa e os pacotes: "Aperte aqui" + seta apontando pra frase. Só no link normal, não no da Black Friday.
-    if (pacotes.length && dados.tipo_pagina !== 'blackfriday') {
+    // faixa entre a capa e os pacotes: "Aperte aqui" + seta apontando pra frase. Leva pro link da Black Friday.
+    // Só aparece no link normal (a função só manda o link da Black Friday pra ele) e some se o da Black Friday estiver desligado.
+    if (dados.link_black_friday) {
       const faixa = el('a', 'faixa-veja');
-      faixa.href = '#pacotes';
+      faixa.href = location.pathname + '?t=' + encodeURIComponent(dados.link_black_friday) + (marcaCliente ? '&m=' + encodeURIComponent(marcaCliente) : '');
       const caixaSeta = el('span', 'faixa-seta-caixa');
       caixaSeta.appendChild(icone(['M5 12h14', 'm13 6 6 6-6 6'], 'faixa-seta', { grosso: true }));
       faixa.append(el('span', 'faixa-pilula', 'Aperte aqui'), caixaSeta, el('span', 'faixa-frase', 'Veja os pacotes da Black Friday'));

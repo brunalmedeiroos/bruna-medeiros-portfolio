@@ -3,9 +3,11 @@
 -- (projeto trfoymytrvdbslwizfqs), depois do ugc-orcamento-black-friday.sql.
 -- ==========================================================================
 -- A página pública de orçamento passa a saber se o link é o normal ou o da
--- Black Friday (a função agora devolve o "tipo"). Com isso, a faixa "Veja os
--- pacotes da Black Friday" só aparece no link normal, e não no da Black Friday.
--- Não muda nenhum pacote nem nenhum link. É seguro rodar de novo.
+-- Black Friday (a função agora devolve o "tipo"). A faixa "Veja os pacotes da
+-- Black Friday" só aparece no link normal e leva pro link da Black Friday (a
+-- função devolve esse link, só pra quem abriu o link normal). No link da Black
+-- Friday a faixa não aparece. Se o link da Black Friday estiver desligado, a
+-- faixa some. Não muda nenhum pacote nem nenhum link. É seguro rodar de novo.
 
 create or replace function public.orcamento_publico(p_token text)
 returns jsonb
@@ -16,11 +18,15 @@ as $$
 declare
   pg public.orcamento_pagina;
   lista jsonb;
+  token_bf text;
 begin
   select * into pg from public.orcamento_pagina where token = p_token and ativa limit 1;
   if not found then
     return null;
   end if;
+
+  -- o link da Black Friday (se estiver ligado), pra faixa do link normal levar até ele
+  select token into token_bf from public.orcamento_pagina where tipo = 'blackfriday' and ativa limit 1;
 
   select coalesce(jsonb_agg(
            jsonb_build_object(
@@ -43,6 +49,7 @@ begin
 
   return jsonb_build_object(
     'tipo_pagina', pg.tipo,
+    'link_black_friday', case when pg.tipo = 'blackfriday' then null else token_bf end,
     'titulo', pg.titulo,
     'intro', pg.intro,
     'condicoes', pg.condicoes,

@@ -12982,21 +12982,20 @@
   opacity: 0.55;
 }
 
-/* dia que já passou: o cartão do dia inteiro fica apagadinho (passa o mouse pra ler melhor) */
-.painel-body .pl-cron-dia-passado {
-  opacity: 0.55;
+/* Dia que já passou (dentro do mês que está na tela): cartão acinzentado, com o conteúdo ainda bem legível.
+   É diferente dos dias de outro mês, que ficam bem clarinhos (pl-cron-dia-fora), pra não confundir o começo e o fim do mês. */
+.painel-body .pl-cron-dia-passado:not(.pl-cron-dia-fora) {
+  background: rgba(var(--grafite-rgb), 0.07);
+  border-color: rgba(var(--grafite-rgb), 0.22);
+  opacity: 0.78;
   transition: opacity 0.15s ease;
 }
 
-.painel-body .pl-cron-dia-passado:hover {
-  opacity: 0.9;
-}
-
-.painel-body .pl-cron-dia-passado.pl-cron-dia-fora {
-  opacity: 0.3;
+.painel-body .pl-cron-dia-passado:not(.pl-cron-dia-fora):hover {
+  opacity: 1;
 }
 
 /* dentro de um dia que já passou o dia todo já está apagado: o verde do publicado não precisa apagar de novo */
-.painel-body .pl-cron-dia-passado .pl-cron-etapa-publicado {
+.painel-body .pl-cron-dia-passado:not(.pl-cron-dia-fora) .pl-cron-etapa-publicado {
   opacity: 1;
 }

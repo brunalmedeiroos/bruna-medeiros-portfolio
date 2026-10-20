@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261045b">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261046a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -4092,6 +4092,8 @@
     // Etapas do roteiro, do rascunho até o post. Os valores gravados no banco ficam em português.
     const PL_STATUS_ORDEM = ['Roteiro pronto', 'Editando', 'Editado', 'Pronto para postar', 'Roteiro em construção', 'Não iniciado', 'Publicado'];
     const PL_STATUS_AGENDAVEIS = ['Roteiro pronto', 'Editando', 'Editado', 'Pronto para postar'];
+    // Da edição em diante o vídeo já foi gravado: no cronograma ganha a bolinha verde.
+    const PL_STATUS_GRAVADOS = ['Editando', 'Editado', 'Pronto para postar', 'Publicado'];
     // A etapa de um conteúdo é o status. Gravado deixou de ser um status: quem tinha esse status, ou foi marcado
     // como gravado sem ter avançado, conta como Pronto para postar.
     function plEstagio(item) {
@@ -14308,7 +14310,7 @@
       if (!btAgendaOk) return [];
       return btConteudos
         .filter((c) => c.data_agendada === diaISO)
-        .map((c) => ({ id: 'bt:' + c.id, titulo: c.titulo, dica: btCaminhoConteudo(c) }));
+        .map((c) => ({ id: 'bt:' + c.id, titulo: c.titulo, dica: btCaminhoConteudo(c), gravado: PL_STATUS_GRAVADOS.includes(plEstagio(c)) }));
     }
 
     function btOpcoesAgendar(lista) {
@@ -15478,7 +15480,7 @@
           `).join('')}
           ${pilaresDoDia.length === 0 ? `<button type="button" class="pl-cron-dia-add-pilar" data-dia="${diaISO}">${escapeHtml(tr('pl_cron_add_pilar_curto'))}</button>` : ''}
           ${ideiasDoDia.map((idea) => `
-            <span class="pl-cron-dia-ideia" data-id="${escapeHtml(idea.id)}"${idea.dica ? ` title="${escapeHtml(idea.dica)}"` : ''}>
+            <span class="pl-cron-dia-ideia${idea.gravado || PL_STATUS_GRAVADOS.includes(plEstagio(idea)) ? ' pl-cron-dia-ideia-gravada' : ''}" data-id="${escapeHtml(idea.id)}"${idea.dica ? ` title="${escapeHtml(idea.dica)}"` : ''}>
               <span class="pl-cron-dia-ideia-titulo">${escapeHtml(idea.titulo)}</span>
               <button type="button" class="pl-cron-dia-ideia-remover" data-id="${escapeHtml(idea.id)}" aria-label="${escapeHtml(tr('pl_cron_remover_ideia_calendario_aria'))}">×</button>
             </span>

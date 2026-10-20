@@ -12943,3 +12943,22 @@
   font-size: 11px;
   color: var(--texto-suave);
 }
+
+/* Cronograma: bolinha verde no canto de baixo do vídeo que já foi gravado (Editando em diante) */
+.painel-body .pl-cron-dia-ideia-gravada {
+  position: relative;
+}
+
+.painel-body .pl-cron-dia-ideia-gravada::after {
+  content: '';
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #34c759;
+  border: 2px solid var(--branco);
+  box-sizing: content-box;
+  pointer-events: none;
+}

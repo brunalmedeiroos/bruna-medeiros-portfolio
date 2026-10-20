@@ -9,9 +9,19 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,wght@0,700;0,800;1,700&display=swap" rel="stylesheet">
+<link rel="preload" as="font" type="font/woff2" href="../fonts/open-sauce-sans-900.woff2" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 
 <style>
+  /* Open Sauce Sans no peso Preto (Black, 900): fonte dos títulos, a mesma do portfólio. Licença OFL. */
+  @font-face {
+    font-family: 'Open Sauce Sans';
+    src: url('../fonts/open-sauce-sans-900.woff2') format('woff2');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+  }
+
   @font-face {
     font-family: 'Bootzy TM';
     src: url('../fonts/BootzyTM.woff2') format('woff2');
@@ -20,24 +30,25 @@
     font-display: swap;
   }
 
-  /* Mesma paleta e mesmo jeito da página da reforma (meuquarto). */
+  /* Paleta nova do portfólio: azul claro, azul escuro, amarelo manteiga e off-white. */
   :root {
-    --blue: #7DB7CE;
-    --blue-pale: #EAF3F6;
-    --blue-pale-2: #D6E8EE;
-    --navy: #04465D;
-    --navy-deep: #032F40;
-    --butter: #FFF7C5;
+    --blue: #9cbbd8;
+    --blue-pale: #E8EEF6;
+    --blue-pale-2: #D5E0EE;
+    --navy: #5c6e91; /* azul escuro */
+    --navy-deep: #3b4a6b;
+    --butter: #f5e1b4;
+    --brown: #4b3935;
     --white: #FFFFFF;
     --offwhite: #F1F1F1;
-    --ink: #29323A;
-    --ink-65: rgba(41, 50, 58, 0.66);
-    --ink-40: rgba(41, 50, 58, 0.42);
-    --ink-08: rgba(41, 50, 58, 0.06);
-    --shadow: 0 22px 48px rgba(125, 183, 206, 0.22);
-    --shadow-sm: 0 8px 20px rgba(125, 183, 206, 0.18);
+    --ink: #3b4a6b;
+    --ink-65: rgba(59, 74, 107, 0.78);
+    --ink-40: rgba(59, 74, 107, 0.55);
+    --ink-08: rgba(59, 74, 107, 0.08);
+    --shadow: 0 22px 48px rgba(92, 110, 145, 0.22);
+    --shadow-sm: 0 8px 20px rgba(92, 110, 145, 0.16);
     --radius: 22px;
-    --font-display: 'Newsreader', Georgia, serif;
+    --font-display: 'Open Sauce Sans', 'Montserrat', sans-serif;
     --font-brand: 'Bootzy TM', Georgia, serif;
     --font-body: 'Montserrat', 'Segoe UI', sans-serif;
   }
@@ -132,8 +143,8 @@
     text-align: center;
     overflow: hidden;
     background:
-      radial-gradient(1100px 480px at 50% -20%, rgba(125, 183, 206, 0.34), transparent 62%),
-      radial-gradient(900px 420px at 50% 100%, rgba(255, 247, 197, 0.45), transparent 55%),
+      radial-gradient(1100px 480px at 50% -20%, rgba(156, 187, 216, 0.34), transparent 62%),
+      radial-gradient(900px 420px at 50% 100%, rgba(245, 225, 180, 0.45), transparent 55%),
       var(--offwhite);
   }
 
@@ -205,7 +216,7 @@
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: rgba(125, 183, 206, 0.55);
+    background: rgba(156, 187, 216, 0.55);
     border-radius: 4px;
     transform: rotate(-1.2deg);
   }
@@ -219,6 +230,33 @@
   }
 
   .capa-acoes { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 34px; }
+
+  /* ---------- faixa entre a capa e os pacotes ---------- */
+  .faixa-veja {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 17px 24px;
+    background: var(--navy);
+    color: var(--butter);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-align: center;
+    transition: background 0.2s ease;
+  }
+
+  .faixa-veja:hover { background: var(--navy-deep); }
+
+  .faixa-seta {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    animation: seta-baixo 1.4s ease-in-out infinite;
+  }
+
+  @keyframes seta-baixo { 0%, 100% { transform: translateY(-2px); } 50% { transform: translateY(5px); } }
 
   /* ---------- seções ---------- */
   .secao { padding: 88px 0 24px; }
@@ -237,7 +275,7 @@
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--blue);
+    color: var(--navy); /* azul escuro: o azul claro quase não aparece sobre o fundo claro */
   }
 
   .secao-cabeca h2 { font-size: clamp(27px, 3.6vw, 40px); }
@@ -350,7 +388,7 @@
   /* o pacote em destaque: mesma cor dos outros, só um pouco mais alto, com borda azul-clara e etiqueta */
   .pacote.destaque {
     border: 2px solid var(--blue);
-    box-shadow: 0 26px 54px rgba(125, 183, 206, 0.4);
+    box-shadow: 0 26px 54px rgba(156, 187, 216, 0.4);
     transform: translateY(-12px);
   }
 
@@ -370,7 +408,7 @@
     font-weight: 800;
     letter-spacing: 0.04em;
     white-space: nowrap;
-    box-shadow: 0 8px 18px rgba(125, 183, 206, 0.35);
+    box-shadow: 0 8px 18px rgba(156, 187, 216, 0.35);
   }
 
   .condicoes {
@@ -401,7 +439,7 @@
     background: var(--white);
     border: 1px solid var(--blue-pale-2);
     border-radius: 18px;
-    box-shadow: 0 14px 34px rgba(125, 183, 206, .18);
+    box-shadow: 0 14px 34px rgba(156, 187, 216, .18);
   }
 
   .avulso-texto { flex: 1; min-width: 240px; }
@@ -435,7 +473,7 @@
     background: var(--white);
     border: 1px solid var(--blue-pale-2);
     border-radius: 18px;
-    box-shadow: 0 14px 34px rgba(125, 183, 206, .18);
+    box-shadow: 0 14px 34px rgba(156, 187, 216, .18);
   }
 
   .adicional-nome { font-family: var(--font-display); font-size: 20px; line-height: 1.25; font-weight: 700; color: var(--navy); }
@@ -454,7 +492,7 @@
     background: var(--white);
     border: 1px solid var(--blue-pale-2);
     border-radius: 18px;
-    box-shadow: 0 14px 34px rgba(125, 183, 206, .18);
+    box-shadow: 0 14px 34px rgba(156, 187, 216, .18);
   }
 
   .observacao-nome { font-family: var(--font-display); font-size: 21px; font-weight: 700; color: var(--navy); }
@@ -474,7 +512,7 @@
     padding: 52px;
     background: var(--navy);
     border-radius: 34px;
-    box-shadow: 0 30px 60px rgba(4, 70, 93, 0.28);
+    box-shadow: 0 30px 60px rgba(92, 110, 145, 0.28);
   }
 
   .contato-painel::before {
@@ -485,7 +523,7 @@
     width: 340px;
     height: 340px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(125, 183, 206, 0.35), transparent 68%);
+    background: radial-gradient(circle, rgba(156, 187, 216, 0.35), transparent 68%);
     pointer-events: none;
   }
 
@@ -512,7 +550,9 @@
 
   .contato-texto { position: relative; z-index: 1; }
 
-  .contato-texto .eyebrow { color: var(--blue); }
+  .contato-texto .eyebrow { color: var(--butter); }
+
+  .contato-texto h2 .accent { color: var(--butter); }
 
   .contato-texto h2 {
     margin: 10px 0 14px;
@@ -524,7 +564,7 @@
 
   .contato-botoes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
 
-  .contato .btn-wa { background: var(--blue); color: var(--navy); }
+  .contato .btn-wa { background: var(--butter); color: var(--ink); }
   .contato .btn-wa:hover { background: var(--white); }
 
   .canais { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
@@ -576,6 +616,7 @@
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     .selo i { animation: none; }
+    .faixa-seta { animation: none; }
     .btn, .pacote { transition: none; }
   }
 </style>
@@ -753,6 +794,14 @@
     capaInner.appendChild(acoes);
     capa.append(deco, capaInner);
     raiz.appendChild(capa);
+
+    // faixa entre a capa e os pacotes, com uma setinha pra descer
+    if (pacotes.length) {
+      const faixa = el('a', 'faixa-veja');
+      faixa.href = '#pacotes';
+      faixa.append(el('span', null, 'Veja os pacotes da Black Friday aqui'), icone(['M12 5v14', 'm6 13 6 6 6-6'], 'faixa-seta', { grosso: true }));
+      raiz.appendChild(faixa);
+    }
 
     // pacotes
     if (pacotes.length) {

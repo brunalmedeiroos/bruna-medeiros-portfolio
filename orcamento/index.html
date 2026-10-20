@@ -236,27 +236,47 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
-    padding: 17px 24px;
-    background: var(--navy);
-    color: var(--butter);
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
+    gap: 20px;
+    padding: 34px 24px;
+    background: var(--brown);
+    color: var(--offwhite);
     text-align: center;
     transition: background 0.2s ease;
   }
 
-  .faixa-veja:hover { background: var(--navy-deep); }
+  .faixa-veja:hover { background: #3a2c29; }
 
-  .faixa-seta {
-    width: 20px;
-    height: 20px;
+  .faixa-pilula {
     flex-shrink: 0;
-    animation: seta-baixo 1.4s ease-in-out infinite;
+    padding: 9px 18px;
+    border-radius: 999px;
+    background: var(--butter);
+    color: var(--brown);
+    font-size: 13.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
   }
 
-  @keyframes seta-baixo { 0%, 100% { transform: translateY(-2px); } 50% { transform: translateY(5px); } }
+  /* a seta aponta pra frase: o espaço dela gira no celular, quando a frase fica embaixo */
+  .faixa-seta-caixa { display: flex; flex-shrink: 0; color: var(--butter); }
+
+  .faixa-seta {
+    width: 34px;
+    height: 34px;
+    animation: seta-frente 1.3s ease-in-out infinite;
+  }
+
+  @keyframes seta-frente { 0%, 100% { transform: translateX(-4px); } 50% { transform: translateX(6px); } }
+
+  .faixa-frase {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 2.6vw, 30px);
+    font-weight: 900;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
 
   /* ---------- seções ---------- */
   .secao { padding: 88px 0 24px; }
@@ -603,6 +623,9 @@
   }
 
   @media (max-width: 620px) {
+    .faixa-veja { flex-direction: column; gap: 12px; padding: 28px 20px; }
+    .faixa-seta-caixa { transform: rotate(90deg); }
+    .faixa-seta { width: 30px; height: 30px; }
     .wrap { padding: 0 18px; }
     .capa { padding: 64px 0 56px; }
     .deco { display: none; }
@@ -795,11 +818,13 @@
     capa.append(deco, capaInner);
     raiz.appendChild(capa);
 
-    // faixa entre a capa e os pacotes, com uma setinha pra descer
+    // faixa entre a capa e os pacotes: "Aperte aqui" + seta apontando pra frase
     if (pacotes.length) {
       const faixa = el('a', 'faixa-veja');
       faixa.href = '#pacotes';
-      faixa.append(el('span', null, 'Veja os pacotes da Black Friday aqui'), icone(['M12 5v14', 'm6 13 6 6 6-6'], 'faixa-seta', { grosso: true }));
+      const caixaSeta = el('span', 'faixa-seta-caixa');
+      caixaSeta.appendChild(icone(['M5 12h14', 'm13 6 6 6-6 6'], 'faixa-seta', { grosso: true }));
+      faixa.append(el('span', 'faixa-pilula', 'Aperte aqui'), caixaSeta, el('span', 'faixa-frase', 'Veja os pacotes da Black Friday'));
       raiz.appendChild(faixa);
     }
 

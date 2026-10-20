@@ -12944,21 +12944,40 @@
   color: var(--texto-suave);
 }
 
-/* Cronograma: bolinha verde no canto de baixo do vídeo que já foi gravado (Editando em diante) */
-.painel-body .pl-cron-dia-ideia-gravada {
-  position: relative;
+/* Cronograma: cada etapa tem a sua cor nos cartões */
+.painel-body .pl-cron-etapa-nao-iniciado {
+  background: #8b95a1;
+  color: var(--branco);
 }
 
-.painel-body .pl-cron-dia-ideia-gravada::after {
-  content: '';
-  position: absolute;
-  right: -3px;
-  bottom: -3px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #34c759;
-  border: 2px solid var(--branco);
-  box-sizing: content-box;
-  pointer-events: none;
+.painel-body .pl-cron-etapa-construcao {
+  background: #f2c94c;
+  color: #4b3935;
+}
+
+.painel-body .pl-cron-etapa-roteiro-pronto {
+  background: #7db7ce;
+  color: var(--branco);
+}
+
+.painel-body .pl-cron-etapa-gravado {
+  background: #d9534f;
+  color: var(--branco);
+}
+
+.painel-body .pl-cron-etapa-editado {
+  background: #8e6bbf;
+  color: var(--branco);
+}
+
+.painel-body .pl-cron-etapa-pronto-postar {
+  background: #04465d;
+  color: var(--branco);
+}
+
+/* publicado: verde e apagadinho, porque já foi e já passou */
+.painel-body .pl-cron-etapa-publicado {
+  background: #3fa66b;
+  color: var(--branco);
+  opacity: 0.55;
 }

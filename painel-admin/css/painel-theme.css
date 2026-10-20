@@ -12975,9 +12975,28 @@
   color: var(--branco);
 }
 
-/* publicado: verde e apagadinho, porque já foi e já passou */
+/* publicado: verde e apagadinho, porque já foi */
 .painel-body .pl-cron-etapa-publicado {
   background: #3fa66b;
   color: var(--branco);
   opacity: 0.55;
+}
+
+/* dia que já passou: o cartão do dia inteiro fica apagadinho (passa o mouse pra ler melhor) */
+.painel-body .pl-cron-dia-passado {
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
+}
+
+.painel-body .pl-cron-dia-passado:hover {
+  opacity: 0.9;
+}
+
+.painel-body .pl-cron-dia-passado.pl-cron-dia-fora {
+  opacity: 0.3;
+}
+
+/* dentro de um dia que já passou o dia todo já está apagado: o verde do publicado não precisa apagar de novo */
+.painel-body .pl-cron-dia-passado .pl-cron-etapa-publicado {
+  opacity: 1;
 }

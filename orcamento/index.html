@@ -818,8 +818,8 @@
     capa.append(deco, capaInner);
     raiz.appendChild(capa);
 
-    // faixa entre a capa e os pacotes: "Aperte aqui" + seta apontando pra frase
-    if (pacotes.length) {
+    // faixa entre a capa e os pacotes: "Aperte aqui" + seta apontando pra frase. Só no link normal, não no da Black Friday.
+    if (pacotes.length && dados.tipo_pagina !== 'blackfriday') {
       const faixa = el('a', 'faixa-veja');
       faixa.href = '#pacotes';
       const caixaSeta = el('span', 'faixa-seta-caixa');

@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261049a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261050a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -10214,15 +10214,35 @@
       return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
     }
 
+    // Em qual coluna (dia) o ponteiro está agora, na horizontal. Fora da grade, vale a coluna da ponta.
+    function indiceColunaSobPonteiro(colunas, clientX) {
+      for (let i = 0; i < colunas.length; i++) {
+        const r = colunas[i].getBoundingClientRect();
+        if (clientX >= r.left && clientX < r.right) return i;
+      }
+      return clientX < colunas[0].getBoundingClientRect().left ? 0 : colunas.length - 1;
+    }
+
+    // Enquanto arrasta, o card acompanha o ponteiro pra outra coluna e a coluna de destino fica marcada.
+    function mostrarDiaAlvoDoArraste(bloco, colunas, indiceOrigem, indiceAlvo, arrastando) {
+      const desloc = colunas[indiceAlvo].getBoundingClientRect().left - colunas[indiceOrigem].getBoundingClientRect().left;
+      bloco.style.transform = desloc ? 'translateX(' + desloc + 'px)' : '';
+      colunas.forEach((c, i) => c.classList.toggle('cal-dia-coluna-alvo', arrastando && i === indiceAlvo && indiceAlvo !== indiceOrigem));
+    }
+
     function configurarArrasteEvento(bloco, tarefa) {
-      // Mover: arrasta o corpo do card, mantém a duração, só muda o horário
-      // de início/fim (deslocados juntos).
+      // Mover: arrasta o corpo do card, mantém a duração, muda o horário de início/fim (deslocados juntos)
+      // e, na Semana, também o dia: é só soltar em cima da coluna de outro dia (como no Google Agenda).
       bloco.addEventListener('pointerdown', (e) => {
         if (e.target.closest('.cal-evento-bloco-redimensionar')) return;
         e.preventDefault();
         bloco.setPointerCapture(e.pointerId);
         const coluna = bloco.parentElement;
         const alturaColuna = coluna.getBoundingClientRect().height;
+        const colunasDia = Array.from(coluna.parentElement.querySelectorAll('.cal-dia-coluna'));
+        const indiceOrigem = colunasDia.indexOf(coluna);
+        const xInicial = e.clientX;
+        let indiceAlvo = indiceOrigem;
         const inicioMin = minutosDoHorario(tarefa.hora_inicio);
         const fimMin = tarefa.hora_fim ? minutosDoHorario(tarefa.hora_fim) : inicioMin + 30;
         const duracaoMin = fimMin - inicioMin;
@@ -10231,18 +10251,28 @@
         let novoInicioMin = inicioMin;
 
         const mover = (ev) => {
-          if (Math.abs(ev.clientY - yInicial) > 3) moveu = true;
+          if (Math.abs(ev.clientY - yInicial) > 3 || Math.abs(ev.clientX - xInicial) > 3) {
+            moveu = true;
+            bloco.classList.add('cal-evento-arrastando');
+          }
           const deltaMin = ((ev.clientY - yInicial) / alturaColuna) * CAL_MINUTOS_TOTAIS_DIA;
           novoInicioMin = Math.max(0, Math.min(24 * 60 - duracaoMin, arredondarSnapMinutos(inicioMin + deltaMin)));
           bloco.style.top = ((novoInicioMin / CAL_MINUTOS_TOTAIS_DIA) * 100) + '%';
+          if (colunasDia.length > 1 && moveu) {
+            indiceAlvo = indiceColunaSobPonteiro(colunasDia, ev.clientX);
+            mostrarDiaAlvoDoArraste(bloco, colunasDia, indiceOrigem, indiceAlvo, true);
+          }
         };
         const soltar = () => {
           bloco.removeEventListener('pointermove', mover);
           bloco.removeEventListener('pointerup', soltar);
           bloco.removeEventListener('pointercancel', soltar);
+          bloco.classList.remove('cal-evento-arrastando');
+          if (colunasDia.length > 1) mostrarDiaAlvoDoArraste(bloco, colunasDia, indiceOrigem, indiceOrigem, false);
           if (moveu) {
             bloco.dataset.arrastou = '1';
-            salvarHorarioArrastado(tarefa, minutosParaHorario(novoInicioMin), minutosParaHorario(novoInicioMin + duracaoMin));
+            const novaData = indiceAlvo !== indiceOrigem ? colunasDia[indiceAlvo].dataset.data : null;
+            salvarHorarioArrastado(tarefa, minutosParaHorario(novoInicioMin), minutosParaHorario(novoInicioMin + duracaoMin), novaData);
           }
         };
         bloco.addEventListener('pointermove', mover);
@@ -10283,10 +10313,25 @@
       });
     }
 
-    async function salvarHorarioArrastado(tarefa, novaHoraInicio, novaHoraFim) {
+    // Tarefa sem horário arrastada pra outro dia: só troca a data.
+    async function salvarDiaArrastado(tarefa, novaData) {
+      try {
+        const { error } = await Auth.sb.from('painel_tarefas').update({ data: novaData }).eq('id', tarefa.id);
+        if (error) throw error;
+        pushEventoGoogle(tarefa.id);
+        await carregarTarefas();
+      } catch (err) {
+        console.error('Erro ao mover a tarefa de dia:', err);
+        alert(tr('erro_salvar_generico'));
+        renderizarCalendario();
+      }
+    }
+
+    // novaData (opcional): o dia pra onde o evento foi arrastado, quando mudou de dia.
+    async function salvarHorarioArrastado(tarefa, novaHoraInicio, novaHoraFim, novaData) {
       try {
         const { error } = await Auth.sb.from('painel_tarefas')
-          .update({ hora_inicio: novaHoraInicio, hora_fim: novaHoraFim })
+          .update({ hora_inicio: novaHoraInicio, hora_fim: novaHoraFim, ...(novaData ? { data: novaData } : {}) })
           .eq('id', tarefa.id);
         if (error) throw error;
         pushEventoGoogle(tarefa.id);
@@ -10300,11 +10345,50 @@
 
     // Bloco da faixa "dia inteiro" (tarefa sem horário, ou entrega de UGC —
     // que nunca tem horário) — sem posicionamento, é uma lista simples.
-    function criarBlocoDiaTodo(item, tipo) {
+    function criarBlocoDiaTodo(item, tipo, colunasFaixa) {
       const bloco = document.createElement('div');
       bloco.className = 'cal-evento-dia-todo' + (tipo === 'ugc' ? ' cal-evento-dia-todo-ugc' : '') + (tipo !== 'ugc' && item.feito ? ' cal-evento-dia-todo-feito' : '');
       bloco.textContent = tipo === 'ugc' ? item.marca + (item.campanha ? ' · ' + item.campanha : '') : item.titulo;
-      bloco.addEventListener('click', () => (tipo === 'ugc' ? abrirEntregaUgcNoCalendario(item) : abrirFormularioTarefa(item)));
+      bloco.addEventListener('click', () => {
+        if (bloco.dataset.arrastou === '1') {
+          delete bloco.dataset.arrastou;
+          return;
+        }
+        if (tipo === 'ugc') abrirEntregaUgcNoCalendario(item);
+        else abrirFormularioTarefa(item);
+      });
+      // tarefa sem horário: arrasta pro lado e solta em outro dia (entrega de UGC não, ela vem do trabalho)
+      if (tipo !== 'ugc' && colunasFaixa && colunasFaixa.length > 1) {
+        bloco.addEventListener('pointerdown', (e) => {
+          const indiceOrigem = colunasFaixa.indexOf(bloco.parentElement);
+          if (indiceOrigem < 0) return;
+          const xInicial = e.clientX;
+          let moveu = false;
+          let indiceAlvo = indiceOrigem;
+          bloco.setPointerCapture(e.pointerId);
+          const mover = (ev) => {
+            if (!moveu && Math.abs(ev.clientX - xInicial) <= 4) return;
+            moveu = true;
+            bloco.classList.add('cal-evento-arrastando');
+            indiceAlvo = indiceColunaSobPonteiro(colunasFaixa, ev.clientX);
+            mostrarDiaAlvoDoArraste(bloco, colunasFaixa, indiceOrigem, indiceAlvo, true);
+          };
+          const soltar = () => {
+            bloco.removeEventListener('pointermove', mover);
+            bloco.removeEventListener('pointerup', soltar);
+            bloco.removeEventListener('pointercancel', soltar);
+            bloco.classList.remove('cal-evento-arrastando');
+            mostrarDiaAlvoDoArraste(bloco, colunasFaixa, indiceOrigem, indiceOrigem, false);
+            if (moveu) {
+              bloco.dataset.arrastou = '1';
+              if (indiceAlvo !== indiceOrigem) salvarDiaArrastado(item, colunasFaixa[indiceAlvo].dataset.data);
+            }
+          };
+          bloco.addEventListener('pointermove', mover);
+          bloco.addEventListener('pointerup', soltar);
+          bloco.addEventListener('pointercancel', soltar);
+        });
+      }
       return bloco;
     }
 
@@ -10339,6 +10423,7 @@
       diaTodoLinha.innerHTML = '<div class="cal-grade-hora-spacer"></div>' + dias.map(() => '<div class="cal-grade-dia-todo-coluna"></div>').join('');
       container.appendChild(diaTodoLinha);
       const colunasDiaTodo = diaTodoLinha.querySelectorAll('.cal-grade-dia-todo-coluna');
+      const colunasFaixaArray = Array.from(colunasDiaTodo);
 
       const corpo = document.createElement('div');
       corpo.className = 'cal-grade-corpo';
@@ -10358,6 +10443,8 @@
         const isoDia = dataParaISO(dia);
         const coluna = document.createElement('div');
         coluna.className = 'cal-dia-coluna';
+        coluna.dataset.data = isoDia;
+        colunasDiaTodo[i].dataset.data = isoDia;
         for (let h = 0; h < 24; h++) {
           const linha = document.createElement('div');
           linha.className = 'cal-dia-coluna-linha';
@@ -10374,7 +10461,7 @@
 
         tarefasDoDia.forEach((tarefa) => {
           if (tarefa.hora_inicio) coluna.appendChild(criarBlocoEvento(tarefa));
-          else colunasDiaTodo[i].appendChild(criarBlocoDiaTodo(tarefa, 'tarefa'));
+          else colunasDiaTodo[i].appendChild(criarBlocoDiaTodo(tarefa, 'tarefa', colunasFaixaArray));
         });
         entregasDoDia.forEach((trabalho) => colunasDiaTodo[i].appendChild(criarBlocoDiaTodo(trabalho, 'ugc')));
 

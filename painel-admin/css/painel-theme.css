@@ -13029,3 +13029,25 @@
   margin-left: -18px;
   color: var(--texto-suave);
 }
+
+/* Calendário: arrastar um evento pra outro dia da semana */
+.painel-body .cal-evento-arrastando {
+  z-index: 20;
+  opacity: 0.92;
+  cursor: grabbing;
+  box-shadow: 0 10px 24px rgba(var(--grafite-rgb), 0.3);
+}
+
+.painel-body .cal-dia-coluna-alvo {
+  background: rgba(var(--coral-rgb), 0.14);
+}
+
+.painel-body .cal-evento-dia-todo {
+  touch-action: none;
+  user-select: none;
+}
+
+.painel-body .cal-grade-dia-todo-coluna:has(.cal-evento-arrastando) {
+  position: relative;
+  z-index: 20;
+}

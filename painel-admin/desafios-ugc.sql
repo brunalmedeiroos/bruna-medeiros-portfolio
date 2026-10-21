@@ -2,7 +2,7 @@
 -- desafios-ugc.sql — Rode UMA VEZ no SQL Editor do Supabase
 -- (projeto trfoymytrvdbslwizfqs).
 -- ==========================================================================
--- Aba "Nos Desafiando a Viver do UGC" (Gestão): central da comunidade gratuita
+-- Aba "Desafio UGC" (Gestão): central da comunidade gratuita
 -- de criadoras de UGC. Cria as tabelas de participantes, desafios (ciclos de
 -- 15 dias), atividades, entregas, pontuação, anotações, conquistas e premiações.
 -- Tudo é só seu: cada tabela só deixa a conta dona do painel ler e escrever.

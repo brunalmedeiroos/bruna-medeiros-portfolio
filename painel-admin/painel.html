@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261050a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261051b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -113,6 +113,10 @@
             <button class="nav-item" data-tab="metas" type="button">
               <i class="nav-icon-emoji" aria-hidden="true">🎯</i>
               <span data-i18n="nav_metas">Metas</span>
+            </button>
+            <button class="nav-item" data-tab="desafios" type="button">
+              <i class="nav-icon-emoji" aria-hidden="true">🏆</i>
+              <span data-i18n="nav_desafios">Nos Desafiando a Viver do UGC</span>
             </button>
             <button class="nav-item" data-tab="email" type="button">
               <i class="nav-icon-emoji" aria-hidden="true">📥</i>
@@ -1897,6 +1901,22 @@
           </div>
         </section>
 
+        <!-- ---------- Gestão > Nos Desafiando a Viver do UGC ---------- -->
+        <section id="panel-desafios" class="tab-panel" hidden>
+          <div class="dg-subnav" id="dg-subnav">
+            <button class="dg-subnav-btn ativo" data-dg-pagina="visao" type="button">Visão geral</button>
+            <button class="dg-subnav-btn" data-dg-pagina="participantes" type="button">Participantes</button>
+            <button class="dg-subnav-btn" data-dg-pagina="desafios" type="button">Desafios</button>
+            <button class="dg-subnav-btn" data-dg-pagina="entregas" type="button">Entregas</button>
+            <button class="dg-subnav-btn" data-dg-pagina="pontos" type="button">Pontuação</button>
+            <button class="dg-subnav-btn" data-dg-pagina="rankings" type="button">Rankings</button>
+            <button class="dg-subnav-btn" data-dg-pagina="premiacoes" type="button">Premiações</button>
+            <button class="dg-subnav-btn" data-dg-pagina="evolucao" type="button">Evolução</button>
+          </div>
+          <p class="dash-aviso" id="dg-aviso" hidden>Falta rodar o arquivo desafios-ugc.sql no Supabase pra usar essa aba.</p>
+          <div id="dg-conteudo" class="dg-conteudo"></div>
+        </section>
+
         <section id="panel-metas" class="tab-panel" hidden>
           <div class="metas-subnav">
             <button class="metas-subnav-btn ativo" data-metas-pagina="visao-geral" type="button">Visão Geral</button>
@@ -2284,6 +2304,24 @@
           <button type="button" id="pl-modal-excluir" class="cal-btn pl-btn-excluir" data-i18n="excluir">Excluir</button>
           <button type="button" id="pl-modal-copiar" class="cal-btn" title="Copia este conteúdo (ideia e roteiro) pra colar em outra pasta" hidden>📋 Copiar</button>
           <button type="button" id="pl-modal-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: formulário único da aba Nos Desafiando a Viver do UGC (montado pelo JS) -->
+    <div id="dg-form-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal dg-modal">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo" id="dg-form-titulo"></span>
+          <button id="dg-form-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div id="dg-form-corpo"></div>
+        <div class="cal-form-acoes">
+          <button type="button" id="dg-form-excluir" class="cal-btn pl-btn-excluir" hidden>Excluir</button>
+          <button type="button" id="dg-form-extra" class="cal-btn" hidden></button>
+          <button type="button" id="dg-form-salvar" class="cal-btn cal-btn-primario">Salvar</button>
         </div>
       </div>
     </div>
@@ -4333,6 +4371,7 @@
       'produtos-digitais': 'titulo_produtos_digitais',
       financeiro: 'titulo_financeiro',
       metas: 'titulo_metas',
+      desafios: 'titulo_desafios',
     };
 
     let configCache = null;
@@ -4364,6 +4403,7 @@
         titulo_produtos_digitais: 'Produtos Digitais',
         titulo_financeiro: 'Financeiro',
         titulo_metas: 'Metas',
+        titulo_desafios: 'Nos Desafiando a Viver do UGC',
         financeiro_pendente: 'Pendente',
         financeiro_recebido_total: 'Recebido no total',
         financeiro_insight_titulo: 'Como está seu faturamento?',
@@ -4590,6 +4630,7 @@
         nav_produtos_digitais: 'Produtos Digitais',
         nav_financeiro: 'Financeiro',
         nav_metas: 'Metas',
+        nav_desafios: 'Nos Desafiando a Viver do UGC',
         nav_configuracoes: 'Configurações',
         nav_grupo_rotina: 'Rotina',
         nav_grupo_fontes_renda: 'Fontes de renda',
@@ -5640,6 +5681,7 @@
         titulo_produtos_digitais: 'Digital Products',
         titulo_financeiro: 'Finance',
         titulo_metas: 'Goals',
+        titulo_desafios: 'Challenging Ourselves to Live off UGC',
         financeiro_pendente: 'Pending',
         financeiro_recebido_total: 'Total received',
         financeiro_insight_titulo: "How's your revenue?",
@@ -5866,6 +5908,7 @@
         nav_produtos_digitais: 'Digital Products',
         nav_financeiro: 'Finance',
         nav_metas: 'Goals',
+        nav_desafios: 'Challenging Ourselves to Live off UGC',
         nav_configuracoes: 'Settings',
         nav_grupo_rotina: 'Routine',
         nav_grupo_fontes_renda: 'Income sources',
@@ -7495,6 +7538,7 @@
 
       document.getElementById('btn-clientes-novo').addEventListener('click', () => abrirModalCliente(null));
       minhasCoisasLigarEventos();
+      dgLigarEventos();
       document.getElementById('clientes-modal-fechar').addEventListener('click', fecharModalCliente);
       document.getElementById('clientes-modal-excluir').addEventListener('click', excluirModalCliente);
       document.getElementById('clientes-modal-salvar').addEventListener('click', salvarModalCliente);
@@ -9130,10 +9174,10 @@
     // Capa azul no topo de cada página (menos Dashboard, que tem a saudação, e
     // E-mail, que tem a capa própria). O menu interno da página (UGC, Instagram,
     // Ferramentas) é levado pra dentro da capa e devolvido ao lugar quando sai.
-    const CAPA_MENUS = { ugc: '.ugc-subnav', instagram: '.instagram-subnav', ferramentas: '.ferr-modos', planejador: '#pl-hub', financeiro: '.financeiro-subnav', metas: '.metas-subnav' };
+    const CAPA_MENUS = { ugc: '.ugc-subnav', instagram: '.instagram-subnav', ferramentas: '.ferr-modos', planejador: '#pl-hub', financeiro: '.financeiro-subnav', metas: '.metas-subnav', desafios: '.dg-subnav' };
     const CAPA_SEM = ['overview', 'email'];
     // Abas que mostram o ícone da Nota rápida na capa (o Dashboard tem o dele).
-    const NOTA_ABAS = ['ferramentas', 'clientes', 'produtos-digitais', 'planejador', 'instagram', 'financeiro', 'metas'];
+    const NOTA_ABAS = ['ferramentas', 'clientes', 'produtos-digitais', 'planejador', 'instagram', 'financeiro', 'metas', 'desafios'];
     let capaMenuMovido = null;
     let capaObservador = null;
 
@@ -9253,6 +9297,7 @@
           carregarMetas();
         }
       }
+      if (aba === 'desafios') dgAbrirAba();
     }
 
     function trocarPeriodo(periodo, btn) {
@@ -21543,6 +21588,1630 @@
         if (document.visibilityState === 'hidden') mcSalvarAgora();
       });
     }
+
+    // ==========================================================================
+    // Nos Desafiando a Viver do UGC (Gestão): central da comunidade gratuita de criadoras de UGC.
+    // Participantes, desafios de 15 dias, entregas, pontuação manual, rankings, premiações e evolução.
+    // Tudo é lançado por você; os totais e os rankings são sempre calculados a partir dos lançamentos válidos.
+    // As tabelas estão em desafios-ugc.sql (comunidade_*).
+    // ==========================================================================
+    const DG_TABELAS = {
+      participantes: 'comunidade_participantes',
+      desafios: 'comunidade_desafios',
+      inscricoes: 'comunidade_inscricoes',
+      atividades: 'comunidade_atividades',
+      entregas: 'comunidade_entregas',
+      motivos: 'comunidade_motivos',
+      pontos: 'comunidade_pontos',
+      notas: 'comunidade_notas',
+      conquistas: 'comunidade_conquistas',
+      premios: 'comunidade_premios',
+      premiacoes: 'comunidade_premiacoes',
+    };
+    const DG_ETAPAS = ['Começando', 'Montando portfólio', 'Produzindo conteúdo', 'Prospectando marcas', 'Já fechou trabalhos'];
+    const DG_PORTFOLIOS = ['Sem portfólio', 'Em construção', 'Pronto'];
+    const DG_STATUS_PART = [['ativa', 'Ativa'], ['pausada', 'Pausada'], ['saiu', 'Saiu']];
+    const DG_STATUS_DESAFIO = [['planejado', 'Planejado'], ['em_andamento', 'Em andamento'], ['encerrado', 'Encerrado']];
+    const DG_STATUS_ENTREGA = [['nao_iniciada', 'Não iniciada'], ['em_andamento', 'Em andamento'], ['enviada', 'Enviada'], ['concluida', 'Concluída'], ['ajustes', 'Precisa de ajustes']];
+    const DG_STATUS_PREMIACAO = [['a_definir', 'A definir'], ['anunciada', 'Anunciada'], ['entregue', 'Entregue']];
+    const DG_TIPOS_NOTA = [['feedback', 'Feedback'], ['duvida', 'Dúvida'], ['dificuldade', 'Dificuldade'], ['orientacao', 'Orientação']];
+    const DG_SEMANAS = [['semana1', 'Semana 1'], ['semana2', 'Semana 2'], ['fechamento', 'Último dia (conferir entregas e anunciar a vencedora)']];
+    const DG_DESEMPATES = [
+      ['entregas', 'Mais entregas concluídas no ciclo'],
+      ['antiga', 'Quem chegou primeiro à pontuação'],
+      ['nome', 'Ordem alfabética'],
+    ];
+    const DG_CONQUISTAS_SUGESTOES = ['Montou o primeiro portfólio', 'Produziu os primeiros vídeos', 'Começou a prospectar marcas', 'Conseguiu o primeiro trabalho', 'Fechou uma parceria paga'];
+    const DG_PAGINAS = ['visao', 'participantes', 'desafios', 'entregas', 'pontos', 'rankings', 'premiacoes', 'evolucao'];
+
+    let dg = { carregado: false, ok: true, carregando: false, d: {} };
+    Object.keys(DG_TABELAS).forEach((k) => (dg.d[k] = []));
+    let dgPagina = 'visao';
+    let dgParam = null; // id da participante ou do desafio abertos
+    let dgFiltro = {
+      part: { busca: '', etapa: '', portfolio: '', status: '', desafio: '' },
+      desafios: { status: '' },
+      entregas: { desafio: 'atual', status: '', participante: '' },
+      pontos: { participante: '', desafio: '' },
+      ranking: { desafio: 'atual' },
+    };
+    let dgEventosLigados = false;
+
+    const dgH = (s) => escapeHtml(s == null ? '' : s);
+    const dgHoje = () => dataParaISO(new Date());
+
+    function dgSomaDias(iso, n) {
+      const d = new Date(iso + 'T12:00:00');
+      d.setDate(d.getDate() + n);
+      return dataParaISO(d);
+    }
+
+    function dgFmtData(iso) {
+      if (!iso) return '—';
+      const [a, m, d] = String(iso).slice(0, 10).split('-');
+      return `${d}/${m}/${String(a).slice(2)}`;
+    }
+
+    function dgHaDias(iso) {
+      if (!iso) return null;
+      const dias = Math.round((new Date(dgHoje() + 'T12:00:00') - new Date(String(iso).slice(0, 10) + 'T12:00:00')) / 86400000);
+      return dias;
+    }
+
+    function dgTextoHa(iso) {
+      const dias = dgHaDias(iso);
+      if (dias == null) return 'sem registro';
+      if (dias <= 0) return 'hoje';
+      return dias === 1 ? 'há 1 dia' : `há ${dias} dias`;
+    }
+
+    function dgRotulo(lista, valor) {
+      const par = lista.find((x) => x[0] === valor);
+      return par ? par[1] : valor || '—';
+    }
+
+    function dgToast(texto) {
+      if (typeof btToast === 'function') btToast(texto);
+    }
+
+    // ---- acesso ao banco ----
+    async function dgInserir(chave, linha) {
+      const { data, error } = await Auth.sb.from(DG_TABELAS[chave]).insert(linha).select();
+      if (error) throw error;
+      dg.d[chave].unshift(data[0]);
+      return data[0];
+    }
+
+    async function dgAtualizar(chave, id, campos) {
+      const { data, error } = await Auth.sb.from(DG_TABELAS[chave]).update(campos).eq('id', id).select();
+      if (error) throw error;
+      const i = dg.d[chave].findIndex((x) => x.id === id);
+      if (i >= 0 && data[0]) dg.d[chave][i] = data[0];
+      return data[0];
+    }
+
+    async function dgApagar(chave, id) {
+      const { error } = await Auth.sb.from(DG_TABELAS[chave]).delete().eq('id', id);
+      if (error) throw error;
+      dg.d[chave] = dg.d[chave].filter((x) => x.id !== id);
+    }
+
+    function dgErro(err, contexto) {
+      console.error('Erro em Nos Desafiando a Viver do UGC (' + contexto + '):', err);
+      alert(tr('erro_salvar_generico'));
+    }
+
+    async function dgCarregar() {
+      if (dg.carregando) return;
+      dg.carregando = true;
+      try {
+        const chaves = Object.keys(DG_TABELAS);
+        const resultados = await Promise.all(chaves.map((k) => buscarTudo(DG_TABELAS[k])));
+        chaves.forEach((k, i) => (dg.d[k] = resultados[i]));
+        dg.ok = true;
+        dg.carregado = true;
+      } catch (err) {
+        console.error('Nos Desafiando a Viver do UGC ainda não disponível (desafios-ugc.sql):', err);
+        dg.ok = false;
+      } finally {
+        dg.carregando = false;
+      }
+      dgRender();
+    }
+
+    // ---- consultas e cálculos ----
+    const dgPart = (id) => dg.d.participantes.find((p) => p.id === id) || null;
+    const dgDesafio = (id) => dg.d.desafios.find((x) => x.id === id) || null;
+    const dgAtividade = (id) => dg.d.atividades.find((x) => x.id === id) || null;
+    const dgInstaTexto = (p) => (p && p.instagram_usuario ? '@' + String(p.instagram_usuario).replace(/^@/, '') : '');
+
+    function dgInstaLink(p) {
+      if (!p) return '';
+      if (p.instagram_link) return p.instagram_link;
+      return p.instagram_usuario ? 'https://instagram.com/' + String(p.instagram_usuario).replace(/^@/, '') : '';
+    }
+
+    function dgDesafioAtual() {
+      const hoje = dgHoje();
+      const emAndamento = dg.d.desafios.filter((x) => x.status === 'em_andamento').sort((a, b) => b.data_inicio.localeCompare(a.data_inicio));
+      if (emAndamento.length) return emAndamento[0];
+      return dg.d.desafios.find((x) => x.status !== 'encerrado' && x.data_inicio <= hoje && x.data_fim >= hoje) || null;
+    }
+
+    function dgDesafiosFuturos() {
+      const atual = dgDesafioAtual();
+      return dg.d.desafios
+        .filter((x) => x.status === 'planejado' && (!atual || x.id !== atual.id))
+        .sort((a, b) => a.data_inicio.localeCompare(b.data_inicio));
+    }
+
+    const dgInscritas = (desafioId) => dg.d.inscricoes.filter((i) => i.desafio_id === desafioId).map((i) => i.participante_id);
+
+    function dgPontos(participanteId, desafioId) {
+      return dg.d.pontos
+        .filter((l) => l.valido && l.participante_id === participanteId && (desafioId === undefined || l.desafio_id === desafioId))
+        .reduce((soma, l) => soma + l.pontos, 0);
+    }
+
+    // Última coisa que a participante fez (ponto, entrega ou anotação), em ISO.
+    function dgUltimaAtividade(participanteId) {
+      const datas = [
+        ...dg.d.pontos.filter((l) => l.participante_id === participanteId).map((l) => l.created_at),
+        ...dg.d.entregas.filter((e) => e.participante_id === participanteId && e.status !== 'nao_iniciada').map((e) => e.updated_at || e.created_at),
+        ...dg.d.notas.filter((n) => n.participante_id === participanteId).map((n) => n.created_at),
+      ].filter(Boolean);
+      return datas.length ? datas.sort().pop().slice(0, 10) : null;
+    }
+
+    // Ativa que não aparece há 15 dias (ou que entrou há mais de 15 dias e nunca fez nada): precisa de incentivo.
+    function dgSemAtividade(p) {
+      if (p.arquivada || p.status !== 'ativa') return false;
+      const ref = [dgUltimaAtividade(p.id), p.data_entrada, String(p.created_at || '').slice(0, 10)].filter(Boolean).sort().pop();
+      return ref ? dgHaDias(ref) > 15 : false;
+    }
+
+    function dgEntregaDe(atividadeId, participanteId) {
+      return dg.d.entregas.find((e) => e.atividade_id === atividadeId && e.participante_id === participanteId) || null;
+    }
+
+    function dgStatusEntrega(atividadeId, participanteId) {
+      const e = dgEntregaDe(atividadeId, participanteId);
+      return e ? e.status : 'nao_iniciada';
+    }
+
+    // Todas as linhas de entrega de um desafio: cada atividade × cada inscrita.
+    function dgLinhasEntrega(desafioId) {
+      const inscritas = dgInscritas(desafioId).map(dgPart).filter((p) => p && !p.arquivada);
+      const atividades = dg.d.atividades.filter((a) => a.desafio_id === desafioId && a.semana !== 'fechamento');
+      const hoje = dgHoje();
+      const linhas = [];
+      atividades.forEach((a) => {
+        inscritas.forEach((p) => {
+          const entrega = dgEntregaDe(a.id, p.id);
+          const status = entrega ? entrega.status : 'nao_iniciada';
+          linhas.push({ atividade: a, participante: p, entrega, status, atrasada: !!a.prazo && a.prazo < hoje && status !== 'concluida' });
+        });
+      });
+      return linhas;
+    }
+
+    function dgRanking(desafioId) {
+      const desafio = desafioId ? dgDesafio(desafioId) : null;
+      const inscritas = desafio ? new Set(dgInscritas(desafioId)) : null;
+      const mapa = new Map();
+      dg.d.participantes.filter((p) => !p.arquivada).forEach((p) => {
+        if (!desafio || inscritas.has(p.id)) mapa.set(p.id, { p, pontos: 0, ultimo: null });
+      });
+      dg.d.pontos.filter((l) => l.valido && (!desafio || l.desafio_id === desafioId)).forEach((l) => {
+        const r = mapa.get(l.participante_id);
+        const p = r ? r.p : dgPart(l.participante_id);
+        if (!p || p.arquivada) return;
+        const linha = r || { p, pontos: 0, ultimo: null };
+        linha.pontos += l.pontos;
+        if (!linha.ultimo || l.created_at > linha.ultimo) linha.ultimo = l.created_at;
+        mapa.set(p.id, linha);
+      });
+      const regra = desafio ? desafio.desempate || 'entregas' : 'entregas';
+      const lista = [...mapa.values()].map((r) => ({
+        ...r,
+        concluidas: dg.d.entregas.filter((e) => e.participante_id === r.p.id && e.status === 'concluida' && (!desafio || e.desafio_id === desafioId)).length,
+      }));
+      lista.sort((a, b) => {
+        if (b.pontos !== a.pontos) return b.pontos - a.pontos;
+        if (regra === 'entregas' && b.concluidas !== a.concluidas) return b.concluidas - a.concluidas;
+        if (regra === 'antiga' && a.ultimo !== b.ultimo) return !a.ultimo ? 1 : !b.ultimo ? -1 : a.ultimo.localeCompare(b.ultimo);
+        return a.p.nome.localeCompare(b.p.nome);
+      });
+      let pos = 0;
+      let anterior = null;
+      lista.forEach((r, i) => {
+        if (r.pontos !== anterior) {
+          pos = i + 1;
+          anterior = r.pontos;
+        }
+        r.pos = pos;
+        r.empate = lista.filter((x) => x.pontos === r.pontos).length > 1;
+      });
+      return { lista, regra };
+    }
+
+    function dgDificuldades() {
+      const mapa = new Map();
+      const norma = (t) => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim();
+      const somar = (texto) => {
+        const chave = norma(texto || '');
+        if (!chave) return;
+        const atual = mapa.get(chave) || { rotulo: String(texto).trim(), qtd: 0 };
+        atual.qtd++;
+        mapa.set(chave, atual);
+      };
+      dg.d.participantes.filter((p) => !p.arquivada).forEach((p) => somar(p.dificuldade_principal));
+      dg.d.notas.filter((n) => n.tipo === 'dificuldade').forEach((n) => somar(n.texto));
+      return [...mapa.values()].sort((a, b) => b.qtd - a.qtd);
+    }
+
+    // ---- navegação ----
+    function dgIr(pagina, param, filtros) {
+      dgPagina = pagina;
+      dgParam = param || null;
+      if (filtros) Object.keys(filtros).forEach((k) => Object.assign(dgFiltro[k], filtros[k]));
+      dgRender();
+      const painel = document.getElementById('panel-desafios');
+      if (painel) painel.scrollIntoView({ block: 'start' });
+    }
+
+    function dgRender() {
+      const aviso = document.getElementById('dg-aviso');
+      const conteudo = document.getElementById('dg-conteudo');
+      if (!conteudo) return;
+      aviso.hidden = dg.ok;
+      document.querySelectorAll('.dg-subnav-btn').forEach((b) => {
+        const pagina = dgPagina.replace(/^(participante|desafio)$/, (m) => m + 's');
+        b.classList.toggle('ativo', b.dataset.dgPagina === pagina);
+      });
+      if (!dg.ok) {
+        conteudo.innerHTML = '';
+        return;
+      }
+      if (!dg.carregado) {
+        conteudo.innerHTML = '<p class="texto-vazio">Carregando...</p>';
+        return;
+      }
+      const paginas = {
+        visao: dgPaginaVisao,
+        participantes: dgPaginaParticipantes,
+        participante: dgPaginaParticipante,
+        desafios: dgPaginaDesafios,
+        desafio: dgPaginaDesafio,
+        entregas: dgPaginaEntregas,
+        pontos: dgPaginaPontos,
+        rankings: dgPaginaRankings,
+        premiacoes: dgPaginaPremiacoes,
+        evolucao: dgPaginaEvolucao,
+      };
+      conteudo.innerHTML = (paginas[dgPagina] || dgPaginaVisao)();
+      dgDepoisDeRenderizar();
+    }
+
+    function dgDepoisDeRenderizar() {
+      if (dgPagina === 'participantes') dgListaParticipantes();
+      if (dgPagina === 'desafios') dgListaDesafios();
+      if (dgPagina === 'entregas') dgListaEntregas();
+      if (dgPagina === 'pontos') dgListaPontos();
+    }
+
+    async function dgAbrirAba() {
+      if (!dg.carregado) {
+        dgRender();
+        await dgCarregar();
+      } else {
+        dgRender();
+      }
+    }
+
+    // ---- pecinhas de interface ----
+    const dgPill = (texto, classe) => `<span class="dg-pill ${classe || ''}">${dgH(texto)}</span>`;
+
+    function dgClasseStatusPart(p) {
+      if (p.arquivada) return 'dg-pill-cinza';
+      return p.status === 'ativa' ? 'dg-pill-verde' : p.status === 'pausada' ? 'dg-pill-amarela' : 'dg-pill-cinza';
+    }
+
+    function dgClasseStatusEntrega(status) {
+      return { nao_iniciada: 'dg-pill-cinza', em_andamento: 'dg-pill-azul', enviada: 'dg-pill-amarela', concluida: 'dg-pill-verde', ajustes: 'dg-pill-vermelha' }[status] || '';
+    }
+
+    function dgLinkInsta(p) {
+      const link = dgInstaLink(p);
+      return link ? `<a href="${dgH(link)}" target="_blank" rel="noopener noreferrer" class="dg-insta">${dgH(dgInstaTexto(p) || 'Instagram')}</a>` : '<span class="dg-vazio">—</span>';
+    }
+
+    const dgOpcoesSelect = (lista, atual, vazio) =>
+      (vazio ? `<option value="">${dgH(vazio)}</option>` : '') +
+      lista.map((o) => `<option value="${dgH(o[0])}"${String(o[0]) === String(atual) ? ' selected' : ''}>${dgH(o[1])}</option>`).join('');
+
+    const dgOpcoesParticipantes = (atual, vazio) =>
+      dgOpcoesSelect(
+        dg.d.participantes.filter((p) => !p.arquivada || p.id === atual).sort((a, b) => a.nome.localeCompare(b.nome)).map((p) => [p.id, p.nome]),
+        atual,
+        vazio
+      );
+
+    const dgOpcoesDesafios = (atual, vazio) =>
+      dgOpcoesSelect(
+        [...dg.d.desafios].sort((a, b) => b.data_inicio.localeCompare(a.data_inicio)).map((x) => [x.id, x.nome]),
+        atual,
+        vazio
+      );
+
+    // Troca o "atual" de um filtro pelo id do desafio atual.
+    const dgResolverDesafio = (valor) => (valor === 'atual' ? (dgDesafioAtual() || {}).id || '' : valor);
+
+    function dgCardStat({ icone, titulo, valor, sub, acao, param, cor }) {
+      return `<button type="button" class="dg-stat ${cor || ''}" data-dg-ir="${dgH(acao)}"${param ? ` data-dg-param="${dgH(param)}"` : ''}>
+        <span class="dg-stat-icone" aria-hidden="true">${icone}</span>
+        <span class="dg-stat-valor${String(valor).length > 8 ? ' dg-stat-valor-texto' : ''}">${dgH(valor)}</span>
+        <span class="dg-stat-titulo">${dgH(titulo)}</span>
+        ${sub ? `<span class="dg-stat-sub">${dgH(sub)}</span>` : ''}
+      </button>`;
+    }
+
+    // ==========================================================================
+    // Visão geral
+    // ==========================================================================
+    function dgPaginaVisao() {
+      const parts = dg.d.participantes.filter((p) => !p.arquivada);
+      const ativas = parts.filter((p) => p.status === 'ativa');
+      const inativas = parts.filter((p) => p.status !== 'ativa');
+      const semAtividade = ativas.filter(dgSemAtividade);
+      const atual = dgDesafioAtual();
+      const linhas = atual ? dgLinhasEntrega(atual.id) : [];
+      const andamento = linhas.filter((l) => l.status === 'em_andamento').length;
+      const pendentes = linhas.filter((l) => l.status !== 'concluida').length;
+      const paraConferir = linhas.filter((l) => l.status === 'enviada').length;
+      const atrasadas = linhas.filter((l) => l.atrasada).length;
+      const diasRestantes = atual ? Math.max(0, -dgHaDias(atual.data_fim)) : null;
+
+      const cards = [
+        dgCardStat({ icone: '👯', titulo: 'Participantes', valor: parts.length, sub: 'ver todas', acao: 'participantes' }),
+        dgCardStat({ icone: '🌟', titulo: 'Ativas', valor: ativas.length, sub: 'ver quem está participando', acao: 'participantes', param: 'ativa', cor: 'dg-stat-verde' }),
+        dgCardStat({ icone: '💤', titulo: 'Inativas', valor: inativas.length, sub: 'pausadas ou que saíram', acao: 'participantes', param: 'inativas' }),
+        dgCardStat({ icone: '💌', titulo: 'Precisam de incentivo', valor: semAtividade.length, sub: 'ativas há mais de 15 dias sem aparecer', acao: 'participantes', param: 'sem_atividade', cor: 'dg-stat-amarelo' }),
+        dgCardStat({
+          icone: '🏁',
+          titulo: 'Desafio atual',
+          valor: atual ? atual.nome : 'Nenhum',
+          sub: atual ? `${dgFmtData(atual.data_inicio)} a ${dgFmtData(atual.data_fim)} · ${diasRestantes === 0 ? 'último dia' : diasRestantes + ' dias restantes'}` : 'criar um desafio',
+          acao: atual ? 'desafio' : 'desafios',
+          param: atual ? atual.id : '',
+        }),
+        dgCardStat({ icone: '✏️', titulo: 'Tarefas em andamento', valor: andamento, sub: 'no desafio atual', acao: 'entregas', param: 'em_andamento' }),
+        dgCardStat({
+          icone: '📥',
+          titulo: 'Entregas pendentes',
+          valor: pendentes,
+          sub: `${paraConferir} para conferir · ${atrasadas} atrasadas`,
+          acao: 'entregas',
+          param: 'pendentes',
+          cor: atrasadas ? 'dg-stat-vermelho' : '',
+        }),
+      ].join('');
+
+      const rank = atual ? dgRanking(atual.id).lista.filter((r) => r.pontos !== 0).slice(0, 5) : [];
+      const proximos = dgDesafiosFuturos().slice(0, 4);
+      const dificuldades = dgDificuldades().slice(0, 5);
+      const conquistas = [...dg.d.conquistas].sort((a, b) => b.data.localeCompare(a.data) || b.created_at.localeCompare(a.created_at)).slice(0, 5);
+
+      return `
+        <div class="dg-grade-stats">${cards}</div>
+        <div class="dg-grade-blocos">
+          <section class="card dg-bloco">
+            <div class="dg-bloco-topo"><h3 class="card-titulo">🏆 Ranking atual</h3><button type="button" class="cal-btn" data-dg-ir="rankings">Ver ranking</button></div>
+            ${
+              atual
+                ? rank.length
+                  ? `<ol class="dg-lista-rank">${rank.map((r) => `<li><span class="dg-rank-pos">${r.pos}º</span><button type="button" class="dg-link" data-dg-ir="participante" data-dg-param="${r.p.id}">${dgH(r.p.nome)}</button><span class="dg-rank-pts">${r.pontos} pts</span></li>`).join('')}</ol>`
+                  : '<p class="dg-vazio-texto">Ninguém pontuou ainda neste desafio.</p>'
+                : '<p class="dg-vazio-texto">Sem desafio em andamento.</p>'
+            }
+          </section>
+          <section class="card dg-bloco">
+            <div class="dg-bloco-topo"><h3 class="card-titulo">📅 Próximos desafios</h3><button type="button" class="cal-btn" data-dg-ir="desafios" data-dg-param="planejado">Ver desafios</button></div>
+            ${
+              proximos.length
+                ? `<ul class="dg-lista-simples">${proximos.map((x) => `<li><button type="button" class="dg-link" data-dg-ir="desafio" data-dg-param="${x.id}">${dgH(x.nome)}</button><span>${dgFmtData(x.data_inicio)} a ${dgFmtData(x.data_fim)}</span></li>`).join('')}</ul>`
+                : '<p class="dg-vazio-texto">Nenhum desafio planejado. Crie os próximos pra organizar o calendário.</p>'
+            }
+          </section>
+          <section class="card dg-bloco">
+            <div class="dg-bloco-topo"><h3 class="card-titulo">🧩 Dificuldades mais frequentes</h3><button type="button" class="cal-btn" data-dg-ir="evolucao">Ver evolução</button></div>
+            ${
+              dificuldades.length
+                ? `<ul class="dg-lista-simples">${dificuldades.map((x) => `<li><span>${dgH(x.rotulo)}</span><strong>${x.qtd}x</strong></li>`).join('')}</ul>`
+                : '<p class="dg-vazio-texto">As dificuldades que você anotar aparecem aqui.</p>'
+            }
+          </section>
+          <section class="card dg-bloco">
+            <div class="dg-bloco-topo"><h3 class="card-titulo">🎉 Conquistas recentes</h3><button type="button" class="cal-btn" data-dg-ir="evolucao">Ver evolução</button></div>
+            ${
+              conquistas.length
+                ? `<ul class="dg-lista-simples">${conquistas.map((c) => `<li><span><button type="button" class="dg-link" data-dg-ir="participante" data-dg-param="${c.participante_id}">${dgH((dgPart(c.participante_id) || {}).nome || '—')}</button> · ${dgH(c.titulo)}</span><span>${dgFmtData(c.data)}</span></li>`).join('')}</ul>`
+                : '<p class="dg-vazio-texto">Quando uma participante conquistar algo, registre na página dela.</p>'
+            }
+          </section>
+        </div>`;
+    }
+
+    // ==========================================================================
+    // Participantes
+    // ==========================================================================
+    function dgFiltrosParticipantesHtml() {
+      const f = dgFiltro.part;
+      const statusOpcoes = [['ativa', 'Ativas'], ['pausada', 'Pausadas'], ['saiu', 'Saíram'], ['inativas', 'Inativas (pausadas e que saíram)'], ['sem_atividade', 'Precisam de incentivo (15 dias sem aparecer)'], ['arquivadas', 'Arquivadas']];
+      const atual = dgDesafioAtual();
+      const desafioOpcoes = [...(atual ? [['atual', 'No desafio atual: ' + atual.nome]] : []), ['nenhum', 'Em nenhum desafio'], ...dg.d.desafios.map((x) => [x.id, x.nome])];
+      return `
+        <div class="dg-filtros">
+          <input type="search" class="rt-busca dg-busca" data-dg-filtro="part.busca" placeholder="Buscar por nome ou Instagram" value="${dgH(f.busca)}">
+          <select data-dg-filtro="part.status">${dgOpcoesSelect(statusOpcoes, f.status, 'Todas (menos arquivadas)')}</select>
+          <select data-dg-filtro="part.etapa">${dgOpcoesSelect(DG_ETAPAS.map((e) => [e, e]), f.etapa, 'Todas as etapas')}</select>
+          <select data-dg-filtro="part.portfolio">${dgOpcoesSelect(DG_PORTFOLIOS.map((e) => [e, e]), f.portfolio, 'Todos os portfólios')}</select>
+          <select data-dg-filtro="part.desafio">${dgOpcoesSelect(desafioOpcoes, f.desafio, 'Todos os desafios')}</select>
+        </div>`;
+    }
+
+    function dgPaginaParticipantes() {
+      return `
+        <div class="dg-cabeca">
+          <div><h3 class="card-titulo">Participantes</h3><p class="cal-todas-resumo" id="dg-resumo-lista"></p></div>
+          <button type="button" class="cal-btn cal-btn-primario" data-dg-acao="nova-participante">+ Nova participante</button>
+        </div>
+        ${dgFiltrosParticipantesHtml()}
+        <div class="dg-tabela-wrap" id="dg-lista"></div>`;
+    }
+
+    function dgParticipantesFiltradas() {
+      const f = dgFiltro.part;
+      const termo = f.busca.trim().toLowerCase().replace(/^@/, '');
+      const idDesafio = dgResolverDesafio(f.desafio);
+      const inscritasDoDesafio = idDesafio && f.desafio !== 'nenhum' ? new Set(dgInscritas(idDesafio)) : null;
+      const emAlgum = new Set(dg.d.inscricoes.map((i) => i.participante_id));
+      return dg.d.participantes
+        .filter((p) => {
+          if (f.status === 'arquivadas') return p.arquivada;
+          if (p.arquivada) return false;
+          if (f.status === 'ativa' || f.status === 'pausada' || f.status === 'saiu') { if (p.status !== f.status) return false; }
+          if (f.status === 'inativas' && p.status === 'ativa') return false;
+          if (f.status === 'sem_atividade' && !dgSemAtividade(p)) return false;
+          if (f.etapa && p.etapa !== f.etapa) return false;
+          if (f.portfolio && p.portfolio_situacao !== f.portfolio) return false;
+          if (f.desafio === 'nenhum' && emAlgum.has(p.id)) return false;
+          if (inscritasDoDesafio && !inscritasDoDesafio.has(p.id)) return false;
+          if (termo && !(p.nome.toLowerCase().includes(termo) || String(p.instagram_usuario || '').toLowerCase().replace(/^@/, '').includes(termo))) return false;
+          return true;
+        })
+        .sort((a, b) => a.nome.localeCompare(b.nome));
+    }
+
+    function dgListaParticipantes() {
+      const lista = dgParticipantesFiltradas();
+      const resumo = document.getElementById('dg-resumo-lista');
+      if (resumo) resumo.textContent = lista.length === 0 ? 'Nenhuma participante encontrada.' : `${lista.length} ${lista.length === 1 ? 'participante' : 'participantes'}.`;
+      const area = document.getElementById('dg-lista');
+      if (!area) return;
+      if (!lista.length) {
+        area.innerHTML = '<p class="texto-vazio">Nada por aqui. Cadastre uma participante ou mude os filtros.</p>';
+        return;
+      }
+      area.innerHTML = `<table class="dg-tabela">
+        <thead><tr><th>Nome</th><th>Instagram</th><th>Etapa</th><th>Portfólio</th><th>Status</th><th>Pontos</th><th>Última atividade</th></tr></thead>
+        <tbody>${lista
+          .map((p) => {
+            const ultima = dgUltimaAtividade(p.id);
+            return `<tr data-dg-ir="participante" data-dg-param="${p.id}" class="dg-linha-clicavel">
+              <td><strong>${dgH(p.nome)}</strong></td>
+              <td>${dgLinkInsta(p)}</td>
+              <td>${dgH(p.etapa)}</td>
+              <td>${dgH(p.portfolio_situacao)}</td>
+              <td>${dgPill(p.arquivada ? 'Arquivada' : dgRotulo(DG_STATUS_PART, p.status), dgClasseStatusPart(p))}${dgSemAtividade(p) ? ' ' + dgPill('💌 incentivar', 'dg-pill-amarela') : ''}</td>
+              <td><strong>${dgPontos(p.id)}</strong></td>
+              <td>${dgH(dgTextoHa(ultima))}</td>
+            </tr>`;
+          })
+          .join('')}</tbody></table>`;
+    }
+
+    function dgFormularioParticipante(p) {
+      const inscritas = p ? dg.d.inscricoes.filter((i) => i.participante_id === p.id).map((i) => i.desafio_id) : [];
+      dgAbrirForm({
+        titulo: p ? 'Editar participante' : 'Nova participante',
+        campos: [
+          { k: 'nome', rotulo: 'Nome completo', tipo: 'texto', obrigatorio: true },
+          { k: 'instagram_usuario', rotulo: 'Nome de usuário do Instagram (sem @)', tipo: 'texto', ph: 'usuario' },
+          { k: 'instagram_link', rotulo: 'Link do Instagram (se ficar vazio, eu monto pelo usuário)', tipo: 'texto', ph: 'https://instagram.com/usuario' },
+          { k: 'data_entrada', rotulo: 'Data de entrada na comunidade', tipo: 'data' },
+          { k: 'etapa', rotulo: 'Etapa atual no UGC', tipo: 'select', opcoes: DG_ETAPAS.map((e) => [e, e]) },
+          { k: 'portfolio_situacao', rotulo: 'Situação do portfólio', tipo: 'select', opcoes: DG_PORTFOLIOS.map((e) => [e, e]) },
+          { k: 'portfolio_link', rotulo: 'Link do portfólio (quando houver)', tipo: 'texto', ph: 'https://' },
+          { k: 'experiencia_conteudo', rotulo: 'Experiência com criação de conteúdo', tipo: 'area' },
+          { k: 'experiencia_marcas', rotulo: 'Experiência com trabalhos para marcas', tipo: 'area' },
+          { k: 'dificuldade_principal', rotulo: 'Principal dificuldade', tipo: 'texto' },
+          { k: 'objetivo', rotulo: 'Objetivo profissional', tipo: 'area' },
+          { k: 'desafios', rotulo: 'Desafios dos quais participa', tipo: 'multi', opcoes: dg.d.desafios.map((x) => [x.id, x.nome]), vazio: 'Ainda não há desafios cadastrados.' },
+          { k: 'status', rotulo: 'Status na comunidade', tipo: 'select', opcoes: DG_STATUS_PART },
+          { k: 'observacoes', rotulo: 'Observações administrativas', tipo: 'area' },
+        ],
+        valores: p ? { ...p, desafios: inscritas } : { etapa: DG_ETAPAS[0], portfolio_situacao: DG_PORTFOLIOS[0], status: 'ativa', data_entrada: dgHoje(), desafios: [] },
+        extra: p ? { rotulo: p.arquivada ? 'Desarquivar' : 'Arquivar', fazer: () => dgArquivar(p) } : null,
+        salvar: async (v) => {
+          const usuario = (v.instagram_usuario || '').replace(/^@/, '').trim() || null;
+          const linha = {
+            nome: v.nome,
+            instagram_usuario: usuario,
+            instagram_link: v.instagram_link || (usuario ? 'https://instagram.com/' + usuario : null),
+            data_entrada: v.data_entrada,
+            etapa: v.etapa,
+            portfolio_situacao: v.portfolio_situacao,
+            portfolio_link: v.portfolio_link,
+            experiencia_conteudo: v.experiencia_conteudo,
+            experiencia_marcas: v.experiencia_marcas,
+            dificuldade_principal: v.dificuldade_principal,
+            objetivo: v.objetivo,
+            status: v.status,
+            observacoes: v.observacoes,
+          };
+          const salva = p ? await dgAtualizar('participantes', p.id, linha) : await dgInserir('participantes', linha);
+          await dgSincronizarInscricoes(salva.id, v.desafios || []);
+          return true;
+        },
+      });
+    }
+
+    // Deixa a participante só nos desafios marcados.
+    async function dgSincronizarInscricoes(participanteId, desafiosMarcados) {
+      const atuais = dg.d.inscricoes.filter((i) => i.participante_id === participanteId);
+      for (const i of atuais.filter((x) => !desafiosMarcados.includes(x.desafio_id))) await dgApagar('inscricoes', i.id);
+      for (const id of desafiosMarcados.filter((d) => !atuais.some((x) => x.desafio_id === d))) await dgInserir('inscricoes', { desafio_id: id, participante_id: participanteId });
+    }
+
+    async function dgSincronizarInscritas(desafioId, participantesMarcadas) {
+      const atuais = dg.d.inscricoes.filter((i) => i.desafio_id === desafioId);
+      for (const i of atuais.filter((x) => !participantesMarcadas.includes(x.participante_id))) await dgApagar('inscricoes', i.id);
+      for (const id of participantesMarcadas.filter((d) => !atuais.some((x) => x.participante_id === d))) await dgInserir('inscricoes', { desafio_id: desafioId, participante_id: id });
+    }
+
+    async function dgArquivar(p) {
+      try {
+        await dgAtualizar('participantes', p.id, { arquivada: !p.arquivada });
+        dgFecharForm();
+        dgToast(p.arquivada ? 'Participante arquivada.' : 'Participante desarquivada.');
+        dgRender();
+      } catch (err) {
+        dgErro(err, 'arquivar');
+      }
+    }
+
+    // ---- página individual ----
+    function dgPaginaParticipante() {
+      const p = dgPart(dgParam);
+      if (!p) return '<p class="texto-vazio">Participante não encontrada.</p>';
+      const ranking = dgRanking(null);
+      const posicao = (ranking.lista.find((r) => r.p.id === p.id) || {}).pos;
+      const inscricoes = dg.d.inscricoes.filter((i) => i.participante_id === p.id).map((i) => dgDesafio(i.desafio_id)).filter(Boolean).sort((a, b) => b.data_inicio.localeCompare(a.data_inicio));
+      const lancamentos = dg.d.pontos.filter((l) => l.participante_id === p.id).sort((a, b) => b.created_at.localeCompare(a.created_at));
+      const entregas = dg.d.entregas.filter((e) => e.participante_id === p.id).sort((a, b) => (b.updated_at || '').localeCompare(a.updated_at || ''));
+      const notas = dg.d.notas.filter((n) => n.participante_id === p.id).sort((a, b) => b.created_at.localeCompare(a.created_at));
+      const conquistas = dg.d.conquistas.filter((c) => c.participante_id === p.id).sort((a, b) => b.data.localeCompare(a.data));
+
+      const dado = (rotulo, valor) => `<div class="dg-dado"><span>${dgH(rotulo)}</span><strong>${valor || '<em class="dg-vazio">—</em>'}</strong></div>`;
+      return `
+        <button type="button" class="cal-btn dg-voltar" data-dg-ir="participantes">← Voltar às participantes</button>
+        <div class="card dg-ficha">
+          <div class="dg-bloco-topo">
+            <div>
+              <h3 class="card-titulo">${dgH(p.nome)}</h3>
+              <p class="cal-todas-resumo">${dgLinkInsta(p)} · entrou em ${dgFmtData(p.data_entrada)} · ${dgPill(p.arquivada ? 'Arquivada' : dgRotulo(DG_STATUS_PART, p.status), dgClasseStatusPart(p))}</p>
+            </div>
+            <button type="button" class="cal-btn" data-dg-acao="editar-participante" data-id="${p.id}">✏️ Editar cadastro</button>
+          </div>
+          <div class="dg-resumo-numeros">
+            <div><strong>${dgPontos(p.id)}</strong><span>pontos no geral</span></div>
+            <div><strong>${posicao ? posicao + 'º' : '—'}</strong><span>no ranking geral</span></div>
+            <div><strong>${inscricoes.length}</strong><span>desafios</span></div>
+            <div><strong>${entregas.filter((e) => e.status === 'concluida').length}</strong><span>entregas concluídas</span></div>
+            <div><strong>${conquistas.length}</strong><span>conquistas</span></div>
+          </div>
+          <div class="dg-dados">
+            ${dado('Etapa atual', dgH(p.etapa))}
+            ${dado('Portfólio', dgH(p.portfolio_situacao) + (p.portfolio_link ? ` · <a href="${dgH(p.portfolio_link)}" target="_blank" rel="noopener noreferrer">abrir</a>` : ''))}
+            ${dado('Principal dificuldade', dgH(p.dificuldade_principal))}
+            ${dado('Objetivo profissional', dgH(p.objetivo))}
+            ${dado('Experiência com conteúdo', dgH(p.experiencia_conteudo))}
+            ${dado('Experiência com marcas', dgH(p.experiencia_marcas))}
+            ${dado('Observações administrativas', dgH(p.observacoes))}
+          </div>
+        </div>
+
+        <div class="dg-grade-blocos">
+          <section class="card dg-bloco">
+            <div class="dg-bloco-topo"><h3 class="card-titulo">🏁 Desafios</h3></div>
+            ${
+              inscricoes.length
+                ? `<ul class="dg-lista-simples">${inscricoes.map((x) => {
+                    const rk = dgRanking(x.id).lista.find((r) => r.p.id === p.id);
+                    return `<li><button type="button" class="dg-link" data-dg-ir="desafio" data-dg-param="${x.id}">${dgH(x.nome)}</button><span>${dgPontos(p.id, x.id)} pts${rk && rk.pontos ? ` · ${rk.pos}º` : ''}${x.vencedora_id === p.id ? ' · 🏆' : ''}</span></li>`;
+                  }).join('')}</ul>`
+                : '<p class="dg-vazio-texto">Ainda não participa de nenhum desafio. Marque no cadastro.</p>'
+            }
+          </section>
+          <section class="card dg-bloco">
+            <div class="dg-bloco-topo"><h3 class="card-titulo">⭐ Pontuações</h3><button type="button" class="cal-btn" data-dg-ir="pontos" data-dg-param="${p.id}">Lançar pontos</button></div>
+            ${
+              lancamentos.length
+                ? `<ul class="dg-lista-simples">${lancamentos.slice(0, 12).map((l) => `<li class="${l.valido ? '' : 'dg-anulado'}"><span>${dgH(l.motivo)}${l.desafio_id ? ' · ' + dgH((dgDesafio(l.desafio_id) || {}).nome) : ''}<small>${dgFmtData(l.created_at)}${l.valido ? '' : ' · anulado'}</small></span><strong>${l.pontos > 0 ? '+' : ''}${l.pontos}</strong></li>`).join('')}</ul>`
+                : '<p class="dg-vazio-texto">Nenhum ponto lançado.</p>'
+            }
+          </section>
+          <section class="card dg-bloco">
+            <div class="dg-bloco-topo"><h3 class="card-titulo">📥 Entregas</h3></div>
+            ${
+              entregas.length
+                ? `<ul class="dg-lista-simples">${entregas.slice(0, 12).map((e) => {
+                    const a = dgAtividade(e.atividade_id);
+                    return `<li><span>${dgH(a ? a.titulo : 'Atividade removida')}<small>${dgH((dgDesafio(e.desafio_id) || {}).nome || '')}</small></span>${dgPill(dgRotulo(DG_STATUS_ENTREGA, e.status), dgClasseStatusEntrega(e.status))}</li>`;
+                  }).join('')}</ul>`
+                : '<p class="dg-vazio-texto">Nenhuma entrega registrada ainda.</p>'
+            }
+          </section>
+          <section class="card dg-bloco">
+            <div class="dg-bloco-topo"><h3 class="card-titulo">🎉 Conquistas</h3><button type="button" class="cal-btn" data-dg-acao="nova-conquista" data-id="${p.id}">+ Conquista</button></div>
+            ${
+              conquistas.length
+                ? `<ul class="dg-lista-simples">${conquistas.map((c) => `<li><span>${dgH(c.titulo)}${c.observacao ? `<small>${dgH(c.observacao)}</small>` : ''}</span><span>${dgFmtData(c.data)} <button type="button" class="dg-mini" data-dg-acao="apagar-conquista" data-id="${c.id}" aria-label="Apagar">✕</button></span></li>`).join('')}</ul>`
+                : '<p class="dg-vazio-texto">Registre aqui os marcos: primeiro portfólio, primeiros vídeos, primeiro trabalho...</p>'
+            }
+          </section>
+        </div>
+
+        <section class="card dg-bloco dg-bloco-largo">
+          <div class="dg-bloco-topo"><h3 class="card-titulo">💬 Feedbacks, dúvidas, dificuldades e orientações</h3><button type="button" class="cal-btn cal-btn-primario" data-dg-acao="nova-nota" data-id="${p.id}">+ Anotação</button></div>
+          ${
+            notas.length
+              ? `<ul class="dg-notas">${notas.map((n) => `<li><div class="dg-nota-topo">${dgPill(dgRotulo(DG_TIPOS_NOTA, n.tipo), n.tipo === 'dificuldade' ? 'dg-pill-vermelha' : n.tipo === 'duvida' ? 'dg-pill-amarela' : 'dg-pill-azul')}<span>${dgFmtData(n.created_at)}${n.desafio_id ? ' · ' + dgH((dgDesafio(n.desafio_id) || {}).nome) : ''}</span><button type="button" class="dg-mini" data-dg-acao="apagar-nota" data-id="${n.id}" aria-label="Apagar">✕</button></div><p>${dgH(n.texto)}</p></li>`).join('')}</ul>`
+              : '<p class="dg-vazio-texto">Nenhuma anotação ainda. Registre o que você orientou, as dúvidas e as dificuldades que ela contou.</p>'
+          }
+        </section>`;
+    }
+
+    function dgFormularioNota(participanteId) {
+      dgAbrirForm({
+        titulo: 'Nova anotação: ' + ((dgPart(participanteId) || {}).nome || ''),
+        campos: [
+          { k: 'tipo', rotulo: 'Tipo', tipo: 'select', opcoes: DG_TIPOS_NOTA },
+          { k: 'desafio_id', rotulo: 'Desafio (opcional)', tipo: 'select', opcoes: [['', '—'], ...dg.d.desafios.map((x) => [x.id, x.nome])] },
+          { k: 'texto', rotulo: 'O que aconteceu / o que você orientou', tipo: 'area', linhas: 5, obrigatorio: true },
+        ],
+        valores: { tipo: 'feedback', desafio_id: (dgDesafioAtual() || {}).id || '' },
+        salvar: async (v) => {
+          await dgInserir('notas', { participante_id: participanteId, tipo: v.tipo, desafio_id: v.desafio_id || null, texto: v.texto });
+          return true;
+        },
+      });
+    }
+
+    function dgFormularioConquista(participanteId) {
+      dgAbrirForm({
+        titulo: 'Nova conquista: ' + ((dgPart(participanteId) || {}).nome || ''),
+        campos: [
+          { k: 'titulo', rotulo: 'Conquista', tipo: 'texto', obrigatorio: true, sugestoes: DG_CONQUISTAS_SUGESTOES },
+          { k: 'data', rotulo: 'Data', tipo: 'data' },
+          { k: 'observacao', rotulo: 'Observação (opcional)', tipo: 'area' },
+        ],
+        valores: { data: dgHoje() },
+        salvar: async (v) => {
+          await dgInserir('conquistas', { participante_id: participanteId, titulo: v.titulo, data: v.data || dgHoje(), observacao: v.observacao });
+          return true;
+        },
+      });
+    }
+
+    // ==========================================================================
+    // Desafios
+    // ==========================================================================
+    function dgPaginaDesafios() {
+      const f = dgFiltro.desafios;
+      return `
+        <div class="dg-cabeca">
+          <div><h3 class="card-titulo">Desafios</h3><p class="cal-todas-resumo" id="dg-resumo-lista"></p></div>
+          <button type="button" class="cal-btn cal-btn-primario" data-dg-acao="novo-desafio">+ Novo desafio</button>
+        </div>
+        <div class="dg-filtros">
+          <select data-dg-filtro="desafios.status">${dgOpcoesSelect(DG_STATUS_DESAFIO, f.status, 'Todos os desafios')}</select>
+        </div>
+        <div id="dg-lista"></div>`;
+    }
+
+    function dgListaDesafios() {
+      const f = dgFiltro.desafios;
+      const lista = dg.d.desafios.filter((x) => !f.status || x.status === f.status).sort((a, b) => b.data_inicio.localeCompare(a.data_inicio));
+      const resumo = document.getElementById('dg-resumo-lista');
+      if (resumo) resumo.textContent = lista.length ? `${lista.length} ${lista.length === 1 ? 'desafio' : 'desafios'}.` : 'Nenhum desafio ainda.';
+      const area = document.getElementById('dg-lista');
+      if (!lista.length) {
+        area.innerHTML = '<p class="texto-vazio">Nenhum desafio aqui. Crie o primeiro ciclo de 15 dias.</p>';
+        return;
+      }
+      const atual = dgDesafioAtual();
+      area.innerHTML = `<div class="dg-cards-desafios">${lista
+        .map((x) => {
+          const atividades = dg.d.atividades.filter((a) => a.desafio_id === x.id && a.semana !== 'fechamento').length;
+          const vencedora = x.vencedora_id ? dgPart(x.vencedora_id) : null;
+          return `<button type="button" class="card dg-card-desafio${atual && atual.id === x.id ? ' dg-card-desafio-atual' : ''}" data-dg-ir="desafio" data-dg-param="${x.id}">
+            <span class="dg-card-desafio-topo">${dgPill(atual && atual.id === x.id ? 'Atual' : dgRotulo(DG_STATUS_DESAFIO, x.status), x.status === 'encerrado' ? 'dg-pill-cinza' : x.status === 'planejado' ? 'dg-pill-amarela' : 'dg-pill-verde')}<span>${dgFmtData(x.data_inicio)} a ${dgFmtData(x.data_fim)}</span></span>
+            <strong class="dg-card-desafio-nome">${dgH(x.nome)}</strong>
+            <span class="dg-card-desafio-info">${dgInscritas(x.id).length} inscritas · ${atividades} atividades</span>
+            ${vencedora ? `<span class="dg-card-desafio-info">🏆 ${dgH(vencedora.nome)}</span>` : ''}
+          </button>`;
+        })
+        .join('')}</div>`;
+    }
+
+    function dgFormularioDesafio(x) {
+      const inscritas = x ? dgInscritas(x.id) : [];
+      const hoje = dgHoje();
+      dgAbrirForm({
+        titulo: x ? 'Editar desafio' : 'Novo desafio (ciclo de 15 dias)',
+        campos: [
+          { k: 'nome', rotulo: 'Nome do desafio', tipo: 'texto', obrigatorio: true },
+          { k: 'descricao', rotulo: 'Descrição', tipo: 'area' },
+          { k: 'objetivo', rotulo: 'Objetivo', tipo: 'area' },
+          { k: 'data_inicio', rotulo: 'Início', tipo: 'data', obrigatorio: true },
+          { k: 'data_fim', rotulo: 'Encerramento (o último dia é pra conferir as entregas e anunciar a vencedora)', tipo: 'data', obrigatorio: true },
+          { k: 'regras', rotulo: 'Regras', tipo: 'area', linhas: 4 },
+          { k: 'criterios_pontuacao', rotulo: 'Critérios de pontuação', tipo: 'area', linhas: 4 },
+          { k: 'desempate', rotulo: 'Critério de desempate no ranking', tipo: 'select', opcoes: DG_DESEMPATES },
+          { k: 'status', rotulo: 'Status', tipo: 'select', opcoes: DG_STATUS_DESAFIO },
+          { k: 'inscritas', rotulo: 'Quem participa', tipo: 'multi', opcoes: dg.d.participantes.filter((p) => !p.arquivada && p.status !== 'saiu').sort((a, b) => a.nome.localeCompare(b.nome)).map((p) => [p.id, p.nome]), vazio: 'Cadastre as participantes primeiro.' },
+        ],
+        valores: x ? { ...x, inscritas } : { data_inicio: hoje, data_fim: dgSomaDias(hoje, 14), desempate: 'entregas', status: 'planejado', inscritas: dg.d.participantes.filter((p) => !p.arquivada && p.status === 'ativa').map((p) => p.id) },
+        extra: x && x.status !== 'encerrado' ? { rotulo: 'Encerrar desafio', fazer: () => dgEncerrar(x) } : null,
+        salvar: async (v) => {
+          if (v.data_fim < v.data_inicio) {
+            alert('A data de encerramento precisa ser depois do início.');
+            return false;
+          }
+          const linha = {
+            nome: v.nome,
+            descricao: v.descricao,
+            objetivo: v.objetivo,
+            data_inicio: v.data_inicio,
+            data_fim: v.data_fim,
+            regras: v.regras,
+            criterios_pontuacao: v.criterios_pontuacao,
+            desempate: v.desempate,
+            status: v.status,
+          };
+          const salvo = x ? await dgAtualizar('desafios', x.id, linha) : await dgInserir('desafios', linha);
+          await dgSincronizarInscritas(salvo.id, v.inscritas || []);
+          if (!x) {
+            // o último dia já nasce como atividade de fechamento
+            await dgInserir('atividades', { desafio_id: salvo.id, titulo: 'Conferir as entregas, fechar o ranking e anunciar a vencedora', semana: 'fechamento', prazo: salvo.data_fim, ordem: 99 });
+            dgIr('desafio', salvo.id);
+          }
+          return true;
+        },
+      });
+    }
+
+    async function dgEncerrar(x) {
+      if (!(await confirmarAcao('Encerrar este desafio? O ranking dele fica guardado nos rankings anteriores.', { textoConfirmar: 'Encerrar', perigo: false }))) return;
+      try {
+        await dgAtualizar('desafios', x.id, { status: 'encerrado' });
+        dgFecharForm();
+        dgToast('Desafio encerrado. Agora é só registrar a vencedora.');
+        dgIr('rankings', null, { ranking: { desafio: x.id } });
+      } catch (err) {
+        dgErro(err, 'encerrar');
+      }
+    }
+
+    function dgPaginaDesafio() {
+      const x = dgDesafio(dgParam);
+      if (!x) return '<p class="texto-vazio">Desafio não encontrado.</p>';
+      const hoje = dgHoje();
+      const inscritas = dgInscritas(x.id).map(dgPart).filter(Boolean).sort((a, b) => a.nome.localeCompare(b.nome));
+      const atividades = dg.d.atividades.filter((a) => a.desafio_id === x.id).sort((a, b) => (a.prazo || '9').localeCompare(b.prazo || '9') || a.ordem - b.ordem);
+      const linhas = dgLinhasEntrega(x.id);
+      const ranking = dgRanking(x.id).lista.filter((r) => r.pontos !== 0).slice(0, 5);
+      const premiacoes = dg.d.premiacoes.filter((p) => p.desafio_id === x.id);
+      const vencedora = x.vencedora_id ? dgPart(x.vencedora_id) : null;
+      const total = linhas.length;
+      const concluidas = linhas.filter((l) => l.status === 'concluida').length;
+      const grupo = (chave, rotulo) => {
+        const itens = atividades.filter((a) => a.semana === chave);
+        return `<div class="dg-semana">
+          <h4>${dgH(rotulo)}</h4>
+          ${
+            itens.length
+              ? `<ul class="dg-lista-simples">${itens.map((a) => {
+                  const feitas = a.semana === 'fechamento' ? null : linhas.filter((l) => l.atividade.id === a.id && l.status === 'concluida').length;
+                  const insc = a.semana === 'fechamento' ? null : inscritas.length;
+                  const atrasada = a.prazo && a.prazo < hoje && x.status !== 'encerrado';
+                  return `<li><span>${dgH(a.titulo)}<small>${a.prazo ? 'prazo ' + dgFmtData(a.prazo) : 'sem prazo'}${feitas != null ? ` · ${feitas}/${insc} concluídas` : ''}${atrasada && feitas != null && feitas < insc ? ' · ' + dgPill('atrasada', 'dg-pill-vermelha') : ''}</small>${a.descricao ? `<small>${dgH(a.descricao)}</small>` : ''}</span><span class="dg-acoes-mini">${a.semana !== 'fechamento' ? `<button type="button" class="dg-mini" data-dg-ir="entregas" data-dg-param="${x.id}" title="Ver entregas">📥</button>` : ''}<button type="button" class="dg-mini" data-dg-acao="editar-atividade" data-id="${a.id}" title="Editar">✏️</button></span></li>`;
+                }).join('')}</ul>`
+              : '<p class="dg-vazio-texto">Nenhuma atividade.</p>'
+          }
+        </div>`;
+      };
+      return `
+        <button type="button" class="cal-btn dg-voltar" data-dg-ir="desafios">← Voltar aos desafios</button>
+        <div class="card dg-ficha">
+          <div class="dg-bloco-topo">
+            <div>
+              <h3 class="card-titulo">${dgH(x.nome)}</h3>
+              <p class="cal-todas-resumo">${dgPill(dgRotulo(DG_STATUS_DESAFIO, x.status), x.status === 'encerrado' ? 'dg-pill-cinza' : x.status === 'planejado' ? 'dg-pill-amarela' : 'dg-pill-verde')} ${dgFmtData(x.data_inicio)} a ${dgFmtData(x.data_fim)} · ${inscritas.length} inscritas · ${total ? Math.round((concluidas / total) * 100) : 0}% das entregas concluídas</p>
+            </div>
+            <div class="dg-acoes-topo">
+              <button type="button" class="cal-btn" data-dg-acao="editar-desafio" data-id="${x.id}">✏️ Editar</button>
+              ${x.status !== 'encerrado' ? `<button type="button" class="cal-btn" data-dg-acao="encerrar-desafio" data-id="${x.id}">Encerrar</button>` : ''}
+              <button type="button" class="cal-btn pl-btn-excluir" data-dg-acao="apagar-desafio" data-id="${x.id}">Excluir</button>
+            </div>
+          </div>
+          <div class="dg-dados">
+            <div class="dg-dado"><span>Descrição</span><strong>${dgH(x.descricao) || '<em class="dg-vazio">—</em>'}</strong></div>
+            <div class="dg-dado"><span>Objetivo</span><strong>${dgH(x.objetivo) || '<em class="dg-vazio">—</em>'}</strong></div>
+            <div class="dg-dado"><span>Regras</span><strong>${dgH(x.regras) || '<em class="dg-vazio">—</em>'}</strong></div>
+            <div class="dg-dado"><span>Critérios de pontuação</span><strong>${dgH(x.criterios_pontuacao) || '<em class="dg-vazio">—</em>'}</strong></div>
+            <div class="dg-dado"><span>Desempate</span><strong>${dgH(dgRotulo(DG_DESEMPATES, x.desempate))}</strong></div>
+            <div class="dg-dado"><span>Vencedora</span><strong>${vencedora ? '🏆 ' + dgH(vencedora.nome) : '<em class="dg-vazio">ainda não registrada</em>'}</strong></div>
+          </div>
+        </div>
+
+        <section class="card dg-bloco dg-bloco-largo">
+          <div class="dg-bloco-topo"><h3 class="card-titulo">📋 Atividades</h3><button type="button" class="cal-btn cal-btn-primario" data-dg-acao="nova-atividade" data-id="${x.id}">+ Atividade</button></div>
+          <div class="dg-semanas">${grupo('semana1', 'Semana 1')}${grupo('semana2', 'Semana 2')}${grupo('fechamento', 'Último dia')}</div>
+        </section>
+
+        <div class="dg-grade-blocos">
+          <section class="card dg-bloco">
+            <div class="dg-bloco-topo"><h3 class="card-titulo">🏆 Ranking do ciclo</h3><button type="button" class="cal-btn" data-dg-ir="rankings" data-dg-param="${x.id}">Ver completo</button></div>
+            ${
+              ranking.length
+                ? `<ol class="dg-lista-rank">${ranking.map((r) => `<li><span class="dg-rank-pos">${r.pos}º</span><span>${dgH(r.p.nome)}</span><span class="dg-rank-pts">${r.pontos} pts</span></li>`).join('')}</ol>`
+                : '<p class="dg-vazio-texto">Ninguém pontuou ainda.</p>'
+            }
+          </section>
+          <section class="card dg-bloco">
+            <div class="dg-bloco-topo"><h3 class="card-titulo">🎁 Premiação</h3><button type="button" class="cal-btn" data-dg-acao="nova-premiacao" data-id="${x.id}">+ Prêmio</button></div>
+            ${
+              premiacoes.length
+                ? `<ul class="dg-lista-simples">${premiacoes.map((pr) => `<li><button type="button" class="dg-link" data-dg-acao="editar-premiacao" data-id="${pr.id}">${dgH((dg.d.premios.find((z) => z.id === pr.premio_id) || {}).nome || 'Prêmio')}</button>${dgPill(dgRotulo(DG_STATUS_PREMIACAO, pr.status), pr.status === 'entregue' ? 'dg-pill-verde' : pr.status === 'anunciada' ? 'dg-pill-azul' : 'dg-pill-amarela')}</li>`).join('')}</ul>`
+                : '<p class="dg-vazio-texto">Escolha o prêmio deste desafio.</p>'
+            }
+          </section>
+          <section class="card dg-bloco">
+            <div class="dg-bloco-topo"><h3 class="card-titulo">👯 Inscritas</h3><button type="button" class="cal-btn" data-dg-acao="editar-desafio" data-id="${x.id}">Editar</button></div>
+            ${
+              inscritas.length
+                ? `<ul class="dg-lista-simples dg-lista-compacta">${inscritas.map((p) => `<li><button type="button" class="dg-link" data-dg-ir="participante" data-dg-param="${p.id}">${dgH(p.nome)}</button><span>${dgPontos(p.id, x.id)} pts</span></li>`).join('')}</ul>`
+                : '<p class="dg-vazio-texto">Ninguém inscrita ainda.</p>'
+            }
+          </section>
+        </div>`;
+    }
+
+    function dgFormularioAtividade(desafioId, a) {
+      const x = dgDesafio(desafioId);
+      dgAbrirForm({
+        titulo: a ? 'Editar atividade' : 'Nova atividade: ' + (x ? x.nome : ''),
+        campos: [
+          { k: 'titulo', rotulo: 'Atividade', tipo: 'texto', obrigatorio: true },
+          { k: 'descricao', rotulo: 'Descrição', tipo: 'area' },
+          { k: 'semana', rotulo: 'Quando', tipo: 'select', opcoes: DG_SEMANAS },
+          { k: 'prazo', rotulo: 'Prazo', tipo: 'data' },
+        ],
+        valores: a || { semana: 'semana1', prazo: x ? dgSomaDias(x.data_inicio, 6) : '' },
+        excluir: a ? async () => {
+          if (!(await confirmarAcao('Excluir esta atividade e as entregas dela?'))) return false;
+          await dgApagar('atividades', a.id);
+          dg.d.entregas = dg.d.entregas.filter((e) => e.atividade_id !== a.id);
+          return true;
+        } : null,
+        salvar: async (v) => {
+          const linha = { titulo: v.titulo, descricao: v.descricao, semana: v.semana, prazo: v.prazo };
+          if (a) await dgAtualizar('atividades', a.id, linha);
+          else await dgInserir('atividades', { ...linha, desafio_id: desafioId, ordem: dg.d.atividades.filter((z) => z.desafio_id === desafioId).length });
+          return true;
+        },
+      });
+    }
+
+    // ==========================================================================
+    // Entregas
+    // ==========================================================================
+    function dgPaginaEntregas() {
+      const f = dgFiltro.entregas;
+      const statusOpcoes = [['pendentes', 'Pendentes (não concluídas)'], ['atrasadas', 'Atrasadas'], ...DG_STATUS_ENTREGA];
+      const atual = dgDesafioAtual();
+      return `
+        <div class="dg-cabeca">
+          <div><h3 class="card-titulo">Entregas</h3><p class="cal-todas-resumo" id="dg-resumo-lista"></p></div>
+        </div>
+        <div class="dg-filtros">
+          <select data-dg-filtro="entregas.desafio">${(atual ? '' : '<option value="">Escolha um desafio</option>') + dgOpcoesDesafiosComAtual(f.desafio)}</select>
+          <select data-dg-filtro="entregas.status">${dgOpcoesSelect(statusOpcoes, f.status, 'Todos os status')}</select>
+          <select data-dg-filtro="entregas.participante">${dgOpcoesParticipantes(f.participante, 'Todas as participantes')}</select>
+        </div>
+        <div class="dg-tabela-wrap" id="dg-lista"></div>`;
+    }
+
+    function dgOpcoesDesafiosComAtual(valor) {
+      const atual = dgDesafioAtual();
+      const lista = [...(atual ? [['atual', 'Desafio atual: ' + atual.nome]] : []), ...[...dg.d.desafios].sort((a, b) => b.data_inicio.localeCompare(a.data_inicio)).map((x) => [x.id, x.nome])];
+      return dgOpcoesSelect(lista, valor);
+    }
+
+    function dgListaEntregas() {
+      const f = dgFiltro.entregas;
+      const desafioId = dgResolverDesafio(f.desafio);
+      const area = document.getElementById('dg-lista');
+      const resumo = document.getElementById('dg-resumo-lista');
+      if (!desafioId) {
+        area.innerHTML = '<p class="texto-vazio">Escolha um desafio pra ver as entregas.</p>';
+        resumo.textContent = '';
+        return;
+      }
+      let linhas = dgLinhasEntrega(desafioId);
+      if (f.status === 'pendentes') linhas = linhas.filter((l) => l.status !== 'concluida');
+      else if (f.status === 'atrasadas') linhas = linhas.filter((l) => l.atrasada);
+      else if (f.status) linhas = linhas.filter((l) => l.status === f.status);
+      if (f.participante) linhas = linhas.filter((l) => l.participante.id === f.participante);
+      linhas.sort((a, b) => (a.atividade.prazo || '9').localeCompare(b.atividade.prazo || '9') || a.participante.nome.localeCompare(b.participante.nome));
+      resumo.textContent = `${linhas.length} ${linhas.length === 1 ? 'entrega' : 'entregas'}.`;
+      if (!linhas.length) {
+        area.innerHTML = '<p class="texto-vazio">Nada por aqui. Cadastre atividades no desafio e inscreva as participantes pra elas aparecerem.</p>';
+        return;
+      }
+      area.innerHTML = `<table class="dg-tabela">
+        <thead><tr><th>Participante</th><th>Atividade</th><th>Prazo</th><th>Status</th><th>Conteúdo</th><th></th></tr></thead>
+        <tbody>${linhas
+          .map((l) => `<tr class="${l.atrasada ? 'dg-linha-atrasada' : ''}">
+            <td><button type="button" class="dg-link" data-dg-ir="participante" data-dg-param="${l.participante.id}">${dgH(l.participante.nome)}</button><small>${dgH(dgInstaTexto(l.participante))}</small></td>
+            <td>${dgH(l.atividade.titulo)}</td>
+            <td>${dgFmtData(l.atividade.prazo)}${l.atrasada ? ' ' + dgPill('atrasada', 'dg-pill-vermelha') : ''}</td>
+            <td><select class="dg-select-status ${dgClasseStatusEntrega(l.status)}" data-dg-status-entrega data-atividade="${l.atividade.id}" data-participante="${l.participante.id}" data-desafio="${desafioId}">${dgOpcoesSelect(DG_STATUS_ENTREGA, l.status)}</select></td>
+            <td>${l.entrega && l.entrega.link_conteudo ? `<a href="${dgH(l.entrega.link_conteudo)}" target="_blank" rel="noopener noreferrer">abrir link</a>` : '<span class="dg-vazio">—</span>'}${l.entrega && l.entrega.observacao ? `<small>${dgH(l.entrega.observacao)}</small>` : ''}</td>
+            <td><button type="button" class="cal-btn" data-dg-acao="editar-entrega" data-atividade="${l.atividade.id}" data-participante="${l.participante.id}" data-desafio="${desafioId}">Detalhes</button></td>
+          </tr>`)
+          .join('')}</tbody></table>`;
+    }
+
+    // Cria ou atualiza a entrega de uma participante numa atividade.
+    async function dgSalvarEntrega(desafioId, atividadeId, participanteId, campos) {
+      const existente = dgEntregaDe(atividadeId, participanteId);
+      const agora = new Date().toISOString();
+      if (existente) return dgAtualizar('entregas', existente.id, { ...campos, updated_at: agora });
+      return dgInserir('entregas', { desafio_id: desafioId, atividade_id: atividadeId, participante_id: participanteId, ...campos, updated_at: agora });
+    }
+
+    function dgFormularioEntrega(desafioId, atividadeId, participanteId) {
+      const e = dgEntregaDe(atividadeId, participanteId);
+      const a = dgAtividade(atividadeId);
+      dgAbrirForm({
+        titulo: `${(dgPart(participanteId) || {}).nome || ''}: ${a ? a.titulo : ''}`,
+        campos: [
+          { k: 'status', rotulo: 'Status', tipo: 'select', opcoes: DG_STATUS_ENTREGA },
+          { k: 'link_conteudo', rotulo: 'Link do conteúdo (Instagram ou o que ela mandou no WhatsApp)', tipo: 'texto', ph: 'https://' },
+          { k: 'observacao', rotulo: 'Observação / ajuste pedido', tipo: 'area' },
+        ],
+        valores: e || { status: 'nao_iniciada' },
+        salvar: async (v) => {
+          await dgSalvarEntrega(desafioId, atividadeId, participanteId, { status: v.status, link_conteudo: v.link_conteudo, observacao: v.observacao });
+          return true;
+        },
+      });
+    }
+
+    // ==========================================================================
+    // Pontuação
+    // ==========================================================================
+    function dgMotivosDisponiveis(desafioId) {
+      return dg.d.motivos.filter((m) => m.ativo && (!m.desafio_id || m.desafio_id === desafioId)).sort((a, b) => a.nome.localeCompare(b.nome));
+    }
+
+    function dgPaginaPontos() {
+      const f = dgFiltro.pontos;
+      const atual = dgDesafioAtual();
+      const desafioPadrao = f.desafio && f.desafio !== 'todos' ? f.desafio : atual ? atual.id : '';
+      return `
+        <div class="dg-cabeca"><div><h3 class="card-titulo">Pontuação</h3><p class="cal-todas-resumo">Cada lançamento fica registrado com data. O total é calculado sozinho pelos lançamentos válidos.</p></div></div>
+        <div class="card dg-lancar" id="dg-form-pontos">
+          <h4 class="dg-sub">⭐ Lançar pontos</h4>
+          <div class="dg-lancar-grade">
+            <label>Participante<select id="dgp-participante">${dgOpcoesParticipantes(f.participante, 'Escolha...')}</select></label>
+            <label>Desafio<select id="dgp-desafio">${dgOpcoesDesafios(desafioPadrao, 'Sem desafio (conta só no geral)')}</select></label>
+            <label>Motivo<select id="dgp-motivo"></select></label>
+            <label>Pontos<input type="number" id="dgp-pontos" step="1" placeholder="ex: 10 ou -5"></label>
+            <label class="dg-lancar-largo" id="dgp-outro-campo" hidden>Qual é o motivo?<input type="text" id="dgp-motivo-texto" maxlength="120"></label>
+            <label class="dg-lancar-largo">Observação (opcional)<input type="text" id="dgp-observacao" maxlength="300"></label>
+          </div>
+          <div class="dg-lancar-acoes"><button type="button" class="cal-btn cal-btn-primario" data-dg-acao="lancar-pontos">Lançar pontos</button><button type="button" class="cal-btn" data-dg-acao="gerenciar-motivos">Gerenciar motivos</button></div>
+        </div>
+        <div class="dg-filtros">
+          <select data-dg-filtro="pontos.participante">${dgOpcoesParticipantes(f.participante, 'Todas as participantes')}</select>
+          <select data-dg-filtro="pontos.desafio">${dgOpcoesSelect([...dg.d.desafios].sort((a, b) => b.data_inicio.localeCompare(a.data_inicio)).map((x) => [x.id, x.nome]), f.desafio, 'Todos os desafios')}</select>
+        </div>
+        <div class="dg-tabela-wrap" id="dg-lista"></div>`;
+    }
+
+    // Preenche a lista de motivos do formulário conforme o desafio e já sugere os pontos do motivo.
+    function dgPreencherMotivos() {
+      const selMotivo = document.getElementById('dgp-motivo');
+      if (!selMotivo) return;
+      const desafioId = document.getElementById('dgp-desafio').value || null;
+      const anterior = selMotivo.value;
+      const motivos = dgMotivosDisponiveis(desafioId);
+      selMotivo.innerHTML =
+        '<option value="">Escolha...</option>' +
+        motivos.map((m) => `<option value="${m.id}">${dgH(m.nome)} (${m.pontos_padrao > 0 ? '+' : ''}${m.pontos_padrao})${m.desafio_id ? ' · deste desafio' : ''}</option>`).join('') +
+        '<option value="__outro__">Outro motivo (digitar)</option>';
+      if (motivos.some((m) => m.id === anterior) || anterior === '__outro__') selMotivo.value = anterior;
+      dgMotivoMudou(false);
+    }
+
+    function dgMotivoMudou(sugerir) {
+      const sel = document.getElementById('dgp-motivo');
+      document.getElementById('dgp-outro-campo').hidden = sel.value !== '__outro__';
+      if (sugerir) {
+        const m = dg.d.motivos.find((x) => x.id === sel.value);
+        if (m) document.getElementById('dgp-pontos').value = m.pontos_padrao;
+      }
+    }
+
+    async function dgLancarPontos() {
+      const participanteId = document.getElementById('dgp-participante').value;
+      const desafioId = document.getElementById('dgp-desafio').value || null;
+      const motivoSel = document.getElementById('dgp-motivo').value;
+      const pontosTexto = document.getElementById('dgp-pontos').value;
+      const observacao = document.getElementById('dgp-observacao').value.trim() || null;
+      if (!participanteId) return alert('Escolha a participante.');
+      if (!motivoSel) return alert('Escolha o motivo.');
+      if (pontosTexto === '' || !Number.isFinite(Number(pontosTexto))) return alert('Informe quantos pontos (pode ser negativo).');
+      let motivo;
+      let motivoId = null;
+      if (motivoSel === '__outro__') {
+        motivo = document.getElementById('dgp-motivo-texto').value.trim();
+        if (!motivo) return alert('Escreva o motivo.');
+      } else {
+        const m = dg.d.motivos.find((x) => x.id === motivoSel);
+        motivo = m ? m.nome : 'Motivo';
+        motivoId = m ? m.id : null;
+      }
+      try {
+        await dgInserir('pontos', { participante_id: participanteId, desafio_id: desafioId, motivo_id: motivoId, motivo, pontos: Math.round(Number(pontosTexto)), observacao });
+        const total = dgPontos(participanteId);
+        dgToast(`${(dgPart(participanteId) || {}).nome}: ${Number(pontosTexto) > 0 ? '+' : ''}${Math.round(Number(pontosTexto))} pontos (total ${total}).`);
+        document.getElementById('dgp-pontos').value = '';
+        document.getElementById('dgp-observacao').value = '';
+        document.getElementById('dgp-motivo-texto').value = '';
+        dgListaPontos();
+      } catch (err) {
+        dgErro(err, 'lançar pontos');
+      }
+    }
+
+    function dgListaPontos() {
+      const area = document.getElementById('dg-lista');
+      if (!area) return;
+      const f = dgFiltro.pontos;
+      dgPreencherMotivos();
+      const lista = dg.d.pontos
+        .filter((l) => (!f.participante || l.participante_id === f.participante) && (!f.desafio || l.desafio_id === f.desafio))
+        .sort((a, b) => b.created_at.localeCompare(a.created_at))
+        .slice(0, 200);
+      if (!lista.length) {
+        area.innerHTML = '<p class="texto-vazio">Nenhum lançamento ainda.</p>';
+        return;
+      }
+      area.innerHTML = `<table class="dg-tabela">
+        <thead><tr><th>Data</th><th>Participante</th><th>Desafio</th><th>Motivo</th><th>Pontos</th><th></th></tr></thead>
+        <tbody>${lista
+          .map((l) => {
+            const sub = l.substitui_id ? 'corrige um lançamento anterior' : '';
+            return `<tr class="${l.valido ? '' : 'dg-anulado'}">
+              <td>${dgFmtData(l.created_at)}</td>
+              <td><button type="button" class="dg-link" data-dg-ir="participante" data-dg-param="${l.participante_id}">${dgH((dgPart(l.participante_id) || {}).nome || '—')}</button></td>
+              <td>${dgH(l.desafio_id ? (dgDesafio(l.desafio_id) || {}).nome : 'Só no geral')}</td>
+              <td>${dgH(l.motivo)}${l.observacao ? `<small>${dgH(l.observacao)}</small>` : ''}${sub ? `<small>${sub}</small>` : ''}${!l.valido ? `<small>Anulado em ${dgFmtData(l.anulado_em)}${l.anulado_motivo ? ': ' + dgH(l.anulado_motivo) : ''}</small>` : ''}</td>
+              <td><strong>${l.pontos > 0 ? '+' : ''}${l.pontos}</strong></td>
+              <td>${l.valido ? `<button type="button" class="cal-btn" data-dg-acao="corrigir-ponto" data-id="${l.id}">Corrigir</button> <button type="button" class="cal-btn pl-btn-excluir" data-dg-acao="anular-ponto" data-id="${l.id}">Anular</button>` : '<span class="dg-vazio">anulado</span>'}</td>
+            </tr>`;
+          })
+          .join('')}</tbody></table>`;
+    }
+
+    // Corrigir = anula o lançamento antigo (continua no histórico) e cria um novo no lugar dele.
+    function dgFormularioCorrecao(l) {
+      dgAbrirForm({
+        titulo: 'Corrigir pontuação',
+        campos: [
+          { k: 'pontos', rotulo: 'Pontos corretos', tipo: 'numero', obrigatorio: true },
+          { k: 'motivo', rotulo: 'Motivo', tipo: 'texto', obrigatorio: true },
+          { k: 'observacao', rotulo: 'Observação', tipo: 'area' },
+          { k: 'por_que', rotulo: 'Por que está corrigindo? (fica no histórico)', tipo: 'texto' },
+        ],
+        valores: { pontos: l.pontos, motivo: l.motivo, observacao: l.observacao || '' },
+        salvar: async (v) => {
+          await dgAtualizar('pontos', l.id, { valido: false, anulado_em: new Date().toISOString(), anulado_motivo: v.por_que || 'corrigido' });
+          await dgInserir('pontos', { participante_id: l.participante_id, desafio_id: l.desafio_id, motivo_id: l.motivo_id, motivo: v.motivo, pontos: Math.round(v.pontos), observacao: v.observacao, substitui_id: l.id });
+          return true;
+        },
+      });
+    }
+
+    async function dgAnularPonto(l) {
+      if (!(await confirmarAcao('Anular este lançamento? Ele sai do total, mas continua no histórico.', { textoConfirmar: 'Anular' }))) return;
+      try {
+        await dgAtualizar('pontos', l.id, { valido: false, anulado_em: new Date().toISOString(), anulado_motivo: 'anulado' });
+        dgListaPontos();
+      } catch (err) {
+        dgErro(err, 'anular');
+      }
+    }
+
+    function dgGerenciarMotivos() {
+      const itens = [...dg.d.motivos].sort((a, b) => a.nome.localeCompare(b.nome));
+      dgAbrirForm({
+        titulo: 'Motivos de pontuação',
+        somenteLeitura: true,
+        html: `<p class="cal-todas-resumo">Crie os motivos e os valores que você usa. Um motivo pode valer pra todos os desafios ou só pra um.</p>
+          <ul class="dg-lista-simples">${itens.length ? itens.map((m) => `<li class="${m.ativo ? '' : 'dg-anulado'}"><span>${dgH(m.nome)}<small>${m.pontos_padrao > 0 ? '+' : ''}${m.pontos_padrao} pts${m.desafio_id ? ' · só em ' + dgH((dgDesafio(m.desafio_id) || {}).nome) : ' · todos os desafios'}${m.ativo ? '' : ' · desligado'}</small></span><button type="button" class="cal-btn" data-dg-acao="editar-motivo" data-id="${m.id}">Editar</button></li>`).join('') : '<li>Nenhum motivo cadastrado.</li>'}</ul>
+          <button type="button" class="cal-btn cal-btn-primario" data-dg-acao="novo-motivo">+ Novo motivo</button>`,
+      });
+    }
+
+    function dgFormularioMotivo(m) {
+      dgAbrirForm({
+        titulo: m ? 'Editar motivo' : 'Novo motivo',
+        campos: [
+          { k: 'nome', rotulo: 'Motivo', tipo: 'texto', obrigatorio: true },
+          { k: 'pontos_padrao', rotulo: 'Pontos sugeridos (pode ser negativo)', tipo: 'numero' },
+          { k: 'desafio_id', rotulo: 'Vale pra', tipo: 'select', opcoes: [['', 'Todos os desafios'], ...dg.d.desafios.map((x) => ['' + x.id, 'Só em: ' + x.nome])] },
+          { k: 'ativo', rotulo: 'Disponível pra usar', tipo: 'check' },
+        ],
+        valores: m ? { ...m, desafio_id: m.desafio_id || '' } : { ativo: true, pontos_padrao: 10, desafio_id: '' },
+        excluir: m ? async () => {
+          if (!(await confirmarAcao('Excluir este motivo? Os lançamentos antigos continuam com o nome dele.'))) return false;
+          await dgApagar('motivos', m.id);
+          return true;
+        } : null,
+        depois: () => dgGerenciarMotivos(),
+        salvar: async (v) => {
+          const linha = { nome: v.nome, pontos_padrao: Math.round(v.pontos_padrao || 0), desafio_id: v.desafio_id || null, ativo: !!v.ativo };
+          if (m) await dgAtualizar('motivos', m.id, linha);
+          else await dgInserir('motivos', linha);
+          return true;
+        },
+      });
+    }
+
+    // ==========================================================================
+    // Rankings
+    // ==========================================================================
+    function dgPaginaRankings() {
+      const f = dgFiltro.ranking;
+      const desafioId = f.desafio === 'geral' ? null : dgResolverDesafio(f.desafio);
+      const desafio = desafioId ? dgDesafio(desafioId) : null;
+      const { lista, regra } = dgRanking(desafioId);
+      const opcoes = [['geral', 'Ranking geral (todos os desafios)'], ...(dgDesafioAtual() ? [['atual', 'Desafio atual: ' + dgDesafioAtual().nome]] : []), ...[...dg.d.desafios].sort((a, b) => b.data_inicio.localeCompare(a.data_inicio)).map((x) => [x.id, x.nome + (x.status === 'encerrado' ? ' (encerrado)' : '')])];
+      const vencedora = desafio && desafio.vencedora_id ? dgPart(desafio.vencedora_id) : null;
+      return `
+        <div class="dg-cabeca">
+          <div><h3 class="card-titulo">Rankings</h3><p class="cal-todas-resumo">${desafio ? `Só os pontos de "${dgH(desafio.nome)}". Desempate: ${dgH(dgRotulo(DG_DESEMPATES, regra).toLowerCase())}.` : 'Soma os pontos válidos de todos os desafios.'}</p></div>
+          ${desafio ? `<div class="dg-acoes-topo"><button type="button" class="cal-btn cal-btn-primario" data-dg-acao="registrar-vencedora" data-id="${desafio.id}">🏆 Registrar vencedora</button><button type="button" class="cal-btn" data-dg-ir="desafio" data-dg-param="${desafio.id}">Ver desafio</button></div>` : ''}
+        </div>
+        <div class="dg-filtros"><select data-dg-filtro="ranking.desafio">${dgOpcoesSelect(opcoes, f.desafio)}</select></div>
+        ${vencedora ? `<div class="card dg-vencedora">🏆 Vencedora deste desafio: <strong>${dgH(vencedora.nome)}</strong> ${dgLinkInsta(vencedora)}</div>` : ''}
+        ${
+          lista.length
+            ? `<div class="dg-tabela-wrap"><table class="dg-tabela">
+          <thead><tr><th>Posição</th><th>Nome</th><th>Instagram</th><th>Pontos</th>${desafio ? '<th>Entregas concluídas</th>' : ''}</tr></thead>
+          <tbody>${lista
+            .map((r) => `<tr class="${r.pos <= 3 && r.pontos > 0 ? 'dg-linha-podio' : ''}">
+              <td><strong>${r.pontos > 0 ? ['🥇', '🥈', '🥉'][r.pos - 1] || '' : ''} ${r.pos}º</strong>${r.empate ? ' <small title="Empate nos pontos: o desempate do desafio foi aplicado">empate</small>' : ''}</td>
+              <td><button type="button" class="dg-link" data-dg-ir="participante" data-dg-param="${r.p.id}">${dgH(r.p.nome)}</button>${desafio && desafio.vencedora_id === r.p.id ? ' 🏆' : ''}</td>
+              <td>${dgLinkInsta(r.p)}</td>
+              <td><strong>${r.pontos}</strong></td>
+              ${desafio ? `<td>${r.concluidas}</td>` : ''}
+            </tr>`)
+            .join('')}</tbody></table></div>`
+            : '<p class="texto-vazio">Ainda não há participantes pontuando.</p>'
+        }`;
+    }
+
+    function dgFormularioVencedora(desafio) {
+      const { lista } = dgRanking(desafio.id);
+      const topo = lista.find((r) => r.pontos > 0);
+      dgAbrirForm({
+        titulo: 'Registrar vencedora: ' + desafio.nome,
+        campos: [{ k: 'vencedora_id', rotulo: 'Vencedora do ciclo', tipo: 'select', opcoes: [['', 'Ainda não definida'], ...lista.map((r) => [r.p.id, `${r.pos}º · ${r.p.nome} (${r.pontos} pts)`])] }],
+        valores: { vencedora_id: desafio.vencedora_id || (topo ? topo.p.id : '') },
+        salvar: async (v) => {
+          await dgAtualizar('desafios', desafio.id, { vencedora_id: v.vencedora_id || null });
+          for (const pr of dg.d.premiacoes.filter((z) => z.desafio_id === desafio.id && (!z.vencedora_id || z.vencedora_id === desafio.vencedora_id))) {
+            await dgAtualizar('premiacoes', pr.id, { vencedora_id: v.vencedora_id || null });
+          }
+          return true;
+        },
+      });
+    }
+
+    // ==========================================================================
+    // Premiações
+    // ==========================================================================
+    function dgPaginaPremiacoes() {
+      const premios = [...dg.d.premios].sort((a, b) => a.nome.localeCompare(b.nome));
+      const premiacoes = [...dg.d.premiacoes].sort((a, b) => b.created_at.localeCompare(a.created_at));
+      return `
+        <div class="dg-cabeca"><div><h3 class="card-titulo">Premiações</h3><p class="cal-todas-resumo">Cadastre as ideias de prêmio e escolha qual será oferecido em cada desafio.</p></div></div>
+        <section class="card dg-bloco dg-bloco-largo">
+          <div class="dg-bloco-topo"><h3 class="card-titulo">🎁 Ideias de prêmio</h3><button type="button" class="cal-btn cal-btn-primario" data-dg-acao="novo-premio">+ Novo prêmio</button></div>
+          ${
+            premios.length
+              ? `<ul class="dg-lista-simples">${premios.map((p) => `<li class="${p.ativo ? '' : 'dg-anulado'}"><span>${dgH(p.nome)}${p.descricao ? `<small>${dgH(p.descricao)}</small>` : ''}${p.criterios ? `<small>Critérios: ${dgH(p.criterios)}</small>` : ''}</span><button type="button" class="cal-btn" data-dg-acao="editar-premio" data-id="${p.id}">Editar</button></li>`).join('')}</ul>`
+              : '<p class="dg-vazio-texto">Nenhum prêmio cadastrado.</p>'
+          }
+        </section>
+        <section class="card dg-bloco dg-bloco-largo">
+          <div class="dg-bloco-topo"><h3 class="card-titulo">🏁 Premiação de cada desafio</h3><button type="button" class="cal-btn cal-btn-primario" data-dg-acao="nova-premiacao">+ Premiar um desafio</button></div>
+          ${
+            premiacoes.length
+              ? `<div class="dg-tabela-wrap"><table class="dg-tabela"><thead><tr><th>Desafio</th><th>Prêmio</th><th>Critérios</th><th>Vencedora</th><th>Status</th><th>Entrega</th><th></th></tr></thead><tbody>${premiacoes
+                  .map((pr) => {
+                    const premio = dg.d.premios.find((z) => z.id === pr.premio_id);
+                    const venc = pr.vencedora_id ? dgPart(pr.vencedora_id) : null;
+                    return `<tr><td>${dgH((dgDesafio(pr.desafio_id) || {}).nome)}</td><td>${dgH(premio ? premio.nome : '—')}</td><td>${dgH(pr.criterios || (premio && premio.criterios) || '')}</td><td>${venc ? dgH(venc.nome) : '<span class="dg-vazio">—</span>'}</td><td>${dgPill(dgRotulo(DG_STATUS_PREMIACAO, pr.status), pr.status === 'entregue' ? 'dg-pill-verde' : pr.status === 'anunciada' ? 'dg-pill-azul' : 'dg-pill-amarela')}</td><td>${dgFmtData(pr.data_entrega)}</td><td><button type="button" class="cal-btn" data-dg-acao="editar-premiacao" data-id="${pr.id}">Editar</button></td></tr>`;
+                  })
+                  .join('')}</tbody></table></div>`
+              : '<p class="dg-vazio-texto">Nenhum desafio premiado ainda.</p>'
+          }
+        </section>`;
+    }
+
+    function dgFormularioPremio(p) {
+      dgAbrirForm({
+        titulo: p ? 'Editar prêmio' : 'Novo prêmio',
+        campos: [
+          { k: 'nome', rotulo: 'Prêmio', tipo: 'texto', obrigatorio: true },
+          { k: 'descricao', rotulo: 'Descrição', tipo: 'area' },
+          { k: 'criterios', rotulo: 'Critérios pra ganhar (padrão)', tipo: 'area' },
+          { k: 'ativo', rotulo: 'Disponível pra escolher nos desafios', tipo: 'check' },
+        ],
+        valores: p || { ativo: true },
+        excluir: p ? async () => {
+          if (!(await confirmarAcao('Excluir este prêmio? As premiações que já usaram ele ficam sem o nome.'))) return false;
+          await dgApagar('premios', p.id);
+          return true;
+        } : null,
+        salvar: async (v) => {
+          const linha = { nome: v.nome, descricao: v.descricao, criterios: v.criterios, ativo: !!v.ativo };
+          if (p) await dgAtualizar('premios', p.id, linha);
+          else await dgInserir('premios', linha);
+          return true;
+        },
+      });
+    }
+
+    function dgFormularioPremiacao(desafioId, pr) {
+      dgAbrirForm({
+        titulo: pr ? 'Editar premiação' : 'Premiar um desafio',
+        campos: [
+          { k: 'desafio_id', rotulo: 'Desafio', tipo: 'select', opcoes: [...dg.d.desafios].sort((a, b) => b.data_inicio.localeCompare(a.data_inicio)).map((x) => [x.id, x.nome]), obrigatorio: true },
+          { k: 'premio_id', rotulo: 'Prêmio', tipo: 'select', opcoes: [['', 'Escolha...'], ...dg.d.premios.filter((z) => z.ativo || (pr && z.id === pr.premio_id)).map((z) => [z.id, z.nome])], obrigatorio: true },
+          { k: 'criterios', rotulo: 'Critérios pra ganhar (deste desafio)', tipo: 'area' },
+          { k: 'vencedora_id', rotulo: 'Vencedora', tipo: 'select', opcoes: [['', 'Ainda não definida'], ...dg.d.participantes.filter((p) => !p.arquivada).sort((a, b) => a.nome.localeCompare(b.nome)).map((p) => [p.id, p.nome])] },
+          { k: 'status', rotulo: 'Status da premiação', tipo: 'select', opcoes: DG_STATUS_PREMIACAO },
+          { k: 'data_entrega', rotulo: 'Data de entrega', tipo: 'data' },
+          { k: 'observacoes', rotulo: 'Observações', tipo: 'area' },
+        ],
+        valores: pr || { desafio_id: desafioId || (dgDesafioAtual() || {}).id || '', status: 'a_definir', vencedora_id: ((desafioId && dgDesafio(desafioId)) || {}).vencedora_id || '' },
+        excluir: pr ? async () => {
+          if (!(await confirmarAcao('Excluir esta premiação?'))) return false;
+          await dgApagar('premiacoes', pr.id);
+          return true;
+        } : null,
+        salvar: async (v) => {
+          const linha = { desafio_id: v.desafio_id, premio_id: v.premio_id || null, criterios: v.criterios, vencedora_id: v.vencedora_id || null, status: v.status, data_entrega: v.data_entrega, observacoes: v.observacoes };
+          if (pr) await dgAtualizar('premiacoes', pr.id, linha);
+          else await dgInserir('premiacoes', linha);
+          return true;
+        },
+      });
+    }
+
+    // ==========================================================================
+    // Evolução da comunidade
+    // ==========================================================================
+    function dgPaginaEvolucao() {
+      const parts = dg.d.participantes.filter((p) => !p.arquivada);
+      const total = parts.length || 1;
+      const porEtapa = DG_ETAPAS.map((e) => ({ e, qtd: parts.filter((p) => p.etapa === e).length }));
+      const maximo = Math.max(1, ...porEtapa.map((x) => x.qtd));
+      const idx = (p) => DG_ETAPAS.indexOf(p.etapa);
+      const indicadores = [
+        { r: 'Com portfólio pronto', v: parts.filter((p) => p.portfolio_situacao === 'Pronto').length, ir: 'participantes', param: null },
+        { r: 'Produzindo conteúdo', v: parts.filter((p) => idx(p) >= 2).length },
+        { r: 'Já prospectaram marcas', v: parts.filter((p) => idx(p) >= 3).length },
+        { r: 'Já conseguiram trabalhos', v: parts.filter((p) => idx(p) >= 4).length },
+      ];
+      const todasEntregas = dg.d.entregas;
+      const concluidas = todasEntregas.filter((e) => e.status === 'concluida').length;
+      const dificuldades = dgDificuldades().slice(0, 10);
+      const ciclos = [...dg.d.desafios].sort((a, b) => b.data_inicio.localeCompare(a.data_inicio));
+      const conquistas = [...dg.d.conquistas].sort((a, b) => b.data.localeCompare(a.data)).slice(0, 12);
+      return `
+        <div class="dg-cabeca"><div><h3 class="card-titulo">Evolução da comunidade</h3><p class="cal-todas-resumo">Calculado sozinho com o que está cadastrado nas participantes (sem as arquivadas).</p></div></div>
+        <div class="dg-grade-blocos">
+          <section class="card dg-bloco">
+            <div class="dg-bloco-topo"><h3 class="card-titulo">📍 Participantes por etapa</h3></div>
+            <div class="dg-barras">${porEtapa.map((x) => `<button type="button" class="dg-barra-linha" data-dg-ir="participantes" data-dg-etapa="${dgH(x.e)}"><span>${dgH(x.e)}</span><span class="dg-barra"><i style="width:${(x.qtd / maximo) * 100}%"></i></span><strong>${x.qtd}</strong></button>`).join('')}</div>
+          </section>
+          <section class="card dg-bloco">
+            <div class="dg-bloco-topo"><h3 class="card-titulo">📈 Como estão indo</h3></div>
+            <ul class="dg-lista-simples">${indicadores.map((i) => `<li><span>${i.r}</span><strong>${i.v} <small>(${Math.round((i.v / total) * 100)}%)</small></strong></li>`).join('')}
+              <li><span>Entregas concluídas (todas)</span><strong>${concluidas}</strong></li>
+              <li><span>Entregas ainda pendentes</span><strong>${todasEntregas.filter((e) => e.status !== 'concluida').length}</strong></li></ul>
+          </section>
+          <section class="card dg-bloco">
+            <div class="dg-bloco-topo"><h3 class="card-titulo">🧩 Dificuldades mais frequentes</h3></div>
+            ${
+              dificuldades.length
+                ? `<ul class="dg-lista-simples">${dificuldades.map((x) => `<li><span>${dgH(x.rotulo)}</span><strong>${x.qtd}x</strong></li>`).join('')}</ul><p class="cal-todas-resumo">Use essa lista pra decidir os próximos conteúdos e desafios.</p>`
+                : '<p class="dg-vazio-texto">Preencha a principal dificuldade no cadastro e registre anotações do tipo "Dificuldade".</p>'
+            }
+          </section>
+          <section class="card dg-bloco">
+            <div class="dg-bloco-topo"><h3 class="card-titulo">🎉 Conquistas</h3></div>
+            ${
+              conquistas.length
+                ? `<ul class="dg-lista-simples">${conquistas.map((c) => `<li><span><button type="button" class="dg-link" data-dg-ir="participante" data-dg-param="${c.participante_id}">${dgH((dgPart(c.participante_id) || {}).nome || '—')}</button> · ${dgH(c.titulo)}</span><span>${dgFmtData(c.data)}</span></li>`).join('')}</ul>`
+                : '<p class="dg-vazio-texto">Nenhuma conquista registrada ainda.</p>'
+            }
+          </section>
+        </div>
+        <section class="card dg-bloco dg-bloco-largo">
+          <div class="dg-bloco-topo"><h3 class="card-titulo">🔁 Participação em cada ciclo</h3></div>
+          ${
+            ciclos.length
+              ? `<div class="dg-tabela-wrap"><table class="dg-tabela"><thead><tr><th>Desafio</th><th>Período</th><th>Inscritas</th><th>Entregas concluídas</th><th>Pendentes</th><th>Pontos lançados</th><th>Vencedora</th></tr></thead><tbody>${ciclos
+                  .map((x) => {
+                    const linhas = dgLinhasEntrega(x.id);
+                    const feitas = linhas.filter((l) => l.status === 'concluida').length;
+                    const venc = x.vencedora_id ? dgPart(x.vencedora_id) : null;
+                    const pts = dg.d.pontos.filter((l) => l.valido && l.desafio_id === x.id).reduce((s, l) => s + l.pontos, 0);
+                    return `<tr class="dg-linha-clicavel" data-dg-ir="desafio" data-dg-param="${x.id}"><td><strong>${dgH(x.nome)}</strong></td><td>${dgFmtData(x.data_inicio)} a ${dgFmtData(x.data_fim)}</td><td>${dgInscritas(x.id).length}</td><td>${feitas}/${linhas.length}${linhas.length ? ` (${Math.round((feitas / linhas.length) * 100)}%)` : ''}</td><td>${linhas.length - feitas}</td><td>${pts}</td><td>${venc ? dgH(venc.nome) : '<span class="dg-vazio">—</span>'}</td></tr>`;
+                  })
+                  .join('')}</tbody></table></div>`
+              : '<p class="dg-vazio-texto">Quando você criar desafios, a participação de cada ciclo aparece aqui.</p>'
+          }
+        </section>`;
+    }
+
+    // ==========================================================================
+    // Formulário genérico (janela única, montada a partir de uma lista de campos)
+    // ==========================================================================
+    let dgFormAtual = null;
+
+    function dgCampoHtml(c, valor) {
+      const id = 'dgf-' + c.k;
+      const v = valor == null ? '' : valor;
+      let controle;
+      if (c.tipo === 'area') {
+        controle = `<textarea id="${id}" rows="${c.linhas || 3}" placeholder="${dgH(c.ph || '')}">${dgH(v)}</textarea>`;
+      } else if (c.tipo === 'select') {
+        controle = `<select id="${id}">${dgOpcoesSelect(c.opcoes, v)}</select>`;
+      } else if (c.tipo === 'multi') {
+        const marcados = Array.isArray(valor) ? valor : [];
+        controle = c.opcoes.length
+          ? `<div class="dg-multi" id="${id}">${c.opcoes.map((o) => `<label><input type="checkbox" value="${dgH(o[0])}"${marcados.includes(o[0]) ? ' checked' : ''}> ${dgH(o[1])}</label>`).join('')}</div>`
+          : `<p class="dg-vazio-texto">${dgH(c.vazio || 'Nada pra escolher.')}</p>`;
+      } else if (c.tipo === 'check') {
+        return `<div class="cal-form-campo"><label class="ugc-orc-ativa"><input type="checkbox" id="${id}"${valor ? ' checked' : ''}><span>${dgH(c.rotulo)}</span></label></div>`;
+      } else {
+        const tipoInput = c.tipo === 'data' ? 'date' : c.tipo === 'numero' ? 'number' : 'text';
+        controle = `<input type="${tipoInput}" id="${id}" value="${dgH(v)}" placeholder="${dgH(c.ph || '')}"${c.tipo === 'numero' ? ' step="1"' : ''}${c.sugestoes ? ` list="${id}-lista"` : ''} autocomplete="off">${c.sugestoes ? `<datalist id="${id}-lista">${c.sugestoes.map((s) => `<option value="${dgH(s)}"></option>`).join('')}</datalist>` : ''}`;
+      }
+      return `<div class="cal-form-campo"><label for="${id}">${dgH(c.rotulo)}${c.obrigatorio ? ' *' : ''}</label>${controle}</div>`;
+    }
+
+    function dgLerCampo(c) {
+      const el = document.getElementById('dgf-' + c.k);
+      if (!el) return c.tipo === 'multi' ? [] : null;
+      if (c.tipo === 'multi') return [...el.querySelectorAll('input:checked')].map((i) => i.value);
+      if (c.tipo === 'check') return el.checked;
+      if (c.tipo === 'numero') return el.value === '' ? null : Number(el.value);
+      const valor = el.value.trim();
+      return c.tipo === 'data' ? valor || null : valor || null;
+    }
+
+    // cfg: { titulo, campos, valores, salvar(valores) -> true fecha, excluir(), extra:{rotulo,fazer}, html, somenteLeitura, depois }
+    function dgAbrirForm(cfg) {
+      dgFormAtual = cfg;
+      document.getElementById('dg-form-titulo').textContent = cfg.titulo;
+      const valores = cfg.valores || {};
+      document.getElementById('dg-form-corpo').innerHTML = cfg.html || (cfg.campos || []).map((c) => dgCampoHtml(c, valores[c.k])).join('');
+      document.getElementById('dg-form-salvar').hidden = !!cfg.somenteLeitura;
+      document.getElementById('dg-form-excluir').hidden = !cfg.excluir;
+      const extra = document.getElementById('dg-form-extra');
+      extra.hidden = !cfg.extra;
+      if (cfg.extra) extra.textContent = cfg.extra.rotulo;
+      document.getElementById('dg-form-overlay').hidden = false;
+      const primeiro = document.querySelector('#dg-form-corpo input:not([type=checkbox]), #dg-form-corpo textarea');
+      if (primeiro && !cfg.somenteLeitura) primeiro.focus();
+    }
+
+    function dgFecharForm() {
+      document.getElementById('dg-form-overlay').hidden = true;
+      dgFormAtual = null;
+    }
+
+    async function dgSalvarForm() {
+      const cfg = dgFormAtual;
+      if (!cfg || !cfg.salvar) return;
+      const v = {};
+      for (const c of cfg.campos) {
+        v[c.k] = dgLerCampo(c);
+        if (c.obrigatorio && (v[c.k] == null || v[c.k] === '')) {
+          alert('Preencha: ' + c.rotulo.replace(/\s*\(.*$/, ''));
+          return;
+        }
+      }
+      const botao = document.getElementById('dg-form-salvar');
+      botao.disabled = true;
+      try {
+        const fechar = await cfg.salvar(v);
+        if (fechar !== false) {
+          const depois = cfg.depois;
+          dgFecharForm();
+          dgRender();
+          if (depois) depois();
+        }
+      } catch (err) {
+        dgErro(err, cfg.titulo);
+      } finally {
+        botao.disabled = false;
+      }
+    }
+
+    async function dgExcluirForm() {
+      const cfg = dgFormAtual;
+      if (!cfg || !cfg.excluir) return;
+      try {
+        const fechar = await cfg.excluir();
+        if (fechar !== false) {
+          const depois = cfg.depois;
+          dgFecharForm();
+          dgRender();
+          if (depois) depois();
+        }
+      } catch (err) {
+        dgErro(err, 'excluir');
+      }
+    }
+
+    // ==========================================================================
+    // Eventos (um só ouvinte pra aba inteira)
+    // ==========================================================================
+    function dgFiltroMudou(el) {
+      const [grupo, campo] = el.dataset.dgFiltro.split('.');
+      dgFiltro[grupo][campo] = el.value;
+      // nos rankings a página inteira muda; nas outras só a lista
+      if (grupo === 'ranking') dgRender();
+      else dgDepoisDeRenderizar();
+    }
+
+    async function dgAcao(acao, el) {
+      const id = el.dataset.id;
+      try {
+        if (acao === 'nova-participante') dgFormularioParticipante(null);
+        else if (acao === 'editar-participante') dgFormularioParticipante(dgPart(id));
+        else if (acao === 'nova-nota') dgFormularioNota(id);
+        else if (acao === 'apagar-nota') {
+          if (await confirmarAcao('Apagar esta anotação?')) {
+            await dgApagar('notas', id);
+            dgRender();
+          }
+        } else if (acao === 'nova-conquista') dgFormularioConquista(id);
+        else if (acao === 'apagar-conquista') {
+          if (await confirmarAcao('Apagar esta conquista?')) {
+            await dgApagar('conquistas', id);
+            dgRender();
+          }
+        } else if (acao === 'novo-desafio') dgFormularioDesafio(null);
+        else if (acao === 'editar-desafio') dgFormularioDesafio(dgDesafio(id));
+        else if (acao === 'encerrar-desafio') await dgEncerrar(dgDesafio(id));
+        else if (acao === 'apagar-desafio') {
+          if (await confirmarAcao('Excluir este desafio com atividades, entregas, inscrições e pontos dele? Isso não dá pra desfazer.')) {
+            await dgApagar('desafios', id);
+            ['atividades', 'entregas', 'inscricoes'].forEach((k) => (dg.d[k] = dg.d[k].filter((z) => z.desafio_id !== id)));
+            dg.d.pontos = dg.d.pontos.map((l) => (l.desafio_id === id ? { ...l, desafio_id: null } : l));
+            dgIr('desafios');
+          }
+        } else if (acao === 'nova-atividade') dgFormularioAtividade(id, null);
+        else if (acao === 'editar-atividade') dgFormularioAtividade(dgAtividade(id).desafio_id, dgAtividade(id));
+        else if (acao === 'editar-entrega') dgFormularioEntrega(el.dataset.desafio, el.dataset.atividade, el.dataset.participante);
+        else if (acao === 'lancar-pontos') await dgLancarPontos();
+        else if (acao === 'gerenciar-motivos') dgGerenciarMotivos();
+        else if (acao === 'novo-motivo') dgFormularioMotivo(null);
+        else if (acao === 'editar-motivo') dgFormularioMotivo(dg.d.motivos.find((m) => m.id === id));
+        else if (acao === 'corrigir-ponto') dgFormularioCorrecao(dg.d.pontos.find((l) => l.id === id));
+        else if (acao === 'anular-ponto') await dgAnularPonto(dg.d.pontos.find((l) => l.id === id));
+        else if (acao === 'registrar-vencedora') dgFormularioVencedora(dgDesafio(id));
+        else if (acao === 'novo-premio') dgFormularioPremio(null);
+        else if (acao === 'editar-premio') dgFormularioPremio(dg.d.premios.find((z) => z.id === id));
+        else if (acao === 'nova-premiacao') dgFormularioPremiacao(id || null, null);
+        else if (acao === 'editar-premiacao') dgFormularioPremiacao(null, dg.d.premiacoes.find((z) => z.id === id));
+      } catch (err) {
+        dgErro(err, acao);
+      }
+    }
+
+    function dgLigarEventos() {
+      if (dgEventosLigados) return;
+      dgEventosLigados = true;
+      const painel = document.getElementById('panel-desafios');
+      painel.addEventListener('click', (e) => {
+        const ir = e.target.closest('[data-dg-ir]');
+        const acao = e.target.closest('[data-dg-acao]');
+        // links e botões dentro de uma linha clicável não devem abrir a linha
+        if (e.target.closest('a')) return;
+        if (acao) return dgAcao(acao.dataset.dgAcao, acao);
+        if (ir) {
+          const pagina = ir.dataset.dgIr;
+          const param = ir.dataset.dgParam || null;
+          const filtros = {};
+          if (pagina === 'participantes') {
+            filtros.part = { busca: '', etapa: ir.dataset.dgEtapa || '', portfolio: '', status: '', desafio: '' };
+            if (param) filtros.part.status = param;
+          }
+          if (pagina === 'entregas') {
+            filtros.entregas = { desafio: param && param.length > 12 ? param : 'atual', status: param && param.length <= 12 ? param : '', participante: '' };
+            if (param === 'pendentes' || param === 'em_andamento') filtros.entregas.desafio = 'atual';
+          }
+          if (pagina === 'desafios') filtros.desafios = { status: param || '' };
+          if (pagina === 'rankings') filtros.ranking = { desafio: param || 'atual' };
+          if (pagina === 'pontos' && param) filtros.pontos = { participante: param, desafio: '' };
+          const id = pagina === 'participante' || pagina === 'desafio' ? param : null;
+          dgIr(pagina, id, filtros);
+        }
+      });
+      painel.addEventListener('change', (e) => {
+        if (e.target.dataset.dgFiltro) return dgFiltroMudou(e.target);
+        if (e.target.id === 'dgp-desafio') return dgPreencherMotivos();
+        if (e.target.id === 'dgp-motivo') return dgMotivoMudou(true);
+        if (e.target.matches('[data-dg-status-entrega]')) {
+          const s = e.target;
+          dgSalvarEntrega(s.dataset.desafio, s.dataset.atividade, s.dataset.participante, { status: s.value })
+            .then(() => dgListaEntregas())
+            .catch((err) => dgErro(err, 'status da entrega'));
+        }
+      });
+      painel.addEventListener('input', (e) => {
+        if (e.target.dataset.dgFiltro && e.target.type === 'search') dgFiltroMudou(e.target);
+      });
+      document.querySelectorAll('.dg-subnav-btn').forEach((b) => b.addEventListener('click', () => dgIr(b.dataset.dgPagina)));
+
+      document.getElementById('dg-form-fechar').addEventListener('click', dgFecharForm);
+      document.getElementById('dg-form-salvar').addEventListener('click', dgSalvarForm);
+      document.getElementById('dg-form-excluir').addEventListener('click', dgExcluirForm);
+      document.getElementById('dg-form-extra').addEventListener('click', () => dgFormAtual && dgFormAtual.extra && dgFormAtual.extra.fazer());
+      document.getElementById('dg-form-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'dg-form-overlay') dgFecharForm();
+        const acao = e.target.closest('[data-dg-acao]');
+        if (acao) dgAcao(acao.dataset.dgAcao, acao);
+      });
+    }
+
 
     // Substitui o confirm() nativo do navegador por um modal no estilo do
     // painel. Uso: if (!(await confirmarAcao('Excluir isto?'))) return;

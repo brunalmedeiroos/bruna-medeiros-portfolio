@@ -13051,3 +13051,664 @@
   position: relative;
   z-index: 20;
 }
+
+/* ==========================================================================
+   Gestão > Nos Desafiando a Viver do UGC
+   ========================================================================== */
+.painel-body .dg-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.painel-body .dg-subnav-btn {
+  background: transparent;
+  border: 1px solid rgba(var(--grafite-rgb), 0.14);
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--fonte-corpo);
+  color: var(--texto-suave);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.painel-body .dg-subnav-btn:hover {
+  color: var(--grafite);
+}
+
+.painel-body .dg-subnav-btn.ativo {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .pg-capa-nav .dg-subnav {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.painel-body .pg-capa-nav .dg-subnav-btn {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--branco);
+}
+
+.painel-body .pg-capa-nav .dg-subnav-btn:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.painel-body .pg-capa-nav .dg-subnav-btn.ativo {
+  background: var(--branco);
+  border-color: var(--branco);
+  color: var(--grafite);
+}
+
+.painel-body .dg-conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.painel-body .dg-grade-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+}
+
+.painel-body .dg-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+  text-align: left;
+  padding: 20px 20px 18px;
+  background: var(--branco);
+  border: 1px solid transparent;
+  border-radius: 20px;
+  box-shadow: var(--sombra);
+  font-family: var(--fonte-corpo);
+  color: var(--grafite);
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.painel-body .dg-stat:hover {
+  transform: translateY(-3px);
+  border-color: var(--coral);
+}
+
+.painel-body .dg-stat-icone {
+  font-size: 22px;
+}
+
+.painel-body .dg-stat-valor {
+  font-family: var(--fonte-titulo);
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.painel-body .dg-stat-titulo {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.painel-body .dg-stat-sub {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.painel-body .dg-stat-verde { box-shadow: inset 4px 0 0 #34a36b, var(--sombra); }
+.painel-body .dg-stat-amarelo { box-shadow: inset 4px 0 0 #f2c94c, var(--sombra); }
+.painel-body .dg-stat-vermelho { box-shadow: inset 4px 0 0 #d9534f, var(--sombra); }
+
+.painel-body .dg-grade-blocos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.painel-body .dg-bloco {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.painel-body .dg-bloco-largo {
+  width: 100%;
+}
+
+.painel-body .dg-bloco-topo,
+.painel-body .dg-cabeca {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.painel-body .dg-bloco-topo .card-titulo,
+.painel-body .dg-cabeca .card-titulo {
+  margin: 0;
+}
+
+.painel-body .dg-vazio-texto {
+  margin: 0;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.painel-body .dg-vazio {
+  color: var(--texto-suave);
+}
+
+.painel-body .dg-lista-simples,
+.painel-body .dg-lista-rank,
+.painel-body .dg-notas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.painel-body .dg-lista-simples li {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--borda);
+  font-size: 14px;
+}
+
+.painel-body .dg-lista-simples li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.painel-body .dg-lista-simples small,
+.painel-body .dg-tabela small {
+  display: block;
+  font-size: 12px;
+  color: var(--texto-suave);
+  font-weight: 500;
+}
+
+.painel-body .dg-lista-rank li {
+  display: grid;
+  grid-template-columns: 38px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.painel-body .dg-rank-pos {
+  font-family: var(--fonte-titulo);
+  font-weight: 700;
+  color: var(--coral);
+}
+
+.painel-body .dg-rank-pts {
+  font-weight: 700;
+}
+
+.painel-body .dg-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--grafite);
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-color: rgba(var(--grafite-rgb), 0.3);
+  cursor: pointer;
+}
+
+.painel-body .dg-link:hover {
+  text-decoration-color: var(--grafite);
+}
+
+.painel-body .dg-mini {
+  background: none;
+  border: 0;
+  padding: 2px 6px;
+  font-size: 13px;
+  color: var(--texto-suave);
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.painel-body .dg-mini:hover {
+  background: rgba(var(--grafite-rgb), 0.08);
+  color: var(--grafite);
+}
+
+.painel-body .dg-acoes-mini,
+.painel-body .dg-acoes-topo {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.painel-body .dg-voltar {
+  align-self: flex-start;
+}
+
+.painel-body .dg-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.painel-body .dg-filtros select,
+.painel-body .dg-filtros input {
+  min-width: 170px;
+}
+
+.painel-body .dg-busca {
+  flex: 1;
+  min-width: 220px;
+}
+
+.painel-body .dg-tabela-wrap {
+  overflow-x: auto;
+  background: var(--branco);
+  border-radius: 20px;
+  box-shadow: var(--sombra);
+}
+
+.painel-body .dg-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.painel-body .dg-tabela th {
+  text-align: left;
+  padding: 14px 16px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+  border-bottom: 1px solid var(--borda);
+  white-space: nowrap;
+}
+
+.painel-body .dg-tabela td {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(var(--grafite-rgb), 0.07);
+  vertical-align: top;
+}
+
+.painel-body .dg-tabela tr:last-child td {
+  border-bottom: 0;
+}
+
+.painel-body .dg-linha-clicavel,
+.painel-body tr.dg-linha-clicavel {
+  cursor: pointer;
+}
+
+.painel-body .dg-linha-clicavel:hover td {
+  background: rgba(var(--coral-rgb), 0.1);
+}
+
+.painel-body .dg-linha-atrasada td {
+  background: rgba(217, 83, 79, 0.06);
+}
+
+.painel-body .dg-linha-podio td {
+  background: rgba(245, 225, 180, 0.35);
+}
+
+.painel-body .dg-anulado {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
+.painel-body .dg-anulado small {
+  text-decoration: none;
+}
+
+.painel-body .dg-insta {
+  color: var(--grafite);
+  font-weight: 600;
+}
+
+.painel-body .dg-pill {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: rgba(var(--grafite-rgb), 0.08);
+  color: var(--grafite);
+}
+
+.painel-body .dg-pill-verde { background: rgba(52, 163, 107, 0.16); color: #1f6b44; }
+.painel-body .dg-pill-amarela { background: rgba(242, 201, 76, 0.28); color: #7a5b00; }
+.painel-body .dg-pill-vermelha { background: rgba(217, 83, 79, 0.16); color: #a3302c; }
+.painel-body .dg-pill-azul { background: rgba(var(--coral-rgb), 0.25); color: var(--grafite); }
+.painel-body .dg-pill-cinza { background: rgba(var(--grafite-rgb), 0.1); color: var(--texto-suave); }
+
+.painel-body .dg-select-status {
+  border-radius: 999px;
+  border: 0;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--fonte-corpo);
+  cursor: pointer;
+}
+
+.painel-body .dg-ficha {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.painel-body .dg-resumo-numeros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.painel-body .dg-resumo-numeros > div {
+  flex: 1;
+  min-width: 120px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(var(--coral-rgb), 0.14);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.painel-body .dg-resumo-numeros strong {
+  font-family: var(--fonte-titulo);
+  font-size: 26px;
+  line-height: 1.1;
+}
+
+.painel-body .dg-resumo-numeros span {
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.painel-body .dg-dados {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px 22px;
+}
+
+.painel-body .dg-dado {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.painel-body .dg-dado span {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.painel-body .dg-dado strong {
+  font-weight: 600;
+  font-size: 14px;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.painel-body .dg-notas li {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(var(--grafite-rgb), 0.04);
+}
+
+.painel-body .dg-nota-topo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.painel-body .dg-nota-topo .dg-mini {
+  margin-left: auto;
+}
+
+.painel-body .dg-notas p {
+  margin: 6px 0 0;
+  white-space: pre-line;
+  font-size: 14px;
+}
+
+.painel-body .dg-cards-desafios {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.painel-body .dg-card-desafio {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  text-align: left;
+  font-family: var(--fonte-corpo);
+  color: var(--grafite);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.painel-body .dg-card-desafio:hover {
+  transform: translateY(-3px);
+  border-color: var(--coral);
+}
+
+.painel-body .dg-card-desafio-atual {
+  border-color: var(--coral);
+}
+
+.painel-body .dg-card-desafio-topo {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.painel-body .dg-card-desafio-nome {
+  font-family: var(--fonte-titulo);
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.painel-body .dg-card-desafio-info {
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.painel-body .dg-semanas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+}
+
+.painel-body .dg-semana h4 {
+  margin: 0 0 10px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.painel-body .dg-lancar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.painel-body .dg-sub {
+  margin: 0;
+  font-size: 15px;
+}
+
+.painel-body .dg-lancar-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.painel-body .dg-lancar-grade label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--texto-suave);
+}
+
+.painel-body .dg-lancar-largo {
+  grid-column: 1 / -1;
+}
+
+.painel-body .dg-lancar-acoes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.painel-body .dg-vencedora {
+  padding: 16px 20px;
+  font-size: 15px;
+}
+
+.painel-body .dg-multi {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 6px 14px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 8px 10px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  background: var(--branco);
+}
+
+.painel-body .dg-multi label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--grafite);
+}
+
+.painel-body .dg-barras {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.painel-body .dg-barra-linha {
+  display: grid;
+  grid-template-columns: 150px 1fr 30px;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: 0;
+  padding: 4px;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  color: var(--grafite);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.painel-body .dg-barra-linha:hover {
+  background: rgba(var(--coral-rgb), 0.12);
+}
+
+.painel-body .dg-barra {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(var(--grafite-rgb), 0.08);
+  overflow: hidden;
+}
+
+.painel-body .dg-barra i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--coral);
+}
+
+.painel-body .dg-modal {
+  max-width: 640px;
+}
+
+.painel-body #dg-form-overlay {
+  z-index: 220;
+}
+
+@media (max-width: 620px) {
+  .painel-body .dg-barra-linha {
+    grid-template-columns: 110px 1fr 24px;
+  }
+
+  .painel-body .dg-grade-blocos {
+    grid-template-columns: 1fr;
+  }
+}
+
+.painel-body .dg-stat-valor-texto {
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.painel-body .dg-lancar-grade label[hidden] {
+  display: none;
+}
+
+.painel-body .dg-filtros select,
+.painel-body .dg-lancar-grade select,
+.painel-body .dg-lancar-grade input {
+  box-sizing: border-box;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: var(--fonte-corpo);
+  color: var(--grafite);
+  background: var(--branco);
+}
+
+.painel-body .dg-lancar-grade select,
+.painel-body .dg-lancar-grade input {
+  width: 100%;
+  font-weight: 500;
+}
+
+.painel-body .dg-select-status {
+  background-color: rgba(var(--grafite-rgb), 0.08);
+}

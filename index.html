@@ -598,6 +598,46 @@ section{ position:relative; }
 #feedbacks{ padding: 80px 0 120px; }
 #feedbacks .services-head{ margin-bottom:10px; }
 #feedbacks .wrap{ max-width:1280px; }
+
+/* =====================================================================
+   MÉTRICAS DO MEU PERFIL — TikTok e Instagram lado a lado (últimos 30 dias)
+===================================================================== */
+#metricas{ padding: 100px 0 110px; }
+#metricas .wrap{ max-width:1280px; }
+#metricas .services-head{ margin-bottom:56px; }
+#metricas .services-sub{ color: var(--offwhite); }
+.metricas-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:34px; align-items:stretch; }
+.metrica-card{
+  background:#fff; border-radius:26px; padding:38px 38px 34px;
+  box-shadow: 0 22px 44px rgba(32,42,68,0.28);
+  display:flex; flex-direction:column; gap:26px;
+}
+.metrica-topo{ display:flex; align-items:center; gap:14px; }
+.metrica-icone{
+  width:52px; height:52px; border-radius:16px; flex-shrink:0;
+  background: var(--blue-dark); color: var(--butter);
+  display:flex; align-items:center; justify-content:center;
+}
+.metrica-icone svg{ width:27px; height:27px; }
+.metrica-topo h3{ font-family: var(--font-display); font-weight:900; font-size:2rem; letter-spacing:-0.5px; line-height:1; color: var(--blue-dark); }
+.metrica-numeros{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+.metrica-num{ background: var(--butter); border-radius:20px; padding:22px 22px 20px; display:flex; flex-direction:column; gap:4px; }
+.metrica-num strong{ font-family: var(--font-display); font-weight:900; font-size:clamp(2.2rem, 3.6vw, 3.2rem); letter-spacing:-1px; line-height:1; color: var(--brown); }
+.metrica-num span{ font-weight:700; font-size:.82rem; letter-spacing:.1em; text-transform:uppercase; color: var(--ink); }
+.metrica-bloco{ display:flex; flex-direction:column; gap:10px; }
+.metrica-bloco h4{ font-weight:800; font-size:.78rem; letter-spacing:.14em; text-transform:uppercase; color: var(--blue-dark); }
+.metrica-genero{ display:flex; height:16px; border-radius:999px; overflow:hidden; background: rgba(92,110,145,0.12); }
+.metrica-genero i{ display:block; height:100%; }
+.metrica-genero .fem{ background: var(--blue-dark); }
+.metrica-genero .masc{ background: var(--blue-light); }
+.metrica-legenda{ display:flex; justify-content:space-between; gap:16px; font-weight:600; color: var(--ink); }
+.metrica-legenda span{ display:flex; align-items:center; gap:8px; }
+.metrica-legenda em{ font-style:normal; width:12px; height:12px; border-radius:50%; display:inline-block; }
+.metrica-legenda .fem em{ background: var(--blue-dark); }
+.metrica-legenda .masc em{ background: var(--blue-light); }
+.metrica-legenda strong{ font-weight:900; color: var(--blue-dark); }
+.metrica-linha{ display:flex; justify-content:space-between; align-items:baseline; gap:16px; padding-top:10px; border-top:1px dashed rgba(59,74,107,0.22); font-weight:600; color: var(--ink); }
+.metrica-linha strong{ font-family: var(--font-display); font-weight:900; font-size:1.5rem; letter-spacing:-0.5px; color: var(--blue-dark); }
 .feedback-grid{
   display:flex; gap:30px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
   padding: 64px 6px 32px; cursor:grab; scrollbar-width:none;
@@ -798,6 +838,7 @@ a.info-value:hover{ text-decoration:underline; }
       <a href="#servicos" class="nav-tab" data-texto="menu_servicos" data-pt="Serviços" data-en="Services">Serviços</a>
       <a href="#resultados" class="nav-tab" data-pt="Resultados" data-en="Results" style="display:none">Resultados</a>
       <a href="#feedbacks" class="nav-tab" data-texto="menu_feedbacks" data-pt="Feedbacks" data-en="Feedback">Feedbacks</a>
+      <a href="#metricas" class="nav-tab" data-pt="Métricas" data-en="Metrics">Métricas</a>
       <a href="#contato" class="nav-tab is-cta" data-texto="menu_proposta" data-pt="Solicitar proposta" data-en="Request a proposal">Solicitar proposta</a>
     </nav>
     <div class="lang-toggle" id="langToggle" role="group" aria-label="Switch language / Mudar idioma">
@@ -1239,6 +1280,73 @@ a.info-value:hover{ text-decoration:underline; }
     </div>
       </div>
       <button type="button" class="catalog-arrow catalog-arrow--next" id="feedbackNext" aria-label="Próximos feedbacks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     07 — MÉTRICAS DO MEU PERFIL
+========================================================== -->
+<section class="section section--dark" id="metricas">
+  <div class="wrap">
+    <div class="services-head">
+      <h2 class="section-title" data-pt="métricas do meu perfil" data-en="my profile metrics">métricas do meu perfil</h2>
+      <p class="services-sub" data-pt="dados dos últimos 30 dias." data-en="data from the last 30 days.">dados dos últimos 30 dias.</p>
+    </div>
+
+    <div class="metricas-grid">
+      <div class="metrica-card">
+        <div class="metrica-topo">
+          <div class="metrica-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2.1 4.3 5 4.6"/></svg></div>
+          <h3>TikTok</h3>
+        </div>
+        <div class="metrica-numeros">
+          <div class="metrica-num"><strong data-pt="12 mil" data-en="12K">12 mil</strong><span data-pt="seguidores" data-en="followers">seguidores</span></div>
+          <div class="metrica-num"><strong data-pt="10 mil" data-en="10K">10 mil</strong><span data-pt="visualizações" data-en="views">visualizações</span></div>
+        </div>
+        <div class="metrica-bloco">
+          <h4 data-pt="gênero do público" data-en="audience gender">gênero do público</h4>
+          <div class="metrica-genero" role="img" aria-label="Feminino 74%, masculino 24%"><i class="fem" style="width:74%"></i><i class="masc" style="width:24%"></i></div>
+          <div class="metrica-legenda">
+            <span class="fem"><em></em><b data-pt="Feminino" data-en="Female" style="font-weight:600">Feminino</b> <strong data-pt="74%" data-en="74%">74%</strong></span>
+            <span class="masc"><em></em><b data-pt="Masculino" data-en="Male" style="font-weight:600">Masculino</b> <strong data-pt="24%" data-en="24%">24%</strong></span>
+          </div>
+        </div>
+        <div class="metrica-bloco">
+          <h4 data-pt="faixa de idade" data-en="age range">faixa de idade</h4>
+          <div class="metrica-linha"><span data-pt="18-24 anos" data-en="18-24 years old">18-24 anos</span><strong data-pt="54,8%" data-en="54.8%">54,8%</strong></div>
+        </div>
+        <div class="metrica-bloco">
+          <h4 data-pt="localização" data-en="location">localização</h4>
+          <div class="metrica-linha"><span data-pt="Brasil" data-en="Brazil">Brasil</span><strong data-pt="99,0%" data-en="99.0%">99,0%</strong></div>
+        </div>
+      </div>
+      <div class="metrica-card">
+        <div class="metrica-topo">
+          <div class="metrica-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"/></svg></div>
+          <h3>Instagram</h3>
+        </div>
+        <div class="metrica-numeros">
+          <div class="metrica-num"><strong data-pt="579" data-en="579">579</strong><span data-pt="seguidores" data-en="followers">seguidores</span></div>
+          <div class="metrica-num"><strong data-pt="+48 mil" data-en="+48K">+48 mil</strong><span data-pt="visualizações" data-en="views">visualizações</span></div>
+        </div>
+        <div class="metrica-bloco">
+          <h4 data-pt="gênero do público" data-en="audience gender">gênero do público</h4>
+          <div class="metrica-genero" role="img" aria-label="Feminino 91,5%, masculino 8,5%"><i class="fem" style="width:91.5%"></i><i class="masc" style="width:8.5%"></i></div>
+          <div class="metrica-legenda">
+            <span class="fem"><em></em><b data-pt="Feminino" data-en="Female" style="font-weight:600">Feminino</b> <strong data-pt="91,5%" data-en="91.5%">91,5%</strong></span>
+            <span class="masc"><em></em><b data-pt="Masculino" data-en="Male" style="font-weight:600">Masculino</b> <strong data-pt="8,5%" data-en="8.5%">8,5%</strong></span>
+          </div>
+        </div>
+        <div class="metrica-bloco">
+          <h4 data-pt="faixa de idade" data-en="age range">faixa de idade</h4>
+          <div class="metrica-linha"><span data-pt="25-34 anos" data-en="25-34 years old">25-34 anos</span><strong data-pt="41,9%" data-en="41.9%">41,9%</strong></div>
+        </div>
+        <div class="metrica-bloco">
+          <h4 data-pt="localização" data-en="location">localização</h4>
+          <div class="metrica-linha"><span data-pt="Brasil" data-en="Brazil">Brasil</span><strong data-pt="94,8%" data-en="94.8%">94,8%</strong></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>

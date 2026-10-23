@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261052b">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261053a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1155,12 +1155,16 @@
               <h3 class="card-titulo">Os Achados ainda não estão prontos pra guardar link e capa</h3>
               <p class="cal-todas-resumo">Falta rodar o arquivo achados-referencias.sql no SQL Editor do Supabase.</p>
             </div>
+            <div id="ach-vista-achados">
             <div class="rt-barra">
               <input type="search" id="ach-busca" class="rt-busca" placeholder="🔎 Buscar por título, perfil, o que viu, como usar..." autocomplete="off">
               <button type="button" id="ach-btn-nova" class="cal-btn cal-btn-primario">+ Nova referência</button>
+              <button type="button" id="ach-btn-ganchos" class="cal-btn" hidden>📋 Lista de ganchos</button>
             </div>
             <div id="ach-chips" class="rt-chips"></div>
             <div id="ach-lista" class="ach-lista"></div>
+            </div>
+            <div id="ach-vista-ganchos" class="gl-vista" hidden></div>
           </div>
 
           <div id="pl-pagina-radar" class="pl-pagina" hidden>
@@ -7382,6 +7386,7 @@
       document.getElementById('pl-modal-achado-salvar').addEventListener('click', salvarModalAchado);
       document.getElementById('pl-modal-achado-excluir').addEventListener('click', excluirModalAchado);
       document.getElementById('ach-btn-nova').addEventListener('click', () => abrirModalAchado(null));
+      glLigarEventos();
       document.getElementById('ach-busca').addEventListener('input', (e) => {
         achBusca = e.target.value;
         renderizarAchados();
@@ -14849,6 +14854,8 @@
     }
 
     function achAbrir() {
+      achVista = 'achados';
+      glAtualizarVista();
       rtLigarEventos();
       renderizarAchados();
       // os roteiros (e a chave da Supadata) ajudam nos botões Transcrever e Buscar capa
@@ -14875,6 +14882,7 @@
       const lista = document.getElementById('ach-lista');
       if (!lista) return;
       if (achColunasOk === null) achVerColunas().then(renderizarAchados);
+      document.getElementById('ach-btn-ganchos').hidden = achFiltro !== 'Gancho';
       document.getElementById('ach-aviso-colunas').hidden = achColunasOk !== false;
 
       const chip = (atributo, chave, rotulo, n, ativo) => `<button type="button" class="rt-chip${ativo ? ' ativo' : ''}" data-${atributo}="${escapeHtml(chave)}">${escapeHtml(rotulo)} (${n})</button>`;
@@ -14894,6 +14902,309 @@
       }
       const itens = achFiltrados();
       lista.innerHTML = itens.length ? itens.map(achHtmlCard).join('') : '<p class="texto-vazio">Nada encontrado com esse filtro.</p>';
+    }
+
+    // ---- Achados > Lista de ganchos: ganchos separados por objetivo (planejador_ganchos, achados-ganchos.sql) ----
+    // Aparece um botão "Lista de ganchos" quando o filtro Gancho está ligado. Dá pra subir uma listinha de uma vez
+    // (colada ou de um .txt/.csv) e cada gancho fica guardado no objetivo dele.
+    let achVista = 'achados'; // 'achados' ou 'ganchos'
+    let glCache = [];
+    let glCarregado = false;
+    let glOk = true;
+    let glFiltro = '';
+    let glBusca = '';
+
+    function glAtualizarVista() {
+      document.getElementById('ach-vista-achados').hidden = achVista !== 'achados';
+      document.getElementById('ach-vista-ganchos').hidden = achVista !== 'ganchos';
+    }
+
+    async function glCarregar() {
+      try {
+        glCache = await buscarTudo('planejador_ganchos');
+        glOk = true;
+        glCarregado = true;
+      } catch (err) {
+        console.error('Lista de ganchos ainda não disponível (achados-ganchos.sql):', err);
+        glOk = false;
+      }
+      glRenderizar();
+    }
+
+    function glAbrir() {
+      achVista = 'ganchos';
+      glAtualizarVista();
+      glRenderizar();
+      if (!glCarregado) glCarregar();
+    }
+
+    function glFechar() {
+      achVista = 'achados';
+      glAtualizarVista();
+    }
+
+    // Objetivos em ordem alfabética, com a quantidade de ganchos de cada um.
+    function glObjetivos() {
+      const mapa = new Map();
+      glCache.forEach((g) => mapa.set(g.objetivo, (mapa.get(g.objetivo) || 0) + 1));
+      return [...mapa.entries()].map(([nome, qtd]) => ({ nome, qtd })).sort((a, b) => a.nome.localeCompare(b.nome));
+    }
+
+    // Monta a tela inteira (uma vez); a busca e os filtros só trocam as chips e a lista.
+    function glRenderizar() {
+      const area = document.getElementById('ach-vista-ganchos');
+      if (!area || achVista !== 'ganchos') return;
+      area.innerHTML = `
+        <div class="gl-topo">
+          <button type="button" class="cal-btn" data-gl-acao="voltar">← Voltar aos achados</button>
+          <div class="gl-acoes">
+            <button type="button" class="cal-btn cal-btn-primario" data-gl-acao="novo">+ Novo gancho</button>
+            <button type="button" class="cal-btn" data-gl-acao="subir">↑ Subir lista</button>
+          </div>
+        </div>
+        <h3 class="card-titulo">🪝 Lista de ganchos</h3>
+        <p class="cal-todas-resumo" id="gl-resumo"></p>
+        <div class="card email-vazio" id="gl-aviso" hidden>
+          <h3 class="card-titulo">A lista de ganchos ainda não está pronta</h3>
+          <p class="cal-todas-resumo">Falta rodar o arquivo achados-ganchos.sql no SQL Editor do Supabase.</p>
+        </div>
+        <input type="search" id="gl-busca" class="rt-busca" placeholder="🔎 Buscar um gancho" autocomplete="off" value="${escapeHtml(glBusca)}">
+        <div id="gl-chips" class="rt-chips"></div>
+        <div id="gl-lista" class="gl-lista"></div>`;
+      glAtualizarLista();
+    }
+
+    function glAtualizarLista() {
+      const lista = document.getElementById('gl-lista');
+      if (!lista) return;
+      document.getElementById('gl-aviso').hidden = glOk;
+      const objetivos = glObjetivos();
+      if (glFiltro && !objetivos.some((o) => o.nome === glFiltro)) glFiltro = '';
+      document.getElementById('gl-resumo').textContent = glCache.length
+        ? `${glCache.length} ${glCache.length === 1 ? 'gancho' : 'ganchos'} em ${objetivos.length} ${objetivos.length === 1 ? 'objetivo' : 'objetivos'}.`
+        : 'Guarde aqui os ganchos que funcionam, separados pelo objetivo de cada um.';
+      const chip = (nome, rotulo, ativo) => `<button type="button" class="rt-chip${ativo ? ' ativo' : ''}" data-gl-objetivo="${escapeHtml(nome)}">${escapeHtml(rotulo)}</button>`;
+      document.getElementById('gl-chips').innerHTML = objetivos.length
+        ? chip('', `Todos (${glCache.length})`, !glFiltro) + objetivos.map((o) => chip(o.nome, `${o.nome} (${o.qtd})`, glFiltro === o.nome)).join('')
+        : '';
+
+      if (!glCache.length) {
+        lista.innerHTML = glOk
+          ? '<p class="texto-vazio">Nenhum gancho ainda. Clique em + Novo gancho ou em ↑ Subir lista pra mandar vários de uma vez.</p>'
+          : '';
+        return;
+      }
+      const termo = rtNorm(glBusca).trim();
+      const grupos = objetivos
+        .filter((o) => !glFiltro || o.nome === glFiltro)
+        .map((o) => ({
+          nome: o.nome,
+          itens: glCache.filter((g) => g.objetivo === o.nome && (!termo || rtNorm(g.texto).includes(termo))).sort((a, b) => String(a.created_at).localeCompare(String(b.created_at))),
+        }))
+        .filter((g) => g.itens.length);
+      if (!grupos.length) {
+        lista.innerHTML = '<p class="texto-vazio">Nenhum gancho encontrado.</p>';
+        return;
+      }
+      lista.innerHTML = grupos
+        .map(
+          (g) => `<section class="card gl-grupo">
+            <div class="gl-grupo-topo">
+              <h4>${escapeHtml(g.nome)} <small>${g.itens.length}</small></h4>
+              <span class="gl-grupo-acoes">
+                <button type="button" class="cal-btn" data-gl-acao="copiar-grupo" data-objetivo="${escapeHtml(g.nome)}">📋 Copiar todos</button>
+                <button type="button" class="cal-btn" data-gl-acao="renomear" data-objetivo="${escapeHtml(g.nome)}">✏️ Renomear</button>
+              </span>
+            </div>
+            <ul class="gl-itens">${g.itens
+              .map(
+                (i) => `<li><span class="gl-texto">${escapeHtml(i.texto)}</span><span class="gl-item-acoes"><button type="button" class="dg-mini" data-gl-acao="copiar" data-id="${i.id}" title="Copiar" aria-label="Copiar">📋</button><button type="button" class="dg-mini" data-gl-acao="editar" data-id="${i.id}" title="Editar" aria-label="Editar">✏️</button><button type="button" class="dg-mini" data-gl-acao="apagar" data-id="${i.id}" title="Apagar" aria-label="Apagar">✕</button></span></li>`
+              )
+              .join('')}</ul>
+          </section>`
+        )
+        .join('');
+    }
+
+    // Lê uma listinha colada (ou de um arquivo) e devolve [{ objetivo, texto }].
+    // Uma linha que é um título vira o objetivo dos ganchos que vêm depois dela: "# Gerar curiosidade",
+    // "Gerar curiosidade:" ou "[Gerar curiosidade]". Marcadores (-, •, 1.) são tirados.
+    // Linhas "objetivo<TAB>gancho" (colar de uma planilha) também valem.
+    function glInterpretar(texto, objetivoPadrao) {
+      let atual = String(objetivoPadrao || '').trim();
+      const saida = [];
+      String(texto || '').split(/\r?\n/).forEach((bruta) => {
+        let linha = bruta.trim();
+        if (!linha) return;
+        let m = linha.match(/^#{1,3}\s*(.+)$/);
+        if (m) {
+          atual = m[1].replace(/:+$/, '').trim();
+          return;
+        }
+        m = linha.match(/^\[(.+)\]$/);
+        if (m) {
+          atual = m[1].trim();
+          return;
+        }
+        if (/:$/.test(linha) && linha.length <= 80) {
+          atual = linha.replace(/:+$/, '').trim();
+          return;
+        }
+        m = linha.match(/^([^\t]{1,80})\t+(.+)$/);
+        if (m) {
+          saida.push({ objetivo: m[1].trim() || atual || 'Sem objetivo', texto: m[2].trim() });
+          return;
+        }
+        linha = linha.replace(/^(?:[-•*–]|\d+[.)])\s+/, '').trim();
+        if (linha) saida.push({ objetivo: atual || 'Sem objetivo', texto: linha });
+      });
+      return saida;
+    }
+
+    function glFormularioGancho(g) {
+      dgAbrirForm({
+        titulo: g ? 'Editar gancho' : 'Novo gancho',
+        campos: [
+          { k: 'objetivo', rotulo: 'Objetivo', tipo: 'texto', obrigatorio: true, ph: 'Ex: Gerar curiosidade', sugestoes: glObjetivos().map((o) => o.nome) },
+          { k: 'texto', rotulo: 'Gancho', tipo: 'area', linhas: 4, obrigatorio: true },
+        ],
+        valores: g || { objetivo: glFiltro },
+        excluir: g
+          ? async () => {
+              if (!(await confirmarAcao('Apagar este gancho?'))) return false;
+              await glApagar(g.id);
+              return true;
+            }
+          : null,
+        depois: glAtualizarLista,
+        salvar: async (v) => {
+          if (g) {
+            const { data, error } = await Auth.sb.from('planejador_ganchos').update({ objetivo: v.objetivo, texto: v.texto }).eq('id', g.id).select();
+            if (error) throw error;
+            glCache = glCache.map((x) => (x.id === g.id ? data[0] : x));
+          } else {
+            const { data, error } = await Auth.sb.from('planejador_ganchos').insert({ objetivo: v.objetivo, texto: v.texto }).select();
+            if (error) throw error;
+            glCache.push(data[0]);
+          }
+          return true;
+        },
+      });
+    }
+
+    async function glApagar(id) {
+      const { error } = await Auth.sb.from('planejador_ganchos').delete().eq('id', id);
+      if (error) throw error;
+      glCache = glCache.filter((x) => x.id !== id);
+    }
+
+    function glFormularioSubir() {
+      dgAbrirForm({
+        titulo: 'Subir uma lista de ganchos',
+        campos: [
+          { k: 'objetivo_padrao', rotulo: 'Objetivo dos ganchos que não tiverem título (opcional)', tipo: 'texto', ph: 'Ex: Gerar curiosidade', sugestoes: glObjetivos().map((o) => o.nome) },
+          { k: 'lista', rotulo: 'A lista (um gancho por linha; uma linha terminada em ":" começa um objetivo novo)', tipo: 'area', linhas: 10, obrigatorio: true, ph: 'Gerar curiosidade:\nNinguém te conta isso sobre UGC...\nO erro que me custou 3 campanhas\n\nVender:\nSe eu fosse começar do zero hoje, faria isso' },
+          { k: 'arquivo', rotulo: 'Ou escolha um arquivo .txt ou .csv', tipo: 'arquivo', alvo: 'lista' },
+        ],
+        valores: { objetivo_padrao: glFiltro },
+        textoSalvar: 'Subir ganchos',
+        depois: glAtualizarLista,
+        salvar: async (v) => {
+          const itens = glInterpretar(v.lista, v.objetivo_padrao);
+          // não repete um gancho que já existe no mesmo objetivo
+          const chave = (o, t) => rtNorm(o).trim() + '|' + rtNorm(t).trim();
+          const jaTem = new Set(glCache.map((g) => chave(g.objetivo, g.texto)));
+          const novos = [];
+          itens.forEach((i) => {
+            const c = chave(i.objetivo, i.texto);
+            if (!jaTem.has(c)) {
+              jaTem.add(c);
+              novos.push(i);
+            }
+          });
+          if (!novos.length) {
+            alert(itens.length ? 'Todos esses ganchos já estão na lista.' : 'Não encontrei nenhum gancho no texto.');
+            return false;
+          }
+          const objetivos = new Set(novos.map((n) => n.objetivo));
+          const repetidos = itens.length - novos.length;
+          const aviso = `Guardar ${novos.length} ${novos.length === 1 ? 'gancho' : 'ganchos'} em ${objetivos.size} ${objetivos.size === 1 ? 'objetivo' : 'objetivos'} (${[...objetivos].slice(0, 4).join(', ')}${objetivos.size > 4 ? '...' : ''})?${repetidos ? ` ${repetidos} já existiam e ficam de fora.` : ''}`;
+          if (!(await confirmarAcao(aviso, { textoConfirmar: 'Guardar', perigo: false }))) return false;
+          for (let i = 0; i < novos.length; i += 200) {
+            const { data, error } = await Auth.sb.from('planejador_ganchos').insert(novos.slice(i, i + 200)).select();
+            if (error) throw error;
+            glCache.push(...data);
+          }
+          dgToast(`${novos.length} ${novos.length === 1 ? 'gancho guardado' : 'ganchos guardados'}.`);
+          return true;
+        },
+      });
+    }
+
+    function glFormularioRenomear(objetivo) {
+      dgAbrirForm({
+        titulo: 'Renomear objetivo',
+        campos: [{ k: 'novo', rotulo: 'Novo nome do objetivo', tipo: 'texto', obrigatorio: true }],
+        valores: { novo: objetivo },
+        depois: glAtualizarLista,
+        salvar: async (v) => {
+          if (v.novo === objetivo) return true;
+          const { data, error } = await Auth.sb.from('planejador_ganchos').update({ objetivo: v.novo }).eq('objetivo', objetivo).select();
+          if (error) throw error;
+          const ids = new Set(data.map((d) => d.id));
+          glCache = glCache.map((g) => (ids.has(g.id) ? { ...g, objetivo: v.novo } : g));
+          if (glFiltro === objetivo) glFiltro = v.novo;
+          return true;
+        },
+      });
+    }
+
+    async function glCopiar(texto) {
+      try {
+        await navigator.clipboard.writeText(texto);
+        dgToast('Copiado.');
+      } catch (err) {
+        console.error('Erro ao copiar:', err);
+        alert(tr('ugc_erro_copiar'));
+      }
+    }
+
+    function glLigarEventos() {
+      document.getElementById('ach-btn-ganchos').addEventListener('click', glAbrir);
+      const area = document.getElementById('ach-vista-ganchos');
+      area.addEventListener('click', async (e) => {
+        const chip = e.target.closest('[data-gl-objetivo]');
+        if (chip) {
+          glFiltro = chip.dataset.glObjetivo;
+          return glAtualizarLista();
+        }
+        const botao = e.target.closest('[data-gl-acao]');
+        if (!botao) return;
+        const acao = botao.dataset.glAcao;
+        const g = glCache.find((x) => x.id === botao.dataset.id);
+        try {
+          if (acao === 'voltar') glFechar();
+          else if (acao === 'novo') glFormularioGancho(null);
+          else if (acao === 'subir') glFormularioSubir();
+          else if (acao === 'editar' && g) glFormularioGancho(g);
+          else if (acao === 'copiar' && g) await glCopiar(g.texto);
+          else if (acao === 'copiar-grupo') await glCopiar(glCache.filter((x) => x.objetivo === botao.dataset.objetivo).map((x) => '- ' + x.texto).join('\n'));
+          else if (acao === 'renomear') glFormularioRenomear(botao.dataset.objetivo);
+          else if (acao === 'apagar' && g && (await confirmarAcao('Apagar este gancho?'))) {
+            await glApagar(g.id);
+            glAtualizarLista();
+          }
+        } catch (err) {
+          console.error('Erro na lista de ganchos:', err);
+          alert(tr('erro_salvar_generico'));
+        }
+      });
+      area.addEventListener('input', (e) => {
+        if (e.target.id === 'gl-busca') {
+          glBusca = e.target.value;
+          glAtualizarLista();
+        }
+      });
     }
 
     // Um achado "post" é o que tem imagens subidas (carrossel ou foto).
@@ -23053,6 +23364,8 @@
       } else if (c.tipo === 'pontuacao') {
         const linhas = Array.isArray(valor) ? valor : [];
         controle = `<div class="dg-pts" id="${id}">${linhas.map(dgLinhaPontosHtml).join('')}<button type="button" class="cal-btn" data-dg-acao="add-linha-pontos">+ Adicionar tarefa</button></div>`;
+      } else if (c.tipo === 'arquivo') {
+        controle = `<input type="file" id="${id}" accept=".txt,.csv,.md,text/plain,text/csv" data-dg-ler-texto="${dgH(c.alvo)}">`;
       } else if (c.tipo === 'check') {
         return `<div class="cal-form-campo"><label class="ugc-orc-ativa"><input type="checkbox" id="${id}"${valor ? ' checked' : ''}><span>${dgH(c.rotulo)}</span></label></div>`;
       } else {
@@ -23070,6 +23383,7 @@
     function dgLerCampo(c) {
       const el = document.getElementById('dgf-' + c.k);
       if (!el) return c.tipo === 'multi' || c.tipo === 'pontuacao' ? [] : null;
+      if (c.tipo === 'arquivo') return null;
       if (c.tipo === 'pontuacao') {
         return [...el.querySelectorAll('.dg-pts-linha')]
           .map((l) => ({ id: l.dataset.id || null, nome: l.querySelector('.dg-pts-nome').value.trim(), pontos: Math.round(Number(l.querySelector('.dg-pts-valor').value) || 0) }))
@@ -23089,6 +23403,7 @@
       const valores = cfg.valores || {};
       document.getElementById('dg-form-corpo').innerHTML = cfg.html || (cfg.campos || []).map((c) => dgCampoHtml(c, valores[c.k])).join('');
       document.getElementById('dg-form-salvar').hidden = !!cfg.somenteLeitura;
+      document.getElementById('dg-form-salvar').textContent = cfg.textoSalvar || 'Salvar';
       document.getElementById('dg-form-excluir').hidden = !cfg.excluir;
       const extra = document.getElementById('dg-form-extra');
       extra.hidden = !cfg.extra;
@@ -23259,6 +23574,14 @@
       document.getElementById('dg-form-salvar').addEventListener('click', dgSalvarForm);
       document.getElementById('dg-form-excluir').addEventListener('click', dgExcluirForm);
       document.getElementById('dg-form-extra').addEventListener('click', () => dgFormAtual && dgFormAtual.extra && dgFormAtual.extra.fazer());
+      document.getElementById('dg-form-overlay').addEventListener('change', (e) => {
+        const alvo = e.target.dataset && e.target.dataset.dgLerTexto;
+        if (!alvo || !e.target.files || !e.target.files[0]) return;
+        e.target.files[0].text().then((texto) => {
+          const caixa = document.getElementById('dgf-' + alvo);
+          if (caixa) caixa.value = (caixa.value ? caixa.value.replace(/\s+$/, '') + '\n' : '') + texto;
+        });
+      });
       document.getElementById('dg-form-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'dg-form-overlay') dgFecharForm();
         const acao = e.target.closest('[data-dg-acao]');

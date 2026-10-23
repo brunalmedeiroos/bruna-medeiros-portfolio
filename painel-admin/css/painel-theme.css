@@ -14013,3 +14013,61 @@
 .painel-body .ugc-formato-novo input {
   flex: 1 1 200px;
 }
+
+/* ---- Roteiros: cards de nicho + aba Entregue ---- */
+.painel-body .ugc-nichos-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.painel-body .ugc-nicho-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 110px;
+  padding: 18px;
+  text-align: left;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-top: 4px solid var(--coral);
+  border-radius: var(--raio-sm);
+  font-family: var(--fonte-corpo);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.painel-body .ugc-nicho-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra);
+}
+
+.painel-body .ugc-nicho-card-nome {
+  font-family: var(--fonte-titulo);
+  font-size: 22px;
+  color: var(--grafite);
+}
+
+.painel-body .ugc-nicho-card-info {
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.painel-body .ugc-nicho-card-entregues {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+.painel-body .ugc-nicho-abas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.painel-body .ugc-nicho-abas small {
+  font-weight: 600;
+  opacity: 0.75;
+}

@@ -13712,3 +13712,117 @@
 .painel-body .dg-select-status {
   background-color: rgba(var(--grafite-rgb), 0.08);
 }
+
+/* Desafio UGC: lista de tarefas que dão pontos */
+.painel-body .dg-pts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.painel-body .dg-pts-linha {
+  display: grid;
+  grid-template-columns: 1fr 90px auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.painel-body .dg-pts-linha input {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 9px 12px;
+  font-size: 14px;
+  font-family: var(--fonte-corpo);
+  background: var(--branco);
+  color: var(--grafite);
+}
+
+.painel-body .dg-pts > .cal-btn {
+  align-self: flex-start;
+}
+
+/* ---- Modo privacidade (olhinho): esconde valores em R$ e o Financeiro ---- */
+.painel-body .ugc-olho {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--grafite-rgb), 0.14);
+  background: transparent;
+  color: var(--texto-suave);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.painel-body .ugc-olho:hover {
+  color: var(--grafite);
+}
+
+.painel-body .ugc-olho .olho-fechado,
+.painel-body.modo-privado .ugc-olho .olho-aberto {
+  display: none;
+}
+
+.painel-body.modo-privado .ugc-olho .olho-fechado {
+  display: block;
+}
+
+.painel-body.modo-privado .ugc-olho {
+  background: var(--grafite);
+  border-color: var(--grafite);
+  color: var(--branco);
+}
+
+.painel-body .pg-capa-nav .ugc-olho {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--branco);
+}
+
+.painel-body.modo-privado .pg-capa-nav .ugc-olho {
+  background: var(--branco);
+  border-color: var(--branco);
+  color: var(--grafite);
+}
+
+.painel-body .valor-sensivel {
+  transition: filter 0.15s ease;
+}
+
+.painel-body.modo-privado .valor-sensivel {
+  filter: blur(7px);
+  user-select: none;
+}
+
+.painel-body.modo-privado :is(#ugc-modal-valor, #clientes-modal-valor, #ugc-preco-valor, #ugc-pacote-valor, .ugc-pi-valor, #meta-valor-atual, #meta-valor-objetivo) {
+  filter: blur(6px);
+}
+
+.painel-body.modo-privado #panel-financeiro > * {
+  filter: blur(14px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.painel-body.modo-privado #panel-financeiro::before {
+  content: '🙈 Informações financeiras ocultas. Pra mostrar de novo, clique no olhinho em UGC/Publicidade.';
+  display: block;
+  margin-bottom: 18px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: rgba(var(--grafite-rgb), 0.08);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.painel-body .dg-multi label {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  font-size: 13px;
+}

@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261051b">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261052b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1204,6 +1204,10 @@
         <!-- ---------- Aba: UGC / Publi ---------- -->
         <section id="panel-ugc" class="tab-panel" hidden>
           <div class="ugc-subnav">
+            <button type="button" class="ugc-olho" id="btn-modo-privado" aria-pressed="false" title="Esconder valores e dados financeiros" aria-label="Esconder valores e dados financeiros">
+              <svg class="olho-aberto" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="olho-fechado" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.9 17.9A10.6 10.6 0 0 1 12 19c-6.4 0-10-7-10-7a17.7 17.7 0 0 1 4.1-5M9.9 5.2A9.9 9.9 0 0 1 12 5c6.4 0 10 7 10 7a17.8 17.8 0 0 1-2.1 3.1M14.1 14.1a3 3 0 1 1-4.2-4.2M2 2l20 20"/></svg>
+            </button>
             <button class="ugc-subnav-btn ativo" data-ugc-pagina="visao-geral" type="button" data-i18n="ugc_visao_geral">Visão Geral</button>
             <button class="ugc-subnav-btn" data-ugc-pagina="trabalhos" type="button" data-i18n="ugc_trabalhos">Campanhas</button>
             <button class="ugc-subnav-btn" data-ugc-pagina="roteiros" type="button" data-i18n="ugc_roteiros">Roteiros</button>
@@ -4404,6 +4408,8 @@
         titulo_financeiro: 'Financeiro',
         titulo_metas: 'Metas',
         titulo_desafios: 'Desafio UGC',
+        priv_esconder: 'Esconder valores e dados financeiros',
+        priv_mostrar: 'Mostrar valores e dados financeiros',
         financeiro_pendente: 'Pendente',
         financeiro_recebido_total: 'Recebido no total',
         financeiro_insight_titulo: 'Como está seu faturamento?',
@@ -5682,6 +5688,8 @@
         titulo_financeiro: 'Finance',
         titulo_metas: 'Goals',
         titulo_desafios: 'UGC Challenge',
+        priv_esconder: 'Hide amounts and financial data',
+        priv_mostrar: 'Show amounts and financial data',
         financeiro_pendente: 'Pending',
         financeiro_recebido_total: 'Total received',
         financeiro_insight_titulo: "How's your revenue?",
@@ -7539,6 +7547,7 @@
       document.getElementById('btn-clientes-novo').addEventListener('click', () => abrirModalCliente(null));
       minhasCoisasLigarEventos();
       dgLigarEventos();
+      privIniciar();
       document.getElementById('clientes-modal-fechar').addEventListener('click', fecharModalCliente);
       document.getElementById('clientes-modal-excluir').addEventListener('click', excluirModalCliente);
       document.getElementById('clientes-modal-salvar').addEventListener('click', salvarModalCliente);
@@ -22174,6 +22183,20 @@
       for (const id of desafiosMarcados.filter((d) => !atuais.some((x) => x.desafio_id === d))) await dgInserir('inscricoes', { desafio_id: id, participante_id: participanteId });
     }
 
+    // As tarefas que dão pontos de um desafio são motivos de pontuação ligados a ele.
+    async function dgSincronizarPontuacao(desafioId, linhas) {
+      const atuais = dg.d.motivos.filter((m) => m.desafio_id === desafioId);
+      for (const m of atuais.filter((x) => !linhas.some((l) => l.id === x.id))) await dgApagar('motivos', m.id);
+      for (const l of linhas) {
+        const existente = l.id ? atuais.find((m) => m.id === l.id) : null;
+        if (existente) {
+          if (existente.nome !== l.nome || existente.pontos_padrao !== l.pontos) await dgAtualizar('motivos', existente.id, { nome: l.nome, pontos_padrao: l.pontos });
+        } else {
+          await dgInserir('motivos', { nome: l.nome, pontos_padrao: l.pontos, desafio_id: desafioId, ativo: true });
+        }
+      }
+    }
+
     async function dgSincronizarInscritas(desafioId, participantesMarcadas) {
       const atuais = dg.d.inscricoes.filter((i) => i.desafio_id === desafioId);
       for (const i of atuais.filter((x) => !participantesMarcadas.includes(x.participante_id))) await dgApagar('inscricoes', i.id);
@@ -22368,12 +22391,16 @@
           { k: 'data_inicio', rotulo: 'Início', tipo: 'data', obrigatorio: true },
           { k: 'data_fim', rotulo: 'Encerramento (o último dia é pra conferir as entregas e anunciar a vencedora)', tipo: 'data', obrigatorio: true },
           { k: 'regras', rotulo: 'Regras', tipo: 'area', linhas: 4 },
-          { k: 'criterios_pontuacao', rotulo: 'Critérios de pontuação', tipo: 'area', linhas: 4 },
+          { k: 'criterios_pontuacao', rotulo: 'Critérios de pontuação (explicação pras participantes)', tipo: 'area', linhas: 4 },
+          { k: 'pontuacao', rotulo: 'Tarefas que dão pontos e quanto cada uma vale', tipo: 'pontuacao' },
           { k: 'desempate', rotulo: 'Critério de desempate no ranking', tipo: 'select', opcoes: DG_DESEMPATES },
           { k: 'status', rotulo: 'Status', tipo: 'select', opcoes: DG_STATUS_DESAFIO },
           { k: 'inscritas', rotulo: 'Quem participa', tipo: 'multi', opcoes: dg.d.participantes.filter((p) => !p.arquivada && p.status !== 'saiu').sort((a, b) => a.nome.localeCompare(b.nome)).map((p) => [p.id, p.nome]), vazio: 'Cadastre as participantes primeiro.' },
         ],
-        valores: x ? { ...x, inscritas } : { data_inicio: hoje, data_fim: dgSomaDias(hoje, 14), desempate: 'entregas', status: 'planejado', inscritas: dg.d.participantes.filter((p) => !p.arquivada && p.status === 'ativa').map((p) => p.id) },
+        valores: x ? { ...x, inscritas, pontuacao: dg.d.motivos.filter((m) => m.desafio_id === x.id).map((m) => ({ id: m.id, nome: m.nome, pontos: m.pontos_padrao })) } : {
+          // começa com os motivos gerais (você tira, muda o valor ou acrescenta as tarefas deste desafio)
+          pontuacao: dg.d.motivos.filter((m) => m.ativo && !m.desafio_id && m.pontos_padrao !== 0).map((m) => ({ nome: m.nome, pontos: m.pontos_padrao })),
+          data_inicio: hoje, data_fim: dgSomaDias(hoje, 14), desempate: 'entregas', status: 'planejado', inscritas: dg.d.participantes.filter((p) => !p.arquivada && p.status === 'ativa').map((p) => p.id) },
         extra: x && x.status !== 'encerrado' ? { rotulo: 'Encerrar desafio', fazer: () => dgEncerrar(x) } : null,
         salvar: async (v) => {
           if (v.data_fim < v.data_inicio) {
@@ -22393,6 +22420,7 @@
           };
           const salvo = x ? await dgAtualizar('desafios', x.id, linha) : await dgInserir('desafios', linha);
           await dgSincronizarInscritas(salvo.id, v.inscritas || []);
+          await dgSincronizarPontuacao(salvo.id, v.pontuacao || []);
           if (!x) {
             // o último dia já nasce como atividade de fechamento
             await dgInserir('atividades', { desafio_id: salvo.id, titulo: 'Conferir as entregas, fechar o ranking e anunciar a vencedora', semana: 'fechamento', prazo: salvo.data_fim, ordem: 99 });
@@ -22462,6 +22490,10 @@
             <div class="dg-dado"><span>Objetivo</span><strong>${dgH(x.objetivo) || '<em class="dg-vazio">—</em>'}</strong></div>
             <div class="dg-dado"><span>Regras</span><strong>${dgH(x.regras) || '<em class="dg-vazio">—</em>'}</strong></div>
             <div class="dg-dado"><span>Critérios de pontuação</span><strong>${dgH(x.criterios_pontuacao) || '<em class="dg-vazio">—</em>'}</strong></div>
+            <div class="dg-dado"><span>Tarefas que dão pontos</span><strong>${(() => {
+              const lista = dg.d.motivos.filter((m) => m.desafio_id === x.id && m.ativo).sort((a, b) => b.pontos_padrao - a.pontos_padrao);
+              return lista.length ? lista.map((m) => `${dgH(m.nome)}: ${m.pontos_padrao > 0 ? '+' : ''}${m.pontos_padrao} pts`).join('<br>') : '<em class="dg-vazio">use os motivos gerais (edite o desafio pra definir)</em>';
+            })()}</strong></div>
             <div class="dg-dado"><span>Desempate</span><strong>${dgH(dgRotulo(DG_DESEMPATES, x.desempate))}</strong></div>
             <div class="dg-dado"><span>Vencedora</span><strong>${vencedora ? '🏆 ' + dgH(vencedora.nome) : '<em class="dg-vazio">ainda não registrada</em>'}</strong></div>
           </div>
@@ -22615,8 +22647,11 @@
     // ==========================================================================
     // Pontuação
     // ==========================================================================
+    // Se o desafio tem a sua lista de tarefas que dão pontos, é ela que aparece; senão, valem os motivos gerais.
     function dgMotivosDisponiveis(desafioId) {
-      return dg.d.motivos.filter((m) => m.ativo && (!m.desafio_id || m.desafio_id === desafioId)).sort((a, b) => a.nome.localeCompare(b.nome));
+      const doDesafio = desafioId ? dg.d.motivos.filter((m) => m.ativo && m.desafio_id === desafioId) : [];
+      const lista = doDesafio.length ? doDesafio : dg.d.motivos.filter((m) => m.ativo && !m.desafio_id);
+      return lista.sort((a, b) => a.nome.localeCompare(b.nome));
     }
 
     function dgPaginaPontos() {
@@ -23015,6 +23050,9 @@
         controle = c.opcoes.length
           ? `<div class="dg-multi" id="${id}">${c.opcoes.map((o) => `<label><input type="checkbox" value="${dgH(o[0])}"${marcados.includes(o[0]) ? ' checked' : ''}> ${dgH(o[1])}</label>`).join('')}</div>`
           : `<p class="dg-vazio-texto">${dgH(c.vazio || 'Nada pra escolher.')}</p>`;
+      } else if (c.tipo === 'pontuacao') {
+        const linhas = Array.isArray(valor) ? valor : [];
+        controle = `<div class="dg-pts" id="${id}">${linhas.map(dgLinhaPontosHtml).join('')}<button type="button" class="cal-btn" data-dg-acao="add-linha-pontos">+ Adicionar tarefa</button></div>`;
       } else if (c.tipo === 'check') {
         return `<div class="cal-form-campo"><label class="ugc-orc-ativa"><input type="checkbox" id="${id}"${valor ? ' checked' : ''}><span>${dgH(c.rotulo)}</span></label></div>`;
       } else {
@@ -23024,9 +23062,19 @@
       return `<div class="cal-form-campo"><label for="${id}">${dgH(c.rotulo)}${c.obrigatorio ? ' *' : ''}</label>${controle}</div>`;
     }
 
+    // Uma linha da lista de tarefas que dão pontos: nome + pontos.
+    function dgLinhaPontosHtml(l) {
+      return `<div class="dg-pts-linha" data-id="${dgH((l && l.id) || '')}"><input type="text" class="dg-pts-nome" placeholder="Tarefa (ex: Vídeo publicado)" maxlength="120" value="${dgH((l && l.nome) || '')}"><input type="number" class="dg-pts-valor" step="1" placeholder="pontos" value="${l && l.pontos != null ? dgH(l.pontos) : ''}"><button type="button" class="dg-mini" data-dg-acao="rm-linha-pontos" aria-label="Tirar">✕</button></div>`;
+    }
+
     function dgLerCampo(c) {
       const el = document.getElementById('dgf-' + c.k);
-      if (!el) return c.tipo === 'multi' ? [] : null;
+      if (!el) return c.tipo === 'multi' || c.tipo === 'pontuacao' ? [] : null;
+      if (c.tipo === 'pontuacao') {
+        return [...el.querySelectorAll('.dg-pts-linha')]
+          .map((l) => ({ id: l.dataset.id || null, nome: l.querySelector('.dg-pts-nome').value.trim(), pontos: Math.round(Number(l.querySelector('.dg-pts-valor').value) || 0) }))
+          .filter((l) => l.nome);
+      }
       if (c.tipo === 'multi') return [...el.querySelectorAll('input:checked')].map((i) => i.value);
       if (c.tipo === 'check') return el.checked;
       if (c.tipo === 'numero') return el.value === '' ? null : Number(el.value);
@@ -23113,7 +23161,13 @@
     async function dgAcao(acao, el) {
       const id = el.dataset.id;
       try {
-        if (acao === 'nova-participante') dgFormularioParticipante(null);
+        if (acao === 'add-linha-pontos') {
+          const botao = el;
+          botao.insertAdjacentHTML('beforebegin', dgLinhaPontosHtml(null));
+          const novas = botao.parentElement.querySelectorAll('.dg-pts-nome');
+          novas[novas.length - 1].focus();
+        } else if (acao === 'rm-linha-pontos') el.closest('.dg-pts-linha').remove();
+        else if (acao === 'nova-participante') dgFormularioParticipante(null);
         else if (acao === 'editar-participante') dgFormularioParticipante(dgPart(id));
         else if (acao === 'nova-nota') dgFormularioNota(id);
         else if (acao === 'apagar-nota') {
@@ -23212,6 +23266,92 @@
       });
     }
 
+
+    // ==========================================================================
+    // Modo privacidade (olhinho no menu da aba UGC/Publicidade): esconde valores em R$ e o Financeiro
+    // pra ela poder mostrar o painel pra outras pessoas. O estado fica salvo neste navegador.
+    // Qualquer texto com "R$ 1.234,56" (em qualquer aba) vira um <span class="valor-sensivel">, que
+    // fica borrado quando o modo está ligado. O Financeiro inteiro fica borrado. Campos de valor também.
+    // ==========================================================================
+    const PRIV_CHAVE = 'painel-modo-privado';
+    const PRIV_TESTE = /-?R\$\s*-?[\d.]+(?:,\d+)?/;
+    const PRIV_ACHAR = /-?R\$\s*-?[\d.]+(?:,\d+)?/g;
+    const PRIV_IGNORAR = 'script,style,textarea,option,select,title,input,.valor-sensivel,[contenteditable]';
+    let privObservador = null;
+
+    function privMascararTexto(no) {
+      const pai = no.parentElement;
+      if (!pai || pai.closest(PRIV_IGNORAR) || !PRIV_TESTE.test(no.nodeValue)) return;
+      const texto = no.nodeValue;
+      const frag = document.createDocumentFragment();
+      let fim = 0;
+      for (const m of texto.matchAll(PRIV_ACHAR)) {
+        if (m.index > fim) frag.appendChild(document.createTextNode(texto.slice(fim, m.index)));
+        const span = document.createElement('span');
+        span.className = 'valor-sensivel';
+        span.textContent = m[0];
+        frag.appendChild(span);
+        fim = m.index + m[0].length;
+      }
+      if (fim < texto.length) frag.appendChild(document.createTextNode(texto.slice(fim)));
+      no.replaceWith(frag);
+    }
+
+    function privMascarar(raizNo) {
+      if (!raizNo) return;
+      if (raizNo.nodeType === 3) return privMascararTexto(raizNo);
+      if (raizNo.nodeType !== 1) return;
+      const caminhante = document.createTreeWalker(raizNo, NodeFilter.SHOW_TEXT);
+      const achados = [];
+      while (caminhante.nextNode()) if (PRIV_TESTE.test(caminhante.currentNode.nodeValue)) achados.push(caminhante.currentNode);
+      achados.forEach(privMascararTexto);
+    }
+
+    function privObservar() {
+      privObservador.observe(document.body, { childList: true, subtree: true, characterData: true });
+    }
+
+    function privAplicar(ligado) {
+      document.body.classList.toggle('modo-privado', ligado);
+      const botao = document.getElementById('btn-modo-privado');
+      if (botao) {
+        botao.setAttribute('aria-pressed', String(ligado));
+        const texto = tr(ligado ? 'priv_mostrar' : 'priv_esconder');
+        botao.title = texto;
+        botao.setAttribute('aria-label', texto);
+      }
+      try {
+        localStorage.setItem(PRIV_CHAVE, ligado ? '1' : '0');
+      } catch (e) {
+        /* navegador sem armazenamento: o modo só vale até recarregar */
+      }
+    }
+
+    function privIniciar() {
+      let ligado = false;
+      try {
+        ligado = localStorage.getItem(PRIV_CHAVE) === '1';
+      } catch (e) {
+        ligado = false;
+      }
+      privMascarar(document.body);
+      privObservador = new MutationObserver((mutacoes) => {
+        // pausa enquanto mexe no próprio DOM, pra não reagir às suas próprias trocas
+        privObservador.disconnect();
+        try {
+          mutacoes.forEach((m) => {
+            if (m.type === 'characterData') privMascarar(m.target);
+            else m.addedNodes.forEach(privMascarar);
+          });
+        } finally {
+          privObservar();
+        }
+      });
+      privObservar();
+      privAplicar(ligado);
+      const botao = document.getElementById('btn-modo-privado');
+      if (botao) botao.addEventListener('click', () => privAplicar(!document.body.classList.contains('modo-privado')));
+    }
 
     // Substitui o confirm() nativo do navegador por um modal no estilo do
     // painel. Uso: if (!(await confirmarAcao('Excluir isto?'))) return;

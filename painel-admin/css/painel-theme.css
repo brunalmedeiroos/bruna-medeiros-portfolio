@@ -13920,3 +13920,57 @@
   gap: 2px;
   flex-shrink: 0;
 }
+
+/* ---- Roteiros por nicho (os nichos do portfólio) ---- */
+.painel-body .ugc-nicho-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.painel-body .ugc-nicho-btn {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--grafite-rgb), 0.2);
+  background: var(--branco);
+  font-family: var(--fonte-corpo);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--grafite);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.painel-body .ugc-nicho-btn:hover {
+  border-color: var(--coral);
+}
+
+.painel-body .ugc-nicho-btn.ativo {
+  background: var(--coral);
+  border-color: var(--coral);
+  color: var(--branco);
+}
+
+.painel-body .ugc-roteiros-agrupado {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.painel-body .ugc-roteiros-agrupado .ugc-roteiros-grade {
+  margin-top: 8px;
+}
+
+.painel-body .ugc-roteiros-grupo-titulo {
+  margin: 14px 0 0;
+  font-family: var(--fonte-titulo);
+  font-size: 20px;
+}
+
+.painel-body .ugc-roteiros-grupo-titulo small {
+  font-family: var(--fonte-corpo);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}

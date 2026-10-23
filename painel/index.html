@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261053a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261054a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1364,7 +1364,9 @@
                 <option value="Aprovado" data-i18n="ugc_roteiro_status_aprovado">Aprovado</option>
                 <option value="Ajustes pedidos" data-i18n="ugc_roteiro_status_ajustes">Ajustes pedidos</option>
               </select>
+              <select id="ugc-roteiros-filtro-nicho" hidden></select>
             </div>
+            <p class="dash-aviso" id="ugc-roteiros-nicho-aviso" hidden>Falta rodar o arquivo roteiro-nicho.sql no Supabase pra separar os roteiros por nicho.</p>
 
             <div id="ugc-roteiros-grade" class="ugc-roteiros-grade"></div>
           </div>
@@ -3003,6 +3005,12 @@
           </div>
         </div>
 
+        <div class="cal-form-campo" id="ugc-roteiro-nicho-campo">
+          <label>Nicho <small>(os mesmos do seu portfólio)</small></label>
+          <div id="ugc-roteiro-nicho-opcoes" class="ugc-nicho-opcoes"></div>
+          <p class="dash-aviso" id="ugc-roteiro-nicho-aviso" hidden>Pra guardar o nicho, falta rodar o arquivo roteiro-nicho.sql no Supabase.</p>
+        </div>
+
         <div class="cal-form-campo">
           <label for="ugc-roteiro-categoria" data-i18n="ugc_categoria">Categoria</label>
           <input type="text" id="ugc-roteiro-categoria" list="ugc-roteiro-categorias-lista" data-i18n-placeholder="ugc_categoria_placeholder" placeholder="Ex: Conteúdo pro perfil">
@@ -4219,6 +4227,7 @@
     let ugcSubAbaAtual = 'visao-geral';
     let filtroRoteirosTexto = '';
     let filtroRoteirosStatus = '';
+    let filtroRoteirosNicho = ''; // '' = todos, '__sem__' = sem nicho, ou o código do nicho
     let ugcTrabalhoAbertoId = null;
     let ugcTrabalhoSnapshotInicial = '';
     let filtroTrabalhos = 'ativas'; // 'todas' | 'ativas' | 'finalizadas'
@@ -7690,6 +7699,17 @@
       document.getElementById('ugc-roteiros-filtro-status').addEventListener('change', (e) => {
         filtroRoteirosStatus = e.target.value;
         renderizarRoteiros();
+      });
+      document.getElementById('ugc-roteiros-filtro-nicho').addEventListener('change', (e) => {
+        filtroRoteirosNicho = e.target.value;
+        renderizarRoteiros();
+      });
+      document.getElementById('ugc-roteiro-nicho-opcoes').addEventListener('click', (e) => {
+        const botao = e.target.closest('[data-nicho]');
+        if (!botao) return;
+        // clicar de novo no nicho escolhido tira a escolha
+        ugcRoteiroNicho = ugcRoteiroNicho === botao.dataset.nicho ? '' : botao.dataset.nicho;
+        ugcRenderizarNichoOpcoes();
       });
       document.getElementById('ugc-modal-roteiro-fechar').addEventListener('click', fecharModalRoteiro);
       document.getElementById('ugc-modal-roteiro-excluir').addEventListener('click', excluirModalRoteiro);
@@ -18164,12 +18184,78 @@
     }
 
     // ---- Roteiros (biblioteca) ----
+    // ---- Roteiros por nicho (os mesmos nichos do portfólio) ----
+    // O nicho fica na coluna ugc_roteiros.nicho (roteiro-nicho.sql). Enquanto a
+    // coluna não existe, a lista segue como sempre e o nicho não é enviado.
+    let ugcRoteiroNicho = '';
+    let ugcRoteiroNichoOk = null; // null = ainda verificando, true/false = coluna existe ou não
+    let ugcNichosPortfolio = null; // nichos do portfólio, na ordem do site
+    let ugcNichosCarregando = false;
+
+    async function ugcCarregarNichosRoteiro() {
+      if (ugcNichosCarregando || (ugcRoteiroNichoOk !== null && ugcNichosPortfolio)) return;
+      ugcNichosCarregando = true;
+      try {
+        if (ugcRoteiroNichoOk === null) {
+          const { error } = await Auth.sb.from('ugc_roteiros').select('nicho').limit(1);
+          ugcRoteiroNichoOk = !error;
+        }
+        if (!ugcNichosPortfolio) {
+          const { data } = await Auth.sb
+            .from('portfolio_itens')
+            .select('categoria,titulo,ordem')
+            .eq('tipo', 'nicho')
+            .order('ordem', { ascending: true })
+            .order('created_at', { ascending: true });
+          ugcNichosPortfolio = data && data.length ? data : PF_NICHOS_PADRAO;
+        }
+      } catch (err) {
+        console.error('Erro ao carregar os nichos dos roteiros:', err);
+        if (ugcRoteiroNichoOk === null) ugcRoteiroNichoOk = false;
+        if (!ugcNichosPortfolio) ugcNichosPortfolio = PF_NICHOS_PADRAO;
+      } finally {
+        ugcNichosCarregando = false;
+      }
+      renderizarRoteiros();
+    }
+
+    // Nichos do portfólio + os que algum roteiro ainda usa mas já saíram do portfólio.
+    function ugcNichosRoteiro() {
+      const lista = [...(ugcNichosPortfolio || PF_NICHOS_PADRAO)];
+      ugcRoteirosCache.forEach((r) => {
+        if (r.nicho && !lista.some((n) => n.categoria === r.nicho)) lista.push({ categoria: r.nicho, titulo: r.nicho });
+      });
+      return lista;
+    }
+
+    function ugcRenderizarNichoOpcoes() {
+      const caixa = document.getElementById('ugc-roteiro-nicho-opcoes');
+      caixa.innerHTML = ugcNichosRoteiro()
+        .map((n) => `<button type="button" class="ugc-nicho-btn${n.categoria === ugcRoteiroNicho ? ' ativo' : ''}" data-nicho="${escapeHtml(n.categoria)}">${escapeHtml(n.titulo || n.categoria)}</button>`)
+        .join('');
+      document.getElementById('ugc-roteiro-nicho-aviso').hidden = ugcRoteiroNichoOk !== false;
+    }
+
+    function ugcAtualizarFiltroNicho() {
+      const sel = document.getElementById('ugc-roteiros-filtro-nicho');
+      document.getElementById('ugc-roteiros-nicho-aviso').hidden = ugcRoteiroNichoOk !== false;
+      sel.hidden = !ugcRoteiroNichoOk;
+      if (!ugcRoteiroNichoOk) return;
+      sel.innerHTML =
+        '<option value="">Todos os nichos</option>' +
+        ugcNichosRoteiro().map((n) => `<option value="${escapeHtml(n.categoria)}">${escapeHtml(n.titulo || n.categoria)}</option>`).join('') +
+        '<option value="__sem__">Sem nicho</option>';
+      sel.value = filtroRoteirosNicho;
+    }
+
     function renderizarRoteiros() {
       atualizarDatalistCategoriasRoteiro();
+      ugcCarregarNichosRoteiro();
       const lista = document.getElementById('ugc-roteiros-grade');
       const termo = filtroRoteirosTexto.trim().toLowerCase();
       const filtrados = ugcRoteirosCache.filter((r) => {
         if (filtroRoteirosStatus && (r.status || 'Rascunho') !== filtroRoteirosStatus) return false;
+        if (ugcRoteiroNichoOk && filtroRoteirosNicho && (filtroRoteirosNicho === '__sem__' ? !!r.nicho : r.nicho !== filtroRoteirosNicho)) return false;
         if (!termo) return true;
         return [r.marca, r.produto, r.campanha].some((v) => (v || '').toLowerCase().includes(termo));
       });
@@ -18185,9 +18271,24 @@
         return;
       }
       lista.innerHTML = '';
-      [...filtrados]
-        .sort((a, b) => b.created_at.localeCompare(a.created_at))
-        .forEach((r) => lista.appendChild(criarCardRoteiro(r)));
+      const ordenados = [...filtrados].sort((a, b) => b.created_at.localeCompare(a.created_at));
+      ugcAtualizarFiltroNicho();
+      if (!ugcRoteiroNichoOk) {
+        // sem a coluna nicho (roteiro-nicho.sql) a lista continua como sempre
+        lista.className = 'ugc-roteiros-grade';
+        ordenados.forEach((r) => lista.appendChild(criarCardRoteiro(r)));
+        return;
+      }
+      // separados por nicho: na ordem dos nichos do portfólio, e "Sem nicho" por último
+      lista.className = 'ugc-roteiros-agrupado';
+      const grupos = ugcNichosRoteiro().map((n) => ({ nome: n.titulo || n.categoria, itens: ordenados.filter((r) => r.nicho === n.categoria) }));
+      grupos.push({ nome: 'Sem nicho', itens: ordenados.filter((r) => !r.nicho) });
+      grupos.filter((g) => g.itens.length).forEach((g) => {
+        const secao = document.createElement('section');
+        secao.innerHTML = `<h4 class="ugc-roteiros-grupo-titulo">${escapeHtml(g.nome)} <small>${g.itens.length}</small></h4><div class="ugc-roteiros-grade"></div>`;
+        g.itens.forEach((r) => secao.querySelector('.ugc-roteiros-grade').appendChild(criarCardRoteiro(r)));
+        lista.appendChild(secao);
+      });
     }
 
     function criarCardRoteiro(roteiro) {
@@ -18656,6 +18757,9 @@
       document.getElementById('ugc-roteiro-produto').value = roteiro ? roteiro.produto || '' : '';
       document.getElementById('ugc-roteiro-duracao').value = roteiro ? roteiro.duracao_prevista || '' : '';
       document.getElementById('ugc-roteiro-categoria').value = roteiro ? roteiro.categoria || '' : '';
+      // roteiro novo já nasce no nicho que estiver filtrado na lista
+      ugcRoteiroNicho = roteiro ? roteiro.nicho || '' : filtroRoteirosNicho && filtroRoteirosNicho !== '__sem__' ? filtroRoteirosNicho : '';
+      ugcRenderizarNichoOpcoes();
       const areaConteudo = document.getElementById('ugc-roteiro-conteudo');
       areaConteudo.innerHTML = roteiro ? roteiro.conteudo || '' : '';
       areaConteudo.setAttribute('data-placeholder', tr('ugc_roteiro_conteudo_placeholder'));
@@ -18692,6 +18796,7 @@
         trabalho: document.getElementById('ugc-roteiro-trabalho').value,
         duracao: document.getElementById('ugc-roteiro-duracao').value,
         categoria: document.getElementById('ugc-roteiro-categoria').value,
+        nicho: ugcRoteiroNicho,
         conteudo: document.getElementById('ugc-roteiro-conteudo').innerHTML,
         corAtiva: document.getElementById('ugc-roteiro-marca-cor-ativa').checked,
         cor: document.getElementById('ugc-roteiro-marca-cor').value,
@@ -18766,6 +18871,7 @@
         trabalho_id: document.getElementById('ugc-roteiro-trabalho').value || null,
         duracao_prevista: document.getElementById('ugc-roteiro-duracao').value.trim() || null,
         categoria: document.getElementById('ugc-roteiro-categoria').value.trim() || null,
+        ...(ugcRoteiroNichoOk ? { nicho: ugcRoteiroNicho || null } : {}),
         conteudo: conteudoRoteiroVazio(document.getElementById('ugc-roteiro-conteudo')) ? null : document.getElementById('ugc-roteiro-conteudo').innerHTML,
         marca_cor: document.getElementById('ugc-roteiro-marca-cor-ativa').checked
           ? document.getElementById('ugc-roteiro-marca-cor').value

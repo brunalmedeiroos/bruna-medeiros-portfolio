@@ -13974,3 +13974,42 @@
   font-weight: 600;
   color: var(--texto-suave);
 }
+
+/* ---- Formato de vídeo do roteiro ---- */
+.painel-body .ugc-formato-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.painel-body .ugc-formato-x {
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.painel-body .ugc-formato-x:hover {
+  background: rgba(var(--grafite-rgb), 0.1);
+  color: var(--grafite);
+}
+
+.painel-body .ugc-formato-vazio {
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.painel-body .ugc-formato-novo {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.painel-body .ugc-formato-novo input {
+  flex: 1 1 200px;
+}

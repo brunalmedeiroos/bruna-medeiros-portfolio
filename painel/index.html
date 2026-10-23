@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261054a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261055a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -3009,6 +3009,16 @@
           <label>Nicho <small>(os mesmos do seu portfólio)</small></label>
           <div id="ugc-roteiro-nicho-opcoes" class="ugc-nicho-opcoes"></div>
           <p class="dash-aviso" id="ugc-roteiro-nicho-aviso" hidden>Pra guardar o nicho, falta rodar o arquivo roteiro-nicho.sql no Supabase.</p>
+        </div>
+
+        <div class="cal-form-campo" id="ugc-roteiro-formato-campo">
+          <label>Formato de vídeo <small>(a lista fica salva pros próximos roteiros)</small></label>
+          <div id="ugc-roteiro-formato-opcoes" class="ugc-nicho-opcoes"></div>
+          <div class="ugc-formato-novo">
+            <input type="text" id="ugc-roteiro-formato-novo" placeholder="Ex: Unboxing, Tutorial, GRWM">
+            <button type="button" id="ugc-roteiro-formato-add" class="cal-btn">+ Adicionar</button>
+          </div>
+          <p class="dash-aviso" id="ugc-roteiro-formato-aviso" hidden>Pra guardar os formatos, falta rodar o arquivo roteiro-formato-video.sql no Supabase.</p>
         </div>
 
         <div class="cal-form-campo">
@@ -7710,6 +7720,21 @@
         // clicar de novo no nicho escolhido tira a escolha
         ugcRoteiroNicho = ugcRoteiroNicho === botao.dataset.nicho ? '' : botao.dataset.nicho;
         ugcRenderizarNichoOpcoes();
+      });
+      document.getElementById('ugc-roteiro-formato-opcoes').addEventListener('click', (e) => {
+        const excluir = e.target.closest('[data-formato-excluir]');
+        if (excluir) return ugcExcluirFormato(excluir.dataset.formatoExcluir);
+        const botao = e.target.closest('[data-formato]');
+        if (!botao) return;
+        // clicar de novo no formato escolhido tira a escolha
+        ugcRoteiroFormato = ugcRoteiroFormato === botao.dataset.formato ? '' : botao.dataset.formato;
+        ugcRenderizarFormatoOpcoes();
+      });
+      document.getElementById('ugc-roteiro-formato-add').addEventListener('click', ugcAdicionarFormato);
+      document.getElementById('ugc-roteiro-formato-novo').addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        e.preventDefault();
+        ugcAdicionarFormato();
       });
       document.getElementById('ugc-modal-roteiro-fechar').addEventListener('click', fecharModalRoteiro);
       document.getElementById('ugc-modal-roteiro-excluir').addEventListener('click', excluirModalRoteiro);
@@ -18248,9 +18273,92 @@
       sel.value = filtroRoteirosNicho;
     }
 
+    // ---- Formato de vídeo do roteiro (lista que a Bruna monta e fica salva) ----
+    // A lista fica na tabela ugc_formatos_video e a escolha na coluna
+    // ugc_roteiros.formato_video (roteiro-formato-video.sql).
+    let ugcRoteiroFormato = '';
+    let ugcFormatoColunaOk = null;
+    let ugcFormatosLista = null; // null = ainda carregando; [] = tabela ausente ou vazia
+    let ugcFormatosTabelaOk = null;
+    let ugcFormatosCarregando = false;
+
+    async function ugcCarregarFormatos() {
+      if (ugcFormatosCarregando || ugcFormatosLista) return;
+      ugcFormatosCarregando = true;
+      try {
+        const col = await Auth.sb.from('ugc_roteiros').select('formato_video').limit(1);
+        ugcFormatoColunaOk = !col.error;
+        const tab = await Auth.sb.from('ugc_formatos_video').select('*').order('created_at', { ascending: true });
+        ugcFormatosTabelaOk = !tab.error;
+        ugcFormatosLista = tab.error ? [] : tab.data || [];
+      } catch (err) {
+        console.error('Erro ao carregar os formatos de vídeo:', err);
+        ugcFormatoColunaOk = ugcFormatoColunaOk === null ? false : ugcFormatoColunaOk;
+        ugcFormatosTabelaOk = false;
+        ugcFormatosLista = [];
+      } finally {
+        ugcFormatosCarregando = false;
+      }
+      ugcRenderizarFormatoOpcoes();
+    }
+
+    function ugcRenderizarFormatoOpcoes() {
+      const caixa = document.getElementById('ugc-roteiro-formato-opcoes');
+      const lista = (ugcFormatosLista || []).map((f) => ({ id: f.id, nome: f.nome }));
+      // formato já escolhido num roteiro mas que saiu da lista continua aparecendo
+      if (ugcRoteiroFormato && !lista.some((f) => f.nome === ugcRoteiroFormato)) lista.push({ id: null, nome: ugcRoteiroFormato });
+      caixa.innerHTML = lista.length
+        ? lista
+            .map(
+              (f) => `<span class="ugc-formato-chip"><button type="button" class="ugc-nicho-btn${f.nome === ugcRoteiroFormato ? ' ativo' : ''}" data-formato="${escapeHtml(f.nome)}">${escapeHtml(f.nome)}</button>${
+                f.id ? `<button type="button" class="ugc-formato-x" data-formato-excluir="${escapeHtml(f.id)}" aria-label="Tirar da lista" title="Tirar da lista">×</button>` : ''
+              }</span>`
+            )
+            .join('')
+        : `<span class="ugc-formato-vazio">${ugcFormatosLista ? 'Nenhum formato ainda. Escreva um abaixo e aperte Adicionar.' : 'Carregando...'}</span>`;
+      document.getElementById('ugc-roteiro-formato-aviso').hidden = ugcFormatosLista === null || (ugcFormatoColunaOk && ugcFormatosTabelaOk);
+    }
+
+    async function ugcAdicionarFormato() {
+      const campo = document.getElementById('ugc-roteiro-formato-novo');
+      const nome = campo.value.trim();
+      if (!nome) return;
+      const existente = (ugcFormatosLista || []).find((f) => rtNorm(f.nome) === rtNorm(nome));
+      if (!existente) {
+        if (!ugcFormatosTabelaOk) {
+          alert('Pra guardar os formatos, falta rodar o arquivo roteiro-formato-video.sql no Supabase.');
+          return;
+        }
+        const { data, error } = await Auth.sb.from('ugc_formatos_video').insert({ nome }).select();
+        if (error) {
+          console.error('Erro ao salvar formato:', error);
+          alert(tr('erro_excluir_generico'));
+          return;
+        }
+        ugcFormatosLista = [...(ugcFormatosLista || []), data[0]];
+      }
+      ugcRoteiroFormato = existente ? existente.nome : nome;
+      campo.value = '';
+      ugcRenderizarFormatoOpcoes();
+    }
+
+    async function ugcExcluirFormato(id) {
+      const f = (ugcFormatosLista || []).find((x) => x.id === id);
+      if (!f || !(await confirmarAcao(`Tirar "${f.nome}" da lista de formatos? Os roteiros que já usam esse formato não mudam.`))) return;
+      const { error } = await Auth.sb.from('ugc_formatos_video').delete().eq('id', id);
+      if (error) {
+        console.error('Erro ao excluir formato:', error);
+        alert(tr('erro_excluir_generico'));
+        return;
+      }
+      ugcFormatosLista = ugcFormatosLista.filter((x) => x.id !== id);
+      ugcRenderizarFormatoOpcoes();
+    }
+
     function renderizarRoteiros() {
       atualizarDatalistCategoriasRoteiro();
       ugcCarregarNichosRoteiro();
+      ugcCarregarFormatos();
       const lista = document.getElementById('ugc-roteiros-grade');
       const termo = filtroRoteirosTexto.trim().toLowerCase();
       const filtrados = ugcRoteirosCache.filter((r) => {
@@ -18760,6 +18868,9 @@
       // roteiro novo já nasce no nicho que estiver filtrado na lista
       ugcRoteiroNicho = roteiro ? roteiro.nicho || '' : filtroRoteirosNicho && filtroRoteirosNicho !== '__sem__' ? filtroRoteirosNicho : '';
       ugcRenderizarNichoOpcoes();
+      ugcRoteiroFormato = roteiro ? roteiro.formato_video || '' : '';
+      document.getElementById('ugc-roteiro-formato-novo').value = '';
+      ugcRenderizarFormatoOpcoes();
       const areaConteudo = document.getElementById('ugc-roteiro-conteudo');
       areaConteudo.innerHTML = roteiro ? roteiro.conteudo || '' : '';
       areaConteudo.setAttribute('data-placeholder', tr('ugc_roteiro_conteudo_placeholder'));
@@ -18797,6 +18908,7 @@
         duracao: document.getElementById('ugc-roteiro-duracao').value,
         categoria: document.getElementById('ugc-roteiro-categoria').value,
         nicho: ugcRoteiroNicho,
+        formato_video: ugcRoteiroFormato,
         conteudo: document.getElementById('ugc-roteiro-conteudo').innerHTML,
         corAtiva: document.getElementById('ugc-roteiro-marca-cor-ativa').checked,
         cor: document.getElementById('ugc-roteiro-marca-cor').value,
@@ -18872,6 +18984,7 @@
         duracao_prevista: document.getElementById('ugc-roteiro-duracao').value.trim() || null,
         categoria: document.getElementById('ugc-roteiro-categoria').value.trim() || null,
         ...(ugcRoteiroNichoOk ? { nicho: ugcRoteiroNicho || null } : {}),
+        ...(ugcFormatoColunaOk ? { formato_video: ugcRoteiroFormato || null } : {}),
         conteudo: conteudoRoteiroVazio(document.getElementById('ugc-roteiro-conteudo')) ? null : document.getElementById('ugc-roteiro-conteudo').innerHTML,
         marca_cor: document.getElementById('ugc-roteiro-marca-cor-ativa').checked
           ? document.getElementById('ugc-roteiro-marca-cor').value

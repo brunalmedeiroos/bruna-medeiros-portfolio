@@ -2888,7 +2888,8 @@
 .painel-body .ugc-subnav,
 .painel-body .instagram-subnav,
 .painel-body .financeiro-subnav,
-.painel-body .metas-subnav {
+.painel-body .metas-subnav,
+.painel-body .clientes-subnav {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -2898,7 +2899,8 @@
 .painel-body .ugc-subnav-btn,
 .painel-body .instagram-subnav-btn,
 .painel-body .financeiro-subnav-btn,
-.painel-body .metas-subnav-btn {
+.painel-body .metas-subnav-btn,
+.painel-body .clientes-subnav-btn {
   background: transparent;
   border: 1px solid rgba(var(--grafite-rgb), 0.14);
   border-radius: 999px;
@@ -2914,14 +2916,16 @@
 .painel-body .ugc-subnav-btn:hover,
 .painel-body .instagram-subnav-btn:hover,
 .painel-body .financeiro-subnav-btn:hover,
-.painel-body .metas-subnav-btn:hover {
+.painel-body .metas-subnav-btn:hover,
+.painel-body .clientes-subnav-btn:hover {
   color: var(--grafite);
 }
 
 .painel-body .ugc-subnav-btn.ativo,
 .painel-body .instagram-subnav-btn.ativo,
 .painel-body .financeiro-subnav-btn.ativo,
-.painel-body .metas-subnav-btn.ativo {
+.painel-body .metas-subnav-btn.ativo,
+.painel-body .clientes-subnav-btn.ativo {
   background: var(--coral);
   border-color: var(--coral);
   color: var(--branco);
@@ -4065,7 +4069,8 @@
 .painel-body .ugc-pagina,
 .painel-body .instagram-pagina,
 .painel-body .financeiro-pagina,
-.painel-body .metas-pagina {
+.painel-body .metas-pagina,
+.painel-body .clientes-pagina {
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -4076,7 +4081,8 @@
 .painel-body .ugc-pagina[hidden],
 .painel-body .instagram-pagina[hidden],
 .painel-body .financeiro-pagina[hidden],
-.painel-body .metas-pagina[hidden] {
+.painel-body .metas-pagina[hidden],
+.painel-body .clientes-pagina[hidden] {
   display: none;
 }
 
@@ -4511,16 +4517,6 @@
 
 /* ---- Clientes ---- */
 
-.painel-body .cal-todas-cabecalho.clientes-linha,
-.painel-body .cal-todas-linha.clientes-linha {
-  grid-template-columns: 1fr 130px 140px 100px 110px 110px;
-}
-
-.painel-body .clientes-nome {
-  font-weight: 700;
-  color: var(--grafite);
-}
-
 .painel-body .clientes-status-pill {
   font-size: 10px;
   font-weight: 700;
@@ -4561,6 +4557,333 @@
   .painel-body .clientes-link-item {
     grid-template-columns: 1fr;
   }
+}
+
+/* ---- Clientes: sub-abas (Visão geral, Clientes, Modelos, Links e mensagens) ---- */
+
+.painel-body .cards-numeros-clientes {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.painel-body .cards-numeros-clientes-dinheiro {
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 560px;
+}
+
+@media (max-width: 900px) {
+  .painel-body .cards-numeros-clientes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .painel-body .cards-numeros-clientes,
+  .painel-body .cards-numeros-clientes-dinheiro {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* "Precisa de ação hoje" */
+.painel-body .clientes-acao-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 10px;
+}
+
+.painel-body .clientes-acao-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--raio-sm);
+  background: transparent;
+  font-family: var(--fonte-corpo);
+  font-size: 14px;
+  color: var(--grafite);
+  text-align: left;
+  cursor: pointer;
+}
+
+.painel-body .clientes-acao-item:hover {
+  background: rgba(var(--grafite-rgb), 0.05);
+}
+
+.painel-body .clientes-acao-nome {
+  font-weight: 700;
+}
+
+.painel-body .clientes-acao-texto {
+  color: var(--texto-suave);
+  text-align: right;
+}
+
+.painel-body .clientes-acao-atrasado {
+  color: var(--erro);
+  font-weight: 600;
+}
+
+/* A planilha */
+.painel-body .clientes-filtro-etapas {
+  flex-wrap: wrap;
+}
+
+.painel-body .clientes-planilha-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.painel-body .clientes-tabela {
+  width: 100%;
+  min-width: 1500px;
+  border-collapse: collapse;
+  font-size: 13px;
+  color: var(--grafite);
+}
+
+.painel-body .clientes-tabela th {
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--borda);
+}
+
+.painel-body .clientes-tabela td {
+  padding: 10px 12px;
+  vertical-align: middle;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(var(--grafite-rgb), 0.06);
+}
+
+.painel-body .clientes-tabela tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.painel-body .clientes-td-centro {
+  text-align: center;
+}
+
+.painel-body .clientes-td-obs {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.painel-body .clientes-td-acoes {
+  display: flex;
+  gap: 6px;
+}
+
+.painel-body .clientes-nome-btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--fonte-corpo);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--grafite);
+  text-align: left;
+  cursor: pointer;
+}
+
+.painel-body .clientes-nome-btn:hover {
+  text-decoration: underline;
+}
+
+.painel-body .clientes-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 200px;
+  font-size: 14px;
+  color: var(--grafite);
+  cursor: pointer;
+}
+
+/* Campos das sub-abas Modelos e Links e mensagens (fora de modal, então
+   não pegam o estilo de .pl-modal) */
+.painel-body #clientes-principal input[type="text"],
+.painel-body #clientes-principal textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: var(--fonte-corpo);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--grafite);
+}
+
+.painel-body .clientes-bloco {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.painel-body .clientes-ajuda {
+  margin: 0;
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.painel-body .clientes-textarea {
+  min-height: 150px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.painel-body .clientes-textarea-alta {
+  min-height: 280px;
+}
+
+.painel-body .clientes-modelos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+.painel-body .clientes-modelo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.painel-body .clientes-modelo-card-largo {
+  grid-column: 1 / -1;
+}
+
+.painel-body .clientes-personalizado-colunas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .painel-body .clientes-personalizado-colunas {
+    grid-template-columns: 1fr;
+  }
+}
+
+.painel-body .clientes-personalizado-colunas .cal-form-campo {
+  gap: 8px;
+}
+
+.painel-body .clientes-personalizado-colunas .cal-btn {
+  align-self: flex-start;
+}
+
+.painel-body .clientes-input-acao {
+  display: flex;
+  gap: 8px;
+}
+
+.painel-body .clientes-input-acao input {
+  flex: 1;
+  min-width: 0;
+}
+
+.painel-body .clientes-prompt-det summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
+.painel-body .clientes-prompt-pre {
+  max-height: 320px;
+  margin: 10px 0 0;
+  padding: 12px;
+  overflow: auto;
+  border-radius: var(--raio-sm);
+  background: rgba(var(--grafite-rgb), 0.05);
+  font-family: var(--fonte-corpo);
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.painel-body .clientes-card-acoes {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.painel-body .clientes-salvo {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sucesso);
+}
+
+.painel-body .clientes-salvo-erro {
+  color: var(--erro);
+}
+
+.painel-body .clientes-links-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.painel-body .clientes-link-linha {
+  display: grid;
+  grid-template-columns: 140px 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.painel-body .clientes-link-linha label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--grafite);
+}
+
+@media (max-width: 640px) {
+  .painel-body .clientes-link-linha {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .painel-body .clientes-link-linha label,
+  .painel-body .clientes-link-linha input {
+    grid-column: 1 / -1;
+  }
+}
+
+.painel-body .clientes-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(var(--grafite-rgb), 0.08);
+}
+
+.painel-body .clientes-msg-topo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.painel-body .clientes-msg-titulo {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--grafite);
 }
 
 /* ---- Checklist de subitens de uma tarefa do Calendário ---- */

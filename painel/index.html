@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261056a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261029a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1684,31 +1684,111 @@
         <!-- ---------- Aba: Clientes ---------- -->
         <section id="panel-clientes" class="tab-panel" hidden>
           <div id="clientes-principal">
-          <div class="cal-todas-topo">
-            <div>
-              <h3 class="card-titulo" data-i18n="clientes_titulo">Clientes</h3>
-              <p class="cal-todas-resumo" id="clientes-resumo" data-i18n="clientes_nenhum">Nenhum cliente ainda.</p>
-            </div>
-            <div class="ugc-trabalhos-topo-acoes">
-              <div class="cal-filtro-grupo">
-                <button class="cal-filtro-btn ativo" data-filtro-cliente="ativos" type="button" data-i18n="clientes_filtro_ativos">Ativos</button>
-                <button class="cal-filtro-btn" data-filtro-cliente="finalizados" type="button" data-i18n="clientes_filtro_finalizados">Finalizados</button>
+          <div class="clientes-subnav">
+            <button class="clientes-subnav-btn ativo" data-clientes-pagina="visao-geral" type="button" data-i18n="clientes_sub_visao">Visão geral</button>
+            <button class="clientes-subnav-btn" data-clientes-pagina="clientes" type="button" data-i18n="clientes_sub_clientes">Clientes</button>
+            <button class="clientes-subnav-btn" data-clientes-pagina="modelos" type="button" data-i18n="clientes_sub_modelos">Modelos de portfólio</button>
+            <button class="clientes-subnav-btn" data-clientes-pagina="links" type="button" data-i18n="clientes_sub_links">Links e mensagens</button>
+          </div>
+
+          <p class="dash-aviso" id="clientes-aviso-sql" hidden data-i18n="clientes_aviso_sql">Pra usar esta aba por completo, rode o arquivo clientes-planilha.sql no Supabase (uma vez só).</p>
+
+          <!-- Visão geral: só leitura, tudo derivado da tabela clientes -->
+          <div id="clientes-pagina-visao-geral" class="clientes-pagina">
+            <div class="cal-todas-topo">
+              <div>
+                <h3 class="card-titulo" data-i18n="clientes_sub_visao">Visão geral</h3>
+                <p class="cal-todas-resumo" id="clientes-visao-resumo"></p>
               </div>
-              <button id="btn-minhas-coisas" class="cal-btn" type="button" data-i18n="mc_botao">Minhas coisas</button>
-              <button id="btn-clientes-novo" class="cal-btn cal-btn-primario" type="button" data-i18n="clientes_novo">+ Novo cliente</button>
+              <div class="ugc-trabalhos-topo-acoes">
+                <button id="btn-clientes-novo-atalho" class="cal-btn cal-btn-primario" type="button" data-i18n="clientes_novo">+ Novo cliente</button>
+              </div>
+            </div>
+
+            <div class="cards-numeros cards-numeros-clientes">
+              <div class="card-numero">
+                <span class="card-label" data-i18n="clientes_card_andamento">Pedidos em andamento</span>
+                <span class="card-valor" id="clientes-num-andamento">0</span>
+              </div>
+              <div class="card-numero">
+                <span class="card-label" data-i18n="clientes_card_aguarda1">Aguardando 1º pagamento</span>
+                <span class="card-valor" id="clientes-num-aguarda1">0</span>
+              </div>
+              <div class="card-numero">
+                <span class="card-label" data-i18n="clientes_card_aguarda2">Aguardando 2º pagamento</span>
+                <span class="card-valor" id="clientes-num-aguarda2">0</span>
+              </div>
+              <div class="card-numero">
+                <span class="card-label" data-i18n="clientes_card_entregues">Entregues</span>
+                <span class="card-valor" id="clientes-num-entregues">0</span>
+              </div>
+            </div>
+
+            <div class="cards-numeros cards-numeros-clientes-dinheiro">
+              <div class="card-numero">
+                <span class="card-label" data-i18n="clientes_card_recebido">Total recebido</span>
+                <span class="card-valor" id="clientes-num-recebido">R$ 0,00</span>
+              </div>
+              <div class="card-numero">
+                <span class="card-label" data-i18n="clientes_card_a_receber">Total a receber</span>
+                <span class="card-valor" id="clientes-num-a-receber">R$ 0,00</span>
+              </div>
+            </div>
+
+            <div class="card">
+              <h3 class="card-titulo" data-i18n="clientes_acao_titulo">Precisa de ação hoje</h3>
+              <div id="clientes-acao-lista" class="clientes-acao-lista"></div>
             </div>
           </div>
 
-          <div class="cal-todas-tabela">
-            <div class="cal-todas-cabecalho clientes-linha">
-              <span data-i18n="clientes_col_nome">Nome</span>
-              <span data-i18n="status">Status</span>
-              <span data-i18n="clientes_col_template">Modelo</span>
-              <span data-i18n="clientes_col_valor">Valor</span>
-              <span data-i18n="clientes_col_fechamento">Fechamento</span>
-              <span data-i18n="clientes_col_entrega">Entrega</span>
+          <!-- Clientes: a planilha -->
+          <div id="clientes-pagina-clientes" class="clientes-pagina" hidden>
+            <div class="cal-todas-topo">
+              <div>
+                <h3 class="card-titulo" data-i18n="clientes_titulo">Clientes</h3>
+                <p class="cal-todas-resumo" id="clientes-resumo" data-i18n="clientes_nenhum">Nenhum cliente ainda.</p>
+              </div>
+              <div class="ugc-trabalhos-topo-acoes">
+                <button id="btn-minhas-coisas" class="cal-btn" type="button" data-i18n="mc_botao">Minhas coisas</button>
+                <button id="btn-clientes-novo" class="cal-btn cal-btn-primario" type="button" data-i18n="clientes_novo">+ Novo cliente</button>
+              </div>
             </div>
-            <div id="clientes-lista" class="cal-todas-linhas"></div>
+
+            <div class="cal-filtro-grupo clientes-filtro-etapas" id="clientes-filtro-etapas"></div>
+
+            <div class="clientes-planilha-wrap">
+              <table class="clientes-tabela">
+                <thead>
+                  <tr>
+                    <th data-i18n="clientes_col_nome">Nome</th>
+                    <th data-i18n="clientes_col_instagram">@</th>
+                    <th data-i18n="clientes_col_plano">Plano</th>
+                    <th data-i18n="clientes_col_template">Modelo</th>
+                    <th data-i18n="clientes_col_valor_total">Valor total</th>
+                    <th data-i18n="clientes_col_pag1">1º pagamento</th>
+                    <th data-i18n="clientes_col_pag2">2º pagamento</th>
+                    <th data-i18n="clientes_col_formulario">Formulário recebido</th>
+                    <th data-i18n="clientes_col_prazo">Prazo de entrega</th>
+                    <th data-i18n="clientes_col_etapa">Etapa</th>
+                    <th data-i18n="clientes_col_site">Site</th>
+                    <th data-i18n="clientes_col_repo">Repositório</th>
+                    <th data-i18n="clientes_observacoes">Observações</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="clientes-lista"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Modelos de portfólio: montado pelo JS a partir de clientes_modelos / clientes_textos -->
+          <div id="clientes-pagina-modelos" class="clientes-pagina" hidden>
+            <div id="clientes-modelos-conteudo"></div>
+          </div>
+
+          <!-- Links e mensagens: montado pelo JS a partir de clientes_textos -->
+          <div id="clientes-pagina-links" class="clientes-pagina" hidden>
+            <div id="clientes-links-conteudo"></div>
           </div>
           </div>
 
@@ -2781,20 +2861,65 @@
 
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <label for="clientes-modal-status" data-i18n="status">Status</label>
-            <select id="clientes-modal-status"></select>
+            <label for="clientes-modal-instagram" data-i18n="clientes_col_instagram_label">@ do Instagram</label>
+            <input type="text" id="clientes-modal-instagram" placeholder="@usuario">
           </div>
           <div class="cal-form-campo">
-            <label for="clientes-modal-template" data-i18n="clientes_col_template">Modelo escolhido</label>
+            <label for="clientes-modal-plano" data-i18n="clientes_col_plano">Plano</label>
+            <select id="clientes-modal-plano"></select>
+          </div>
+          <div class="cal-form-campo">
+            <label for="clientes-modal-etapa" data-i18n="clientes_col_etapa">Etapa</label>
+            <select id="clientes-modal-etapa"></select>
+          </div>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="clientes-modal-template" data-i18n="clientes_template_escolhido">Modelo escolhido</label>
             <input type="text" id="clientes-modal-template" list="clientes-templates-sugeridos" placeholder="Ex: Água-Viva">
-            <datalist id="clientes-templates-sugeridos">
-              <option value="Penumbra Dourada"></option>
-              <option value="Água-Viva"></option>
-              <option value="Recorte &amp; Colagem"></option>
-              <option value="Letreiro UGC"></option>
-              <option value="Clube Zine Varsity"></option>
-              <option value="Estúdio Folhagem"></option>
-            </datalist>
+            <datalist id="clientes-templates-sugeridos"></datalist>
+          </div>
+          <div class="cal-form-campo">
+            <label for="clientes-modal-valor" data-i18n="clientes_valor_total_reais">Valor total (R$)</label>
+            <input type="number" step="0.01" min="0" id="clientes-modal-valor">
+          </div>
+        </div>
+
+        <div class="pl-modal-linha">
+          <label class="clientes-check">
+            <input type="checkbox" id="clientes-modal-pag1">
+            <span data-i18n="clientes_pag1_pago">1º pagamento pago (50%)</span>
+          </label>
+          <label class="clientes-check">
+            <input type="checkbox" id="clientes-modal-pag2">
+            <span data-i18n="clientes_pag2_pago">2º pagamento pago (50%)</span>
+          </label>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="clientes-modal-formulario" data-i18n="clientes_col_formulario">Formulário recebido</label>
+            <input type="date" id="clientes-modal-formulario">
+          </div>
+          <div class="cal-form-campo">
+            <label for="clientes-modal-fechamento" data-i18n="clientes_col_fechamento_label">Data de fechamento</label>
+            <input type="date" id="clientes-modal-fechamento">
+          </div>
+          <div class="cal-form-campo">
+            <label for="clientes-modal-entrega" data-i18n="clientes_col_prazo">Prazo de entrega</label>
+            <input type="date" id="clientes-modal-entrega">
+          </div>
+        </div>
+
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="clientes-modal-site" data-i18n="clientes_link_site">Link do site</label>
+            <input type="text" id="clientes-modal-site" placeholder="https://...">
+          </div>
+          <div class="cal-form-campo">
+            <label for="clientes-modal-repo" data-i18n="clientes_link_repo">Link do repositório</label>
+            <input type="text" id="clientes-modal-repo" placeholder="https://github.com/...">
           </div>
         </div>
 
@@ -2804,23 +2929,8 @@
             <input type="text" id="clientes-modal-email">
           </div>
           <div class="cal-form-campo">
-            <label for="clientes-modal-whats" data-i18n="ugc_whatsapp_instagram">WhatsApp/Instagram</label>
+            <label for="clientes-modal-whats" data-i18n="clientes_whatsapp">WhatsApp</label>
             <input type="text" id="clientes-modal-whats">
-          </div>
-        </div>
-
-        <div class="pl-modal-linha">
-          <div class="cal-form-campo">
-            <label for="clientes-modal-valor" data-i18n="clientes_valor_combinado">Valor combinado (R$)</label>
-            <input type="number" step="0.01" min="0" id="clientes-modal-valor">
-          </div>
-          <div class="cal-form-campo">
-            <label for="clientes-modal-fechamento" data-i18n="clientes_col_fechamento">Data de fechamento</label>
-            <input type="date" id="clientes-modal-fechamento">
-          </div>
-          <div class="cal-form-campo">
-            <label for="clientes-modal-entrega" data-i18n="clientes_col_entrega">Data de entrega</label>
-            <input type="date" id="clientes-modal-entrega">
           </div>
         </div>
 
@@ -4363,31 +4473,45 @@
     let clientesAbaCarregada = false;
     let clientesCache = [];
     let clientesLinksCache = [];
+    let clientesModelosCache = [];
+    let clientesTextos = {};
+    let clientesSqlPendente = false;
+    let clientesSubAbaAtual = 'visao-geral';
     let clienteAbertoId = null;
     let clienteSnapshotInicial = '';
     let clientesModalLinks = [];
-    let filtroClientes = 'ativos'; // 'ativos' | 'finalizados'
-    const CLIENTES_STATUS = ['Negociando', 'Fechado', 'Em produção', 'Entregue', 'Cancelado'];
-    // Valor gravado em cliente.status continua em português (é o "código");
-    // só o rótulo exibido muda com o idioma.
-    const CLIENTES_STATUS_CHAVE = {
-      'Negociando': 'clientes_status_negociando',
-      'Fechado': 'clientes_status_fechado',
-      'Em produção': 'clientes_status_em_producao',
-      'Entregue': 'clientes_status_entregue',
-      'Cancelado': 'clientes_status_cancelado',
+    let filtroEtapaClientes = 'todas';
+    // Etapa e plano: o valor gravado no banco é o "código" (sem acento);
+    // só o rótulo exibido muda com o idioma. Os planos são nomes de produto
+    // e ficam iguais nos dois idiomas.
+    const CLIENTES_ETAPAS = ['conversa', 'pagou_50', 'formulario', 'banco', 'site', 'previa', 'entregue'];
+    const CLIENTES_ETAPA_CHAVE = {
+      conversa: 'clientes_etapa_conversa',
+      pagou_50: 'clientes_etapa_pagou_50',
+      formulario: 'clientes_etapa_formulario',
+      banco: 'clientes_etapa_banco',
+      site: 'clientes_etapa_site',
+      previa: 'clientes_etapa_previa',
+      entregue: 'clientes_etapa_entregue',
     };
-    function traduzirStatusCliente(status) {
-      const chave = CLIENTES_STATUS_CHAVE[status];
-      return chave ? tr(chave) : status;
+    const CLIENTES_PLANOS = ['Portfólio', 'Completo', 'Personalizado'];
+    function traduzirEtapaCliente(etapa) {
+      const chave = CLIENTES_ETAPA_CHAVE[etapa];
+      return chave ? tr(chave) : etapa;
     }
-    function classeStatusCliente(status) {
-      if (status === 'Entregue') return 'clientes-status-entregue';
-      if (status === 'Cancelado') return 'clientes-status-cancelado';
-      if (status === 'Fechado' || status === 'Em produção') return 'clientes-status-producao';
-      return '';
+    function classeEtapaCliente(etapa) {
+      if (etapa === 'entregue') return 'clientes-status-entregue';
+      if (etapa === 'conversa') return '';
+      return 'clientes-status-producao';
     }
-
+    // A coluna "status" da primeira versão continua existindo; mantida em
+    // sincronia com a etapa pra não ficar contradizendo.
+    function statusLegadoDaEtapa(etapa) {
+      if (etapa === 'entregue') return 'Entregue';
+      if (etapa === 'conversa') return 'Negociando';
+      if (etapa === 'pagou_50') return 'Fechado';
+      return 'Em produção';
+    }
     const TITULOS_ABA = {
       overview: 'titulo_dashboard',
       portfolio: 'titulo_portfolio',
@@ -5613,6 +5737,83 @@
         clientes_status_em_producao: 'Em produção',
         clientes_status_entregue: 'Entregue',
         clientes_status_cancelado: 'Cancelado',
+        clientes_sub_visao: 'Visão geral',
+        clientes_sub_clientes: 'Clientes',
+        clientes_sub_modelos: 'Modelos de portfólio',
+        clientes_sub_links: 'Links e mensagens',
+        clientes_aviso_sql: 'Pra usar esta aba por completo, rode o arquivo clientes-planilha.sql no Supabase (uma vez só).',
+        clientes_card_andamento: 'Pedidos em andamento',
+        clientes_card_aguarda1: 'Aguardando 1º pagamento',
+        clientes_card_aguarda2: 'Aguardando 2º pagamento',
+        clientes_card_entregues: 'Entregues',
+        clientes_card_recebido: 'Total recebido',
+        clientes_card_a_receber: 'Total a receber',
+        clientes_acao_titulo: 'Precisa de ação hoje',
+        clientes_acao_nada: 'Nada urgente por enquanto.',
+        clientes_acao_formulario: 'Pagou, formulário ainda não recebido',
+        clientes_acao_atrasado_1: 'Prazo venceu ontem',
+        clientes_acao_atrasado_n: 'Prazo venceu há {n} dias',
+        clientes_acao_prazo_hoje: 'Prazo vence hoje',
+        clientes_acao_prazo_amanha: 'Prazo vence amanhã',
+        clientes_acao_prazo_em: 'Prazo vence em {n} dias',
+        clientes_col_instagram: '@',
+        clientes_col_instagram_label: '@ do Instagram',
+        clientes_col_plano: 'Plano',
+        clientes_col_valor_total: 'Valor total',
+        clientes_valor_total_reais: 'Valor total (R$)',
+        clientes_col_pag1: '1º pagamento',
+        clientes_col_pag2: '2º pagamento',
+        clientes_col_formulario: 'Formulário recebido',
+        clientes_col_prazo: 'Prazo de entrega',
+        clientes_col_etapa: 'Etapa',
+        clientes_col_site: 'Site',
+        clientes_col_repo: 'Repositório',
+        clientes_col_fechamento_label: 'Data de fechamento',
+        clientes_template_escolhido: 'Modelo escolhido',
+        clientes_pag1_pago: '1º pagamento pago (50%)',
+        clientes_pag2_pago: '2º pagamento pago (50%)',
+        clientes_link_site: 'Link do site',
+        clientes_link_repo: 'Link do repositório',
+        clientes_whatsapp: 'WhatsApp',
+        clientes_filtro_todas: 'Todas',
+        clientes_etapa_conversa: 'Conversa',
+        clientes_etapa_pagou_50: 'Pagou 50%',
+        clientes_etapa_formulario: 'Formulário',
+        clientes_etapa_banco: 'Banco',
+        clientes_etapa_site: 'Site',
+        clientes_etapa_previa: 'Prévia',
+        clientes_etapa_entregue: 'Entregue',
+        clientes_abrir: 'Abrir',
+        clientes_editar: 'Editar',
+        clientes_copiar: 'Copiar',
+        clientes_copiado: 'Copiado ✓',
+        clientes_salvo: 'Salvo',
+        clientes_erro_salvar_texto: 'Não consegui salvar',
+        clientes_salvar_sozinho: 'As alterações são salvas sozinhas quando você sai do campo.',
+        clientes_parte_fixa_titulo: 'Parte fixa do prompt',
+        clientes_parte_fixa_ajuda: 'Vale para todos os modelos. O prompt completo de cada modelo é esta parte fixa + a ficha de estilo dele.',
+        clientes_modelo_nome: 'Nome do modelo',
+        clientes_modelo_previa: 'Link da prévia',
+        clientes_modelo_ficha: 'Ficha de estilo',
+        clientes_ver_prompt: 'Ver prompt completo',
+        clientes_copiar_prompt: 'Copiar prompt',
+        clientes_personalizado_titulo: 'Personalizado',
+        clientes_personalizado_ficha: 'Ficha em branco (preencha com o estilo dela)',
+        clientes_personalizado_lista: 'O que pedir para a cliente',
+        clientes_copiar_lista: 'Copiar lista',
+        clientes_personalizado_ref: 'Referência da cliente (cole aqui)',
+        clientes_personalizado_ref_ph: 'Cole aqui o link, a descrição ou o texto da referência dela...',
+        clientes_links_titulo: 'Links',
+        clientes_link_apresentacao: 'Apresentação',
+        clientes_link_formulario: 'Formulário',
+        clientes_link_termos: 'Termos',
+        clientes_msgs_titulo: 'Mensagens da conversa',
+        clientes_msg_primeira: '1. Primeira resposta',
+        clientes_msg_pix: '2. Pix dos 50%',
+        clientes_msg_formulario: '3. Envio do formulário',
+        clientes_msg_prazo: '4. Confirmação de prazo',
+        clientes_msg_previa: '5. Envio da prévia',
+        clientes_copiar_mensagem: 'Copiar mensagem',
         instagram_visao_geral: '📊 Visão Geral',
         instagram_automacoes: '🤖 Automações',
         instagram_leads: 'Leads',
@@ -6899,6 +7100,83 @@
         clientes_status_em_producao: 'In progress',
         clientes_status_entregue: 'Delivered',
         clientes_status_cancelado: 'Cancelled',
+        clientes_sub_visao: 'Overview',
+        clientes_sub_clientes: 'Clients',
+        clientes_sub_modelos: 'Portfolio templates',
+        clientes_sub_links: 'Links and messages',
+        clientes_aviso_sql: 'To use this tab fully, run the clientes-planilha.sql file in Supabase (just once).',
+        clientes_card_andamento: 'Orders in progress',
+        clientes_card_aguarda1: 'Awaiting 1st payment',
+        clientes_card_aguarda2: 'Awaiting 2nd payment',
+        clientes_card_entregues: 'Delivered',
+        clientes_card_recebido: 'Total received',
+        clientes_card_a_receber: 'Total to receive',
+        clientes_acao_titulo: 'Needs action today',
+        clientes_acao_nada: 'Nothing urgent right now.',
+        clientes_acao_formulario: 'Paid, form not received yet',
+        clientes_acao_atrasado_1: 'Deadline passed yesterday',
+        clientes_acao_atrasado_n: 'Deadline passed {n} days ago',
+        clientes_acao_prazo_hoje: 'Deadline is today',
+        clientes_acao_prazo_amanha: 'Deadline is tomorrow',
+        clientes_acao_prazo_em: 'Deadline in {n} days',
+        clientes_col_instagram: '@',
+        clientes_col_instagram_label: 'Instagram @',
+        clientes_col_plano: 'Plan',
+        clientes_col_valor_total: 'Total value',
+        clientes_valor_total_reais: 'Total value (R$)',
+        clientes_col_pag1: '1st payment',
+        clientes_col_pag2: '2nd payment',
+        clientes_col_formulario: 'Form received',
+        clientes_col_prazo: 'Delivery deadline',
+        clientes_col_etapa: 'Stage',
+        clientes_col_site: 'Site',
+        clientes_col_repo: 'Repository',
+        clientes_col_fechamento_label: 'Closing date',
+        clientes_template_escolhido: 'Chosen template',
+        clientes_pag1_pago: '1st payment paid (50%)',
+        clientes_pag2_pago: '2nd payment paid (50%)',
+        clientes_link_site: 'Site link',
+        clientes_link_repo: 'Repository link',
+        clientes_whatsapp: 'WhatsApp',
+        clientes_filtro_todas: 'All',
+        clientes_etapa_conversa: 'Conversation',
+        clientes_etapa_pagou_50: 'Paid 50%',
+        clientes_etapa_formulario: 'Form',
+        clientes_etapa_banco: 'Database',
+        clientes_etapa_site: 'Site',
+        clientes_etapa_previa: 'Preview',
+        clientes_etapa_entregue: 'Delivered',
+        clientes_abrir: 'Open',
+        clientes_editar: 'Edit',
+        clientes_copiar: 'Copy',
+        clientes_copiado: 'Copied ✓',
+        clientes_salvo: 'Saved',
+        clientes_erro_salvar_texto: 'Could not save',
+        clientes_salvar_sozinho: 'Changes are saved automatically when you leave the field.',
+        clientes_parte_fixa_titulo: 'Fixed part of the prompt',
+        clientes_parte_fixa_ajuda: 'Applies to every template. Each template\'s full prompt is this fixed part + its style sheet.',
+        clientes_modelo_nome: 'Template name',
+        clientes_modelo_previa: 'Preview link',
+        clientes_modelo_ficha: 'Style sheet',
+        clientes_ver_prompt: 'View full prompt',
+        clientes_copiar_prompt: 'Copy prompt',
+        clientes_personalizado_titulo: 'Custom',
+        clientes_personalizado_ficha: 'Blank style sheet (fill in with her style)',
+        clientes_personalizado_lista: 'What to ask the client for',
+        clientes_copiar_lista: 'Copy list',
+        clientes_personalizado_ref: 'Client reference (paste here)',
+        clientes_personalizado_ref_ph: 'Paste her link, description or reference text here...',
+        clientes_links_titulo: 'Links',
+        clientes_link_apresentacao: 'Presentation',
+        clientes_link_formulario: 'Form',
+        clientes_link_termos: 'Terms',
+        clientes_msgs_titulo: 'Conversation messages',
+        clientes_msg_primeira: '1. First reply',
+        clientes_msg_pix: '2. 50% Pix payment',
+        clientes_msg_formulario: '3. Sending the form',
+        clientes_msg_prazo: '4. Deadline confirmation',
+        clientes_msg_previa: '5. Sending the preview',
+        clientes_copiar_mensagem: 'Copy message',
         instagram_visao_geral: '📊 Overview',
         instagram_automacoes: '🤖 Automations',
         instagram_leads: 'Leads',
@@ -7565,13 +7843,7 @@
       document.getElementById('ugc-modal-add-entregavel').addEventListener('click', adicionarEntregavelModal);
 
       // Clientes
-      document.querySelectorAll('#panel-clientes .cal-filtro-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          filtroClientes = btn.dataset.filtroCliente;
-          document.querySelectorAll('#panel-clientes .cal-filtro-btn').forEach((b) => b.classList.toggle('ativo', b === btn));
-          renderizarClientes();
-        });
-      });
+      ligarEventosClientes();
 
       document.getElementById('btn-clientes-novo').addEventListener('click', () => abrirModalCliente(null));
       minhasCoisasLigarEventos();
@@ -9352,9 +9624,12 @@
           carregarUGC();
         }
       }
-      if (aba === 'clientes' && !clientesAbaCarregada) {
-        clientesAbaCarregada = true;
-        carregarClientes();
+      if (aba === 'clientes') {
+        trocarSubAbaClientes('visao-geral');
+        if (!clientesAbaCarregada) {
+          clientesAbaCarregada = true;
+          carregarClientes();
+        }
       }
       if (aba === 'financeiro' && !financeiroAbaCarregada) {
         financeiroAbaCarregada = true;
@@ -21546,9 +21821,31 @@
     }
 
     // ==========================================================================
-    // Clientes (controle de clientes do pacote painel+portfólio — ver
-    // Playbook do Cliente Novo, na aba UGC não, é módulo próprio)
+    // Clientes (controle de clientes do pacote painel+portfólio). Quatro
+    // sub-abas: Visão geral, Clientes (a planilha), Modelos de portfólio e
+    // Links e mensagens. Tudo vem do Supabase: tabelas clientes e
+    // clientes_links (clientes-tabela.sql) mais clientes_modelos e
+    // clientes_textos (clientes-planilha.sql).
     // ==========================================================================
+    const CLIENTES_LINKS_TEXTOS = [
+      { chave: 'link_apresentacao', rotulo: 'clientes_link_apresentacao' },
+      { chave: 'link_formulario', rotulo: 'clientes_link_formulario' },
+      { chave: 'link_termos', rotulo: 'clientes_link_termos' },
+    ];
+    const CLIENTES_MENSAGENS = [
+      { chave: 'msg_primeira_resposta', rotulo: 'clientes_msg_primeira' },
+      { chave: 'msg_pix_50', rotulo: 'clientes_msg_pix' },
+      { chave: 'msg_formulario', rotulo: 'clientes_msg_formulario' },
+      { chave: 'msg_prazo', rotulo: 'clientes_msg_prazo' },
+      { chave: 'msg_previa', rotulo: 'clientes_msg_previa' },
+    ];
+
+    function trocarSubAbaClientes(pagina) {
+      clientesSubAbaAtual = pagina;
+      document.querySelectorAll('.clientes-subnav-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.clientesPagina === pagina));
+      document.querySelectorAll('.clientes-pagina').forEach((p) => (p.hidden = p.id !== 'clientes-pagina-' + pagina));
+    }
+
     async function carregarClientes() {
       try {
         const [clientes, links] = await Promise.all([
@@ -21557,51 +21854,518 @@
         ]);
         clientesCache = clientes;
         clientesLinksCache = links;
-        renderizarClientes();
       } catch (err) {
         console.error('Erro ao carregar Clientes:', err);
       }
+
+      // Modelos e textos moram em tabelas novas: se o SQL ainda não foi rodado,
+      // a aba só mostra o aviso em vez de quebrar.
+      try {
+        const [modelos, textos] = await Promise.all([
+          Auth.sb.from('clientes_modelos').select('*').order('ordem', { ascending: true }),
+          Auth.sb.from('clientes_textos').select('*'),
+        ]);
+        if (modelos.error) throw modelos.error;
+        if (textos.error) throw textos.error;
+        clientesModelosCache = modelos.data || [];
+        clientesTextos = {};
+        (textos.data || []).forEach((t) => { clientesTextos[t.chave] = t.valor; });
+        clientesSqlPendente = false;
+      } catch (err) {
+        console.error('Erro ao carregar modelos e textos de Clientes:', err);
+        clientesModelosCache = [];
+        clientesTextos = {};
+        clientesSqlPendente = true;
+      }
+      if (clientesCache.length && !('etapa' in clientesCache[0])) clientesSqlPendente = true;
+      document.getElementById('clientes-aviso-sql').hidden = !clientesSqlPendente;
+
+      renderizarClientes();
     }
 
     function renderizarClientes() {
-      const filtradas = filtroClientes === 'finalizados'
-        ? clientesCache.filter((c) => c.status === 'Entregue' || c.status === 'Cancelado')
-        : clientesCache.filter((c) => c.status !== 'Entregue' && c.status !== 'Cancelado');
-      const ordenadas = [...filtradas].sort((a, b) => (a.data_entrega || '9999-99-99').localeCompare(b.data_entrega || '9999-99-99'));
+      renderizarClientesVisaoGeral();
+      renderizarClientesPlanilha();
+      renderizarClientesModelos();
+      renderizarClientesLinksMensagens();
+    }
+
+    // ---- Ajudas ----
+    const etapaDoCliente = (c) => c.etapa || 'conversa';
+    const metadeDoValor = (c) => (Number(c.valor) || 0) / 2;
+    const dataLocalDeISO = (iso) => new Date(iso + 'T00:00:00');
+    const escaparAtributo = (s) => escapeHtml(s).replace(/"/g, '&quot;');
+
+    // Só deixa abrir link http/https (o campo é de texto livre).
+    function urlSeguraCliente(url) {
+      const limpa = String(url || '').trim();
+      return /^https?:\/\/\S+$/i.test(limpa) ? limpa : null;
+    }
+
+    function celulaLinkCliente(url) {
+      const segura = urlSeguraCliente(url);
+      if (!segura) return '—';
+      return `<a href="${segura.replace(/["<>]/g, encodeURIComponent)}" target="_blank" rel="noopener noreferrer">${escapeHtml(tr('clientes_abrir'))}</a>`;
+    }
+
+    function alertaErroClientes(err, chaveGenerica) {
+      const colunaFaltando = err && (err.code === 'PGRST204' || err.code === '42703' || /column/i.test(err.message || ''));
+      alert(tr(colunaFaltando ? 'clientes_aviso_sql' : chaveGenerica));
+    }
+
+    async function clientesCopiar(texto, botao) {
+      let ok = false;
+      try {
+        await navigator.clipboard.writeText(texto);
+        ok = true;
+      } catch (e) {
+        const area = document.createElement('textarea');
+        area.value = texto;
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        area.select();
+        try { ok = document.execCommand('copy'); } catch (e2) { ok = false; }
+        area.remove();
+      }
+      if (!ok) {
+        alert(tr('ugc_erro_copiar'));
+        return;
+      }
+      if (botao) {
+        if (!botao.dataset.rotulo) botao.dataset.rotulo = botao.textContent;
+        botao.textContent = tr('clientes_copiado');
+        clearTimeout(botao._copiadoTimer);
+        botao._copiadoTimer = setTimeout(() => { botao.textContent = botao.dataset.rotulo; }, 1600);
+      }
+    }
+
+    // ---- Sub-aba 1: Visão geral ----
+    function renderizarClientesVisaoGeral() {
+      const entregue = (c) => etapaDoCliente(c) === 'entregue';
+      const andamento = clientesCache.filter((c) => !entregue(c) && (c.pagamento1_pago || etapaDoCliente(c) !== 'conversa'));
+      const aguarda1 = clientesCache.filter((c) => !c.pagamento1_pago && !entregue(c));
+      const aguarda2 = clientesCache.filter((c) => c.pagamento1_pago && !c.pagamento2_pago);
+      const entregues = clientesCache.filter(entregue);
+
+      // Cada pedido vale duas parcelas iguais de 50%.
+      let recebido = 0;
+      let aReceber = 0;
+      clientesCache.forEach((c) => {
+        recebido += (c.pagamento1_pago ? metadeDoValor(c) : 0) + (c.pagamento2_pago ? metadeDoValor(c) : 0);
+        aReceber += (c.pagamento1_pago ? 0 : metadeDoValor(c)) + (c.pagamento2_pago ? 0 : metadeDoValor(c));
+      });
+
+      document.getElementById('clientes-num-andamento').textContent = andamento.length;
+      document.getElementById('clientes-num-aguarda1').textContent = aguarda1.length;
+      document.getElementById('clientes-num-aguarda2').textContent = aguarda2.length;
+      document.getElementById('clientes-num-entregues').textContent = entregues.length;
+      document.getElementById('clientes-num-recebido').textContent = formatarMoeda(recebido);
+      document.getElementById('clientes-num-a-receber').textContent = formatarMoeda(aReceber);
+      document.getElementById('clientes-visao-resumo').textContent = clientesCache.length === 0
+        ? tr('clientes_nenhum')
+        : `${clientesCache.length} ${tr(clientesCache.length === 1 ? 'clientes_singular' : 'clientes_plural')}.`;
+
+      // Precisa de ação hoje: pagou mas o formulário não chegou, e prazo
+      // vencido ou vencendo (hoje, amanhã ou depois de amanhã).
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      const acoes = [];
+      clientesCache.forEach((c) => {
+        if (entregue(c)) return;
+        if (c.pagamento1_pago && !c.formulario_data) {
+          acoes.push({ peso: 10, cliente: c, texto: tr('clientes_acao_formulario'), atrasado: false });
+        }
+        if (c.data_entrega) {
+          const dias = Math.round((dataLocalDeISO(c.data_entrega) - hoje) / 86400000);
+          if (dias <= 2) {
+            let texto;
+            if (dias < -1) texto = tr('clientes_acao_atrasado_n').replace('{n}', String(Math.abs(dias)));
+            else if (dias === -1) texto = tr('clientes_acao_atrasado_1');
+            else if (dias === 0) texto = tr('clientes_acao_prazo_hoje');
+            else if (dias === 1) texto = tr('clientes_acao_prazo_amanha');
+            else texto = tr('clientes_acao_prazo_em').replace('{n}', String(dias));
+            acoes.push({ peso: dias, cliente: c, texto, atrasado: dias < 0 });
+          }
+        }
+      });
+      acoes.sort((a, b) => a.peso - b.peso || a.cliente.nome.localeCompare(b.cliente.nome));
+
+      const lista = document.getElementById('clientes-acao-lista');
+      if (acoes.length === 0) {
+        lista.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('clientes_acao_nada'))}</p>`;
+        return;
+      }
+      lista.innerHTML = acoes.map((a) => `
+        <button type="button" class="clientes-acao-item" data-id="${escaparAtributo(a.cliente.id)}">
+          <span class="clientes-acao-nome">${escapeHtml(a.cliente.nome)}</span>
+          <span class="clientes-acao-texto${a.atrasado ? ' clientes-acao-atrasado' : ''}">${escapeHtml(a.texto)}</span>
+        </button>
+      `).join('');
+    }
+
+    // ---- Sub-aba 2: Clientes (a planilha) ----
+    function renderizarClientesPlanilha() {
+      const contagem = {};
+      CLIENTES_ETAPAS.forEach((e) => { contagem[e] = 0; });
+      clientesCache.forEach((c) => { contagem[etapaDoCliente(c)] = (contagem[etapaDoCliente(c)] || 0) + 1; });
+
+      const chips = [['todas', tr('clientes_filtro_todas'), clientesCache.length]]
+        .concat(CLIENTES_ETAPAS.map((e) => [e, traduzirEtapaCliente(e), contagem[e]]));
+      const filtro = document.getElementById('clientes-filtro-etapas');
+      filtro.innerHTML = chips
+        .map(([valor, rotulo, n]) => `<button class="cal-filtro-btn${filtroEtapaClientes === valor ? ' ativo' : ''}" data-etapa="${valor}" type="button">${escapeHtml(rotulo)} (${n})</button>`)
+        .join('');
+
+      const filtradas = filtroEtapaClientes === 'todas'
+        ? clientesCache
+        : clientesCache.filter((c) => etapaDoCliente(c) === filtroEtapaClientes);
+      // Quem ainda está em andamento primeiro, pelo prazo mais próximo.
+      const ordenadas = [...filtradas].sort((a, b) => {
+        const fimA = etapaDoCliente(a) === 'entregue' ? 1 : 0;
+        const fimB = etapaDoCliente(b) === 'entregue' ? 1 : 0;
+        return fimA - fimB || (a.data_entrega || '9999-99-99').localeCompare(b.data_entrega || '9999-99-99');
+      });
 
       document.getElementById('clientes-resumo').textContent =
         ordenadas.length === 0
           ? tr('clientes_nenhum_aqui')
           : `${ordenadas.length} ${tr(ordenadas.length === 1 ? 'clientes_singular' : 'clientes_plural')}.`;
 
-      const lista = document.getElementById('clientes-lista');
-      lista.innerHTML = '';
+      const corpo = document.getElementById('clientes-lista');
       if (ordenadas.length === 0) {
-        lista.innerHTML = `<p class="texto-vazio">${tr('nada_por_aqui')}</p>`;
+        corpo.innerHTML = `<tr><td colspan="14" class="texto-vazio">${escapeHtml(tr('nada_por_aqui'))}</td></tr>`;
         return;
       }
-      ordenadas.forEach((c) => lista.appendChild(criarLinhaCliente(c)));
+      corpo.innerHTML = ordenadas.map(linhaClienteHtml).join('');
     }
 
-    function criarLinhaCliente(cliente) {
-      const linha = document.createElement('div');
-      linha.className = 'cal-todas-linha clientes-linha';
-      const fechamentoFmt = cliente.data_fechamento ? formatarDataCurta(new Date(cliente.data_fechamento + 'T00:00:00')) : '—';
-      const entregaFmt = cliente.data_entrega ? formatarDataCurta(new Date(cliente.data_entrega + 'T00:00:00')) : '—';
-      const valorFmt = cliente.valor != null ? formatarMoeda(cliente.valor) : '—';
-      linha.innerHTML = `
-        <span class="clientes-nome">${escapeHtml(cliente.nome)}</span>
-        <span class="clientes-status-pill ${classeStatusCliente(cliente.status)}">${escapeHtml(traduzirStatusCliente(cliente.status))}</span>
-        <span>${escapeHtml(cliente.template_escolhido || '—')}</span>
-        <span>${valorFmt}</span>
-        <span>${fechamentoFmt}</span>
-        <span>${entregaFmt}</span>
+    function linhaClienteHtml(c) {
+      const data = (iso) => (iso ? formatarDataExtrato(dataLocalDeISO(iso)) : '—');
+      const etapa = etapaDoCliente(c);
+      const caixa = (campo, marcado, chaveAria) =>
+        `<input type="checkbox" data-pag="${campo}"${marcado ? ' checked' : ''} aria-label="${escaparAtributo(tr(chaveAria))}">`;
+      return `
+        <tr data-id="${escaparAtributo(c.id)}">
+          <td><button type="button" class="clientes-nome-btn" data-acao="editar">${escapeHtml(c.nome)}</button></td>
+          <td>${escapeHtml(c.instagram || '—')}</td>
+          <td>${escapeHtml(c.plano || '—')}</td>
+          <td>${escapeHtml(c.template_escolhido || '—')}</td>
+          <td>${c.valor != null ? formatarMoeda(c.valor) : '—'}</td>
+          <td class="clientes-td-centro">${caixa('pagamento1_pago', c.pagamento1_pago, 'clientes_col_pag1')}</td>
+          <td class="clientes-td-centro">${caixa('pagamento2_pago', c.pagamento2_pago, 'clientes_col_pag2')}</td>
+          <td>${data(c.formulario_data)}</td>
+          <td>${data(c.data_entrega)}</td>
+          <td><span class="clientes-status-pill ${classeEtapaCliente(etapa)}">${escapeHtml(traduzirEtapaCliente(etapa))}</span></td>
+          <td>${celulaLinkCliente(c.site_url)}</td>
+          <td>${celulaLinkCliente(c.repo_url)}</td>
+          <td class="clientes-td-obs" title="${escaparAtributo(c.observacoes || '')}">${escapeHtml(c.observacoes || '—')}</td>
+          <td class="clientes-td-acoes">
+            <button type="button" class="cal-btn" data-acao="editar">${escapeHtml(tr('clientes_editar'))}</button>
+            <button type="button" class="cal-btn pl-btn-excluir" data-acao="excluir">${escapeHtml(tr('excluir'))}</button>
+          </td>
+        </tr>
       `;
-      linha.addEventListener('click', () => abrirModalCliente(cliente));
-      return linha;
     }
 
-    // ---- Links (dentro do modal de Cliente) ----
+    async function alternarPagamentoCliente(cliente, campo, marcado, caixa) {
+      try {
+        const { error } = await Auth.sb.from('clientes').update({ [campo]: marcado }).eq('id', cliente.id);
+        if (error) throw error;
+        cliente[campo] = marcado;
+        renderizarClientesVisaoGeral();
+        renderizarClientesPlanilha();
+      } catch (err) {
+        console.error('Erro ao atualizar pagamento:', err);
+        caixa.checked = !marcado;
+        alertaErroClientes(err, 'erro_salvar_generico');
+      }
+    }
+
+    async function excluirClienteDaLinha(cliente) {
+      if (!(await confirmarAcao(tr('clientes_excluir_confirmar')))) return;
+      try {
+        const { error } = await Auth.sb.from('clientes').delete().eq('id', cliente.id);
+        if (error) throw error;
+        await carregarClientes();
+      } catch (err) {
+        console.error('Erro ao excluir cliente:', err);
+        alert(tr('erro_excluir_generico'));
+      }
+    }
+
+    // ---- Sub-aba 3: Modelos de portfólio ----
+    // Prompt completo = parte fixa (vale pra todos) + ficha de estilo do modelo.
+    function montarPromptCompleto(ficha, extra) {
+      return [clientesTextos.prompt_parte_fixa, ficha, extra]
+        .map((s) => String(s || '').trim())
+        .filter(Boolean)
+        .join('\n\n');
+    }
+
+    function promptDoPersonalizado() {
+      const ref = String(clientesTextos.personalizado_referencia || '').trim();
+      return montarPromptCompleto(clientesTextos.personalizado_ficha, ref ? `REFERÊNCIA DA CLIENTE:\n${ref}` : '');
+    }
+
+    function atualizarPreviasDePrompt() {
+      document.querySelectorAll('[data-prompt-de]').forEach((pre) => {
+        const id = pre.dataset.promptDe;
+        if (id === 'personalizado') {
+          pre.textContent = promptDoPersonalizado();
+        } else {
+          const modelo = clientesModelosCache.find((m) => m.id === id);
+          pre.textContent = modelo ? montarPromptCompleto(modelo.ficha) : '';
+        }
+      });
+    }
+
+    function cartaoModeloHtml(m) {
+      return `
+        <div class="card clientes-modelo-card" data-salvavel data-modelo-id="${escaparAtributo(m.id)}">
+          <div class="cal-form-campo">
+            <label>${escapeHtml(tr('clientes_modelo_nome'))}</label>
+            <input type="text" data-modelo-campo="nome" value="${escaparAtributo(m.nome)}">
+          </div>
+          <div class="cal-form-campo">
+            <label>${escapeHtml(tr('clientes_modelo_previa'))}</label>
+            <div class="clientes-input-acao">
+              <input type="text" data-modelo-campo="previa_url" placeholder="https://..." value="${escaparAtributo(m.previa_url || '')}">
+              <button type="button" class="cal-btn" data-abrir-modelo="${escaparAtributo(m.id)}">${escapeHtml(tr('clientes_abrir'))}</button>
+            </div>
+          </div>
+          <div class="cal-form-campo">
+            <label>${escapeHtml(tr('clientes_modelo_ficha'))}</label>
+            <textarea class="clientes-textarea" data-modelo-campo="ficha">${escapeHtml(m.ficha || '')}</textarea>
+          </div>
+          <details class="clientes-prompt-det">
+            <summary>${escapeHtml(tr('clientes_ver_prompt'))}</summary>
+            <pre class="clientes-prompt-pre" data-prompt-de="${escaparAtributo(m.id)}"></pre>
+          </details>
+          <div class="clientes-card-acoes">
+            <span class="clientes-salvo"></span>
+            <button type="button" class="cal-btn cal-btn-primario" data-copiar-prompt="${escaparAtributo(m.id)}">${escapeHtml(tr('clientes_copiar_prompt'))}</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function cartaoPersonalizadoHtml() {
+      return `
+        <div class="card clientes-modelo-card clientes-modelo-card-largo" data-salvavel>
+          <h3 class="card-titulo">${escapeHtml(tr('clientes_personalizado_titulo'))}</h3>
+          <div class="clientes-personalizado-colunas">
+            <div class="cal-form-campo">
+              <label>${escapeHtml(tr('clientes_personalizado_ficha'))}</label>
+              <textarea class="clientes-textarea" data-texto="personalizado_ficha">${escapeHtml(clientesTextos.personalizado_ficha || '')}</textarea>
+            </div>
+            <div class="cal-form-campo">
+              <label>${escapeHtml(tr('clientes_personalizado_lista'))}</label>
+              <textarea class="clientes-textarea" data-texto="personalizado_lista">${escapeHtml(clientesTextos.personalizado_lista || '')}</textarea>
+              <button type="button" class="cal-btn" data-copiar-texto="personalizado_lista">${escapeHtml(tr('clientes_copiar_lista'))}</button>
+            </div>
+          </div>
+          <div class="cal-form-campo">
+            <label>${escapeHtml(tr('clientes_personalizado_ref'))}</label>
+            <textarea class="clientes-textarea" data-texto="personalizado_referencia" placeholder="${escaparAtributo(tr('clientes_personalizado_ref_ph'))}">${escapeHtml(clientesTextos.personalizado_referencia || '')}</textarea>
+          </div>
+          <details class="clientes-prompt-det">
+            <summary>${escapeHtml(tr('clientes_ver_prompt'))}</summary>
+            <pre class="clientes-prompt-pre" data-prompt-de="personalizado"></pre>
+          </details>
+          <div class="clientes-card-acoes">
+            <span class="clientes-salvo"></span>
+            <button type="button" class="cal-btn cal-btn-primario" data-copiar-prompt="personalizado">${escapeHtml(tr('clientes_copiar_prompt'))}</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderizarClientesModelos() {
+      const cont = document.getElementById('clientes-modelos-conteudo');
+      if (clientesSqlPendente) {
+        cont.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('clientes_aviso_sql'))}</p>`;
+        return;
+      }
+      cont.innerHTML = `
+        <div class="card clientes-bloco" data-salvavel>
+          <h3 class="card-titulo">${escapeHtml(tr('clientes_parte_fixa_titulo'))}</h3>
+          <p class="clientes-ajuda">${escapeHtml(tr('clientes_parte_fixa_ajuda'))} ${escapeHtml(tr('clientes_salvar_sozinho'))}</p>
+          <textarea class="clientes-textarea clientes-textarea-alta" data-texto="prompt_parte_fixa">${escapeHtml(clientesTextos.prompt_parte_fixa || '')}</textarea>
+          <div class="clientes-card-acoes"><span class="clientes-salvo"></span></div>
+        </div>
+        <div class="clientes-modelos-grid">
+          ${clientesModelosCache.map(cartaoModeloHtml).join('')}
+          ${cartaoPersonalizadoHtml()}
+        </div>
+      `;
+      atualizarPreviasDePrompt();
+    }
+
+    // ---- Sub-aba 4: Links e mensagens ----
+    function renderizarClientesLinksMensagens() {
+      const cont = document.getElementById('clientes-links-conteudo');
+      if (clientesSqlPendente) {
+        cont.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('clientes_aviso_sql'))}</p>`;
+        return;
+      }
+      const linhasLinks = CLIENTES_LINKS_TEXTOS.map((l) => `
+        <div class="clientes-link-linha">
+          <label>${escapeHtml(tr(l.rotulo))}</label>
+          <input type="text" data-texto="${l.chave}" placeholder="https://..." value="${escaparAtributo(clientesTextos[l.chave] || '')}">
+          <button type="button" class="cal-btn cal-btn-primario" data-copiar-texto="${l.chave}">${escapeHtml(tr('clientes_copiar'))}</button>
+          <button type="button" class="cal-btn" data-abrir-texto="${l.chave}">${escapeHtml(tr('clientes_abrir'))}</button>
+        </div>
+      `).join('');
+      const blocosMensagens = CLIENTES_MENSAGENS.map((m) => `
+        <div class="clientes-msg" data-salvavel>
+          <div class="clientes-msg-topo">
+            <span class="clientes-msg-titulo">${escapeHtml(tr(m.rotulo))}</span>
+            <span class="clientes-salvo"></span>
+            <button type="button" class="cal-btn cal-btn-primario" data-copiar-texto="${m.chave}">${escapeHtml(tr('clientes_copiar_mensagem'))}</button>
+          </div>
+          <textarea class="clientes-textarea" data-texto="${m.chave}">${escapeHtml(clientesTextos[m.chave] || '')}</textarea>
+        </div>
+      `).join('');
+      cont.innerHTML = `
+        <div class="card clientes-bloco" data-salvavel>
+          <h3 class="card-titulo">${escapeHtml(tr('clientes_links_titulo'))}</h3>
+          <p class="clientes-ajuda">${escapeHtml(tr('clientes_salvar_sozinho'))}</p>
+          <div class="clientes-links-lista">${linhasLinks}</div>
+          <span class="clientes-salvo"></span>
+        </div>
+        <div class="card clientes-bloco">
+          <h3 class="card-titulo">${escapeHtml(tr('clientes_msgs_titulo'))}</h3>
+          <p class="clientes-ajuda">${escapeHtml(tr('clientes_salvar_sozinho'))}</p>
+          ${blocosMensagens}
+        </div>
+      `;
+    }
+
+    // ---- Salvar textos e modelos (salva ao sair do campo) ----
+    function mostrarSalvoCliente(elemento, ok) {
+      const bloco = elemento.closest('[data-salvavel]');
+      const aviso = bloco && bloco.querySelector('.clientes-salvo');
+      if (!aviso) return;
+      aviso.textContent = tr(ok ? 'clientes_salvo' : 'clientes_erro_salvar_texto');
+      aviso.classList.toggle('clientes-salvo-erro', !ok);
+      clearTimeout(aviso._salvoTimer);
+      if (ok) aviso._salvoTimer = setTimeout(() => { aviso.textContent = ''; }, 2000);
+    }
+
+    async function salvarTextoCliente(chave, valor, elemento) {
+      clientesTextos[chave] = valor;
+      atualizarPreviasDePrompt();
+      try {
+        const { error } = await Auth.sb
+          .from('clientes_textos')
+          .upsert({ chave, valor, updated_at: new Date().toISOString() }, { onConflict: 'chave' });
+        if (error) throw error;
+        mostrarSalvoCliente(elemento, true);
+      } catch (err) {
+        console.error('Erro ao salvar texto de Clientes:', err);
+        mostrarSalvoCliente(elemento, false);
+      }
+    }
+
+    async function salvarCampoModelo(modelo, campo, valor, elemento) {
+      if (campo === 'nome' && !valor.trim()) {
+        elemento.value = modelo.nome;
+        return;
+      }
+      modelo[campo] = campo === 'previa_url' ? (valor.trim() || null) : valor;
+      atualizarPreviasDePrompt();
+      try {
+        const { error } = await Auth.sb.from('clientes_modelos').update({ [campo]: modelo[campo] }).eq('id', modelo.id);
+        if (error) throw error;
+        mostrarSalvoCliente(elemento, true);
+      } catch (err) {
+        console.error('Erro ao salvar modelo:', err);
+        mostrarSalvoCliente(elemento, false);
+      }
+    }
+
+    function ligarEventosClientes() {
+      document.querySelectorAll('.clientes-subnav-btn').forEach((btn) => {
+        btn.addEventListener('click', () => trocarSubAbaClientes(btn.dataset.clientesPagina));
+      });
+      document.getElementById('btn-clientes-novo-atalho').addEventListener('click', () => abrirModalCliente(null));
+
+      const principal = document.getElementById('clientes-principal');
+      const clienteDaLinha = (el) => {
+        const linha = el.closest('tr[data-id]');
+        return linha ? clientesCache.find((c) => c.id === linha.dataset.id) : null;
+      };
+
+      principal.addEventListener('click', (e) => {
+        const alvo = e.target;
+        const itemAcao = alvo.closest('.clientes-acao-item');
+        if (itemAcao) {
+          const c = clientesCache.find((x) => x.id === itemAcao.dataset.id);
+          if (c) abrirModalCliente(c);
+          return;
+        }
+        const chip = alvo.closest('[data-etapa]');
+        if (chip) {
+          filtroEtapaClientes = chip.dataset.etapa;
+          renderizarClientesPlanilha();
+          return;
+        }
+        const botaoLinha = alvo.closest('tr [data-acao]');
+        if (botaoLinha) {
+          const c = clienteDaLinha(botaoLinha);
+          if (!c) return;
+          if (botaoLinha.dataset.acao === 'excluir') excluirClienteDaLinha(c);
+          else abrirModalCliente(c);
+          return;
+        }
+        const copiarPrompt = alvo.closest('[data-copiar-prompt]');
+        if (copiarPrompt) {
+          const id = copiarPrompt.dataset.copiarPrompt;
+          const modelo = clientesModelosCache.find((m) => m.id === id);
+          const texto = id === 'personalizado' ? promptDoPersonalizado() : montarPromptCompleto(modelo && modelo.ficha);
+          clientesCopiar(texto, copiarPrompt);
+          return;
+        }
+        const copiarTexto = alvo.closest('[data-copiar-texto]');
+        if (copiarTexto) {
+          clientesCopiar(clientesTextos[copiarTexto.dataset.copiarTexto] || '', copiarTexto);
+          return;
+        }
+        const abrirTexto = alvo.closest('[data-abrir-texto]');
+        if (abrirTexto) {
+          const url = urlSeguraCliente(clientesTextos[abrirTexto.dataset.abrirTexto]);
+          if (url) window.open(url, '_blank', 'noopener,noreferrer');
+          return;
+        }
+        const abrirModelo = alvo.closest('[data-abrir-modelo]');
+        if (abrirModelo) {
+          const modelo = clientesModelosCache.find((m) => m.id === abrirModelo.dataset.abrirModelo);
+          const url = modelo && urlSeguraCliente(modelo.previa_url);
+          if (url) window.open(url, '_blank', 'noopener,noreferrer');
+        }
+      });
+
+      principal.addEventListener('change', (e) => {
+        const alvo = e.target;
+        if (alvo.matches('input[data-pag]')) {
+          const c = clienteDaLinha(alvo);
+          if (c) alternarPagamentoCliente(c, alvo.dataset.pag, alvo.checked, alvo);
+          return;
+        }
+        if (alvo.matches('[data-texto]')) {
+          salvarTextoCliente(alvo.dataset.texto, alvo.value, alvo);
+          return;
+        }
+        if (alvo.matches('[data-modelo-campo]')) {
+          const cartao = alvo.closest('[data-modelo-id]');
+          const modelo = cartao && clientesModelosCache.find((m) => m.id === cartao.dataset.modeloId);
+          if (modelo) salvarCampoModelo(modelo, alvo.dataset.modeloCampo, alvo.value, alvo);
+        }
+      });
+    }
+
+    // ---- Modal de cliente ----
     function adicionarLinkModal() {
       clientesModalLinks.push({ rotulo: '', url: '', tipo: 'privado' });
       renderizarLinksModal();
@@ -21654,22 +22418,38 @@
       });
     }
 
-    // ---- Modal de cliente ----
     function abrirModalCliente(cliente) {
       clienteAbertoId = cliente ? cliente.id : null;
 
       document.getElementById('clientes-modal-nome').value = cliente ? cliente.nome : '';
+      document.getElementById('clientes-modal-instagram').value = cliente ? cliente.instagram || '' : '';
 
-      const selectStatus = document.getElementById('clientes-modal-status');
-      selectStatus.innerHTML = CLIENTES_STATUS.map((s) => `<option value="${s}">${escapeHtml(traduzirStatusCliente(s))}</option>`).join('');
-      selectStatus.value = cliente ? cliente.status : 'Negociando';
+      const selectPlano = document.getElementById('clientes-modal-plano');
+      selectPlano.innerHTML = `<option value="">—</option>` + CLIENTES_PLANOS.map((p) => `<option value="${p}">${escapeHtml(p)}</option>`).join('');
+      selectPlano.value = cliente ? cliente.plano || '' : '';
+
+      const selectEtapa = document.getElementById('clientes-modal-etapa');
+      selectEtapa.innerHTML = CLIENTES_ETAPAS.map((e) => `<option value="${e}">${escapeHtml(traduzirEtapaCliente(e))}</option>`).join('');
+      selectEtapa.value = cliente ? etapaDoCliente(cliente) : 'conversa';
+
+      // Sugestões de modelo: os cartões da sub-aba Modelos + Personalizado.
+      document.getElementById('clientes-templates-sugeridos').innerHTML = clientesModelosCache
+        .map((m) => m.nome)
+        .concat(['Personalizado'])
+        .map((nome) => `<option value="${escaparAtributo(nome)}"></option>`)
+        .join('');
 
       document.getElementById('clientes-modal-template').value = cliente ? cliente.template_escolhido || '' : '';
-      document.getElementById('clientes-modal-email').value = cliente ? cliente.contato_email || '' : '';
-      document.getElementById('clientes-modal-whats').value = cliente ? cliente.contato_whatsapp || '' : '';
       document.getElementById('clientes-modal-valor').value = cliente && cliente.valor != null ? cliente.valor : '';
+      document.getElementById('clientes-modal-pag1').checked = !!(cliente && cliente.pagamento1_pago);
+      document.getElementById('clientes-modal-pag2').checked = !!(cliente && cliente.pagamento2_pago);
+      document.getElementById('clientes-modal-formulario').value = cliente && cliente.formulario_data ? cliente.formulario_data : '';
       document.getElementById('clientes-modal-fechamento').value = cliente && cliente.data_fechamento ? cliente.data_fechamento : '';
       document.getElementById('clientes-modal-entrega').value = cliente && cliente.data_entrega ? cliente.data_entrega : '';
+      document.getElementById('clientes-modal-site').value = cliente ? cliente.site_url || '' : '';
+      document.getElementById('clientes-modal-repo').value = cliente ? cliente.repo_url || '' : '';
+      document.getElementById('clientes-modal-email').value = cliente ? cliente.contato_email || '' : '';
+      document.getElementById('clientes-modal-whats').value = cliente ? cliente.contato_whatsapp || '' : '';
       document.getElementById('clientes-modal-observacoes').value = cliente ? cliente.observacoes || '' : '';
 
       clientesModalLinks = cliente
@@ -21688,13 +22468,20 @@
     function capturarEstadoCliente() {
       return JSON.stringify({
         nome: document.getElementById('clientes-modal-nome').value,
-        status: document.getElementById('clientes-modal-status').value,
+        instagram: document.getElementById('clientes-modal-instagram').value,
+        plano: document.getElementById('clientes-modal-plano').value,
+        etapa: document.getElementById('clientes-modal-etapa').value,
         template: document.getElementById('clientes-modal-template').value,
-        email: document.getElementById('clientes-modal-email').value,
-        whats: document.getElementById('clientes-modal-whats').value,
         valor: document.getElementById('clientes-modal-valor').value,
+        pag1: document.getElementById('clientes-modal-pag1').checked,
+        pag2: document.getElementById('clientes-modal-pag2').checked,
+        formulario: document.getElementById('clientes-modal-formulario').value,
         fechamento: document.getElementById('clientes-modal-fechamento').value,
         entrega: document.getElementById('clientes-modal-entrega').value,
+        site: document.getElementById('clientes-modal-site').value,
+        repo: document.getElementById('clientes-modal-repo').value,
+        email: document.getElementById('clientes-modal-email').value,
+        whats: document.getElementById('clientes-modal-whats').value,
         observacoes: document.getElementById('clientes-modal-observacoes').value,
         links: clientesModalLinks,
       });
@@ -21724,15 +22511,25 @@
         return;
       }
 
+      const valorTexto = document.getElementById('clientes-modal-valor').value;
+      const etapa = document.getElementById('clientes-modal-etapa').value;
       const linha = {
         nome,
-        status: document.getElementById('clientes-modal-status').value,
+        instagram: document.getElementById('clientes-modal-instagram').value.trim() || null,
+        plano: document.getElementById('clientes-modal-plano').value || null,
+        etapa,
+        status: statusLegadoDaEtapa(etapa),
         template_escolhido: document.getElementById('clientes-modal-template').value.trim() || null,
-        contato_email: document.getElementById('clientes-modal-email').value.trim() || null,
-        contato_whatsapp: document.getElementById('clientes-modal-whats').value.trim() || null,
-        valor: document.getElementById('clientes-modal-valor').value ? Number(document.getElementById('clientes-modal-valor').value) : null,
+        valor: valorTexto ? Number(valorTexto) : null,
+        pagamento1_pago: document.getElementById('clientes-modal-pag1').checked,
+        pagamento2_pago: document.getElementById('clientes-modal-pag2').checked,
+        formulario_data: document.getElementById('clientes-modal-formulario').value || null,
         data_fechamento: document.getElementById('clientes-modal-fechamento').value || null,
         data_entrega: document.getElementById('clientes-modal-entrega').value || null,
+        site_url: document.getElementById('clientes-modal-site').value.trim() || null,
+        repo_url: document.getElementById('clientes-modal-repo').value.trim() || null,
+        contato_email: document.getElementById('clientes-modal-email').value.trim() || null,
+        contato_whatsapp: document.getElementById('clientes-modal-whats').value.trim() || null,
         observacoes: document.getElementById('clientes-modal-observacoes').value.trim() || null,
       };
 
@@ -21766,7 +22563,7 @@
         await carregarClientes();
       } catch (err) {
         console.error('Erro ao salvar cliente:', err);
-        alert(tr('erro_salvar_generico'));
+        alertaErroClientes(err, 'erro_salvar_generico');
       } finally {
         btn.disabled = false;
       }

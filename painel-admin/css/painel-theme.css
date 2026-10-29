@@ -7421,6 +7421,7 @@
 .painel-body .pg-capa-nav .instagram-subnav,
 .painel-body .pg-capa-nav .financeiro-subnav,
 .painel-body .pg-capa-nav .metas-subnav,
+.painel-body .pg-capa-nav .clientes-subnav,
 .painel-body .pg-capa-nav .ferr-modos {
   margin: 0;
   display: flex;
@@ -7439,6 +7440,7 @@
 .painel-body .pg-capa-nav .instagram-subnav-btn,
 .painel-body .pg-capa-nav .financeiro-subnav-btn,
 .painel-body .pg-capa-nav .metas-subnav-btn,
+.painel-body .pg-capa-nav .clientes-subnav-btn,
 .painel-body .pg-capa-nav .cal-filtro-btn {
   background: rgba(255, 255, 255, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -7453,6 +7455,7 @@
 .painel-body .pg-capa-nav .instagram-subnav-btn:hover,
 .painel-body .pg-capa-nav .financeiro-subnav-btn:hover,
 .painel-body .pg-capa-nav .metas-subnav-btn:hover,
+.painel-body .pg-capa-nav .clientes-subnav-btn:hover,
 .painel-body .pg-capa-nav .cal-filtro-btn:hover {
   background: rgba(255, 255, 255, 0.3);
   color: var(--branco);
@@ -7462,6 +7465,7 @@
 .painel-body .pg-capa-nav .instagram-subnav-btn.ativo,
 .painel-body .pg-capa-nav .financeiro-subnav-btn.ativo,
 .painel-body .pg-capa-nav .metas-subnav-btn.ativo,
+.painel-body .pg-capa-nav .clientes-subnav-btn.ativo,
 .painel-body .pg-capa-nav .cal-filtro-btn.ativo {
   background: var(--branco);
   border-color: var(--branco);

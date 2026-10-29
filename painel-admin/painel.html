@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261029a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261029b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1696,10 +1696,7 @@
           <!-- Visão geral: só leitura, tudo derivado da tabela clientes -->
           <div id="clientes-pagina-visao-geral" class="clientes-pagina">
             <div class="cal-todas-topo">
-              <div>
-                <h3 class="card-titulo" data-i18n="clientes_sub_visao">Visão geral</h3>
-                <p class="cal-todas-resumo" id="clientes-visao-resumo"></p>
-              </div>
+              <p class="cal-todas-resumo" id="clientes-visao-resumo"></p>
               <div class="ugc-trabalhos-topo-acoes">
                 <button id="btn-clientes-novo-atalho" class="cal-btn cal-btn-primario" type="button" data-i18n="clientes_novo">+ Novo cliente</button>
               </div>
@@ -1744,10 +1741,7 @@
           <!-- Clientes: a planilha -->
           <div id="clientes-pagina-clientes" class="clientes-pagina" hidden>
             <div class="cal-todas-topo">
-              <div>
-                <h3 class="card-titulo" data-i18n="clientes_titulo">Clientes</h3>
-                <p class="cal-todas-resumo" id="clientes-resumo" data-i18n="clientes_nenhum">Nenhum cliente ainda.</p>
-              </div>
+              <p class="cal-todas-resumo" id="clientes-resumo" data-i18n="clientes_nenhum">Nenhum cliente ainda.</p>
               <div class="ugc-trabalhos-topo-acoes">
                 <button id="btn-minhas-coisas" class="cal-btn" type="button" data-i18n="mc_botao">Minhas coisas</button>
                 <button id="btn-clientes-novo" class="cal-btn cal-btn-primario" type="button" data-i18n="clientes_novo">+ Novo cliente</button>
@@ -5737,10 +5731,10 @@
         clientes_status_em_producao: 'Em produção',
         clientes_status_entregue: 'Entregue',
         clientes_status_cancelado: 'Cancelado',
-        clientes_sub_visao: 'Visão geral',
-        clientes_sub_clientes: 'Clientes',
-        clientes_sub_modelos: 'Modelos de portfólio',
-        clientes_sub_links: 'Links e mensagens',
+        clientes_sub_visao: '📊 Visão geral',
+        clientes_sub_clientes: '👥 Clientes',
+        clientes_sub_modelos: '🎨 Modelos de portfólio',
+        clientes_sub_links: '🔗 Links e mensagens',
         clientes_aviso_sql: 'Pra usar esta aba por completo, rode o arquivo clientes-planilha.sql no Supabase (uma vez só).',
         clientes_card_andamento: 'Pedidos em andamento',
         clientes_card_aguarda1: 'Aguardando 1º pagamento',
@@ -7100,10 +7094,10 @@
         clientes_status_em_producao: 'In progress',
         clientes_status_entregue: 'Delivered',
         clientes_status_cancelado: 'Cancelled',
-        clientes_sub_visao: 'Overview',
-        clientes_sub_clientes: 'Clients',
-        clientes_sub_modelos: 'Portfolio templates',
-        clientes_sub_links: 'Links and messages',
+        clientes_sub_visao: '📊 Overview',
+        clientes_sub_clientes: '👥 Clients',
+        clientes_sub_modelos: '🎨 Portfolio templates',
+        clientes_sub_links: '🔗 Links and messages',
         clientes_aviso_sql: 'To use this tab fully, run the clientes-planilha.sql file in Supabase (just once).',
         clientes_card_andamento: 'Orders in progress',
         clientes_card_aguarda1: 'Awaiting 1st payment',
@@ -9516,7 +9510,7 @@
     // Capa azul no topo de cada página (menos Dashboard, que tem a saudação, e
     // E-mail, que tem a capa própria). O menu interno da página (UGC, Instagram,
     // Ferramentas) é levado pra dentro da capa e devolvido ao lugar quando sai.
-    const CAPA_MENUS = { ugc: '.ugc-subnav', instagram: '.instagram-subnav', ferramentas: '.ferr-modos', planejador: '#pl-hub', financeiro: '.financeiro-subnav', metas: '.metas-subnav', desafios: '.dg-subnav' };
+    const CAPA_MENUS = { ugc: '.ugc-subnav', instagram: '.instagram-subnav', ferramentas: '.ferr-modos', planejador: '#pl-hub', financeiro: '.financeiro-subnav', metas: '.metas-subnav', desafios: '.dg-subnav', clientes: '.clientes-subnav' };
     const CAPA_SEM = ['overview', 'email'];
     // Abas que mostram o ícone da Nota rápida na capa (o Dashboard tem o dele).
     const NOTA_ABAS = ['ferramentas', 'clientes', 'produtos-digitais', 'planejador', 'instagram', 'financeiro', 'metas', 'desafios'];
@@ -22663,6 +22657,7 @@
 
     async function mcAbrirPagina() {
       document.getElementById('clientes-principal').hidden = true;
+      document.getElementById('pg-capa-nav').hidden = true;
       document.getElementById('minhas-coisas-pagina').hidden = false;
       if (!mcCarregada) await mcCarregar();
     }
@@ -22671,6 +22666,7 @@
       await mcSalvarAgora();
       document.getElementById('minhas-coisas-pagina').hidden = true;
       document.getElementById('clientes-principal').hidden = false;
+      document.getElementById('pg-capa-nav').hidden = false;
     }
 
     async function mcCarregar() {

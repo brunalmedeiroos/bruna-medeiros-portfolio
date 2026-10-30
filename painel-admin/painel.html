@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261029b">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261030a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -2946,6 +2946,188 @@
       </div>
     </div>
 
+    <!-- Modal: prompt do modelo (prompt de um lado, dados da cliente do outro) -->
+    <div id="clientes-prompt-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal clientes-prompt-modal">
+        <div class="clientes-prompt-topo">
+          <h3 id="clientes-prompt-titulo" class="clientes-prompt-titulo"></h3>
+          <button id="clientes-prompt-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="clientes-prompt-corpo">
+          <pre id="clientes-prompt-texto" class="clientes-prompt-texto"></pre>
+
+          <div id="clientes-prompt-form" class="clientes-prompt-form">
+            <div class="cal-form-campo">
+              <label for="clientes-prompt-cliente" data-i18n="clientes_prompt_escolher">Escolher cliente</label>
+              <select id="clientes-prompt-cliente"></select>
+            </div>
+            <p class="clientes-ajuda" data-i18n="clientes_prompt_dica_form">Preencha o que você já sabe. O prompt ao lado se completa sozinho. Se escolher uma cliente, o que você preencher fica salvo no cadastro dela.</p>
+
+            <h4 class="clientes-form-titulo" data-i18n="clientes_f_seus_dados">Seus dados</h4>
+            <div class="cal-form-campo">
+              <label for="clientes-f-nome" data-i18n="clientes_f_nome">Nome completo</label>
+              <input type="text" id="clientes-f-nome" data-campo="nome" placeholder="Lara Dam">
+            </div>
+            <div class="cal-form-campo">
+              <label for="clientes-f-instagram" data-i18n="clientes_col_instagram_label">@ do Instagram</label>
+              <input type="text" id="clientes-f-instagram" data-campo="instagram" placeholder="@usuario">
+            </div>
+            <div class="clientes-form-duplo">
+              <div class="cal-form-campo">
+                <label for="clientes-f-email" data-i18n="clientes_f_email">E-mail</label>
+                <input type="text" id="clientes-f-email" data-campo="email" placeholder="voce@email.com">
+              </div>
+              <div class="cal-form-campo">
+                <label for="clientes-f-whatsapp" data-i18n="clientes_whatsapp">WhatsApp</label>
+                <input type="text" id="clientes-f-whatsapp" data-campo="whatsapp" placeholder="(11) 90000-0000">
+              </div>
+            </div>
+            <div class="cal-form-campo">
+              <label for="clientes-f-cidade" data-i18n="clientes_f_cidade">Cidade</label>
+              <input type="text" id="clientes-f-cidade" data-campo="cidade" placeholder="São Paulo">
+            </div>
+
+            <h4 class="clientes-form-titulo" data-i18n="clientes_f_seu_trabalho">Seu trabalho</h4>
+            <div class="cal-form-campo">
+              <label for="clientes-f-marcas" data-i18n="clientes_f_marcas">Marcas com quem já trabalhou</label>
+              <input type="text" id="clientes-f-marcas" data-campo="marcas" placeholder="Marca A, Marca B, Marca C">
+            </div>
+            <div class="cal-form-campo">
+              <label for="clientes-f-frase" data-i18n="clientes_f_frase">Uma frase que te descreve</label>
+              <textarea id="clientes-f-frase" data-campo="frase" rows="2" placeholder="eu gravo como quem indica pra uma amiga"></textarea>
+            </div>
+
+            <h4 class="clientes-form-titulo" data-i18n="clientes_f_seus_numeros">Seus números</h4>
+            <div class="clientes-form-triplo">
+              <div class="cal-form-campo">
+                <label for="clientes-f-videos" data-i18n="clientes_f_videos">Vídeos entregues</label>
+                <input type="text" id="clientes-f-videos" data-campo="videos" placeholder="120">
+              </div>
+              <div class="cal-form-campo">
+                <label for="clientes-f-marcas-atendidas" data-i18n="clientes_f_marcas_atendidas">Marcas atendidas</label>
+                <input type="text" id="clientes-f-marcas-atendidas" data-campo="marcas_atendidas" placeholder="38">
+              </div>
+              <div class="cal-form-campo">
+                <label for="clientes-f-views" data-i18n="clientes_f_views">Views somadas</label>
+                <input type="text" id="clientes-f-views" data-campo="views" placeholder="12M">
+              </div>
+            </div>
+
+            <h4 class="clientes-form-titulo" data-i18n="clientes_f_seus_nichos">Seus nichos</h4>
+            <div id="clientes-prompt-nichos" class="clientes-nichos"></div>
+
+            <h4 class="clientes-form-titulo" data-i18n="clientes_f_destaques">Seus 3 conteúdos de destaque</h4>
+            <div class="clientes-destaque">
+              <div class="cal-form-campo">
+                <label data-i18n="clientes_f_video_1">Link do vídeo 1</label>
+                <input type="text" data-destaque="0" data-parte="link" placeholder="instagram.com/reel/...">
+              </div>
+              <div class="cal-form-campo">
+                <label data-i18n="clientes_f_numero_dele">Número dele</label>
+                <input type="text" data-destaque="0" data-parte="numero" placeholder="+2,4M views">
+              </div>
+            </div>
+            <div class="clientes-destaque">
+              <div class="cal-form-campo">
+                <label data-i18n="clientes_f_video_2">Link do vídeo 2</label>
+                <input type="text" data-destaque="1" data-parte="link" placeholder="instagram.com/reel/...">
+              </div>
+              <div class="cal-form-campo">
+                <label data-i18n="clientes_f_numero_dele">Número dele</label>
+                <input type="text" data-destaque="1" data-parte="numero" placeholder="+2,4M views">
+              </div>
+            </div>
+            <div class="clientes-destaque">
+              <div class="cal-form-campo">
+                <label data-i18n="clientes_f_video_3">Link do vídeo 3</label>
+                <input type="text" data-destaque="2" data-parte="link" placeholder="instagram.com/reel/...">
+              </div>
+              <div class="cal-form-campo">
+                <label data-i18n="clientes_f_numero_dele">Número dele</label>
+                <input type="text" data-destaque="2" data-parte="numero" placeholder="+2,4M views">
+              </div>
+            </div>
+
+            <div id="clientes-prompt-personalizado" hidden>
+              <h4 class="clientes-form-titulo" data-i18n="clientes_f_referencia">A referência da cliente</h4>
+              <div class="cal-form-campo">
+                <label for="clientes-f-ref-link" data-i18n="clientes_f_ref_link">Link ou imagem da referência</label>
+                <div class="clientes-input-acao">
+                  <input type="text" id="clientes-f-ref-link" data-campo="ref_link" placeholder="https://...">
+                  <button type="button" id="clientes-prompt-ref-enviar" class="cal-btn" data-i18n="clientes_enviar_imagem">Enviar imagem</button>
+                </div>
+                <input type="file" id="clientes-prompt-ref-arquivo" accept="image/*" hidden>
+              </div>
+              <div class="cal-form-campo">
+                <label for="clientes-f-cores" data-i18n="clientes_f_cores">Cores que ela quer</label>
+                <input type="text" id="clientes-f-cores" data-campo="cores" placeholder="rosa antigo, verde-sálvia, creme">
+              </div>
+              <div class="cal-form-campo">
+                <label for="clientes-f-gostou" data-i18n="clientes_f_gostou">O que ela gostou na referência</label>
+                <textarea id="clientes-f-gostou" data-campo="gostou" rows="3"></textarea>
+              </div>
+              <div class="cal-form-campo">
+                <label for="clientes-f-nao-quer" data-i18n="clientes_f_nao_quer">O que ela não quer</label>
+                <textarea id="clientes-f-nao-quer" data-campo="nao_quer" rows="3"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="clientes-prompt-rodape">
+          <span class="clientes-ajuda" data-i18n="clientes_prompt_dica_rodape">Cole no seu Claude Code e mande. Depois é só ir pedindo os ajustes.</span>
+          <span id="clientes-prompt-salvo" class="clientes-salvo"></span>
+          <button type="button" id="clientes-prompt-copiar" class="cal-btn cal-btn-primario" data-i18n="clientes_copiar_prompt">Copiar prompt</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: editar o cartão de um modelo (nome, descrição, imagem, link e ficha) -->
+    <div id="clientes-edit-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pl-modal-grande">
+        <div class="pl-modal-topo">
+          <h3 id="clientes-edit-titulo" class="clientes-prompt-titulo"></h3>
+          <button id="clientes-edit-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+
+        <div class="cal-form-campo clientes-edit-so-modelo">
+          <label for="clientes-edit-nome" data-i18n="clientes_modelo_nome">Nome do modelo</label>
+          <input type="text" id="clientes-edit-nome">
+        </div>
+        <div class="cal-form-campo clientes-edit-so-modelo">
+          <label for="clientes-edit-descricao" data-i18n="clientes_f_descricao">Descrição curta</label>
+          <textarea id="clientes-edit-descricao" rows="3"></textarea>
+        </div>
+        <div class="cal-form-campo clientes-edit-so-modelo">
+          <label data-i18n="clientes_f_imagem_previa">Imagem de prévia</label>
+          <img id="clientes-edit-img" class="clientes-edit-img" alt="" hidden>
+          <div class="clientes-input-acao">
+            <button type="button" id="clientes-edit-enviar-img" class="cal-btn" data-i18n="clientes_enviar_imagem">Enviar imagem</button>
+            <button type="button" id="clientes-edit-remover-img" class="cal-btn pl-btn-excluir" data-i18n="clientes_remover_imagem" hidden>Remover imagem</button>
+            <span id="clientes-edit-img-status" class="clientes-ajuda"></span>
+          </div>
+          <input type="file" id="clientes-edit-arquivo" accept="image/*" hidden>
+        </div>
+        <div class="cal-form-campo clientes-edit-so-modelo">
+          <label for="clientes-edit-link" data-i18n="clientes_modelo_previa">Link da prévia</label>
+          <input type="text" id="clientes-edit-link" placeholder="https://...">
+        </div>
+        <div class="cal-form-campo">
+          <label for="clientes-edit-ficha" data-i18n="clientes_modelo_ficha">Ficha de estilo</label>
+          <textarea id="clientes-edit-ficha" class="pl-textarea-grande" rows="10"></textarea>
+        </div>
+
+        <div class="cal-form-acoes">
+          <button type="button" id="clientes-edit-salvar" class="cal-btn cal-btn-primario" data-i18n="salvar">Salvar</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: automação do Instagram (comentário → resposta privada) -->
     <div id="instagram-modal-automacao-overlay" class="pl-modal-overlay" hidden>
       <div class="pl-modal pl-modal-grande pl-modal-xl ig-editor-modal">
@@ -5808,6 +5990,41 @@
         clientes_msg_prazo: '4. Confirmação de prazo',
         clientes_msg_previa: '5. Envio da prévia',
         clientes_copiar_mensagem: 'Copiar mensagem',
+        clientes_vitrine_ver: 'Ver o modelo completo',
+        clientes_personalizado_desc: 'Design único a partir da referência da cliente',
+        clientes_prompt_do_modelo: 'Prompt do modelo',
+        clientes_prompt_escolher: 'Escolher cliente',
+        clientes_prompt_sem_cliente: 'Sem cliente (só preencher)',
+        clientes_prompt_dica_form: 'Preencha o que você já sabe. O prompt ao lado se completa sozinho. Se escolher uma cliente, o que você preencher fica salvo no cadastro dela.',
+        clientes_prompt_dica_rodape: 'Cole no seu Claude Code e mande. Depois é só ir pedindo os ajustes.',
+        clientes_prompt_salvo_em: 'Salvo no cadastro de {nome}',
+        clientes_f_seus_dados: 'Seus dados',
+        clientes_f_nome: 'Nome completo',
+        clientes_f_email: 'E-mail',
+        clientes_f_cidade: 'Cidade',
+        clientes_f_seu_trabalho: 'Seu trabalho',
+        clientes_f_marcas: 'Marcas com quem já trabalhou',
+        clientes_f_frase: 'Uma frase que te descreve',
+        clientes_f_seus_numeros: 'Seus números',
+        clientes_f_videos: 'Vídeos entregues',
+        clientes_f_marcas_atendidas: 'Marcas atendidas',
+        clientes_f_views: 'Views somadas',
+        clientes_f_seus_nichos: 'Seus nichos',
+        clientes_f_destaques: 'Seus 3 conteúdos de destaque',
+        clientes_f_video_1: 'Link do vídeo 1',
+        clientes_f_video_2: 'Link do vídeo 2',
+        clientes_f_video_3: 'Link do vídeo 3',
+        clientes_f_numero_dele: 'Número dele',
+        clientes_f_referencia: 'A referência da cliente',
+        clientes_f_ref_link: 'Link ou imagem da referência',
+        clientes_f_cores: 'Cores que ela quer',
+        clientes_f_gostou: 'O que ela gostou na referência',
+        clientes_f_nao_quer: 'O que ela não quer',
+        clientes_enviar_imagem: 'Enviar imagem',
+        clientes_remover_imagem: 'Remover imagem',
+        clientes_enviando_imagem: 'Enviando...',
+        clientes_f_descricao: 'Descrição curta',
+        clientes_f_imagem_previa: 'Imagem de prévia',
         instagram_visao_geral: '📊 Visão Geral',
         instagram_automacoes: '🤖 Automações',
         instagram_leads: 'Leads',
@@ -7171,6 +7388,41 @@
         clientes_msg_prazo: '4. Deadline confirmation',
         clientes_msg_previa: '5. Sending the preview',
         clientes_copiar_mensagem: 'Copy message',
+        clientes_vitrine_ver: 'View full template',
+        clientes_personalizado_desc: 'One-of-a-kind design based on the client\'s reference',
+        clientes_prompt_do_modelo: 'Prompt for template',
+        clientes_prompt_escolher: 'Choose client',
+        clientes_prompt_sem_cliente: 'No client (just fill in)',
+        clientes_prompt_dica_form: 'Fill in what you already know. The prompt on the left completes itself. If you choose a client, what you fill in is saved to her record.',
+        clientes_prompt_dica_rodape: 'Paste it into your Claude Code and send. Then just ask for adjustments.',
+        clientes_prompt_salvo_em: 'Saved to {nome}\'s record',
+        clientes_f_seus_dados: 'Your details',
+        clientes_f_nome: 'Full name',
+        clientes_f_email: 'E-mail',
+        clientes_f_cidade: 'City',
+        clientes_f_seu_trabalho: 'Your work',
+        clientes_f_marcas: 'Brands you have worked with',
+        clientes_f_frase: 'A sentence that describes you',
+        clientes_f_seus_numeros: 'Your numbers',
+        clientes_f_videos: 'Videos delivered',
+        clientes_f_marcas_atendidas: 'Brands served',
+        clientes_f_views: 'Total views',
+        clientes_f_seus_nichos: 'Your niches',
+        clientes_f_destaques: 'Your 3 highlight contents',
+        clientes_f_video_1: 'Video 1 link',
+        clientes_f_video_2: 'Video 2 link',
+        clientes_f_video_3: 'Video 3 link',
+        clientes_f_numero_dele: 'Its number',
+        clientes_f_referencia: 'The client\'s reference',
+        clientes_f_ref_link: 'Reference link or image',
+        clientes_f_cores: 'Colors she wants',
+        clientes_f_gostou: 'What she liked in the reference',
+        clientes_f_nao_quer: 'What she does not want',
+        clientes_enviar_imagem: 'Upload image',
+        clientes_remover_imagem: 'Remove image',
+        clientes_enviando_imagem: 'Uploading...',
+        clientes_f_descricao: 'Short description',
+        clientes_f_imagem_previa: 'Preview image',
         instagram_visao_geral: '📊 Overview',
         instagram_automacoes: '🤖 Automations',
         instagram_leads: 'Leads',
@@ -22088,88 +22340,106 @@
       }
     }
 
-    // ---- Sub-aba 3: Modelos de portfólio ----
-    // Prompt completo = parte fixa (vale pra todos) + ficha de estilo do modelo.
-    function montarPromptCompleto(ficha, extra) {
-      return [clientesTextos.prompt_parte_fixa, ficha, extra]
+    // ---- Sub-aba 3: Modelos de portfólio (vitrine) ----
+    // Cada cartão abre uma janela com o prompt completo (parte fixa + ficha do
+    // modelo + dados da cliente) de um lado e o formulário da cliente do outro.
+    const CLIENTES_NICHOS = ['beleza', 'skincare', 'moda', 'comida', 'casa e decoração', 'fitness', 'maternidade', 'pet', 'viagem', 'tech'];
+    const clientesFormVazio = () => ({
+      nome: '', instagram: '', email: '', whatsapp: '', cidade: '',
+      marcas: '', frase: '',
+      videos: '', marcas_atendidas: '', views: '',
+      nichos: [],
+      destaques: [{ link: '', numero: '' }, { link: '', numero: '' }, { link: '', numero: '' }],
+      ref_link: '', cores: '', gostou: '', nao_quer: '',
+    });
+    // Campos do formulário que moram em clientes.dados_prompt (o resto usa as colunas normais)
+    const CLIENTES_CAMPOS_DADOS = ['cidade', 'marcas', 'frase', 'videos', 'marcas_atendidas', 'views', 'ref_link', 'cores', 'gostou', 'nao_quer'];
+    let promptForm = clientesFormVazio();
+    let promptClienteId = null;
+    let promptModeloAberto = null;
+    let promptTimerSalvar = null;
+    let editModeloAberto = null;
+    let editModeloImagem = '';
+
+    function fichaDoModelo(id) {
+      if (id === 'personalizado') return clientesTextos.personalizado_ficha || '';
+      const modelo = clientesModelosCache.find((m) => m.id === id);
+      return (modelo && modelo.ficha) || '';
+    }
+
+    function linhaDadoPrompt(rotulo, valor) {
+      const v = String(valor || '').trim();
+      return v ? `${rotulo}: ${v}` : '';
+    }
+
+    // O prompt vai pro Claude Code, então este bloco fica sempre em português.
+    function montarDadosCliente(form, personalizado) {
+      const destaques = form.destaques
+        .map((d, i) => {
+          const link = d.link.trim();
+          const numero = d.numero.trim();
+          return link || numero ? `${i + 1}. ${[link, numero && `(${numero})`].filter(Boolean).join(' ')}` : '';
+        })
+        .filter(Boolean);
+      const numeros = [['vídeos entregues', form.videos], ['marcas atendidas', form.marcas_atendidas], ['views somadas', form.views]]
+        .filter(([, v]) => String(v || '').trim())
+        .map(([rotulo, v]) => `${rotulo}: ${String(v).trim()}`)
+        .join(', ');
+      const linhas = [
+        linhaDadoPrompt('Nome completo', form.nome),
+        linhaDadoPrompt('@ do Instagram', form.instagram),
+        linhaDadoPrompt('E-mail', form.email),
+        linhaDadoPrompt('WhatsApp', form.whatsapp),
+        linhaDadoPrompt('Cidade', form.cidade),
+        linhaDadoPrompt('Marcas com quem já trabalhou', form.marcas),
+        linhaDadoPrompt('Frase que me descreve', form.frase),
+        numeros ? `Números: ${numeros}` : '',
+        form.nichos.length ? `Nichos: ${form.nichos.join(', ')}` : '',
+        destaques.length ? `Conteúdos de destaque:\n${destaques.join('\n')}` : '',
+      ];
+      if (personalizado) {
+        linhas.push(
+          linhaDadoPrompt('Link ou imagem da referência', form.ref_link),
+          linhaDadoPrompt('Cores que eu quero', form.cores),
+          linhaDadoPrompt('O que eu gostei na referência', form.gostou),
+          linhaDadoPrompt('O que eu não quero', form.nao_quer),
+        );
+      }
+      const corpo = linhas.filter(Boolean).join('\n');
+      return corpo ? `== DADOS DA CLIENTE ==\n${corpo}` : '';
+    }
+
+    // Parte fixa + ficha do modelo + dados da cliente, nessa ordem.
+    function montarPromptCompleto(id) {
+      return [clientesTextos.prompt_parte_fixa, fichaDoModelo(id), montarDadosCliente(promptForm, id === 'personalizado')]
         .map((s) => String(s || '').trim())
         .filter(Boolean)
         .join('\n\n');
     }
 
-    function promptDoPersonalizado() {
-      const ref = String(clientesTextos.personalizado_referencia || '').trim();
-      return montarPromptCompleto(clientesTextos.personalizado_ficha, ref ? `REFERÊNCIA DA CLIENTE:\n${ref}` : '');
+    function atualizarPromptTexto() {
+      document.getElementById('clientes-prompt-texto').textContent = montarPromptCompleto(promptModeloAberto);
     }
 
-    function atualizarPreviasDePrompt() {
-      document.querySelectorAll('[data-prompt-de]').forEach((pre) => {
-        const id = pre.dataset.promptDe;
-        if (id === 'personalizado') {
-          pre.textContent = promptDoPersonalizado();
-        } else {
-          const modelo = clientesModelosCache.find((m) => m.id === id);
-          pre.textContent = modelo ? montarPromptCompleto(modelo.ficha) : '';
-        }
-      });
+    function corpoVitrineHtml(imagem, personalizado) {
+      const url = urlSeguraCliente(imagem);
+      if (personalizado) return '<div class="clientes-vitrine-capa clientes-vitrine-capa-neutra"><span class="clientes-vitrine-icone" aria-hidden="true">✦</span></div>';
+      if (url) return `<div class="clientes-vitrine-capa"><img src="${url.replace(/["<>]/g, encodeURIComponent)}" alt="" loading="lazy"></div>`;
+      return '<div class="clientes-vitrine-capa clientes-vitrine-capa-neutra"></div>';
     }
 
-    function cartaoModeloHtml(m) {
+    function cartaoVitrineHtml(id, numero, nome, descricao, imagem, previa, personalizado) {
+      const botaoVer = personalizado
+        ? ''
+        : `<button type="button" class="clientes-vitrine-ver" data-ver-modelo="${escaparAtributo(id)}"${urlSeguraCliente(previa) ? '' : ' disabled'}>${escapeHtml(tr('clientes_vitrine_ver'))} <span aria-hidden="true">↗</span></button>`;
       return `
-        <div class="card clientes-modelo-card" data-salvavel data-modelo-id="${escaparAtributo(m.id)}">
-          <div class="cal-form-campo">
-            <label>${escapeHtml(tr('clientes_modelo_nome'))}</label>
-            <input type="text" data-modelo-campo="nome" value="${escaparAtributo(m.nome)}">
-          </div>
-          <div class="cal-form-campo">
-            <label>${escapeHtml(tr('clientes_modelo_previa'))}</label>
-            <div class="clientes-input-acao">
-              <input type="text" data-modelo-campo="previa_url" placeholder="https://..." value="${escaparAtributo(m.previa_url || '')}">
-              <button type="button" class="cal-btn" data-abrir-modelo="${escaparAtributo(m.id)}">${escapeHtml(tr('clientes_abrir'))}</button>
-            </div>
-          </div>
-          <div class="cal-form-campo">
-            <label>${escapeHtml(tr('clientes_modelo_ficha'))}</label>
-            <textarea class="clientes-textarea" data-modelo-campo="ficha">${escapeHtml(m.ficha || '')}</textarea>
-          </div>
-          <details class="clientes-prompt-det">
-            <summary>${escapeHtml(tr('clientes_ver_prompt'))}</summary>
-            <pre class="clientes-prompt-pre" data-prompt-de="${escaparAtributo(m.id)}"></pre>
-          </details>
-          <div class="clientes-card-acoes">
-            <span class="clientes-salvo"></span>
-            <button type="button" class="cal-btn cal-btn-primario" data-copiar-prompt="${escaparAtributo(m.id)}">${escapeHtml(tr('clientes_copiar_prompt'))}</button>
-          </div>
-        </div>
-      `;
-    }
-
-    function cartaoPersonalizadoHtml() {
-      return `
-        <div class="card clientes-modelo-card clientes-modelo-card-largo" data-salvavel>
-          <h3 class="card-titulo">${escapeHtml(tr('clientes_personalizado_titulo'))}</h3>
-          <div class="clientes-personalizado-colunas">
-            <div class="cal-form-campo">
-              <label>${escapeHtml(tr('clientes_personalizado_ficha'))}</label>
-              <textarea class="clientes-textarea" data-texto="personalizado_ficha">${escapeHtml(clientesTextos.personalizado_ficha || '')}</textarea>
-            </div>
-            <div class="cal-form-campo">
-              <label>${escapeHtml(tr('clientes_personalizado_lista'))}</label>
-              <textarea class="clientes-textarea" data-texto="personalizado_lista">${escapeHtml(clientesTextos.personalizado_lista || '')}</textarea>
-              <button type="button" class="cal-btn" data-copiar-texto="personalizado_lista">${escapeHtml(tr('clientes_copiar_lista'))}</button>
-            </div>
-          </div>
-          <div class="cal-form-campo">
-            <label>${escapeHtml(tr('clientes_personalizado_ref'))}</label>
-            <textarea class="clientes-textarea" data-texto="personalizado_referencia" placeholder="${escaparAtributo(tr('clientes_personalizado_ref_ph'))}">${escapeHtml(clientesTextos.personalizado_referencia || '')}</textarea>
-          </div>
-          <details class="clientes-prompt-det">
-            <summary>${escapeHtml(tr('clientes_ver_prompt'))}</summary>
-            <pre class="clientes-prompt-pre" data-prompt-de="personalizado"></pre>
-          </details>
-          <div class="clientes-card-acoes">
-            <span class="clientes-salvo"></span>
-            <button type="button" class="cal-btn cal-btn-primario" data-copiar-prompt="personalizado">${escapeHtml(tr('clientes_copiar_prompt'))}</button>
+        <div class="card clientes-vitrine-card" data-vitrine="${escaparAtributo(id)}" role="button" tabindex="0">
+          ${corpoVitrineHtml(imagem, personalizado)}
+          <h4 class="clientes-vitrine-nome"><span class="clientes-vitrine-num">${numero}</span>${escapeHtml(nome)}</h4>
+          <p class="clientes-vitrine-desc">${escapeHtml(descricao || '')}</p>
+          <div class="clientes-vitrine-acoes">
+            ${botaoVer}
+            <button type="button" class="cal-btn" data-editar-modelo="${escaparAtributo(id)}">${escapeHtml(tr('clientes_editar'))}</button>
           </div>
         </div>
       `;
@@ -22181,6 +22451,9 @@
         cont.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('clientes_aviso_sql'))}</p>`;
         return;
       }
+      const cartoes = clientesModelosCache.map((m, i) =>
+        cartaoVitrineHtml(m.id, String(i + 1).padStart(2, '0'), m.nome, m.descricao, m.imagem_url, m.previa_url, false));
+      cartoes.push(cartaoVitrineHtml('personalizado', String(clientesModelosCache.length + 1).padStart(2, '0'), tr('clientes_personalizado_titulo'), tr('clientes_personalizado_desc'), '', '', true));
       cont.innerHTML = `
         <div class="card clientes-bloco" data-salvavel>
           <h3 class="card-titulo">${escapeHtml(tr('clientes_parte_fixa_titulo'))}</h3>
@@ -22188,12 +22461,209 @@
           <textarea class="clientes-textarea clientes-textarea-alta" data-texto="prompt_parte_fixa">${escapeHtml(clientesTextos.prompt_parte_fixa || '')}</textarea>
           <div class="clientes-card-acoes"><span class="clientes-salvo"></span></div>
         </div>
-        <div class="clientes-modelos-grid">
-          ${clientesModelosCache.map(cartaoModeloHtml).join('')}
-          ${cartaoPersonalizadoHtml()}
-        </div>
+        <div class="clientes-vitrine-grade">${cartoes.join('')}</div>
       `;
-      atualizarPreviasDePrompt();
+    }
+
+    // ---- Janela "Prompt do modelo" ----
+    function preencherFormPrompt() {
+      document.querySelectorAll('#clientes-prompt-form [data-campo]').forEach((el) => { el.value = promptForm[el.dataset.campo] || ''; });
+      document.querySelectorAll('#clientes-prompt-form [data-destaque]').forEach((el) => {
+        el.value = promptForm.destaques[Number(el.dataset.destaque)][el.dataset.parte] || '';
+      });
+      document.getElementById('clientes-prompt-nichos').innerHTML = CLIENTES_NICHOS
+        .map((n) => `<button type="button" class="clientes-nicho${promptForm.nichos.includes(n) ? ' ativo' : ''}" data-nicho="${escaparAtributo(n)}">${escapeHtml(n)}</button>`)
+        .join('');
+    }
+
+    function abrirModalPrompt(id) {
+      const personalizado = id === 'personalizado';
+      const modelo = clientesModelosCache.find((m) => m.id === id);
+      if (!personalizado && !modelo) return;
+      promptModeloAberto = id;
+      document.getElementById('clientes-prompt-titulo').textContent =
+        `${tr('clientes_prompt_do_modelo')} ${personalizado ? tr('clientes_personalizado_titulo') : modelo.nome}`;
+      document.getElementById('clientes-prompt-personalizado').hidden = !personalizado;
+
+      const select = document.getElementById('clientes-prompt-cliente');
+      select.innerHTML = `<option value="">${escapeHtml(tr('clientes_prompt_sem_cliente'))}</option>`
+        + [...clientesCache].sort((a, b) => a.nome.localeCompare(b.nome))
+          .map((c) => `<option value="${escaparAtributo(c.id)}">${escapeHtml(c.nome)}</option>`).join('');
+      select.value = promptClienteId || '';
+
+      preencherFormPrompt();
+      atualizarPromptTexto();
+      document.getElementById('clientes-prompt-salvo').textContent = '';
+      document.getElementById('clientes-prompt-overlay').hidden = false;
+    }
+
+    async function fecharModalPrompt() {
+      await descarregarSalvarPrompt();
+      document.getElementById('clientes-prompt-overlay').hidden = true;
+      promptModeloAberto = null;
+    }
+
+    // Monta o formulário com o que já existe no cadastro. Campo vazio no
+    // cadastro mantém o que já estava na base.
+    function formDoCliente(cliente, base) {
+      const f = JSON.parse(JSON.stringify(base));
+      const dados = cliente.dados_prompt || {};
+      const pegar = (chave, valor) => { if (valor != null && String(valor).trim() !== '') f[chave] = valor; };
+      pegar('nome', cliente.nome);
+      pegar('instagram', cliente.instagram);
+      pegar('email', cliente.contato_email);
+      pegar('whatsapp', cliente.contato_whatsapp);
+      CLIENTES_CAMPOS_DADOS.forEach((k) => pegar(k, dados[k]));
+      if (Array.isArray(dados.nichos) && dados.nichos.length) f.nichos = [...dados.nichos];
+      if (Array.isArray(dados.destaques)) {
+        dados.destaques.slice(0, 3).forEach((d, i) => {
+          if (d && (d.link || d.numero)) f.destaques[i] = { link: d.link || '', numero: d.numero || '' };
+        });
+      }
+      return f;
+    }
+
+    async function escolherClientePrompt(id) {
+      await descarregarSalvarPrompt();
+      const anterior = promptClienteId;
+      promptClienteId = id || null;
+      if (!id) return;
+      const cliente = clientesCache.find((c) => c.id === id);
+      if (!cliente) return;
+      // De uma cliente pra outra o formulário recomeça do zero (não carrega dados da anterior);
+      // se estava só digitando sem cliente, o que foi digitado vai junto pro cadastro.
+      promptForm = formDoCliente(cliente, anterior ? clientesFormVazio() : promptForm);
+      preencherFormPrompt();
+      atualizarPromptTexto();
+      if (!anterior) agendarSalvarPrompt(0);
+    }
+
+    function agendarSalvarPrompt(atraso) {
+      if (!promptClienteId) return;
+      clearTimeout(promptTimerSalvar);
+      promptTimerSalvar = setTimeout(salvarPromptNoCliente, atraso);
+    }
+
+    async function descarregarSalvarPrompt() {
+      if (promptTimerSalvar == null) return;
+      clearTimeout(promptTimerSalvar);
+      promptTimerSalvar = null;
+      await salvarPromptNoCliente();
+    }
+
+    async function salvarPromptNoCliente() {
+      promptTimerSalvar = null;
+      const cliente = clientesCache.find((c) => c.id === promptClienteId);
+      if (!cliente) return;
+      const f = promptForm;
+      const dados = { nichos: f.nichos, destaques: f.destaques };
+      CLIENTES_CAMPOS_DADOS.forEach((k) => { dados[k] = f[k]; });
+      const linha = {
+        instagram: f.instagram.trim() || null,
+        contato_email: f.email.trim() || null,
+        contato_whatsapp: f.whatsapp.trim() || null,
+        dados_prompt: dados,
+      };
+      if (f.nome.trim()) linha.nome = f.nome.trim();
+      const aviso = document.getElementById('clientes-prompt-salvo');
+      try {
+        const { error } = await Auth.sb.from('clientes').update(linha).eq('id', cliente.id);
+        if (error) throw error;
+        Object.assign(cliente, linha);
+        aviso.textContent = tr('clientes_prompt_salvo_em').replace('{nome}', cliente.nome);
+        aviso.classList.remove('clientes-salvo-erro');
+        renderizarClientesVisaoGeral();
+        renderizarClientesPlanilha();
+      } catch (err) {
+        console.error('Erro ao salvar dados do prompt no cadastro:', err);
+        aviso.textContent = tr('clientes_erro_salvar_texto');
+        aviso.classList.add('clientes-salvo-erro');
+      }
+    }
+
+    // ---- Janela de edição do cartão ----
+    function mostrarImagemEdicao() {
+      const url = urlSeguraCliente(editModeloImagem);
+      const img = document.getElementById('clientes-edit-img');
+      img.hidden = !url;
+      img.src = url || '';
+      document.getElementById('clientes-edit-remover-img').hidden = !url;
+    }
+
+    function abrirModalEditarModelo(id) {
+      const personalizado = id === 'personalizado';
+      const modelo = clientesModelosCache.find((m) => m.id === id);
+      if (!personalizado && !modelo) return;
+      editModeloAberto = id;
+      document.getElementById('clientes-edit-titulo').textContent = personalizado ? tr('clientes_personalizado_titulo') : modelo.nome;
+      document.querySelectorAll('.clientes-edit-so-modelo').forEach((el) => { el.hidden = personalizado; });
+      document.getElementById('clientes-edit-nome').value = personalizado ? '' : modelo.nome;
+      document.getElementById('clientes-edit-descricao').value = personalizado ? '' : modelo.descricao || '';
+      document.getElementById('clientes-edit-link').value = personalizado ? '' : modelo.previa_url || '';
+      document.getElementById('clientes-edit-ficha').value = fichaDoModelo(id);
+      document.getElementById('clientes-edit-img-status').textContent = '';
+      editModeloImagem = personalizado ? '' : modelo.imagem_url || '';
+      mostrarImagemEdicao();
+      document.getElementById('clientes-edit-overlay').hidden = false;
+    }
+
+    function fecharModalEditarModelo() {
+      editModeloAberto = null;
+      document.getElementById('clientes-edit-overlay').hidden = true;
+    }
+
+    async function enviarImagemModelo(arquivo) {
+      if (!arquivo) return;
+      const status = document.getElementById('clientes-edit-img-status');
+      if (arquivo.size > 20 * 1024 * 1024) {
+        status.textContent = tr('pf_imagem_grande');
+        return;
+      }
+      status.textContent = tr('clientes_enviando_imagem');
+      try {
+        editModeloImagem = await pfUploadImagem('foto-modelo-previa', arquivo);
+        status.textContent = '';
+        mostrarImagemEdicao();
+      } catch (err) {
+        console.error('Erro ao enviar imagem do modelo:', err);
+        status.textContent = tr('clientes_erro_salvar_texto');
+      }
+    }
+
+    async function salvarModalEditarModelo() {
+      const id = editModeloAberto;
+      if (!id) return;
+      const ficha = document.getElementById('clientes-edit-ficha').value;
+      const btn = document.getElementById('clientes-edit-salvar');
+      btn.disabled = true;
+      try {
+        if (id === 'personalizado') {
+          await gravarTextoCliente('personalizado_ficha', ficha);
+        } else {
+          const nome = document.getElementById('clientes-edit-nome').value.trim();
+          if (!nome) {
+            alert(tr('clientes_preencha_nome'));
+            return;
+          }
+          const linha = {
+            nome,
+            descricao: document.getElementById('clientes-edit-descricao').value.trim() || null,
+            previa_url: document.getElementById('clientes-edit-link').value.trim() || null,
+            imagem_url: editModeloImagem || null,
+            ficha,
+          };
+          const { error } = await Auth.sb.from('clientes_modelos').update(linha).eq('id', id);
+          if (error) throw error;
+          Object.assign(clientesModelosCache.find((m) => m.id === id), linha);
+        }
+        fecharModalEditarModelo();
+        renderizarClientesModelos();
+      } catch (err) {
+        console.error('Erro ao salvar modelo:', err);
+        alertaErroClientes(err, 'erro_salvar_generico');
+      } finally {
+        btn.disabled = false;
+      }
     }
 
     // ---- Sub-aba 4: Links e mensagens ----
@@ -22236,7 +22706,7 @@
       `;
     }
 
-    // ---- Salvar textos e modelos (salva ao sair do campo) ----
+    // ---- Salvar textos (salva ao sair do campo) ----
     function mostrarSalvoCliente(elemento, ok) {
       const bloco = elemento.closest('[data-salvavel]');
       const aviso = bloco && bloco.querySelector('.clientes-salvo');
@@ -22247,34 +22717,21 @@
       if (ok) aviso._salvoTimer = setTimeout(() => { aviso.textContent = ''; }, 2000);
     }
 
-    async function salvarTextoCliente(chave, valor, elemento) {
+    async function gravarTextoCliente(chave, valor) {
+      // Guarda na hora: quem clica em "Copiar" logo depois de sair do campo já pega o texto novo.
       clientesTextos[chave] = valor;
-      atualizarPreviasDePrompt();
+      const { error } = await Auth.sb
+        .from('clientes_textos')
+        .upsert({ chave, valor, updated_at: new Date().toISOString() }, { onConflict: 'chave' });
+      if (error) throw error;
+    }
+
+    async function salvarTextoCliente(chave, valor, elemento) {
       try {
-        const { error } = await Auth.sb
-          .from('clientes_textos')
-          .upsert({ chave, valor, updated_at: new Date().toISOString() }, { onConflict: 'chave' });
-        if (error) throw error;
+        await gravarTextoCliente(chave, valor);
         mostrarSalvoCliente(elemento, true);
       } catch (err) {
         console.error('Erro ao salvar texto de Clientes:', err);
-        mostrarSalvoCliente(elemento, false);
-      }
-    }
-
-    async function salvarCampoModelo(modelo, campo, valor, elemento) {
-      if (campo === 'nome' && !valor.trim()) {
-        elemento.value = modelo.nome;
-        return;
-      }
-      modelo[campo] = campo === 'previa_url' ? (valor.trim() || null) : valor;
-      atualizarPreviasDePrompt();
-      try {
-        const { error } = await Auth.sb.from('clientes_modelos').update({ [campo]: modelo[campo] }).eq('id', modelo.id);
-        if (error) throw error;
-        mostrarSalvoCliente(elemento, true);
-      } catch (err) {
-        console.error('Erro ao salvar modelo:', err);
         mostrarSalvoCliente(elemento, false);
       }
     }
@@ -22313,12 +22770,21 @@
           else abrirModalCliente(c);
           return;
         }
-        const copiarPrompt = alvo.closest('[data-copiar-prompt]');
-        if (copiarPrompt) {
-          const id = copiarPrompt.dataset.copiarPrompt;
-          const modelo = clientesModelosCache.find((m) => m.id === id);
-          const texto = id === 'personalizado' ? promptDoPersonalizado() : montarPromptCompleto(modelo && modelo.ficha);
-          clientesCopiar(texto, copiarPrompt);
+        const verModelo = alvo.closest('[data-ver-modelo]');
+        if (verModelo) {
+          const modelo = clientesModelosCache.find((m) => m.id === verModelo.dataset.verModelo);
+          const url = modelo && urlSeguraCliente(modelo.previa_url);
+          if (url) window.open(url, '_blank', 'noopener,noreferrer');
+          return;
+        }
+        const editarModelo = alvo.closest('[data-editar-modelo]');
+        if (editarModelo) {
+          abrirModalEditarModelo(editarModelo.dataset.editarModelo);
+          return;
+        }
+        const cartao = alvo.closest('[data-vitrine]');
+        if (cartao) {
+          abrirModalPrompt(cartao.dataset.vitrine);
           return;
         }
         const copiarTexto = alvo.closest('[data-copiar-texto]');
@@ -22330,14 +22796,13 @@
         if (abrirTexto) {
           const url = urlSeguraCliente(clientesTextos[abrirTexto.dataset.abrirTexto]);
           if (url) window.open(url, '_blank', 'noopener,noreferrer');
-          return;
         }
-        const abrirModelo = alvo.closest('[data-abrir-modelo]');
-        if (abrirModelo) {
-          const modelo = clientesModelosCache.find((m) => m.id === abrirModelo.dataset.abrirModelo);
-          const url = modelo && urlSeguraCliente(modelo.previa_url);
-          if (url) window.open(url, '_blank', 'noopener,noreferrer');
-        }
+      });
+
+      principal.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' || e.target.closest('button, a, input, textarea, select')) return;
+        const cartao = e.target.closest('[data-vitrine]');
+        if (cartao) abrirModalPrompt(cartao.dataset.vitrine);
       });
 
       principal.addEventListener('change', (e) => {
@@ -22349,13 +22814,68 @@
         }
         if (alvo.matches('[data-texto]')) {
           salvarTextoCliente(alvo.dataset.texto, alvo.value, alvo);
-          return;
+          if (alvo.dataset.texto === 'prompt_parte_fixa' && promptModeloAberto) atualizarPromptTexto();
         }
-        if (alvo.matches('[data-modelo-campo]')) {
-          const cartao = alvo.closest('[data-modelo-id]');
-          const modelo = cartao && clientesModelosCache.find((m) => m.id === cartao.dataset.modeloId);
-          if (modelo) salvarCampoModelo(modelo, alvo.dataset.modeloCampo, alvo.value, alvo);
+      });
+
+      // Janela "Prompt do modelo"
+      const formPrompt = document.getElementById('clientes-prompt-form');
+      formPrompt.addEventListener('input', (e) => {
+        const el = e.target;
+        if (el.dataset.destaque !== undefined) promptForm.destaques[Number(el.dataset.destaque)][el.dataset.parte] = el.value;
+        else if (el.dataset.campo) promptForm[el.dataset.campo] = el.value;
+        else return;
+        atualizarPromptTexto();
+        agendarSalvarPrompt(700);
+      });
+      document.getElementById('clientes-prompt-nichos').addEventListener('click', (e) => {
+        const botao = e.target.closest('[data-nicho]');
+        if (!botao) return;
+        const nicho = botao.dataset.nicho;
+        promptForm.nichos = promptForm.nichos.includes(nicho)
+          ? promptForm.nichos.filter((n) => n !== nicho)
+          : promptForm.nichos.concat(nicho);
+        botao.classList.toggle('ativo', promptForm.nichos.includes(nicho));
+        atualizarPromptTexto();
+        agendarSalvarPrompt(700);
+      });
+      document.getElementById('clientes-prompt-cliente').addEventListener('change', (e) => escolherClientePrompt(e.target.value));
+      document.getElementById('clientes-prompt-copiar').addEventListener('click', (e) => clientesCopiar(montarPromptCompleto(promptModeloAberto), e.currentTarget));
+      document.getElementById('clientes-prompt-fechar').addEventListener('click', fecharModalPrompt);
+      document.getElementById('clientes-prompt-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'clientes-prompt-overlay') fecharModalPrompt();
+      });
+      document.getElementById('clientes-prompt-ref-enviar').addEventListener('click', () => document.getElementById('clientes-prompt-ref-arquivo').click());
+      document.getElementById('clientes-prompt-ref-arquivo').addEventListener('change', async (e) => {
+        const arquivo = e.target.files[0];
+        e.target.value = '';
+        if (!arquivo) return;
+        try {
+          promptForm.ref_link = await pfUploadImagem('foto-referencia', arquivo);
+          preencherFormPrompt();
+          atualizarPromptTexto();
+          agendarSalvarPrompt(0);
+        } catch (err) {
+          console.error('Erro ao enviar imagem de referência:', err);
+          alert(tr('clientes_erro_salvar_texto'));
         }
+      });
+
+      // Janela de edição do cartão
+      document.getElementById('clientes-edit-fechar').addEventListener('click', fecharModalEditarModelo);
+      document.getElementById('clientes-edit-salvar').addEventListener('click', salvarModalEditarModelo);
+      document.getElementById('clientes-edit-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'clientes-edit-overlay') fecharModalEditarModelo();
+      });
+      document.getElementById('clientes-edit-enviar-img').addEventListener('click', () => document.getElementById('clientes-edit-arquivo').click());
+      document.getElementById('clientes-edit-arquivo').addEventListener('change', (e) => {
+        const arquivo = e.target.files[0];
+        e.target.value = '';
+        enviarImagemModelo(arquivo);
+      });
+      document.getElementById('clientes-edit-remover-img').addEventListener('click', () => {
+        editModeloImagem = '';
+        mostrarImagemEdicao();
       });
     }
 

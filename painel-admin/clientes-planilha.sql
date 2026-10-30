@@ -144,7 +144,7 @@ insert into public.clientes_textos (chave, valor) values
   ('prompt_parte_fixa', $pf$Crie um site de portfólio de [nome da cliente], criadora de conteúdo / UGC creator, em página única, com visual limpo e acolhedor, e um painel administrativo pra ela editar tudo sozinha, sem mexer em código.
 
 ### 1. Tecnologia
-- Site estático: um único `index.html` com CSS e JavaScript dentro (sem framework, sem build). Publicado no GitHub Pages com domínio próprio (arquivo CNAME).
+- Site estático: um único `index.html` com CSS e JavaScript dentro (sem framework, sem build). Publicado no Cloudflare Pages (nomedela.pages.dev ou domínio próprio), sem arquivo CNAME. O código fica no GitHub.
 - Dados (vídeos, marcas, serviços, feedbacks, textos, fotos) vêm do Supabase por uma Edge Function pública de leitura chamada `portfolio-publico`. Se a função falhar, o site continua mostrando o conteúdo que já está escrito no HTML (nada de página vazia).
 - Imagens enviadas pelo painel ficam no bucket público `portfolio-imagens` do Supabase Storage.
 - Visitas, cliques e visualização de vídeos são enviados pra uma Edge Function `track`, que grava na tabela `portfolio_events`. O site nunca grava direto no banco.

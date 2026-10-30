@@ -22361,6 +22361,22 @@
     let editModeloAberto = null;
     let editModeloImagem = '';
 
+    // Capa de cada modelo quando nenhuma imagem foi enviada: o topo (hero) do próprio modelo.
+    const CLIENTES_CAPAS_PADRAO = {
+      'Penumbra Dourada': '/painel-admin/img/modelos/penumbra-dourada.jpg',
+      'Água-Viva': '/painel-admin/img/modelos/agua-viva.jpg',
+      'Recorte & Colagem': '/painel-admin/img/modelos/recorte-colagem.jpg',
+      'Clube Zine Varsity': '/painel-admin/img/modelos/clube-zine-varsity.jpg',
+      'Estúdio Folhagem': '/painel-admin/img/modelos/estudio-folhagem.jpg',
+    };
+    const capaPadraoDoModelo = (nome) => CLIENTES_CAPAS_PADRAO[nome] || '';
+
+    // Aceita link http(s) (imagem enviada) ou uma capa padrão guardada no próprio painel.
+    function urlImagemCliente(url) {
+      const limpa = String(url || '').trim();
+      return /^(https?:\/\/|\/painel-admin\/img\/)\S+$/i.test(limpa) ? limpa : null;
+    }
+
     function fichaDoModelo(id) {
       if (id === 'personalizado') return clientesTextos.personalizado_ficha || '';
       const modelo = clientesModelosCache.find((m) => m.id === id);
@@ -22422,7 +22438,7 @@
     }
 
     function corpoVitrineHtml(imagem, personalizado) {
-      const url = urlSeguraCliente(imagem);
+      const url = urlImagemCliente(imagem);
       if (personalizado) return '<div class="clientes-vitrine-capa clientes-vitrine-capa-neutra"><span class="clientes-vitrine-icone" aria-hidden="true">✦</span></div>';
       if (url) return `<div class="clientes-vitrine-capa"><img src="${url.replace(/["<>]/g, encodeURIComponent)}" alt="" loading="lazy"></div>`;
       return '<div class="clientes-vitrine-capa clientes-vitrine-capa-neutra"></div>';
@@ -22452,7 +22468,7 @@
         return;
       }
       const cartoes = clientesModelosCache.map((m, i) =>
-        cartaoVitrineHtml(m.id, String(i + 1).padStart(2, '0'), m.nome, m.descricao, m.imagem_url, m.previa_url, false));
+        cartaoVitrineHtml(m.id, String(i + 1).padStart(2, '0'), m.nome, m.descricao, m.imagem_url || capaPadraoDoModelo(m.nome), m.previa_url, false));
       cartoes.push(cartaoVitrineHtml('personalizado', String(clientesModelosCache.length + 1).padStart(2, '0'), tr('clientes_personalizado_titulo'), tr('clientes_personalizado_desc'), '', '', true));
       cont.innerHTML = `
         <div class="card clientes-bloco" data-salvavel>
@@ -22583,11 +22599,13 @@
 
     // ---- Janela de edição do cartão ----
     function mostrarImagemEdicao() {
-      const url = urlSeguraCliente(editModeloImagem);
+      const modelo = clientesModelosCache.find((m) => m.id === editModeloAberto);
+      const url = urlImagemCliente(editModeloImagem || (modelo ? capaPadraoDoModelo(modelo.nome) : ''));
       const img = document.getElementById('clientes-edit-img');
       img.hidden = !url;
       img.src = url || '';
-      document.getElementById('clientes-edit-remover-img').hidden = !url;
+      // "Remover" só faz sentido pra imagem enviada; sem ela, vale a capa padrão
+      document.getElementById('clientes-edit-remover-img').hidden = !editModeloImagem;
     }
 
     function abrirModalEditarModelo(id) {

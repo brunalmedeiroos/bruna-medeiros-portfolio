@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261030a">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261030c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -22426,8 +22426,8 @@
     }
 
     // Parte fixa + ficha do modelo + dados da cliente, nessa ordem.
-    function montarPromptCompleto(id) {
-      return [clientesTextos.prompt_parte_fixa, fichaDoModelo(id), montarDadosCliente(promptForm, id === 'personalizado')]
+    function montarPromptCompleto(id, comDadosCliente = true) {
+      return [clientesTextos.prompt_parte_fixa, fichaDoModelo(id), comDadosCliente ? montarDadosCliente(promptForm, id === 'personalizado') : '']
         .map((s) => String(s || '').trim())
         .filter(Boolean)
         .join('\n\n');
@@ -22455,6 +22455,7 @@
           <p class="clientes-vitrine-desc">${escapeHtml(descricao || '')}</p>
           <div class="clientes-vitrine-acoes">
             ${botaoVer}
+            <button type="button" class="cal-btn cal-btn-primario clientes-vitrine-copiar" data-copiar-modelo="${escaparAtributo(id)}">${escapeHtml(tr('clientes_copiar_prompt'))}</button>
             <button type="button" class="cal-btn" data-editar-modelo="${escaparAtributo(id)}">${escapeHtml(tr('clientes_editar'))}</button>
           </div>
         </div>
@@ -22471,13 +22472,13 @@
         cartaoVitrineHtml(m.id, String(i + 1).padStart(2, '0'), m.nome, m.descricao, m.imagem_url || capaPadraoDoModelo(m.nome), m.previa_url, false));
       cartoes.push(cartaoVitrineHtml('personalizado', String(clientesModelosCache.length + 1).padStart(2, '0'), tr('clientes_personalizado_titulo'), tr('clientes_personalizado_desc'), '', '', true));
       cont.innerHTML = `
+        <div class="clientes-vitrine-grade">${cartoes.join('')}</div>
         <div class="card clientes-bloco" data-salvavel>
           <h3 class="card-titulo">${escapeHtml(tr('clientes_parte_fixa_titulo'))}</h3>
           <p class="clientes-ajuda">${escapeHtml(tr('clientes_parte_fixa_ajuda'))} ${escapeHtml(tr('clientes_salvar_sozinho'))}</p>
           <textarea class="clientes-textarea clientes-textarea-alta" data-texto="prompt_parte_fixa">${escapeHtml(clientesTextos.prompt_parte_fixa || '')}</textarea>
           <div class="clientes-card-acoes"><span class="clientes-salvo"></span></div>
         </div>
-        <div class="clientes-vitrine-grade">${cartoes.join('')}</div>
       `;
     }
 
@@ -22793,6 +22794,11 @@
           const modelo = clientesModelosCache.find((m) => m.id === verModelo.dataset.verModelo);
           const url = modelo && urlSeguraCliente(modelo.previa_url);
           if (url) window.open(url, '_blank', 'noopener,noreferrer');
+          return;
+        }
+        const copiarModelo = alvo.closest('[data-copiar-modelo]');
+        if (copiarModelo) {
+          clientesCopiar(montarPromptCompleto(copiarModelo.dataset.copiarModelo, false), copiarModelo);
           return;
         }
         const editarModelo = alvo.closest('[data-editar-modelo]');

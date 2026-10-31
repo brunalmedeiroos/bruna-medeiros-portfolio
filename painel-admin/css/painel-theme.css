@@ -4829,12 +4829,23 @@
 
 .painel-body .clientes-vitrine-acoes {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   align-items: stretch;
 }
 
-.painel-body .clientes-vitrine-ver {
+.painel-body .clientes-vitrine-copiar {
   flex: 1;
+}
+
+/* Parte fixa agora vem depois dos cartões */
+.painel-body .clientes-vitrine-grade + .clientes-bloco {
+  margin-top: 20px;
+  margin-bottom: 0;
+}
+
+.painel-body .clientes-vitrine-ver {
+  flex: 1 1 100%;
   padding: 12px 16px;
   border: 0;
   border-radius: 999px;

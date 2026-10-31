@@ -1365,6 +1365,10 @@
                 <option value="Ajustes pedidos" data-i18n="ugc_roteiro_status_ajustes">Ajustes pedidos</option>
               <option value="Entregue" data-i18n="ugc_roteiro_status_entregue">Entregue</option>
               </select>
+              <div class="cal-filtro-grupo" id="ugc-roteiros-destino">
+                <button class="cal-filtro-btn" data-destino-roteiro="portfolio" type="button" data-i18n="ugc_roteiros_para_portfolio">Roteiros para portfólio</button>
+                <button class="cal-filtro-btn" data-destino-roteiro="marca" type="button" data-i18n="ugc_roteiros_para_marca">Roteiros para marca</button>
+              </div>
             </div>
             <p class="dash-aviso" id="ugc-roteiros-nicho-aviso" hidden>Falta rodar o arquivo roteiro-nicho.sql no Supabase pra separar os roteiros por nicho.</p>
 
@@ -4524,6 +4528,7 @@
     let ugcSubAbaAtual = 'visao-geral';
     let filtroRoteirosTexto = '';
     let filtroRoteirosStatus = '';
+    let filtroRoteirosDestino = ''; // '' = todos | 'portfolio' | 'marca'
     let filtroRoteirosNicho = ''; // '' = tela dos cards de nicho; '__sem__' ou o código do nicho = nicho aberto
     let filtroRoteirosEntregues = false; // dentro do nicho aberto: false = em andamento, true = aba Entregue
     let ugcTrabalhoAbertoId = null;
@@ -5560,6 +5565,8 @@
         ugc_nenhum_roteiro_filtro: 'Nenhum roteiro encontrado com esse filtro.',
         ugc_roteiros_buscar_placeholder: 'Buscar por marca, produto ou campanha',
         ugc_roteiros_todos_status: 'Todos os status',
+        ugc_roteiros_para_portfolio: 'Roteiros para portfólio',
+        ugc_roteiros_para_marca: 'Roteiros para marca',
         ugc_novo_roteiro: '+ Novo roteiro',
         ugc_outbound: 'Outbound',
         ugc_inbound: 'Inbound',
@@ -6955,6 +6962,8 @@
         ugc_nenhum_roteiro_filtro: 'No script matches this filter.',
         ugc_roteiros_buscar_placeholder: 'Search by brand, product or campaign',
         ugc_roteiros_todos_status: 'All statuses',
+        ugc_roteiros_para_portfolio: 'Portfolio scripts',
+        ugc_roteiros_para_marca: 'Brand scripts',
         ugc_novo_roteiro: '+ New script',
         ugc_outbound: 'Outbound',
         ugc_inbound: 'Inbound',
@@ -8234,6 +8243,13 @@
       document.getElementById('ugc-roteiros-filtro-status').addEventListener('change', (e) => {
         filtroRoteirosStatus = e.target.value;
         renderizarRoteiros();
+      });
+      document.querySelectorAll('#ugc-roteiros-destino .cal-filtro-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          filtroRoteirosDestino = filtroRoteirosDestino === btn.dataset.destinoRoteiro ? '' : btn.dataset.destinoRoteiro;
+          document.querySelectorAll('#ugc-roteiros-destino .cal-filtro-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.destinoRoteiro === filtroRoteirosDestino));
+          renderizarRoteiros();
+        });
       });
       document.getElementById('ugc-roteiros-grade').addEventListener('click', (e) => {
         const abrir = e.target.closest('[data-abrir-nicho]');
@@ -18881,6 +18897,12 @@
       ugcRenderizarFormatoOpcoes();
     }
 
+    // Roteiro de portfólio = categoria com "portfólio" (ex.: "UGC portfólio"); todo o resto é pra marca.
+    function destinoDoRoteiro(roteiro) {
+      const categoria = String(roteiro.categoria || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+      return categoria.includes('portf') ? 'portfolio' : 'marca';
+    }
+
     function renderizarRoteiros() {
       atualizarDatalistCategoriasRoteiro();
       ugcCarregarNichosRoteiro();
@@ -18889,6 +18911,7 @@
       const termo = filtroRoteirosTexto.trim().toLowerCase();
       const filtrados = ugcRoteirosCache.filter((r) => {
         if (filtroRoteirosStatus && (r.status || 'Rascunho') !== filtroRoteirosStatus) return false;
+        if (filtroRoteirosDestino && destinoDoRoteiro(r) !== filtroRoteirosDestino) return false;
         if (ugcRoteiroNichoOk && filtroRoteirosNicho && (filtroRoteirosNicho === '__sem__' ? !!r.nicho : r.nicho !== filtroRoteirosNicho)) return false;
         if (!termo) return true;
         return [r.marca, r.produto, r.campanha].some((v) => (v || '').toLowerCase().includes(termo));

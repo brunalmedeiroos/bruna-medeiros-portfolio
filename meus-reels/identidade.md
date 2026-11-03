@@ -15,6 +15,7 @@
 - Posição: logo acima da base segura (acima de 126 px da base)
 - Cor: #f1f1f1 com a palavra-chave em #f5e1b4 (combinação provisória; pode ajustar a qualquer momento)
 - Sombra bem clara e suave, sem contorno nem fundo
-## 4. Ritmo — a definir
+## 4. Ritmo
+- Médio: cortes a cada 2 ou 3 segundos
 ## 5. Som — a definir
 ## 6. Tom de voz — a definir

@@ -2653,65 +2653,14 @@
   border-color: var(--grafite);
 }
 
-.painel-body .pl-cron-dia-pilar {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.2px;
-  padding: 2px 6px;
-  border-radius: 10px;
-  background: rgba(var(--grafite-rgb), 0.08);
-  color: var(--grafite);
-  width: fit-content;
-  max-width: 100%;
-}
-
-.painel-body .pl-cron-dia-pilar-remover {
-  background: transparent;
-  border: none;
-  color: var(--grafite);
-  opacity: 0.6;
-  font-size: 11px;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0 1px;
-  flex-shrink: 0;
-}
-
-.painel-body .pl-cron-dia-add-pilar {
-  width: fit-content;
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.2px;
-  padding: 2px 6px;
-  border-radius: 10px;
-  border: 1px dashed var(--borda);
-  background: transparent;
-  color: var(--texto-suave);
-  cursor: pointer;
-}
-
-.painel-body .pl-cron-dia-add-pilar:hover {
-  color: var(--grafite);
-  border-color: var(--grafite);
-}
-
-.painel-body .pl-cron-dia-pilar-remover:hover {
-  opacity: 1;
-}
-
 .painel-body .pl-cron-dia-ideia {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  flex-direction: column;
+  gap: 2px;
   font-size: 9px;
   font-weight: 600;
-  padding: 2px 4px 2px 6px;
-  border-radius: 10px;
+  padding: 3px 4px 4px 6px;
+  border-radius: 8px;
   background: var(--coral);
   color: var(--branco);
   max-width: 100%;
@@ -2719,11 +2668,19 @@
   cursor: pointer;
 }
 
+.painel-body .pl-cron-dia-ideia-topo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
 .painel-body .pl-cron-dia-ideia-titulo {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
+  flex: 1;
 }
 
 .painel-body .pl-cron-dia-ideia-remover {
@@ -2737,9 +2694,48 @@
   flex-shrink: 0;
 }
 
+.painel-body .pl-cron-dia-ideia-funcao {
+  width: fit-content;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  color: inherit;
+}
+
+.painel-body .pl-cron-dia-ideia-status {
+  font-size: 8px;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.painel-body .pl-cron-dia-ideia-aviso {
+  font-size: 8px;
+  font-weight: 700;
+  opacity: 0.95;
+}
+
+.painel-body .pl-cron-dia-ideia-aviso-atrasado {
+  text-decoration: underline;
+}
+
+/* Passada a data sem postar: anel vermelho por cima da cor da etapa, sem trocar ela. */
+.painel-body .pl-cron-dia-ideia-atrasada {
+  box-shadow: inset 0 0 0 2px #d9534f;
+}
+
 @media (max-width: 700px) {
-  .painel-body .pl-cron-dia-pilar {
-    font-size: 8px;
+  .painel-body .pl-cron-dia-ideia-funcao,
+  .painel-body .pl-cron-dia-ideia-status,
+  .painel-body .pl-cron-dia-ideia-aviso {
+    font-size: 7px;
   }
 }
 
@@ -10811,33 +10807,6 @@
   box-shadow: inset 0 0 0 1px rgba(var(--grafite-rgb), 0.15);
 }
 
-/* ---- Cronograma: sugestões de pilar do dia ---- */
-
-.painel-body .pl-pilar-sugestoes-titulo {
-  margin: 14px 0 6px;
-}
-
-.painel-body .pl-pilar-sugestoes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.painel-body .pl-pilar-sugestao {
-  padding: 5px 12px;
-  border: 1px solid var(--borda);
-  border-radius: 999px;
-  background: var(--branco);
-  color: var(--grafite);
-  font: inherit;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.painel-body .pl-pilar-sugestao:hover {
-  background: rgba(var(--grafite-rgb), 0.07);
-}
-
 /* ---- Menu lateral: setinha branca dentro da aba azul; fechado, some por completo ---- */
 
 @media (min-width: 769px) {
@@ -11113,17 +11082,6 @@
 
 .painel-body .pl-agendar-roteiro.selecionado .pl-agendar-roteiro-check {
   display: flex;
-}
-
-.painel-body .pl-pilar-sugestao.selecionado {
-  background: var(--coral);
-  border-color: var(--coral);
-  color: var(--branco);
-  font-weight: 600;
-}
-
-.painel-body .pl-pilar-sugestao.selecionado:hover {
-  background: var(--coral);
 }
 
 /* ---- UGC/Publi > Preços: pacotes ---- */

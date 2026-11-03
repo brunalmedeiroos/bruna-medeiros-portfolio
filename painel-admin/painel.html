@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261103b">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261103c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1036,31 +1036,6 @@
 
           <div id="pl-pagina-visao-geral" class="pl-pagina">
             <div class="pl-vg">
-              <div class="card pl-vg-semana" id="pl-vg-semana" hidden>
-                <h3 class="card-titulo">📌 Esta semana</h3>
-                <p class="cal-todas-resumo">Até 5 conteúdos pra focar agora. Marque o 📌 em qualquer conteúdo do Banco de ideias pra trazer ele pra cá.</p>
-                <div id="pl-vg-semana-lista" class="ugc-roteiros-grade"></div>
-              </div>
-
-              <div class="card pl-vg-pipeline-card">
-                <h3 class="card-titulo">Pipeline</h3>
-                <p class="cal-todas-resumo">Quantos conteúdos em cada etapa, do zero até postado.</p>
-                <div id="pl-vg-pipeline"></div>
-              </div>
-
-              <div class="pl-vg-equilibrio" id="pl-vg-equilibrio" hidden>
-                <div class="card pl-eq-card">
-                  <h3 class="card-titulo" data-i18n="pl_eq_pilares_titulo">Equilíbrio de Função</h3>
-                  <p class="cal-todas-resumo" data-i18n="pl_eq_pilares_desc">Quantos conteúdos em cada função.</p>
-                  <div id="pl-eq-pilares"></div>
-                </div>
-                <div class="card pl-eq-card">
-                  <h3 class="card-titulo" data-i18n="pl_eq_publico_titulo">Oferta</h3>
-                  <p class="cal-todas-resumo" data-i18n="pl_eq_publico_desc">Quanto do seu conteúdo convida a marca a trabalhar com você.</p>
-                  <div id="pl-eq-publico"></div>
-                </div>
-              </div>
-
               <div class="pl-vg-cronograma">
                 <div class="pl-cron-cabecalho">
                   <h3 class="card-titulo pl-pagina-titulo" data-i18n="pl_cronograma">Cronograma de postagem</h3>
@@ -1084,6 +1059,31 @@
               </div>
               <div class="pl-cron-grade" id="pl-cron-grade"></div>
             </div>
+              </div>
+
+              <div class="card pl-vg-semana" id="pl-vg-semana" hidden>
+                <h3 class="card-titulo">📌 Esta semana</h3>
+                <p class="cal-todas-resumo">Até 5 conteúdos pra focar agora. Marque o 📌 em qualquer conteúdo do Banco de ideias pra trazer ele pra cá.</p>
+                <div id="pl-vg-semana-lista" class="ugc-roteiros-grade"></div>
+              </div>
+
+              <div class="card pl-vg-pipeline-card">
+                <h3 class="card-titulo">Pipeline</h3>
+                <p class="cal-todas-resumo">Quantos conteúdos em cada etapa, do zero até postado.</p>
+                <div id="pl-vg-pipeline"></div>
+              </div>
+
+              <div class="pl-vg-equilibrio" id="pl-vg-equilibrio" hidden>
+                <div class="card pl-eq-card">
+                  <h3 class="card-titulo" data-i18n="pl_eq_pilares_titulo">Equilíbrio de Função</h3>
+                  <p class="cal-todas-resumo" data-i18n="pl_eq_pilares_desc">Quantos conteúdos em cada função.</p>
+                  <div id="pl-eq-pilares"></div>
+                </div>
+                <div class="card pl-eq-card">
+                  <h3 class="card-titulo" data-i18n="pl_eq_publico_titulo">Oferta</h3>
+                  <p class="cal-todas-resumo" data-i18n="pl_eq_publico_desc">Quanto do seu conteúdo convida a marca a trabalhar com você.</p>
+                  <div id="pl-eq-publico"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -2620,28 +2620,6 @@
             <button type="button" id="pl-agendar-livre-voltar" class="cal-btn" data-i18n="pl_livre_voltar">Voltar</button>
             <button type="button" id="pl-agendar-livre-salvar" class="cal-btn cal-btn-primario" data-i18n="pl_livre_agendar">Agendar ideia</button>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal: escolher o pilar de um dia específico do calendário do cronograma -->
-    <div id="pl-modal-pilar-dia-overlay" class="pl-modal-overlay" hidden>
-      <div class="pl-modal pl-modal-pequeno">
-        <div class="pl-modal-topo">
-          <span class="pl-modal-titulo-fixo"><span data-i18n="pl_pilar_do_dia">Pilar do dia</span> — <span id="pl-modal-pilar-dia-data"></span></span>
-          <button id="pl-modal-pilar-dia-fechar" class="cal-btn cal-btn-icon" type="button" data-i18n-aria="fechar" aria-label="Fechar">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </button>
-        </div>
-
-        <div class="cal-form-campo">
-          <label for="pl-modal-pilar-dia-input" data-i18n="pl_pilar">Pilar</label>
-          <input type="text" id="pl-modal-pilar-dia-input" maxlength="60" autocomplete="off" data-i18n-placeholder="pl_cron_pilar_placeholder" placeholder="Escreva um pilar novo...">
-          <div id="pl-modal-pilar-dia-sugestoes"></div>
-        </div>
-
-        <div class="cal-form-acoes">
-          <button type="button" id="pl-modal-pilar-dia-confirmar" class="cal-btn cal-btn-primario" data-i18n="escolher">Escolher</button>
         </div>
       </div>
     </div>
@@ -4418,9 +4396,6 @@
     let pilaresCache = [];
     let ideiasCache = [];
     let achadosCache = [];
-    let cronogramaCache = [];
-    let cronogramaDiasCache = [];
-    let dataPilarDiaAtual = null;
     let cronMesAtual = new Date(); // mês exibido no calendário do cronograma
     let cronModo = 'semana'; // 'semana' (padrão) ou 'mes'
     let cronSemanaAtual = new Date(); // qualquer dia da semana exibida
@@ -5496,7 +5471,6 @@
         pl_livre_preencha: 'Escreva a ideia primeiro.',
         pl_livre_sem_pasta: 'Crie uma pasta no Banco de ideias & Roteiros primeiro, pra a ideia ter onde ficar.',
         pl_agendar: 'Agendar',
-        pl_pilar_do_dia: 'Pilar do dia',
         escolher: 'Escolher',
         achados_col_gancho: 'Gancho',
         achados_col_frase: 'Frase',
@@ -5523,16 +5497,11 @@
         adicionar: 'Adicionar',
         erro_criar_generico: 'Não foi possível criar agora. Tente de novo em instantes.',
         pl_cron_agendar_ideia_aria: 'Agendar ideia',
-        pl_cron_remover_pilar_dia_aria: 'Remover pilar deste dia',
         pl_cron_remover_ideia_calendario_aria: 'Remover do calendário',
-        pl_cron_add_pilar_curto: '+ pilar',
         pl_cron_nenhuma_ideia_roteiro_pronto: 'Nenhum roteiro pronto disponível pra agendar. Marque um roteiro como "Roteiro pronto" no Banco de ideias & Roteiros.',
         pl_erro_agendar: 'Não foi possível agendar agora. Tente de novo em instantes.',
         pl_erro_remover_calendario: 'Não foi possível remover agora. Tente de novo em instantes.',
         pl_cron_nenhum_pilar_disponivel: 'Nenhum pilar disponível — cadastre um no Banco de ideias',
-        pl_cron_pilar_placeholder: 'Escreva um pilar novo...',
-        pl_cron_pilar_suas_pastas: 'Suas pastas',
-        pl_cron_pilar_usados: 'Já usados no calendário',
         pl_cron_etapa: 'Etapa',
         pl_agendar_conteudos: 'Conteúdos',
         pl_cron_nenhum_conteudo: 'Nenhum conteúdo sem data no Banco de ideias & Roteiros. Use "Ideia sem roteiro" pra criar um direto aqui.',
@@ -6893,7 +6862,6 @@
         pl_livre_preencha: 'Write the idea first.',
         pl_livre_sem_pasta: 'Create a folder in the Idea bank & Scripts first, so the idea has a place to live.',
         pl_agendar: 'Schedule',
-        pl_pilar_do_dia: "Day's pillar",
         escolher: 'Choose',
         achados_col_gancho: 'Hook',
         achados_col_frase: 'Phrase',
@@ -6920,16 +6888,11 @@
         adicionar: 'Add',
         erro_criar_generico: 'Could not create it right now. Try again in a moment.',
         pl_cron_agendar_ideia_aria: 'Schedule idea',
-        pl_cron_remover_pilar_dia_aria: "Remove this day's pillar",
         pl_cron_remover_ideia_calendario_aria: 'Remove from calendar',
-        pl_cron_add_pilar_curto: '+ pillar',
         pl_cron_nenhuma_ideia_roteiro_pronto: 'No ready script available to schedule. Mark a script as "Ready script" in the Idea bank & Scripts.',
         pl_erro_agendar: 'Could not schedule it right now. Try again in a moment.',
         pl_erro_remover_calendario: 'Could not remove it right now. Try again in a moment.',
         pl_cron_nenhum_pilar_disponivel: 'No pillars available — add one in the Idea bank',
-        pl_cron_pilar_placeholder: 'Type a new pillar...',
-        pl_cron_pilar_suas_pastas: 'Your folders',
-        pl_cron_pilar_usados: 'Already used in the calendar',
         pl_cron_etapa: 'Stage',
         pl_agendar_conteudos: 'Content',
         pl_cron_nenhum_conteudo: 'No undated content in the Idea bank & Scripts. Use "Idea without a script" to create one right here.',
@@ -8063,18 +8026,6 @@
       document.getElementById('pl-modal-agendar-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'pl-modal-agendar-overlay') fecharModalAgendar();
       });
-      document.getElementById('pl-modal-pilar-dia-fechar').addEventListener('click', fecharModalPilarDia);
-      document.getElementById('pl-modal-pilar-dia-confirmar').addEventListener('click', () => confirmarPilarDia());
-      document.getElementById('pl-modal-pilar-dia-input').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          confirmarPilarDia();
-        }
-      });
-      document.getElementById('pl-modal-pilar-dia-overlay').addEventListener('click', (e) => {
-        if (e.target.id === 'pl-modal-pilar-dia-overlay') fecharModalPilarDia();
-      });
-
       // Radar de Notícias
       document.getElementById('btn-radar-atualizar').addEventListener('click', atualizarNoticias);
       document.querySelectorAll('.radar-filtro-periodo .radar-filtro-btn').forEach((btn) => {
@@ -13460,24 +13411,18 @@
 
     async function carregarPlanejador() {
       try {
-        const [pilares, ideias, achados, cronograma, cronogramaDias] = await Promise.all([
+        const [pilares, ideias, achados] = await Promise.all([
           Auth.sb.from('planejador_pilares').select('*').order('ordem', { ascending: true }),
           Auth.sb.from('planejador_ideias').select('*').order('ordem', { ascending: true }),
           Auth.sb.from('planejador_achados').select('*').order('ordem', { ascending: true }),
-          Auth.sb.from('planejador_cronograma').select('*').order('ordem', { ascending: true }),
-          Auth.sb.from('planejador_cronograma_dias').select('*'),
         ]);
         if (pilares.error) throw pilares.error;
         if (ideias.error) throw ideias.error;
         if (achados.error) throw achados.error;
-        if (cronograma.error) throw cronograma.error;
-        if (cronogramaDias.error) throw cronogramaDias.error;
 
         pilaresCache = pilares.data || [];
         ideiasCache = ideias.data || [];
         achadosCache = achados.data || [];
-        cronogramaCache = cronograma.data || [];
-        cronogramaDiasCache = cronogramaDias.data || [];
         btCarregar().then(btAtualizarCronograma); // conteúdos do Banco de ideias & Roteiros também entram no cronograma
 
         renderizarBancoIdeias();
@@ -15498,11 +15443,12 @@
     }
 
     // Itens do teste marcados num dia, no formato que o calendário já usa (id com prefixo "bt:").
+    // funcao/statusCru só existem aqui (nunca nos itens do sistema antigo, que ficam sem chip e sem aviso).
     function btItensDoDia(diaISO) {
       if (!btAgendaOk) return [];
       return btConteudos
         .filter((c) => c.data_agendada === diaISO)
-        .map((c) => ({ id: 'bt:' + c.id, titulo: c.titulo, dica: btCaminhoConteudo(c), etapa: plEstagio(c) }));
+        .map((c) => ({ id: 'bt:' + c.id, titulo: c.titulo, dica: btCaminhoConteudo(c), etapa: plEstagio(c), funcao: c.funcao || null, statusCru: statusCru(c), dataAgendada: c.data_agendada }));
     }
 
     function btOpcoesAgendar(lista) {
@@ -17014,6 +16960,32 @@
       renderizarCronogramaCalendario();
     }
 
+    // Quantos dias antes da data de postagem o aviso de atraso começa a aparecer
+    // (depois da data, se ainda não foi postado, o aviso continua e vira "atrasado").
+    const PL_CRON_DIAS_AVISO_ANTES = 2;
+
+    // O que falta, por status puro. Pronto para postar e Publicado não entram aqui (sem aviso).
+    const PL_CRON_AVISO_TEXTO = {
+      'Não iniciado': 'falta roteiro, gravar e editar',
+      'Roteiro em construção': 'falta terminar roteiro, gravar e editar',
+      'Roteiro pronto': 'falta gravar e editar',
+      'Editando': 'falta editar',
+      'Editado': 'falta marcar como pronto',
+    };
+
+    // null quando não há aviso (sem data, status já adiantado, ou ainda cedo demais pra avisar).
+    function btAvisoAtraso(statusCruValor, dataAgendadaISO) {
+      const texto = PL_CRON_AVISO_TEXTO[statusCruValor];
+      if (!texto || !dataAgendadaISO) return null;
+      const dataAgendada = new Date(dataAgendadaISO + 'T00:00:00');
+      const limite = new Date(dataAgendada);
+      limite.setDate(limite.getDate() - PL_CRON_DIAS_AVISO_ANTES);
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      if (hoje < limite) return null;
+      return { texto, atrasado: dataParaISO(hoje) > dataAgendadaISO };
+    }
+
     function renderizarCronogramaCalendario() {
       const emSemana = cronModo === 'semana';
       const grade = document.getElementById('pl-cron-grade');
@@ -17036,19 +17008,11 @@
 
       const hoje = new Date();
 
-      // Mapa data (ISO) -> lista de pilares escolhidos pra aquele dia específico.
-      const mapaDia = {};
-      cronogramaDiasCache.forEach((linha) => {
-        if (!mapaDia[linha.data]) mapaDia[linha.data] = [];
-        mapaDia[linha.data].push(linha.pilar);
-      });
-
       for (let i = 0; i < (emSemana ? 7 : 42); i++) {
         const dia = new Date(inicioGrade);
         dia.setDate(dia.getDate() + i);
         const diaISO = dataParaISO(dia);
 
-        const pilaresDoDia = mapaDia[diaISO] || [];
         const jaImportadas = btIdsAntigosMigrados();
         const ideiasDoDia = ideiasCache.filter((idea) => idea.data_agendada === diaISO && !jaImportadas.has(idea.id)).concat(btItensDoDia(diaISO));
 
@@ -17064,19 +17028,20 @@
             <span class="pl-cron-dia-numero">${dia.getDate()}</span>
             <button type="button" class="pl-cron-dia-add" aria-label="${escapeHtml(tr('pl_cron_agendar_ideia_aria'))}">+</button>
           </div>
-          ${pilaresDoDia.map((p) => `
-            <span class="pl-cron-dia-pilar">
-              ${escapeHtml(p)}
-              <button type="button" class="pl-cron-dia-pilar-remover" data-dia="${diaISO}" data-pilar="${escapeHtml(p)}" aria-label="${escapeHtml(tr('pl_cron_remover_pilar_dia_aria'))}">×</button>
-            </span>
-          `).join('')}
-          ${pilaresDoDia.length === 0 ? `<button type="button" class="pl-cron-dia-add-pilar" data-dia="${diaISO}">${escapeHtml(tr('pl_cron_add_pilar_curto'))}</button>` : ''}
-          ${ideiasDoDia.map((idea) => `
-            <span class="pl-cron-dia-ideia ${PL_CRON_ETAPA_CLASSE[idea.etapa || plEstagio(idea)] || ''}" data-id="${escapeHtml(idea.id)}"${idea.dica ? ` title="${escapeHtml(idea.dica)}"` : ''}>
-              <span class="pl-cron-dia-ideia-titulo">${escapeHtml(idea.titulo)}</span>
-              <button type="button" class="pl-cron-dia-ideia-remover" data-id="${escapeHtml(idea.id)}" aria-label="${escapeHtml(tr('pl_cron_remover_ideia_calendario_aria'))}">×</button>
-            </span>
-          `).join('')}
+          ${ideiasDoDia.map((idea) => {
+            // Itens do sistema antigo não têm statusCru: sem chip de função, sem status e sem aviso, como hoje.
+            const aviso = idea.statusCru ? btAvisoAtraso(idea.statusCru, idea.dataAgendada) : null;
+            return `
+            <div class="pl-cron-dia-ideia ${PL_CRON_ETAPA_CLASSE[idea.etapa || plEstagio(idea)] || ''}${aviso && aviso.atrasado ? ' pl-cron-dia-ideia-atrasada' : ''}" data-id="${escapeHtml(idea.id)}"${idea.dica ? ` title="${escapeHtml(idea.dica)}"` : ''}>
+              <div class="pl-cron-dia-ideia-topo">
+                <span class="pl-cron-dia-ideia-titulo">${escapeHtml(idea.titulo)}</span>
+                <button type="button" class="pl-cron-dia-ideia-remover" data-id="${escapeHtml(idea.id)}" aria-label="${escapeHtml(tr('pl_cron_remover_ideia_calendario_aria'))}">×</button>
+              </div>
+              ${idea.funcao ? `<span class="pl-cron-dia-ideia-funcao">${escapeHtml(idea.funcao)}</span>` : ''}
+              ${idea.statusCru ? `<span class="pl-cron-dia-ideia-status">${escapeHtml(traduzirStatusIdeia(idea.etapa))}</span>` : ''}
+              ${aviso ? `<span class="pl-cron-dia-ideia-aviso${aviso.atrasado ? ' pl-cron-dia-ideia-aviso-atrasado' : ''}">${aviso.atrasado ? '⚠ atrasado: ' : '⏰ '}${escapeHtml(aviso.texto)}</span>` : ''}
+            </div>`;
+          }).join('')}
         `;
 
         celula.querySelector('.pl-cron-dia-add').addEventListener('click', () => abrirModalAgendar(diaISO));
@@ -17086,14 +17051,6 @@
             desagendarIdeia(btn.dataset.id);
           });
         });
-        celula.querySelectorAll('.pl-cron-dia-pilar-remover').forEach((btn) => {
-          btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            excluirPilarDoDia(btn.dataset.dia, btn.dataset.pilar);
-          });
-        });
-        const botaoAddPilar = celula.querySelector('.pl-cron-dia-add-pilar');
-        if (botaoAddPilar) botaoAddPilar.addEventListener('click', () => abrirModalPilarDia(diaISO));
         celula.querySelectorAll('.pl-cron-dia-ideia').forEach((tag) => {
           tag.addEventListener('click', () => {
             if (tag.dataset.id.startsWith('bt:')) {
@@ -17287,88 +17244,6 @@
       } catch (err) {
         console.error('Erro ao remover ideia do calendário:', err);
         alert(tr('pl_erro_remover_calendario'));
-      }
-    }
-
-    // "+ PILAR" do cronograma: o pilar do dia é só um rótulo. Você marca (fica azul) uma ou mais pastas e/ou pilares já
-    // usados no calendário, pode escrever um novo, e "Escolher" coloca tudo no dia.
-    let pilarDiaSelecionados = new Set();
-
-    async function abrirModalPilarDia(diaISO) {
-      dataPilarDiaAtual = diaISO;
-      pilarDiaSelecionados = new Set();
-      document.getElementById('pl-modal-pilar-dia-data').textContent =
-        new Date(diaISO + 'T00:00:00').toLocaleDateString(localeAtual(), { day: '2-digit', month: 'long' });
-
-      if (!btCarregado) await btCarregar();
-      const jaEscolhidos = cronogramaDiasCache.filter((l) => l.data === diaISO).map((l) => l.pilar);
-      const unicos = (nomes) => [...new Set(nomes.filter(Boolean))].filter((n) => !jaEscolhidos.includes(n));
-      const dasPastas = unicos(btOrdenar(btPastas).map((p) => p.nome));
-      const usados = unicos([...cronogramaDiasCache.map((l) => l.pilar), ...cronogramaCache.map((l) => l.pilar)]).filter((n) => !dasPastas.includes(n));
-
-      const chips = (titulo, nomes) =>
-        nomes.length
-          ? `<p class="cal-todas-resumo pl-pilar-sugestoes-titulo">${escapeHtml(titulo)}</p><div class="pl-pilar-sugestoes">${nomes
-              .map((n) => `<button type="button" class="pl-pilar-sugestao" aria-pressed="false" data-nome="${escapeHtml(n)}">${escapeHtml(n)}</button>`)
-              .join('')}</div>`
-          : '';
-      const area = document.getElementById('pl-modal-pilar-dia-sugestoes');
-      area.innerHTML = chips(tr('pl_cron_pilar_suas_pastas'), dasPastas) + chips(tr('pl_cron_pilar_usados'), usados);
-      area.querySelectorAll('.pl-pilar-sugestao').forEach((b) =>
-        b.addEventListener('click', () => {
-          const nome = b.dataset.nome;
-          const marcado = !pilarDiaSelecionados.has(nome);
-          if (marcado) pilarDiaSelecionados.add(nome);
-          else pilarDiaSelecionados.delete(nome);
-          b.classList.toggle('selecionado', marcado);
-          b.setAttribute('aria-pressed', String(marcado));
-        })
-      );
-
-      const input = document.getElementById('pl-modal-pilar-dia-input');
-      input.value = '';
-      document.getElementById('pl-modal-pilar-dia-overlay').hidden = false;
-      input.focus();
-    }
-
-    function fecharModalPilarDia() {
-      dataPilarDiaAtual = null;
-      document.getElementById('pl-modal-pilar-dia-overlay').hidden = true;
-    }
-
-    // Coloca no dia tudo o que foi marcado, mais o que foi escrito no campo.
-    async function confirmarPilarDia() {
-      if (!dataPilarDiaAtual) return;
-      const digitado = document.getElementById('pl-modal-pilar-dia-input').value.trim();
-      const nomes = [...pilarDiaSelecionados];
-      if (digitado && !nomes.includes(digitado)) nomes.push(digitado);
-      if (nomes.length === 0) return;
-      const jaNoDia = cronogramaDiasCache.filter((l) => l.data === dataPilarDiaAtual).map((l) => l.pilar);
-      const novos = nomes.filter((n) => !jaNoDia.includes(n));
-      if (novos.length === 0) {
-        fecharModalPilarDia();
-        return;
-      }
-      try {
-        const { error } = await Auth.sb.from('planejador_cronograma_dias').insert(novos.map((pilar) => ({ data: dataPilarDiaAtual, pilar })));
-        if (error) throw error;
-        fecharModalPilarDia();
-        await carregarPlanejador();
-      } catch (err) {
-        console.error('Erro ao escolher pilar do dia:', err);
-        alert(tr('erro_salvar_generico'));
-      }
-    }
-
-    // Tira um pilar do calendário naquele dia específico.
-    async function excluirPilarDoDia(diaISO, pilar) {
-      try {
-        const { error } = await Auth.sb.from('planejador_cronograma_dias').delete().eq('data', diaISO).eq('pilar', pilar);
-        if (error) throw error;
-        await carregarPlanejador();
-      } catch (err) {
-        console.error('Erro ao excluir pilar do dia:', err);
-        alert(tr('erro_excluir_generico'));
       }
     }
 

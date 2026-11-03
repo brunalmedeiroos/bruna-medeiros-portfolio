@@ -2296,6 +2296,20 @@
             <label for="pl-modal-pasta">Pasta</label>
             <select id="pl-modal-pasta"></select>
           </div>
+          <div class="cal-form-campo" id="pl-modal-funcao-campo" hidden>
+            <label for="pl-modal-funcao">Função</label>
+            <select id="pl-modal-funcao">
+              <option value="">Sem função</option>
+              <option value="Mostra meu trabalho">Mostra meu trabalho</option>
+              <option value="Conecta">Conecta</option>
+              <option value="Ensina">Ensina</option>
+            </select>
+          </div>
+          <div class="cal-form-campo" id="pl-modal-tema-campo" hidden>
+            <label for="pl-modal-tema">Tema</label>
+            <input type="text" id="pl-modal-tema" list="pl-modal-tema-sugestoes" placeholder="Ex: UGC, Beleza/Unhas...">
+            <datalist id="pl-modal-tema-sugestoes"></datalist>
+          </div>
         </div>
 
         <div class="pl-modal-linha" id="bt-classif-linha" hidden>
@@ -2324,6 +2338,10 @@
           <input type="checkbox" id="pl-modal-gravado">
           <span id="pl-modal-gravado-txt" data-i18n="pl_ja_gravado">Já foi gravado (some do Banco de Ideias, continua no Cronograma)</span>
           <span id="pl-modal-gravado-txt-teste" hidden>Já foi gravado</span>
+        </label>
+        <label class="pl-checkbox-linha" id="pl-modal-oferta-campo" hidden>
+          <input type="checkbox" id="pl-modal-oferta">
+          <span>Convida a marca a trabalhar comigo (Oferta)</span>
         </label>
 
         <div class="cal-form-campo">
@@ -13798,6 +13816,9 @@
         pilarConteudo: btPilaresLer(),
         publico: document.getElementById('pl-modal-publico').value,
         gravado: document.getElementById('pl-modal-gravado').checked,
+        funcao: document.getElementById('pl-modal-funcao').value,
+        oferta: document.getElementById('pl-modal-oferta').checked,
+        tema: document.getElementById('pl-modal-tema').value,
         roteiroBreve: document.getElementById('pl-modal-roteiro-breve').value,
         roteiroCompleto: document.getElementById('pl-modal-roteiro-completo').innerHTML,
       });
@@ -14912,11 +14933,16 @@
     function prepararModalIdeiaModo(teste) {
       document.getElementById('pl-modal-pilar-campo').hidden = teste;
       document.getElementById('pl-modal-pasta-campo').hidden = !teste;
+      document.getElementById('pl-modal-funcao-campo').hidden = !teste;
+      document.getElementById('pl-modal-tema-campo').hidden = !teste;
+      document.getElementById('pl-modal-oferta-campo').hidden = !teste;
       document.getElementById('pl-modal-gravado-txt').hidden = teste;
       document.getElementById('pl-modal-gravado-txt-teste').hidden = !teste;
       document.getElementById('pl-modal-copiar').hidden = !teste;
-      document.getElementById('bt-classif-linha').hidden = !(teste && btClassifOk);
-      document.getElementById('bt-classif-aviso').hidden = !(teste && !btClassifOk);
+      // Pilares e "Conteúdo para" saíram da tela (viraram Função/Oferta). O dado
+      // antigo continua sendo lido e salvo por baixo dos panos, só não aparece mais.
+      document.getElementById('bt-classif-linha').hidden = true;
+      document.getElementById('bt-classif-aviso').hidden = true;
       if (!teste) {
         btPilaresEscrever('');
         document.getElementById('pl-modal-publico').value = '';
@@ -14936,6 +14962,13 @@
       areaRoteiroCompleto.setAttribute('data-placeholder', tr('pl_roteiro_completo_placeholder'));
       prepararEstiloPadraoRoteiro(areaRoteiroCompleto);
       document.getElementById('pl-modal-gravado').checked = !!c.gravado;
+      document.getElementById('pl-modal-funcao').value = c.funcao || '';
+      document.getElementById('pl-modal-oferta').checked = !!c.oferta;
+      document.getElementById('pl-modal-tema').value = c.tema || '';
+      document.getElementById('pl-modal-tema-sugestoes').innerHTML = [...new Set(btConteudos.map((x) => x.tema).filter(Boolean))]
+        .sort()
+        .map((t) => `<option value="${escapeHtml(t)}">`)
+        .join('');
       btPilaresEscrever(c.pilar_conteudo);
       document.getElementById('pl-modal-publico').value = c.publico || '';
 
@@ -14955,18 +14988,28 @@
       ideiaSnapshotInicial = capturarEstadoIdeia();
     }
 
-    // Pilares e "Conteúdo para" não fazem sentido na pasta Youtube (é tudo pra comunidade e sem pilar): somem do editor.
-    function btAtualizarClassifVisivel() {
-      document.getElementById('bt-classif-linha').hidden = !(btClassifOk && !btPastaFicaFora(document.getElementById('pl-modal-pasta').value));
-    }
+    // Pilares e "Conteúdo para" saíram da tela (viraram Função/Oferta); a
+    // seção fica sempre escondida agora. Função continua existindo só pra não
+    // quebrar quem ainda chama ela (listener de troca de pasta, abertura do editor).
+    function btAtualizarClassifVisivel() {}
 
     async function btSalvarConteudo() {
+      const titulo = document.getElementById('pl-modal-titulo').value.trim();
+      const pastaId = document.getElementById('pl-modal-pasta').value;
+      if (!titulo || !pastaId) return;
+
+      const funcao = document.getElementById('pl-modal-funcao').value;
+      if (!funcao && !(await confirmarAcao('Esse conteúdo ainda está sem Função. Salvar assim mesmo?', { perigo: false, textoConfirmar: 'Salvar assim' }))) return;
+
       const linha = {
-        titulo: document.getElementById('pl-modal-titulo').value.trim(),
+        titulo,
         formato: document.getElementById('pl-modal-formato').value.trim() || null,
         status: document.getElementById('pl-modal-status').value,
-        pasta_id: document.getElementById('pl-modal-pasta').value,
+        pasta_id: pastaId,
         gravado: document.getElementById('pl-modal-gravado').checked,
+        funcao: funcao || null,
+        oferta: document.getElementById('pl-modal-oferta').checked,
+        tema: document.getElementById('pl-modal-tema').value.trim() || null,
         roteiro_breve: document.getElementById('pl-modal-roteiro-breve').value.trim() || null,
         roteiro_completo: (() => {
           const area = document.getElementById('pl-modal-roteiro-completo');
@@ -14979,7 +15022,6 @@
             }
           : {}),
       };
-      if (!linha.titulo || !linha.pasta_id) return;
       try {
         const { data, error } = await Auth.sb.from('ideias_conteudos').update(linha).eq('id', btConteudoAbertoId).select();
         if (error) throw error;

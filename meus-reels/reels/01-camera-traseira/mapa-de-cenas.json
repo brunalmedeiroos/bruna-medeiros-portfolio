@@ -2,7 +2,7 @@
  {
   "cena": "1 gancho",
   "inicio": 0.0,
-  "fim": 3.72,
+  "fim": 3.59,
   "origem": [
    "v1",
    13.64,
@@ -11,8 +11,8 @@
  },
  {
   "cena": "2 problema a",
-  "inicio": 4.0,
-  "fim": 9.54,
+  "inicio": 3.64,
+  "fim": 9.05,
   "origem": [
    "v1",
    41.25,
@@ -21,8 +21,8 @@
  },
  {
   "cena": "2 problema b",
-  "inicio": 9.7,
-  "fim": 16.14,
+  "inicio": 9.1,
+  "fim": 15.41,
   "origem": [
    "v1",
    61.27,
@@ -31,8 +31,8 @@
  },
  {
   "cena": "2 problema c",
-  "inicio": 16.3,
-  "fim": 17.44,
+  "inicio": 15.46,
+  "fim": 16.47,
   "origem": [
    "v1",
    72.8,
@@ -41,8 +41,8 @@
  },
  {
   "cena": "3 solucao a",
-  "inicio": 17.72,
-  "fim": 20.17,
+  "inicio": 16.52,
+  "fim": 18.84,
   "origem": [
    "v1",
    75.45,
@@ -51,8 +51,8 @@
  },
  {
   "cena": "3 solucao b",
-  "inicio": 20.33,
-  "fim": 24.39,
+  "inicio": 18.89,
+  "fim": 22.82,
   "origem": [
    "v1",
    94.26,
@@ -61,8 +61,8 @@
  },
  {
   "cena": "3 solucao c",
-  "inicio": 24.55,
-  "fim": 25.88,
+  "inicio": 22.87,
+  "fim": 24.07,
   "origem": [
    "v1",
    100.08,
@@ -71,8 +71,8 @@
  },
  {
   "cena": "4 app",
-  "inicio": 26.16,
-  "fim": 27.98,
+  "inicio": 24.12,
+  "fim": 25.81,
   "origem": [
    "v2",
    3.2,
@@ -81,8 +81,8 @@
  },
  {
   "cena": "5 conectar a",
-  "inicio": 28.26,
-  "fim": 31.14,
+  "inicio": 25.86,
+  "fim": 28.61,
   "origem": [
    "v2",
    20.19,
@@ -91,8 +91,8 @@
  },
  {
   "cena": "5 conectar b",
-  "inicio": 31.3,
-  "fim": 34.61,
+  "inicio": 28.66,
+  "fim": 31.84,
   "origem": [
    "v2",
    24.67,
@@ -101,8 +101,8 @@
  },
  {
   "cena": "6 possib a",
-  "inicio": 34.89,
-  "fim": 37.37,
+  "inicio": 31.89,
+  "fim": 34.24,
   "origem": [
    "v2",
    63.13,
@@ -111,8 +111,8 @@
  },
  {
   "cena": "6 possib b",
-  "inicio": 37.53,
-  "fim": 40.5,
+  "inicio": 34.29,
+  "fim": 37.13,
   "origem": [
    "v2",
    68.27,
@@ -121,8 +121,8 @@
  },
  {
   "cena": "6 possib c",
-  "inicio": 40.66,
-  "fim": 43.15,
+  "inicio": 37.18,
+  "fim": 39.54,
   "origem": [
    "v2",
    73.68,
@@ -131,8 +131,8 @@
  },
  {
   "cena": "7 cta a",
-  "inicio": 43.43,
-  "fim": 48.05,
+  "inicio": 39.59,
+  "fim": 44.08,
   "origem": [
    "v2",
    93.61,
@@ -141,8 +141,8 @@
  },
  {
   "cena": "7 cta b",
-  "inicio": 48.21,
-  "fim": 49.54,
+  "inicio": 44.13,
+  "fim": 45.33,
   "origem": [
    "v2",
    99.28,

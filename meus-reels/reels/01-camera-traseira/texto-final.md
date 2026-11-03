@@ -1,5 +1,5 @@
 # Reels 01 — Câmera traseira · texto final (conferido por transcrição do áudio limpo)
-Formato: vídeo falado · app: Let's View · sem a parte do tutorial (por enquanto) · 49,9 s
+Formato: vídeo falado · app: Let's View · sem a parte do tutorial (por enquanto) · 45,5 s (silêncios cortados)
 Legenda final: "beijo 💋" · Fonte de vídeo: arquivos do WhatsApp (576x1024)
 
 1. Sabia que tem um jeito muito simples de você se ver gravando com a câmera traseira do seu celular?

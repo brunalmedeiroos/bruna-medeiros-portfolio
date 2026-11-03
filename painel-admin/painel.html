@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261103d">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261103e">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1061,12 +1061,6 @@
             </div>
               </div>
 
-              <div class="card pl-vg-semana" id="pl-vg-semana" hidden>
-                <h3 class="card-titulo">📌 Esta semana</h3>
-                <p class="cal-todas-resumo">Até 5 conteúdos pra focar agora. Marque o 📌 em qualquer conteúdo do Banco de ideias pra trazer ele pra cá.</p>
-                <div id="pl-vg-semana-lista" class="ugc-roteiros-grade"></div>
-              </div>
-
               <div class="card pl-vg-pipeline-card">
                 <h3 class="card-titulo">Onde está travando</h3>
                 <p class="cal-todas-resumo" id="pl-vg-travando-frase">Quantos conteúdos em cada etapa, do banco de ideias até postado.</p>
@@ -1074,25 +1068,18 @@
                 <div id="pl-vg-pipeline"></div>
               </div>
 
-              <div class="pl-vg-equilibrio" id="pl-vg-equilibrio" hidden>
-                <div class="card pl-eq-card">
-                  <h3 class="card-titulo" data-i18n="pl_eq_pilares_titulo">Equilíbrio de Função</h3>
-                  <p class="cal-todas-resumo" data-i18n="pl_eq_pilares_desc">Quantos conteúdos em cada função.</p>
-                  <div class="pl-eq-funcao-bloco">
-                    <h4 class="pl-eq-funcao-subtitulo" data-i18n="pl_eq_funcao_postado">Já postei</h4>
-                    <div id="pl-eq-funcao-postado"></div>
-                  </div>
-                  <div class="pl-eq-funcao-bloco">
-                    <h4 class="pl-eq-funcao-subtitulo" data-i18n="pl_eq_funcao_planejado">Tenho planejado</h4>
-                    <div id="pl-eq-funcao-planejado"></div>
-                  </div>
-                  <p class="pl-eq-nota" id="pl-eq-funcao-sem-funcao" hidden></p>
+              <div class="card pl-eq-card" id="pl-vg-equilibrio" hidden>
+                <h3 class="card-titulo" data-i18n="pl_eq_pilares_titulo">Equilíbrio de Função</h3>
+                <p class="cal-todas-resumo" data-i18n="pl_eq_pilares_desc">Quantos conteúdos em cada função.</p>
+                <div class="pl-eq-funcao-bloco">
+                  <h4 class="pl-eq-funcao-subtitulo" data-i18n="pl_eq_funcao_postado">Já postei</h4>
+                  <div id="pl-eq-funcao-postado"></div>
                 </div>
-                <div class="card pl-eq-card">
-                  <h3 class="card-titulo" data-i18n="pl_eq_publico_titulo">Oferta</h3>
-                  <p class="cal-todas-resumo" data-i18n="pl_eq_publico_desc">Quanto do seu conteúdo convida a marca a trabalhar com você.</p>
-                  <div id="pl-eq-publico"></div>
+                <div class="pl-eq-funcao-bloco">
+                  <h4 class="pl-eq-funcao-subtitulo" data-i18n="pl_eq_funcao_planejado">Tenho planejado</h4>
+                  <div id="pl-eq-funcao-planejado"></div>
                 </div>
+                <p class="pl-eq-nota" id="pl-eq-funcao-sem-funcao" hidden></p>
               </div>
             </div>
           </div>
@@ -2340,10 +2327,6 @@
           <input type="checkbox" id="pl-modal-gravado">
           <span id="pl-modal-gravado-txt" data-i18n="pl_ja_gravado">Já foi gravado (some do Banco de Ideias, continua no Cronograma)</span>
           <span id="pl-modal-gravado-txt-teste" hidden>Já foi gravado</span>
-        </label>
-        <label class="pl-checkbox-linha" id="pl-modal-oferta-campo" hidden>
-          <input type="checkbox" id="pl-modal-oferta">
-          <span>Convida a marca a trabalhar comigo (Oferta)</span>
         </label>
 
         <div class="cal-form-campo">
@@ -4349,22 +4332,6 @@
       </div>
     </div>
 
-    <!-- Fase 6: revisão em lote da Função sugerida pros conteúdos "Sem função". -->
-    <div id="bt-lote-overlay" class="pl-modal-overlay" hidden>
-      <div class="pl-modal pl-modal-xl">
-        <div class="pl-modal-topo">
-          <span class="pl-modal-titulo-fixo">Revisar Função — lote de teste</span>
-          <button type="button" id="bt-lote-fechar" class="cal-btn cal-btn-icon" aria-label="Fechar">✕</button>
-        </div>
-        <p class="cal-todas-resumo" id="bt-lote-resumo"></p>
-        <div id="bt-lote-tabela"></div>
-        <p class="bt-descricao" id="bt-lote-resultado" hidden></p>
-        <div class="cal-form-acoes">
-          <button type="button" id="bt-lote-cancelar" class="cal-btn">Cancelar</button>
-          <button type="button" id="bt-lote-confirmar" class="cal-btn cal-btn-primario">Confirmar lote</button>
-        </div>
-      </div>
-    </div>
   </div>
 
   <script>
@@ -5413,10 +5380,7 @@
         pl_travando_banco_um: 'no banco de ideias (não iniciado)',
         pl_travando_banco_varios: 'no banco de ideias (não iniciados)',
         pl_travando_vazio: 'Nada parado na produção agora.',
-        pl_eq_publico_titulo: 'Oferta',
-        pl_eq_publico_desc: 'Quanto do seu conteúdo convida a marca a trabalhar com você. A pasta Conteúdos Youtube não entra na conta.',
         pl_eq_vazio_pilares: 'Marque a função dos seus conteúdos pra ver aqui qual está mais forte.',
-        pl_eq_vazio_publico: 'Nenhum conteúdo aqui ainda pra calcular a oferta.',
         pl_eq_sem_pilar_um: 'conteúdo ainda sem função',
         pl_eq_sem_pilar_varios: 'conteúdos ainda sem função',
         pl_eq_sem_publico_um: 'roteiro ainda sem público definido',
@@ -6806,10 +6770,7 @@
         pl_travando_banco_um: 'in the idea bank (not started)',
         pl_travando_banco_varios: 'in the idea bank (not started)',
         pl_travando_vazio: 'Nothing stuck in production right now.',
-        pl_eq_publico_titulo: 'Offer',
-        pl_eq_publico_desc: 'How much of your content invites the brand to work with you. The Conteúdos Youtube folder is not counted.',
         pl_eq_vazio_pilares: 'Mark the function of your content to see which one is strongest here.',
-        pl_eq_vazio_publico: 'No content here yet to calculate the offer rate.',
         pl_eq_sem_pilar_um: 'content piece still without a function',
         pl_eq_sem_pilar_varios: 'content pieces still without a function',
         pl_eq_sem_publico_um: 'script still without an audience',
@@ -7927,10 +7888,6 @@
       document.getElementById('bt-pasta-modal-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'bt-pasta-modal-overlay') btFecharModalPasta();
       });
-      // Fase 6: revisão em lote de Função
-      document.getElementById('bt-lote-fechar').addEventListener('click', () => (document.getElementById('bt-lote-overlay').hidden = true));
-      document.getElementById('bt-lote-cancelar').addEventListener('click', () => (document.getElementById('bt-lote-overlay').hidden = true));
-      document.getElementById('bt-lote-confirmar').addEventListener('click', btConfirmarLote);
       document.getElementById('pl-modal-copiar').addEventListener('click', btCopiarDoEditor);
       document.getElementById('pl-modal-status').addEventListener('change', (e) => {
         if (btConteudoAbertoId && ['Editando', 'Editado', 'Pronto para postar', 'Publicado'].includes(e.target.value)) {
@@ -13789,7 +13746,6 @@
         publico: document.getElementById('pl-modal-publico').value,
         gravado: document.getElementById('pl-modal-gravado').checked,
         funcao: document.getElementById('pl-modal-funcao').value,
-        oferta: document.getElementById('pl-modal-oferta').checked,
         tema: document.getElementById('pl-modal-tema').value,
         roteiroBreve: document.getElementById('pl-modal-roteiro-breve').value,
         roteiroCompleto: document.getElementById('pl-modal-roteiro-completo').innerHTML,
@@ -13930,7 +13886,6 @@
 
     let btGrupos = []; // pastas principais (linhas de ideias_grupos)
     let btAgendaOk = false; // a coluna data_agendada existe (SQL do cronograma rodado)
-    let btEstaSemanaOk = false; // a coluna esta_semana existe (banco-ideias-esta-semana.sql rodado)
     let btClassifOk = false; // as colunas pilar_conteudo e publico existem (banco-ideias-pilar-publico.sql rodado)
     let btGruposEditaveis = true;
 
@@ -14028,7 +13983,6 @@
       await btCarregarAgenda();
       await btCarregarClassif();
       await btCarregarSub();
-      await btCarregarEstaSemana();
       btCarregado = true;
     }
 
@@ -14831,10 +14785,9 @@
           <div class="ferr-pasta-titulo-bloco">
             <h3 class="card-titulo">${escapeHtml(titulo)}</h3>
             <p class="cal-todas-resumo">${escapeHtml(resumo)}</p>
-            ${ehSemFuncao ? '<p class="bt-descricao">Temporário: todo conteúdo sem Função cai aqui até os antigos serem migrados. Escolha a Função em cada um pelo editor pra ele sair daqui.</p>' : ''}
+            ${ehSemFuncao ? '<p class="bt-descricao">Rede de segurança: todo conteúdo criado sem Função cai aqui. Escolha a Função pelo editor pra ele sair daqui.</p>' : ''}
           </div>
           <div class="ferr-pasta-acoes">
-            ${ehSemFuncao ? '<button type="button" class="cal-btn" id="bt-lote-abrir">Revisar sugestões (lote)</button>' : ''}
             <button type="button" class="cal-btn cal-btn-primario" id="bt-novo-item-funcao">+ Novo conteúdo</button>
           </div>
         </div>
@@ -14851,8 +14804,6 @@
 
       document.getElementById('bt-voltar').addEventListener('click', () => btIr(btGrupo, null));
       document.getElementById('bt-novo-item-funcao').addEventListener('click', () => btMostrarFormNovoItemFuncao(funcao));
-      const btnLote = document.getElementById('bt-lote-abrir');
-      if (btnLote) btnLote.addEventListener('click', btAbrirLoteRevisao);
       const filtroTema = document.getElementById('bt-funcao-filtro-tema');
       if (filtroTema) {
         filtroTema.querySelectorAll('[data-tema]').forEach((btn) => {
@@ -15040,7 +14991,6 @@
         ${btAgendaOk && c.data_agendada ? `<span class="bt-agendado">📅 ${escapeHtml(btDataCurta(c.data_agendada))}</span>` : ''}
         ${c.gravado ? '<span class="bt-gravado">Gravado</span>' : ''}
         ${btAgendaOk && c.data_agendada && !c.gravado ? `<span class="pl-card-marcar-gravado">${escapeHtml(tr('pl_marcar_gravado'))}</span>` : ''}
-        ${btEstaSemanaOk ? `<span class="bt-card-semana${c.esta_semana ? ' ativo' : ''}" title="${c.esta_semana ? 'Tirar de Esta semana' : 'Marcar pra Esta semana'}">📌</span>` : ''}
         <span class="bt-card-copiar" title="Copiar este conteúdo pra colar em outra pasta">Copiar</span>
       `;
       card.addEventListener('click', (e) => {
@@ -15052,11 +15002,6 @@
         if (e.target.closest('.pl-card-marcar-gravado')) {
           e.stopPropagation();
           btMarcarGravado(c);
-          return;
-        }
-        if (e.target.closest('.bt-card-semana')) {
-          e.stopPropagation();
-          btAlternarEstaSemana(c);
           return;
         }
         btAbrirConteudo(c);
@@ -15152,128 +15097,6 @@
       }
     }
 
-    // ---------- Fase 6: revisão em lote da Função sugerida ----------
-
-    // Regra aprovada: "Ensina" com confiança alta só quando o título é
-    // conselho/explicação genérica clara ("Como + verbo", "Diferença de X pra
-    // Y", "X, devo ter?"). Título em primeira pessoa ("Como eu...") vira
-    // incerto mesmo batendo o padrão. Título que é só nome de assunto, sem
-    // nenhum desses padrões, também vira incerto, sem default — não existe
-    // ainda regra de alta confiança aprovada pra "Mostra meu trabalho" ou
-    // "Conecta", então esses dois também caem em incerto por enquanto. O
-    // pilar nunca entra aqui como motivo de default, só fica disponível pra
-    // você olhar na tela do lote.
-    function btSugerirFuncao(c) {
-      const titulo = (c.titulo || '').trim();
-      if (/^como\s+eu\b/i.test(titulo)) return { funcao: null, incerto: true };
-      const pareceEnsina = /^como\s+\S/i.test(titulo) || /diferen[çc]a\s+(de|entre)\b/i.test(titulo) || /,\s*devo\s+ter\s*\??$/i.test(titulo);
-      if (pareceEnsina) return { funcao: 'Ensina', incerto: false };
-      return { funcao: null, incerto: true };
-    }
-
-    const BT_LOTE_TAMANHO = 12; // "comece com um único lote de teste"
-    let btLoteItens = []; // [{conteudo, sugestao:{funcao,incerto}}] do lote aberto agora
-
-    function btAbrirLoteRevisao() {
-      const pendentes = btConteudosDoGrupoFuncoes()
-        .filter((c) => !c.funcao)
-        .map((c) => ({ conteudo: c, sugestao: btSugerirFuncao(c) }));
-      if (!pendentes.length) {
-        alert('Não há conteúdo "Sem função" pra revisar.');
-        return;
-      }
-      const certos = pendentes.filter((p) => !p.sugestao.incerto);
-      const incertos = pendentes.filter((p) => p.sugestao.incerto);
-      btLoteItens = [...certos, ...incertos].slice(0, BT_LOTE_TAMANHO);
-      document.getElementById('bt-lote-resumo').textContent =
-        `Lote de teste: ${btLoteItens.length} de ${pendentes.length} sem Função (no total, ${certos.length} certos e ${incertos.length} incertos). Os certos aparecem primeiro.`;
-      document.getElementById('bt-lote-resultado').hidden = true;
-      btRenderizarLoteTabela();
-      document.getElementById('bt-lote-overlay').hidden = false;
-    }
-
-    function btRenderizarLoteTabela() {
-      const area = document.getElementById('bt-lote-tabela');
-      area.innerHTML = btLoteItens
-        .map(({ conteudo: c, sugestao }) => {
-          const caminho = btCaminhoConteudo(c);
-          const pilares = (c.pilar_conteudo || '').split(',').map((s) => s.trim()).filter(Boolean);
-          const temOferta = pilares.includes('Oferta');
-          return `
-        <div class="bt-lote-linha${sugestao.incerto ? ' bt-lote-linha-incerta' : ''}" data-id="${c.id}">
-          <div class="bt-lote-linha-titulo">
-            <strong>${escapeHtml(c.titulo)}</strong>
-            ${sugestao.incerto ? '<span class="bt-lote-badge">⚠ incerto</span>' : ''}
-          </div>
-          <div class="bt-lote-linha-meta">${escapeHtml(caminho)}${pilares.length ? ' · Pilares: ' + escapeHtml(pilares.join(', ')) : ''}</div>
-          <div class="bt-lote-linha-campos">
-            <label>Função
-              <select class="bt-lote-funcao">
-                <option value="">-- escolha --</option>
-                ${BT_FUNCOES.map((f) => `<option value="${escapeHtml(f)}" ${f === sugestao.funcao ? 'selected' : ''}>${escapeHtml(f)}</option>`).join('')}
-              </select>
-            </label>
-            <label class="bt-lote-check"><input type="checkbox" class="bt-lote-oferta" ${temOferta ? 'checked' : ''}> Oferta</label>
-            <label class="bt-lote-check"><input type="checkbox" class="bt-lote-incluir" ${sugestao.incerto ? '' : 'checked'} ${sugestao.incerto ? 'disabled' : ''}> Incluir neste lote</label>
-          </div>
-        </div>`;
-        })
-        .join('');
-      area.querySelectorAll('.bt-lote-linha').forEach((linha) => {
-        const item = btLoteItens.find((p) => String(p.conteudo.id) === linha.dataset.id);
-        if (!item.sugestao.incerto) return;
-        const selectFuncao = linha.querySelector('.bt-lote-funcao');
-        const checkIncluir = linha.querySelector('.bt-lote-incluir');
-        selectFuncao.addEventListener('change', () => {
-          checkIncluir.disabled = !selectFuncao.value;
-          checkIncluir.checked = !!selectFuncao.value;
-        });
-      });
-    }
-
-    // Grava funcao_sugerida pra todo o lote mostrado (nunca a função de
-    // verdade) e, só pros itens marcados "incluir" (certos, ou incertos onde
-    // você escolheu a função na hora), grava funcao + oferta de verdade.
-    async function btConfirmarLote() {
-      const linhas = [...document.getElementById('bt-lote-tabela').querySelectorAll('.bt-lote-linha')];
-      const sugestoes = [];
-      const confirmados = [];
-      linhas.forEach((linha) => {
-        const id = linha.dataset.id;
-        const item = btLoteItens.find((p) => String(p.conteudo.id) === id);
-        const funcaoEscolhida = linha.querySelector('.bt-lote-funcao').value || null;
-        const incluir = linha.querySelector('.bt-lote-incluir').checked;
-        const oferta = linha.querySelector('.bt-lote-oferta').checked;
-        // funcao_sugerida grava sempre o que o algoritmo propôs, nunca o que
-        // você escolheu no select — isso é só o rastro da sugestão original.
-        sugestoes.push({ id, funcao_sugerida: item.sugestao.funcao, funcao_sugerida_incerta: item.sugestao.incerto });
-        if (incluir && funcaoEscolhida) confirmados.push({ id, funcao: funcaoEscolhida, oferta });
-      });
-      try {
-        await Promise.all(
-          sugestoes.map((u) =>
-            Auth.sb.from('ideias_conteudos').update({ funcao_sugerida: u.funcao_sugerida, funcao_sugerida_incerta: u.funcao_sugerida_incerta }).eq('id', u.id)
-          )
-        );
-        await Promise.all(confirmados.map((u) => Auth.sb.from('ideias_conteudos').update({ funcao: u.funcao, oferta: u.oferta }).eq('id', u.id)));
-        sugestoes.forEach((u) => {
-          const i = btConteudos.findIndex((c) => String(c.id) === u.id);
-          if (i >= 0) btConteudos[i] = { ...btConteudos[i], funcao_sugerida: u.funcao_sugerida, funcao_sugerida_incerta: u.funcao_sugerida_incerta };
-        });
-        confirmados.forEach((u) => {
-          const i = btConteudos.findIndex((c) => String(c.id) === u.id);
-          if (i >= 0) btConteudos[i] = { ...btConteudos[i], funcao: u.funcao, oferta: u.oferta };
-        });
-        const resultado = document.getElementById('bt-lote-resultado');
-        resultado.hidden = false;
-        resultado.textContent = `${confirmados.length} de ${btLoteItens.length} itens atualizados (função + oferta gravados). Os demais continuam em "Sem função".`;
-        btRenderizar();
-      } catch (err) {
-        console.error('Erro ao confirmar lote de função:', err);
-        alert('Erro ao salvar o lote. Nada foi perdido: confirme de novo.');
-      }
-    }
-
     // ---------- editor de roteiro (o mesmo de sempre) ----------
 
     // O editor é um só. Aqui só escolhemos qual campo aparece (Pilar no banco
@@ -15283,7 +15106,6 @@
       document.getElementById('pl-modal-pasta-campo').hidden = !teste;
       document.getElementById('pl-modal-funcao-campo').hidden = !teste;
       document.getElementById('pl-modal-tema-campo').hidden = !teste;
-      document.getElementById('pl-modal-oferta-campo').hidden = !teste;
       document.getElementById('pl-modal-gravado-txt').hidden = teste;
       document.getElementById('pl-modal-gravado-txt-teste').hidden = !teste;
       document.getElementById('pl-modal-copiar').hidden = !teste;
@@ -15311,7 +15133,6 @@
       prepararEstiloPadraoRoteiro(areaRoteiroCompleto);
       document.getElementById('pl-modal-gravado').checked = !!c.gravado;
       document.getElementById('pl-modal-funcao').value = c.funcao || '';
-      document.getElementById('pl-modal-oferta').checked = !!c.oferta;
       document.getElementById('pl-modal-tema').value = c.tema || '';
       document.getElementById('pl-modal-tema-sugestoes').innerHTML = [...new Set(btConteudos.map((x) => x.tema).filter(Boolean))]
         .sort()
@@ -15356,7 +15177,6 @@
         pasta_id: pastaId,
         gravado: document.getElementById('pl-modal-gravado').checked,
         funcao: funcao || null,
-        oferta: document.getElementById('pl-modal-oferta').checked,
         tema: document.getElementById('pl-modal-tema').value.trim() || null,
         roteiro_breve: document.getElementById('pl-modal-roteiro-breve').value.trim() || null,
         roteiro_completo: (() => {
@@ -15442,16 +15262,6 @@
         btAgendaOk = !error;
       } catch (err) {
         btAgendaOk = false;
-      }
-    }
-
-    // Sem a coluna esta_semana (banco-ideias-esta-semana.sql ainda não rodado) o bloco "Esta semana" fica escondido.
-    async function btCarregarEstaSemana() {
-      try {
-        const { error } = await Auth.sb.from('ideias_conteudos').select('esta_semana').limit(1);
-        btEstaSemanaOk = !error;
-      } catch (err) {
-        btEstaSemanaOk = false;
       }
     }
 
@@ -16787,18 +16597,6 @@
       if (semFuncaoTotal) {
         notaSemFuncao.textContent = `${semFuncaoTotal} ${semFuncaoTotal === 1 ? tr('pl_eq_sem_pilar_um') : tr('pl_eq_sem_pilar_varios')}`;
       }
-
-      // --- oferta ---
-      const areaPublico = document.getElementById('pl-eq-publico');
-      if (conteudos.length === 0) {
-        areaPublico.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('pl_eq_vazio_publico'))}</p>`;
-        return;
-      }
-      const comOferta = conteudos.filter((c) => c.oferta).length;
-      const pct = Math.round((comOferta / conteudos.length) * 100);
-      areaPublico.innerHTML = `
-        <div class="pl-eq-empilhada">${comOferta ? `<span class="pl-eq-seg pl-eq-c-marcas" style="width:${pct}%" title="Convidam a marca: ${comOferta}">${pct >= 9 ? pct + '%' : ''}</span>` : ''}</div>
-        <p class="pl-eq-resumo">${pct}% dos seus conteúdos convidam a marca a trabalhar com você (${comOferta} de ${conteudos.length}).</p>`;
     }
 
     // Etapas do pipeline em ordem natural (distinto de PL_STATUS_ORDEM, que é
@@ -16860,90 +16658,11 @@
       }).join('');
     }
 
-    // "Esta semana": até 5 conteúdos marcados à mão (campo esta_semana), pra
-    // responder "o que eu faço agora". Não é calculado sozinho.
-    function renderizarEstaSemana() {
-      const bloco = document.getElementById('pl-vg-semana');
-      if (!bloco) return;
-      bloco.hidden = !btEstaSemanaOk;
-      if (!btEstaSemanaOk) return;
-      const lista = document.getElementById('pl-vg-semana-lista');
-      const itens = btConteudos.filter((c) => c.esta_semana);
-      if (!itens.length) {
-        lista.innerHTML = '<p class="texto-vazio">Nenhum conteúdo marcado ainda. Clique no 📌 de um conteúdo, no Banco de ideias, pra trazer ele pra cá (até 5).</p>';
-        return;
-      }
-      lista.innerHTML = '';
-      itens.forEach((c) => lista.appendChild(btCriarCardSemana(c)));
-    }
-
-    function btCriarCardSemana(c) {
-      const card = document.createElement('div');
-      card.className = 'ugc-roteiro-card';
-      const status = statusCru(c);
-      const proximo = proximoStatusPipeline(status);
-      card.innerHTML = `
-        <span class="ugc-status-pill ${classeStatusIdeia(status)}">${escapeHtml(traduzirStatusIdeia(status))}</span>
-        <span class="ugc-roteiro-card-marca">${escapeHtml(c.titulo)}</span>
-        <span class="ugc-roteiro-card-info">${escapeHtml(c.funcao || 'Sem função')}</span>
-        <div class="pl-vg-semana-acoes">
-          ${proximo ? `<button type="button" class="cal-btn" data-acao="avancar">Avançar: ${escapeHtml(traduzirStatusIdeia(proximo))}</button>` : ''}
-          <button type="button" class="cal-btn cal-btn-icon" data-acao="remover" title="Tirar de Esta semana" aria-label="Tirar de Esta semana">✕</button>
-        </div>`;
-      card.addEventListener('click', (e) => {
-        if (e.target.closest('[data-acao="remover"]')) {
-          e.stopPropagation();
-          btAlternarEstaSemana(c);
-          return;
-        }
-        if (e.target.closest('[data-acao="avancar"]')) {
-          e.stopPropagation();
-          btAvancarStatus(c, proximo);
-          return;
-        }
-        btAbrirConteudo(c);
-      });
-      return card;
-    }
-
-    async function btAlternarEstaSemana(c) {
-      const indo = !c.esta_semana;
-      if (indo && btConteudos.filter((x) => x.esta_semana).length >= 5) {
-        alert('Você já tem 5 conteúdos em "Esta semana". Tire um de lá antes de adicionar outro.');
-        return;
-      }
-      try {
-        const { data, error } = await Auth.sb.from('ideias_conteudos').update({ esta_semana: indo }).eq('id', c.id).select();
-        if (error) throw error;
-        const i = btConteudos.findIndex((x) => x.id === c.id);
-        if (i >= 0 && data[0]) btConteudos[i] = data[0];
-        btRenderizar();
-      } catch (err) {
-        console.error('Erro ao marcar "Esta semana":', err);
-        alert(tr('erro_salvar_generico'));
-      }
-    }
-
-    async function btAvancarStatus(c, novoStatus) {
-      if (!novoStatus) return;
-      try {
-        const { data, error } = await Auth.sb.from('ideias_conteudos').update({ status: novoStatus }).eq('id', c.id).select();
-        if (error) throw error;
-        const i = btConteudos.findIndex((x) => x.id === c.id);
-        if (i >= 0 && data[0]) btConteudos[i] = data[0];
-        btRenderizar();
-      } catch (err) {
-        console.error('Erro ao avançar status:', err);
-        alert(tr('erro_salvar_generico'));
-      }
-    }
-
-    // Visão geral do Banco de ideias & Roteiros: pipeline completo, "Esta
-    // semana" e o equilíbrio por Função/Oferta (todas as pastas).
+    // Visão geral do Banco de ideias & Roteiros: "Onde está travando" e o
+    // equilíbrio por Função/Oferta (todas as pastas).
     function atualizarContadorVisaoGeral() {
       renderizarEquilibrioConteudo();
       renderizarPipelineVisaoGeral();
-      renderizarEstaSemana();
     }
 
     // Cronograma: visão semanal (padrão) ou mensal.

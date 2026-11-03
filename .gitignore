@@ -1,0 +1,4 @@
+# O repositório é público e tudo que está nele é publicado no site (até
+# arquivos fora de painel-admin/). Backups de dados reais (roteiros, etc.)
+# nunca podem ir pro git: ficam só localmente.
+**/backups/

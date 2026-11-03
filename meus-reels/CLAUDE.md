@@ -45,3 +45,6 @@ Frase repetida ou palavra cortada? · Elementos na hora exata da fala? · Algo t
 
 ## Skills instaladas
 Skills do Remotion (`remotion-dev/skills`) em `.claude/skills`. Usar `remotion-best-practices` antes de editar composições.
+
+## Skill /meusreels
+O jeito de editar da Bruna está salvo na skill `/meusreels` (`.claude/skills/meusreels/`). Uso: `/meusreels + vídeo + roteiro + materiais`. Reels 01 (câmera traseira) foi o primeiro e serviu de modelo.

@@ -23,3 +23,10 @@
 - Trilha: a Bruna fornece o arquivo em assets/ ou adiciona o áudio em alta direto no Instagram ao postar (direitos autorais)
 ## 6. Tom de voz
 - Próxima (conversa de amiga), bem-humorada e direta: frases curtas, uma ideia por frase, sem rodeio
+
+## Estilos aprovados (prévias em `src/Estilos.tsx`)
+A Bruna gostou dos 3 e vai usar todos, conforme o tipo de vídeo (sugestão a confirmar):
+- **A · Suave:** vlog e B-roll com narração (fundo claro/azul, palavra-chave dourada, título em Pinyon Script)
+- **B · Marca-texto:** Reels que ensinam, com prints (marca-texto #f5e1b4 na palavra-chave, cartão de print)
+- **C · Contraste:** frase de virada ou de impacto (fundo escuro, palavra gigante em Pinyon Script dourada)
+Podem ser misturados no mesmo Reels (ex.: B no meio e C na virada), sempre mantendo paleta, fontes e legenda acima da base segura.

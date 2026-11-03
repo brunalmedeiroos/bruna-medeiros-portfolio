@@ -17,5 +17,8 @@
 - Sombra bem clara e suave, sem contorno nem fundo
 ## 4. Ritmo
 - Médio: cortes a cada 2 ou 3 segundos
-## 5. Som — a definir
+## 5. Som
+- Música pop/tendência do momento, mais animada, baixa embaixo da voz
+- Com efeitos sonoros (ex.: pop na palavra-chave)
+- Trilha: a Bruna fornece o arquivo em assets/ ou adiciona o áudio em alta direto no Instagram ao postar (direitos autorais)
 ## 6. Tom de voz — a definir

@@ -243,7 +243,7 @@ const Efeitos: React.FC = () => {
           from={Math.round(t * fps)}
           durationInFrames={Math.round(0.4 * fps)}
         >
-          <Audio src={staticFile("sfx/pop.wav")} volume={0.55} />
+          <Audio src={staticFile("sfx/click.wav")} volume={0.5} />
         </Sequence>
       ))}
       {SFX_CLICK.map((t) => (

@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261030d">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261103a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1036,34 +1036,27 @@
 
           <div id="pl-pagina-visao-geral" class="pl-pagina">
             <div class="pl-vg">
-              <div class="pl-vg-numeros">
-                <div class="card-numero">
-                  <span class="card-label" data-i18n="pl_roteiros_prontos">Roteiros prontos</span>
-                  <span class="card-valor" id="pl-vg-roteiros-prontos">0</span>
-                </div>
-                <div class="card-numero">
-                  <span class="card-label" data-i18n="pl_vg_editados">Editados</span>
-                  <span class="card-valor" id="pl-vg-editados">0</span>
-                </div>
-                <div class="card-numero">
-                  <span class="card-label" data-i18n="pl_vg_pronto_postar">Pronto para postar</span>
-                  <span class="card-valor" id="pl-vg-pronto-postar">0</span>
-                </div>
-                <div class="card-numero">
-                  <span class="card-label" data-i18n="pl_vg_postados">Postados</span>
-                  <span class="card-valor" id="pl-vg-postados">0</span>
-                </div>
+              <div class="card pl-vg-semana" id="pl-vg-semana" hidden>
+                <h3 class="card-titulo">📌 Esta semana</h3>
+                <p class="cal-todas-resumo">Até 5 conteúdos pra focar agora. Marque o 📌 em qualquer conteúdo do Banco de ideias pra trazer ele pra cá.</p>
+                <div id="pl-vg-semana-lista" class="ugc-roteiros-grade"></div>
+              </div>
+
+              <div class="card pl-vg-pipeline-card">
+                <h3 class="card-titulo">Pipeline</h3>
+                <p class="cal-todas-resumo">Quantos conteúdos em cada etapa, do zero até postado.</p>
+                <div id="pl-vg-pipeline"></div>
               </div>
 
               <div class="pl-vg-equilibrio" id="pl-vg-equilibrio" hidden>
                 <div class="card pl-eq-card">
-                  <h3 class="card-titulo" data-i18n="pl_eq_pilares_titulo">Pilares de conteúdo</h3>
-                  <p class="cal-todas-resumo" data-i18n="pl_eq_pilares_desc">Quantos roteiros tem em cada pilar.</p>
+                  <h3 class="card-titulo" data-i18n="pl_eq_pilares_titulo">Equilíbrio de Função</h3>
+                  <p class="cal-todas-resumo" data-i18n="pl_eq_pilares_desc">Quantos conteúdos em cada função.</p>
                   <div id="pl-eq-pilares"></div>
                 </div>
                 <div class="card pl-eq-card">
-                  <h3 class="card-titulo" data-i18n="pl_eq_publico_titulo">Marcas × Comunidade</h3>
-                  <p class="cal-todas-resumo" data-i18n="pl_eq_publico_desc">Pra quem são os seus roteiros.</p>
+                  <h3 class="card-titulo" data-i18n="pl_eq_publico_titulo">Oferta</h3>
+                  <p class="cal-todas-resumo" data-i18n="pl_eq_publico_desc">Quanto do seu conteúdo convida a marca a trabalhar com você.</p>
                   <div id="pl-eq-publico"></div>
                 </div>
               </div>
@@ -5412,17 +5405,17 @@
         bt_publico_comunidade: 'Comunidade',
         bt_publico_ambos: 'Os dois',
         bt_classif_aviso: 'Pra marcar o pilar e o público, rode o arquivo banco-ideias-pilar-publico.sql no SQL Editor do Supabase.',
-        pl_eq_pilares_titulo: 'Pilares de conteúdo',
-        pl_eq_pilares_desc: 'Quantos roteiros tem em cada pilar. Um roteiro com mais de um pilar conta em todos. A pasta Conteúdos Youtube não entra na conta.',
-        pl_eq_publico_titulo: 'Marcas × Comunidade',
-        pl_eq_publico_desc: 'Pra quem são os seus roteiros. A pasta Conteúdos Youtube não entra na conta.',
-        pl_eq_vazio_pilares: 'Marque o pilar dos seus roteiros pra ver aqui qual está mais forte.',
-        pl_eq_vazio_publico: 'Marque pra quem é cada roteiro (marcas, comunidade ou os dois) pra ver o equilíbrio aqui.',
+        pl_eq_pilares_titulo: 'Equilíbrio de Função',
+        pl_eq_pilares_desc: 'Quantos conteúdos em cada função. A pasta Conteúdos Youtube não entra na conta.',
+        pl_eq_publico_titulo: 'Oferta',
+        pl_eq_publico_desc: 'Quanto do seu conteúdo convida a marca a trabalhar com você. A pasta Conteúdos Youtube não entra na conta.',
+        pl_eq_vazio_pilares: 'Marque a função dos seus conteúdos pra ver aqui qual está mais forte.',
+        pl_eq_vazio_publico: 'Nenhum conteúdo aqui ainda pra calcular a oferta.',
         pl_eq_mais_forte: 'Mais forte',
         pl_eq_precisa_mais: 'Precisa de mais',
-        pl_eq_pilares_equilibrados: '✨ Os pilares estão equilibrados.',
-        pl_eq_sem_pilar_um: 'roteiro ainda sem pilar',
-        pl_eq_sem_pilar_varios: 'roteiros ainda sem pilar',
+        pl_eq_pilares_equilibrados: '✨ As funções estão equilibradas.',
+        pl_eq_sem_pilar_um: 'conteúdo ainda sem função',
+        pl_eq_sem_pilar_varios: 'conteúdos ainda sem função',
         pl_eq_sem_publico_um: 'roteiro ainda sem público definido',
         pl_eq_sem_publico_varios: 'roteiros ainda sem público definido',
         pl_eq_publico_equilibrado: '⚖️ Equilibrado entre marcas e comunidade.',
@@ -6809,17 +6802,17 @@
         bt_publico_comunidade: 'Community',
         bt_publico_ambos: 'Both',
         bt_classif_aviso: 'To mark the pillar and audience, run banco-ideias-pilar-publico.sql in the Supabase SQL Editor.',
-        pl_eq_pilares_titulo: 'Content pillars',
-        pl_eq_pilares_desc: 'How many scripts are in each pillar. A script with more than one pillar counts in all of them. The Conteúdos Youtube folder is not counted.',
-        pl_eq_publico_titulo: 'Brands × Community',
-        pl_eq_publico_desc: 'Who your scripts are for. The Conteúdos Youtube folder is not counted.',
-        pl_eq_vazio_pilares: 'Mark the pillar of your scripts to see which one is strongest here.',
-        pl_eq_vazio_publico: 'Mark who each script is for (brands, community or both) to see the balance here.',
+        pl_eq_pilares_titulo: 'Function balance',
+        pl_eq_pilares_desc: 'How many content pieces in each function. The Conteúdos Youtube folder is not counted.',
+        pl_eq_publico_titulo: 'Offer',
+        pl_eq_publico_desc: 'How much of your content invites the brand to work with you. The Conteúdos Youtube folder is not counted.',
+        pl_eq_vazio_pilares: 'Mark the function of your content to see which one is strongest here.',
+        pl_eq_vazio_publico: 'No content here yet to calculate the offer rate.',
         pl_eq_mais_forte: 'Strongest',
         pl_eq_precisa_mais: 'Needs more',
-        pl_eq_pilares_equilibrados: '✨ The pillars are balanced.',
-        pl_eq_sem_pilar_um: 'script still without a pillar',
-        pl_eq_sem_pilar_varios: 'scripts still without a pillar',
+        pl_eq_pilares_equilibrados: '✨ The functions are balanced.',
+        pl_eq_sem_pilar_um: 'content piece still without a function',
+        pl_eq_sem_pilar_varios: 'content pieces still without a function',
         pl_eq_sem_publico_um: 'script still without an audience',
         pl_eq_sem_publico_varios: 'scripts still without an audience',
         pl_eq_publico_equilibrado: '⚖️ Balanced between brands and community.',
@@ -13958,6 +13951,7 @@
 
     let btGrupos = []; // pastas principais (linhas de ideias_grupos)
     let btAgendaOk = false; // a coluna data_agendada existe (SQL do cronograma rodado)
+    let btEstaSemanaOk = false; // a coluna esta_semana existe (banco-ideias-esta-semana.sql rodado)
     let btClassifOk = false; // as colunas pilar_conteudo e publico existem (banco-ideias-pilar-publico.sql rodado)
     let btGruposEditaveis = true;
 
@@ -14055,6 +14049,7 @@
       await btCarregarAgenda();
       await btCarregarClassif();
       await btCarregarSub();
+      await btCarregarEstaSemana();
       btCarregado = true;
     }
 
@@ -15063,6 +15058,7 @@
         ${btAgendaOk && c.data_agendada ? `<span class="bt-agendado">📅 ${escapeHtml(btDataCurta(c.data_agendada))}</span>` : ''}
         ${c.gravado ? '<span class="bt-gravado">Gravado</span>' : ''}
         ${btAgendaOk && c.data_agendada && !c.gravado ? `<span class="pl-card-marcar-gravado">${escapeHtml(tr('pl_marcar_gravado'))}</span>` : ''}
+        ${btEstaSemanaOk ? `<span class="bt-card-semana${c.esta_semana ? ' ativo' : ''}" title="${c.esta_semana ? 'Tirar de Esta semana' : 'Marcar pra Esta semana'}">📌</span>` : ''}
         <span class="bt-card-copiar" title="Copiar este conteúdo pra colar em outra pasta">Copiar</span>
       `;
       card.addEventListener('click', (e) => {
@@ -15074,6 +15070,11 @@
         if (e.target.closest('.pl-card-marcar-gravado')) {
           e.stopPropagation();
           btMarcarGravado(c);
+          return;
+        }
+        if (e.target.closest('.bt-card-semana')) {
+          e.stopPropagation();
+          btAlternarEstaSemana(c);
           return;
         }
         btAbrirConteudo(c);
@@ -15337,6 +15338,16 @@
         btAgendaOk = !error;
       } catch (err) {
         btAgendaOk = false;
+      }
+    }
+
+    // Sem a coluna esta_semana (banco-ideias-esta-semana.sql ainda não rodado) o bloco "Esta semana" fica escondido.
+    async function btCarregarEstaSemana() {
+      try {
+        const { error } = await Auth.sb.from('ideias_conteudos').select('esta_semana').limit(1);
+        btEstaSemanaOk = !error;
+      } catch (err) {
+        btEstaSemanaOk = false;
       }
     }
 
@@ -16629,55 +16640,53 @@
 
     function renderizarEquilibrioConteudo() {
       const bloco = document.getElementById('pl-vg-equilibrio');
-      bloco.hidden = !(btCarregado && btClassifOk);
+      bloco.hidden = !btCarregado;
       if (bloco.hidden) return;
       const conteudos = btConteudos.filter((c) => !btForaDosGraficos(c));
       const plural = (n, um, varios) => `${n} ${n === 1 ? tr(um) : tr(varios)}`;
 
-      // --- pilares ---
-      const chavePilar = { Autoridade: 'bt_pilar_autoridade', Desejo: 'bt_pilar_desejo', Conexão: 'bt_pilar_conexao', Oferta: 'bt_pilar_oferta' };
-      const contagem = { Autoridade: 0, Desejo: 0, Conexão: 0, Oferta: 0 };
-      let semPilar = 0;
-      const semPilarItens = []; // os roteiros sem pilar, pra mostrar o nome de cada um
+      // --- função ---
+      const contagem = { 'Mostra meu trabalho': 0, Conecta: 0, Ensina: 0 };
+      let semFuncao = 0;
+      const semFuncaoItens = []; // os conteúdos sem função, pra mostrar o nome de cada um
       conteudos.forEach((c) => {
-        const marcados = String(c.pilar_conteudo || '').split(',').filter((p) => p in contagem);
-        if (!marcados.length) {
-          semPilar++;
-          semPilarItens.push(c);
+        if (c.funcao && c.funcao in contagem) contagem[c.funcao]++;
+        else {
+          semFuncao++;
+          semFuncaoItens.push(c);
         }
-        marcados.forEach((p) => contagem[p]++);
       });
       const valores = Object.values(contagem);
       const maior = Math.max(...valores);
       const menor = Math.min(...valores);
-      const totalMarcas = valores.reduce((s, v) => s + v, 0);
+      const totalFuncao = valores.reduce((s, v) => s + v, 0);
       const areaPilares = document.getElementById('pl-eq-pilares');
-      if (totalMarcas === 0) {
+      if (totalFuncao === 0) {
         areaPilares.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('pl_eq_vazio_pilares'))}</p>`;
       } else {
         const equilibrado = maior === menor;
-        const linhasPilares = Object.keys(contagem)
-          .map((p) => {
-            const v = contagem[p];
+        const linhasFuncao = Object.keys(contagem)
+          .map((f) => {
+            const v = contagem[f];
             const classe = equilibrado ? '' : v === maior ? ' pl-eq-forte' : v === menor ? ' pl-eq-fraco' : '';
-            const pct = Math.round((v / totalMarcas) * 100);
+            const pct = Math.round((v / totalFuncao) * 100);
             return `<div class="pl-eq-linha">
-              <span class="pl-eq-rotulo">${escapeHtml(tr(chavePilar[p]))}</span>
+              <span class="pl-eq-rotulo">${escapeHtml(f)}</span>
               <span class="pl-eq-trilho"><span class="pl-eq-barra${classe}" style="width:${maior ? Math.max((v / maior) * 100, v ? 4 : 0) : 0}%"></span></span>
               <span class="pl-eq-valor">${v}<small>${pct}%</small></span>
             </div>`;
           })
           .join('');
-        const nomes = (alvo) => Object.keys(contagem).filter((p) => contagem[p] === alvo).map((p) => tr(chavePilar[p])).join(', ');
+        const nomes = (alvo) => Object.keys(contagem).filter((f) => contagem[f] === alvo).join(', ');
         const resumo = equilibrado
           ? `<p class="pl-eq-resumo">${escapeHtml(tr('pl_eq_pilares_equilibrados'))}</p>`
           : `<p class="pl-eq-resumo"><span class="pl-eq-selo pl-eq-selo-forte">${escapeHtml(tr('pl_eq_mais_forte'))}</span> ${escapeHtml(nomes(maior))}<br><span class="pl-eq-selo pl-eq-selo-fraco">${escapeHtml(tr('pl_eq_precisa_mais'))}</span> ${escapeHtml(nomes(menor))}</p>`;
-        const aviso = semPilar
-          ? `<p class="pl-eq-nota">${escapeHtml(plural(semPilar, 'pl_eq_sem_pilar_um', 'pl_eq_sem_pilar_varios'))}:</p>
-        <ul class="pl-eq-nota-lista">${semPilarItens.slice(0, 10).map((c) => `<li><button type="button" class="pl-eq-nota-link" data-id="${escapeHtml(c.id)}">${escapeHtml(c.titulo)}</button></li>`).join('')}${semPilarItens.length > 10 ? `<li class="pl-eq-nota-mais">+ ${semPilarItens.length - 10}</li>` : ''}</ul>`
+        const aviso = semFuncao
+          ? `<p class="pl-eq-nota">${escapeHtml(plural(semFuncao, 'pl_eq_sem_pilar_um', 'pl_eq_sem_pilar_varios'))}:</p>
+        <ul class="pl-eq-nota-lista">${semFuncaoItens.slice(0, 10).map((c) => `<li><button type="button" class="pl-eq-nota-link" data-id="${escapeHtml(c.id)}">${escapeHtml(c.titulo)}</button></li>`).join('')}${semFuncaoItens.length > 10 ? `<li class="pl-eq-nota-mais">+ ${semFuncaoItens.length - 10}</li>` : ''}</ul>`
           : '';
-        areaPilares.innerHTML = linhasPilares + resumo + aviso;
-        // clicar no nome abre o roteiro, pra marcar o pilar
+        areaPilares.innerHTML = linhasFuncao + resumo + aviso;
+        // clicar no nome abre o conteúdo, pra marcar a função
         areaPilares.querySelectorAll('.pl-eq-nota-link').forEach((botao) => {
           botao.addEventListener('click', () => {
             const c = btConteudos.find((x) => x.id === botao.dataset.id);
@@ -16686,70 +16695,136 @@
         });
       }
 
-      // --- marcas × comunidade ---
-      let marcas = 0;
-      let comunidade = 0;
-      let ambos = 0;
-      let semPublico = 0;
-      const semPublicoItens = []; // os roteiros sem público, pra mostrar o nome de cada um
-      conteudos.forEach((c) => {
-        if (c.publico === 'marcas') marcas++;
-        else if (c.publico === 'comunidade') comunidade++;
-        else if (c.publico === 'ambos') ambos++;
-        else {
-          semPublico++;
-          semPublicoItens.push(c);
-        }
-      });
-      const definidos = marcas + comunidade + ambos;
+      // --- oferta ---
       const areaPublico = document.getElementById('pl-eq-publico');
-      if (definidos === 0) {
+      if (conteudos.length === 0) {
         areaPublico.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('pl_eq_vazio_publico'))}</p>`;
         return;
       }
-      const pctDe = (v) => (v / definidos) * 100;
-      const segmento = (v, classe, rotulo) =>
-        v ? `<span class="pl-eq-seg ${classe}" style="width:${pctDe(v)}%" title="${escapeHtml(rotulo)}: ${v}">${pctDe(v) >= 9 ? Math.round(pctDe(v)) + '%' : ''}</span>` : '';
-      const legenda = (v, classe, rotulo) =>
-        `<span class="pl-eq-leg"><i class="pl-eq-leg-cor ${classe}"></i>${escapeHtml(rotulo)} <strong>${v}</strong></span>`;
-      const rMarcas = tr('bt_publico_marcas');
-      const rComunidade = tr('bt_publico_comunidade');
-      const rAmbos = tr('bt_publico_ambos');
-      // quem fala com marcas (só marcas + os dois) contra quem fala com a comunidade (só comunidade + os dois)
-      const comMarcas = marcas + ambos;
-      const comComunidade = comunidade + ambos;
-      const parteMarcas = comMarcas / (comMarcas + comComunidade);
-      const veredito =
-        parteMarcas > 0.6 ? tr('pl_eq_publico_mais_marcas') : parteMarcas < 0.4 ? tr('pl_eq_publico_mais_comunidade') : tr('pl_eq_publico_equilibrado');
+      const comOferta = conteudos.filter((c) => c.oferta).length;
+      const pct = Math.round((comOferta / conteudos.length) * 100);
       areaPublico.innerHTML = `
-        <div class="pl-eq-empilhada">${segmento(marcas, 'pl-eq-c-marcas', rMarcas)}${segmento(ambos, 'pl-eq-c-ambos', rAmbos)}${segmento(comunidade, 'pl-eq-c-comunidade', rComunidade)}</div>
-        <div class="pl-eq-legenda">${legenda(marcas, 'pl-eq-c-marcas', rMarcas)}${legenda(ambos, 'pl-eq-c-ambos', rAmbos)}${legenda(comunidade, 'pl-eq-c-comunidade', rComunidade)}</div>
-        <p class="pl-eq-resumo">${escapeHtml(veredito)}</p>
-        ${semPublico
-          ? `<p class="pl-eq-nota">${escapeHtml(plural(semPublico, 'pl_eq_sem_publico_um', 'pl_eq_sem_publico_varios'))}:</p>
-        <ul class="pl-eq-nota-lista">${semPublicoItens.slice(0, 10).map((c) => `<li><button type="button" class="pl-eq-nota-link" data-id="${escapeHtml(c.id)}">${escapeHtml(c.titulo)}</button></li>`).join('')}${semPublicoItens.length > 10 ? `<li class="pl-eq-nota-mais">+ ${semPublicoItens.length - 10}</li>` : ''}</ul>`
-          : ''}`;
-      // clicar no nome abre o roteiro, pra definir o público
-      areaPublico.querySelectorAll('.pl-eq-nota-link').forEach((botao) => {
-        botao.addEventListener('click', () => {
-          const c = btConteudos.find((x) => x.id === botao.dataset.id);
-          if (c) btAbrirConteudo(c);
-        });
-      });
+        <div class="pl-eq-empilhada">${comOferta ? `<span class="pl-eq-seg pl-eq-c-marcas" style="width:${pct}%" title="Convidam a marca: ${comOferta}">${pct >= 9 ? pct + '%' : ''}</span>` : ''}</div>
+        <p class="pl-eq-resumo">${pct}% dos seus conteúdos convidam a marca a trabalhar com você (${comOferta} de ${conteudos.length}).</p>`;
     }
 
-    // Contadores por etapa do roteiro, do Banco de ideias & Roteiros (todas as pastas).
+    // Etapas do pipeline em ordem natural (distinto de PL_STATUS_ORDEM, que é
+    // só prioridade de exibição dentro de uma pasta). Conta sempre pelo status
+    // puro, sem a regra de exibição do `gravado` — essa regra continua existindo
+    // só pra onde já existia (plEstagio), não entra aqui nem no "Esta semana".
+    const PL_STATUS_PIPELINE = ['Não iniciado', 'Roteiro em construção', 'Roteiro pronto', 'Editando', 'Editado', 'Pronto para postar', 'Publicado'];
+
+    function statusCru(c) {
+      return c.status || 'Não iniciado';
+    }
+
+    function proximoStatusPipeline(status) {
+      const i = PL_STATUS_PIPELINE.indexOf(status);
+      if (i === -1 || i === PL_STATUS_PIPELINE.length - 1) return null;
+      return PL_STATUS_PIPELINE[i + 1];
+    }
+
+    function renderizarPipelineVisaoGeral() {
+      const area = document.getElementById('pl-vg-pipeline');
+      if (!area) return;
+      const conteudos = btConteudos.filter((c) => !btForaDosGraficos(c));
+      const contagem = PL_STATUS_PIPELINE.map((status) => conteudos.filter((c) => statusCru(c) === status).length);
+      const maior = Math.max(...contagem, 0);
+      area.innerHTML = PL_STATUS_PIPELINE.map((status, i) => {
+        const v = contagem[i];
+        const destaque = maior > 0 && v === maior;
+        return `<div class="pl-eq-linha">
+          <span class="pl-eq-rotulo">${escapeHtml(traduzirStatusIdeia(status))}</span>
+          <span class="pl-eq-trilho"><span class="pl-eq-barra${destaque ? ' pl-eq-forte' : ''}" style="width:${maior ? Math.max((v / maior) * 100, v ? 4 : 0) : 0}%"></span></span>
+          <span class="pl-eq-valor">${v}</span>
+        </div>`;
+      }).join('');
+    }
+
+    // "Esta semana": até 5 conteúdos marcados à mão (campo esta_semana), pra
+    // responder "o que eu faço agora". Não é calculado sozinho.
+    function renderizarEstaSemana() {
+      const bloco = document.getElementById('pl-vg-semana');
+      if (!bloco) return;
+      bloco.hidden = !btEstaSemanaOk;
+      if (!btEstaSemanaOk) return;
+      const lista = document.getElementById('pl-vg-semana-lista');
+      const itens = btConteudos.filter((c) => c.esta_semana);
+      if (!itens.length) {
+        lista.innerHTML = '<p class="texto-vazio">Nenhum conteúdo marcado ainda. Clique no 📌 de um conteúdo, no Banco de ideias, pra trazer ele pra cá (até 5).</p>';
+        return;
+      }
+      lista.innerHTML = '';
+      itens.forEach((c) => lista.appendChild(btCriarCardSemana(c)));
+    }
+
+    function btCriarCardSemana(c) {
+      const card = document.createElement('div');
+      card.className = 'ugc-roteiro-card';
+      const status = statusCru(c);
+      const proximo = proximoStatusPipeline(status);
+      card.innerHTML = `
+        <span class="ugc-status-pill ${classeStatusIdeia(status)}">${escapeHtml(traduzirStatusIdeia(status))}</span>
+        <span class="ugc-roteiro-card-marca">${escapeHtml(c.titulo)}</span>
+        <span class="ugc-roteiro-card-info">${escapeHtml(c.funcao || 'Sem função')}</span>
+        <div class="pl-vg-semana-acoes">
+          ${proximo ? `<button type="button" class="cal-btn" data-acao="avancar">Avançar: ${escapeHtml(traduzirStatusIdeia(proximo))}</button>` : ''}
+          <button type="button" class="cal-btn cal-btn-icon" data-acao="remover" title="Tirar de Esta semana" aria-label="Tirar de Esta semana">✕</button>
+        </div>`;
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('[data-acao="remover"]')) {
+          e.stopPropagation();
+          btAlternarEstaSemana(c);
+          return;
+        }
+        if (e.target.closest('[data-acao="avancar"]')) {
+          e.stopPropagation();
+          btAvancarStatus(c, proximo);
+          return;
+        }
+        btAbrirConteudo(c);
+      });
+      return card;
+    }
+
+    async function btAlternarEstaSemana(c) {
+      const indo = !c.esta_semana;
+      if (indo && btConteudos.filter((x) => x.esta_semana).length >= 5) {
+        alert('Você já tem 5 conteúdos em "Esta semana". Tire um de lá antes de adicionar outro.');
+        return;
+      }
+      try {
+        const { data, error } = await Auth.sb.from('ideias_conteudos').update({ esta_semana: indo }).eq('id', c.id).select();
+        if (error) throw error;
+        const i = btConteudos.findIndex((x) => x.id === c.id);
+        if (i >= 0 && data[0]) btConteudos[i] = data[0];
+        btRenderizar();
+      } catch (err) {
+        console.error('Erro ao marcar "Esta semana":', err);
+        alert(tr('erro_salvar_generico'));
+      }
+    }
+
+    async function btAvancarStatus(c, novoStatus) {
+      if (!novoStatus) return;
+      try {
+        const { data, error } = await Auth.sb.from('ideias_conteudos').update({ status: novoStatus }).eq('id', c.id).select();
+        if (error) throw error;
+        const i = btConteudos.findIndex((x) => x.id === c.id);
+        if (i >= 0 && data[0]) btConteudos[i] = data[0];
+        btRenderizar();
+      } catch (err) {
+        console.error('Erro ao avançar status:', err);
+        alert(tr('erro_salvar_generico'));
+      }
+    }
+
+    // Visão geral do Banco de ideias & Roteiros: pipeline completo, "Esta
+    // semana" e o equilíbrio por Função/Oferta (todas as pastas).
     function atualizarContadorVisaoGeral() {
       renderizarEquilibrioConteudo();
-      const conta = (...etapas) => btConteudos.filter((c) => etapas.includes(plEstagio(c))).length;
-      [
-        ['pl-vg-roteiros-prontos', ['Roteiro pronto']],
-        ['pl-vg-editados', ['Editado']],
-        ['pl-vg-pronto-postar', ['Pronto para postar']],
-        ['pl-vg-postados', ['Publicado']],
-      ].forEach(([id, etapas]) => {
-        document.getElementById(id).textContent = conta(...etapas);
-      });
+      renderizarPipelineVisaoGeral();
+      renderizarEstaSemana();
     }
 
     // Cronograma: visão semanal (padrão) ou mensal.

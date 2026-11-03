@@ -1288,3 +1288,9 @@ begin
   end if;
 end
 $$;
+
+-- ---------------------------------------------------------------------
+-- Meus conteúdos: "Esta semana" na Visão geral (ver banco-ideias-esta-semana.sql).
+-- ---------------------------------------------------------------------
+
+alter table public.ideias_conteudos add column if not exists esta_semana boolean not null default false;

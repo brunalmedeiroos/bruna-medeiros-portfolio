@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261103a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261103b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -4361,6 +4361,23 @@
         </div>
       </div>
     </div>
+
+    <!-- Fase 6: revisão em lote da Função sugerida pros conteúdos "Sem função". -->
+    <div id="bt-lote-overlay" class="pl-modal-overlay" hidden>
+      <div class="pl-modal pl-modal-xl">
+        <div class="pl-modal-topo">
+          <span class="pl-modal-titulo-fixo">Revisar Função — lote de teste</span>
+          <button type="button" id="bt-lote-fechar" class="cal-btn cal-btn-icon" aria-label="Fechar">✕</button>
+        </div>
+        <p class="cal-todas-resumo" id="bt-lote-resumo"></p>
+        <div id="bt-lote-tabela"></div>
+        <p class="bt-descricao" id="bt-lote-resultado" hidden></p>
+        <div class="cal-form-acoes">
+          <button type="button" id="bt-lote-cancelar" class="cal-btn">Cancelar</button>
+          <button type="button" id="bt-lote-confirmar" class="cal-btn cal-btn-primario">Confirmar lote</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -7934,6 +7951,10 @@
       document.getElementById('bt-pasta-modal-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'bt-pasta-modal-overlay') btFecharModalPasta();
       });
+      // Fase 6: revisão em lote de Função
+      document.getElementById('bt-lote-fechar').addEventListener('click', () => (document.getElementById('bt-lote-overlay').hidden = true));
+      document.getElementById('bt-lote-cancelar').addEventListener('click', () => (document.getElementById('bt-lote-overlay').hidden = true));
+      document.getElementById('bt-lote-confirmar').addEventListener('click', btConfirmarLote);
       document.getElementById('pl-modal-copiar').addEventListener('click', btCopiarDoEditor);
       document.getElementById('pl-modal-status').addEventListener('change', (e) => {
         if (btConteudoAbertoId && ['Editando', 'Editado', 'Pronto para postar', 'Publicado'].includes(e.target.value)) {
@@ -14855,6 +14876,7 @@
             ${ehSemFuncao ? '<p class="bt-descricao">Temporário: todo conteúdo sem Função cai aqui até os antigos serem migrados. Escolha a Função em cada um pelo editor pra ele sair daqui.</p>' : ''}
           </div>
           <div class="ferr-pasta-acoes">
+            ${ehSemFuncao ? '<button type="button" class="cal-btn" id="bt-lote-abrir">Revisar sugestões (lote)</button>' : ''}
             <button type="button" class="cal-btn cal-btn-primario" id="bt-novo-item-funcao">+ Novo conteúdo</button>
           </div>
         </div>
@@ -14871,6 +14893,8 @@
 
       document.getElementById('bt-voltar').addEventListener('click', () => btIr(btGrupo, null));
       document.getElementById('bt-novo-item-funcao').addEventListener('click', () => btMostrarFormNovoItemFuncao(funcao));
+      const btnLote = document.getElementById('bt-lote-abrir');
+      if (btnLote) btnLote.addEventListener('click', btAbrirLoteRevisao);
       const filtroTema = document.getElementById('bt-funcao-filtro-tema');
       if (filtroTema) {
         filtroTema.querySelectorAll('[data-tema]').forEach((btn) => {
@@ -15167,6 +15191,128 @@
       } catch (err) {
         console.error('Erro ao criar conteúdo na Função:', err);
         alert(tr('pl_erro_criar_ideia'));
+      }
+    }
+
+    // ---------- Fase 6: revisão em lote da Função sugerida ----------
+
+    // Regra aprovada: "Ensina" com confiança alta só quando o título é
+    // conselho/explicação genérica clara ("Como + verbo", "Diferença de X pra
+    // Y", "X, devo ter?"). Título em primeira pessoa ("Como eu...") vira
+    // incerto mesmo batendo o padrão. Título que é só nome de assunto, sem
+    // nenhum desses padrões, também vira incerto, sem default — não existe
+    // ainda regra de alta confiança aprovada pra "Mostra meu trabalho" ou
+    // "Conecta", então esses dois também caem em incerto por enquanto. O
+    // pilar nunca entra aqui como motivo de default, só fica disponível pra
+    // você olhar na tela do lote.
+    function btSugerirFuncao(c) {
+      const titulo = (c.titulo || '').trim();
+      if (/^como\s+eu\b/i.test(titulo)) return { funcao: null, incerto: true };
+      const pareceEnsina = /^como\s+\S/i.test(titulo) || /diferen[çc]a\s+(de|entre)\b/i.test(titulo) || /,\s*devo\s+ter\s*\??$/i.test(titulo);
+      if (pareceEnsina) return { funcao: 'Ensina', incerto: false };
+      return { funcao: null, incerto: true };
+    }
+
+    const BT_LOTE_TAMANHO = 12; // "comece com um único lote de teste"
+    let btLoteItens = []; // [{conteudo, sugestao:{funcao,incerto}}] do lote aberto agora
+
+    function btAbrirLoteRevisao() {
+      const pendentes = btConteudosDoGrupoFuncoes()
+        .filter((c) => !c.funcao)
+        .map((c) => ({ conteudo: c, sugestao: btSugerirFuncao(c) }));
+      if (!pendentes.length) {
+        alert('Não há conteúdo "Sem função" pra revisar.');
+        return;
+      }
+      const certos = pendentes.filter((p) => !p.sugestao.incerto);
+      const incertos = pendentes.filter((p) => p.sugestao.incerto);
+      btLoteItens = [...certos, ...incertos].slice(0, BT_LOTE_TAMANHO);
+      document.getElementById('bt-lote-resumo').textContent =
+        `Lote de teste: ${btLoteItens.length} de ${pendentes.length} sem Função (no total, ${certos.length} certos e ${incertos.length} incertos). Os certos aparecem primeiro.`;
+      document.getElementById('bt-lote-resultado').hidden = true;
+      btRenderizarLoteTabela();
+      document.getElementById('bt-lote-overlay').hidden = false;
+    }
+
+    function btRenderizarLoteTabela() {
+      const area = document.getElementById('bt-lote-tabela');
+      area.innerHTML = btLoteItens
+        .map(({ conteudo: c, sugestao }) => {
+          const caminho = btCaminhoConteudo(c);
+          const pilares = (c.pilar_conteudo || '').split(',').map((s) => s.trim()).filter(Boolean);
+          const temOferta = pilares.includes('Oferta');
+          return `
+        <div class="bt-lote-linha${sugestao.incerto ? ' bt-lote-linha-incerta' : ''}" data-id="${c.id}">
+          <div class="bt-lote-linha-titulo">
+            <strong>${escapeHtml(c.titulo)}</strong>
+            ${sugestao.incerto ? '<span class="bt-lote-badge">⚠ incerto</span>' : ''}
+          </div>
+          <div class="bt-lote-linha-meta">${escapeHtml(caminho)}${pilares.length ? ' · Pilares: ' + escapeHtml(pilares.join(', ')) : ''}</div>
+          <div class="bt-lote-linha-campos">
+            <label>Função
+              <select class="bt-lote-funcao">
+                <option value="">-- escolha --</option>
+                ${BT_FUNCOES.map((f) => `<option value="${escapeHtml(f)}" ${f === sugestao.funcao ? 'selected' : ''}>${escapeHtml(f)}</option>`).join('')}
+              </select>
+            </label>
+            <label class="bt-lote-check"><input type="checkbox" class="bt-lote-oferta" ${temOferta ? 'checked' : ''}> Oferta</label>
+            <label class="bt-lote-check"><input type="checkbox" class="bt-lote-incluir" ${sugestao.incerto ? '' : 'checked'} ${sugestao.incerto ? 'disabled' : ''}> Incluir neste lote</label>
+          </div>
+        </div>`;
+        })
+        .join('');
+      area.querySelectorAll('.bt-lote-linha').forEach((linha) => {
+        const item = btLoteItens.find((p) => String(p.conteudo.id) === linha.dataset.id);
+        if (!item.sugestao.incerto) return;
+        const selectFuncao = linha.querySelector('.bt-lote-funcao');
+        const checkIncluir = linha.querySelector('.bt-lote-incluir');
+        selectFuncao.addEventListener('change', () => {
+          checkIncluir.disabled = !selectFuncao.value;
+          checkIncluir.checked = !!selectFuncao.value;
+        });
+      });
+    }
+
+    // Grava funcao_sugerida pra todo o lote mostrado (nunca a função de
+    // verdade) e, só pros itens marcados "incluir" (certos, ou incertos onde
+    // você escolheu a função na hora), grava funcao + oferta de verdade.
+    async function btConfirmarLote() {
+      const linhas = [...document.getElementById('bt-lote-tabela').querySelectorAll('.bt-lote-linha')];
+      const sugestoes = [];
+      const confirmados = [];
+      linhas.forEach((linha) => {
+        const id = linha.dataset.id;
+        const item = btLoteItens.find((p) => String(p.conteudo.id) === id);
+        const funcaoEscolhida = linha.querySelector('.bt-lote-funcao').value || null;
+        const incluir = linha.querySelector('.bt-lote-incluir').checked;
+        const oferta = linha.querySelector('.bt-lote-oferta').checked;
+        // funcao_sugerida grava sempre o que o algoritmo propôs, nunca o que
+        // você escolheu no select — isso é só o rastro da sugestão original.
+        sugestoes.push({ id, funcao_sugerida: item.sugestao.funcao, funcao_sugerida_incerta: item.sugestao.incerto });
+        if (incluir && funcaoEscolhida) confirmados.push({ id, funcao: funcaoEscolhida, oferta });
+      });
+      try {
+        await Promise.all(
+          sugestoes.map((u) =>
+            Auth.sb.from('ideias_conteudos').update({ funcao_sugerida: u.funcao_sugerida, funcao_sugerida_incerta: u.funcao_sugerida_incerta }).eq('id', u.id)
+          )
+        );
+        await Promise.all(confirmados.map((u) => Auth.sb.from('ideias_conteudos').update({ funcao: u.funcao, oferta: u.oferta }).eq('id', u.id)));
+        sugestoes.forEach((u) => {
+          const i = btConteudos.findIndex((c) => String(c.id) === u.id);
+          if (i >= 0) btConteudos[i] = { ...btConteudos[i], funcao_sugerida: u.funcao_sugerida, funcao_sugerida_incerta: u.funcao_sugerida_incerta };
+        });
+        confirmados.forEach((u) => {
+          const i = btConteudos.findIndex((c) => String(c.id) === u.id);
+          if (i >= 0) btConteudos[i] = { ...btConteudos[i], funcao: u.funcao, oferta: u.oferta };
+        });
+        const resultado = document.getElementById('bt-lote-resultado');
+        resultado.hidden = false;
+        resultado.textContent = `${confirmados.length} de ${btLoteItens.length} itens atualizados (função + oferta gravados). Os demais continuam em "Sem função".`;
+        btRenderizar();
+      } catch (err) {
+        console.error('Erro ao confirmar lote de função:', err);
+        alert('Erro ao salvar o lote. Nada foi perdido: confirme de novo.');
       }
     }
 

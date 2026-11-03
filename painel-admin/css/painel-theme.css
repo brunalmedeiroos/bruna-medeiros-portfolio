@@ -1942,7 +1942,7 @@
   text-decoration: none;
   color: inherit;
   border: 1px solid rgba(var(--grafite-rgb), 0.08);
-  border-radius: var(--raio-md);
+  border-radius: var(--raio-sm);
   overflow: hidden;
   background: var(--branco);
 }
@@ -2064,7 +2064,7 @@
 .painel-body .pl-coluna {
   background: rgba(255, 255, 255, 0.55);
   border: 1px solid var(--borda);
-  border-radius: var(--raio-md);
+  border-radius: var(--raio-sm);
   padding: 14px;
   width: 260px;
   flex-shrink: 0;
@@ -10624,6 +10624,70 @@
   align-items: center;
   gap: 6px;
   margin-top: 6px;
+}
+
+/* ---- Fase 6: revisão em lote da Função sugerida (tela "Sem função") ---- */
+
+.painel-body #bt-lote-tabela {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.painel-body .bt-lote-linha {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  background: var(--creme);
+}
+
+.painel-body .bt-lote-linha-incerta {
+  border-color: #E8A33D;
+  background: rgba(232, 163, 61, 0.08);
+}
+
+.painel-body .bt-lote-linha-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.painel-body .bt-lote-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: #94630A;
+  background: rgba(232, 163, 61, 0.2);
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+
+.painel-body .bt-lote-linha-meta {
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+.painel-body .bt-lote-linha-campos {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.painel-body .bt-lote-linha-campos label {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.painel-body .bt-lote-check {
+  cursor: pointer;
 }
 
 .painel-body #pl-modal-copiar[hidden] {

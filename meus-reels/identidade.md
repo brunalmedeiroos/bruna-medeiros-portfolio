@@ -21,4 +21,5 @@
 - Música pop/tendência do momento, mais animada, baixa embaixo da voz
 - Com efeitos sonoros (ex.: pop na palavra-chave)
 - Trilha: a Bruna fornece o arquivo em assets/ ou adiciona o áudio em alta direto no Instagram ao postar (direitos autorais)
-## 6. Tom de voz — a definir
+## 6. Tom de voz
+- Próxima (conversa de amiga), bem-humorada e direta: frases curtas, uma ideia por frase, sem rodeio

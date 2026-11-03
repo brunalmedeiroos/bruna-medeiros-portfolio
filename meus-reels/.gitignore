@@ -10,3 +10,5 @@ originais/*
 entregas/*
 !entregas/.gitkeep
 assets/fontes/BootzyTM.*
+referencias/*.mp4
+referencias/frames/

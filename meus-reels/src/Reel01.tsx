@@ -230,6 +230,35 @@ const Elementos: React.FC = () => (
   </>
 );
 
+// efeitos sonoros: pop quando um cartão entra, click a cada item do check
+const SFX_POP = [25.1, 30.7, 34.6];
+const SFX_CLICK = [35.06, 35.64, 36.4];
+const Efeitos: React.FC = () => {
+  const { fps } = useVideoConfig();
+  return (
+    <>
+      {SFX_POP.map((t) => (
+        <Sequence
+          key={`p${t}`}
+          from={Math.round(t * fps)}
+          durationInFrames={Math.round(0.4 * fps)}
+        >
+          <Audio src={staticFile("sfx/pop.wav")} volume={0.55} />
+        </Sequence>
+      ))}
+      {SFX_CLICK.map((t) => (
+        <Sequence
+          key={`c${t}`}
+          from={Math.round(t * fps)}
+          durationInFrames={Math.round(0.3 * fps)}
+        >
+          <Audio src={staticFile("sfx/click.wav")} volume={0.5} />
+        </Sequence>
+      ))}
+    </>
+  );
+};
+
 export const Reel01: React.FC<{ showSafeArea: boolean }> = ({
   showSafeArea,
 }) => {
@@ -237,6 +266,7 @@ export const Reel01: React.FC<{ showSafeArea: boolean }> = ({
   return (
     <AbsoluteFill style={{ background: CORES.escuro }}>
       <Audio src={staticFile("narracao-limpa.wav")} />
+      <Efeitos />
       <Pecas />
       {/* véu suave embaixo para a legenda branca ler bem */}
       <div

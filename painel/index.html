@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261103c">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261103d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1068,8 +1068,9 @@
               </div>
 
               <div class="card pl-vg-pipeline-card">
-                <h3 class="card-titulo">Pipeline</h3>
-                <p class="cal-todas-resumo">Quantos conteúdos em cada etapa, do zero até postado.</p>
+                <h3 class="card-titulo">Onde está travando</h3>
+                <p class="cal-todas-resumo" id="pl-vg-travando-frase">Quantos conteúdos em cada etapa, do banco de ideias até postado.</p>
+                <div class="pl-vg-travando-banco" id="pl-vg-travando-banco"></div>
                 <div id="pl-vg-pipeline"></div>
               </div>
 
@@ -1077,7 +1078,15 @@
                 <div class="card pl-eq-card">
                   <h3 class="card-titulo" data-i18n="pl_eq_pilares_titulo">Equilíbrio de Função</h3>
                   <p class="cal-todas-resumo" data-i18n="pl_eq_pilares_desc">Quantos conteúdos em cada função.</p>
-                  <div id="pl-eq-pilares"></div>
+                  <div class="pl-eq-funcao-bloco">
+                    <h4 class="pl-eq-funcao-subtitulo" data-i18n="pl_eq_funcao_postado">Já postei</h4>
+                    <div id="pl-eq-funcao-postado"></div>
+                  </div>
+                  <div class="pl-eq-funcao-bloco">
+                    <h4 class="pl-eq-funcao-subtitulo" data-i18n="pl_eq_funcao_planejado">Tenho planejado</h4>
+                    <div id="pl-eq-funcao-planejado"></div>
+                  </div>
+                  <p class="pl-eq-nota" id="pl-eq-funcao-sem-funcao" hidden></p>
                 </div>
                 <div class="card pl-eq-card">
                   <h3 class="card-titulo" data-i18n="pl_eq_publico_titulo">Oferta</h3>
@@ -5399,13 +5408,15 @@
         bt_classif_aviso: 'Pra marcar o pilar e o público, rode o arquivo banco-ideias-pilar-publico.sql no SQL Editor do Supabase.',
         pl_eq_pilares_titulo: 'Equilíbrio de Função',
         pl_eq_pilares_desc: 'Quantos conteúdos em cada função. A pasta Conteúdos Youtube não entra na conta.',
+        pl_eq_funcao_postado: 'Já postei',
+        pl_eq_funcao_planejado: 'Tenho planejado',
+        pl_travando_banco_um: 'no banco de ideias (não iniciado)',
+        pl_travando_banco_varios: 'no banco de ideias (não iniciados)',
+        pl_travando_vazio: 'Nada parado na produção agora.',
         pl_eq_publico_titulo: 'Oferta',
         pl_eq_publico_desc: 'Quanto do seu conteúdo convida a marca a trabalhar com você. A pasta Conteúdos Youtube não entra na conta.',
         pl_eq_vazio_pilares: 'Marque a função dos seus conteúdos pra ver aqui qual está mais forte.',
         pl_eq_vazio_publico: 'Nenhum conteúdo aqui ainda pra calcular a oferta.',
-        pl_eq_mais_forte: 'Mais forte',
-        pl_eq_precisa_mais: 'Precisa de mais',
-        pl_eq_pilares_equilibrados: '✨ As funções estão equilibradas.',
         pl_eq_sem_pilar_um: 'conteúdo ainda sem função',
         pl_eq_sem_pilar_varios: 'conteúdos ainda sem função',
         pl_eq_sem_publico_um: 'roteiro ainda sem público definido',
@@ -6790,13 +6801,15 @@
         bt_classif_aviso: 'To mark the pillar and audience, run banco-ideias-pilar-publico.sql in the Supabase SQL Editor.',
         pl_eq_pilares_titulo: 'Function balance',
         pl_eq_pilares_desc: 'How many content pieces in each function. The Conteúdos Youtube folder is not counted.',
+        pl_eq_funcao_postado: 'Already posted',
+        pl_eq_funcao_planejado: 'Planned',
+        pl_travando_banco_um: 'in the idea bank (not started)',
+        pl_travando_banco_varios: 'in the idea bank (not started)',
+        pl_travando_vazio: 'Nothing stuck in production right now.',
         pl_eq_publico_titulo: 'Offer',
         pl_eq_publico_desc: 'How much of your content invites the brand to work with you. The Conteúdos Youtube folder is not counted.',
         pl_eq_vazio_pilares: 'Mark the function of your content to see which one is strongest here.',
         pl_eq_vazio_publico: 'No content here yet to calculate the offer rate.',
-        pl_eq_mais_forte: 'Strongest',
-        pl_eq_precisa_mais: 'Needs more',
-        pl_eq_pilares_equilibrados: '✨ The functions are balanced.',
         pl_eq_sem_pilar_um: 'content piece still without a function',
         pl_eq_sem_pilar_varios: 'content pieces still without a function',
         pl_eq_sem_publico_um: 'script still without an audience',
@@ -16735,56 +16748,44 @@
       bloco.hidden = !btCarregado;
       if (bloco.hidden) return;
       const conteudos = btConteudos.filter((c) => !btForaDosGraficos(c));
-      const plural = (n, um, varios) => `${n} ${n === 1 ? tr(um) : tr(varios)}`;
 
-      // --- função ---
-      const contagem = { 'Mostra meu trabalho': 0, Conecta: 0, Ensina: 0 };
-      let semFuncao = 0;
-      const semFuncaoItens = []; // os conteúdos sem função, pra mostrar o nome de cada um
-      conteudos.forEach((c) => {
-        if (c.funcao && c.funcao in contagem) contagem[c.funcao]++;
-        else {
-          semFuncao++;
-          semFuncaoItens.push(c);
+      // --- função: duas barras por status puro — Já postei (Publicado) e Tenho
+      // planejado (todo o resto, banco de ideias + produção) ---
+      const postados = conteudos.filter((c) => statusCru(c) === 'Publicado');
+      const planejados = conteudos.filter((c) => statusCru(c) !== 'Publicado');
+
+      const barraFuncao = (lista, idArea) => {
+        const area = document.getElementById(idArea);
+        const contagem = { 'Mostra meu trabalho': 0, Conecta: 0, Ensina: 0 };
+        lista.forEach((c) => {
+          if (c.funcao && c.funcao in contagem) contagem[c.funcao]++;
+        });
+        const total = Object.values(contagem).reduce((s, v) => s + v, 0);
+        if (total === 0) {
+          area.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('pl_eq_vazio_pilares'))}</p>`;
+          return;
         }
-      });
-      const valores = Object.values(contagem);
-      const maior = Math.max(...valores);
-      const menor = Math.min(...valores);
-      const totalFuncao = valores.reduce((s, v) => s + v, 0);
-      const areaPilares = document.getElementById('pl-eq-pilares');
-      if (totalFuncao === 0) {
-        areaPilares.innerHTML = `<p class="texto-vazio">${escapeHtml(tr('pl_eq_vazio_pilares'))}</p>`;
-      } else {
-        const equilibrado = maior === menor;
-        const linhasFuncao = Object.keys(contagem)
+        const maiorAqui = Math.max(...Object.values(contagem));
+        area.innerHTML = Object.keys(contagem)
           .map((f) => {
             const v = contagem[f];
-            const classe = equilibrado ? '' : v === maior ? ' pl-eq-forte' : v === menor ? ' pl-eq-fraco' : '';
-            const pct = Math.round((v / totalFuncao) * 100);
+            const pct = Math.round((v / total) * 100);
             return `<div class="pl-eq-linha">
               <span class="pl-eq-rotulo">${escapeHtml(f)}</span>
-              <span class="pl-eq-trilho"><span class="pl-eq-barra${classe}" style="width:${maior ? Math.max((v / maior) * 100, v ? 4 : 0) : 0}%"></span></span>
+              <span class="pl-eq-trilho"><span class="pl-eq-barra" style="width:${maiorAqui ? Math.max((v / maiorAqui) * 100, v ? 4 : 0) : 0}%"></span></span>
               <span class="pl-eq-valor">${v}<small>${pct}%</small></span>
             </div>`;
           })
           .join('');
-        const nomes = (alvo) => Object.keys(contagem).filter((f) => contagem[f] === alvo).join(', ');
-        const resumo = equilibrado
-          ? `<p class="pl-eq-resumo">${escapeHtml(tr('pl_eq_pilares_equilibrados'))}</p>`
-          : `<p class="pl-eq-resumo"><span class="pl-eq-selo pl-eq-selo-forte">${escapeHtml(tr('pl_eq_mais_forte'))}</span> ${escapeHtml(nomes(maior))}<br><span class="pl-eq-selo pl-eq-selo-fraco">${escapeHtml(tr('pl_eq_precisa_mais'))}</span> ${escapeHtml(nomes(menor))}</p>`;
-        const aviso = semFuncao
-          ? `<p class="pl-eq-nota">${escapeHtml(plural(semFuncao, 'pl_eq_sem_pilar_um', 'pl_eq_sem_pilar_varios'))}:</p>
-        <ul class="pl-eq-nota-lista">${semFuncaoItens.slice(0, 10).map((c) => `<li><button type="button" class="pl-eq-nota-link" data-id="${escapeHtml(c.id)}">${escapeHtml(c.titulo)}</button></li>`).join('')}${semFuncaoItens.length > 10 ? `<li class="pl-eq-nota-mais">+ ${semFuncaoItens.length - 10}</li>` : ''}</ul>`
-          : '';
-        areaPilares.innerHTML = linhasFuncao + resumo + aviso;
-        // clicar no nome abre o conteúdo, pra marcar a função
-        areaPilares.querySelectorAll('.pl-eq-nota-link').forEach((botao) => {
-          botao.addEventListener('click', () => {
-            const c = btConteudos.find((x) => x.id === botao.dataset.id);
-            if (c) btAbrirConteudo(c);
-          });
-        });
+      };
+      barraFuncao(postados, 'pl-eq-funcao-postado');
+      barraFuncao(planejados, 'pl-eq-funcao-planejado');
+
+      const semFuncaoTotal = conteudos.filter((c) => !c.funcao).length;
+      const notaSemFuncao = document.getElementById('pl-eq-funcao-sem-funcao');
+      notaSemFuncao.hidden = semFuncaoTotal === 0;
+      if (semFuncaoTotal) {
+        notaSemFuncao.textContent = `${semFuncaoTotal} ${semFuncaoTotal === 1 ? tr('pl_eq_sem_pilar_um') : tr('pl_eq_sem_pilar_varios')}`;
       }
 
       // --- oferta ---
@@ -16816,18 +16817,44 @@
       return PL_STATUS_PIPELINE[i + 1];
     }
 
+    // "Onde está travando": Não iniciado é o banco de ideias, contado à parte
+    // (não é produção). As 5 etapas de produção aparecem em fluxo até Publicado;
+    // a que tiver mais conteúdos é o gargalo e ganha destaque + frase.
+    const PL_TRAVANDO_ETAPAS = ['Roteiro em construção', 'Roteiro pronto', 'Editando', 'Editado', 'Pronto para postar'];
+    const PL_TRAVANDO_FRASE = {
+      'Roteiro em construção': (n) => `${n} ${n === 1 ? 'roteiro' : 'roteiros'} em construção`,
+      'Roteiro pronto': (n) => `${n} ${n === 1 ? 'roteiro pronto' : 'roteiros prontos'} esperando gravação`,
+      Editando: (n) => `${n} ${n === 1 ? 'gravado' : 'gravados'} esperando edição`,
+      Editado: (n) => `${n} ${n === 1 ? 'editado' : 'editados'} esperando ficar ${n === 1 ? 'pronto' : 'prontos'}`,
+      'Pronto para postar': (n) => `${n} ${n === 1 ? 'pronto' : 'prontos'} esperando postagem`,
+    };
+
     function renderizarPipelineVisaoGeral() {
       const area = document.getElementById('pl-vg-pipeline');
-      if (!area) return;
+      const areaBanco = document.getElementById('pl-vg-travando-banco');
+      const frase = document.getElementById('pl-vg-travando-frase');
+      if (!area || !areaBanco) return;
       const conteudos = btConteudos.filter((c) => !btForaDosGraficos(c));
-      const contagem = PL_STATUS_PIPELINE.map((status) => conteudos.filter((c) => statusCru(c) === status).length);
-      const maior = Math.max(...contagem, 0);
-      area.innerHTML = PL_STATUS_PIPELINE.map((status, i) => {
-        const v = contagem[i];
-        const destaque = maior > 0 && v === maior;
+
+      const banco = conteudos.filter((c) => statusCru(c) === 'Não iniciado').length;
+      const rotuloBanco = tr(banco === 1 ? 'pl_travando_banco_um' : 'pl_travando_banco_varios');
+      areaBanco.innerHTML = `<span class="pl-vg-travando-banco-numero">${banco}</span><span class="pl-vg-travando-banco-rotulo">${escapeHtml(rotuloBanco)}</span>`;
+
+      const contagemProducao = PL_TRAVANDO_ETAPAS.map((status) => conteudos.filter((c) => statusCru(c) === status).length);
+      const maiorProducao = Math.max(...contagemProducao, 0);
+      const etapaGargalo = maiorProducao > 0 ? PL_TRAVANDO_ETAPAS[contagemProducao.indexOf(maiorProducao)] : null;
+      frase.textContent = etapaGargalo ? PL_TRAVANDO_FRASE[etapaGargalo](maiorProducao) : tr('pl_travando_vazio');
+
+      const postados = conteudos.filter((c) => statusCru(c) === 'Publicado').length;
+      const etapasFluxo = [...PL_TRAVANDO_ETAPAS, 'Publicado'];
+      const contagemFluxo = [...contagemProducao, postados];
+      const maiorFluxo = Math.max(...contagemFluxo, 0);
+      area.innerHTML = etapasFluxo.map((status, i) => {
+        const v = contagemFluxo[i];
+        const destaque = status === etapaGargalo;
         return `<div class="pl-eq-linha">
           <span class="pl-eq-rotulo">${escapeHtml(traduzirStatusIdeia(status))}</span>
-          <span class="pl-eq-trilho"><span class="pl-eq-barra${destaque ? ' pl-eq-forte' : ''}" style="width:${maior ? Math.max((v / maior) * 100, v ? 4 : 0) : 0}%"></span></span>
+          <span class="pl-eq-trilho"><span class="pl-eq-barra${destaque ? ' pl-eq-forte' : ''}" style="width:${maiorFluxo ? Math.max((v / maiorFluxo) * 100, v ? 4 : 0) : 0}%"></span></span>
           <span class="pl-eq-valor">${v}</span>
         </div>`;
       }).join('');

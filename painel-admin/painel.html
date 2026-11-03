@@ -13982,6 +13982,15 @@
     let btPastaEditandoId = null;
     let btConteudoAbertoId = null; // conteúdo aberto no editor de roteiro
 
+    // Dentro do grupo "tema" (Conteúdos Instagram), a navegação principal
+    // passou a ser por Função, não mais pastas por assunto. Uma "pasta de
+    // função" é só um filtro (lê btConteudos na hora), nunca uma linha de
+    // ideias_pastas: nada é movido nem duplicado quando você entra nela.
+    const BT_FUNCOES = ['Mostra meu trabalho', 'Conecta', 'Ensina'];
+    const BT_GRUPO_FUNCOES = 'tema'; // chave do grupo onde Função substitui as pastas por tema
+    let btFuncaoAtual = null; // um de BT_FUNCOES, 'sem-funcao', ou null (fora de uma view de função)
+    let btTemaFiltro = ''; // filtro secundário de tema dentro de uma view de função ('' = todos)
+
     function btOrdenar(lista) {
       return [...lista].sort((a, b) => (a.ordem || 0) - (b.ordem || 0) || String(a.created_at).localeCompare(String(b.created_at)));
     }
@@ -13996,6 +14005,29 @@
 
     function btPastaAtual() {
       return btPastaId ? btPastas.find((p) => p.id === btPastaId) || null : null;
+    }
+
+    // Todos os conteúdos cuja pasta pertence ao grupo "tema" (Conteúdos
+    // Instagram), não importa se a pasta é Quadro, Série ou uma antiga pasta
+    // de tema. É o universo que as views de Função enxergam.
+    function btConteudosDoGrupoFuncoes() {
+      const pastasDoGrupo = new Set(btPastas.filter((p) => p.grupo === BT_GRUPO_FUNCOES).map((p) => p.id));
+      return btConteudos.filter((c) => pastasDoGrupo.has(c.pasta_id));
+    }
+
+    // conteudos de uma Função específica (ou 'sem-funcao'), já filtrados
+    // pelo tema escolhido em btTemaFiltro, se houver.
+    function btConteudosDaFuncao(funcao) {
+      const doGrupo = btConteudosDoGrupoFuncoes();
+      const daFuncao = funcao === 'sem-funcao' ? doGrupo.filter((c) => !c.funcao) : doGrupo.filter((c) => c.funcao === funcao);
+      return btTemaFiltro ? daFuncao.filter((c) => (c.tema || '') === btTemaFiltro) : daFuncao;
+    }
+
+    // Temas presentes nos conteúdos de uma Função, pra montar o filtro secundário.
+    function btTemasDaFuncao(funcao) {
+      const doGrupo = btConteudosDoGrupoFuncoes();
+      const daFuncao = funcao === 'sem-funcao' ? doGrupo.filter((c) => !c.funcao) : doGrupo.filter((c) => c.funcao === funcao);
+      return [...new Set(daFuncao.map((c) => c.tema).filter(Boolean))].sort();
     }
 
     function btPlural(n, um, plural) {
@@ -14029,6 +14061,8 @@
     async function btAbrir() {
       btGrupo = null;
       btPastaId = null;
+      btFuncaoAtual = null;
+      btTemaFiltro = '';
       if (!btCarregado) document.getElementById('bt-conteudo').innerHTML = '<p class="texto-vazio">Carregando...</p>';
       else btRenderizar();
       await btCarregar();
@@ -14038,6 +14072,19 @@
     function btIr(grupo, pastaId) {
       btGrupo = grupo;
       btPastaId = pastaId;
+      btFuncaoAtual = null;
+      btTemaFiltro = '';
+      btRenderizar();
+      window.scrollTo({ top: 0 });
+    }
+
+    // Entra numa view de Função (ou 'sem-funcao'): não é uma pasta real, só
+    // um filtro sobre btConteudos. Nunca move nem duplica nada.
+    function btIrFuncao(funcao) {
+      btGrupo = BT_GRUPO_FUNCOES;
+      btPastaId = null;
+      btFuncaoAtual = funcao;
+      btTemaFiltro = '';
       btRenderizar();
       window.scrollTo({ top: 0 });
     }
@@ -14049,13 +14096,15 @@
       if (btGrupo && !btGrupos.some((g) => g.chave === btGrupo)) {
         btGrupo = null;
         btPastaId = null;
+        btFuncaoAtual = null;
       }
       if (btPastaId && !btPastaAtual()) btPastaId = null; // pasta apagada
       btAtualizarCronograma();
       btRenderizarCopiado();
       btRenderizarMigalhas();
       if (!btTabelasOk) return;
-      if (btPastaId) btRenderizarPasta(area);
+      if (btFuncaoAtual) btRenderizarFuncao(area);
+      else if (btPastaId) btRenderizarPasta(area);
       else if (btGrupo) btRenderizarGrupo(area);
       else btRenderizarRaiz(area);
     }
@@ -14069,6 +14118,7 @@
         { rotulo: 'Banco de ideias & Roteiros', ir: () => btIr(null, null) },
       ];
       if (btGrupo) partes.push({ rotulo: btInfoGrupo(btGrupo).rotulo, ir: () => btIr(btGrupo, null), alvo: { grupo: btGrupo } });
+      if (btFuncaoAtual) partes.push({ rotulo: btFuncaoAtual === 'sem-funcao' ? 'Sem função' : btFuncaoAtual, ir: () => btIrFuncao(btFuncaoAtual) });
       const pasta = btPastaAtual();
       if (pasta) btCaminhoPasta(pasta).forEach((p) => partes.push({ rotulo: btNomePasta(p), ir: () => btIr(btGrupo, p.id), alvo: { pastaId: p.id } }));
 
@@ -14688,6 +14738,7 @@
 
     // Dentro de Quadros / Séries / Conteúdos: as pastas daquele grupo.
     function btRenderizarGrupo(area) {
+      if (btGrupo === BT_GRUPO_FUNCOES) return btRenderizarGrupoFuncoes(area);
       const g = btInfoGrupo(btGrupo);
       const pastas = btFilhas(btGrupo, null);
       area.innerHTML = `
@@ -14726,6 +14777,144 @@
         },
         true
       );
+    }
+
+    // Dentro do grupo "tema": Função substitui as pastas por assunto (são
+    // filtros sobre btConteudos, nunca linhas de ideias_pastas — entrar numa
+    // delas não move nem duplica nada). Quadros e Séries continuam sendo
+    // pastas de verdade, do lado, do jeito que sempre foram.
+    function btRenderizarGrupoFuncoes(area) {
+      const g = btInfoGrupo(btGrupo);
+      const pastasReais = btFilhas(btGrupo, null).filter((p) => p.nome === 'Quadros' || p.nome === 'Séries');
+      const cartoesFuncao = [...BT_FUNCOES, 'sem-funcao'].map((f) => {
+        const n = btConteudosDaFuncao(f).length;
+        const nome = f === 'sem-funcao' ? '⚠️ Sem função' : f;
+        const cor = f === 'sem-funcao' ? '#E8A33D' : g.cor;
+        return { cor, html: btHtmlPasta(f, nome, cor, btPlural(n, 'conteúdo', 'conteúdos'), false) };
+      });
+      const cartoesPastas = pastasReais.map((p) => ({ cor: btCorPasta(p), html: btHtmlPasta(p.id, btNomePasta(p), btCorPasta(p), btSubtituloPasta(p, g), true) }));
+      area.innerHTML = `
+        <div class="ferr-pasta-topo">
+          <button type="button" class="cal-btn" id="bt-voltar">← Voltar</button>
+          <div class="ferr-pasta-titulo-bloco">
+            <h3 class="card-titulo">${escapeHtml(g.rotulo)}</h3>
+            <p class="cal-todas-resumo">Organizado por Função. Quadros e Séries continuam como pastas, do jeito que sempre foram.</p>
+          </div>
+        </div>
+        <div id="bt-funcoes-grade">${btGradesPorCor(cartoesFuncao)}</div>
+        ${cartoesPastas.length ? `<h4 class="card-titulo" style="margin-top:20px">Pastas</h4><div id="bt-pastas-reais-grade">${btGradesPorCor(cartoesPastas)}</div>` : ''}
+      `;
+      document.getElementById('bt-voltar').addEventListener('click', () => btIr(null, null));
+      document.getElementById('bt-funcoes-grade').querySelectorAll('.ferr-pasta').forEach((el) => {
+        el.addEventListener('click', () => btIrFuncao(el.dataset.chave));
+      });
+      const areaPastasReais = document.getElementById('bt-pastas-reais-grade');
+      if (areaPastasReais) {
+        areaPastasReais.querySelectorAll('.ferr-pasta').forEach((el) => {
+          const pasta = pastasReais.find((p) => p.id === el.dataset.chave);
+          el.addEventListener('click', () => btIr(btGrupo, pasta.id));
+          const editar = el.querySelector('[data-acao="editar"]');
+          if (editar) {
+            editar.addEventListener('click', (e) => {
+              e.stopPropagation();
+              btAbrirMenuPasta(el, pasta, false);
+            });
+          }
+        });
+        // Arrastar fica restrito a este container: só reordena Quadros/Séries
+        // entre si. Os cartões de Função ficam fora dele, então nunca recebem
+        // nada solto em cima (nem pasta nem conteúdo).
+        btLigarArrasto(
+          areaPastasReais,
+          '.ferr-pasta',
+          'pasta',
+          (origem, destino) => {
+            btPersistirOrdem(btReordenarLista(pastasReais, 'id', origem, destino), 'ideias_pastas');
+          },
+          true
+        );
+      }
+    }
+
+    // View de uma Função (ou "Sem função"): um filtro sobre btConteudos, nunca
+    // uma pasta de verdade. Sem subpastas, sem "+ Nova pasta", sem arrastar —
+    // só agrupa por status (igual uma pasta normal) e abre o editor de sempre.
+    function btRenderizarFuncao(area) {
+      const g = btInfoGrupo(btGrupo);
+      const funcao = btFuncaoAtual;
+      const ehSemFuncao = funcao === 'sem-funcao';
+      const conteudos = btConteudosDaFuncao(funcao);
+      const temas = btTemasDaFuncao(funcao);
+      const titulo = ehSemFuncao ? 'Sem função' : funcao;
+      const prontos = conteudos.filter((c) => plEstagio(c) === 'Roteiro pronto').length;
+      const resumo = conteudos.length
+        ? `${btPlural(conteudos.length, g.itemUm, g.itemPlural)}${prontos ? ` · ${prontos} com roteiro pronto` : ''}`
+        : g.vazioItens;
+
+      area.innerHTML = `
+        <div class="ferr-pasta-topo">
+          <button type="button" class="cal-btn" id="bt-voltar">← ${escapeHtml(g.rotulo)}</button>
+          <div class="ferr-pasta-titulo-bloco">
+            <h3 class="card-titulo">${escapeHtml(titulo)}</h3>
+            <p class="cal-todas-resumo">${escapeHtml(resumo)}</p>
+            ${ehSemFuncao ? '<p class="bt-descricao">Temporário: todo conteúdo sem Função cai aqui até os antigos serem migrados. Escolha a Função em cada um pelo editor pra ele sair daqui.</p>' : ''}
+          </div>
+        </div>
+        ${
+          temas.length
+            ? `<div class="cal-filtro-grupo" id="bt-funcao-filtro-tema">
+          <button type="button" class="cal-filtro-btn${btTemaFiltro ? '' : ' ativo'}" data-tema="">Todos os temas</button>
+          ${temas.map((t) => `<button type="button" class="cal-filtro-btn${btTemaFiltro === t ? ' ativo' : ''}" data-tema="${escapeHtml(t)}">${escapeHtml(t)}</button>`).join('')}
+        </div>`
+            : ''
+        }
+        <div id="bt-itens-grade"></div>`;
+
+      document.getElementById('bt-voltar').addEventListener('click', () => btIr(btGrupo, null));
+      const filtroTema = document.getElementById('bt-funcao-filtro-tema');
+      if (filtroTema) {
+        filtroTema.querySelectorAll('[data-tema]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            btTemaFiltro = btn.dataset.tema;
+            btRenderizarFuncao(area);
+          });
+        });
+      }
+
+      const grade = document.getElementById('bt-itens-grade');
+      if (conteudos.length === 0) {
+        grade.innerHTML = '<div class="ferr-vazio"><p>Nenhum conteúdo aqui ainda.</p></div>';
+        return;
+      }
+      const ORDEM_STATUS = PL_STATUS_ORDEM;
+      const porStatus = new Map();
+      conteudos.forEach((c) => {
+        const status = plEstagio(c);
+        if (!porStatus.has(status)) porStatus.set(status, []);
+        porStatus.get(status).push(c);
+      });
+      [...porStatus.keys()]
+        .sort((a, b) => {
+          const ia = ORDEM_STATUS.indexOf(a);
+          const ib = ORDEM_STATUS.indexOf(b);
+          return (ia === -1 ? ORDEM_STATUS.length : ia) - (ib === -1 ? ORDEM_STATUS.length : ib);
+        })
+        .forEach((status) => {
+          let lista = porStatus.get(status);
+          if (status === 'Não iniciado') lista = [2, 1, 0].flatMap((nivel) => lista.filter((c) => btNivelRoteiro(c) === nivel));
+          const secao = document.createElement('div');
+          secao.className = 'pl-banco-grupo';
+          secao.innerHTML = `
+            <div class="pl-banco-grupo-titulo">
+              <span class="ugc-status-pill ${classeStatusIdeia(status)}">${escapeHtml(traduzirStatusIdeia(status))}</span>
+              <span class="pl-banco-grupo-contagem">${lista.length}</span>
+            </div>`;
+          const cartoes = document.createElement('div');
+          cartoes.className = 'ugc-roteiros-grade';
+          lista.forEach((c) => cartoes.appendChild(btCriarCardConteudo(c, conteudos.indexOf(c), false)));
+          secao.appendChild(cartoes);
+          grade.appendChild(secao);
+        });
     }
 
     // Dentro de uma pasta: subpastas (em qualquer nível) e conteúdos (cada um abre o editor de roteiro de sempre).

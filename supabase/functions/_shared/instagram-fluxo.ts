@@ -495,27 +495,11 @@ export async function processarMensagem(supabaseAdmin: any, contaId: string, acc
     return;
   }
 
-  // Nenhum passo pendente: trata como um gatilho novo, igual um comentário
-  // (mensagem direta com a palavra-chave também dispara a automação).
-  const { data: automacoes } = await supabaseAdmin.from("instagram_automacoes").select(COLUNAS_AUTOMACAO).eq("ativo", true);
-  const automacao = acharAutomacaoParaTexto((automacoes || []) as AutomacaoRow[], texto, null);
-  if (!automacao) return; // não bate com nada — silêncio
-
-  const passo0 = primeiroPasso(automacao.flow);
-  if (!passo0) return;
-
-  const { enviadoAgora, garantido } = await entregarPasso(supabaseAdmin, contaId, accessToken, { id: igUserId }, automacao as AutomacaoRow, passo0, igUserId, null);
-  if (!garantido) return;
-
-  await upsertLead(supabaseAdmin, {
-    igUserId,
-    username: null,
-    origem: "Direct",
-    palavra: automacao.match_any ? "(qualquer palavra)" : automacao.palavra_gatilho,
-    automacaoId: automacao.id,
-    recebeu: enviadoAgora,
-    flowStep: String(passo0.id),
-  });
+  // REGRA DO SISTEMA: uma automação só pode ser iniciada por um comentário no
+  // post — nunca por uma mensagem direta, mesmo que o texto bata com a
+  // palavra-chave. Sem passo pendente nem botão apertado, essa DM solta não
+  // está continuando um fluxo que já começou por comentário, então é
+  // ignorada em silêncio (não inicia nada novo).
 }
 
 // ---- Usado pelo instagram-scheduler ----

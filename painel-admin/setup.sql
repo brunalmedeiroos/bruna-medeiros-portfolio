@@ -1261,3 +1261,30 @@ create policy "Painel: escrita autenticada de registros de hábito"
 drop policy if exists "Painel: exclusão autenticada de registros de hábito" on public.painel_habito_registros;
 create policy "Painel: exclusão autenticada de registros de hábito"
   on public.painel_habito_registros for delete to authenticated using (public.is_owner());
+
+-- ---------------------------------------------------------------------
+-- Meus conteúdos: Função, Oferta e Tema em cada conteúdo (ver
+-- banco-ideias-funcao-tema-oferta.sql). Aditivo: não mexe em pilar_conteudo,
+-- publico nem na estrutura de pastas.
+-- ---------------------------------------------------------------------
+
+alter table public.ideias_conteudos add column if not exists funcao text;
+alter table public.ideias_conteudos add column if not exists oferta boolean not null default false;
+alter table public.ideias_conteudos add column if not exists tema text;
+alter table public.ideias_conteudos add column if not exists funcao_sugerida text;
+alter table public.ideias_conteudos add column if not exists funcao_sugerida_incerta boolean not null default false;
+
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'ideias_conteudos_funcao_check') then
+    alter table public.ideias_conteudos
+      add constraint ideias_conteudos_funcao_check
+      check (funcao is null or funcao in ('Mostra meu trabalho', 'Conecta', 'Ensina'));
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'ideias_conteudos_funcao_sugerida_check') then
+    alter table public.ideias_conteudos
+      add constraint ideias_conteudos_funcao_sugerida_check
+      check (funcao_sugerida is null or funcao_sugerida in ('Mostra meu trabalho', 'Conecta', 'Ensina'));
+  end if;
+end
+$$;

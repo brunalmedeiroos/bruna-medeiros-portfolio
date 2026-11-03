@@ -1,0 +1,152 @@
+[
+ {
+  "cena": "1 gancho",
+  "inicio": 0.0,
+  "fim": 3.72,
+  "origem": [
+   "v1",
+   13.64,
+   17.15
+  ]
+ },
+ {
+  "cena": "2 problema a",
+  "inicio": 4.0,
+  "fim": 9.54,
+  "origem": [
+   "v1",
+   41.25,
+   46.58
+  ]
+ },
+ {
+  "cena": "2 problema b",
+  "inicio": 9.7,
+  "fim": 16.14,
+  "origem": [
+   "v1",
+   61.27,
+   67.5
+  ]
+ },
+ {
+  "cena": "2 problema c",
+  "inicio": 16.3,
+  "fim": 17.44,
+  "origem": [
+   "v1",
+   72.8,
+   73.73
+  ]
+ },
+ {
+  "cena": "3 solucao a",
+  "inicio": 17.72,
+  "fim": 20.17,
+  "origem": [
+   "v1",
+   75.45,
+   77.69
+  ]
+ },
+ {
+  "cena": "3 solucao b",
+  "inicio": 20.33,
+  "fim": 24.39,
+  "origem": [
+   "v1",
+   94.26,
+   98.11
+  ]
+ },
+ {
+  "cena": "3 solucao c",
+  "inicio": 24.55,
+  "fim": 25.88,
+  "origem": [
+   "v1",
+   100.08,
+   101.2
+  ]
+ },
+ {
+  "cena": "4 app",
+  "inicio": 26.16,
+  "fim": 27.98,
+  "origem": [
+   "v2",
+   3.2,
+   4.81
+  ]
+ },
+ {
+  "cena": "5 conectar a",
+  "inicio": 28.26,
+  "fim": 31.14,
+  "origem": [
+   "v2",
+   20.19,
+   22.86
+  ]
+ },
+ {
+  "cena": "5 conectar b",
+  "inicio": 31.3,
+  "fim": 34.61,
+  "origem": [
+   "v2",
+   24.67,
+   27.77
+  ]
+ },
+ {
+  "cena": "6 possib a",
+  "inicio": 34.89,
+  "fim": 37.37,
+  "origem": [
+   "v2",
+   63.13,
+   65.4
+  ]
+ },
+ {
+  "cena": "6 possib b",
+  "inicio": 37.53,
+  "fim": 40.5,
+  "origem": [
+   "v2",
+   68.27,
+   71.03
+  ]
+ },
+ {
+  "cena": "6 possib c",
+  "inicio": 40.66,
+  "fim": 43.15,
+  "origem": [
+   "v2",
+   73.68,
+   75.96
+  ]
+ },
+ {
+  "cena": "7 cta a",
+  "inicio": 43.43,
+  "fim": 48.05,
+  "origem": [
+   "v2",
+   93.61,
+   98.02
+  ]
+ },
+ {
+  "cena": "7 cta b",
+  "inicio": 48.21,
+  "fim": 49.54,
+  "origem": [
+   "v2",
+   99.28,
+   100.4
+  ]
+ }
+]

@@ -13,7 +13,7 @@
 ## 3. Legenda
 - De 1 a 3 palavras por vez, na fonte Bootzy TM
 - Posição: logo acima da base segura (acima de 126 px da base)
-- Cor: #f1f1f1 com a palavra-chave em #f5e1b4 (combinação provisória; pode ajustar a qualquer momento)
+- Cor: sempre #f1f1f1 (branquinho); só a palavra destacada muda para #f5e1b4 (cor de destaque). Aprovado pela Bruna
 - Sombra bem clara e suave, sem contorno nem fundo
 ## 4. Ritmo
 - Médio: cortes a cada 2 ou 3 segundos
@@ -30,3 +30,9 @@ A Bruna gostou dos 3 e vai usar todos, conforme o tipo de vídeo (sugestão a co
 - **B · Marca-texto:** Reels que ensinam, com prints (marca-texto #f5e1b4 na palavra-chave, cartão de print)
 - **C · Contraste:** frase de virada ou de impacto (fundo escuro, palavra gigante em Pinyon Script dourada)
 Podem ser misturados no mesmo Reels (ex.: B no meio e C na virada), sempre mantendo paleta, fontes e legenda acima da base segura.
+
+## Estilos aprovados (Bruna gostou dos 3; usar conforme o vídeo)
+- A · Suave: fundo claro→azul, título em Pinyon Script no topo
+- B · Cartão de print: fundo azul, cartão de print girando no alto
+- C · Contraste: fundo marrom escuro, palavra gigante em Pinyon Script dourada na virada
+- Em todos: legenda branca, destaque dourado, sombra clara

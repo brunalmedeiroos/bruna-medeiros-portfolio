@@ -222,10 +222,10 @@ export const EstiloB: React.FC = () => (
     cortes={[0, 2, 3.7]}
     estilo={{
       fundo: (i) => [CORES.azul, CORES.claro, CORES.azul][i],
-      corTexto: CORES.escuro,
-      corDestaque: CORES.escuro,
-      sombra: "0 3px 12px rgba(241,241,241,0.9)",
-      marcaTexto: true,
+      corTexto: CORES.claro,
+      corDestaque: CORES.destaque,
+      sombra: "0 4px 18px rgba(75,57,53,0.28)",
+      marcaTexto: false,
     }}
     extra={<Cartao de={2.5} texto="print de resultado" />}
   />
@@ -249,7 +249,7 @@ export const EstiloC: React.FC = () => {
           ][i],
         corTexto: CORES.claro,
         corDestaque: CORES.destaque,
-        sombra: "0 4px 16px rgba(241,241,241,0.25)",
+        sombra: "0 4px 18px rgba(0,0,0,0.25)",
         marcaTexto: false,
       }}
       extra={

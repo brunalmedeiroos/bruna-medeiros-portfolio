@@ -13,13 +13,13 @@ import {
 import { CORES } from "./identidade";
 import { HEIGHT, SAFE_AREA, WIDTH } from "./config";
 
-const F = {
+export const F = {
   titulo: "Open Sauce One",
   script: "Pinyon Script",
   legenda: "Bootzy TM",
 };
 
-const useFontes = () => {
+export const useFontes = () => {
   const [handle] = useState(() => delayRender("fontes"));
   useEffect(() => {
     Promise.all([

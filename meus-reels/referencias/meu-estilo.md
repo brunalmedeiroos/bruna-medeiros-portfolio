@@ -5,6 +5,7 @@ Referências analisadas (vídeos locais em `referencias/*.mp4`, fora do Git):
 2. @leticiavaz — DefZ7EusqfG (137s): falado, plano contínuo sem cortes, prints/cards de perfis aparecendo no alto, destaque amarelo-marca-texto nas palavras-chave.
 3. @pa.parmigiani — DecBxW3RInx (61s): falado, plano fixo, janelas de tela (Pinterest, Claude) no alto, legenda 2–3 palavras na base, adesivos no fim ("me segue").
 4. @dudarmg — DZ3rygvsuly (33s): B-roll + narração, ~21 cortes (1 a 2 s por cena), legenda 1–4 palavras no centro, cor clara, sem sombra forte.
+5. @katya (DZ_Nr8KsLN6, 68s): ~23 cortes, falado com B-roll e prints de métricas em tela cheia, palavras grandes e pequenas misturadas, adesivos de estrela, telas lisas com texto.
 (Som/áudio não analisado: não consigo ouvir os vídeos.)
 
 ## Os 6 pontos

@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261103e">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261107a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -2888,6 +2888,13 @@
           <div class="cal-form-campo">
             <label for="clientes-modal-entrega" data-i18n="clientes_col_prazo">Prazo de entrega</label>
             <input type="date" id="clientes-modal-entrega">
+          </div>
+        </div>
+
+        <h4 class="ugc-modal-secao-titulo" data-i18n="clientes_respostas_formulario">Respostas do formulário</h4>
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <textarea id="clientes-modal-respostas-formulario" class="pl-textarea-grande" rows="5" data-i18n-placeholder="clientes_respostas_formulario_placeholder" placeholder="Cole aqui as respostas que a cliente preencheu no formulário."></textarea>
           </div>
         </div>
 
@@ -5880,6 +5887,8 @@
         clientes_links: 'Links',
         clientes_add_link: '+ Adicionar link',
         clientes_observacoes: 'Observações',
+        clientes_respostas_formulario: 'Respostas do formulário',
+        clientes_respostas_formulario_placeholder: 'Cole aqui as respostas que a cliente preencheu no formulário.',
         clientes_nenhum_link: 'Nenhum link ainda.',
         clientes_link_rotulo_placeholder: 'Rótulo (ex: Vitrine)',
         clientes_link_privado: 'Privado',
@@ -7274,6 +7283,8 @@
         clientes_links: 'Links',
         clientes_add_link: '+ Add link',
         clientes_observacoes: 'Notes',
+        clientes_respostas_formulario: 'Form answers',
+        clientes_respostas_formulario_placeholder: 'Paste the answers the client filled in the form here.',
         clientes_nenhum_link: 'No links yet.',
         clientes_link_rotulo_placeholder: 'Label (e.g. Showcase)',
         clientes_link_privado: 'Private',
@@ -23183,6 +23194,7 @@
       document.getElementById('clientes-modal-email').value = cliente ? cliente.contato_email || '' : '';
       document.getElementById('clientes-modal-whats').value = cliente ? cliente.contato_whatsapp || '' : '';
       document.getElementById('clientes-modal-observacoes').value = cliente ? cliente.observacoes || '' : '';
+      document.getElementById('clientes-modal-respostas-formulario').value = cliente ? cliente.respostas_formulario || '' : '';
 
       clientesModalLinks = cliente
         ? clientesLinksCache
@@ -23194,6 +23206,11 @@
 
       document.getElementById('clientes-modal-excluir').hidden = !cliente;
       document.getElementById('clientes-modal-overlay').hidden = false;
+      // Cliente novo: o nome ainda precisa ser digitado primeiro, mas o campo
+      // de respostas do formulário fica em destaque — é o motivo de abrir a
+      // ficha agora, geralmente logo depois que o formulário chega.
+      if (!cliente) document.getElementById('clientes-modal-respostas-formulario').classList.add('clientes-campo-destaque');
+      else document.getElementById('clientes-modal-respostas-formulario').classList.remove('clientes-campo-destaque');
       clienteSnapshotInicial = capturarEstadoCliente();
     }
 
@@ -23215,6 +23232,7 @@
         email: document.getElementById('clientes-modal-email').value,
         whats: document.getElementById('clientes-modal-whats').value,
         observacoes: document.getElementById('clientes-modal-observacoes').value,
+        respostasFormulario: document.getElementById('clientes-modal-respostas-formulario').value,
         links: clientesModalLinks,
       });
     }
@@ -23263,6 +23281,7 @@
         contato_email: document.getElementById('clientes-modal-email').value.trim() || null,
         contato_whatsapp: document.getElementById('clientes-modal-whats').value.trim() || null,
         observacoes: document.getElementById('clientes-modal-observacoes').value.trim() || null,
+        respostas_formulario: document.getElementById('clientes-modal-respostas-formulario').value.trim() || null,
       };
 
       const btn = document.getElementById('clientes-modal-salvar');

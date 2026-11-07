@@ -4707,6 +4707,12 @@
   cursor: pointer;
 }
 
+/* Cliente novo: destaca onde colar as respostas do formulário assim que ele chegar. */
+.painel-body .clientes-campo-destaque {
+  border-color: var(--coral);
+  box-shadow: 0 0 0 1px var(--coral);
+}
+
 /* Campos das sub-abas Modelos e Links e mensagens (fora de modal, então
    não pegam o estilo de .pl-modal) */
 .painel-body #clientes-principal input[type="text"],

@@ -721,7 +721,8 @@ create table if not exists public.clientes (
   valor numeric(10, 2),
   data_fechamento date,
   data_entrega date,
-  observacoes text
+  observacoes text,
+  respostas_formulario text
 );
 
 create index if not exists clientes_status_idx on public.clientes (status);

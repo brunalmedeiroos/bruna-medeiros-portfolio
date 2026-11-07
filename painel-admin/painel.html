@@ -2891,10 +2891,17 @@
           </div>
         </div>
 
-        <h4 class="ugc-modal-secao-titulo" data-i18n="clientes_respostas_formulario">Respostas do formulário</h4>
+        <h4 class="ugc-modal-secao-titulo" data-i18n="clientes_respostas_formulario">Respostas pro prompt</h4>
         <div class="pl-modal-linha">
           <div class="cal-form-campo">
-            <textarea id="clientes-modal-respostas-formulario" class="pl-textarea-grande" rows="5" data-i18n-placeholder="clientes_respostas_formulario_placeholder" placeholder="Cole aqui as respostas que a cliente preencheu no formulário."></textarea>
+            <textarea id="clientes-modal-respostas-formulario" class="pl-textarea-grande" rows="5" data-i18n-placeholder="clientes_respostas_formulario_placeholder" placeholder="Cole aqui bio, nichos, cidade, serviços, vídeos, marcas, feedbacks, contato do site, cores — o que vai virar conteúdo do portfólio."></textarea>
+          </div>
+        </div>
+
+        <h4 class="ugc-modal-secao-titulo" data-i18n="clientes_respostas_privado">Só pra mim (não entra no prompt)</h4>
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <textarea id="clientes-modal-respostas-privado" class="pl-textarea-grande" rows="5" data-i18n-placeholder="clientes_respostas_privado_placeholder" placeholder="Plano, valor, termos aceitos, autorização de divulgação, contato pessoal da cliente..."></textarea>
           </div>
         </div>
 
@@ -5887,8 +5894,10 @@
         clientes_links: 'Links',
         clientes_add_link: '+ Adicionar link',
         clientes_observacoes: 'Observações',
-        clientes_respostas_formulario: 'Respostas do formulário',
-        clientes_respostas_formulario_placeholder: 'Cole aqui as respostas que a cliente preencheu no formulário.',
+        clientes_respostas_formulario: 'Respostas pro prompt',
+        clientes_respostas_formulario_placeholder: 'Cole aqui bio, nichos, cidade, serviços, vídeos, marcas, feedbacks, contato do site, cores — o que vai virar conteúdo do portfólio.',
+        clientes_respostas_privado: 'Só pra mim (não entra no prompt)',
+        clientes_respostas_privado_placeholder: 'Plano, valor, termos aceitos, autorização de divulgação, contato pessoal da cliente...',
         clientes_nenhum_link: 'Nenhum link ainda.',
         clientes_link_rotulo_placeholder: 'Rótulo (ex: Vitrine)',
         clientes_link_privado: 'Privado',
@@ -7283,8 +7292,10 @@
         clientes_links: 'Links',
         clientes_add_link: '+ Add link',
         clientes_observacoes: 'Notes',
-        clientes_respostas_formulario: 'Form answers',
-        clientes_respostas_formulario_placeholder: 'Paste the answers the client filled in the form here.',
+        clientes_respostas_formulario: 'Answers for the prompt',
+        clientes_respostas_formulario_placeholder: 'Paste bio, niches, city, services, videos, brands, feedback, site contact, colors — whatever becomes portfolio content.',
+        clientes_respostas_privado: 'Just for me (not in the prompt)',
+        clientes_respostas_privado_placeholder: 'Plan, price, terms accepted, publicity consent, the client\'s personal contact...',
         clientes_nenhum_link: 'No links yet.',
         clientes_link_rotulo_placeholder: 'Label (e.g. Showcase)',
         clientes_link_privado: 'Private',
@@ -23195,6 +23206,7 @@
       document.getElementById('clientes-modal-whats').value = cliente ? cliente.contato_whatsapp || '' : '';
       document.getElementById('clientes-modal-observacoes').value = cliente ? cliente.observacoes || '' : '';
       document.getElementById('clientes-modal-respostas-formulario').value = cliente ? cliente.respostas_formulario || '' : '';
+      document.getElementById('clientes-modal-respostas-privado').value = cliente ? cliente.respostas_privado || '' : '';
 
       clientesModalLinks = cliente
         ? clientesLinksCache
@@ -23206,11 +23218,12 @@
 
       document.getElementById('clientes-modal-excluir').hidden = !cliente;
       document.getElementById('clientes-modal-overlay').hidden = false;
-      // Cliente novo: o nome ainda precisa ser digitado primeiro, mas o campo
-      // de respostas do formulário fica em destaque — é o motivo de abrir a
-      // ficha agora, geralmente logo depois que o formulário chega.
-      if (!cliente) document.getElementById('clientes-modal-respostas-formulario').classList.add('clientes-campo-destaque');
-      else document.getElementById('clientes-modal-respostas-formulario').classList.remove('clientes-campo-destaque');
+      // Cliente novo: o nome ainda precisa ser digitado primeiro, mas os dois
+      // campos de respostas ficam em destaque — é o motivo de abrir a ficha
+      // agora, geralmente logo depois que o formulário chega.
+      [document.getElementById('clientes-modal-respostas-formulario'), document.getElementById('clientes-modal-respostas-privado')].forEach((el) => {
+        el.classList.toggle('clientes-campo-destaque', !cliente);
+      });
       clienteSnapshotInicial = capturarEstadoCliente();
     }
 
@@ -23233,6 +23246,7 @@
         whats: document.getElementById('clientes-modal-whats').value,
         observacoes: document.getElementById('clientes-modal-observacoes').value,
         respostasFormulario: document.getElementById('clientes-modal-respostas-formulario').value,
+        respostasPrivado: document.getElementById('clientes-modal-respostas-privado').value,
         links: clientesModalLinks,
       });
     }
@@ -23282,6 +23296,7 @@
         contato_whatsapp: document.getElementById('clientes-modal-whats').value.trim() || null,
         observacoes: document.getElementById('clientes-modal-observacoes').value.trim() || null,
         respostas_formulario: document.getElementById('clientes-modal-respostas-formulario').value.trim() || null,
+        respostas_privado: document.getElementById('clientes-modal-respostas-privado').value.trim() || null,
       };
 
       const btn = document.getElementById('clientes-modal-salvar');

@@ -24148,7 +24148,6 @@
 
       const rank = atual ? dgRanking(atual.id).lista.filter((r) => r.pontos !== 0).slice(0, 5) : [];
       const proximos = dgDesafiosFuturos().slice(0, 4);
-      const dificuldades = dgDificuldades().slice(0, 5);
       const conquistas = [...dg.d.conquistas].sort((a, b) => b.data.localeCompare(a.data) || b.created_at.localeCompare(a.created_at)).slice(0, 5);
 
       return `
@@ -24170,14 +24169,6 @@
               proximos.length
                 ? `<ul class="dg-lista-simples">${proximos.map((x) => `<li><button type="button" class="dg-link" data-dg-ir="desafio" data-dg-param="${x.id}">${dgH(x.nome)}</button><span>${dgFmtData(x.data_inicio)} a ${dgFmtData(x.data_fim)}</span></li>`).join('')}</ul>`
                 : '<p class="dg-vazio-texto">Nenhum desafio planejado. Crie os próximos pra organizar o calendário.</p>'
-            }
-          </section>
-          <section class="card dg-bloco">
-            <div class="dg-bloco-topo"><h3 class="card-titulo">🧩 Dificuldades mais frequentes</h3><button type="button" class="cal-btn" data-dg-ir="evolucao">Ver evolução</button></div>
-            ${
-              dificuldades.length
-                ? `<ul class="dg-lista-simples">${dificuldades.map((x) => `<li><span>${dgH(x.rotulo)}</span><strong>${x.qtd}x</strong></li>`).join('')}</ul>`
-                : '<p class="dg-vazio-texto">As dificuldades que você anotar aparecem aqui.</p>'
             }
           </section>
           <section class="card dg-bloco">

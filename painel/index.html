@@ -24253,7 +24253,7 @@
         return;
       }
       area.innerHTML = `<table class="dg-tabela">
-        <thead><tr><th>Nome</th><th>Instagram</th><th>Etapa</th><th>Portfólio</th><th>Status</th><th>Pontos</th><th>Última atividade</th></tr></thead>
+        <thead><tr><th>Nome</th><th>Instagram</th><th>Etapa</th><th>Status</th><th>Pontos</th><th>Última atividade</th></tr></thead>
         <tbody>${lista
           .map((p) => {
             const ultima = dgUltimaAtividade(p.id);
@@ -24261,7 +24261,6 @@
               <td><strong>${dgH(p.nome)}</strong></td>
               <td>${dgLinkInsta(p)}</td>
               <td>${dgH(p.etapa)}</td>
-              <td>${dgH(p.portfolio_situacao)}</td>
               <td>${dgPill(p.arquivada ? 'Arquivada' : dgRotulo(DG_STATUS_PART, p.status), dgClasseStatusPart(p))}${dgSemAtividade(p) ? ' ' + dgPill('💌 incentivar', 'dg-pill-amarela') : ''}</td>
               <td><strong>${dgPontos(p.id)}</strong></td>
               <td>${dgH(dgTextoHa(ultima))}</td>

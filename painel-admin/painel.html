@@ -25422,12 +25422,6 @@
         if (e.target.dataset.dgFiltro) return dgFiltroMudou(e.target);
         if (e.target.id === 'dgp-desafio') return dgPreencherMotivos();
         if (e.target.id === 'dgp-motivo') return dgMotivoMudou();
-        if (e.target.matches('[data-dg-status-entrega]')) {
-          const s = e.target;
-          dgSalvarEntrega(s.dataset.desafio, s.dataset.atividade, s.dataset.participante, { status: s.value })
-            .then(() => dgListaEntregas())
-            .catch((err) => dgErro(err, 'status da entrega'));
-        }
       });
       painel.addEventListener('input', (e) => {
         if (e.target.dataset.dgFiltro && e.target.type === 'search') dgFiltroMudou(e.target);

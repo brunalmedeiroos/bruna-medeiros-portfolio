@@ -258,10 +258,6 @@ const Gigante: React.FC = () => {
 
 const Elementos: React.FC = () => (
   <>
-    <Cartao de={T.controle[0]} ate={T.controle[1]} rot={-3}>
-      <span style={{ fontSize: 80 }}>🎮</span>
-      <span>controle do tripé</span>
-    </Cartao>
     <Cartao de={T.angulos[0]} ate={T.angulos[1]} rot={2}>
       <span style={{ fontSize: 80 }}>🎬</span>
       <span>
@@ -295,7 +291,7 @@ const SONS: [number, string, number][] = [
   [1.48, "brilho", 0.6], // "comigo"
   [11.5, "espelhar", 0.3], // "do meu celular"
 
-  [T.controle[0], "click", 0.5],
+  [T.controle[0], "click", 0.5], // "controlzinho" (só som, sem cartão)
   [T.angulos[0], "click", 0.5],
   [T.troca[0], "click", 0.5],
   [T.gigante[0], "impacto", 0.6],

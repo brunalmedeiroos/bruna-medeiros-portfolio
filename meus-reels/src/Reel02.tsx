@@ -58,7 +58,7 @@ const Recorte: React.FC<{ zoom: (f: number) => number }> = ({ zoom }) => {
   );
 };
 
-const segundos = () => useCurrentFrame() / useVideoConfig().fps;
+const useSegundos = () => useCurrentFrame() / useVideoConfig().fps;
 
 // ---------- título de abertura ----------
 const Titulo: React.FC = () => {
@@ -120,21 +120,16 @@ const Legenda: React.FC = () => {
   if (s >= T.gigante[0] && s < T.gigante[1]) return null; // a palavra gigante fala por si
   const atual = LEGENDA.find((c) => s >= c.s && s < c.e);
   if (!atual) return null;
-  const local = (s - atual.s) * fps;
-  const op = interpolate(local, [0, 3], [0, 1], { extrapolateRight: "clamp" });
-  const sc = interpolate(local, [0, 3], [0.92, 1], { extrapolateRight: "clamp" });
   return (
     <div
       style={{
         position: "absolute",
         left: SAFE_AREA.sides + 40,
         right: SAFE_AREA.sides + 40,
-        bottom: SAFE_AREA.bottom + 330,
+        bottom: SAFE_AREA.bottom + 430,
         textAlign: "center",
-        opacity: op,
-        transform: `scale(${sc})`,
         fontFamily: F.legenda,
-        fontSize: 88,
+        fontSize: 76,
         lineHeight: 1.1,
         textShadow: "0 4px 18px rgba(75,57,53,0.28)",
       }}
@@ -213,7 +208,7 @@ const Rotulo: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 const Item: React.FC<{ quando: number; texto: string; x?: boolean }> = ({ quando, texto, x }) => {
-  const t = segundos();
+  const t = useSegundos();
   const p = interpolate(t, [quando, quando + 0.18], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
@@ -230,7 +225,6 @@ const Item: React.FC<{ quando: number; texto: string; x?: boolean }> = ({ quando
         color: x ? "rgba(75,57,53,0.55)" : undefined,
       }}
     >
-      <span style={{ color: x ? "#b5574b" : "#b88a2a", fontSize: 60 }}>{x ? "✗" : "✓"}</span>
       <span>{texto}</span>
     </div>
   );
@@ -299,19 +293,9 @@ const Checklist: React.FC = () => (
 
 const Elementos: React.FC = () => (
   <>
-    <Cartao de={T.espelho[0]} ate={T.espelho[1]} rot={3}>
-      <span style={{ fontSize: 80 }}>📱</span>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        <Rotulo>dica</Rotulo>
-        <span>espelhar a tela</span>
-      </div>
-    </Cartao>
     <Cartao de={T.controle[0]} ate={T.controle[1]} rot={-3}>
       <span style={{ fontSize: 80 }}>🎮</span>
-      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        <Rotulo>dica</Rotulo>
-        <span>controle do tripé</span>
-      </div>
+      <span>controle do tripé</span>
     </Cartao>
     <Cartao de={T.angulos[0]} ate={T.angulos[1]} rot={2}>
       <span style={{ fontSize: 80 }}>🎬</span>
@@ -342,15 +326,12 @@ const Elementos: React.FC = () => (
 
 // ---------- efeitos sonoros ----------
 const SONS: [number, string, number][] = [
-  [0, "whoosh", 0.55],
-  [0.23, "whoosh", 0.35],
+  [0, "whoosh", 0.18],
+  [1.48, "brilho", 0.35], // "comigo"
   [T.lista[0], "click", 0.5],
-  ...T.itens.map((t) => [t, "click", 0.5] as [number, string, number]),
-  [T.espelho[0], "click", 0.5],
   [T.controle[0], "click", 0.5],
   [T.angulos[0], "click", 0.5],
   [T.troca[0], "click", 0.5],
-  [T.trocaItens[1], "click", 0.5],
   [T.gigante[0], "impacto", 0.6],
   [T.perfil[0], "click", 0.5],
 ];

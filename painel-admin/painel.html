@@ -24204,7 +24204,6 @@
           <input type="search" class="rt-busca dg-busca" data-dg-filtro="part.busca" placeholder="Buscar por nome ou Instagram" value="${dgH(f.busca)}">
           <select data-dg-filtro="part.status">${dgOpcoesSelect(statusOpcoes, f.status, 'Todas (menos arquivadas)')}</select>
           <select data-dg-filtro="part.etapa">${dgOpcoesSelect(DG_ETAPAS.map((e) => [e, e]), f.etapa, 'Todas as etapas')}</select>
-          <select data-dg-filtro="part.portfolio">${dgOpcoesSelect(DG_PORTFOLIOS.map((e) => [e, e]), f.portfolio, 'Todos os portfólios')}</select>
           <select data-dg-filtro="part.desafio">${dgOpcoesSelect(desafioOpcoes, f.desafio, 'Todos os desafios')}</select>
         </div>`;
     }
@@ -24233,7 +24232,6 @@
           if (f.status === 'inativas' && p.status === 'ativa') return false;
           if (f.status === 'sem_atividade' && !dgSemAtividade(p)) return false;
           if (f.etapa && p.etapa !== f.etapa) return false;
-          if (f.portfolio && p.portfolio_situacao !== f.portfolio) return false;
           if (f.desafio === 'nenhum' && emAlgum.has(p.id)) return false;
           if (inscritasDoDesafio && !inscritasDoDesafio.has(p.id)) return false;
           if (termo && !(p.nome.toLowerCase().includes(termo) || String(p.instagram_usuario || '').toLowerCase().replace(/^@/, '').includes(termo))) return false;

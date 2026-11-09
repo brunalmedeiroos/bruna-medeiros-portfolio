@@ -110,7 +110,7 @@ const Legenda: React.FC = () => {
       }}
     >
       {atual.w.map((w, i) => (
-        <span key={i} style={{ color: CORES.claro }}>
+        <span key={i} style={{ color: CORES.claro, opacity: s >= w.s ? 1 : 0 }}>
           {w.t}
           {i < atual.w.length - 1 ? " " : ""}
         </span>
@@ -225,6 +225,32 @@ const Gigante: React.FC = () => {
 
 // ---------- X com as mãos ("acabou"): soco de zoom + flash + tremida ----------
 const X_MAOS = 33.27;
+const Acabou: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const t = frame / fps;
+  const ate = 34.0;
+  if (t < X_MAOS || t > ate) return null;
+  const e = spring({ frame: frame - X_MAOS * fps, fps, config: { damping: 10, stiffness: 220 } });
+  const op = interpolate(t, [ate - 0.15, ate], [1, 0], { extrapolateLeft: "clamp" });
+  return (
+    <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", opacity: op }}>
+      <div
+        style={{
+          fontFamily: F.titulo,
+          fontWeight: 700,
+          fontSize: 150,
+          color: CORES.claro,
+          textShadow: "0 6px 30px rgba(75,57,53,0.55)",
+          transform: `scale(${0.4 + e * 0.6}) rotate(-4deg)`,
+        }}
+      >
+        acabou!
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 const useSocoX = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -238,6 +264,7 @@ const useSocoX = () => {
 const Elementos: React.FC = () => (
   <>
     <Gigante />
+    <Acabou />
     <Cartao de={T.perfil[0]} ate={T.perfil[1]} rot={3}>
       <span style={{ fontSize: 80 }}>✨</span>
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>

@@ -24371,7 +24371,6 @@
           </div>
           <div class="dg-dados">
             ${dado('Etapa atual', dgH(p.etapa))}
-            ${dado('Portfólio', dgH(p.portfolio_situacao) + (p.portfolio_link ? ` · <a href="${dgH(p.portfolio_link)}" target="_blank" rel="noopener noreferrer">abrir</a>` : ''))}
             ${dado('Principal dificuldade', dgH(p.dificuldade_principal))}
             ${dado('Objetivo profissional', dgH(p.objetivo))}
             ${dado('Experiência com conteúdo', dgH(p.experiencia_conteudo))}
@@ -25099,7 +25098,6 @@
       const maximo = Math.max(1, ...porEtapa.map((x) => x.qtd));
       const idx = (p) => DG_ETAPAS.indexOf(p.etapa);
       const indicadores = [
-        { r: 'Com portfólio pronto', v: parts.filter((p) => p.portfolio_situacao === 'Pronto').length, ir: 'participantes', param: null },
         { r: 'Produzindo conteúdo', v: parts.filter((p) => idx(p) >= 2).length },
         { r: 'Já prospectaram marcas', v: parts.filter((p) => idx(p) >= 3).length },
         { r: 'Já conseguiram trabalhos', v: parts.filter((p) => idx(p) >= 4).length },

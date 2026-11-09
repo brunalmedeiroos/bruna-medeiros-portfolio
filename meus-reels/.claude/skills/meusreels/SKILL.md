@@ -25,6 +25,13 @@ Uso dela: `/meusreels + vídeo + roteiro + materiais`. Fale em português, sem j
 - Tom de voz: próxima, bem-humorada e direta; frases curtas.
 - Estilos aprovados (usar conforme o vídeo): A Suave, **B cartões de print (padrão em vídeo falado)**, C Contraste (palavra gigante em Pinyon Script na virada).
 - Cartões: no **alto da tela (top ≈ 190)**, nunca sobre a boca; entram com spring girando, saem com fade; ficheiros em `modelo/Reel01.tsx` (`Cartao`, `Item`, `Wifi`).
+- **Atualizado no Reels 02 (bastidores, aprovado):** legenda **toda branca** (sem dourado), **palavra por palavra** (cada palavra surge na hora da fala, dentro do grupo de 1–3), **sem animação de entrada**, Bootzy 76 px, bottom = 126 + 430. Modelo: `src/Reel02.tsx` + `src/reel02-data.ts` (cada palavra tem `s`).
+- **Vídeo de bastidores/vlog:** nada de cartões de "dica", listas com ✓/✗ ou cartões no meio; só título no início, frase de impacto em texto branco simples no meio da tela (palavra por palavra, um click por palavra) e cartão final de CTA (ex.: "resultado no meu tiktok @brunamedeiros"). Reprovado: palavra gigante estilo C com fundo escuro + Pinyon.
+- **Título de abertura aprovado:** "BASTIDORES" Open Sauce 700 + "de uma publi" Pinyon dourada, whoosh quase inaudível (vol 0.07) e o **brilho da Bruna** na palavra marcante da 1ª frase.
+- **Sons aprovados:** click (cartões/palavras), brilho da Bruna (arquivo dela, `assets/sons/brilho-bruna.mp4`, fora do Git; pedir de novo se faltar; sintetizados foram ODIADOS), "controle" (bip de botão com plim), "espelhar" (bipes digitais), impacto em gesto. O som entra na palavra exata que ela indicar.
+- **Efeito em gesto:** quando ela faz um gesto (ex.: X com as mãos = acabou) → soco de zoom + flash branco + tremida + impacto + palavra no meio ("acabou!").
+- **Recorte (camada atrás dela):** `@imgly/background-removal-node` (npm, modelo medium, ~5 s/quadro) gera PNGs em `public/recorte-NN/`; usar quando um elemento precisa ficar atrás dela.
+- **Nuvem:** Whisper vem do npm (`@skillninja/shortmovie-telop-model-p0..3`, `WHISPER_MODEL=<pasta>`); Remotion com `--browser-executable=/opt/pw-browsers/chromium_headless_shell-*/chrome-headless-shell-linux64/chrome-headless-shell`. Bootzy está em `fonts/BootzyTM.woff2` na raiz do repo.
 - Legenda pode corrigir gramática ("conectando"→"conectados"); a voz nunca é alterada. Avisar a Bruna.
 
 ## Fluxo (cada passo termina em aprovação dela)

@@ -25100,7 +25100,6 @@
       ];
       const todasEntregas = dg.d.entregas;
       const concluidas = todasEntregas.filter((e) => e.status === 'concluida').length;
-      const dificuldades = dgDificuldades().slice(0, 10);
       const ciclos = [...dg.d.desafios].sort((a, b) => b.data_inicio.localeCompare(a.data_inicio));
       const conquistas = [...dg.d.conquistas].sort((a, b) => b.data.localeCompare(a.data)).slice(0, 12);
       return `
@@ -25115,14 +25114,6 @@
             <ul class="dg-lista-simples">${indicadores.map((i) => `<li><span>${i.r}</span><strong>${i.v} <small>(${Math.round((i.v / total) * 100)}%)</small></strong></li>`).join('')}
               <li><span>Entregas concluídas (todas)</span><strong>${concluidas}</strong></li>
               <li><span>Entregas ainda pendentes</span><strong>${todasEntregas.filter((e) => e.status !== 'concluida').length}</strong></li></ul>
-          </section>
-          <section class="card dg-bloco">
-            <div class="dg-bloco-topo"><h3 class="card-titulo">🧩 Dificuldades mais frequentes</h3></div>
-            ${
-              dificuldades.length
-                ? `<ul class="dg-lista-simples">${dificuldades.map((x) => `<li><span>${dgH(x.rotulo)}</span><strong>${x.qtd}x</strong></li>`).join('')}</ul><p class="cal-todas-resumo">Use essa lista pra decidir os próximos conteúdos e desafios.</p>`
-                : '<p class="dg-vazio-texto">Preencha a principal dificuldade no cadastro e registre anotações do tipo "Dificuldade".</p>'
-            }
           </section>
           <section class="card dg-bloco">
             <div class="dg-bloco-topo"><h3 class="card-titulo">🎉 Conquistas</h3></div>

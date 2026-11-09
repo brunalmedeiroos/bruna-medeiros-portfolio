@@ -54,7 +54,7 @@
 
 .painel-body .sidebar-logo,
 .painel-body .logo-mini {
-  font-family: 'Bootzy TM', var(--fonte-titulo);
+  font-family: var(--fonte-titulo); /* mesma fonte da saudação do Dashboard */
   letter-spacing: 1.2px;
 }
 
@@ -125,7 +125,7 @@
 }
 
 .painel-body .nav-item {
-  color: #3b4a6b;
+  color: #fff;
   /* Mesma proteção contra flex-shrink do .nav-group-label logo abaixo —
      sem isto, este item também pode ser espremido pelo flex quando a lista
      não cabe inteira (só que aqui é menos perceptível por ter mais
@@ -134,8 +134,8 @@
 }
 
 .painel-body .nav-item:hover {
-  background: rgba(255, 255, 255, 0.4);
-  color: #3b4a6b;
+  background: rgba(0, 0, 0, 0.1);
+  color: #fff;
 }
 
 .painel-body .nav-item.active {
@@ -160,7 +160,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #3b4a6b;
+  color: #fff;
   white-space: nowrap;
   /* Mesma proteção contra flex-shrink que o rótulo antigo precisava (ver
      histórico: overflow diferente de "visible" tira a proteção automática
@@ -272,7 +272,7 @@
    mesmo tamanho de fonte, e "Creator Center" cortava contra o botão de
    colapsar a sidebar. text-overflow como rede de segurança. */
 .painel-body .sidebar-logo {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   text-overflow: ellipsis;
 }
 

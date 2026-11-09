@@ -14593,3 +14593,41 @@
   min-width: 34px;
   padding: 0 8px;
 }
+
+/* ---- Desafio UGC: janela grande de lançamento (fundo branco) ---- */
+.painel-body .dg-modal.dg-modal-largo {
+  max-width: 920px;
+  padding: 32px 36px;
+  gap: 18px;
+  background: var(--branco);
+}
+
+.painel-body .dg-modal-largo .dg-tarefa-linha {
+  grid-template-columns: minmax(0, 1fr) 170px;
+  gap: 16px;
+}
+
+.painel-body .dg-modal-largo input,
+.painel-body .dg-modal-largo select {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio-sm);
+  padding: 12px 14px;
+  font-size: 15px;
+  font-family: var(--fonte-corpo);
+  color: var(--grafite);
+  background: var(--branco);
+}
+
+.painel-body .dg-modal-largo input:focus,
+.painel-body .dg-modal-largo select:focus {
+  outline: none;
+  border-color: var(--coral);
+}
+
+@media (max-width: 620px) {
+  .painel-body .dg-modal-largo .dg-tarefa-linha {
+    grid-template-columns: 1fr;
+  }
+}

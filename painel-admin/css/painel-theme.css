@@ -14527,3 +14527,49 @@
   min-width: 0;
   overflow-wrap: anywhere;
 }
+
+/* ---- Desafio UGC: entregas junto com a pontuação ---- */
+.painel-body .dg-matriz th,
+.painel-body .dg-matriz td {
+  text-align: center;
+}
+
+.painel-body .dg-matriz th:first-child,
+.painel-body .dg-matriz td:first-child {
+  text-align: left;
+}
+
+.painel-body .dg-matriz-ativ {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 260px;
+}
+
+.painel-body .dg-cel {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px dashed rgba(var(--grafite-rgb), 0.25);
+  background: transparent;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.painel-body .dg-cel:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+.painel-body .dg-cel.feita {
+  border: 1px solid transparent;
+  background: rgba(60, 140, 90, 0.18);
+  color: #2f7a4d;
+}
+
+.painel-body .dg-cel.atrasada {
+  border-color: rgba(200, 60, 60, 0.5);
+  color: #b84040;
+}

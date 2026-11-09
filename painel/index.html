@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261107b">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261107c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1984,7 +1984,6 @@
             <button class="dg-subnav-btn ativo" data-dg-pagina="visao" type="button">Visão geral</button>
             <button class="dg-subnav-btn" data-dg-pagina="participantes" type="button">Participantes</button>
             <button class="dg-subnav-btn" data-dg-pagina="desafios" type="button">Desafios</button>
-            <button class="dg-subnav-btn" data-dg-pagina="entregas" type="button">Entregas</button>
             <button class="dg-subnav-btn" data-dg-pagina="pontos" type="button">Pontuação</button>
             <button class="dg-subnav-btn" data-dg-pagina="rankings" type="button">Rankings</button>
             <button class="dg-subnav-btn" data-dg-pagina="premiacoes" type="button">Premiações</button>
@@ -23771,7 +23770,7 @@
       ['nome', 'Ordem alfabética'],
     ];
     const DG_CONQUISTAS_SUGESTOES = ['Montou o primeiro portfólio', 'Produziu os primeiros vídeos', 'Começou a prospectar marcas', 'Conseguiu o primeiro trabalho', 'Fechou uma parceria paga'];
-    const DG_PAGINAS = ['visao', 'participantes', 'desafios', 'entregas', 'pontos', 'rankings', 'premiacoes', 'evolucao'];
+    const DG_PAGINAS = ['visao', 'participantes', 'desafios', 'pontos', 'rankings', 'premiacoes', 'evolucao'];
 
     let dg = { carregado: false, ok: true, carregando: false, d: {} };
     Object.keys(DG_TABELAS).forEach((k) => (dg.d[k] = []));
@@ -23865,6 +23864,9 @@
         const chaves = Object.keys(DG_TABELAS);
         const resultados = await Promise.all(chaves.map((k) => buscarTudo(DG_TABELAS[k])));
         chaves.forEach((k, i) => (dg.d[k] = resultados[i]));
+        // as colunas novas das atividades e dos pontos (desafio-atividade-pontos.sql) podem ainda não existir
+        const sonda = await Promise.all([Auth.sb.from('comunidade_atividades').select('pontos,tipo_entrega').limit(1), Auth.sb.from('comunidade_pontos').select('atividade_id').limit(1)]);
+        dg.colAtividadePontos = !sonda[0].error && !sonda[1].error;
         dg.ok = true;
         dg.carregado = true;
       } catch (err) {
@@ -24009,6 +24011,13 @@
 
     // ---- navegação ----
     function dgIr(pagina, param, filtros) {
+      // as entregas agora ficam junto com a pontuação
+      if (pagina === 'entregas') {
+        dgFiltro.pontos.desafio = param && param.length > 12 ? param : '';
+        dgFiltro.pontos.participante = '';
+        pagina = 'pontos';
+        param = null;
+      }
       dgPagina = pagina;
       dgParam = param || null;
       if (filtros) Object.keys(filtros).forEach((k) => Object.assign(dgFiltro[k], filtros[k]));
@@ -24040,7 +24049,6 @@
         participante: dgPaginaParticipante,
         desafios: dgPaginaDesafios,
         desafio: dgPaginaDesafio,
-        entregas: dgPaginaEntregas,
         pontos: dgPaginaPontos,
         rankings: dgPaginaRankings,
         premiacoes: dgPaginaPremiacoes,
@@ -24053,7 +24061,6 @@
     function dgDepoisDeRenderizar() {
       if (dgPagina === 'participantes') dgListaParticipantes();
       if (dgPagina === 'desafios') dgListaDesafios();
-      if (dgPagina === 'entregas') dgListaEntregas();
       if (dgPagina === 'pontos') dgListaPontos();
     }
 
@@ -24605,7 +24612,7 @@
                   const feitas = a.semana === 'fechamento' ? null : linhas.filter((l) => l.atividade.id === a.id && l.status === 'concluida').length;
                   const insc = a.semana === 'fechamento' ? null : inscritas.length;
                   const atrasada = a.prazo && a.prazo < hoje && x.status !== 'encerrado';
-                  return `<li>${dgBadgeDia(a.prazo)}<span class="dg-ativ-texto">${dgH(a.titulo)}<small>${feitas != null ? `${feitas}/${insc} concluídas` : ''}${atrasada && feitas != null && feitas < insc ? ' · ' + dgPill('atrasada', 'dg-pill-vermelha') : ''}</small>${a.descricao ? `<small>${dgH(a.descricao)}</small>` : ''}</span><span class="dg-acoes-mini">${a.semana !== 'fechamento' ? `<button type="button" class="dg-mini" data-dg-ir="entregas" data-dg-param="${x.id}" title="Ver entregas">📥</button>` : ''}<button type="button" class="dg-mini" data-dg-acao="editar-atividade" data-id="${a.id}" title="Editar">✏️</button></span></li>`;
+                  return `<li>${dgBadgeDia(a.prazo)}<span class="dg-ativ-texto">${dgH(a.titulo)}${a.tipo_entrega || a.pontos ? `<small>${[a.tipo_entrega, a.pontos ? a.pontos + ' pts' : ''].filter(Boolean).map(dgH).join(' · ')}</small>` : ''}<small>${feitas != null ? `${feitas}/${insc} concluídas` : ''}${atrasada && feitas != null && feitas < insc ? ' · ' + dgPill('atrasada', 'dg-pill-vermelha') : ''}</small>${a.descricao ? `<small>${dgH(a.descricao)}</small>` : ''}</span><span class="dg-acoes-mini">${a.semana !== 'fechamento' ? `<button type="button" class="dg-mini" data-dg-ir="entregas" data-dg-param="${x.id}" title="Ver entregas">📥</button>` : ''}<button type="button" class="dg-mini" data-dg-acao="editar-atividade" data-id="${a.id}" title="Editar">✏️</button></span></li>`;
                 }).join('')}</ul>`
               : '<p class="dg-vazio-texto">Nenhuma atividade.</p>'
           }
@@ -24681,6 +24688,7 @@
           { k: 'descricao', rotulo: 'Descrição', tipo: 'area' },
           { k: 'semana', rotulo: 'Quando', tipo: 'select', opcoes: DG_SEMANAS },
           { k: 'prazo', rotulo: 'Prazo', tipo: 'data' },
+          ...(dg.colAtividadePontos ? [{ k: 'tipo_entrega', rotulo: 'Tipo de entrega (o que ela entrega neste dia)', tipo: 'texto', ph: 'Ex: vídeo UGC, foto, print da análise' }, { k: 'pontos', rotulo: 'Pontos desta atividade', tipo: 'numero' }] : []),
         ],
         valores: a || { semana: 'semana1', prazo: x ? dgSomaDias(x.data_inicio, 6) : '' },
         excluir: a ? async () => {
@@ -24691,6 +24699,7 @@
         } : null,
         salvar: async (v) => {
           const linha = { titulo: v.titulo, descricao: v.descricao, semana: v.semana, prazo: v.prazo };
+          if (dg.colAtividadePontos) Object.assign(linha, { tipo_entrega: v.tipo_entrega || null, pontos: Math.round(Number(v.pontos) || 0) });
           if (a) await dgAtualizar('atividades', a.id, linha);
           else await dgInserir('atividades', { ...linha, desafio_id: desafioId, ordem: dg.d.atividades.filter((z) => z.desafio_id === desafioId).length });
           return true;
@@ -24701,61 +24710,10 @@
     // ==========================================================================
     // Entregas
     // ==========================================================================
-    function dgPaginaEntregas() {
-      const f = dgFiltro.entregas;
-      const statusOpcoes = [['pendentes', 'Pendentes (não concluídas)'], ['atrasadas', 'Atrasadas'], ...DG_STATUS_ENTREGA];
-      const atual = dgDesafioAtual();
-      return `
-        <div class="dg-cabeca">
-          <div><h3 class="card-titulo">Entregas</h3><p class="cal-todas-resumo" id="dg-resumo-lista"></p></div>
-        </div>
-        <div class="dg-filtros">
-          <select data-dg-filtro="entregas.desafio">${(atual ? '' : '<option value="">Escolha um desafio</option>') + dgOpcoesDesafiosComAtual(f.desafio)}</select>
-          <select data-dg-filtro="entregas.status">${dgOpcoesSelect(statusOpcoes, f.status, 'Todos os status')}</select>
-          <select data-dg-filtro="entregas.participante">${dgOpcoesParticipantes(f.participante, 'Todas as participantes')}</select>
-        </div>
-        <div class="dg-tabela-wrap" id="dg-lista"></div>`;
-    }
-
     function dgOpcoesDesafiosComAtual(valor) {
       const atual = dgDesafioAtual();
       const lista = [...(atual ? [['atual', 'Desafio atual: ' + atual.nome]] : []), ...[...dg.d.desafios].sort((a, b) => b.data_inicio.localeCompare(a.data_inicio)).map((x) => [x.id, x.nome])];
       return dgOpcoesSelect(lista, valor);
-    }
-
-    function dgListaEntregas() {
-      const f = dgFiltro.entregas;
-      const desafioId = dgResolverDesafio(f.desafio);
-      const area = document.getElementById('dg-lista');
-      const resumo = document.getElementById('dg-resumo-lista');
-      if (!desafioId) {
-        area.innerHTML = '<p class="texto-vazio">Escolha um desafio pra ver as entregas.</p>';
-        resumo.textContent = '';
-        return;
-      }
-      let linhas = dgLinhasEntrega(desafioId);
-      if (f.status === 'pendentes') linhas = linhas.filter((l) => l.status !== 'concluida');
-      else if (f.status === 'atrasadas') linhas = linhas.filter((l) => l.atrasada);
-      else if (f.status) linhas = linhas.filter((l) => l.status === f.status);
-      if (f.participante) linhas = linhas.filter((l) => l.participante.id === f.participante);
-      linhas.sort((a, b) => (a.atividade.prazo || '9').localeCompare(b.atividade.prazo || '9') || a.participante.nome.localeCompare(b.participante.nome));
-      resumo.textContent = `${linhas.length} ${linhas.length === 1 ? 'entrega' : 'entregas'}.`;
-      if (!linhas.length) {
-        area.innerHTML = '<p class="texto-vazio">Nada por aqui. Cadastre atividades no desafio e inscreva as participantes pra elas aparecerem.</p>';
-        return;
-      }
-      area.innerHTML = `<table class="dg-tabela">
-        <thead><tr><th>Participante</th><th>Atividade</th><th>Prazo</th><th>Status</th><th>Conteúdo</th><th></th></tr></thead>
-        <tbody>${linhas
-          .map((l) => `<tr class="${l.atrasada ? 'dg-linha-atrasada' : ''}">
-            <td><button type="button" class="dg-link" data-dg-ir="participante" data-dg-param="${l.participante.id}">${dgH(l.participante.nome)}</button><small>${dgH(dgInstaTexto(l.participante))}</small></td>
-            <td>${dgH(l.atividade.titulo)}</td>
-            <td>${dgFmtData(l.atividade.prazo)}${l.atrasada ? ' ' + dgPill('atrasada', 'dg-pill-vermelha') : ''}</td>
-            <td><select class="dg-select-status ${dgClasseStatusEntrega(l.status)}" data-dg-status-entrega data-atividade="${l.atividade.id}" data-participante="${l.participante.id}" data-desafio="${desafioId}">${dgOpcoesSelect(DG_STATUS_ENTREGA, l.status)}</select></td>
-            <td>${l.entrega && l.entrega.link_conteudo ? `<a href="${dgH(l.entrega.link_conteudo)}" target="_blank" rel="noopener noreferrer">abrir link</a>` : '<span class="dg-vazio">—</span>'}${l.entrega && l.entrega.observacao ? `<small>${dgH(l.entrega.observacao)}</small>` : ''}</td>
-            <td><button type="button" class="cal-btn" data-dg-acao="editar-entrega" data-atividade="${l.atividade.id}" data-participante="${l.participante.id}" data-desafio="${desafioId}">Detalhes</button></td>
-          </tr>`)
-          .join('')}</tbody></table>`;
     }
 
     // Cria ou atualiza a entrega de uma participante numa atividade.
@@ -24811,6 +24769,7 @@
           </div>
           <div class="dg-lancar-acoes"><button type="button" class="cal-btn cal-btn-primario" data-dg-acao="lancar-pontos">Lançar pontos</button><button type="button" class="cal-btn" data-dg-acao="gerenciar-motivos">Gerenciar motivos</button></div>
         </div>
+        <div id="dg-matriz"></div>
         <div class="dg-filtros">
           <select data-dg-filtro="pontos.participante">${dgOpcoesParticipantes(f.participante, 'Todas as participantes')}</select>
           <select data-dg-filtro="pontos.desafio">${dgOpcoesSelect([...dg.d.desafios].sort((a, b) => b.data_inicio.localeCompare(a.data_inicio)).map((x) => [x.id, x.nome]), f.desafio, 'Todos os desafios')}</select>
@@ -24823,16 +24782,20 @@
       const lista = document.getElementById('dgp-motivos-lista');
       if (!lista) return;
       const desafioId = document.getElementById('dgp-desafio').value || null;
-      lista.innerHTML = dgMotivosDisponiveis(desafioId).map((m) => `<option value="${dgH(m.nome)}" label="${m.pontos_padrao > 0 ? '+' : ''}${m.pontos_padrao}"></option>`).join('');
+      const atividades = dg.colAtividadePontos && desafioId ? dg.d.atividades.filter((a) => a.desafio_id === desafioId && a.semana !== 'fechamento' && a.pontos) : [];
+      lista.innerHTML =
+        atividades.map((a) => `<option value="${dgH(a.titulo)}" label="+${a.pontos} (atividade)"></option>`).join('') +
+        dgMotivosDisponiveis(desafioId).map((m) => `<option value="${dgH(m.nome)}" label="${m.pontos_padrao > 0 ? '+' : ''}${m.pontos_padrao}"></option>`).join('');
     }
 
     // Se o que ela escreveu é um motivo cadastrado, já sugere os pontos dele (sem trocar um número que ela já digitou).
     function dgMotivoMudou() {
       const desafioId = document.getElementById('dgp-desafio').value || null;
       const texto = document.getElementById('dgp-motivo').value.trim().toLowerCase();
-      const m = dgMotivosDisponiveis(desafioId).find((x) => x.nome.toLowerCase() === texto);
+      const atividade = dg.colAtividadePontos ? dgAtividadePorTitulo(desafioId, texto) : null;
+      const m = atividade ? { pontos_padrao: atividade.pontos } : dgMotivosDisponiveis(desafioId).find((x) => x.nome.toLowerCase() === texto);
       const campo = document.getElementById('dgp-pontos');
-      if (m && campo.value === '') campo.value = m.pontos_padrao;
+      if (m && m.pontos_padrao && campo.value === '') campo.value = m.pontos_padrao;
     }
 
     async function dgLancarPontos() {
@@ -24846,8 +24809,11 @@
       if (pontosTexto === '' || !Number.isFinite(Number(pontosTexto))) return alert('Informe quantos pontos (pode ser negativo).');
       const cadastrado = dgMotivosDisponiveis(desafioId).find((x) => x.nome.toLowerCase() === motivo.toLowerCase());
       const motivoId = cadastrado ? cadastrado.id : null;
+      const atividade = dg.colAtividadePontos ? dgAtividadePorTitulo(desafioId, motivo) : null;
+      if (atividade && dgPontosDaAtividade(atividade.id, participanteId).length && !(await confirmarAcao('Ela já tem pontos dessa atividade. Lançar de novo mesmo assim?', { textoConfirmar: 'Lançar', perigo: false }))) return;
       try {
-        await dgInserir('pontos', { participante_id: participanteId, desafio_id: desafioId, motivo_id: motivoId, motivo, pontos: Math.round(Number(pontosTexto)), observacao });
+        if (atividade) await dgLancarDaAtividade(desafioId, atividade, participanteId, Math.round(Number(pontosTexto)), observacao);
+        else await dgInserir('pontos', { participante_id: participanteId, desafio_id: desafioId, motivo_id: motivoId, motivo, pontos: Math.round(Number(pontosTexto)), observacao });
         const total = dgPontos(participanteId);
         dgToast(`${(dgPart(participanteId) || {}).nome}: ${Number(pontosTexto) > 0 ? '+' : ''}${Math.round(Number(pontosTexto))} pontos (total ${total}).`);
         document.getElementById('dgp-pontos').value = '';
@@ -24863,6 +24829,7 @@
       const area = document.getElementById('dg-lista');
       if (!area) return;
       const f = dgFiltro.pontos;
+      dgMatrizEntregas();
       dgPreencherMotivos();
       const lista = dg.d.pontos
         .filter((l) => (!f.participante || l.participante_id === f.participante) && (!f.desafio || l.desafio_id === f.desafio))
@@ -24889,6 +24856,97 @@
           .join('')}</tbody></table>`;
     }
 
+    // ---- Entregas junto com a pontuação ----
+    // Cada atividade (dia) tem o seu tipo de entrega e quantos pontos vale. Lançar os pontos dela
+    // pra uma participante já marca a entrega como concluída; anular os pontos desmarca.
+    function dgAtividadePorTitulo(desafioId, texto) {
+      const alvo = String(texto || '').trim().toLowerCase();
+      if (!alvo || !desafioId) return null;
+      return dg.d.atividades.find((a) => a.desafio_id === desafioId && a.semana !== 'fechamento' && String(a.titulo || '').trim().toLowerCase() === alvo) || null;
+    }
+
+    const dgPontosDaAtividade = (atividadeId, participanteId) => dg.d.pontos.filter((l) => l.valido && l.atividade_id === atividadeId && l.participante_id === participanteId);
+
+    // Lança os pontos da atividade e marca a entrega como concluída.
+    async function dgLancarDaAtividade(desafioId, atividade, participanteId, pontos, observacao) {
+      await dgInserir('pontos', { participante_id: participanteId, desafio_id: desafioId, motivo_id: null, atividade_id: atividade.id, motivo: atividade.titulo, pontos, observacao: observacao || null });
+      await dgSalvarEntrega(desafioId, atividade.id, participanteId, { status: 'concluida' });
+    }
+
+    // Depois de anular pontos de uma atividade, a entrega volta pra "não iniciada" se não sobrou nenhum ponto válido dela.
+    async function dgDesmarcarEntregaSePreciso(l) {
+      if (!l.atividade_id || !l.desafio_id) return;
+      if (dgPontosDaAtividade(l.atividade_id, l.participante_id).length) return;
+      const entrega = dgEntregaDe(l.atividade_id, l.participante_id);
+      if (entrega && entrega.status === 'concluida') await dgSalvarEntrega(l.desafio_id, l.atividade_id, l.participante_id, { status: 'nao_iniciada' });
+    }
+
+    // Quadro: atividades nas linhas, participantes nas colunas. Clicar numa casinha vazia lança os pontos da atividade; clicar numa marcada desfaz.
+    function dgMatrizEntregas() {
+      const area = document.getElementById('dg-matriz');
+      if (!area) return;
+      const f = dgFiltro.pontos;
+      const atual = dgDesafioAtual();
+      const desafioId = f.desafio && f.desafio !== 'todos' ? f.desafio : atual ? atual.id : '';
+      const desafio = dgDesafio(desafioId);
+      if (!desafio) {
+        area.innerHTML = '';
+        return;
+      }
+      if (!dg.colAtividadePontos) {
+        area.innerHTML = '<p class="dash-aviso">Pra juntar as entregas com a pontuação, falta rodar o arquivo desafio-atividade-pontos.sql no Supabase.</p>';
+        return;
+      }
+      const atividades = dg.d.atividades
+        .filter((a) => a.desafio_id === desafioId && a.semana !== 'fechamento')
+        .sort((a, b) => (a.prazo || '9').localeCompare(b.prazo || '9') || a.ordem - b.ordem);
+      const inscritas = dgInscritas(desafioId).map(dgPart).filter((p) => p && !p.arquivada).sort((a, b) => a.nome.localeCompare(b.nome));
+      if (!atividades.length || !inscritas.length) {
+        area.innerHTML = `<div class="card dg-bloco"><h4 class="dg-sub">✅ Entregas: ${dgH(desafio.nome)}</h4><p class="dg-vazio-texto">Cadastre atividades no desafio e inscreva as participantes pra elas aparecerem aqui.</p></div>`;
+        return;
+      }
+      const hoje = dgHoje();
+      area.innerHTML = `<div class="card dg-bloco">
+        <h4 class="dg-sub">✅ Entregas: ${dgH(desafio.nome)}</h4>
+        <p class="cal-todas-resumo">Clique numa casinha pra lançar os pontos da atividade e marcar como entregue. Clique numa casinha marcada pra desfazer.</p>
+        <div class="dg-tabela-wrap"><table class="dg-tabela dg-matriz">
+          <thead><tr><th>Atividade</th>${inscritas.map((p) => `<th title="${dgH(p.nome)}">${dgH(p.nome.split(' ')[0])}</th>`).join('')}<th>Entregas</th></tr></thead>
+          <tbody>${atividades
+            .map((a) => {
+              const feitas = inscritas.filter((p) => dgStatusEntrega(a.id, p.id) === 'concluida').length;
+              const atrasada = a.prazo && a.prazo < hoje;
+              return `<tr>
+                <td class="dg-matriz-ativ">${dgBadgeDia(a.prazo)}<span>${dgH(a.titulo)}<small>${[a.tipo_entrega, a.pontos ? a.pontos + ' pts' : 'sem pontos definidos'].filter(Boolean).map(dgH).join(' · ')}</small></span></td>
+                ${inscritas
+                  .map((p) => {
+                    const feita = dgStatusEntrega(a.id, p.id) === 'concluida';
+                    return `<td><button type="button" class="dg-cel${feita ? ' feita' : atrasada ? ' atrasada' : ''}" data-dg-acao="alternar-entrega" data-desafio="${desafioId}" data-atividade="${a.id}" data-participante="${p.id}" title="${dgH(p.nome)}">${feita ? '✓' : '+'}</button></td>`;
+                  })
+                  .join('')}
+                <td><strong>${feitas}/${inscritas.length}</strong></td>
+              </tr>`;
+            })
+            .join('')}</tbody></table></div>
+      </div>`;
+    }
+
+    async function dgAlternarEntrega(desafioId, atividadeId, participanteId) {
+      const atividade = dgAtividade(atividadeId);
+      const participante = dgPart(participanteId);
+      if (!atividade || !participante) return;
+      const feitos = dgPontosDaAtividade(atividadeId, participanteId);
+      if (dgStatusEntrega(atividadeId, participanteId) === 'concluida') {
+        if (!(await confirmarAcao(`Desfazer a entrega de ${participante.nome} em "${atividade.titulo}"? Os pontos dela nessa atividade são anulados (continuam no histórico).`, { textoConfirmar: 'Desfazer' }))) return;
+        for (const l of feitos) await dgAtualizar('pontos', l.id, { valido: false, anulado_em: new Date().toISOString(), anulado_motivo: 'entrega desfeita' });
+        await dgSalvarEntrega(desafioId, atividadeId, participanteId, { status: 'nao_iniciada' });
+      } else {
+        if (!atividade.pontos) return alert('Essa atividade ainda não tem pontos. Clique no lápis dela na página do desafio e preencha os pontos.');
+        await dgLancarDaAtividade(desafioId, atividade, participanteId, atividade.pontos);
+        dgToast(`${participante.nome}: +${atividade.pontos} pontos (total ${dgPontos(participanteId)}).`);
+      }
+      dgListaPontos();
+    }
+
     // Corrigir = anula o lançamento antigo (continua no histórico) e cria um novo no lugar dele.
     function dgFormularioCorrecao(l) {
       dgAbrirForm({
@@ -24902,7 +24960,7 @@
         valores: { pontos: l.pontos, motivo: l.motivo, observacao: l.observacao || '' },
         salvar: async (v) => {
           await dgAtualizar('pontos', l.id, { valido: false, anulado_em: new Date().toISOString(), anulado_motivo: v.por_que || 'corrigido' });
-          await dgInserir('pontos', { participante_id: l.participante_id, desafio_id: l.desafio_id, motivo_id: l.motivo_id, motivo: v.motivo, pontos: Math.round(v.pontos), observacao: v.observacao, substitui_id: l.id });
+          await dgInserir('pontos', { participante_id: l.participante_id, desafio_id: l.desafio_id, motivo_id: l.motivo_id, ...(l.atividade_id ? { atividade_id: l.atividade_id } : {}), motivo: v.motivo, pontos: Math.round(v.pontos), observacao: v.observacao, substitui_id: l.id });
           return true;
         },
       });
@@ -24912,6 +24970,7 @@
       if (!(await confirmarAcao('Anular este lançamento? Ele sai do total, mas continua no histórico.', { textoConfirmar: 'Anular' }))) return;
       try {
         await dgAtualizar('pontos', l.id, { valido: false, anulado_em: new Date().toISOString(), anulado_motivo: 'anulado' });
+        await dgDesmarcarEntregaSePreciso(l);
         dgListaPontos();
       } catch (err) {
         dgErro(err, 'anular');
@@ -25312,6 +25371,7 @@
         } else if (acao === 'nova-atividade') dgFormularioAtividade(id, null);
         else if (acao === 'datas-automaticas') await dgDatasAutomaticas(dgDesafio(id));
         else if (acao === 'editar-atividade') dgFormularioAtividade(dgAtividade(id).desafio_id, dgAtividade(id));
+        else if (acao === 'alternar-entrega') await dgAlternarEntrega(el.dataset.desafio, el.dataset.atividade, el.dataset.participante);
         else if (acao === 'editar-entrega') dgFormularioEntrega(el.dataset.desafio, el.dataset.atividade, el.dataset.participante);
         else if (acao === 'lancar-pontos') await dgLancarPontos();
         else if (acao === 'gerenciar-motivos') dgGerenciarMotivos();

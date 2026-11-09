@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261107a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261107b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -23801,6 +23801,14 @@
       return `${d}/${m}/${String(a).slice(2)}`;
     }
 
+    // Data de cada atividade em destaque (ex: 09/11 + dia da semana); sem prazo aparece "sem data".
+    function dgBadgeDia(iso) {
+      if (!iso) return '<span class="dg-ativ-dia sem-data">sem data</span>';
+      const [, m, d] = String(iso).slice(0, 10).split('-');
+      const semana = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'][new Date(String(iso).slice(0, 10) + 'T12:00:00').getDay()];
+      return `<span class="dg-ativ-dia">${d}/${m}<small>${semana}</small></span>`;
+    }
+
     function dgHaDias(iso) {
       if (!iso) return null;
       const dias = Math.round((new Date(dgHoje() + 'T12:00:00') - new Date(String(iso).slice(0, 10) + 'T12:00:00')) / 86400000);
@@ -24561,7 +24569,7 @@
                   const feitas = a.semana === 'fechamento' ? null : linhas.filter((l) => l.atividade.id === a.id && l.status === 'concluida').length;
                   const insc = a.semana === 'fechamento' ? null : inscritas.length;
                   const atrasada = a.prazo && a.prazo < hoje && x.status !== 'encerrado';
-                  return `<li><span>${dgH(a.titulo)}<small>${a.prazo ? 'prazo ' + dgFmtData(a.prazo) : 'sem prazo'}${feitas != null ? ` · ${feitas}/${insc} concluídas` : ''}${atrasada && feitas != null && feitas < insc ? ' · ' + dgPill('atrasada', 'dg-pill-vermelha') : ''}</small>${a.descricao ? `<small>${dgH(a.descricao)}</small>` : ''}</span><span class="dg-acoes-mini">${a.semana !== 'fechamento' ? `<button type="button" class="dg-mini" data-dg-ir="entregas" data-dg-param="${x.id}" title="Ver entregas">📥</button>` : ''}<button type="button" class="dg-mini" data-dg-acao="editar-atividade" data-id="${a.id}" title="Editar">✏️</button></span></li>`;
+                  return `<li>${dgBadgeDia(a.prazo)}<span class="dg-ativ-texto">${dgH(a.titulo)}<small>${feitas != null ? `${feitas}/${insc} concluídas` : ''}${atrasada && feitas != null && feitas < insc ? ' · ' + dgPill('atrasada', 'dg-pill-vermelha') : ''}</small>${a.descricao ? `<small>${dgH(a.descricao)}</small>` : ''}</span><span class="dg-acoes-mini">${a.semana !== 'fechamento' ? `<button type="button" class="dg-mini" data-dg-ir="entregas" data-dg-param="${x.id}" title="Ver entregas">📥</button>` : ''}<button type="button" class="dg-mini" data-dg-acao="editar-atividade" data-id="${a.id}" title="Editar">✏️</button></span></li>`;
                 }).join('')}</ul>`
               : '<p class="dg-vazio-texto">Nenhuma atividade.</p>'
           }

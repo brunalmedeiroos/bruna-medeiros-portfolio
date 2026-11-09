@@ -24525,6 +24525,8 @@
           const salvo = x ? await dgAtualizar('desafios', x.id, linha) : await dgInserir('desafios', linha);
           await dgSincronizarInscritas(salvo.id, v.inscritas || []);
           await dgSincronizarPontuacao(salvo.id, v.pontuacao || []);
+          // mudou o dia de início: oferece recalcular as datas das atividades pelos dias úteis
+          if (x && x.data_inicio !== v.data_inicio && dg.d.atividades.some((a) => a.desafio_id === x.id)) await dgDatasAutomaticas(salvo);
           if (!x) {
             // o último dia já nasce como atividade de fechamento
             await dgInserir('atividades', { desafio_id: salvo.id, titulo: 'Conferir as entregas, fechar o ranking e anunciar a vencedora', semana: 'fechamento', prazo: salvo.data_fim, ordem: 99 });
@@ -24533,6 +24535,40 @@
           return true;
         },
       });
+    }
+
+    // Dia útil número n (1 = o primeiro dia útil a partir do início; sábado e domingo não contam).
+    function dgDiaUtil(inicio, n) {
+      let dia = inicio;
+      let contados = 0;
+      for (;;) {
+        const semana = new Date(dia + 'T12:00:00').getDay();
+        if (semana !== 0 && semana !== 6 && ++contados === n) return dia;
+        dia = dgSomaDias(dia, 1);
+      }
+    }
+
+    // Preenche o prazo de cada atividade "Dia N" pelo dia útil N a partir do início do desafio;
+    // a atividade de fechamento vai pro dia útil seguinte ao último Dia, e o encerramento acompanha.
+    async function dgDatasAutomaticas(x, perguntar = true) {
+      const numero = (a) => {
+        const m = /^\s*dia\s*(\d+)/i.exec(a.titulo || '');
+        return m ? Number(m[1]) : null;
+      };
+      const todas = dg.d.atividades.filter((a) => a.desafio_id === x.id);
+      const dias = todas.filter((a) => a.semana !== 'fechamento' && numero(a) !== null);
+      const fechamento = todas.filter((a) => a.semana === 'fechamento');
+      if (!dias.length) return alert('Não achei atividades com "Dia 1", "Dia 2"... no nome. Dê esse nome às atividades que eu calculo as datas.');
+      const ultimo = Math.max(...dias.map(numero));
+      const plano = [...dias.map((a) => ({ a, prazo: dgDiaUtil(x.data_inicio, numero(a)) })), ...fechamento.map((a) => ({ a, prazo: dgDiaUtil(x.data_inicio, ultimo + 1) }))];
+      const fim = plano.map((p) => p.prazo).sort().pop();
+      const soltas = todas.length - plano.length;
+      const resumo = `Contando só dias úteis (segunda a sexta) a partir de ${dgFmtData(x.data_inicio)}: Dia 1 = ${dgFmtData(dgDiaUtil(x.data_inicio, 1))}, Dia ${ultimo} = ${dgFmtData(dgDiaUtil(x.data_inicio, ultimo))}${fechamento.length ? ', último dia = ' + dgFmtData(fim) : ''}. Isso muda o prazo de ${plano.length} atividades e o encerramento do desafio para ${dgFmtData(fim)}.${soltas ? ' ' + soltas + ' atividade(s) sem "Dia N" no nome ficam como estão.' : ''}`;
+      if (perguntar && !(await confirmarAcao(resumo, { textoConfirmar: 'Preencher datas', perigo: false }))) return;
+      for (const p of plano) if (p.a.prazo !== p.prazo) await dgAtualizar('atividades', p.a.id, { prazo: p.prazo });
+      if (x.data_fim !== fim) await dgAtualizar('desafios', x.id, { data_fim: fim });
+      dgToast('Datas preenchidas pelos dias úteis.');
+      dgRender();
     }
 
     async function dgEncerrar(x) {
@@ -24604,7 +24640,7 @@
         </div>
 
         <section class="card dg-bloco dg-bloco-largo">
-          <div class="dg-bloco-topo"><h3 class="card-titulo">📋 Atividades</h3><button type="button" class="cal-btn cal-btn-primario" data-dg-acao="nova-atividade" data-id="${x.id}">+ Atividade</button></div>
+          <div class="dg-bloco-topo"><h3 class="card-titulo">📋 Atividades</h3><span class="dg-acoes-topo"><button type="button" class="cal-btn" data-dg-acao="datas-automaticas" data-id="${x.id}" title="Preenche as datas pelos dias úteis a partir do início do desafio">📅 Datas automáticas</button><button type="button" class="cal-btn cal-btn-primario" data-dg-acao="nova-atividade" data-id="${x.id}">+ Atividade</button></span></div>
           <div class="dg-semanas">${grupo('semana1', 'Semana 1')}${grupo('semana2', 'Semana 2')}${grupo('fechamento', 'Último dia')}</div>
         </section>
 
@@ -25274,6 +25310,7 @@
             dgIr('desafios');
           }
         } else if (acao === 'nova-atividade') dgFormularioAtividade(id, null);
+        else if (acao === 'datas-automaticas') await dgDatasAutomaticas(dgDesafio(id));
         else if (acao === 'editar-atividade') dgFormularioAtividade(dgAtividade(id).desafio_id, dgAtividade(id));
         else if (acao === 'editar-entrega') dgFormularioEntrega(el.dataset.desafio, el.dataset.atividade, el.dataset.participante);
         else if (acao === 'lancar-pontos') await dgLancarPontos();

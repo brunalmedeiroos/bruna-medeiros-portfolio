@@ -24111,11 +24111,8 @@
     function dgPaginaVisao() {
       const parts = dg.d.participantes.filter((p) => !p.arquivada);
       const ativas = parts.filter((p) => p.status === 'ativa');
-      const inativas = parts.filter((p) => p.status !== 'ativa');
-      const semAtividade = ativas.filter(dgSemAtividade);
       const atual = dgDesafioAtual();
       const linhas = atual ? dgLinhasEntrega(atual.id) : [];
-      const andamento = linhas.filter((l) => l.status === 'em_andamento').length;
       const pendentes = linhas.filter((l) => l.status !== 'concluida').length;
       const paraConferir = linhas.filter((l) => l.status === 'enviada').length;
       const atrasadas = linhas.filter((l) => l.atrasada).length;
@@ -24124,8 +24121,6 @@
       const cards = [
         dgCardStat({ icone: '👯', titulo: 'Participantes', valor: parts.length, sub: 'ver todas', acao: 'participantes' }),
         dgCardStat({ icone: '🌟', titulo: 'Ativas', valor: ativas.length, sub: 'ver quem está participando', acao: 'participantes', param: 'ativa', cor: 'dg-stat-verde' }),
-        dgCardStat({ icone: '💤', titulo: 'Inativas', valor: inativas.length, sub: 'pausadas ou que saíram', acao: 'participantes', param: 'inativas' }),
-        dgCardStat({ icone: '💌', titulo: 'Precisam de incentivo', valor: semAtividade.length, sub: 'ativas há mais de 15 dias sem aparecer', acao: 'participantes', param: 'sem_atividade', cor: 'dg-stat-amarelo' }),
         dgCardStat({
           icone: '🏁',
           titulo: 'Desafio atual',
@@ -24134,7 +24129,6 @@
           acao: atual ? 'desafio' : 'desafios',
           param: atual ? atual.id : '',
         }),
-        dgCardStat({ icone: '✏️', titulo: 'Tarefas em andamento', valor: andamento, sub: 'no desafio atual', acao: 'entregas', param: 'em_andamento' }),
         dgCardStat({
           icone: '📥',
           titulo: 'Entregas pendentes',
@@ -24147,7 +24141,6 @@
       ].join('');
 
       const rank = atual ? dgRanking(atual.id).lista.filter((r) => r.pontos !== 0).slice(0, 5) : [];
-      const proximos = dgDesafiosFuturos().slice(0, 4);
       const conquistas = [...dg.d.conquistas].sort((a, b) => b.data.localeCompare(a.data) || b.created_at.localeCompare(a.created_at)).slice(0, 5);
 
       return `
@@ -24161,14 +24154,6 @@
                   ? `<ol class="dg-lista-rank">${rank.map((r) => `<li><span class="dg-rank-pos">${r.pos}º</span><button type="button" class="dg-link" data-dg-ir="participante" data-dg-param="${r.p.id}">${dgH(r.p.nome)}</button><span class="dg-rank-pts">${r.pontos} pts</span></li>`).join('')}</ol>`
                   : '<p class="dg-vazio-texto">Ninguém pontuou ainda neste desafio.</p>'
                 : '<p class="dg-vazio-texto">Sem desafio em andamento.</p>'
-            }
-          </section>
-          <section class="card dg-bloco">
-            <div class="dg-bloco-topo"><h3 class="card-titulo">📅 Próximos desafios</h3><button type="button" class="cal-btn" data-dg-ir="desafios" data-dg-param="planejado">Ver desafios</button></div>
-            ${
-              proximos.length
-                ? `<ul class="dg-lista-simples">${proximos.map((x) => `<li><button type="button" class="dg-link" data-dg-ir="desafio" data-dg-param="${x.id}">${dgH(x.nome)}</button><span>${dgFmtData(x.data_inicio)} a ${dgFmtData(x.data_fim)}</span></li>`).join('')}</ul>`
-                : '<p class="dg-vazio-texto">Nenhum desafio planejado. Crie os próximos pra organizar o calendário.</p>'
             }
           </section>
           <section class="card dg-bloco">
@@ -24776,9 +24761,8 @@
           <div class="dg-lancar-grade">
             <label>Participante<select id="dgp-participante">${dgOpcoesParticipantes(f.participante, 'Escolha...')}</select></label>
             <label>Desafio<select id="dgp-desafio">${dgOpcoesDesafios(desafioPadrao, 'Sem desafio (conta só no geral)')}</select></label>
-            <label>Motivo<select id="dgp-motivo"></select></label>
+            <label>Motivo<input type="text" id="dgp-motivo" list="dgp-motivos-lista" maxlength="120" placeholder="Escreva o motivo" autocomplete="off"><datalist id="dgp-motivos-lista"></datalist></label>
             <label>Pontos<input type="number" id="dgp-pontos" step="1" placeholder="ex: 10 ou -5"></label>
-            <label class="dg-lancar-largo" id="dgp-outro-campo" hidden>Qual é o motivo?<input type="text" id="dgp-motivo-texto" maxlength="120"></label>
             <label class="dg-lancar-largo">Observação (opcional)<input type="text" id="dgp-observacao" maxlength="300"></label>
           </div>
           <div class="dg-lancar-acoes"><button type="button" class="cal-btn cal-btn-primario" data-dg-acao="lancar-pontos">Lançar pontos</button><button type="button" class="cal-btn" data-dg-acao="gerenciar-motivos">Gerenciar motivos</button></div>
@@ -24790,56 +24774,41 @@
         <div class="dg-tabela-wrap" id="dg-lista"></div>`;
     }
 
-    // Preenche a lista de motivos do formulário conforme o desafio e já sugere os pontos do motivo.
+    // Os motivos cadastrados viram só sugestões enquanto ela escreve; o motivo e os pontos podem ser qualquer coisa.
     function dgPreencherMotivos() {
-      const selMotivo = document.getElementById('dgp-motivo');
-      if (!selMotivo) return;
+      const lista = document.getElementById('dgp-motivos-lista');
+      if (!lista) return;
       const desafioId = document.getElementById('dgp-desafio').value || null;
-      const anterior = selMotivo.value;
-      const motivos = dgMotivosDisponiveis(desafioId);
-      selMotivo.innerHTML =
-        '<option value="">Escolha...</option>' +
-        motivos.map((m) => `<option value="${m.id}">${dgH(m.nome)} (${m.pontos_padrao > 0 ? '+' : ''}${m.pontos_padrao})${m.desafio_id ? ' · deste desafio' : ''}</option>`).join('') +
-        '<option value="__outro__">Outro motivo (digitar)</option>';
-      if (motivos.some((m) => m.id === anterior) || anterior === '__outro__') selMotivo.value = anterior;
-      dgMotivoMudou(false);
+      lista.innerHTML = dgMotivosDisponiveis(desafioId).map((m) => `<option value="${dgH(m.nome)}" label="${m.pontos_padrao > 0 ? '+' : ''}${m.pontos_padrao}"></option>`).join('');
     }
 
-    function dgMotivoMudou(sugerir) {
-      const sel = document.getElementById('dgp-motivo');
-      document.getElementById('dgp-outro-campo').hidden = sel.value !== '__outro__';
-      if (sugerir) {
-        const m = dg.d.motivos.find((x) => x.id === sel.value);
-        if (m) document.getElementById('dgp-pontos').value = m.pontos_padrao;
-      }
+    // Se o que ela escreveu é um motivo cadastrado, já sugere os pontos dele (sem trocar um número que ela já digitou).
+    function dgMotivoMudou() {
+      const desafioId = document.getElementById('dgp-desafio').value || null;
+      const texto = document.getElementById('dgp-motivo').value.trim().toLowerCase();
+      const m = dgMotivosDisponiveis(desafioId).find((x) => x.nome.toLowerCase() === texto);
+      const campo = document.getElementById('dgp-pontos');
+      if (m && campo.value === '') campo.value = m.pontos_padrao;
     }
 
     async function dgLancarPontos() {
       const participanteId = document.getElementById('dgp-participante').value;
       const desafioId = document.getElementById('dgp-desafio').value || null;
-      const motivoSel = document.getElementById('dgp-motivo').value;
+      const motivo = document.getElementById('dgp-motivo').value.trim();
       const pontosTexto = document.getElementById('dgp-pontos').value;
       const observacao = document.getElementById('dgp-observacao').value.trim() || null;
       if (!participanteId) return alert('Escolha a participante.');
-      if (!motivoSel) return alert('Escolha o motivo.');
+      if (!motivo) return alert('Escreva o motivo.');
       if (pontosTexto === '' || !Number.isFinite(Number(pontosTexto))) return alert('Informe quantos pontos (pode ser negativo).');
-      let motivo;
-      let motivoId = null;
-      if (motivoSel === '__outro__') {
-        motivo = document.getElementById('dgp-motivo-texto').value.trim();
-        if (!motivo) return alert('Escreva o motivo.');
-      } else {
-        const m = dg.d.motivos.find((x) => x.id === motivoSel);
-        motivo = m ? m.nome : 'Motivo';
-        motivoId = m ? m.id : null;
-      }
+      const cadastrado = dgMotivosDisponiveis(desafioId).find((x) => x.nome.toLowerCase() === motivo.toLowerCase());
+      const motivoId = cadastrado ? cadastrado.id : null;
       try {
         await dgInserir('pontos', { participante_id: participanteId, desafio_id: desafioId, motivo_id: motivoId, motivo, pontos: Math.round(Number(pontosTexto)), observacao });
         const total = dgPontos(participanteId);
         dgToast(`${(dgPart(participanteId) || {}).nome}: ${Number(pontosTexto) > 0 ? '+' : ''}${Math.round(Number(pontosTexto))} pontos (total ${total}).`);
         document.getElementById('dgp-pontos').value = '';
         document.getElementById('dgp-observacao').value = '';
-        document.getElementById('dgp-motivo-texto').value = '';
+        document.getElementById('dgp-motivo').value = '';
         dgListaPontos();
       } catch (err) {
         dgErro(err, 'lançar pontos');
@@ -25347,7 +25316,7 @@
       painel.addEventListener('change', (e) => {
         if (e.target.dataset.dgFiltro) return dgFiltroMudou(e.target);
         if (e.target.id === 'dgp-desafio') return dgPreencherMotivos();
-        if (e.target.id === 'dgp-motivo') return dgMotivoMudou(true);
+        if (e.target.id === 'dgp-motivo') return dgMotivoMudou();
         if (e.target.matches('[data-dg-status-entrega]')) {
           const s = e.target;
           dgSalvarEntrega(s.dataset.desafio, s.dataset.atividade, s.dataset.participante, { status: s.value })

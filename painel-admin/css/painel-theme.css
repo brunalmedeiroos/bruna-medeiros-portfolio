@@ -14573,3 +14573,23 @@
   border-color: rgba(200, 60, 60, 0.5);
   color: #b84040;
 }
+
+/* ---- Desafio UGC: até 3 tarefas por lançamento ---- */
+.painel-body .dg-tarefas-linhas {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.painel-body .dg-tarefa-linha {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  gap: 12px;
+}
+
+.painel-body .dg-cel {
+  width: auto;
+  min-width: 34px;
+  padding: 0 8px;
+}

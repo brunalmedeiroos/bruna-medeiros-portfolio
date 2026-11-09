@@ -2,6 +2,7 @@ import React from "react";
 import {
   AbsoluteFill,
   Audio,
+  Img,
   interpolate,
   OffthreadVideo,
   Sequence,
@@ -14,6 +15,10 @@ import { CORES } from "./identidade";
 import { SAFE_AREA, WIDTH } from "./config";
 import { F, useFontes } from "./Estilos";
 import { DURACAO_S, LEGENDA } from "./reel02-data";
+
+// recorte da Bruna (fundo removido) para a checklist ficar ATRÁS dela
+// quadros em public/recorte-02/f0001.png... a partir de 5,5 s (fora do Git)
+const RECORTE = { inicio: 5.5, quadros: 159 };
 
 // Reels 02 · bastidores de uma publi (IMG_2624, vídeo já cortado pela Bruna)
 export const REEL02_FRAMES = Math.ceil(DURACAO_S * 30);
@@ -31,6 +36,26 @@ const T = {
   trocaItens: [24.02, 26.7],
   gigante: [30.44, 31.75],
   perfil: [34.02, 35.4],
+};
+
+const Recorte: React.FC<{ zoom: (f: number) => number }> = ({ zoom }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const de = Math.round(RECORTE.inicio * fps);
+  const i = frame - de;
+  if (i < 0 || i >= RECORTE.quadros) return null;
+  return (
+    <Img
+      src={staticFile(`recorte-02/f${String(i + 1).padStart(4, "0")}.png`)}
+      style={{
+        position: "absolute",
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        transform: `scale(${zoom(frame)})`,
+      }}
+    />
+  );
 };
 
 const segundos = () => useCurrentFrame() / useVideoConfig().fps;
@@ -104,12 +129,12 @@ const Legenda: React.FC = () => {
         position: "absolute",
         left: SAFE_AREA.sides + 40,
         right: SAFE_AREA.sides + 40,
-        bottom: SAFE_AREA.bottom + 230,
+        bottom: SAFE_AREA.bottom + 330,
         textAlign: "center",
         opacity: op,
         transform: `scale(${sc})`,
         fontFamily: F.legenda,
-        fontSize: 104,
+        fontSize: 88,
         lineHeight: 1.1,
         textShadow: "0 4px 18px rgba(75,57,53,0.28)",
       }}
@@ -261,16 +286,19 @@ const Gigante: React.FC = () => {
   );
 };
 
+const Checklist: React.FC = () => (
+  <Cartao de={T.lista[0]} ate={T.lista[1]} rot={-2}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 12, minWidth: 520 }}>
+      <Rotulo>antes de gravar</Rotulo>
+      <Item quando={T.itens[0]} texto="me arrumar" />
+      <Item quando={T.itens[1]} texto="cenário" />
+      <Item quando={T.itens[2]} texto="equipamentos" />
+    </div>
+  </Cartao>
+);
+
 const Elementos: React.FC = () => (
   <>
-    <Cartao de={T.lista[0]} ate={T.lista[1]} rot={-2}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12, minWidth: 520 }}>
-        <Rotulo>antes de gravar</Rotulo>
-        <Item quando={T.itens[0]} texto="me arrumar" />
-        <Item quando={T.itens[1]} texto="cenário" />
-        <Item quando={T.itens[2]} texto="equipamentos" />
-      </div>
-    </Cartao>
     <Cartao de={T.espelho[0]} ate={T.espelho[1]} rot={3}>
       <span style={{ fontSize: 80 }}>📱</span>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -343,13 +371,17 @@ export const Reel02: React.FC<{ showSafeArea: boolean }> = ({ showSafeArea }) =>
   useFontes();
   const frame = useCurrentFrame();
   // zoom bem lento no vídeo todo para dar movimento (o vídeo já vem cortado)
-  const zoom = interpolate(frame, [0, REEL02_FRAMES], [1.0, 1.04]);
+  const zoomDe = (f: number) => interpolate(f, [0, REEL02_FRAMES], [1.0, 1.04]);
+  const zoom = zoomDe(frame);
   return (
     <AbsoluteFill style={{ background: CORES.escuro }}>
       <OffthreadVideo
         src={staticFile("originais/img2624.mp4")}
         style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})` }}
       />
+      {/* camadas: vídeo → checklist → Bruna recortada por cima → véus */}
+      <Checklist />
+      <Recorte zoom={zoomDe} />
       <Efeitos />
       {/* véu no alto durante o título e véu suave embaixo para a legenda */}
       <div

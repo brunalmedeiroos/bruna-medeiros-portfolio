@@ -291,9 +291,9 @@ const Elementos: React.FC = () => (
 
 // ---------- efeitos sonoros ----------
 const SONS: [number, string, number][] = [
-  [0, "whoosh", 0.18],
-  [1.48, "brilho", 0.35], // "comigo"
-  [T.espelho[0], "espelhar", 0.3], // "espelho a tela"
+  [0, "whoosh", 0.07],
+  [1.48, "brilho", 0.6], // "comigo"
+  [11.5, "espelhar", 0.3], // "do meu celular"
 
   [T.controle[0], "click", 0.5],
   [T.angulos[0], "click", 0.5],

@@ -17,3 +17,5 @@ reels/*/*.wav
 public/originais/
 public/narracao-limpa.wav
 public/recorte-*/
+assets/sons/
+public/sfx/brilho.wav

@@ -24,7 +24,8 @@ for s, e in sil:
     if s > cur: fala.append((cur, s))
     cur = e
 if cur < dur: fala.append((cur, dur))
-m = WhisperModel("small", compute_type="int8")
+import os
+m = WhisperModel(os.environ.get("WHISPER_MODEL", "small"), compute_type="int8")  # WHISPER_MODEL = pasta local do modelo se o download falhar
 linhas = []
 for s, e in fala:
     if e - s < 0.35: continue

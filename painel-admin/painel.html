@@ -8,7 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="manifest" href="../painel/manifest.json">
 <link rel="apple-touch-icon" href="../painel/icons/icone-180.png">
-<meta name="theme-color" content="#7DB7CE">
+<meta name="theme-color" content="#9cbbd8">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Painel">
@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20260924a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261107e">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261107f">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -73,10 +73,6 @@
             <button class="nav-item" data-tab="clientes" type="button">
               <i class="nav-icon-emoji" aria-hidden="true">👥</i>
               <span data-i18n="nav_clientes">Clientes</span>
-            </button>
-            <button class="nav-item" data-tab="produtos-digitais" type="button">
-              <i class="nav-icon-emoji" aria-hidden="true">💻</i>
-              <span data-i18n="nav_produtos_digitais">Produtos Digitais</span>
             </button>
           </div>
         </div>
@@ -485,7 +481,7 @@
                 <div class="cal-categoria-picker" id="cal-categoria-picker"></div>
                 <div class="cal-categoria-novo-form" id="cal-categoria-novo-form" hidden>
                   <input type="text" id="cal-categoria-novo-nome" data-i18n-placeholder="cal_categoria_nome_placeholder" placeholder="Nome da categoria">
-                  <input type="color" id="cal-categoria-novo-cor" class="ugc-roteiro-cor-input" value="#7DB7CE" data-i18n-aria="cal_categoria_cor_aria" aria-label="Cor da categoria">
+                  <input type="color" id="cal-categoria-novo-cor" class="ugc-roteiro-cor-input" value="#9cbbd8" data-i18n-aria="cal_categoria_cor_aria" aria-label="Cor da categoria">
                   <button type="button" id="cal-categoria-novo-criar" class="cal-btn cal-btn-primario" data-i18n="cal_categoria_criar">Criar</button>
                   <button type="button" id="cal-categoria-novo-cancelar" class="cal-btn cal-btn-icon" data-i18n-aria="fechar" aria-label="Fechar">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -1830,13 +1826,6 @@
 
               <div class="mc-vazio" id="mc-vazio" data-i18n="mc_vazio">Escolha uma nota ou crie uma nova.</div>
             </div>
-          </div>
-        </section>
-
-        <!-- ---------- Abas novas (placeholder — sem tela/dado próprio ainda) ---------- -->
-        <section id="panel-produtos-digitais" class="tab-panel" hidden>
-          <div class="card">
-            <p class="texto-vazio" data-i18n="placeholder_em_breve">Em breve — essa área ainda está sendo construída.</p>
           </div>
         </section>
 
@@ -3270,7 +3259,7 @@
                 <input type="checkbox" id="ugc-roteiro-marca-cor-ativa">
                 <span data-i18n="ugc_cor_marca_ativa_label">Personalizar</span>
               </label>
-              <input type="color" id="ugc-roteiro-marca-cor" class="ugc-roteiro-cor-input" value="#7DB7CE" disabled data-i18n-aria="ugc_cor_marca_label" aria-label="Cor da marca">
+              <input type="color" id="ugc-roteiro-marca-cor" class="ugc-roteiro-cor-input" value="#9cbbd8" disabled data-i18n-aria="ugc_cor_marca_label" aria-label="Cor da marca">
             </div>
           </div>
         </div>
@@ -4695,7 +4684,6 @@
       planejador: 'titulo_planejador',
       ugc: 'titulo_ugc',
       clientes: 'titulo_clientes',
-      'produtos-digitais': 'titulo_produtos_digitais',
       financeiro: 'titulo_financeiro',
       metas: 'titulo_metas',
       desafios: 'titulo_desafios',
@@ -4727,7 +4715,6 @@
         titulo_radar: 'Radar de Notícias',
         titulo_ugc: 'UGC/Publicidade',
         titulo_clientes: 'Clientes',
-        titulo_produtos_digitais: 'Produtos Digitais',
         titulo_financeiro: 'Financeiro',
         titulo_metas: 'Metas',
         titulo_desafios: 'Desafio UGC',
@@ -4956,7 +4943,6 @@
         nav_radar: 'Radar de Notícias',
         nav_ugc: 'UGC/Publicidade',
         nav_clientes: 'Clientes',
-        nav_produtos_digitais: 'Produtos Digitais',
         nav_financeiro: 'Financeiro',
         nav_metas: 'Metas',
         nav_desafios: 'Desafio UGC',
@@ -6120,7 +6106,6 @@
         titulo_radar: 'News Radar',
         titulo_ugc: 'UGC/Advertising',
         titulo_clientes: 'Clients',
-        titulo_produtos_digitais: 'Digital Products',
         titulo_financeiro: 'Finance',
         titulo_metas: 'Goals',
         titulo_desafios: 'UGC Challenge',
@@ -6349,7 +6334,6 @@
         nav_radar: 'News Radar',
         nav_ugc: 'UGC/Advertising',
         nav_clientes: 'Clients',
-        nav_produtos_digitais: 'Digital Products',
         nav_financeiro: 'Finance',
         nav_metas: 'Goals',
         nav_desafios: 'UGC Challenge',
@@ -9757,7 +9741,7 @@
     const CAPA_MENUS = { ugc: '.ugc-subnav', instagram: '.instagram-subnav', ferramentas: '.ferr-modos', planejador: '#pl-hub', financeiro: '.financeiro-subnav', metas: '.metas-subnav', desafios: '.dg-subnav', clientes: '.clientes-subnav' };
     const CAPA_SEM = ['overview', 'email'];
     // Abas que mostram o ícone da Nota rápida na capa (o Dashboard tem o dele).
-    const NOTA_ABAS = ['ferramentas', 'clientes', 'produtos-digitais', 'planejador', 'instagram', 'financeiro', 'metas', 'desafios'];
+    const NOTA_ABAS = ['ferramentas', 'clientes', 'planejador', 'instagram', 'financeiro', 'metas', 'desafios'];
     let capaMenuMovido = null;
     let capaObservador = null;
 
@@ -13845,7 +13829,7 @@
     const BT_GRUPOS = {
       quadro: {
         rotulo: 'Quadros',
-        cor: '#7DB7CE',
+        cor: '#9cbbd8',
         um: 'quadro',
         plural: 'quadros',
         itemUm: 'conteúdo',
@@ -13860,7 +13844,7 @@
       },
       serie: {
         rotulo: 'Séries',
-        cor: '#04465D',
+        cor: '#5c6e91',
         um: 'série',
         plural: 'séries',
         itemUm: 'episódio',
@@ -13875,7 +13859,7 @@
       },
       tema: {
         rotulo: 'Conteúdos',
-        cor: '#FFF7C5',
+        cor: '#f5e1b4',
         um: 'tema',
         plural: 'temas',
         itemUm: 'conteúdo',
@@ -14091,7 +14075,7 @@
 
     let btSubOk = false; // as colunas pai_id, cor e emoji existem (SQL de subpastas rodado)
     let btPastaPaiNovaId = null; // dentro de qual pasta a nova pasta vai ser criada (null = direto na pasta principal)
-    let btPastaCorEscolhida = '#7DB7CE';
+    let btPastaCorEscolhida = '#9cbbd8';
     let btPastaCorTocada = false; // só grava a cor se você escolher uma; senão a pasta herda a de cima
 
     async function btCarregarSub() {
@@ -15355,7 +15339,7 @@
 
     let btGrupoEditandoId = null;
     let btGrupoSoCor = false;
-    let btGrupoCorEscolhida = '#7DB7CE'; // mesma cor padrão das pastas de Ferramentas
+    let btGrupoCorEscolhida = '#9cbbd8'; // mesma cor padrão das pastas de Ferramentas
 
     function btNovaChave() {
       if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
@@ -15419,7 +15403,7 @@
         ).join('') +
         `<label class="ferr-cor ferr-cor-livre${personalizada ? ' ativa' : ''}" title="Escolher outro tom" aria-label="Escolher outro tom">
           <span class="ferr-cor-livre-miolo" style="${personalizada ? `background:${cor}` : 'display:none'}"></span>
-          <input type="color" value="${/^#[0-9a-f]{6}$/.test(cor) ? cor : '#7db7ce'}">
+          <input type="color" value="${/^#[0-9a-f]{6}$/.test(cor) ? cor : '#9cbbd8'}">
         </label>`;
       cont.querySelectorAll('button.ferr-cor').forEach((b) =>
         b.addEventListener('click', () => {
@@ -19618,7 +19602,7 @@
       const corAtiva = !!(roteiro && roteiro.marca_cor);
       document.getElementById('ugc-roteiro-marca-cor-ativa').checked = corAtiva;
       document.getElementById('ugc-roteiro-marca-cor').disabled = !corAtiva;
-      document.getElementById('ugc-roteiro-marca-cor').value = (roteiro && roteiro.marca_cor) || '#7DB7CE';
+      document.getElementById('ugc-roteiro-marca-cor').value = (roteiro && roteiro.marca_cor) || '#9cbbd8';
 
       const selectTrabalho = document.getElementById('ugc-roteiro-trabalho');
       selectTrabalho.innerHTML =
@@ -20469,10 +20453,10 @@
     // e o rodapé do SAIR sempre presente (nesse modo o sistema garante isso).
     function montarHtmlEmailTextoFacil(corpoTexto, botaoTexto, botaoLink) {
       const corpoEscapado = escapeHtml(corpoTexto || '');
-      const corpoComLinks = corpoEscapado.replace(/(https?:\/\/[^\s<]+)/g, (url) => `<a href="${url}" style="color:#7DB7CE;">${url}</a>`);
+      const corpoComLinks = corpoEscapado.replace(/(https?:\/\/[^\s<]+)/g, (url) => `<a href="${url}" style="color:#9cbbd8;">${url}</a>`);
       const corpoComQuebras = corpoComLinks.replace(/\n/g, '<br>');
       const botaoHtml = botaoTexto && botaoLink
-        ? `<div style="text-align:center;margin:32px 0 8px;"><a href="${escapeHtml(botaoLink)}" style="background:#7DB7CE;color:#ffffff;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:600;display:inline-block;font-family:Arial,sans-serif;">${escapeHtml(botaoTexto)}</a></div>`
+        ? `<div style="text-align:center;margin:32px 0 8px;"><a href="${escapeHtml(botaoLink)}" style="background:#9cbbd8;color:#ffffff;text-decoration:none;padding:13px 28px;border-radius:10px;font-weight:600;display:inline-block;font-family:Arial,sans-serif;">${escapeHtml(botaoTexto)}</a></div>`
         : '';
       return `<!DOCTYPE html>
 <html>
@@ -25565,15 +25549,15 @@
     // ==========================================================================
 
     // Cores de pasta: só tons que já existem na paleta do painel/site.
-    const FERR_CORES = ['#7DB7CE', '#04465D', '#FFF7C5', '#4a90d9', '#2D7A4F', '#c98a1c', '#C4453C'];
-    const FERR_COR_PADRAO = '#7DB7CE';
+    const FERR_CORES = ['#9cbbd8', '#5c6e91', '#f5e1b4', '#4a90d9', '#2D7A4F', '#c98a1c', '#C4453C'];
+    const FERR_COR_PADRAO = '#9cbbd8';
 
     const FERR_TIPOS = {
       prompt: { rotulo: 'Prompt', emoji: '✨', cor: '#4a90d9', desc: 'Um prompt pronto pra copiar' },
-      prompt_campos: { rotulo: 'Prompt com campos', emoji: '🧩', cor: '#04465D', desc: 'Prompt com variáveis {{assim}} que viram campos' },
+      prompt_campos: { rotulo: 'Prompt com campos', emoji: '🧩', cor: '#5c6e91', desc: 'Prompt com variáveis {{assim}} que viram campos' },
       texto: { rotulo: 'Texto para copiar', emoji: '📋', cor: '#2D7A4F', desc: 'Um texto pronto, com um botão de copiar' },
       link: { rotulo: 'Link', emoji: '🔗', cor: '#c98a1c', desc: 'Um endereço pra abrir com um clique' },
-      checklist: { rotulo: 'Checklist', emoji: '☑️', cor: '#7DB7CE', desc: 'Uma lista de itens pra marcar' },
+      checklist: { rotulo: 'Checklist', emoji: '☑️', cor: '#9cbbd8', desc: 'Uma lista de itens pra marcar' },
       processo: { rotulo: 'Processo', emoji: '🧭', cor: '#C4453C', desc: 'Um passo a passo, em etapas ou texto livre' },
       nota: { rotulo: 'Nota', emoji: '📝', cor: '#8a7a2e', desc: 'Uma anotação simples' },
       outro: { rotulo: 'Outro', emoji: '📦', cor: '#6b7f88', desc: 'Qualquer outra coisa' },
@@ -25619,7 +25603,7 @@
     function ferrTextoSobre(hex) {
       const n = parseInt(hex.replace('#', ''), 16);
       const lum = (0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
-      return lum > 0.6 ? '#04465D' : '#FFFFFF';
+      return lum > 0.6 ? '#4b3935' : '#FFFFFF';
     }
 
     async function ferrCopiar(texto, botao) {

@@ -12,13 +12,13 @@
 
 .painel-body {
   /* ---- Cores extraídas do :root de index.html ---- */
-  --coral: #7DB7CE;                       /* --blue-light: destaque (nav ativa, filtros, gráfico) */
-  --coral-rgb: 125, 183, 206;              /* mesma cor acima, em R,G,B — fallback de --marca-rgb quando o roteiro não tem cor própria */
-  --coral-hover: #6796A9;                 /* hover do botão primário — acompanha --coral quando a cor de ênfase muda */
-  --creme: #FAF9F4;                       /* --offwhite: fundo da página */
+  --coral: #9cbbd8;                       /* --blue-light: destaque (nav ativa, filtros, gráfico) */
+  --coral-rgb: 156, 187, 216;              /* mesma cor acima, em R,G,B */
+  --coral-hover: #86a6c6;                 /* hover do botão primário */
+  --creme: #f1f1f1;                       /* --offwhite: fundo da página */
   --branco: #FFFFFF;                      /* --white: fundo dos cards */
-  --grafite: #04465D;                     /* --blue-dark: texto principal */
-  --grafite-rgb: 4, 70, 93;               /* mesma cor acima, em R,G,B — base de toda tinta/sombra sutil abaixo */
+  --grafite: #4b3935;                     /* --brown: texto principal */
+  --grafite-rgb: 75, 57, 53;              /* mesma cor acima, em R,G,B: base de toda tinta/sombra sutil */
   --texto-suave: rgba(var(--grafite-rgb), 0.7);
   --borda: rgba(var(--grafite-rgb), 0.18);         /* mesma borda usada nos inputs do site */
 
@@ -125,7 +125,7 @@
 }
 
 .painel-body .nav-item {
-  color: rgba(255, 255, 255, 0.78);
+  color: #3b4a6b;
   /* Mesma proteção contra flex-shrink do .nav-group-label logo abaixo —
      sem isto, este item também pode ser espremido pelo flex quando a lista
      não cabe inteira (só que aqui é menos perceptível por ter mais
@@ -134,19 +134,19 @@
 }
 
 .painel-body .nav-item:hover {
-  background: rgba(0, 0, 0, 0.1);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.4);
+  color: #3b4a6b;
 }
 
 .painel-body .nav-item.active {
   background: rgba(255, 255, 255, 0.95);
-  color: #04465D;
+  color: #4b3935;
 }
 
 /* Tópico do menu (Rotina / Fontes de renda / Criação de Conteúdo / Gestão)
    — só texto, não é clicável (o acordeão que recolhia os grupos foi tirado:
    a Bru não se adaptou). Sem ícone, todos na mesma cor de destaque: o
-   amarelo "butter" da paleta do site (index.html --butter: #FFF7C5).
+   amarelo "butter" da paleta do site (index.html --butter: #f5e1b4).
    Mesmo espaço lateral dos nav-item (14px) pra alinhar com os ícones
    abaixo. */
 .painel-body .nav-group-label {
@@ -160,7 +160,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #FFF7C5;
+  color: #3b4a6b;
   white-space: nowrap;
   /* Mesma proteção contra flex-shrink que o rótulo antigo precisava (ver
      histórico: overflow diferente de "visible" tira a proteção automática
@@ -3899,7 +3899,7 @@
   padding: 12px 14px;
   border: 1px dashed var(--coral);
   border-radius: var(--raio-sm);
-  background: rgba(125, 183, 206, 0.08);
+  background: rgba(156, 187, 216, 0.08);
   font-size: 13px;
   color: var(--texto-suave);
 }
@@ -3959,7 +3959,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  background: rgba(125, 183, 206, 0.15);
+  background: rgba(156, 187, 216, 0.15);
   border: 1px solid var(--coral);
   border-radius: var(--raio-sm);
   padding: 10px 14px;
@@ -7068,8 +7068,8 @@
 .painel-body .ferr-cofre-caixa {
   max-width: 460px;
   margin: 10px auto 0;
-  background: linear-gradient(160deg, #04465D, #06607f);
-  color: #FFF7C5;
+  background: linear-gradient(160deg, #5c6e91, #7487ad);
+  color: #f5e1b4;
   border-radius: var(--raio-lg);
   padding: 34px 30px;
   display: flex;
@@ -7093,7 +7093,7 @@
   font-family: var(--fonte-titulo);
   font-size: 22px;
   margin: 0;
-  color: #FFF7C5;
+  color: #f5e1b4;
 }
 
 .painel-body .ferr-cofre-caixa .cal-btn {
@@ -7121,7 +7121,7 @@
 }
 
 .painel-body .ferr-cofre-input:focus {
-  border-color: #FFF7C5;
+  border-color: #f5e1b4;
   box-shadow: 0 0 0 2px rgba(255, 247, 197, 0.4);
 }
 
@@ -7137,17 +7137,17 @@
 
 .painel-body .ferr-cofre-caixa .ferr-cofre-check,
 .painel-body .ferr-cofre-caixa .ferr-cofre-check span {
-  color: #FFF7C5;
+  color: #f5e1b4;
 }
 
 .painel-body .ferr-cofre-check input {
   margin-top: 2px;
-  accent-color: #FFF7C5;
+  accent-color: #f5e1b4;
 }
 
 .painel-body .ferr-cofre-caixa .cal-btn-primario {
-  background: #FFF7C5;
-  color: #04465D;
+  background: #f5e1b4;
+  color: #4b3935;
 }
 
 .painel-body .ferr-cofre-erro {
@@ -7163,8 +7163,8 @@
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
-  background: linear-gradient(160deg, #04465D, #06607f);
-  color: #FFF7C5;
+  background: linear-gradient(160deg, #5c6e91, #7487ad);
+  color: #f5e1b4;
   border-radius: var(--raio-sm);
   padding: 12px 16px;
   margin-bottom: 18px;
@@ -7180,7 +7180,7 @@
 .painel-body .cofre-cartao {
   background: var(--branco);
   border: 1px solid var(--borda);
-  border-left: 4px solid #04465D;
+  border-left: 4px solid #5c6e91;
   border-radius: var(--raio-sm);
   padding: 14px 16px;
   display: flex;
@@ -7514,7 +7514,7 @@
   max-width: 92%;
   box-sizing: border-box;
   padding: 9px 12px;
-  background: #FFF7C5;
+  background: #f5e1b4;
   border: 1px solid rgba(var(--grafite-rgb), 0.12);
   border-radius: 16px 16px 4px 16px;
   font-size: 14px;
@@ -8239,7 +8239,7 @@
   resize: none;
   border: none;
   outline: none;
-  background: #FFF7C5;
+  background: #f5e1b4;
   border-radius: var(--raio-sm);
   padding: 14px;
   font-family: var(--fonte-corpo);
@@ -8970,7 +8970,7 @@
 }
 
 .painel-body .abd-falta {
-  background: #FFF7C5;
+  background: #f5e1b4;
   color: var(--grafite);
   border-radius: 4px;
   padding: 1px 4px;
@@ -10616,7 +10616,7 @@
   max-width: calc(100vw - 32px);
   padding: 10px 18px;
   border-radius: 999px;
-  background: #04465D;
+  background: #5c6e91;
   color: #fff;
   font-size: 13px;
   font-weight: 600;
@@ -10691,12 +10691,12 @@
 }
 
 .painel-body .pl-status-editado {
-  background: #7DB7CE;
-  color: #04465D;
+  background: #9cbbd8;
+  color: #4b3935;
 }
 
 .painel-body .pl-status-pronto-postar {
-  background: #04465D;
+  background: #5c6e91;
   color: var(--branco);
 }
 
@@ -10719,8 +10719,8 @@
 }
 
 .painel-body .pl-status-construcao {
-  background: #FFF7C5;
-  color: #04465D;
+  background: #f5e1b4;
+  color: #4b3935;
   box-shadow: inset 0 0 0 1px rgba(var(--grafite-rgb), 0.15);
 }
 
@@ -11537,7 +11537,7 @@
 }
 
 .painel-body .rt-aviso-erro {
-  background: #FFF7C5;
+  background: #f5e1b4;
   color: var(--grafite);
 }
 
@@ -11641,7 +11641,7 @@
   align-items: center;
   justify-content: center;
   aspect-ratio: 9 / 15;
-  background: linear-gradient(160deg, #D6E8EE, #7DB7CE);
+  background: linear-gradient(160deg, #d5e3ef, #9cbbd8);
   overflow: hidden;
 }
 
@@ -11755,7 +11755,7 @@
 }
 
 .painel-body .rt-etq-outra {
-  background: #FFF7C5;
+  background: #f5e1b4;
   color: var(--grafite);
   box-shadow: inset 0 0 0 1px rgba(var(--grafite-rgb), 0.15);
 }
@@ -11782,7 +11782,7 @@
 .painel-body .rt-estado-erro {
   padding: 8px 12px;
   border-radius: var(--raio-sm);
-  background: #FFF7C5;
+  background: #f5e1b4;
 }
 
 .painel-body .rt-relogio {
@@ -12235,7 +12235,7 @@
   padding: 0;
   border: none;
   border-radius: 14px;
-  background: linear-gradient(160deg, #D6E8EE, #7DB7CE);
+  background: linear-gradient(160deg, #d5e3ef, #9cbbd8);
   overflow: hidden;
   text-decoration: none;
 }
@@ -12445,7 +12445,7 @@
   height: 76px;
   border-radius: 12px;
   overflow: hidden;
-  background: #D6E8EE;
+  background: #d5e3ef;
 }
 
 .painel-body .ach-img-item img {
@@ -13409,7 +13409,7 @@
 }
 
 .painel-body .pl-cron-etapa-roteiro-pronto {
-  background: #7db7ce;
+  background: #9cbbd8;
   color: var(--branco);
 }
 
@@ -13419,7 +13419,7 @@
 }
 
 .painel-body .pl-cron-etapa-editado {
-  background: #04465d;
+  background: #5c6e91;
   color: var(--branco);
 }
 

@@ -34,7 +34,6 @@ const T = {
   perfil: [34.02, 35.4],
 };
 
-const useSegundos = () => useCurrentFrame() / useVideoConfig().fps;
 
 // ---------- título de abertura ----------
 const Titulo: React.FC = () => {
@@ -183,104 +182,68 @@ const Rotulo: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </span>
 );
 
-const Item: React.FC<{ quando: number; texto: string; x?: boolean }> = ({ quando, texto, x }) => {
-  const t = useSegundos();
-  const p = interpolate(t, [quando, quando + 0.18], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  return (
-    <div
-      style={{
-        opacity: p,
-        transform: `translateX(${(1 - p) * -30}px)`,
-        display: "flex",
-        gap: 22,
-        alignItems: "center",
-        textDecoration: x ? "line-through" : undefined,
-        color: x ? "rgba(75,57,53,0.55)" : undefined,
-      }}
-    >
-      <span>{texto}</span>
-    </div>
-  );
-};
 
-// ---------- virada: palavra gigante (estilo C) ----------
+// ---------- "300 mil vezes" no meio da tela, palavra por palavra na fala ----------
+const PALAVRAS_300: [string, number][] = [
+  ["300", 30.44],
+  ["mil", 30.72],
+  ["vezes", 31.08],
+];
 const Gigante: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = frame / fps;
   const [de, ate] = T.gigante;
   if (t < de || t > ate) return null;
-  const e = spring({ frame: frame - de * fps, fps, config: { damping: 10, stiffness: 170 } });
-  const op = interpolate(t, [ate - 0.2, ate], [1, 0], { extrapolateLeft: "clamp" });
-  const tremor = interpolate(frame - de * fps, [0, 3, 6, 9], [0, 10, -6, 0], { extrapolateRight: "clamp" });
+  const op = interpolate(t, [ate - 0.15, ate], [1, 0], { extrapolateLeft: "clamp" });
   return (
-    <AbsoluteFill style={{ opacity: op }}>
-      <AbsoluteFill style={{ background: CORES.escuro, opacity: 0.62 * e }} />
-      <AbsoluteFill
+    <AbsoluteFill style={{ justifyContent: "center", alignItems: "center", opacity: op }}>
+      <div
         style={{
-          justifyContent: "center",
-          alignItems: "center",
-          transform: `translateX(${tremor}px)`,
+          display: "flex",
+          gap: 26,
+          fontFamily: F.titulo,
+          fontWeight: 700,
+          fontSize: 124,
+          color: CORES.claro,
+          whiteSpace: "nowrap",
+          textShadow: "0 6px 30px rgba(75,57,53,0.55)",
         }}
       >
-        <div
-          style={{
-            fontFamily: F.titulo,
-            fontWeight: 700,
-            fontSize: 250,
-            color: CORES.claro,
-            lineHeight: 0.9,
-            whiteSpace: "nowrap",
-            textAlign: "center",
-            transform: `scale(${0.4 + e * 0.6})`,
-          }}
-        >
-          300 mil
-        </div>
-        <div
-          style={{
-            fontFamily: F.script,
-            fontSize: 210,
-            color: CORES.destaque,
-            marginTop: 10,
-            transform: `scale(${e}) rotate(-4deg)`,
-          }}
-        >
-          vezes
-        </div>
-      </AbsoluteFill>
+        {PALAVRAS_300.map(([p, quando]) => {
+          const e = spring({ frame: frame - quando * fps, fps, config: { damping: 11, stiffness: 220 } });
+          return (
+            <span key={p} style={{ opacity: t >= quando ? 1 : 0, transform: `scale(${0.5 + e * 0.5})` }}>
+              {p}
+            </span>
+          );
+        })}
+      </div>
     </AbsoluteFill>
   );
 };
 
+// ---------- X com as mãos ("acabou"): soco de zoom + flash + tremida ----------
+const X_MAOS = 33.27;
+const useSocoX = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const k = frame - X_MAOS * fps;
+  const zoom = interpolate(k, [0, 3, 12], [1, 1.14, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const shake = interpolate(k, [0, 2, 4, 6, 8], [0, 14, -10, 6, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const flash = interpolate(k, [0, 1, 6], [0, 0.55, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  return { zoom, shake, flash };
+};
+
 const Elementos: React.FC = () => (
   <>
-    <Cartao de={T.angulos[0]} ate={T.angulos[1]} rot={2}>
-      <span style={{ fontSize: 80 }}>🎬</span>
-      <span>
-        mesma cena,
-        <br />
-        vários ângulos
-      </span>
-    </Cartao>
-    <Cartao de={T.troca[0]} ate={T.troca[1]} rot={-2}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12, minWidth: 520 }}>
-        <Rotulo>plano B</Rotulo>
-        <Item quando={T.trocaItens[0]} texto="penteadeira" x />
-        <Item quando={T.trocaItens[1]} texto="escrivaninha" />
-      </div>
-    </Cartao>
     <Gigante />
     <Cartao de={T.perfil[0]} ate={T.perfil[1]} rot={3}>
       <span style={{ fontSize: 80 }}>✨</span>
-      <span>
-        resultado
-        <br />
-        no meu perfil
-      </span>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <span>resultado no meu tiktok</span>
+        <Rotulo>@brunamedeiros</Rotulo>
+      </div>
     </Cartao>
   </>
 );
@@ -291,11 +254,10 @@ const SONS: [number, string, number][] = [
   [1.48, "brilho", 0.6], // "comigo"
   [11.5, "espelhar", 0.3], // "do meu celular"
 
-  [T.controle[0], "click", 0.5], // "controlzinho" (só som, sem cartão)
-  [T.angulos[0], "click", 0.5],
-  [T.troca[0], "click", 0.5],
-  [T.gigante[0], "impacto", 0.6],
-  [T.perfil[0], "click", 0.5],
+  [T.controle[0], "controle", 0.4], // "controlzinho" (só som, sem cartão)
+  ...PALAVRAS_300.map(([, q]) => [q, "click", 0.6] as [number, string, number]), // um som por palavra
+  [X_MAOS, "impacto", 0.55], // X com as mãos
+  [T.perfil[0], "brilho", 0.6], // cartão do tiktok
 ];
 const Efeitos: React.FC = () => {
   const { fps } = useVideoConfig();
@@ -315,13 +277,15 @@ export const Reel02: React.FC<{ showSafeArea: boolean }> = ({ showSafeArea }) =>
   const frame = useCurrentFrame();
   // zoom bem lento no vídeo todo para dar movimento (o vídeo já vem cortado)
   const zoomDe = (f: number) => interpolate(f, [0, REEL02_FRAMES], [1.0, 1.04]);
-  const zoom = zoomDe(frame);
+  const soco = useSocoX();
+  const zoom = zoomDe(frame) * soco.zoom;
   return (
     <AbsoluteFill style={{ background: CORES.escuro }}>
       <OffthreadVideo
         src={staticFile("originais/img2624.mp4")}
-        style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})` }}
+        style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom}) translateX(${soco.shake}px)` }}
       />
+      <AbsoluteFill style={{ background: "white", opacity: soco.flash }} />
       <Efeitos />
       {/* véu no alto durante o título e véu suave embaixo para a legenda */}
       <div

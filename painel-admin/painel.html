@@ -24276,39 +24276,27 @@
         titulo: p ? 'Editar participante' : 'Nova participante',
         campos: [
           { k: 'nome', rotulo: 'Nome completo', tipo: 'texto', obrigatorio: true },
-          { k: 'instagram_usuario', rotulo: 'Nome de usuário do Instagram (sem @)', tipo: 'texto', ph: 'usuario' },
-          { k: 'instagram_link', rotulo: 'Link do Instagram (se ficar vazio, eu monto pelo usuário)', tipo: 'texto', ph: 'https://instagram.com/usuario' },
+          { k: 'instagram_usuario', rotulo: '@ do Instagram (sem o @)', tipo: 'texto', ph: 'usuario' },
           { k: 'data_entrada', rotulo: 'Data de entrada na comunidade', tipo: 'data' },
           { k: 'etapa', rotulo: 'Etapa atual no UGC', tipo: 'select', opcoes: DG_ETAPAS.map((e) => [e, e]) },
-          { k: 'portfolio_situacao', rotulo: 'Situação do portfólio', tipo: 'select', opcoes: DG_PORTFOLIOS.map((e) => [e, e]) },
-          { k: 'portfolio_link', rotulo: 'Link do portfólio (quando houver)', tipo: 'texto', ph: 'https://' },
-          { k: 'experiencia_conteudo', rotulo: 'Experiência com criação de conteúdo', tipo: 'area' },
-          { k: 'experiencia_marcas', rotulo: 'Experiência com trabalhos para marcas', tipo: 'area' },
-          { k: 'dificuldade_principal', rotulo: 'Principal dificuldade', tipo: 'texto' },
-          { k: 'objetivo', rotulo: 'Objetivo profissional', tipo: 'area' },
           { k: 'desafios', rotulo: 'Desafios dos quais participa', tipo: 'multi', opcoes: dg.d.desafios.map((x) => [x.id, x.nome]), vazio: 'Ainda não há desafios cadastrados.' },
           { k: 'status', rotulo: 'Status na comunidade', tipo: 'select', opcoes: DG_STATUS_PART },
           { k: 'observacoes', rotulo: 'Observações administrativas', tipo: 'area' },
         ],
-        valores: p ? { ...p, desafios: inscritas } : { etapa: DG_ETAPAS[0], portfolio_situacao: DG_PORTFOLIOS[0], status: 'ativa', data_entrada: dgHoje(), desafios: [] },
+        valores: p ? { ...p, desafios: inscritas } : { etapa: DG_ETAPAS[0], status: 'ativa', data_entrada: dgHoje(), desafios: [] },
         extra: p ? { rotulo: p.arquivada ? 'Desarquivar' : 'Arquivar', fazer: () => dgArquivar(p) } : null,
         salvar: async (v) => {
           const usuario = (v.instagram_usuario || '').replace(/^@/, '').trim() || null;
           const linha = {
             nome: v.nome,
             instagram_usuario: usuario,
-            instagram_link: v.instagram_link || (usuario ? 'https://instagram.com/' + usuario : null),
             data_entrada: v.data_entrada,
             etapa: v.etapa,
-            portfolio_situacao: v.portfolio_situacao,
-            portfolio_link: v.portfolio_link,
-            experiencia_conteudo: v.experiencia_conteudo,
-            experiencia_marcas: v.experiencia_marcas,
-            dificuldade_principal: v.dificuldade_principal,
-            objetivo: v.objetivo,
             status: v.status,
             observacoes: v.observacoes,
           };
+          // o link do Instagram é montado pelo @; um link personalizado antigo só muda se o @ mudar
+          if (!p || (p.instagram_usuario || null) !== usuario) linha.instagram_link = usuario ? 'https://instagram.com/' + usuario : null;
           const salva = p ? await dgAtualizar('participantes', p.id, linha) : await dgInserir('participantes', linha);
           await dgSincronizarInscricoes(salva.id, v.desafios || []);
           return true;

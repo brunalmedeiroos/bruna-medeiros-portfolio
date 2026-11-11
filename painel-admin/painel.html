@@ -24862,7 +24862,7 @@
       const hoje = dgHoje();
       area.innerHTML = `<div class="card dg-bloco">
         <h4 class="dg-sub">✅ Entregas: ${dgH(desafio.nome)}</h4>
-        <p class="cal-todas-resumo">Clique numa casinha pra lançar as tarefas daquele dia pra participante. A casinha marcada (✓) mostra o total de pontos dela no dia.</p>
+        <p class="cal-todas-resumo">Clique numa casinha pra lançar as tarefas daquele dia pra participante. A casinha marcada (✓) mostra o total de pontos dela no dia, e clicando nela você muda os pontos já lançados.</p>
         <div class="dg-tabela-wrap"><table class="dg-tabela dg-matriz">
           <thead><tr><th>Dia</th>${inscritas.map((p) => `<th title="${dgH(p.nome)}">${dgH(p.nome.split(' ')[0])}</th>`).join('')}<th>Entregas</th></tr></thead>
           <tbody>${atividades
@@ -24895,28 +24895,32 @@
       return f.desafio && f.desafio !== 'todos' ? f.desafio : atual ? atual.id : '';
     }
 
-    // Janela grande, de fundo branco, pra lançar até 3 tarefas. Vem do "+" do quadro (participante e dia já escolhidos)
-    // ou do botão "Lançar pontos" do topo (aí a janela pede a participante e o dia).
+    // Janela grande, de fundo branco, pra lançar tarefas (3 linhas, mais se o dia já tiver mais lançamentos). Vem do "+" do quadro
+    // (participante e dia já escolhidos) ou do botão "Lançar pontos" do topo (aí a janela pede a participante e o dia).
+    // Se o dia já tem pontos lançados, eles aparecem preenchidos e dá pra mudar: o antigo fica no histórico como anulado/corrigido.
     function dgAbrirLancamento({ desafioId, atividadeId, participanteId }) {
       const atividade = atividadeId ? dgAtividade(atividadeId) : null;
       const participante = participanteId ? dgPart(participanteId) : null;
-      const feitos = atividade && participante ? dgPontosDaAtividade(atividadeId, participanteId) : [];
+      const feitos = atividade && participante ? dgPontosDaAtividade(atividadeId, participanteId).sort((a, b) => a.created_at.localeCompare(b.created_at)) : [];
+      const total = Math.max(3, feitos.length);
+      const indices = Array.from({ length: total }, (_, k) => k + 1);
       const escolherParticipante = !participante;
       const inscritas = (desafioId ? dgInscritas(desafioId) : []).map(dgPart).filter((p) => p && !p.arquivada);
       const candidatas = (inscritas.length ? inscritas : dg.d.participantes.filter((p) => !p.arquivada)).sort((a, b) => a.nome.localeCompare(b.nome));
       const dias = dg.d.atividades
         .filter((a) => a.desafio_id === desafioId && a.semana !== 'fechamento')
         .sort((a, b) => (a.prazo || '9').localeCompare(b.prazo || '9') || a.ordem - b.ordem);
-      const linhas = [1, 2, 3]
-        .map(
-          (i) => `<div class="dg-tarefa-linha">
-            <div class="cal-form-campo"><label for="dgf-t${i}">Tarefa ${i}</label><input type="text" id="dgf-t${i}" list="dgf-motivos-lista" maxlength="120" placeholder="Escreva a tarefa" autocomplete="off"></div>
-            <div class="cal-form-campo"><label for="dgf-p${i}">Pontos</label><input type="number" id="dgf-p${i}" step="1" placeholder="ex: 10 ou -5"></div>
-          </div>`
-        )
+      const linhas = indices
+        .map((i) => {
+          const l = feitos[i - 1];
+          return `<div class="dg-tarefa-linha">
+            <div class="cal-form-campo"><label for="dgf-t${i}">Tarefa ${i}</label><input type="text" id="dgf-t${i}" list="dgf-motivos-lista" maxlength="120" placeholder="Escreva a tarefa" autocomplete="off" value="${l ? dgH(l.motivo) : ''}"></div>
+            <div class="cal-form-campo"><label for="dgf-p${i}">Pontos</label><input type="number" id="dgf-p${i}" step="1" placeholder="ex: 10 ou -5" value="${l ? l.pontos : ''}"></div>
+          </div>`;
+        })
         .join('');
-      const jaLancado = feitos.length
-        ? `<p class="cal-todas-resumo">Já lançado neste dia: ${feitos.map((l) => `${dgH(l.motivo)} (${l.pontos > 0 ? '+' : ''}${l.pontos})`).join(', ')}. Pra corrigir ou anular, use o histórico lá embaixo.</p>`
+      const aviso = feitos.length
+        ? `<p class="cal-todas-resumo">Pontos já lançados neste dia. Mude o nome ou os pontos pra corrigir, ou deixe a linha em branco pra apagar. O que foi trocado fica no histórico como anulado.</p>`
         : '';
       const escolhas = escolherParticipante
         ? `<div class="dg-tarefa-linha">
@@ -24924,26 +24928,76 @@
             <div class="cal-form-campo"><label for="dgf-atividade">Dia</label><select id="dgf-atividade">${dgOpcoesSelect(dias.map((a) => [a.id, a.titulo]), '', 'Sem dia (pontos avulsos)')}</select></div>
           </div>`
         : '';
+      const observacaoAntiga = (feitos.find((l) => l.observacao) || {}).observacao || '';
       dgAbrirForm({
         titulo: participante ? `${participante.nome}: ${atividade ? atividade.titulo : 'pontos avulsos'}` : '⭐ Lançar pontos',
-        textoSalvar: 'Lançar pontos',
+        textoSalvar: feitos.length ? 'Salvar' : 'Lançar pontos',
         largo: true,
         desafioId,
-        campos: [1, 2, 3]
+        campos: indices
           .flatMap((i) => [{ k: 't' + i, rotulo: 'Tarefa ' + i, tipo: 'texto' }, { k: 'p' + i, rotulo: 'Pontos', tipo: 'numero' }])
           .concat([{ k: 'observacao', rotulo: 'Observação', tipo: 'texto' }, { k: 'participante', rotulo: 'Participante', tipo: 'select', opcoes: [] }, { k: 'atividade', rotulo: 'Dia', tipo: 'select', opcoes: [] }]),
-        html: `${jaLancado}${escolhas}<div class="dg-tarefas-linhas">${linhas}</div>
+        html: `${aviso}${escolhas}<div class="dg-tarefas-linhas">${linhas}</div>
           <datalist id="dgf-motivos-lista">${dgMotivosDisponiveis(desafioId).map((m) => `<option value="${dgH(m.nome)}" label="${m.pontos_padrao > 0 ? '+' : ''}${m.pontos_padrao}"></option>`).join('')}</datalist>
-          <div class="cal-form-campo"><label for="dgf-observacao">Observação (opcional)</label><input type="text" id="dgf-observacao" maxlength="300"></div>`,
+          <div class="cal-form-campo"><label for="dgf-observacao">Observação (opcional)</label><input type="text" id="dgf-observacao" maxlength="300" value="${dgH(observacaoAntiga)}"></div>`,
         salvar: async (v) => {
           const idParticipante = participanteId || v.participante;
           if (!idParticipante) {
             alert('Escolha a participante.');
             return false;
           }
-          const tarefas = dgMontarTarefas([1, 2, 3].map((i) => [v['t' + i], v['p' + i]]));
-          if (!tarefas) return false;
-          await dgGravarTarefas({ participanteId: idParticipante, desafioId: desafioId || null, atividadeId: atividadeId || v.atividade || null, tarefas, observacao: (v.observacao || '').trim() || null });
+          const observacao = (v.observacao || '').trim() || null;
+          const novos = [];
+          const mudancas = [];
+          for (const i of indices) {
+            const motivo = String(v['t' + i] == null ? '' : v['t' + i]).trim();
+            const pts = v['p' + i];
+            const semPontos = pts === null || pts === undefined || pts === '';
+            const antigo = feitos[i - 1];
+            if (!motivo && semPontos) {
+              if (antigo) mudancas.push({ antigo, apagar: true });
+              continue;
+            }
+            if (!motivo || semPontos || !Number.isFinite(Number(pts))) {
+              alert('Preencha o nome e os pontos de cada tarefa (ou deixe a linha em branco).');
+              return false;
+            }
+            const pontos = Math.round(Number(pts));
+            if (!antigo) novos.push({ motivo, pontos });
+            else if (antigo.motivo !== motivo || antigo.pontos !== pontos) mudancas.push({ antigo, motivo, pontos });
+          }
+          if (!novos.length && !mudancas.length) {
+            if (feitos.length) return true;
+            alert('Escreva pelo menos uma tarefa com os pontos (podem ser negativos).');
+            return false;
+          }
+          const agora = new Date().toISOString();
+          for (const m of mudancas) {
+            await dgAtualizar('pontos', m.antigo.id, { valido: false, anulado_em: agora, anulado_motivo: m.apagar ? 'removido na edição do dia' : 'corrigido na edição do dia' });
+            if (m.apagar) continue;
+            const cadastrado = dgMotivosDisponiveis(desafioId).find((x) => x.nome.toLowerCase() === m.motivo.toLowerCase());
+            await dgInserir('pontos', {
+              participante_id: idParticipante,
+              desafio_id: desafioId || null,
+              motivo_id: cadastrado ? cadastrado.id : null,
+              ...(m.antigo.atividade_id ? { atividade_id: m.antigo.atividade_id } : {}),
+              motivo: m.motivo,
+              pontos: m.pontos,
+              observacao,
+              substitui_id: m.antigo.id,
+            });
+          }
+          const idDia = atividadeId || v.atividade || null;
+          if (novos.length) await dgGravarTarefas({ participanteId: idParticipante, desafioId: desafioId || null, atividadeId: idDia, tarefas: novos, observacao });
+          if (idDia && desafioId) {
+            if (dgPontosDaAtividade(idDia, idParticipante).length) {
+              const e = dgEntregaDe(idDia, idParticipante);
+              if (!e || e.status !== 'concluida') await dgSalvarEntrega(desafioId, idDia, idParticipante, { status: 'concluida' });
+            } else {
+              await dgDesmarcarEntregaSePreciso({ atividade_id: idDia, desafio_id: desafioId, participante_id: idParticipante });
+            }
+          }
+          if (!novos.length) dgToast(`${(dgPart(idParticipante) || {}).nome}: pontos do dia atualizados (total ${dgPontos(idParticipante)}).`);
           return true;
         },
       });
@@ -25434,7 +25488,7 @@
       document.getElementById('dg-form-excluir').addEventListener('click', dgExcluirForm);
       document.getElementById('dg-form-extra').addEventListener('click', () => dgFormAtual && dgFormAtual.extra && dgFormAtual.extra.fazer());
       document.getElementById('dg-form-overlay').addEventListener('change', (e) => {
-        const linhaTarefa = /^dgf-t([123])$/.exec(e.target.id || '');
+        const linhaTarefa = /^dgf-t(\d+)$/.exec(e.target.id || '');
         if (linhaTarefa) return dgSugerirPontos(linhaTarefa[1]);
         const alvo = e.target.dataset && e.target.dataset.dgLerTexto;
         if (!alvo || !e.target.files || !e.target.files[0]) return;

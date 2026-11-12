@@ -8247,6 +8247,7 @@
       document.getElementById('ugc-modal-roteiro-revogar-link').addEventListener('click', revogarLinkRoteiro);
       document.getElementById('ugc-modal-roteiro-salvar').addEventListener('click', salvarModalRoteiro);
       document.getElementById('ugc-roteiro-zerar-visualizacoes').addEventListener('click', zerarVisualizacoesRoteiro);
+      document.getElementById('ugc-roteiro-trabalho').addEventListener('change', ugcPreencherRoteiroDoTrabalho);
       document.getElementById('ugc-roteiro-marca-cor-ativa').addEventListener('change', (e) => {
         document.getElementById('ugc-roteiro-marca-cor').disabled = !e.target.checked;
       });
@@ -19557,6 +19558,34 @@
       }
     }
 
+    // Escolher a campanha (trabalho vinculado) já preenche o roteiro com o que a campanha tem: marca, produto e nicho.
+    // Só mexe em campo vazio ou que ainda tem o valor da campanha escolhida antes, pra nunca apagar o que ela escreveu.
+    let ugcRoteiroTrabalhoAnterior = '';
+    function ugcDadosDoTrabalho(t) {
+      if (!t) return { marca: '', produto: '', nicho: '' };
+      const nicho = t.portfolio_categoria && ugcNichosRoteiro().some((n) => n.categoria === t.portfolio_categoria) ? t.portfolio_categoria : '';
+      return { marca: t.marca || '', produto: t.produto || '', nicho };
+    }
+
+    function ugcPreencherRoteiroDoTrabalho() {
+      const novoId = document.getElementById('ugc-roteiro-trabalho').value;
+      const antes = ugcDadosDoTrabalho(ugcTrabalhosCache.find((t) => t.id === ugcRoteiroTrabalhoAnterior));
+      const novo = ugcDadosDoTrabalho(ugcTrabalhosCache.find((t) => t.id === novoId));
+      ugcRoteiroTrabalhoAnterior = novoId;
+      if (!novoId) return;
+      const poe = (id, antigo, valor) => {
+        const campo = document.getElementById(id);
+        const atual = campo.value.trim();
+        if (!atual || atual === antigo) campo.value = valor;
+      };
+      poe('ugc-roteiro-marca', antes.marca, novo.marca);
+      poe('ugc-roteiro-produto', antes.produto, novo.produto);
+      if (novo.nicho && (!ugcRoteiroNicho || ugcRoteiroNicho === antes.nicho)) {
+        ugcRoteiroNicho = novo.nicho;
+        ugcRenderizarNichoOpcoes();
+      }
+    }
+
     function abrirModalRoteiro(roteiro) {
       ugcRoteiroAbertoId = roteiro ? roteiro.id : null;
       document.getElementById('ugc-roteiro-status').value = roteiro ? roteiro.status || 'Rascunho' : 'Rascunho';
@@ -19609,6 +19638,7 @@
         `<option value="">${tr('nenhum')}</option>` +
         ugcTrabalhosCache.map((t) => `<option value="${t.id}">${escapeHtml(t.marca)}${t.campanha ? ' — ' + escapeHtml(t.campanha) : ''}</option>`).join('');
       selectTrabalho.value = roteiro && roteiro.trabalho_id ? roteiro.trabalho_id : '';
+      ugcRoteiroTrabalhoAnterior = selectTrabalho.value;
 
       ugcModalMoodboard = roteiro && roteiro.moodboard_imagens ? roteiro.moodboard_imagens.map((ref) => ({ ...ref })) : [];
       renderizarMoodboardModal();

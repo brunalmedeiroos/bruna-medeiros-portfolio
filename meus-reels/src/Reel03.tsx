@@ -388,6 +388,8 @@ export const Reel03: React.FC<{ gancho: Gancho; showSafeArea: boolean }> = ({ ga
   useMontserrat();
   return (
     <AbsoluteFill style={{ background: "black" }}>
+      {/* trilha original (composta para o vídeo, sem direitos autorais), bem baixinha */}
+      <Audio src={staticFile("musica/trilha-blant.wav")} volume={0.05} />
       <OffthreadVideo src={staticFile(gancho.video)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       {/* camadas: vídeo → frase do gancho → Bruna recortada por cima → legenda */}
       <Destaque g={gancho} />

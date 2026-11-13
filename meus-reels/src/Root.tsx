@@ -3,6 +3,7 @@ import { Reel, reelSchemaDefaults } from "./Reel";
 import { EstiloA, EstiloB, EstiloC } from "./Estilos";
 import { Reel01, REEL01_FRAMES, reel01Defaults } from "./Reel01";
 import { Reel02, REEL02_FRAMES, reel02Defaults } from "./Reel02";
+import { GANCHO_1, Reel03 } from "./Reel03";
 import { FPS, HEIGHT, WIDTH } from "./config";
 
 export const RemotionRoot: React.FC = () => {
@@ -36,6 +37,15 @@ export const RemotionRoot: React.FC = () => {
         width={WIDTH}
         height={HEIGHT}
         defaultProps={reel02Defaults}
+      />
+      <Composition
+        id="Reel03G1"
+        component={Reel03}
+        durationInFrames={Math.round(GANCHO_1.duracao * FPS)}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={{ gancho: GANCHO_1, showSafeArea: false }}
       />
       <Composition
         id="Reel"

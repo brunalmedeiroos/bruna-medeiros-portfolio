@@ -530,8 +530,7 @@ export const Reel03: React.FC<{ gancho: Gancho; showSafeArea: boolean }> = ({
   return (
     <Desloc.Provider value={gancho.desloc}>
       <AbsoluteFill style={{ background: "black" }}>
-        {/* trilha original (composta para o vídeo, sem direitos autorais), bem baixinha */}
-        <Audio src={staticFile(gancho.musica.arquivo)} volume={gancho.musica.vol} />
+        {/* sem música: a Bruna preferiu só voz + efeitos */}
         <OffthreadVideo
           src={staticFile(gancho.video)}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}

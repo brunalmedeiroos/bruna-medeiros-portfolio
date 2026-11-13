@@ -90,7 +90,7 @@ const Destaque: React.FC<{ g: Gancho }> = ({ g }) => {
       }}
     >
       {linhas.map((l, i) => {
-        const e = spring({ frame: frame - de * fps - i * 5, fps, config: { damping: 14, stiffness: 170 } });
+        const e = spring({ frame: frame - de * fps, fps, config: { damping: 14, stiffness: 170 } });
         return (
           <div
             key={i}
@@ -133,7 +133,7 @@ const Legenda: React.FC<{ g: Gancho }> = ({ g }) => {
         textAlign: "center",
         fontFamily: FONTE,
         fontWeight: 700,
-        fontSize: 62,
+        fontSize: 52,
         lineHeight: 1.15,
         textShadow: SOMBRA,
       }}
@@ -142,16 +142,244 @@ const Legenda: React.FC<{ g: Gancho }> = ({ g }) => {
         <span
           key={i}
           style={{
-            color: w.k ? BLANT.verde : BLANT.branco,
+            color: BLANT.branco,
             opacity: s >= w.s ? 1 : 0,
-            // verde escuro ganha um brilho claro por trás para ler sobre fundos escuros
-            textShadow: w.k ? "0 0 14px rgba(255,255,255,0.85), 0 0 4px rgba(255,255,255,0.9)" : SOMBRA,
           }}
         >
           {w.t}
           {i < atual.w.length - 1 ? " " : ""}
         </span>
       ))}
+    </div>
+  );
+};
+
+// ---------- momentos presos à fala (segundos) ----------
+// o miolo do vídeo é igual nos dois ganchos; DESLOC soma a diferença de duração do gancho
+const T = {
+  fragil: 12.26,
+  fina: 13.04,
+  quebradica: 13.6,
+  fimFotos: 14.3,
+  combo: 15.9, // "montou o combo"
+  fimCombo: 19.5,
+  link: 56.02, // "clica no link abaixo"
+};
+const PRODUTOS = [
+  { nome: "Maximus Nail 10x1", sub: "fortalecimento", de: 23.56, ate: 26.6 },
+  { nome: "Esmaltes Coretrat", sub: "cor + tratamento", de: 35.7, ate: 38.6 },
+  { nome: "Caneta Booster", sub: "hidratação", de: 43.02, ate: 45.8 },
+];
+
+const Som: React.FC<{ de: number; som: string; vol: number }> = ({ de, som, vol }) => (
+  <Sequence from={Math.round(de * 30)} durationInFrames={30}>
+    <Audio src={staticFile(`sfx/${som}.wav`)} volume={vol} />
+  </Sequence>
+);
+
+const useEntrada = (de: number, ate: number) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const t = frame / fps;
+  const e = spring({ frame: frame - de * fps, fps, config: { damping: 14, stiffness: 170 } });
+  const saida = interpolate(t, [ate - 0.2, ate], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  return { visivel: t >= de && t <= ate, e, saida };
+};
+
+// foto de unha (polaroid); "zoom"/"foco" mostram partes diferentes da mesma foto
+const Polaroid: React.FC<{ w: number; rot: number; rotulo?: string; zoom?: number; foco?: string }> = ({
+  w,
+  rot,
+  rotulo,
+  zoom = 1,
+  foco = "50% 50%",
+}) => (
+  <div
+    style={{
+      background: BLANT.branco,
+      padding: 12,
+      paddingBottom: rotulo ? 10 : 12,
+      borderRadius: 14,
+      boxShadow: "0 14px 34px rgba(0,0,0,0.3)",
+      transform: `rotate(${rot}deg)`,
+      width: w,
+    }}
+  >
+    <div style={{ width: w - 24, height: (w - 24) * 0.75, overflow: "hidden", borderRadius: 8 }}>
+      <Img
+        src={staticFile("blant/unha-fragil.png")}
+        style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, transformOrigin: foco }}
+      />
+    </div>
+    {rotulo ? (
+      <div
+        style={{
+          fontFamily: FONTE,
+          fontWeight: 800,
+          fontSize: 36,
+          color: BLANT.verde,
+          textAlign: "center",
+          marginTop: 8,
+        }}
+      >
+        {rotulo}
+      </div>
+    ) : null}
+  </div>
+);
+
+// gancho: foto da unha frágil no canto, ao lado do rosto (na frente, para aparecer inteira)
+const FotoGancho: React.FC<{ g: Gancho }> = ({ g }) => {
+  const { visivel, e, saida } = useEntrada(g.destaque.de + 0.15, g.destaque.ate);
+  if (!visivel) return null;
+  return (
+    <div style={{ position: "absolute", left: 30, top: 820, opacity: saida, transform: `scale(${e})` }}>
+      <Polaroid w={330} rot={-8} />
+    </div>
+  );
+};
+
+// "frágil, fina e quebradiça": uma foto por palavra, na hora da fala
+const FotosFrageis: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const t = frame / fps;
+  if (t < T.fragil || t > T.fimFotos) return null;
+  const saida = interpolate(t, [T.fimFotos - 0.2, T.fimFotos], [1, 0], { extrapolateLeft: "clamp" });
+  const fotos: [string, number, number, number, string][] = [
+    ["frágil", T.fragil, -6, 1.0, "50% 50%"],
+    ["fina", T.fina, 4, 1.9, "52% 62%"],
+    ["quebradiça", T.quebradica, -3, 1.8, "72% 45%"],
+  ];
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: SAFE_AREA.top + 30,
+        left: 0,
+        width: WIDTH,
+        display: "flex",
+        justifyContent: "center",
+        gap: 18,
+        opacity: saida,
+      }}
+    >
+      {fotos.map(([rot, de, r, z, foco]) => {
+        const e = spring({ frame: frame - de * fps, fps, config: { damping: 13, stiffness: 180 } });
+        return (
+          <div key={rot} style={{ opacity: t >= de ? 1 : 0, transform: `scale(${e})` }}>
+            <Polaroid w={310} rot={r} rotulo={rot} zoom={z} foco={foco} />
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+// "montou o combo": nome do combo em destaque
+const Combo: React.FC = () => {
+  const { visivel, e, saida } = useEntrada(T.combo, T.fimCombo);
+  if (!visivel) return null;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: SAFE_AREA.top + 60,
+        left: 0,
+        width: WIDTH,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 8,
+        opacity: saida,
+        transform: `scale(${e})`,
+      }}
+    >
+      <div style={{ ...ETIQUETA, background: BLANT.branco, color: BLANT.verde, fontSize: 46, rotate: "-2deg" }}>
+        combo
+      </div>
+      <div style={{ ...ETIQUETA, background: BLANT.verde, color: BLANT.branco, fontSize: 64, rotate: "1.5deg" }}>
+        Emagrecimento Acelerado
+      </div>
+    </div>
+  );
+};
+
+const ETIQUETA: React.CSSProperties = {
+  fontFamily: FONTE,
+  fontWeight: 800,
+  lineHeight: 1.1,
+  padding: "12px 30px",
+  borderRadius: 22,
+  boxShadow: "0 10px 30px rgba(0,0,0,0.22)",
+  whiteSpace: "nowrap",
+};
+
+// cartão com o nome do produto quando ela fala
+const CartaoProduto: React.FC<{ nome: string; sub: string; de: number; ate: number }> = ({ nome, sub, de, ate }) => {
+  const { visivel, e, saida } = useEntrada(de, ate);
+  if (!visivel) return null;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: SAFE_AREA.top + 60,
+        left: 0,
+        width: WIDTH,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 8,
+        opacity: saida,
+        transform: `scale(${e}) rotate(${(1 - e) * -8}deg)`,
+      }}
+    >
+      <div style={{ ...ETIQUETA, background: BLANT.verde, color: BLANT.branco, fontSize: 64 }}>{nome}</div>
+      <div style={{ ...ETIQUETA, background: BLANT.branco, color: BLANT.verde, fontSize: 38, fontWeight: 700 }}>
+        {sub}
+      </div>
+    </div>
+  );
+};
+
+// "clica no link abaixo": setinha pulando para baixo
+const Seta: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const t = frame / fps;
+  if (t < T.link) return null;
+  const e = spring({ frame: frame - T.link * fps, fps, config: { damping: 12, stiffness: 160 } });
+  const pulo = Math.abs(Math.sin((t - T.link) * Math.PI * 2.2)) * 26;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        bottom: SAFE_AREA.bottom + 150,
+        left: 0,
+        width: WIDTH,
+        display: "flex",
+        justifyContent: "center",
+        transform: `translateY(${pulo}px) scale(${e})`,
+      }}
+    >
+      <svg width="200" height="250" viewBox="0 0 150 190" style={{ filter: "drop-shadow(0 6px 14px rgba(0,0,0,0.35))" }}>
+        <path
+          d="M75 12 V150 M22 100 L75 160 L128 100"
+          fill="none"
+          stroke={BLANT.branco}
+          strokeWidth="26"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M75 12 V150 M22 100 L75 160 L128 100"
+          fill="none"
+          stroke={BLANT.verde}
+          strokeWidth="13"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
     </div>
   );
 };
@@ -175,13 +403,20 @@ export const Reel03: React.FC<{ gancho: Gancho; showSafeArea: boolean }> = ({ ga
       {/* camadas: vídeo → frase do gancho → Bruna recortada por cima → legenda */}
       <Destaque g={gancho} />
       <Recorte g={gancho} />
-      {/* um pop quando cada cartão da frase do gancho aparece (entram a cada 5 quadros) */}
-      {gancho.destaque.linhas.map((_, i) => (
-        <Sequence key={i} from={Math.round(gancho.destaque.de * 30) + i * 5} durationInFrames={10}>
-          <Audio src={staticFile("sfx/pop.wav")} volume={0.55} />
-        </Sequence>
+      <FotoGancho g={gancho} />
+      {/* um pop só quando os cartões do gancho aparecem juntos */}
+      <Som de={gancho.destaque.de} som="pop" vol={0.32} />
+      <FotosFrageis />
+      <Combo />
+      {PRODUTOS.map((p) => (
+        <React.Fragment key={p.nome}>
+          <CartaoProduto {...p} />
+          <Som de={p.de} som="pop" vol={0.32} />
+        </React.Fragment>
       ))}
       <Legenda g={gancho} />
+      <Seta />
+      <Som de={T.link} som="brilho" vol={0.5} />
       {showSafeArea ? (
         <div
           style={{

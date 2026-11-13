@@ -175,9 +175,12 @@ export const Reel03: React.FC<{ gancho: Gancho; showSafeArea: boolean }> = ({ ga
       {/* camadas: vídeo → frase do gancho → Bruna recortada por cima → legenda */}
       <Destaque g={gancho} />
       <Recorte g={gancho} />
-      <Sequence from={Math.round(gancho.destaque.de * 30)} durationInFrames={30}>
-        <Audio src={staticFile("sfx/brilho.wav")} volume={0.5} />
-      </Sequence>
+      {/* um pop quando cada cartão da frase do gancho aparece (entram a cada 5 quadros) */}
+      {gancho.destaque.linhas.map((_, i) => (
+        <Sequence key={i} from={Math.round(gancho.destaque.de * 30) + i * 5} durationInFrames={10}>
+          <Audio src={staticFile("sfx/pop.wav")} volume={0.55} />
+        </Sequence>
+      ))}
       <Legenda g={gancho} />
       {showSafeArea ? (
         <div

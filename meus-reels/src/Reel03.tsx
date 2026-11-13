@@ -167,7 +167,7 @@ const T = {
 };
 const PRODUTOS = [
   { nome: "Maximus Nail 10x1", sub: "fortalecimento", de: 23.56, ate: 26.6 },
-  { nome: "Esmaltes Coretrat", sub: "cor + tratamento", de: 35.7, ate: 38.6 },
+  { nome: "Esmaltes Coretrat", sub: "cor + tratamento", de: 32.36, ate: 38.6 }, // entra no "pintar"
   { nome: "Caneta Booster", sub: "hidratação", de: 43.02, ate: 45.8 },
 ];
 
@@ -227,17 +227,6 @@ const Polaroid: React.FC<{ w: number; rot: number; rotulo?: string; zoom?: numbe
     ) : null}
   </div>
 );
-
-// gancho: foto da unha frágil no canto, ao lado do rosto (na frente, para aparecer inteira)
-const FotoGancho: React.FC<{ g: Gancho }> = ({ g }) => {
-  const { visivel, e, saida } = useEntrada(g.destaque.de + 0.15, g.destaque.ate);
-  if (!visivel) return null;
-  return (
-    <div style={{ position: "absolute", left: 30, top: 820, opacity: saida, transform: `scale(${e})` }}>
-      <Polaroid w={330} rot={-8} />
-    </div>
-  );
-};
 
 // "frágil, fina e quebradiça": uma foto por palavra, na hora da fala
 const FotosFrageis: React.FC = () => {
@@ -403,11 +392,14 @@ export const Reel03: React.FC<{ gancho: Gancho; showSafeArea: boolean }> = ({ ga
       {/* camadas: vídeo → frase do gancho → Bruna recortada por cima → legenda */}
       <Destaque g={gancho} />
       <Recorte g={gancho} />
-      <FotoGancho g={gancho} />
       {/* um pop só quando os cartões do gancho aparecem juntos */}
       <Som de={gancho.destaque.de} som="pop" vol={0.32} />
       <FotosFrageis />
+      {[T.fragil, T.fina, T.quebradica].map((t) => (
+        <Som key={t} de={t} som="pop" vol={0.32} />
+      ))}
       <Combo />
+      <Som de={T.combo} som="brilho" vol={0.45} />
       {PRODUTOS.map((p) => (
         <React.Fragment key={p.nome}>
           <CartaoProduto {...p} />

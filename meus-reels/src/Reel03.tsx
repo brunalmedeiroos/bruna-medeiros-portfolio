@@ -44,6 +44,7 @@ export type Gancho = {
   // o miolo é igual nos dois vídeos: desloc = quanto o miolo começa depois do que no vídeo 1
   desloc: number;
   link: number; // "clica no link abaixo"
+  musica: { arquivo: string; vol: number };
 };
 
 export const GANCHO_1: Gancho = {
@@ -62,6 +63,7 @@ export const GANCHO_1: Gancho = {
   recorte: { pasta: "recorte-03g1", quadros: 180 },
   desloc: 0,
   link: 56.02,
+  musica: { arquivo: "musica/trilha-blant.wav", vol: 0.05 },
 };
 
 export const GANCHO_2: Gancho = {
@@ -82,6 +84,7 @@ export const GANCHO_2: Gancho = {
   recorte: { pasta: "recorte-03g2", quadros: 225 },
   desloc: 1.4,
   link: 57.22,
+  musica: { arquivo: "musica/trilha-blant-suave.wav", vol: 0.028 }, // mais calma e mais baixa (pedido da Bruna)
 };
 
 const useMontserrat = () => {
@@ -528,7 +531,7 @@ export const Reel03: React.FC<{ gancho: Gancho; showSafeArea: boolean }> = ({
     <Desloc.Provider value={gancho.desloc}>
       <AbsoluteFill style={{ background: "black" }}>
         {/* trilha original (composta para o vídeo, sem direitos autorais), bem baixinha */}
-        <Audio src={staticFile("musica/trilha-blant.wav")} volume={0.05} />
+        <Audio src={staticFile(gancho.musica.arquivo)} volume={gancho.musica.vol} />
         <OffthreadVideo
           src={staticFile(gancho.video)}
           style={{ width: "100%", height: "100%", objectFit: "cover" }}

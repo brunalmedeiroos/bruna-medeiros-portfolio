@@ -16,6 +16,7 @@ import {
 import { loadFont } from "@remotion/fonts";
 import { SAFE_AREA, WIDTH } from "./config";
 import { LEGENDA as LEG_G1 } from "./reel03-g1-data";
+import { LEGENDA as LEG_G2 } from "./reel03-g2-data";
 
 // Reels 03 · UGC Blant (combo unhas). Vídeo já editado pela Bruna (cortes, áudio e sons);
 // aqui entram só a legenda palavra por palavra e a frase de destaque do gancho.
@@ -31,9 +32,18 @@ export type Gancho = {
   video: string;
   legenda: Trecho[];
   duracao: number;
-  destaque: { de: number; ate: number; linhas: { t: string; verde?: boolean }[] };
+  destaque: {
+    de: number;
+    ate: number;
+    linhas: { t: string; verde?: boolean }[];
+    top?: number;
+    fonte?: number;
+  };
   // quadros da Bruna recortada (fundo removido) para a frase ficar ATRÁS dela
   recorte: { pasta: string; quadros: number };
+  // o miolo é igual nos dois vídeos: desloc = quanto o miolo começa depois do que no vídeo 1
+  desloc: number;
+  link: number; // "clica no link abaixo"
 };
 
 export const GANCHO_1: Gancho = {
@@ -50,6 +60,28 @@ export const GANCHO_1: Gancho = {
     ],
   },
   recorte: { pasta: "recorte-03g1", quadros: 180 },
+  desloc: 0,
+  link: 56.02,
+};
+
+export const GANCHO_2: Gancho = {
+  video: "originais/blant-g2.mp4",
+  legenda: LEG_G2,
+  duracao: 59.23,
+  destaque: {
+    de: 0.58, // "deixa eu adivinhar"
+    ate: 7.2,
+    linhas: [
+      { t: "deixa eu adivinhar…" },
+      { t: "unhas frágeis no", verde: true },
+      { t: "emagrecimento acelerado?", verde: true },
+    ],
+    top: SAFE_AREA.top + 6, // enquadramento mais fechado: cabeça mais alta que no vídeo 1
+    fonte: 54,
+  },
+  recorte: { pasta: "recorte-03g2", quadros: 225 },
+  desloc: 1.4,
+  link: 57.22,
 };
 
 const useMontserrat = () => {
@@ -72,14 +104,16 @@ const Destaque: React.FC<{ g: Gancho }> = ({ g }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = frame / fps;
-  const { de, ate, linhas } = g.destaque;
+  const { de, ate, linhas, top = SAFE_AREA.top + 50, fonte = 66 } = g.destaque;
   if (t < de || t > ate) return null;
-  const saida = interpolate(t, [ate - 0.2, ate], [1, 0], { extrapolateLeft: "clamp" });
+  const saida = interpolate(t, [ate - 0.2, ate], [1, 0], {
+    extrapolateLeft: "clamp",
+  });
   return (
     <div
       style={{
         position: "absolute",
-        top: SAFE_AREA.top + 50, // logo acima da cabeça: a Bruna recortada passa na frente
+        top, // logo acima da cabeça: a Bruna recortada passa na frente
         left: 0,
         width: WIDTH,
         display: "flex",
@@ -90,7 +124,11 @@ const Destaque: React.FC<{ g: Gancho }> = ({ g }) => {
       }}
     >
       {linhas.map((l, i) => {
-        const e = spring({ frame: frame - de * fps, fps, config: { damping: 14, stiffness: 170 } });
+        const e = spring({
+          frame: frame - de * fps,
+          fps,
+          config: { damping: 14, stiffness: 170 },
+        });
         return (
           <div
             key={i}
@@ -99,8 +137,9 @@ const Destaque: React.FC<{ g: Gancho }> = ({ g }) => {
               color: l.verde ? BLANT.branco : BLANT.verde,
               fontFamily: FONTE,
               fontWeight: 800,
-              fontSize: 66,
+              fontSize: fonte,
               lineHeight: 1.1,
+              whiteSpace: "nowrap",
               padding: "12px 30px",
               borderRadius: 22,
               boxShadow: "0 10px 30px rgba(0,0,0,0.22)",
@@ -154,8 +193,8 @@ const Legenda: React.FC<{ g: Gancho }> = ({ g }) => {
   );
 };
 
-// ---------- momentos presos à fala (segundos) ----------
-// o miolo do vídeo é igual nos dois ganchos; DESLOC soma a diferença de duração do gancho
+// ---------- momentos presos à fala (segundos, no vídeo 1) ----------
+// o miolo do vídeo é igual nos dois ganchos; no vídeo 2 tudo é somado de gancho.desloc
 const T = {
   fragil: 12.26,
   fina: 13.04,
@@ -163,7 +202,6 @@ const T = {
   fimFotos: 14.3,
   combo: 15.9, // "montou o combo"
   fimCombo: 19.5,
-  link: 56.02, // "clica no link abaixo"
 };
 const PRODUTOS = [
   { nome: "Maximus Nail 10x1", sub: "fortalecimento", de: 23.56, ate: 26.6 },
@@ -171,29 +209,49 @@ const PRODUTOS = [
   { nome: "Caneta Booster", sub: "hidratação", de: 43.02, ate: 45.8 },
 ];
 
-const Som: React.FC<{ de: number; som: string; vol: number }> = ({ de, som, vol }) => (
-  <Sequence from={Math.round(de * 30)} durationInFrames={30}>
-    <Audio src={staticFile(`sfx/${som}.wav`)} volume={vol} />
-  </Sequence>
-);
+const Desloc = React.createContext(0);
+const useT = (t: number) => t + React.useContext(Desloc);
 
-const useEntrada = (de: number, ate: number) => {
+const Som: React.FC<{
+  de: number;
+  som: string;
+  vol: number;
+  abs?: boolean;
+}> = ({ de, som, vol, abs }) => {
+  const d = useT(0);
+  return (
+    <Sequence from={Math.round((abs ? de : de + d) * 30)} durationInFrames={30}>
+      <Audio src={staticFile(`sfx/${som}.wav`)} volume={vol} />
+    </Sequence>
+  );
+};
+
+const useEntrada = (de0: number, ate0: number) => {
+  const de = useT(de0);
+  const ate = useT(ate0);
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = frame / fps;
-  const e = spring({ frame: frame - de * fps, fps, config: { damping: 14, stiffness: 170 } });
-  const saida = interpolate(t, [ate - 0.2, ate], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const e = spring({
+    frame: frame - de * fps,
+    fps,
+    config: { damping: 14, stiffness: 170 },
+  });
+  const saida = interpolate(t, [ate - 0.2, ate], [1, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
   return { visivel: t >= de && t <= ate, e, saida };
 };
 
 // foto de unha (polaroid); "zoom"/"foco" mostram partes diferentes da mesma foto
-const Polaroid: React.FC<{ w: number; rot: number; rotulo?: string; zoom?: number; foco?: string }> = ({
-  w,
-  rot,
-  rotulo,
-  zoom = 1,
-  foco = "50% 50%",
-}) => (
+const Polaroid: React.FC<{
+  w: number;
+  rot: number;
+  rotulo?: string;
+  zoom?: number;
+  foco?: string;
+}> = ({ w, rot, rotulo, zoom = 1, foco = "50% 50%" }) => (
   <div
     style={{
       background: BLANT.branco,
@@ -205,10 +263,23 @@ const Polaroid: React.FC<{ w: number; rot: number; rotulo?: string; zoom?: numbe
       width: w,
     }}
   >
-    <div style={{ width: w - 24, height: (w - 24) * 0.75, overflow: "hidden", borderRadius: 8 }}>
+    <div
+      style={{
+        width: w - 24,
+        height: (w - 24) * 0.75,
+        overflow: "hidden",
+        borderRadius: 8,
+      }}
+    >
       <Img
         src={staticFile("blant/unha-fragil.png")}
-        style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${zoom})`, transformOrigin: foco }}
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          transform: `scale(${zoom})`,
+          transformOrigin: foco,
+        }}
       />
     </div>
     {rotulo ? (
@@ -232,9 +303,12 @@ const Polaroid: React.FC<{ w: number; rot: number; rotulo?: string; zoom?: numbe
 const FotosFrageis: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const t = frame / fps;
+  const d = React.useContext(Desloc);
+  const t = frame / fps - d; // tempo no relógio do vídeo 1
   if (t < T.fragil || t > T.fimFotos) return null;
-  const saida = interpolate(t, [T.fimFotos - 0.2, T.fimFotos], [1, 0], { extrapolateLeft: "clamp" });
+  const saida = interpolate(t, [T.fimFotos - 0.2, T.fimFotos], [1, 0], {
+    extrapolateLeft: "clamp",
+  });
   const fotos: [string, number, number, number, string][] = [
     ["frágil", T.fragil, -6, 1.0, "50% 50%"],
     ["fina", T.fina, 4, 1.9, "52% 62%"],
@@ -254,9 +328,16 @@ const FotosFrageis: React.FC = () => {
       }}
     >
       {fotos.map(([rot, de, r, z, foco]) => {
-        const e = spring({ frame: frame - de * fps, fps, config: { damping: 13, stiffness: 180 } });
+        const e = spring({
+          frame: frame - (de + d) * fps,
+          fps,
+          config: { damping: 13, stiffness: 180 },
+        });
         return (
-          <div key={rot} style={{ opacity: t >= de ? 1 : 0, transform: `scale(${e})` }}>
+          <div
+            key={rot}
+            style={{ opacity: t >= de ? 1 : 0, transform: `scale(${e})` }}
+          >
             <Polaroid w={310} rot={r} rotulo={rot} zoom={z} foco={foco} />
           </div>
         );
@@ -284,10 +365,26 @@ const Combo: React.FC = () => {
         transform: `scale(${e})`,
       }}
     >
-      <div style={{ ...ETIQUETA, background: BLANT.branco, color: BLANT.verde, fontSize: 46, rotate: "-2deg" }}>
+      <div
+        style={{
+          ...ETIQUETA,
+          background: BLANT.branco,
+          color: BLANT.verde,
+          fontSize: 46,
+          rotate: "-2deg",
+        }}
+      >
         combo
       </div>
-      <div style={{ ...ETIQUETA, background: BLANT.verde, color: BLANT.branco, fontSize: 64, rotate: "1.5deg" }}>
+      <div
+        style={{
+          ...ETIQUETA,
+          background: BLANT.verde,
+          color: BLANT.branco,
+          fontSize: 64,
+          rotate: "1.5deg",
+        }}
+      >
         Emagrecimento Acelerado
       </div>
     </div>
@@ -305,7 +402,12 @@ const ETIQUETA: React.CSSProperties = {
 };
 
 // cartão com o nome do produto quando ela fala
-const CartaoProduto: React.FC<{ nome: string; sub: string; de: number; ate: number }> = ({ nome, sub, de, ate }) => {
+const CartaoProduto: React.FC<{
+  nome: string;
+  sub: string;
+  de: number;
+  ate: number;
+}> = ({ nome, sub, de, ate }) => {
   const { visivel, e, saida } = useEntrada(de, ate);
   if (!visivel) return null;
   return (
@@ -323,8 +425,25 @@ const CartaoProduto: React.FC<{ nome: string; sub: string; de: number; ate: numb
         transform: `scale(${e}) rotate(${(1 - e) * -8}deg)`,
       }}
     >
-      <div style={{ ...ETIQUETA, background: BLANT.verde, color: BLANT.branco, fontSize: 64 }}>{nome}</div>
-      <div style={{ ...ETIQUETA, background: BLANT.branco, color: BLANT.verde, fontSize: 38, fontWeight: 700 }}>
+      <div
+        style={{
+          ...ETIQUETA,
+          background: BLANT.verde,
+          color: BLANT.branco,
+          fontSize: 64,
+        }}
+      >
+        {nome}
+      </div>
+      <div
+        style={{
+          ...ETIQUETA,
+          background: BLANT.branco,
+          color: BLANT.verde,
+          fontSize: 38,
+          fontWeight: 700,
+        }}
+      >
         {sub}
       </div>
     </div>
@@ -332,13 +451,17 @@ const CartaoProduto: React.FC<{ nome: string; sub: string; de: number; ate: numb
 };
 
 // "clica no link abaixo": setinha pulando para baixo
-const Seta: React.FC = () => {
+const Seta: React.FC<{ link: number }> = ({ link }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = frame / fps;
-  if (t < T.link) return null;
-  const e = spring({ frame: frame - T.link * fps, fps, config: { damping: 12, stiffness: 160 } });
-  const pulo = Math.abs(Math.sin((t - T.link) * Math.PI * 2.2)) * 26;
+  if (t < link) return null;
+  const e = spring({
+    frame: frame - link * fps,
+    fps,
+    config: { damping: 12, stiffness: 160 },
+  });
+  const pulo = Math.abs(Math.sin((t - link) * Math.PI * 2.2)) * 26;
   return (
     <div
       style={{
@@ -351,7 +474,12 @@ const Seta: React.FC = () => {
         transform: `translateY(${pulo}px) scale(${e})`,
       }}
     >
-      <svg width="200" height="250" viewBox="0 0 150 190" style={{ filter: "drop-shadow(0 6px 14px rgba(0,0,0,0.35))" }}>
+      <svg
+        width="200"
+        height="250"
+        viewBox="0 0 150 190"
+        style={{ filter: "drop-shadow(0 6px 14px rgba(0,0,0,0.35))" }}
+      >
         <path
           d="M75 12 V150 M22 100 L75 160 L128 100"
           fill="none"
@@ -378,51 +506,66 @@ const Recorte: React.FC<{ g: Gancho }> = ({ g }) => {
   if (frame >= g.recorte.quadros) return null;
   return (
     <Img
-      src={staticFile(`${g.recorte.pasta}/f${String(frame + 1).padStart(4, "0")}.png`)}
-      style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover" }}
+      src={staticFile(
+        `${g.recorte.pasta}/f${String(frame + 1).padStart(4, "0")}.png`,
+      )}
+      style={{
+        position: "absolute",
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+      }}
     />
   );
 };
 
-export const Reel03: React.FC<{ gancho: Gancho; showSafeArea: boolean }> = ({ gancho, showSafeArea }) => {
+export const Reel03: React.FC<{ gancho: Gancho; showSafeArea: boolean }> = ({
+  gancho,
+  showSafeArea,
+}) => {
   useMontserrat();
   return (
-    <AbsoluteFill style={{ background: "black" }}>
-      {/* trilha original (composta para o vídeo, sem direitos autorais), bem baixinha */}
-      <Audio src={staticFile("musica/trilha-blant.wav")} volume={0.05} />
-      <OffthreadVideo src={staticFile(gancho.video)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-      {/* camadas: vídeo → frase do gancho → Bruna recortada por cima → legenda */}
-      <Destaque g={gancho} />
-      <Recorte g={gancho} />
-      {/* um pop só quando os cartões do gancho aparecem juntos */}
-      <Som de={gancho.destaque.de} som="pop" vol={0.32} />
-      <FotosFrageis />
-      {[T.fragil, T.fina, T.quebradica].map((t) => (
-        <Som key={t} de={t} som="pop" vol={0.32} />
-      ))}
-      <Combo />
-      <Som de={T.combo} som="brilho" vol={0.45} />
-      {PRODUTOS.map((p) => (
-        <React.Fragment key={p.nome}>
-          <CartaoProduto {...p} />
-          <Som de={p.de} som="pop" vol={0.32} />
-        </React.Fragment>
-      ))}
-      <Legenda g={gancho} />
-      <Seta />
-      <Som de={T.link} som="brilho" vol={0.5} />
-      {showSafeArea ? (
-        <div
-          style={{
-            position: "absolute",
-            top: SAFE_AREA.top,
-            bottom: SAFE_AREA.bottom,
-            left: SAFE_AREA.sides,
-            right: SAFE_AREA.sides,
-            border: "3px dashed rgba(255,0,80,0.7)",
-          }}
+    <Desloc.Provider value={gancho.desloc}>
+      <AbsoluteFill style={{ background: "black" }}>
+        {/* trilha original (composta para o vídeo, sem direitos autorais), bem baixinha */}
+        <Audio src={staticFile("musica/trilha-blant.wav")} volume={0.05} />
+        <OffthreadVideo
+          src={staticFile(gancho.video)}
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />
-      ) : null}
-    </AbsoluteFill>
+        {/* camadas: vídeo → frase do gancho → Bruna recortada por cima → legenda */}
+        <Destaque g={gancho} />
+        <Recorte g={gancho} />
+        {/* um pop só quando os cartões do gancho aparecem juntos */}
+        <Som de={gancho.destaque.de} som="pop" vol={0.32} abs />
+        <FotosFrageis />
+        {[T.fragil, T.fina, T.quebradica].map((t) => (
+          <Som key={t} de={t} som="pop" vol={0.32} />
+        ))}
+        <Combo />
+        <Som de={T.combo} som="brilho" vol={0.45} />
+        {PRODUTOS.map((p) => (
+          <React.Fragment key={p.nome}>
+            <CartaoProduto {...p} />
+            <Som de={p.de} som="pop" vol={0.32} />
+          </React.Fragment>
+        ))}
+        <Legenda g={gancho} />
+        <Seta link={gancho.link} />
+        <Som de={gancho.link} som="brilho" vol={0.5} abs />
+        {showSafeArea ? (
+          <div
+            style={{
+              position: "absolute",
+              top: SAFE_AREA.top,
+              bottom: SAFE_AREA.bottom,
+              left: SAFE_AREA.sides,
+              right: SAFE_AREA.sides,
+              border: "3px dashed rgba(255,0,80,0.7)",
+            }}
+          />
+        ) : null}
+      </AbsoluteFill>
+    </Desloc.Provider>
   );
 };

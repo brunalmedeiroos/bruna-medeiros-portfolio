@@ -4,12 +4,22 @@ import json, math, re, sys
 W = json.load(open(sys.argv[1]))
 FIX = {"agressimento": "emagrecimento", "Ablante": "Blant", "Blanche": "Blant", "Nile": "Nail",
        "forfalecimento": "fortalecimento", "Buster": "Booster", "Esmalta": "esmaltes", "Score": "Coretrat",
-       "3": "três", "72": "72"}
+       "3": "três", "72": "72", "frágis": "frágeis", "Blunt": "Blant", "coretrátiles": "Coretrat"}
 DROP = {"&", "Trat"}  # "Score & Trat" vira "Coretrat"
 KEY = {"frágeis", "emagrecimento", "acelerado", "trio", "nutrientes", "frágil", "fina", "quebradiça", "Blant",
        "combo", "fortalecimento", "esmaltação", "hidratação", "Maximus", "Nail", "10x1", "fortalecer", "hidratar",
        "resistência", "pintar", "tratamento", "Coretrat", "Booster", "72", "horas", "prática", "simples", "link"}
 NOMES = {"Blant", "Maximus", "Nail", "10x1", "Coretrat", "Booster"}
+# junta/separa palavras que a transcrição errou (vídeo 2)
+W2 = []
+for i, (t, s, e) in enumerate(W):
+    tt = t.strip()
+    if tt == "disso." and W2 and W2[-1][0].strip() == "quebra":
+        W2[-1] = [" quebradiça.", W2[-1][1], e]; continue
+    if tt == "MaxMosNile":
+        W2 += [[" Maximus", s, s + 0.35], [" Nail", s + 0.35, e]]; continue
+    W2.append([t, s, e])
+W = W2
 ws = []
 for t, s, e in W:
     t = t.strip(); p = bool(re.search(r"[,.?!]$", t)); t = re.sub(r"[,.!?]$", "", t)

@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {
   AbsoluteFill,
+  Audio,
   continueRender,
+  Img,
+  Sequence,
   delayRender,
   interpolate,
   OffthreadVideo,
@@ -29,6 +32,8 @@ export type Gancho = {
   legenda: Trecho[];
   duracao: number;
   destaque: { de: number; ate: number; linhas: { t: string; verde?: boolean }[] };
+  // quadros da Bruna recortada (fundo removido) para a frase ficar ATRÁS dela
+  recorte: { pasta: string; quadros: number };
 };
 
 export const GANCHO_1: Gancho = {
@@ -44,6 +49,7 @@ export const GANCHO_1: Gancho = {
       { t: "acelerado?", verde: true },
     ],
   },
+  recorte: { pasta: "recorte-03g1", quadros: 180 },
 };
 
 const useMontserrat = () => {
@@ -73,7 +79,7 @@ const Destaque: React.FC<{ g: Gancho }> = ({ g }) => {
     <div
       style={{
         position: "absolute",
-        top: SAFE_AREA.top + 40,
+        top: SAFE_AREA.top + 50, // logo acima da cabeça: a Bruna recortada passa na frente
         left: 0,
         width: WIDTH,
         display: "flex",
@@ -123,7 +129,7 @@ const Legenda: React.FC<{ g: Gancho }> = ({ g }) => {
         position: "absolute",
         left: SAFE_AREA.sides + 40,
         right: SAFE_AREA.sides + 40,
-        bottom: SAFE_AREA.bottom + 200, // mais baixa que no Reels 02 para não cobrir os produtos nas mãos
+        bottom: SAFE_AREA.bottom + 430,
         textAlign: "center",
         fontFamily: FONTE,
         fontWeight: 700,
@@ -133,8 +139,16 @@ const Legenda: React.FC<{ g: Gancho }> = ({ g }) => {
       }}
     >
       {atual.w.map((w, i) => (
-        <span key={i} style={{ color: w.k ? BLANT.verde : BLANT.branco, opacity: s >= w.s ? 1 : 0 }}>
-          {w.k ? <Verde>{w.t}</Verde> : w.t}
+        <span
+          key={i}
+          style={{
+            color: w.k ? BLANT.verde : BLANT.branco,
+            opacity: s >= w.s ? 1 : 0,
+            // verde escuro ganha um brilho claro por trás para ler sobre fundos escuros
+            textShadow: w.k ? "0 0 14px rgba(255,255,255,0.85), 0 0 4px rgba(255,255,255,0.9)" : SOMBRA,
+          }}
+        >
+          {w.t}
           {i < atual.w.length - 1 ? " " : ""}
         </span>
       ))}
@@ -142,29 +156,28 @@ const Legenda: React.FC<{ g: Gancho }> = ({ g }) => {
   );
 };
 
-// palavra em verde ganha um fundinho branco para ler bem em qualquer cena
-const Verde: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <span
-    style={{
-      background: BLANT.branco,
-      color: BLANT.verde,
-      borderRadius: 12,
-      padding: "0 12px",
-      textShadow: "none",
-      boxDecorationBreak: "clone",
-      WebkitBoxDecorationBreak: "clone",
-    }}
-  >
-    {children}
-  </span>
-);
+const Recorte: React.FC<{ g: Gancho }> = ({ g }) => {
+  const frame = useCurrentFrame();
+  if (frame >= g.recorte.quadros) return null;
+  return (
+    <Img
+      src={staticFile(`${g.recorte.pasta}/f${String(frame + 1).padStart(4, "0")}.png`)}
+      style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover" }}
+    />
+  );
+};
 
 export const Reel03: React.FC<{ gancho: Gancho; showSafeArea: boolean }> = ({ gancho, showSafeArea }) => {
   useMontserrat();
   return (
     <AbsoluteFill style={{ background: "black" }}>
       <OffthreadVideo src={staticFile(gancho.video)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      {/* camadas: vídeo → frase do gancho → Bruna recortada por cima → legenda */}
       <Destaque g={gancho} />
+      <Recorte g={gancho} />
+      <Sequence from={Math.round(gancho.destaque.de * 30)} durationInFrames={30}>
+        <Audio src={staticFile("sfx/brilho.wav")} volume={0.5} />
+      </Sequence>
       <Legenda g={gancho} />
       {showSafeArea ? (
         <div

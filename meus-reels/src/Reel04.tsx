@@ -62,65 +62,121 @@ const Logo: React.FC<{ path: string; cor: string; fundo: string; tam: number }> 
   </div>
 );
 
-const FOTOS_QUARTO: { f: string; w: number; ar: number; x: number; y: number; r: number; de: number }[] = [
-  { f: "parede-cama.jpg", w: 560, ar: 2000 / 3556, x: 360, y: 760, r: -7, de: 16.3 },
-  { f: "parede-penteadeira.jpg", w: 330, ar: 2880 / 1620, x: 780, y: 820, r: 5, de: 16.9 },
-  { f: "parede-janela.jpg", w: 560, ar: 2000 / 3556, x: 650, y: 1230, r: 4, de: 17.3 },
-  { f: "parede-tv.jpg", w: 330, ar: 2880 / 1620, x: 280, y: 1250, r: -5, de: 17.7 },
-];
-const T_JUNTA: [number, number] = [18.15, 18.85];
-const T_ENVIA: [number, number] = [19.45, 19.95];
-const C_GPT = [540, 980];
+const QUARTO = ["parede-cama.jpg", "parede-penteadeira.jpg", "parede-janela.jpg", "parede-tv.jpg"];
+const PINS = ["pin-1.jpg", "pin-2.jpg", "pin-3.jpg", "pin-4.jpg", "pin-5.jpg"];
+const PIN_AR = [1264 / 736, 1308 / 736, 678 / 735, 1177 / 736, 1119 / 736];
+// tempos (segundos da narração)
+const J = {
+  toque: 16.12, // dedo no ícone do Pinterest
+  abre: [16.28, 16.5] as [number, number],
+  rola: [16.5, 17.62] as [number, number],
+  fotos: [17.62, 18.5] as [number, number], // fotos do quarto rapidinho
+  junta: [18.5, 18.95] as [number, number], // refs + fotos viram um painel
+  envia: [19.45, 19.95] as [number, number], // painel entra no ChatGPT
+};
+const C_GPT = [540, 960];
+const cl = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
+
+const Dedo: React.FC<{ x: number; y: number; op: number; s?: number }> = ({ x, y, op, s = 1 }) => (
+  <div style={{ position: "absolute", left: x - 55, top: y - 55, width: 110, height: 110, borderRadius: 110, background: "rgba(255,255,255,0.55)", border: "5px solid rgba(255,255,255,0.95)", boxShadow: "0 6px 24px rgba(0,0,0,0.3)", opacity: op, transform: `scale(${s})` }} />
+);
 
 const Juntei: React.FC<{ t0: number }> = ({ t0 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = t0 + frame / fps;
   const f = (x: number) => Math.round((x - t0) * fps);
-  const cl = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
-  const pin = spring({ frame: frame - f(15.94), fps, config: { damping: 11, stiffness: 170 } });
-  const pinSai = interpolate(t, [19.2, 19.45], [1, 0], cl);
-  const junta = interpolate(t, T_JUNTA, [0, 1], { ...cl, easing: (x) => 1 - Math.pow(1 - x, 3) });
-  const envia = interpolate(t, T_ENVIA, [0, 1], { ...cl, easing: (x) => x * x });
-  const gpt = spring({ frame: frame - f(T_ENVIA[1] - 0.05), fps, config: { damping: 10, stiffness: 180 } });
+
+  // A) ícone do app + toque
+  if (t < J.abre[1]) {
+    const pop = spring({ frame, fps, config: { damping: 12, stiffness: 170 } });
+    const aperta = t >= J.toque ? interpolate(t, [J.toque, J.toque + 0.08, J.abre[0]], [1, 0.88, 1], cl) : 1;
+    const abre = interpolate(t, J.abre, [0, 1], { ...cl, easing: (x) => x * x });
+    return (
+      <AbsoluteFill style={{ background: CORES.escuro }}>
+        <Img src={R("parede-cama.jpg")} style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover", filter: "blur(30px) brightness(0.5)", transform: "scale(1.2)" }} />
+        <div style={{ position: "absolute", left: 540 - 140, top: 820 - 140, width: 280, height: 280, borderRadius: 66, background: `#${siPinterest.hex}`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 18px 50px rgba(0,0,0,0.4)", transform: `scale(${pop * aperta})` }}>
+          <svg viewBox="0 0 24 24" width={180} height={180}><path d={siPinterest.path} fill="#fff" /></svg>
+        </div>
+        <div style={{ position: "absolute", top: 820 + 170, width: WIDTH, textAlign: "center", fontFamily: F.titulo, fontWeight: 700, fontSize: 46, color: CORES.claro, opacity: pop }}>Pinterest</div>
+        {t >= J.toque - 0.06 ? <Dedo x={560} y={840} op={interpolate(t, [J.toque - 0.06, J.toque, J.abre[1]], [0, 1, 0], cl)} s={interpolate(t, [J.toque - 0.06, J.toque], [1.3, 1], cl)} /> : null}
+        {/* app abrindo a partir do ícone */}
+        <div style={{ position: "absolute", inset: 0, background: "#fff", clipPath: `circle(${abre * 1200}px at 540px 820px)` }} />
+      </AbsoluteFill>
+    );
+  }
+
+  // B) feed do Pinterest rolando  ·  C) fotos do quarto  ·  D) painel  ·  E) ChatGPT
+  if (t < J.fotos[0]) {
+    const rola = interpolate(t, J.rola, [0, 1], { ...cl, easing: (x) => 1 - Math.pow(1 - x, 2.2) });
+    const colW = 507;
+    const cols: { f: string; h: number }[][] = [[], []];
+    const alt = [0, 0];
+    for (let k = 0; k < 12; k++) {
+      const i = k % PINS.length;
+      const c = alt[0] <= alt[1] ? 0 : 1;
+      const h = colW * PIN_AR[i];
+      cols[c].push({ f: PINS[i], h });
+      alt[c] += h + 18;
+    }
+    return (
+      <AbsoluteFill style={{ background: "#fff" }}>
+        <div style={{ position: "absolute", top: 300 - rola * 2100, left: 24, right: 24, display: "flex", gap: 18 }}>
+          {cols.map((col, c) => (
+            <div key={c} style={{ width: colW, display: "flex", flexDirection: "column", gap: 18, marginTop: c === 1 ? 70 : 0 }}>
+              {col.map((it, j) => (
+                <Img key={j} src={R(it.f)} style={{ width: colW, height: it.h, objectFit: "cover", borderRadius: 30, display: "block" }} />
+              ))}
+            </div>
+          ))}
+        </div>
+        {/* barra de busca */}
+        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 290, background: "#fff", display: "flex", alignItems: "flex-end", padding: "0 34px 28px", gap: 22 }}>
+          <svg viewBox="0 0 24 24" width={74} height={74}><path d={siPinterest.path} fill={`#${siPinterest.hex}`} /></svg>
+          <div style={{ flex: 1, height: 84, borderRadius: 84, background: "#efefef", display: "flex", alignItems: "center", padding: "0 34px", fontFamily: F.titulo, fontWeight: 600, fontSize: 38, color: "#555" }}>quarto azul e branco</div>
+        </div>
+        <Dedo x={720} y={interpolate(t, J.rola, [1500, 700], cl)} op={interpolate(t, [J.rola[0], J.rola[0] + 0.08, J.rola[1] - 0.15, J.rola[1]], [0, 1, 1, 0], cl)} />
+      </AbsoluteFill>
+    );
+  }
+  if (t < J.junta[0]) {
+    const cada = (J.fotos[1] - J.fotos[0]) / QUARTO.length;
+    const i = Math.min(QUARTO.length - 1, Math.floor((t - J.fotos[0]) / cada));
+    const k = (t - J.fotos[0] - i * cada) / cada;
+    return (
+      <AbsoluteFill style={{ background: "#000", overflow: "hidden" }}>
+        <Img src={R(QUARTO[i])} style={{ width: "100%", height: "100%", objectFit: "cover", transform: `scale(${1.12 - 0.08 * k})` }} />
+        <AbsoluteFill style={{ background: "#fff", opacity: interpolate(k, [0, 0.25], [0.5, 0], cl) }} />
+      </AbsoluteFill>
+    );
+  }
+  // D) painel: refs (esquerda) + fotos do quarto (direita) se juntando em 3x3
+  const tiles = [PINS[0], QUARTO[0], PINS[1], QUARTO[1], PINS[2], QUARTO[2], PINS[3], QUARTO[3], PINS[4]];
+  const envia = interpolate(t, J.envia, [0, 1], { ...cl, easing: (x) => x * x });
+  const gpt = spring({ frame: frame - f(J.envia[1] - 0.05), fps, config: { damping: 10, stiffness: 180 } });
+  const tw = 318, th = 420, gap = 16, top = 330;
   return (
-    <AbsoluteFill style={{ background: CORES.escuro }}>
-      <Img src={R("parede-cama.jpg")} style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover", filter: "blur(30px) brightness(0.5)", transform: "scale(1.2)" }} />
-      {/* logo do Pinterest em cima */}
-      <div style={{ position: "absolute", top: 230, left: 0, width: WIDTH, display: "flex", justifyContent: "center", opacity: pinSai, transform: `scale(${pin})` }}>
-        <Logo path={siPinterest.path} cor={`#${siPinterest.hex}`} fundo="#fff" tam={250} />
-      </div>
-      {/* fotos do quarto aparecendo, depois juntando numa pilha e indo pro ChatGPT */}
-      {FOTOS_QUARTO.map((c, i) => {
-        if (t < c.de) return null;
-        const sp = spring({ frame: frame - f(c.de), fps, config: { damping: 13, stiffness: 220 } });
-        const x = c.x + (C_GPT[0] - c.x) * junta;
-        const y = c.y + (C_GPT[1] - c.y) * junta + i * -6 * junta;
-        const r = c.r * (1 - junta) + [-3, 2, -1, 3][i] * junta;
-        const esc = (0.6 + 0.4 * sp) * (1 - 0.25 * junta) * (1 - 0.92 * envia);
-        if (envia >= 1) return null;
-        return (
-          <div
-            key={c.f}
-            style={{
-              position: "absolute",
-              left: x,
-              top: y,
-              width: c.w,
-              background: "#fbfaf6",
-              padding: 12,
-              boxShadow: "0 18px 46px rgba(0,0,0,0.45)",
-              opacity: Math.min(1, sp * 2) * (1 - envia * 0.6),
-              transform: `translate(-50%, -50%) rotate(${r}deg) scale(${esc})`,
-            }}
-          >
-            <Img src={R(c.f)} style={{ width: "100%", height: c.w * c.ar, objectFit: "cover", display: "block" }} />
-          </div>
-        );
-      })}
-      {/* logo do ChatGPT */}
-      {t >= T_ENVIA[1] - 0.05 ? (
-        <div style={{ position: "absolute", left: 0, width: WIDTH, top: C_GPT[1] - 150, display: "flex", flexDirection: "column", alignItems: "center", gap: 26, transform: `scale(${gpt})` }}>
+    <AbsoluteFill style={{ background: "#f3eee6" }}>
+      {envia < 1
+        ? tiles.map((tf, n) => {
+            const r = Math.floor(n / 3), c = n % 3;
+            const ex = 540 + (c - 1) * (tw + gap);
+            const ey = top + r * (th + gap) + th / 2;
+            const ehRef = tf.startsWith("pin");
+            const sp = spring({ frame: frame - f(J.junta[0] + n * 0.035), fps, config: { damping: 15, stiffness: 170 } });
+            const sx = ehRef ? -400 : 1480;
+            const x = sx + (ex - sx) * sp;
+            const x2 = x + (C_GPT[0] - x) * envia;
+            const y2 = ey + (C_GPT[1] - ey) * envia;
+            return (
+              <div key={n} style={{ position: "absolute", left: x2 - tw / 2, top: y2 - th / 2, width: tw, height: th, borderRadius: 26, overflow: "hidden", boxShadow: "0 10px 30px rgba(75,57,53,0.25)", transform: `rotate(${(1 - sp) * (ehRef ? -14 : 14)}deg) scale(${1 - 0.9 * envia})`, opacity: 1 - envia * 0.5 }}>
+                <Img src={R(tf)} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </div>
+            );
+          })
+        : null}
+      {t >= J.envia[1] - 0.05 ? (
+        <div style={{ position: "absolute", left: 0, width: WIDTH, top: C_GPT[1] - 150, display: "flex", justifyContent: "center", transform: `scale(${gpt})` }}>
           <Logo path={siOpenai.path} cor="#fff" fundo="#0d0d0d" tam={300} />
         </div>
       ) : null}
@@ -135,6 +191,45 @@ const Projeto: React.FC = () => {
   const ps = [CAMA, PENTEADEIRA, TV, JANELA];
   const i = Math.min(ps.length - 1, Math.floor((frame / durationInFrames) * ps.length));
   return <ParedeGiz p={ps[i]} t0={ps[i].ate + 1} />;
+};
+
+
+// ---------- efeitos sonoros ----------
+const S = (n: string) => staticFile(`sfx/${n}`);
+const GIZ_SONS = [CAMA, PENTEADEIRA, TV, JANELA].flatMap((p) => p.elementos.filter((e) => !e.led)).concat([PISO]);
+const UI_SONS: [number, string, number][] = [
+  [0.0, "whoosh.wav", 0.07], // título (aprovado bem baixinho)
+  [J.toque, "click.wav", 0.5], // toque no ícone do Pinterest
+  [J.rola[0], "whoosh.wav", 0.12], // rolando o feed
+  ...[0, 1, 2, 3].map((i): [number, string, number] => [J.fotos[0] + (i * (J.fotos[1] - J.fotos[0])) / 4, "click.wav", 0.32]), // fotos do quarto
+  [J.junta[0], "whoosh.wav", 0.12], // painel se juntando
+  [J.envia[0], "whoosh.wav", 0.14], // indo pro ChatGPT
+  [J.envia[1], "click.wav", 0.45], // logo do ChatGPT
+  ...[0, 1, 2, 3].map((i): [number, string, number] => [58.42 + i * 0.27, "click.wav", 0.3]), // "esse é o projeto"
+];
+const Sons: React.FC = () => {
+  const { fps } = useVideoConfig();
+  return (
+    <>
+      {GIZ_SONS.map((e, i) => {
+        const dur = Math.round((e.dur + 0.1) * fps);
+        return (
+          <Sequence key={`g${i}`} from={Math.round(e.t * fps)} durationInFrames={dur}>
+            <Audio
+              src={S(`giz-${(i % 3) + 1}.wav`)}
+              startFrom={(i * 7) % 12}
+              volume={(fr) => 0.42 * interpolate(fr, [0, 2, dur - 4, dur], [0, 1, 1, 0], cl)}
+            />
+          </Sequence>
+        );
+      })}
+      {UI_SONS.map(([t, n, v], i) => (
+        <Sequence key={`u${i}`} from={Math.round(t * fps)} durationInFrames={Math.round(1.2 * fps)}>
+          <Audio src={S(n)} volume={v} />
+        </Sequence>
+      ))}
+    </>
+  );
 };
 
 // ---------- título ----------
@@ -172,7 +267,7 @@ const Legenda: React.FC = () => {
         fontFamily: F.legenda,
         fontSize: 76,
         lineHeight: 1.1,
-        textShadow: "0 4px 18px rgba(40,30,28,0.55)",
+        textShadow: "0 2px 4px rgba(40,30,28,0.55), 0 4px 18px rgba(40,30,28,0.6)",
       }}
     >
       {atual.w.map((w, i) => (
@@ -209,7 +304,7 @@ export const CENAS: Cena[] = [
   [14.7, 15.94, v("copy_DDDA", 6.75, 1.08)], // uma ideia de como eu queria
   [15.94, 21.28, (t0) => <Juntei t0={t0} />], // Pinterest + fotos do quarto juntando + ChatGPT
   [21.28, 22.5, v("IMG_2890", 2.2)], // e olha, não é por nada
-  [22.5, 23.6, v("IMG_2727", 127.6, 1.06)], // mas eu amei o projeto
+  [22.5, 23.6, v("IMG_2890", 5.2, 1.06)], // mas eu amei o projeto (rindo na cama)
   [23.6, 24.5, v("IMG_2699", 37.2)], // que a gente criou, tá?
   [24.5, 25.54, v("IMG_2891", 2.6)], // então vamos para a ideia
   [CAMA.de, CAMA.ate, giz(CAMA)],
@@ -252,6 +347,7 @@ export const Reel04: React.FC<{ showSafeArea: boolean }> = ({ showSafeArea }) =>
       </Sequence>
       <Legenda />
       <Audio src={R("narracao.wav")} />
+      <Sons />
       {showSafeArea ? (
         <AbsoluteFill style={{ border: "2px dashed red", top: SAFE_AREA.top, bottom: SAFE_AREA.bottom, left: SAFE_AREA.sides, right: SAFE_AREA.sides }} />
       ) : null}

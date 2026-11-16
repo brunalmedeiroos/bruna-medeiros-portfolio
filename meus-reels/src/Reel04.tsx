@@ -200,7 +200,7 @@ const S = (n: string) => staticFile(`sfx/${n}`);
 // [segundo da narração, arquivo, volume, duração máx. em s]
 const UI_SONS: [number, string, number, number?][] = [
   [0.0, "brilho.wav", 0.25], // título
-  [1.44, "suspeito.wav", 0.3, 2.2], // loucura (suspeito, da Bru)
+  [1.44, "suspeito.wav", 0.12, 2.2], // loucura (suspeito, da Bru)
   [2.94, "pop-1.wav", 0.45], // durmo
   [3.3, "pop-2.wav", 0.45], // trabalho
   [3.8, "pop-3.wav", 0.45], // e gravo
@@ -233,7 +233,7 @@ const Sons: React.FC = () => {
             <Audio
               src={S("giz-real.wav")}
               startFrom={Math.round(((i * 1.37) % 4.3) * fps)}
-              volume={(fr) => 0.3 * interpolate(fr, [0, 3, dur - 5, dur], [0, 1, 1, 0], cl)}
+              volume={(fr) => 0.13 * interpolate(fr, [0, 3, dur - 5, dur], [0, 1, 1, 0], cl)}
             />
           </Sequence>
         );

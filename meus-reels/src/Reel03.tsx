@@ -17,6 +17,7 @@ import { loadFont } from "@remotion/fonts";
 import { SAFE_AREA, WIDTH } from "./config";
 import { LEGENDA as LEG_G1 } from "./reel03-g1-data";
 import { LEGENDA as LEG_G2 } from "./reel03-g2-data";
+import { LEGENDA as LEG_G2V2 } from "./reel03-g2v2-data";
 
 // Reels 03 · UGC Blant (combo unhas). Vídeo já editado pela Bruna (cortes, áudio e sons);
 // aqui entram só a legenda palavra por palavra e a frase de destaque do gancho.
@@ -44,6 +45,8 @@ export type Gancho = {
   // o miolo é igual nos dois vídeos: desloc = quanto o miolo começa depois do que no vídeo 1
   desloc: number;
   link: number; // "clica no link abaixo"
+  // gancho novo montado aqui: clipes de produto + narração; depois o vídeo segue a partir de "corte"
+  abertura?: { clipes: { src: string; dur: number }[]; narracao: string; dur: number; corte: number };
   musica: { arquivo: string; vol: number };
 };
 
@@ -64,6 +67,46 @@ export const GANCHO_1: Gancho = {
   desloc: 0,
   link: 56.02,
   musica: { arquivo: "musica/trilha-blant.wav", vol: 0.05 },
+};
+
+// gancho 2 refeito (16/11): clipes de produto + narração nova; o resto do vídeo 2 a partir da troca de cena (7,233 s)
+const G2_CORTE = 217 / 30;
+const G2_ABERTURA = 9.5;
+const G2_OFF = G2_ABERTURA - G2_CORTE;
+const clipe = (n: number, dur: number) => ({ src: `originais/g2novo/IMG_${n}.mp4`, dur });
+export const GANCHO_2_NOVO: Gancho = {
+  video: "originais/blant-g2.mp4",
+  legenda: LEG_G2V2,
+  duracao: G2_ABERTURA + (59.23 - G2_CORTE),
+  destaque: {
+    de: 0,
+    ate: 3.7, // até "ninguém te avisa"
+    linhas: [
+      { t: "o efeito colateral" },
+      { t: "das canetas emagrecedoras", verde: true },
+      { t: "que ninguém te avisa", verde: true },
+    ],
+    fonte: 56,
+  },
+  recorte: { pasta: "", quadros: 0 },
+  desloc: 1.4 + G2_OFF,
+  link: 57.22 + G2_OFF,
+  musica: { arquivo: "", vol: 0 },
+  abertura: {
+    // um clipe por ~1 s; o trio entra no "o trio ideal" (6,4 s)
+    clipes: [
+      clipe(2906, 1.07),
+      clipe(2907, 1.07),
+      clipe(2908, 1.07),
+      clipe(2909, 1.07),
+      clipe(2910, 1.06),
+      clipe(2905, 1.06),
+      clipe(2904, 3.1),
+    ],
+    narracao: "originais/g2novo/narracao.wav",
+    dur: G2_ABERTURA,
+    corte: G2_CORTE,
+  },
 };
 
 export const GANCHO_2: Gancho = {
@@ -504,6 +547,34 @@ const Seta: React.FC<{ link: number }> = ({ link }) => {
   );
 };
 
+const Video: React.FC<{ g: Gancho }> = ({ g }) => {
+  const est = { width: "100%", height: "100%", objectFit: "cover" } as const;
+  const a = g.abertura;
+  if (!a) return <OffthreadVideo src={staticFile(g.video)} style={est} />;
+  const durF = Math.round(a.dur * 30);
+  let ini = 0;
+  return (
+    <>
+      {a.clipes.map((c) => {
+        const from = ini;
+        const len = Math.round(c.dur * 30);
+        ini += len;
+        return (
+          <Sequence key={c.src} from={from} durationInFrames={len}>
+            <OffthreadVideo src={staticFile(c.src)} muted style={est} />
+          </Sequence>
+        );
+      })}
+      <Sequence durationInFrames={durF}>
+        <Audio src={staticFile(a.narracao)} />
+      </Sequence>
+      <Sequence from={durF}>
+        <OffthreadVideo src={staticFile(g.video)} startFrom={Math.round(a.corte * 30)} style={est} />
+      </Sequence>
+    </>
+  );
+};
+
 const Recorte: React.FC<{ g: Gancho }> = ({ g }) => {
   const frame = useCurrentFrame();
   if (frame >= g.recorte.quadros) return null;
@@ -531,10 +602,7 @@ export const Reel03: React.FC<{ gancho: Gancho; showSafeArea: boolean }> = ({
     <Desloc.Provider value={gancho.desloc}>
       <AbsoluteFill style={{ background: "black" }}>
         {/* sem música: a Bruna preferiu só voz + efeitos */}
-        <OffthreadVideo
-          src={staticFile(gancho.video)}
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        />
+        <Video g={gancho} />
         {/* camadas: vídeo → frase do gancho → Bruna recortada por cima → legenda */}
         <Destaque g={gancho} />
         <Recorte g={gancho} />

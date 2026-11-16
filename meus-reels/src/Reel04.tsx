@@ -20,7 +20,6 @@ import { CAMA, JANELA, PENTEADEIRA, PISO, TV } from "./reel04-paredes";
 import { siOpenai, siPinterest } from "simple-icons";
 
 // Reels 04 · Diário de reforma ep. 1 (só B-roll + narração + giz nas paredes)
-export const REEL04_FRAMES = Math.ceil(DURACAO_S * 30);
 export const reel04Defaults = { showSafeArea: false };
 
 const R = (n: string) => staticFile(`reforma/${n}`);
@@ -195,40 +194,92 @@ const Projeto: React.FC = () => {
 
 
 // ---------- efeitos sonoros ----------
+const JA = { de: 59.88, ate: 61.4, texto: "JÁ COMEÇOU!", digita: 0.75 };
 const S = (n: string) => staticFile(`sfx/${n}`);
-const GIZ_SONS = [CAMA, PENTEADEIRA, TV, JANELA].flatMap((p) => p.elementos.filter((e) => !e.led)).concat([PISO]);
-const UI_SONS: [number, string, number][] = [
-  [0.0, "whoosh.wav", 0.07], // título (aprovado bem baixinho)
+// sons de verdade (CC0: Meta Open Sound + free-sfx-download) e o brilho que a Bru mandou
+// [segundo da narração, arquivo, volume, duração máx. em s]
+const UI_SONS: [number, string, number, number?][] = [
+  [0.0, "brilho.wav", 0.25], // título
+  [1.44, "espanto.wav", 0.32, 1.6], // loucura
+  [2.94, "pop-1.wav", 0.45], // durmo
+  [3.3, "pop-2.wav", 0.45], // trabalho
+  [3.8, "pop-3.wav", 0.45], // e gravo
+  [6.2, "negacao.wav", 0.2, 2.2], // não tá nem um pouco bonito
+  [8.7, "obra.wav", 0.32], // reformar (martelinho de leve)
+  [8.94, "obra.wav", 0.22],
+  [11.0, "brilho.wav", 0.22], // gravação
+  [12.74, "camera.wav", 0.6], // bora lá (flash)
   [J.toque, "click.wav", 0.5], // toque no ícone do Pinterest
   [J.rola[0], "whoosh.wav", 0.12], // rolando o feed
   ...[0, 1, 2, 3].map((i): [number, string, number] => [J.fotos[0] + (i * (J.fotos[1] - J.fotos[0])) / 4, "click.wav", 0.32]), // fotos do quarto
   [J.junta[0], "whoosh.wav", 0.12], // painel se juntando
   [J.envia[0], "whoosh.wav", 0.14], // indo pro ChatGPT
   [J.envia[1], "click.wav", 0.45], // logo do ChatGPT
+  [22.54, "amei.wav", 0.25, 2.2], // amei
+  [41.44, "duvida.wav", 0.17, 2.6], // que eu ainda não tenho a TV
   ...[0, 1, 2, 3].map((i): [number, string, number] => [58.42 + i * 0.27, "click.wav", 0.3]), // "esse é o projeto"
+  [JA.de, "teclado.wav", 0.35, JA.digita + 0.15], // "já começou" digitando
 ];
 const Sons: React.FC = () => {
   const { fps } = useVideoConfig();
   return (
     <>
-      {GIZ_SONS.map((e, i) => {
-        const dur = Math.round((e.dur + 0.1) * fps);
+      {UI_SONS.map(([t, n, v, max], i) => {
+        const dur = Math.round((max ?? 1.4) * fps);
         return (
-          <Sequence key={`g${i}`} from={Math.round(e.t * fps)} durationInFrames={dur}>
-            <Audio
-              src={S(`giz-${(i % 3) + 1}.wav`)}
-              startFrom={(i * 7) % 12}
-              volume={(fr) => 0.42 * interpolate(fr, [0, 2, dur - 4, dur], [0, 1, 1, 0], cl)}
-            />
+          <Sequence key={`u${i}`} from={Math.round(t * fps)} durationInFrames={dur}>
+            <Audio src={S(n)} volume={(fr) => v * interpolate(fr, [0, dur - 6, dur], [1, 1, 0], cl)} />
           </Sequence>
         );
       })}
-      {UI_SONS.map(([t, n, v], i) => (
-        <Sequence key={`u${i}`} from={Math.round(t * fps)} durationInFrames={Math.round(1.2 * fps)}>
-          <Audio src={S(n)} volume={v} />
-        </Sequence>
-      ))}
     </>
+  );
+};
+
+// ---------- "bora lá": flash quente ----------
+const Flash: React.FC = () => {
+  const frame = useCurrentFrame();
+  const o = interpolate(frame, [0, 2, 4, 13], [0, 1, 0.9, 0], cl);
+  return (
+    <AbsoluteFill
+      style={{
+        opacity: o,
+        background: "radial-gradient(circle at 50% 45%, #fff8e6 0%, #ffd08a 38%, #ff9a4d 75%, #e8743a 100%)",
+        mixBlendMode: "screen",
+      }}
+    />
+  );
+};
+
+// ---------- "já começou" no meio da tela, digitando ----------
+const JaComecou: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const t = frame / fps;
+  const n = Math.floor(interpolate(t, [0, JA.digita], [0, JA.texto.length], cl));
+  const pisca = t > JA.digita && Math.floor(t * 2.5) % 2 === 1 ? 0 : 1;
+  const sai = interpolate(t, [JA.ate - JA.de - 0.18, JA.ate - JA.de], [1, 0], cl);
+  return (
+    <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", opacity: sai }}>
+      <div
+        style={{
+          fontFamily: F.titulo,
+          fontWeight: 700,
+          fontSize: 116,
+          letterSpacing: -3,
+          color: CORES.claro,
+          background: "rgba(40,30,28,0.55)",
+          padding: "18px 44px 22px",
+          borderRadius: 26,
+          whiteSpace: "pre",
+          textShadow: "0 6px 28px rgba(0,0,0,0.45)",
+        }}
+      >
+        {JA.texto.slice(0, n)}
+        <span style={{ color: CORES.destaque, opacity: pisca }}>|</span>
+        <span style={{ opacity: 0 }}>{JA.texto.slice(n)}</span>
+      </div>
+    </AbsoluteFill>
   );
 };
 
@@ -255,7 +306,7 @@ const Legenda: React.FC = () => {
   const { fps } = useVideoConfig();
   const s = frame / fps;
   const atual = LEGENDA.find((c) => s >= c.s && s < c.e);
-  if (!atual) return null;
+  if (!atual || (s >= JA.de && s < JA.ate)) return null;
   return (
     <div
       style={{
@@ -328,8 +379,8 @@ export const CENAS: Cena[] = [
   [62.95, DURACAO_S, v("IMG_2699", 39.4)], // é isso, beijo!
 ];
 
-export const Reel04: React.FC<{ showSafeArea: boolean }> = ({ showSafeArea }) => {
-  useFontes();
+// tudo em "tempo da narração" (segundos do áudio original)
+const Conteudo: React.FC = () => {
   const { fps } = useVideoConfig();
   return (
     <AbsoluteFill style={{ background: "#000" }}>
@@ -342,12 +393,39 @@ export const Reel04: React.FC<{ showSafeArea: boolean }> = ({ showSafeArea }) =>
           </Sequence>
         );
       })}
-      <Sequence from={0} durationInFrames={Math.round(1.9 * fps)}>
+      <Sequence from={Math.round(12.74 * fps)} durationInFrames={14}>
+        <Flash />
+      </Sequence>
+      <Sequence from={Math.round(JA.de * fps)} durationInFrames={Math.round((JA.ate - JA.de) * fps)}>
+        <JaComecou />
+      </Sequence>
+      <Sequence  durationInFrames={Math.round(1.9 * fps)}>
         <Titulo />
       </Sequence>
       <Legenda />
       <Audio src={R("narracao.wav")} />
       <Sons />
+    </AbsoluteFill>
+  );
+};
+
+// respiro antes do "Por isso": tira 10 quadros (7,47 s → 7,80 s da narração)
+const CORTE_F = 224;
+const PULO_F = 10;
+export const REEL04_FRAMES = Math.ceil(DURACAO_S * 30) - PULO_F;
+
+export const Reel04: React.FC<{ showSafeArea: boolean }> = ({ showSafeArea }) => {
+  useFontes();
+  return (
+    <AbsoluteFill style={{ background: "#000" }}>
+      <Sequence durationInFrames={CORTE_F}>
+        <Conteudo />
+      </Sequence>
+      <Sequence from={CORTE_F}>
+        <Sequence from={-(CORTE_F + PULO_F)}>
+          <Conteudo />
+        </Sequence>
+      </Sequence>
       {showSafeArea ? (
         <AbsoluteFill style={{ border: "2px dashed red", top: SAFE_AREA.top, bottom: SAFE_AREA.bottom, left: SAFE_AREA.sides, right: SAFE_AREA.sides }} />
       ) : null}

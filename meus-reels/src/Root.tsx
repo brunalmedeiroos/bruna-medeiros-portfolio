@@ -4,6 +4,7 @@ import { EstiloA, EstiloB, EstiloC } from "./Estilos";
 import { Reel01, REEL01_FRAMES, reel01Defaults } from "./Reel01";
 import { Reel02, REEL02_FRAMES, reel02Defaults } from "./Reel02";
 import { GANCHO_1, GANCHO_2, GANCHO_2_NOVO, Reel03 } from "./Reel03";
+import { Reel04, REEL04_FRAMES, reel04Defaults } from "./Reel04";
 import { FPS, HEIGHT, WIDTH } from "./config";
 
 export const RemotionRoot: React.FC = () => {
@@ -64,6 +65,15 @@ export const RemotionRoot: React.FC = () => {
         width={WIDTH}
         height={HEIGHT}
         defaultProps={{ gancho: GANCHO_2_NOVO, showSafeArea: false }}
+      />
+      <Composition
+        id="Reel04"
+        component={Reel04}
+        durationInFrames={REEL04_FRAMES}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={reel04Defaults}
       />
       <Composition
         id="Reel"

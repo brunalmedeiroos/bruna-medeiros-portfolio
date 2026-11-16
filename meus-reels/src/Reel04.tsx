@@ -194,17 +194,17 @@ const Projeto: React.FC = () => {
 
 
 // ---------- efeitos sonoros ----------
-const JA = { de: 59.88, ate: 61.4, texto: "JÁ COMEÇOU!", digita: 0.75 };
+const JA = { de: 59.88, ate: 61.4, texto: "JÁ COMEÇOU!", digita: 0.4 };
 const S = (n: string) => staticFile(`sfx/${n}`);
 // sons de verdade (CC0: Meta Open Sound + free-sfx-download) e o brilho que a Bru mandou
 // [segundo da narração, arquivo, volume, duração máx. em s]
 const UI_SONS: [number, string, number, number?][] = [
   [0.0, "brilho.wav", 0.25], // título
-  [1.44, "espanto.wav", 0.32, 1.6], // loucura
+  [1.44, "suspeito.wav", 0.3, 2.2], // loucura (suspeito, da Bru)
   [2.94, "pop-1.wav", 0.45], // durmo
   [3.3, "pop-2.wav", 0.45], // trabalho
   [3.8, "pop-3.wav", 0.45], // e gravo
-  [6.2, "negacao.wav", 0.2, 2.2], // não tá nem um pouco bonito
+  [6.2, "toin.wav", 0.95], // não tá nem um pouco bonito (toin, da Bru)
   [8.7, "obra.wav", 0.32], // reformar (martelinho de leve)
   [8.94, "obra.wav", 0.22],
   [11.0, "brilho.wav", 0.22], // gravação
@@ -215,15 +215,29 @@ const UI_SONS: [number, string, number, number?][] = [
   [J.junta[0], "whoosh.wav", 0.12], // painel se juntando
   [J.envia[0], "whoosh.wav", 0.14], // indo pro ChatGPT
   [J.envia[1], "click.wav", 0.45], // logo do ChatGPT
-  [22.54, "amei.wav", 0.25, 2.2], // amei
-  [41.44, "duvida.wav", 0.17, 2.6], // que eu ainda não tenho a TV
+  [22.54, "brilho2.wav", 0.25, 1.5], // amei (brilho 2, da Bru)
+  [41.02, "toin.wav", 0.95], // que eu ainda não tenho a TV (toin, da Bru)
   ...[0, 1, 2, 3].map((i): [number, string, number] => [58.42 + i * 0.27, "click.wav", 0.3]), // "esse é o projeto"
-  [JA.de, "teclado.wav", 0.35, JA.digita + 0.15], // "já começou" digitando
+  [JA.de, "teclado-bru.wav", 0.9, JA.digita + 0.2], // "já começou" digitando
 ];
+// giz de verdade (gravação que a Bru mandou, 7,6 s): cada desenho pega um trecho diferente
+const GIZ_SONS = [CAMA, PENTEADEIRA, TV, JANELA].flatMap((p) => p.elementos.filter((e) => !e.led)).concat([PISO]);
 const Sons: React.FC = () => {
   const { fps } = useVideoConfig();
   return (
     <>
+      {GIZ_SONS.map((e, i) => {
+        const dur = Math.round(Math.min(e.dur + 0.1, 3) * fps);
+        return (
+          <Sequence key={`g${i}`} from={Math.round(e.t * fps)} durationInFrames={dur}>
+            <Audio
+              src={S("giz-real.wav")}
+              startFrom={Math.round(((i * 1.37) % 4.3) * fps)}
+              volume={(fr) => 0.3 * interpolate(fr, [0, 3, dur - 5, dur], [0, 1, 1, 0], cl)}
+            />
+          </Sequence>
+        );
+      })}
       {UI_SONS.map(([t, n, v, max], i) => {
         const dur = Math.round((max ?? 1.4) * fps);
         return (
@@ -263,16 +277,11 @@ const JaComecou: React.FC = () => {
     <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", opacity: sai }}>
       <div
         style={{
-          fontFamily: F.titulo,
-          fontWeight: 700,
-          fontSize: 116,
-          letterSpacing: -3,
+          fontFamily: F.legenda,
+          fontSize: 96,
           color: CORES.claro,
-          background: "rgba(40,30,28,0.55)",
-          padding: "18px 44px 22px",
-          borderRadius: 26,
           whiteSpace: "pre",
-          textShadow: "0 6px 28px rgba(0,0,0,0.45)",
+          textShadow: "0 3px 6px rgba(40,30,28,0.6), 0 6px 26px rgba(40,30,28,0.65)",
         }}
       >
         {JA.texto.slice(0, n)}

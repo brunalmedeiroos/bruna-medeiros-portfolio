@@ -17,7 +17,7 @@ import { loadFont } from "@remotion/fonts";
 import { SAFE_AREA, WIDTH } from "./config";
 import { LEGENDA as LEG_G1 } from "./reel03-g1-data";
 import { LEGENDA as LEG_G2 } from "./reel03-g2-data";
-import { LEGENDA as LEG_G2V2 } from "./reel03-g2v2-data";
+import { LEGENDA as LEG_G2V2 } from "./reel03-g2v3-data";
 
 // Reels 03 · UGC Blant (combo unhas). Vídeo já editado pela Bruna (cortes, áudio e sons);
 // aqui entram só a legenda palavra por palavra e a frase de destaque do gancho.
@@ -48,7 +48,7 @@ export type Gancho = {
   link: number; // "clica no link abaixo"
   // gancho novo montado aqui: clipes de produto + narração; depois o vídeo segue a partir de "corte"
   abertura?: {
-    clipes: { src: string; dur: number }[];
+    clipes: { src: string; dur: number; baixo?: string }[];
     pops?: number[];
     narracao: string;
     dur: number;
@@ -78,41 +78,35 @@ export const GANCHO_1: Gancho = {
 
 // gancho 2 refeito (16/11): clipes de produto + narração nova; o resto do vídeo 2 a partir da troca de cena (7,233 s)
 const G2_CORTE = 217 / 30;
-const G2_ABERTURA = 8.0; // narração sem respiros e 15% mais rápida
+const G2_ABERTURA = 222 / 30; // narração sem respiros, ~24% mais rápida que a original
 const G2_OFF = G2_ABERTURA - G2_CORTE;
-const clipe = (n: number, dur: number) => ({ src: `originais/g2novo/IMG_${n}.mp4`, dur });
+const src = (n: number) => `originais/g2novo/IMG_${n}.mp4`;
+// tela dividida: take normal em cima, take com zoom embaixo
+const dividido = (cima: number, baixo: number, quadros: number) => ({
+  src: src(cima),
+  baixo: src(baixo),
+  dur: quadros / 30,
+});
 export const GANCHO_2_NOVO: Gancho = {
   video: "originais/blant-g2.mp4",
   legenda: LEG_G2V2,
   duracao: G2_ABERTURA + (59.23 - G2_CORTE),
-  destaque: {
-    de: 0,
-    ate: 3.5, // até "ninguém te avisa"
-    linhas: [
-      { t: "o efeito colateral" },
-      { t: "das canetas emagrecedoras", verde: true },
-      { t: "que ninguém te avisa", verde: true },
-    ],
-    fonte: 56,
-    semPop: true, // aqui o pop é dos produtos
-  },
+  // sem título no início (pedido da Bru 16/11)
+  destaque: { de: -1, ate: -1, linhas: [], semPop: true },
   recorte: { pasta: "", quadros: 0 },
   desloc: 1.4 + G2_OFF,
   link: 57.22 + G2_OFF,
   musica: { arquivo: "", vol: 0 },
   abertura: {
-    // abre com os 3 produtos, um por vez, cada um com pop; o trio entra no "o trio ideal" (5,38 s)
+    // 3 produtos um por vez (pop em cada), trio na mesa no "o trio ideal" (4,98 s)
     clipes: [
-      clipe(2909, 0.45),
-      clipe(2905, 0.45),
-      clipe(2907, 0.45),
-      clipe(2910, 1.35),
-      clipe(2906, 1.34),
-      clipe(2908, 1.34),
-      clipe(2904, 2.62),
+      dividido(2909, 2910, 50), // Maximus
+      dividido(2905, 2906, 50), // Coretrat
+      dividido(2907, 2908, 49), // Booster
+      { src: src(2904), dur: 73 / 30 },
     ],
-    pops: [0, 0.45, 0.9],
-    narracao: "originais/g2novo/narracao-rapida.wav",
+    pops: [0, 50 / 30, 100 / 30],
+    narracao: "originais/g2novo/narracao-rapida2.wav",
     dur: G2_ABERTURA,
     corte: G2_CORTE,
   },
@@ -570,7 +564,14 @@ const Video: React.FC<{ g: Gancho }> = ({ g }) => {
         ini += len;
         return (
           <Sequence key={c.src} from={from} durationInFrames={len}>
-            <OffthreadVideo src={staticFile(c.src)} muted style={est} />
+            {c.baixo ? (
+              <>
+                <OffthreadVideo src={staticFile(c.src)} muted style={{ ...est, position: "absolute", top: 0, height: "50%" }} />
+                <OffthreadVideo src={staticFile(c.baixo)} muted style={{ ...est, position: "absolute", top: "50%", height: "50%" }} />
+              </>
+            ) : (
+              <OffthreadVideo src={staticFile(c.src)} muted style={est} />
+            )}
           </Sequence>
         );
       })}

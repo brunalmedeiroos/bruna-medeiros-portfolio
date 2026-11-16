@@ -39,6 +39,7 @@ export type Gancho = {
     linhas: { t: string; verde?: boolean }[];
     top?: number;
     fonte?: number;
+    semPop?: boolean;
   };
   // quadros da Bruna recortada (fundo removido) para a frase ficar ATRÁS dela
   recorte: { pasta: string; quadros: number };
@@ -46,7 +47,13 @@ export type Gancho = {
   desloc: number;
   link: number; // "clica no link abaixo"
   // gancho novo montado aqui: clipes de produto + narração; depois o vídeo segue a partir de "corte"
-  abertura?: { clipes: { src: string; dur: number }[]; narracao: string; dur: number; corte: number };
+  abertura?: {
+    clipes: { src: string; dur: number }[];
+    pops?: number[];
+    narracao: string;
+    dur: number;
+    corte: number;
+  };
   musica: { arquivo: string; vol: number };
 };
 
@@ -71,7 +78,7 @@ export const GANCHO_1: Gancho = {
 
 // gancho 2 refeito (16/11): clipes de produto + narração nova; o resto do vídeo 2 a partir da troca de cena (7,233 s)
 const G2_CORTE = 217 / 30;
-const G2_ABERTURA = 9.5;
+const G2_ABERTURA = 8.0; // narração sem respiros e 15% mais rápida
 const G2_OFF = G2_ABERTURA - G2_CORTE;
 const clipe = (n: number, dur: number) => ({ src: `originais/g2novo/IMG_${n}.mp4`, dur });
 export const GANCHO_2_NOVO: Gancho = {
@@ -80,30 +87,32 @@ export const GANCHO_2_NOVO: Gancho = {
   duracao: G2_ABERTURA + (59.23 - G2_CORTE),
   destaque: {
     de: 0,
-    ate: 3.7, // até "ninguém te avisa"
+    ate: 3.5, // até "ninguém te avisa"
     linhas: [
       { t: "o efeito colateral" },
       { t: "das canetas emagrecedoras", verde: true },
       { t: "que ninguém te avisa", verde: true },
     ],
     fonte: 56,
+    semPop: true, // aqui o pop é dos produtos
   },
   recorte: { pasta: "", quadros: 0 },
   desloc: 1.4 + G2_OFF,
   link: 57.22 + G2_OFF,
   musica: { arquivo: "", vol: 0 },
   abertura: {
-    // um clipe por ~1 s; o trio entra no "o trio ideal" (6,4 s)
+    // abre com os 3 produtos, um por vez, cada um com pop; o trio entra no "o trio ideal" (5,38 s)
     clipes: [
-      clipe(2906, 1.07),
-      clipe(2907, 1.07),
-      clipe(2908, 1.07),
-      clipe(2909, 1.07),
-      clipe(2910, 1.06),
-      clipe(2905, 1.06),
-      clipe(2904, 3.1),
+      clipe(2909, 0.45),
+      clipe(2905, 0.45),
+      clipe(2907, 0.45),
+      clipe(2910, 1.35),
+      clipe(2906, 1.34),
+      clipe(2908, 1.34),
+      clipe(2904, 2.62),
     ],
-    narracao: "originais/g2novo/narracao.wav",
+    pops: [0, 0.45, 0.9],
+    narracao: "originais/g2novo/narracao-rapida.wav",
     dur: G2_ABERTURA,
     corte: G2_CORTE,
   },
@@ -607,7 +616,10 @@ export const Reel03: React.FC<{ gancho: Gancho; showSafeArea: boolean }> = ({
         <Destaque g={gancho} />
         <Recorte g={gancho} />
         {/* um pop só quando os cartões do gancho aparecem juntos */}
-        <Som de={gancho.destaque.de} som="pop" vol={0.32} abs />
+        {gancho.destaque.semPop ? null : <Som de={gancho.destaque.de} som="pop" vol={0.32} abs />}
+        {(gancho.abertura?.pops ?? []).map((t) => (
+          <Som key={`p${t}`} de={t} som="pop" vol={0.32} abs />
+        ))}
         <FotosFrageis />
         {[T.fragil, T.fina, T.quebradica].map((t) => (
           <Som key={t} de={t} som="pop" vol={0.32} />

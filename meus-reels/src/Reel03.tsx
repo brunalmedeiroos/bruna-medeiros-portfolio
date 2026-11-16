@@ -84,7 +84,7 @@ const src = (n: number) => `originais/g2novo/IMG_${n}.mp4`;
 // tela dividida: take normal em cima, take com zoom embaixo
 const dividido = (cima: number, baixo: number, quadros: number) => ({
   src: src(cima),
-  baixo: src(baixo),
+  baixo: `originais/g2novo/IMG_${baixo}-estab.mp4`, // take com zoom estabilizado (vidstab)
   dur: quadros / 30,
 });
 export const GANCHO_2_NOVO: Gancho = {
@@ -101,8 +101,8 @@ export const GANCHO_2_NOVO: Gancho = {
     // 3 produtos um por vez (pop em cada), trio na mesa no "o trio ideal" (4,98 s)
     clipes: [
       dividido(2909, 2910, 50), // Maximus
-      dividido(2905, 2906, 50), // Coretrat
-      dividido(2907, 2908, 49), // Booster
+      dividido(2907, 2908, 50), // Booster
+      dividido(2905, 2906, 49), // Coretrat
       { src: src(2904), dur: 73 / 30 },
     ],
     pops: [0, 50 / 30, 100 / 30],
@@ -211,13 +211,17 @@ const Legenda: React.FC<{ g: Gancho }> = ({ g }) => {
   const s = frame / fps;
   const atual = g.legenda.find((c) => s >= c.s && s < c.e);
   if (!atual) return null;
+  // no gancho com tela dividida, a legenda fica centralizada na linha de divisão
+  const naDivisao = g.abertura && s < g.abertura.dur;
   return (
     <div
       style={{
         position: "absolute",
         left: SAFE_AREA.sides + 40,
         right: SAFE_AREA.sides + 40,
-        bottom: SAFE_AREA.bottom + 430,
+        ...(naDivisao
+          ? { top: 960, transform: "translateY(-50%)" }
+          : { bottom: SAFE_AREA.bottom + 430 }),
         textAlign: "center",
         fontFamily: FONTE,
         fontWeight: 700,
@@ -619,7 +623,7 @@ export const Reel03: React.FC<{ gancho: Gancho; showSafeArea: boolean }> = ({
         {/* um pop só quando os cartões do gancho aparecem juntos */}
         {gancho.destaque.semPop ? null : <Som de={gancho.destaque.de} som="pop" vol={0.32} abs />}
         {(gancho.abertura?.pops ?? []).map((t) => (
-          <Som key={`p${t}`} de={t} som="pop" vol={0.32} abs />
+          <Som key={`p${t}`} de={t} som="pop-bru" vol={0.6} abs />
         ))}
         <FotosFrageis />
         {[T.fragil, T.fina, T.quebradica].map((t) => (

@@ -1,5 +1,11 @@
 import { staticFile } from "remotion";
-import type { Elemento, Forma, Parede } from "./Giz";
+import { GIZ_BRANCO, type Elemento, type Forma, type Parede } from "./Giz";
+
+const AZUL = "#86a6d1"; // azul das listras da referência
+const VERDE = "#9ccc8a"; // plantas
+const MADEIRA = "#e9bf84"; // quadros, livros, velinha
+const TERRA = "#e6a58e"; // vasinhos
+const pinta = (cor: string, f: Forma[]): Forma[] => f.map((x) => ({ ...x, cor }));
 
 // Desenhos a giz de cada parede, baseados nas fotos "referencia parede ..." (projeto da Bruna).
 // Coordenadas em pixels da foto original (cama/janela 4032x2268, penteadeira/tv 2268x4032).
@@ -11,28 +17,32 @@ const ripas = (x0: number, x1: number, y0: number, y1: number, passo: number): F
   return f;
 };
 const vaso = (x: number, yBase: number, w = 100, h = 90, cip = 300): Forma[] => [
-  { k: "ret", x: x - w / 2, y: yBase - h, w, h },
+  { k: "ret", x: x - w / 2, y: yBase - h, w, h, cor: TERRA },
+  ...pinta(VERDE, [
   { k: "elipse", cx: x - 30, cy: yBase - h - 30, w: 70, h: 45 },
   { k: "elipse", cx: x + 30, cy: yBase - h - 35, w: 70, h: 45 },
   { k: "elipse", cx: x, cy: yBase - h - 60, w: 60, h: 50 },
   { k: "curva", p: [[x - w / 2, yBase - h + 10], [x - w / 2 - 40, yBase + cip * 0.4], [x - w / 2 - 10, yBase + cip * 0.75], [x - w / 2 - 35, yBase + cip]] },
   { k: "curva", p: [[x + w / 2, yBase - h + 10], [x + w / 2 + 35, yBase + cip * 0.3], [x + w / 2 + 10, yBase + cip * 0.6]] },
+  ]),
 ];
-const mickey = (cx: number, cy: number, r = 48): Forma[] => [
-  { k: "elipse", cx, cy, w: r * 2, h: r * 2 },
-  { k: "elipse", cx: cx - r * 0.85, cy: cy - r * 1.05, w: r, h: r },
-  { k: "elipse", cx: cx + r * 0.85, cy: cy - r * 1.05, w: r, h: r },
+// velinha num potinho + vasinho redondo (no lugar do mickey)
+const vela0 = (cx: number, yBase: number, r = 48): Forma[] => [
+  { k: "ret", x: cx - r * 0.8, y: yBase - r * 1.6, w: r * 0.9, h: r * 1.6 },
+  { k: "curva", p: [[cx - r * 0.35, yBase - r * 1.6], [cx - r * 0.5, yBase - r * 2.1], [cx - r * 0.35, yBase - r * 2.5], [cx - r * 0.2, yBase - r * 2.1], [cx - r * 0.35, yBase - r * 1.6]] },
+  { k: "elipse", cx: cx + r * 0.75, cy: yBase - r * 0.7, w: r * 1.2, h: r * 1.4 },
+  { k: "linha", p: [[cx + r * 0.6, yBase - r * 1.4], [cx + r * 0.9, yBase - r * 1.4]] },
 ];
-const livros = (x: number, yBase: number, w = 150): Forma[] => [
+const livros0 = (x: number, yBase: number, w = 150): Forma[] => [
   { k: "ret", x, y: yBase - 18, w, h: 18 },
   { k: "ret", x: x + 8, y: yBase - 36, w: w - 16, h: 18 },
   { k: "ret", x: x + 3, y: yBase - 52, w: w - 10, h: 16 },
 ];
-const quadro = (x: number, y: number, w: number, h: number): Forma[] => [
+const quadro0 = (x: number, y: number, w: number, h: number): Forma[] => [
   { k: "ret", x, y, w, h },
   { k: "ret", x: x + w * 0.14, y: y + h * 0.12, w: w * 0.72, h: h * 0.76 },
 ];
-const difusor = (x: number, yBase: number): Forma[] => [
+const difusor0 = (x: number, yBase: number): Forma[] => [
   { k: "ret", x: x - 25, y: yBase - 80, w: 50, h: 80 },
   { k: "linha", p: [[x - 5, yBase - 80], [x - 40, yBase - 200]] },
   { k: "linha", p: [[x, yBase - 80], [x + 5, yBase - 210]] },
@@ -51,11 +61,21 @@ const mesinha = (x: number, y: number, w: number, h: number): Forma[] => [
   { k: "linha", p: [[x + w - 20, y + h], [x + w - 10, y + h + 60]] },
 ];
 
+const livros = (...a: Parameters<typeof livros0>) => pinta(MADEIRA, livros0(...a));
+const quadro = (...a: Parameters<typeof quadro0>) => pinta(MADEIRA, quadro0(...a));
+const difusor = (...a: Parameters<typeof difusor0>) => pinta(MADEIRA, difusor0(...a));
+const vela = (...a: Parameters<typeof vela0>) => pinta(MADEIRA, vela0(...a));
+
 // ---------------- parede da cama (foto deitada) ----------------
 const listras: Forma[] = [];
 for (let i = 0; i < 12; i++) {
   const x = 700 + i * 196;
-  listras.push(i % 2 === 0 ? { k: "ret", x, y: 410, w: 196, h: 725, hach: 26, ang: -60 } : { k: "linha", p: [[x + 196, 410], [x + 196, 1135]] });
+  // listras azul e branco, pintadas a giz (como na referência)
+  listras.push(
+    i % 2 === 0
+      ? { k: "ret", x, y: 410, w: 196, h: 725, hach: 13, ang: -65, cor: AZUL, preenche: AZUL }
+      : { k: "ret", x, y: 410, w: 196, h: 725, hach: 15, ang: -65, preenche: GIZ_BRANCO },
+  );
 }
 
 export const CAMA: Parede = {
@@ -83,8 +103,8 @@ export const CAMA: Parede = {
       formas: [
         ...vaso(910, 1140),
         ...livros(1350, 1140),
-        { k: "elipse", cx: 1180, cy: 1080, w: 70, h: 115 },
-        ...mickey(1760, 1085),
+        { k: "elipse", cx: 1180, cy: 1080, w: 70, h: 115, cor: TERRA },
+        ...vela(1760, 1140),
         ...quadro(2150, 920, 180, 220),
         ...vaso(2560, 1140),
         ...difusor(2830, 1140),
@@ -148,7 +168,7 @@ export const PENTEADEIRA: Parede = {
     {
       t: 37.55,
       dur: 0.9,
-      formas: [...vaso(470, 1560, 100, 90, 260), ...livros(700, 1560), ...mickey(1050, 1500), ...quadro(1200, 1290, 200, 265), ...quadro(1450, 1350, 170, 205)],
+      formas: [...vaso(470, 1560, 100, 90, 260), ...livros(700, 1560), ...vela(1050, 1560), ...quadro(1200, 1290, 200, 265), ...quadro(1450, 1350, 170, 205)],
     }, // decoração
     { t: 38.33, dur: 0.45, led: true, formas: [{ k: "linha", p: [[330, 1615], [1750, 1615]] }] }, // LED
     { t: 38.82, dur: 0.9, formas: [...quadro(1180, 1780, 280, 400), ...quadro(1540, 1760, 240, 250), ...quadro(1540, 2080, 240, 250)] }, // quadrinhos
@@ -192,7 +212,7 @@ export const TV: Parede = {
     {
       t: 46.6,
       dur: 0.9,
-      formas: [...difusor(720, 1220), ...quadro(800, 960, 200, 255), ...quadro(1060, 1010, 190, 205), ...mickey(1500, 1170, 42), ...livros(1640, 1220), ...vaso(1930, 1220, 100, 90, 330)],
+      formas: [...difusor(720, 1220), ...quadro(800, 960, 200, 255), ...quadro(1060, 1010, 190, 205), ...vela(1500, 1220, 42), ...livros(1640, 1220), ...vaso(1930, 1220, 100, 90, 330)],
     }, // decoração
     { t: 47.38, dur: 0.7, formas: [{ k: "ret", x: 300, y: 880, w: 270, h: 1680 }, ...ripas(340, 540, 880, 2560, 40)] }, // ripado
     {
@@ -318,3 +338,4 @@ for (let xb = -700; xb <= 2200; xb += 150) {
   pisoTabuas.push({ k: "linha", p: [[vx + (xb - vx) * a, 1180], [xb, 1920]] });
 }
 export const PISO: Elemento = { t: 57.55, dur: 0.75, formas: pisoTabuas };
+

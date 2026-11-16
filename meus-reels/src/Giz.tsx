@@ -3,12 +3,16 @@ import rough from "roughjs";
 import { Easing, Img, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
 
 // ---------- formas desenhadas a giz (coordenadas em pixels da foto ORIGINAL) ----------
-export type Forma =
-  | { k: "ret"; x: number; y: number; w: number; h: number; hach?: number; ang?: number }
-  | { k: "linha"; p: [number, number][] }
-  | { k: "curva"; p: [number, number][] }
-  | { k: "elipse"; cx: number; cy: number; w: number; h: number; hach?: number }
-  | { k: "path"; d: string };
+type Base = { cor?: string; preenche?: string }; // cor do traço / cor do preenchimento (giz colorido)
+export type Forma = Base &
+  (
+    | { k: "ret"; x: number; y: number; w: number; h: number; hach?: number; ang?: number }
+    | { k: "linha"; p: [number, number][] }
+    | { k: "curva"; p: [number, number][] }
+    | { k: "elipse"; cx: number; cy: number; w: number; h: number; hach?: number }
+    | { k: "path"; d: string }
+  );
+export const GIZ_BRANCO = "#f7f5ee";
 
 export type Elemento = {
   t: number; // segundo da narração em que começa a desenhar (palavra)
@@ -31,15 +35,18 @@ export type Parede = {
 
 const gen = rough.generator();
 
-const sketch = (f: Forma, seed: number, esp: number): string[] => {
+type Traco = { d: string; cor: string; w: number };
+const sketch = (f: Forma, seed: number, esp: number): Traco[] => {
+  const cor = f.cor ?? GIZ_BRANCO;
+  const corP = f.preenche ?? cor;
   const o = {
     seed,
-    roughness: 1.4,
-    bowing: 1.2,
+    roughness: 1.5,
+    bowing: 1.3,
     strokeWidth: esp,
     stroke: "#fff",
     ...("hach" in f && f.hach
-      ? { fill: "#fff", fillStyle: "zigzag-line" as const, hachureGap: f.hach, hachureAngle: "ang" in f && f.ang !== undefined ? f.ang : -42, fillWeight: esp * 0.75 }
+      ? { fill: "#fff", fillStyle: (f.preenche ? "hachure" : "zigzag-line") as "hachure", hachureGap: f.hach, hachureAngle: "ang" in f && f.ang !== undefined ? f.ang : -42, fillWeight: f.preenche ? esp * 1.6 : esp * 0.8 }
       : {}),
   };
   let d;
@@ -49,8 +56,9 @@ const sketch = (f: Forma, seed: number, esp: number): string[] => {
   else if (f.k === "elipse") d = gen.ellipse(f.cx, f.cy, f.w, f.h, o);
   else d = gen.path(f.d, o);
   // a hachura vem antes no rough; desenhar contorno primeiro e depois o preenchimento
-  const ps = gen.toPaths(d).map((p) => p.d);
-  return ps.length > 1 ? [...ps.slice(1), ps[0]] : ps;
+  const ps = gen.toPaths(d);
+  const tr = ps.map((p, i) => ({ d: p.d, cor: ps.length > 1 && i === 0 ? corP : cor, w: ps.length > 1 && i === 0 ? (o.fillWeight ?? esp) : esp }));
+  return tr.length > 1 ? [...tr.slice(1), tr[0]] : tr;
 };
 
 const ease = Easing.bezier(0.45, 0, 0.25, 1);
@@ -61,7 +69,7 @@ export const ParedeGiz: React.FC<{ p: Parede; t0: number; semFoto?: boolean }> =
   const { fps, width, height } = useVideoConfig();
   const t = t0 + frame / fps;
   const base = height / p.H; // foto cobre a altura toda
-  const esp = 5.2 / base; // espessura do traço ~5 px na tela
+  const esp = 8 / base; // espessura do traço ~8 px na tela (giz)
 
   const paths = useMemo(
     () =>
@@ -84,7 +92,7 @@ export const ParedeGiz: React.FC<{ p: Parede; t0: number; semFoto?: boolean }> =
 
   // a parede escurece um pouco quando o giz começa (giz branco em parede branca não aparece)
   const primeiro = p.elementos[0]?.t ?? p.de;
-  const esc = interpolate(t, [primeiro - 0.5, primeiro], [1, 0.62], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const esc = interpolate(t, [primeiro - 0.5, primeiro], [1, 0.58], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: semFoto ? "transparent" : "#222" }}>
@@ -103,13 +111,27 @@ export const ParedeGiz: React.FC<{ p: Parede; t0: number; semFoto?: boolean }> =
         />}
         <svg viewBox={`0 0 ${p.W} ${p.H}`} width={p.W} height={p.H} style={{ position: "absolute", overflow: "visible" }}>
           <defs>
-            <filter id="giz" x="-5%" y="-5%" width="110%" height="110%">
-              <feTurbulence type="fractalNoise" baseFrequency={0.35 * base} numOctaves={2} seed={4} result="n" />
-              <feDisplacementMap in="SourceGraphic" in2="n" scale={2.2 / base} result="d" />
-              <feTurbulence type="fractalNoise" baseFrequency={1.1 * base} numOctaves={1} seed={9} result="g" />
-              <feColorMatrix in="g" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -2.4 1.9" result="ga" />
-              <feComposite in="d" in2="ga" operator="in" result="c" />
-              <feDropShadow dx="0" dy={1.5 / base} stdDeviation={2 / base} floodColor="#2a211e" floodOpacity="0.55" />
+            <filter id="giz" x="-5%" y="-5%" width="110%" height="110%" colorInterpolationFilters="sRGB">
+              {/* borda irregular */}
+              <feTurbulence type="fractalNoise" baseFrequency={0.45 * base} numOctaves={2} seed={3} result="r" />
+              <feDisplacementMap in="SourceGraphic" in2="r" scale={4.5 / base} xChannelSelector="R" yChannelSelector="G" result="d" />
+              {/* grão do giz: falhas finas, meio arrastadas */}
+              <feTurbulence type="fractalNoise" baseFrequency={`${0.95 * base} ${0.42 * base}`} numOctaves={2} seed={11} result="g" />
+              <feColorMatrix in="g" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 -4.2 2.75" result="ga" />
+              {/* pressão da mão: partes mais fortes e mais fracas */}
+              <feTurbulence type="fractalNoise" baseFrequency={0.012 * base} numOctaves={1} seed={5} result="p" />
+              <feColorMatrix in="p" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.4 0.1" result="pa" />
+              <feComposite in="d" in2="ga" operator="in" result="c1" />
+              <feComposite in="c1" in2="pa" operator="in" result="c2" />
+              {/* pozinho de giz em volta */}
+              <feGaussianBlur in="c2" stdDeviation={3 / base} result="po" />
+              <feComponentTransfer in="po" result="po2">
+                <feFuncA type="linear" slope="0.45" />
+              </feComponentTransfer>
+              <feMerge>
+                <feMergeNode in="po2" />
+                <feMergeNode in="c2" />
+              </feMerge>
             </filter>
             <filter id="led" x="-10%" y="-200%" width="120%" height="500%">
               <feGaussianBlur stdDeviation={7 / base} result="b" />
@@ -127,19 +149,19 @@ export const ParedeGiz: React.FC<{ p: Parede; t0: number; semFoto?: boolean }> =
             const n = paths[i].length;
             return (
               <g key={i} filter={el.led ? "url(#led)" : "url(#giz)"} opacity={op}>
-                {paths[i].map((d, j) => {
+                {paths[i].map((tr, j) => {
                   const pj = Math.min(Math.max(prog * n - j, 0), 1);
                   if (pj <= 0) return null;
                   return (
                     <path
                       key={j}
-                      d={d}
+                      d={tr.d}
                       pathLength={1}
                       strokeDasharray="1 1"
                       strokeDashoffset={1 - pj}
                       fill="none"
-                      stroke={el.led ? "#ffd27a" : "#fbfaf6"}
-                      strokeWidth={el.led ? esp * 1.1 : esp}
+                      stroke={el.led ? "#ffd27a" : tr.cor}
+                      strokeWidth={el.led ? esp * 0.8 : tr.w}
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     />

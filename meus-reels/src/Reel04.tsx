@@ -17,6 +17,7 @@ import { F, useFontes } from "./Estilos";
 import { DURACAO_S, LEGENDA } from "./reel04-data";
 import { ParedeGiz, type Parede } from "./Giz";
 import { CAMA, JANELA, PENTEADEIRA, PISO, TV } from "./reel04-paredes";
+import { T, TV as TN } from "./reel04-tempo";
 import { siOpenai, siPinterest } from "simple-icons";
 
 // Reels 04 · Diário de reforma ep. 1 (só B-roll + narração + giz nas paredes)
@@ -83,8 +84,8 @@ const Dedo: React.FC<{ x: number; y: number; op: number; s?: number }> = ({ x, y
 const Juntei: React.FC<{ t0: number }> = ({ t0 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const t = t0 + frame / fps;
-  const f = (x: number) => Math.round((x - t0) * fps);
+  const t = TN(t0 + frame / fps); // tempo da narração antiga
+  const f = (x: number) => Math.round((T(x) - t0) * fps);
 
   // A) ícone do app + toque
   if (t < J.abre[1]) {
@@ -200,7 +201,6 @@ const S = (n: string) => staticFile(`sfx/${n}`);
 // [segundo da narração, arquivo, volume, duração máx. em s]
 const UI_SONS: [number, string, number, number?][] = [
   [0.0, "brilho.wav", 0.25], // título
-  [1.44, "suspeito.wav", 0.12, 2.2], // loucura (suspeito, da Bru)
   [2.94, "pop-1.wav", 0.45], // durmo
   [3.3, "pop-2.wav", 0.45], // trabalho
   [3.8, "pop-3.wav", 0.45], // e gravo
@@ -227,9 +227,9 @@ const Sons: React.FC = () => {
   return (
     <>
       {GIZ_SONS.map((e, i) => {
-        const dur = Math.round(Math.min(e.dur + 0.1, 3) * fps);
+        const dur = Math.round(Math.min(T(e.t + e.dur) - T(e.t) + 0.1, 3) * fps);
         return (
-          <Sequence key={`g${i}`} from={Math.round(e.t * fps)} durationInFrames={dur}>
+          <Sequence key={`g${i}`} from={Math.round(T(e.t) * fps)} durationInFrames={dur}>
             <Audio
               src={S("giz-real.wav")}
               startFrom={Math.round(((i * 1.37) % 4.3) * fps)}
@@ -239,9 +239,10 @@ const Sons: React.FC = () => {
         );
       })}
       {UI_SONS.map(([t, n, v, max], i) => {
+        if (i > 0 && T(t) < 0) return null;
         const dur = Math.round((max ?? 1.4) * fps);
         return (
-          <Sequence key={`u${i}`} from={Math.round(t * fps)} durationInFrames={dur}>
+          <Sequence key={`u${i}`} from={Math.max(0, Math.round(T(t) * fps))} durationInFrames={dur}>
             <Audio src={S(n)} volume={(fr) => v * interpolate(fr, [0, dur - 6, dur], [1, 1, 0], cl)} />
           </Sequence>
         );
@@ -268,11 +269,11 @@ const Flash: React.FC = () => {
 // ---------- "já começou" no meio da tela, digitando ----------
 const JaComecou: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
   const t = frame / fps;
   const n = Math.floor(interpolate(t, [0, JA.digita], [0, JA.texto.length], cl));
   const pisca = t > JA.digita && Math.floor(t * 2.5) % 2 === 1 ? 0 : 1;
-  const sai = interpolate(t, [JA.ate - JA.de - 0.18, JA.ate - JA.de], [1, 0], cl);
+  const sai = interpolate(t, [durationInFrames / fps - 0.18, durationInFrames / fps], [1, 0], cl);
   return (
     <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", opacity: sai }}>
       <div
@@ -298,7 +299,7 @@ const Titulo: React.FC = () => {
   const { fps } = useVideoConfig();
   const a = spring({ frame, fps, config: { damping: 12, stiffness: 140 } });
   const b = spring({ frame: frame - 7, fps, config: { damping: 13, stiffness: 120 } });
-  const saida = interpolate(frame / fps, [1.65, 1.88], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const saida = interpolate(frame / fps, [1.45, 1.68], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   return (
     <div style={{ position: "absolute", top: SAFE_AREA.top + 60, left: 0, width: WIDTH, textAlign: "center", opacity: saida, textShadow: "0 6px 28px rgba(75,57,53,0.55)" }}>
       <div style={{ fontFamily: F.titulo, fontWeight: 700, fontSize: 112, letterSpacing: -3, color: CORES.claro, lineHeight: 1, transform: `translateY(${(1 - a) * -80}px) scale(${0.8 + a * 0.2})`, opacity: a }}>
@@ -315,7 +316,7 @@ const Legenda: React.FC = () => {
   const { fps } = useVideoConfig();
   const s = frame / fps;
   const atual = LEGENDA.find((c) => s >= c.s && s < c.e);
-  if (!atual || (s >= JA.de && s < JA.ate)) return null;
+  if (!atual || (s >= T(JA.de) && s < T(JA.ate))) return null;
   return (
     <div
       style={{
@@ -343,7 +344,7 @@ const Legenda: React.FC = () => {
 // ---------- mapa de cenas (segundos da narração) ----------
 type Cena = [number, number, (t0: number) => React.ReactNode];
 const v = (n: string, de: number, zoom = 1) => () => <Clip n={n} de={de} zoom={zoom} />;
-const giz = (p: Parede) => (t0: number) => <ParedeGiz p={p} t0={t0} />;
+const giz = (p: Parede) => (t0: number) => <ParedeGiz p={p} t0={t0} conv={TN} />;
 const PISO_P: Parede = { foto: "", W: 1080, H: 1920, de: 56.75, ate: 58.42, cam: [[0, 540, 960, 1]], elementos: [PISO] };
 
 export const CENAS: Cena[] = [
@@ -378,14 +379,14 @@ export const CENAS: Cena[] = [
       <>
         <Clip n="IMG_2896" de={0.2} />
         <AbsoluteFill style={{ background: "rgba(40,30,28,0.28)" }} />
-        <ParedeGiz p={PISO_P} t0={t0} semFoto />
+        <ParedeGiz p={PISO_P} t0={t0} conv={TN} semFoto />
       </>
     ),
   ], // também quero mudar o piso
   [58.42, 59.5, () => <Projeto />], // esse é o projeto (as 4 paredes desenhadas)
   [59.5, 61.4, v("IMG_2896", 1.95, 1.06)], // a reforma começou já esta semana
   [61.4, 62.95, v("IMG_2699", 2.0)], // mas isso vai ficar pro próximo vídeo
-  [62.95, DURACAO_S, v("IMG_2699", 39.4)], // é isso, beijo!
+  [62.95, 70, v("IMG_2699", 39.4)], // é isso, beijo!
 ];
 
 // tudo em "tempo da narração" (segundos do áudio original)
@@ -394,47 +395,39 @@ const Conteudo: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: "#000" }}>
       {CENAS.map(([de, ate, el], i) => {
-        const from = Math.round(de * fps);
-        const dur = Math.max(1, Math.round(ate * fps) - from);
+        // cenas marcadas na narração antiga, convertidas para a fala nova
+        const from = Math.max(0, Math.round(T(de) * fps));
+        const dur = Math.round(T(ate) * fps) - from;
+        if (dur <= 0) return null;
         return (
           <Sequence key={i} from={from} durationInFrames={dur} premountFor={30}>
             {el(from / fps)}
           </Sequence>
         );
       })}
-      <Sequence from={Math.round(12.74 * fps)} durationInFrames={14}>
+      <Sequence from={Math.round(T(12.74) * fps)} durationInFrames={14}>
         <Flash />
       </Sequence>
-      <Sequence from={Math.round(JA.de * fps)} durationInFrames={Math.round((JA.ate - JA.de) * fps)}>
+      <Sequence from={Math.round(T(JA.de) * fps)} durationInFrames={Math.round((T(JA.ate) - T(JA.de)) * fps)}>
         <JaComecou />
       </Sequence>
-      <Sequence  durationInFrames={Math.round(1.9 * fps)}>
+      <Sequence durationInFrames={Math.round(1.7 * fps)}>
         <Titulo />
       </Sequence>
       <Legenda />
-      <Audio src={R("narracao.wav")} />
+      <Audio src={R("narracao2.wav")} />
       <Sons />
     </AbsoluteFill>
   );
 };
 
-// respiro antes do "Por isso": tira 10 quadros (7,47 s → 7,80 s da narração)
-const CORTE_F = 224;
-const PULO_F = 10;
-export const REEL04_FRAMES = Math.ceil(DURACAO_S * 30) - PULO_F;
+export const REEL04_FRAMES = Math.ceil(DURACAO_S * 30);
 
 export const Reel04: React.FC<{ showSafeArea: boolean }> = ({ showSafeArea }) => {
   useFontes();
   return (
     <AbsoluteFill style={{ background: "#000" }}>
-      <Sequence durationInFrames={CORTE_F}>
-        <Conteudo />
-      </Sequence>
-      <Sequence from={CORTE_F}>
-        <Sequence from={-(CORTE_F + PULO_F)}>
-          <Conteudo />
-        </Sequence>
-      </Sequence>
+      <Conteudo />
       {showSafeArea ? (
         <AbsoluteFill style={{ border: "2px dashed red", top: SAFE_AREA.top, bottom: SAFE_AREA.bottom, left: SAFE_AREA.sides, right: SAFE_AREA.sides }} />
       ) : null}

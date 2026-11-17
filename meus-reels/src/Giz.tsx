@@ -63,11 +63,11 @@ const sketch = (f: Forma, seed: number, esp: number): Traco[] => {
 
 const ease = Easing.bezier(0.45, 0, 0.25, 1);
 
-export const ParedeGiz: React.FC<{ p: Parede; t0: number; semFoto?: boolean }> = ({ p, t0, semFoto }) => {
+export const ParedeGiz: React.FC<{ p: Parede; t0: number; semFoto?: boolean; conv?: (s: number) => number }> = ({ p, t0, semFoto, conv }) => {
   // t0 = segundo da narração em que esta cena (Sequence) começa
   const frame = useCurrentFrame();
   const { fps, width, height } = useVideoConfig();
-  const t = t0 + frame / fps;
+  const t = conv ? conv(t0 + frame / fps) : t0 + frame / fps; // conv: tempo do vídeo -> tempo das marcações
   const base = height / p.H; // foto cobre a altura toda
   const esp = 8 / base; // espessura do traço ~8 px na tela (giz)
 

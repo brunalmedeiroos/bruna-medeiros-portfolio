@@ -5,7 +5,7 @@ import json, re, subprocess, os
 D = os.path.dirname(os.path.abspath(__file__)); V = os.path.join(D, "v2")
 SRC = os.path.join(V, "limpa-inteira.wav")
 # tomadas que ficam (última versão de cada frase); fora: respiro antes de "Na parede da TV" (66,2-66,7), "por isso é de mim", 1as tentativas da parede da TV, ruído em 30,9-31,9
-KEEP = [(0.4,6.6),(8.9,15.7),(17.35,26.3),(27.1,30.6),(32.5,43.7),(44.95,51.1),(66.8,76.45),(77.15,86.2),(87.3,89.5),(91.0,97.4)]
+KEEP = [(0.86,6.6),(8.9,15.7),(17.35,26.3),(27.1,30.6),(32.5,43.7),(44.95,51.1),(66.8,76.45),(77.15,86.2),(87.3,89.5),(91.0,97.4)]
 r = subprocess.run(["ffmpeg","-hide_banner","-i",SRC,"-af","silencedetect=n=-40dB:d=0.18","-f","null","-"],capture_output=True,text=True).stderr
 t = [float(x) for x in re.findall(r"silence_(?:start|end): ([0-9.]+)", r)]
 sil = [(t[i], t[i+1]) for i in range(0, len(t)-1, 2)]

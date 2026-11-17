@@ -200,10 +200,6 @@ const S = (n: string) => staticFile(`sfx/${n}`);
 // sons de verdade (CC0: Meta Open Sound + free-sfx-download) e o brilho que a Bru mandou
 // [segundo da narração, arquivo, volume, duração máx. em s]
 const UI_SONS: [number, string, number, number?][] = [
-  [0.0, "brilho.wav", 0.25], // título
-  [2.94, "pop-1.wav", 0.45], // durmo
-  [3.3, "pop-2.wav", 0.45], // trabalho
-  [3.8, "pop-3.wav", 0.45], // e gravo
   [6.2, "toin.wav", 0.95], // não tá nem um pouco bonito (toin, da Bru)
   [8.7, "obra.wav", 0.32], // reformar (martelinho de leve)
   [8.94, "obra.wav", 0.22],
@@ -214,7 +210,7 @@ const UI_SONS: [number, string, number, number?][] = [
   ...[0, 1, 2, 3].map((i): [number, string, number] => [J.fotos[0] + (i * (J.fotos[1] - J.fotos[0])) / 4, "click.wav", 0.32]), // fotos do quarto
   [J.junta[0], "whoosh.wav", 0.12], // painel se juntando
   [J.envia[0], "whoosh.wav", 0.14], // indo pro ChatGPT
-  [J.envia[1], "click.wav", 0.45], // logo do ChatGPT
+  [J.envia[1], "pop-1.wav", 0.5], // logo do ChatGPT (pop)
   [22.54, "brilho2.wav", 0.25, 1.5], // amei (brilho 2, da Bru)
   [41.02, "toin.wav", 0.95], // que eu ainda não tenho a TV (toin, da Bru)
   ...[0, 1, 2, 3].map((i): [number, string, number] => [58.42 + i * 0.27, "click.wav", 0.3]), // "esse é o projeto"
@@ -233,13 +229,13 @@ const Sons: React.FC = () => {
             <Audio
               src={S("giz-real.wav")}
               startFrom={Math.round(((i * 1.37) % 4.3) * fps)}
-              volume={(fr) => 0.13 * interpolate(fr, [0, 3, dur - 5, dur], [0, 1, 1, 0], cl)}
+              volume={(fr) => 0.06 * interpolate(fr, [0, 3, dur - 5, dur], [0, 1, 1, 0], cl)}
             />
           </Sequence>
         );
       })}
       {UI_SONS.map(([t, n, v, max], i) => {
-        if (i > 0 && T(t) < 0) return null;
+        if (T(t) < 0) return null;
         const dur = Math.round((max ?? 1.4) * fps);
         return (
           <Sequence key={`u${i}`} from={Math.max(0, Math.round(T(t) * fps))} durationInFrames={dur}>
@@ -294,18 +290,28 @@ const JaComecou: React.FC = () => {
 };
 
 // ---------- título ----------
+const TIT = { texto: "DIÁRIO DE REFORMA", digita: 0.8, ep: 0.9, fim: 2.3 }; // segundos do vídeo
 const Titulo: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const a = spring({ frame, fps, config: { damping: 12, stiffness: 140 } });
-  const b = spring({ frame: frame - 7, fps, config: { damping: 13, stiffness: 120 } });
-  const saida = interpolate(frame / fps, [1.45, 1.68], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const t = frame / fps;
+  const n = Math.floor(interpolate(t, [0.05, TIT.digita], [0, TIT.texto.length], cl));
+  const cursor = t < TIT.ep && Math.floor(t * 4) % 2 === 0 ? 1 : 0;
+  const b = spring({ frame: frame - Math.round(TIT.ep * fps), fps, config: { damping: 13, stiffness: 140 } });
+  const saida = interpolate(t, [TIT.fim - 0.25, TIT.fim], [1, 0], cl);
   return (
     <div style={{ position: "absolute", top: SAFE_AREA.top + 60, left: 0, width: WIDTH, textAlign: "center", opacity: saida, textShadow: "0 6px 28px rgba(75,57,53,0.55)" }}>
-      <div style={{ fontFamily: F.titulo, fontWeight: 700, fontSize: 112, letterSpacing: -3, color: CORES.claro, lineHeight: 1, transform: `translateY(${(1 - a) * -80}px) scale(${0.8 + a * 0.2})`, opacity: a }}>
-        DIÁRIO DE REFORMA
+      {/* escrevendo + brilhinho no ep. 1 */}
+      <Audio src={staticFile("sfx/teclado-bru.wav")} volume={(fr) => 0.9 * interpolate(fr, [0, Math.round(TIT.digita * fps) - 3, Math.round(TIT.digita * fps) + 2], [1, 1, 0], cl)} />
+      <Sequence from={Math.round(TIT.ep * fps)} layout="none">
+        <Audio src={staticFile("sfx/brilho.wav")} volume={0.25} />
+      </Sequence>
+      <div style={{ fontFamily: F.titulo, fontWeight: 700, fontSize: 112, letterSpacing: -3, color: CORES.claro, lineHeight: 1 }}>
+        {TIT.texto.slice(0, n)}
+        <span style={{ color: CORES.destaque, opacity: cursor }}>|</span>
+        <span style={{ opacity: 0 }}>{TIT.texto.slice(n)}</span>
       </div>
-      <div style={{ fontFamily: F.script, fontSize: 130, color: CORES.destaque, lineHeight: 1.15, transform: `scale(${b}) rotate(${(1 - b) * -10 - 3}deg)` }}>ep. 1</div>
+      <div style={{ fontFamily: F.script, fontSize: 130, color: CORES.destaque, lineHeight: 1.15, opacity: t >= TIT.ep ? 1 : 0, transform: `scale(${b}) rotate(${(1 - b) * -10 - 3}deg)` }}>ep. 1</div>
     </div>
   );
 };
@@ -349,8 +355,8 @@ const PISO_P: Parede = { foto: "", W: 1080, H: 1920, de: 56.75, ate: 58.42, cam:
 
 export const CENAS: Cena[] = [
   [0.0, 1.88, v("IMG_2890", 0.3)], // talvez eu esteja me metendo em uma loucura
-  [1.88, 2.94, v("IMG_2891", 0.0, 1.05)], // mas esse é o quarto onde
-  [2.94, 3.3, v("IMG_2890", 4.7)], // eu durmo
+  [1.88, 2.94, v("IMG_2890", 4.7)], // esse é o quarto onde (a antiga cena 2 abre o vídeo)
+  [2.94, 3.3, v("IMG_2891", 0.0, 1.05)], // eu durmo
   [3.3, 3.8, v("copy_DDDA", 0.3)], // trabalho
   [3.8, 4.54, v("IMG_2727", 18)], // e gravo
   [4.54, 5.24, v("IMG_2727", 61, 1.08)], // todos os meus conteúdos
@@ -411,7 +417,7 @@ const Conteudo: React.FC = () => {
       <Sequence from={Math.round(T(JA.de) * fps)} durationInFrames={Math.round((T(JA.ate) - T(JA.de)) * fps)}>
         <JaComecou />
       </Sequence>
-      <Sequence durationInFrames={Math.round(1.7 * fps)}>
+      <Sequence durationInFrames={Math.round(TIT.fim * fps)}>
         <Titulo />
       </Sequence>
       <Legenda />

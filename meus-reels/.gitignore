@@ -27,3 +27,5 @@ public/sfx/suspeito.wav
 public/sfx/brilho2.wav
 public/sfx/teclado-bru.wav
 public/sfx/giz-real.wav
+reels/*/*/*.wav
+reels/*/*/*.mp4

@@ -50,6 +50,7 @@ export type Gancho = {
   abertura?: {
     clipes: { src: string; dur: number; baixo?: string }[];
     pops?: number[];
+    brilho?: number; // brilho da Bru numa palavra do gancho
     narracao: string;
     dur: number;
     corte: number;
@@ -106,6 +107,7 @@ export const GANCHO_2_NOVO: Gancho = {
       { src: src(2904), dur: 75 / 30 },
     ],
     pops: [0, 37 / 30, 74 / 30],
+    brilho: 5.32, // "tá procurando"
     narracao: "originais/g2novo/narracao-procurando.wav",
     dur: G2_ABERTURA,
     corte: G2_CORTE,
@@ -640,6 +642,9 @@ export const Reel03: React.FC<{ gancho: Gancho; showSafeArea: boolean }> = ({
         <Legenda g={gancho} />
         <Seta link={gancho.link} />
         <Som de={gancho.link} som="brilho" vol={0.5} abs />
+        {gancho.abertura?.brilho !== undefined ? (
+          <Som de={gancho.abertura.brilho} som="brilho" vol={0.45} abs />
+        ) : null}
         {showSafeArea ? (
           <div
             style={{

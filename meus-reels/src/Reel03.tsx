@@ -78,7 +78,7 @@ export const GANCHO_1: Gancho = {
 
 // gancho 2 refeito (16/11): clipes de produto + narração nova; o resto do vídeo 2 a partir da troca de cena (7,233 s)
 const G2_CORTE = 217 / 30;
-const G2_ABERTURA = 152 / 30; // narração na velocidade normal, sem respiro, termina em "a Blant tem a solução"
+const G2_ABERTURA = 186 / 30; // fala normal, sem respiro, até "…tem a solução que você está procurando"
 const G2_OFF = G2_ABERTURA - G2_CORTE;
 const src = (n: number) => `originais/g2novo/IMG_${n}.mp4`;
 // tela dividida: take normal em cima, take com zoom embaixo
@@ -98,15 +98,15 @@ export const GANCHO_2_NOVO: Gancho = {
   link: 57.22 + G2_OFF,
   musica: { arquivo: "", vol: 0 },
   abertura: {
-    // 3 produtos um por vez (pop em cada), trio na mesa no "e a Blant tem a solução" (3,7 s)
+    // 3 produtos um por vez (pop em cada), trio na mesa no "e a Blant tem a solução…" (3,7 s)
     clipes: [
       dividido(2909, 2910, 37), // Maximus
       dividido(2907, 2908, 37), // Booster
       dividido(2905, 2906, 37), // Coretrat
-      { src: src(2904), dur: 41 / 30 },
+      { src: src(2904), dur: 75 / 30 },
     ],
     pops: [0, 37 / 30, 74 / 30],
-    narracao: "originais/g2novo/narracao-normal.wav",
+    narracao: "originais/g2novo/narracao-procurando.wav",
     dur: G2_ABERTURA,
     corte: G2_CORTE,
   },

@@ -87,11 +87,11 @@ const Legenda: React.FC = () => {
         position: "absolute",
         left: SAFE_AREA.sides + 40,
         right: SAFE_AREA.sides + 40,
-        bottom: SAFE_AREA.bottom + 430,
+        bottom: SAFE_AREA.bottom + 560,
         textAlign: "center",
         fontFamily: "Montserrat",
         fontWeight: 700,
-        fontSize: 62,
+        fontSize: 54,
         lineHeight: 1.15,
         textShadow: "0 3px 14px rgba(40,28,26,0.75), 0 1px 3px rgba(40,28,26,0.8)",
       }}

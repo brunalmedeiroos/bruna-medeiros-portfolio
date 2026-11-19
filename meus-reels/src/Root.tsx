@@ -5,6 +5,7 @@ import { Reel01, REEL01_FRAMES, reel01Defaults } from "./Reel01";
 import { Reel02, REEL02_FRAMES, reel02Defaults } from "./Reel02";
 import { GANCHO_1, GANCHO_2, GANCHO_2_NOVO, Reel03 } from "./Reel03";
 import { Reel04, REEL04_FRAMES, reel04Defaults } from "./Reel04";
+import { Reel05, REEL05_FRAMES, reel05Defaults } from "./Reel05";
 import { FPS, HEIGHT, WIDTH } from "./config";
 
 export const RemotionRoot: React.FC = () => {
@@ -83,6 +84,15 @@ export const RemotionRoot: React.FC = () => {
         width={WIDTH}
         height={HEIGHT}
         defaultProps={reelSchemaDefaults}
+      />
+      <Composition
+        id="Reel05"
+        component={Reel05}
+        durationInFrames={REEL05_FRAMES}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
+        defaultProps={reel05Defaults}
       />
     </>
   );

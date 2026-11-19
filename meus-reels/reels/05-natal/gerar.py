@@ -9,7 +9,8 @@ ws = []
 for t, s, e in W:
     t = t.strip(); p = bool(re.search(r"[,.?!]$", t)); t = re.sub(r"[,.!?]$", "", t)
     t = FIX.get(t, t)
-    if t == "Foto": p = True  # lista: foto, suspeito, depoimento, jornal
+    if t == "suspeito" and ws and ws[-1][0] == "Foto":  # ela fala "foto dos suspeitos"
+        ws.append(["dos", s - 0.04, s, False]); t = "suspeitos"
     ws.append([t, s, e, p])
 # "ele minte um depoimento" -> "ele mentiu no depoimento"
 for i, w in enumerate(ws):

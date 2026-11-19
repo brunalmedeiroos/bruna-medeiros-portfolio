@@ -1,84 +1,77 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { loadFont } from "@remotion/fonts";
 import {
   AbsoluteFill,
   Audio,
   interpolate,
   OffthreadVideo,
   Sequence,
-  spring,
   staticFile,
+  continueRender,
+  delayRender,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
 import { CORES } from "./identidade";
 import { SAFE_AREA, WIDTH } from "./config";
-import { F, useFontes } from "./Estilos";
+import { useFontes } from "./Estilos";
 import { DURACAO_S, LEGENDA } from "./reel05-data";
 
-// dourado mais quente que o da identidade: o #f5e1b4 sumia na toalha branca e nos envelopes kraft
-const OURO = "#ffcf5a";
 
 // Reels 05 · "O melhor presente de Natal" (caso criminal com a mãe; vídeo e áudio já prontos da Bruna)
 export const REEL05_FRAMES = Math.floor(Math.min(DURACAO_S, 31.7) * 30);
 export const reel05Defaults = { showSafeArea: false };
 
 const TITULO: [number, number] = [0, 3.5]; // gancho: até "caso criminal"
+const FRASE = ["O MELHOR", "PRESENTE", "DE NATAL"];
+const DIGITA = 1.3; // segundos digitando a frase toda
+const TOTAL_LETRAS = FRASE.join("").length;
 
+// gancho digitando: frase inteira em Montserrat 800, branca, letra por letra
 const Titulo: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = frame / fps;
   const [, ate] = TITULO;
   if (t > ate) return null;
-  const a = spring({ frame, fps, config: { damping: 12, stiffness: 140 } });
-  const b = spring({ frame: frame - 7, fps, config: { damping: 13, stiffness: 120 } });
+  const visiveis = Math.floor(interpolate(t, [0.1, 0.1 + DIGITA], [0, TOTAL_LETRAS], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }));
   const saida = interpolate(t, [ate - 0.25, ate], [1, 0], { extrapolateLeft: "clamp" });
+  let n = 0;
   return (
     <div
       style={{
         position: "absolute",
-        top: SAFE_AREA.top + 80,
+        top: SAFE_AREA.top + 90,
         left: 0,
         width: WIDTH,
         textAlign: "center",
         opacity: saida,
-        textShadow: "0 6px 30px rgba(40,28,26,0.7), 0 2px 6px rgba(40,28,26,0.55)",
+        fontFamily: "Montserrat",
+        fontWeight: 800,
+        fontSize: 118,
+        letterSpacing: -2,
+        lineHeight: 1.05,
+        color: CORES.claro,
+        textShadow: "0 6px 30px rgba(40,28,26,0.75), 0 2px 6px rgba(40,28,26,0.6)",
       }}
     >
-      <div
-        style={{
-          fontFamily: F.titulo,
-          fontWeight: 700,
-          fontSize: 112,
-          letterSpacing: -3,
-          color: CORES.claro,
-          lineHeight: 1,
-          transform: `translateY(${(1 - a) * -80}px) scale(${0.8 + a * 0.2})`,
-          opacity: a,
-        }}
-      >
-        O MELHOR
-        <br />
-        PRESENTE
-      </div>
-      <div
-        style={{
-          fontFamily: F.script,
-          fontSize: 175,
-          color: OURO,
-          textShadow: "0 4px 18px rgba(40,28,26,0.9), 0 2px 4px rgba(40,28,26,0.9)",
-          lineHeight: 1.1,
-          marginTop: -4,
-          transform: `scale(${b}) rotate(${(1 - b) * -10 - 3}deg)`,
-        }}
-      >
-        de Natal
-      </div>
+      {FRASE.map((linha, li) => (
+        <div key={li}>
+          {linha.split("").map((ch, ci) => {
+            const on = n++ < visiveis;
+            return (
+              <span key={ci} style={{ opacity: on ? 1 : 0 }}>
+                {ch}
+              </span>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 };
 
-// legenda palavra por palavra (1-3), branca, palavras-chave em dourado, sem animação
+// legenda palavra por palavra (1-3), toda branca em Montserrat, sem destaque e sem animação
 const Legenda: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -93,14 +86,15 @@ const Legenda: React.FC = () => {
         right: SAFE_AREA.sides + 40,
         bottom: SAFE_AREA.bottom + 430,
         textAlign: "center",
-        fontFamily: F.legenda,
-        fontSize: 80,
-        lineHeight: 1.1,
+        fontFamily: "Montserrat",
+        fontWeight: 700,
+        fontSize: 62,
+        lineHeight: 1.15,
         textShadow: "0 3px 14px rgba(40,28,26,0.75), 0 1px 3px rgba(40,28,26,0.8)",
       }}
     >
       {atual.w.map((w, i) => (
-        <span key={i} style={{ color: w.k ? OURO : CORES.claro, opacity: s >= w.s ? 1 : 0 }}>
+        <span key={i} style={{ color: CORES.claro, opacity: s >= w.s ? 1 : 0 }}>
           {w.t}
           {i < atual.w.length - 1 ? " " : ""}
         </span>
@@ -110,30 +104,49 @@ const Legenda: React.FC = () => {
 };
 
 // sons da lista da Bruna (public/sfx/bru, fora do Git), presos à palavra
-const SONS: [number, string, number][] = [
-  [0.25, "bru/brilho.wav", 0.6], // título "de Natal"
-  [9.3, "click.wav", 0.75], // foto
-  [9.46, "bru/suspeito.wav", 0.14], // suspeito
+const SONS: [number, string, number, number?][] = [
+  [0.1, "bru/teclado-bru.wav", 0.9, DIGITA + 0.15], // gancho digitando
+  [9.3, "click.wav", 0.75], // foto dos suspeitos (trocar pelo click 2 dela)
+  [9.46, "bru/suspeito.wav", 0.07], // suspeitos (mais baixo)
   [10.24, "click.wav", 0.75], // depoimento
   [11.02, "click.wav", 0.75], // jornal
+  [8.46, "bru/pop-bru.wav", 0.35], // dois envelopes
   [18.44, "bru/toin.wav", 0.8], // não é mais ninguém
+  [21.5, "bru/pop-bru.wav", 0.35], // quatro horas
   [23.64, "bru/brilho2.wav", 0.4], // a melhor experiência
+  [27.42, "bru/pop-bru.wav", 0.35], // o próximo
+  [31.33, "bru/brilho.wav", 0.6], // as duas batem as mãos no final
 ];
 const Efeitos: React.FC = () => {
   const { fps } = useVideoConfig();
   return (
     <>
-      {SONS.map(([t, som, vol], i) => (
-        <Sequence key={i} from={Math.round(t * fps)} durationInFrames={Math.round(1.6 * fps)}>
-          <Audio src={staticFile(`sfx/${som}`)} volume={vol} />
+      {SONS.map(([t, som, vol, dur], i) => (
+        <Sequence key={i} from={Math.round(t * fps)} durationInFrames={Math.round((dur ?? 1.6) * fps)}>
+          <Audio
+            src={staticFile(`sfx/${som}`)}
+            volume={(f) => (dur ? vol * interpolate(f, [dur * fps - 5, dur * fps], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) : vol)}
+          />
         </Sequence>
       ))}
     </>
   );
 };
 
+const useMontserrat = () => {
+  const [h] = useState(() => delayRender("montserrat"));
+  useEffect(() => {
+    Promise.all(
+      [700, 800].map((w) =>
+        loadFont({ family: "Montserrat", url: staticFile(`fontes/montserrat-latin-${w}-normal.woff2`), weight: String(w) }),
+      ),
+    ).then(() => continueRender(h));
+  }, [h]);
+};
+
 export const Reel05: React.FC<{ showSafeArea: boolean }> = ({ showSafeArea }) => {
   useFontes();
+  useMontserrat();
   const frame = useCurrentFrame();
   return (
     <AbsoluteFill style={{ background: CORES.escuro }}>

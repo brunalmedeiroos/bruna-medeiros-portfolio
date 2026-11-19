@@ -24,6 +24,7 @@ export const reel05Defaults = { showSafeArea: false };
 
 const TITULO: [number, number] = [0, 3.5]; // gancho: até "caso criminal"
 const FRASE = ["O MELHOR", "PRESENTE", "DE NATAL"];
+const VERMELHO = "#e3262b"; // "NATAL" em vermelho (pedido da Bru)
 const DIGITA = 1.3; // segundos digitando a frase toda
 const TOTAL_LETRAS = FRASE.join("").length;
 
@@ -50,7 +51,8 @@ const Titulo: React.FC = () => {
         fontWeight: 800,
         fontSize: 118,
         letterSpacing: -2,
-        lineHeight: 1.05,
+        wordSpacing: -12,
+        lineHeight: 0.9,
         color: CORES.claro,
         textShadow: "0 6px 30px rgba(40,28,26,0.75), 0 2px 6px rgba(40,28,26,0.6)",
       }}
@@ -59,8 +61,9 @@ const Titulo: React.FC = () => {
         <div key={li}>
           {linha.split("").map((ch, ci) => {
             const on = n++ < visiveis;
+            const natal = li === 2 && ci >= 3;
             return (
-              <span key={ci} style={{ opacity: on ? 1 : 0 }}>
+              <span key={ci} style={{ opacity: on ? 1 : 0, color: natal ? VERMELHO : undefined }}>
                 {ch}
               </span>
             );
@@ -106,15 +109,12 @@ const Legenda: React.FC = () => {
 // sons da lista da Bruna (public/sfx/bru, fora do Git), presos à palavra
 const SONS: [number, string, number, number?][] = [
   [0.1, "bru/teclado-bru.wav", 0.9, DIGITA + 0.15], // gancho digitando
-  [9.3, "click.wav", 0.75], // foto dos suspeitos (trocar pelo click 2 dela)
-  [9.46, "bru/suspeito.wav", 0.07], // suspeitos (mais baixo)
+  [0.1 + DIGITA, "bru/brilho.wav", 0.6], // terminou de escrever NATAL
+  [9.3, "click.wav", 0.75], // foto dos suspeitos
   [10.24, "click.wav", 0.75], // depoimento
   [11.02, "click.wav", 0.75], // jornal
-  [8.46, "bru/pop-bru.wav", 0.35], // dois envelopes
   [18.44, "bru/toin.wav", 0.8], // não é mais ninguém
-  [21.5, "bru/pop-bru.wav", 0.35], // quatro horas
   [23.64, "bru/brilho2.wav", 0.4], // a melhor experiência
-  [27.42, "bru/pop-bru.wav", 0.35], // o próximo
   [31.33, "bru/brilho.wav", 0.6], // as duas batem as mãos no final
 ];
 const Efeitos: React.FC = () => {

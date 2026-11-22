@@ -76,31 +76,26 @@
 }
 
 /* ==========================================================================
-   Sidebar azul — identidade visual do painel. Fundo cravado em var(--coral)
-   (o azul claro da marca) em vez de var(--branco). Os tons abaixo (branco/
-   preto translúcidos, hex do grafite no texto do item ativo) são fixos em
-   vez de var(--grafite)/var(--branco) porque o contraste contra o azul
-   precisa ficar sempre igual, independente do restante do painel.
+   Sidebar branca — fundo branco (var(--branco)) igual ao resto do site, com
+   texto em tom suave de grafite. O item ativo não vira um bloco de cor:
+   fica num tom mais escuro de texto + leve elevação (sombra + borda fina),
+   pra lembrar um cartão "flutuando" sobre o fundo branco da sidebar.
    ========================================================================== */
-.painel-body .sidebar {
-  background: var(--coral);
-  border-right: none;
-}
 
 /* Com mais itens de menu (grupos + ícones maiores), a lista pode passar da
    altura da sidebar — sem scroll próprio, o final do menu (E-mail,
-   Configurações) vazava pra fora da caixa azul e aparecia sobre o fundo
-   creme da página. min-height:0 é o que permite um filho flex realmente
-   encolher/rolar em vez de estourar o pai (senão overflow-y não faz nada). */
+   Configurações) vazava pra fora da caixa e aparecia sobre o fundo da
+   página. min-height:0 é o que permite um filho flex realmente encolher/
+   rolar em vez de estourar o pai (senão overflow-y não faz nada). */
 .painel-body .sidebar-nav {
   min-height: 0;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.6) rgba(0, 0, 0, 0.08);
+  scrollbar-color: rgba(var(--grafite-rgb), 0.22) transparent;
   /* Aproxima a barra de scroll da borda direita da sidebar — a sidebar tem
-     20px de padding lateral, então sem isto a barra ficava bem afastada da
-     ponta, quase no meio do respiro. */
-  margin-right: -18px;
+     padding lateral, então sem isto a barra ficava bem afastada da ponta,
+     quase no meio do respiro. */
+  margin-right: -14px;
 }
 
 .painel-body .sidebar-nav::-webkit-scrollbar {
@@ -108,24 +103,16 @@
 }
 
 .painel-body .sidebar-nav::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(var(--grafite-rgb), 0.22);
   border-radius: 4px;
 }
 
 .painel-body .sidebar-nav::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.08);
-}
-
-.painel-body .sidebar-logo {
-  color: #f1f1f1;
-}
-
-.painel-body .sidebar .logo-dot {
-  color: #f1f1f1;
+  background: transparent;
 }
 
 .painel-body .nav-item {
-  color: #fff;
+  color: var(--texto-suave);
   /* Mesma proteção contra flex-shrink do .nav-group-label logo abaixo —
      sem isto, este item também pode ser espremido pelo flex quando a lista
      não cabe inteira (só que aqui é menos perceptível por ter mais
@@ -134,33 +121,56 @@
 }
 
 .painel-body .nav-item:hover {
-  background: rgba(0, 0, 0, 0.1);
-  color: #fff;
+  background: var(--creme);
+  color: var(--grafite);
 }
 
 .painel-body .nav-item.active {
-  background: rgba(255, 255, 255, 0.95);
-  color: #4b3935;
+  background: var(--branco);
+  color: var(--grafite);
+  border: 1px solid var(--borda);
+  box-shadow: var(--sombra);
 }
 
-/* Tópico do menu (Rotina / Fontes de renda / Criação de Conteúdo / Gestão)
-   — só texto, não é clicável (o acordeão que recolhia os grupos foi tirado:
-   a Bru não se adaptou). Sem ícone, todos na mesma cor de destaque: o
-   amarelo "butter" da paleta do site (index.html --butter: #f5e1b4).
-   Mesmo espaço lateral dos nav-item (14px) pra alinhar com os ícones
-   abaixo. */
+/* Botão "Sair" do grupo Conta — mesmo vermelho dos avisos de ação
+   destrutiva do painel, pra se diferenciar dos outros itens do menu. */
+.painel-body .nav-item-sair {
+  color: var(--erro);
+}
+
+.painel-body .nav-item-sair:hover {
+  background: rgba(196, 69, 60, 0.08);
+  color: var(--erro);
+}
+
+/* Divisória fina entre os tópicos do menu (Principal / ERP / Conta), e uma
+   segunda, mais curta, entre "Recolher" e "Sair" dentro de Conta. */
+.painel-body .nav-divisor {
+  height: 1px;
+  background: var(--borda);
+  margin: 10px 10px;
+  flex-shrink: 0;
+}
+
+.painel-body .nav-divisor-conta {
+  margin: 6px 10px;
+}
+
+/* Tópico do menu (Principal / ERP / Conta) — só texto, não é clicável (o
+   acordeão que recolhia os grupos foi tirado: a Bru não se adaptou). Mesmo
+   espaço lateral dos nav-item (14px) pra alinhar com os ícones abaixo. */
 .painel-body .nav-group-label {
   display: flex;
   align-items: center;
   width: 100%;
   font-family: var(--fonte-corpo);
-  padding: 16px 14px 4px;
+  padding: 14px 14px 6px;
   font-size: 12px;
   line-height: 17px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--texto-suave);
   white-space: nowrap;
   /* Mesma proteção contra flex-shrink que o rótulo antigo precisava (ver
      histórico: overflow diferente de "visible" tira a proteção automática
@@ -177,73 +187,6 @@
 }
 
 .sidebar.colapsada .nav-group-label {
-  display: none;
-}
-
-/* Card de perfil fixo no rodapé da sidebar (fora do <nav>, não rola com a
-   lista) — avatar com a inicial do nome + "Ver perfil", abre o modal de
-   Configurações já na aba Perfil. Mesmo padrão visual do card da Julia
-   Eduarda na referência. */
-.painel-body .sidebar-perfil {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  margin-top: 12px;
-  padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: var(--raio-sm);
-  background: transparent;
-  text-align: left;
-}
-
-.painel-body .sidebar-perfil:hover {
-  background: rgba(0, 0, 0, 0.1);
-}
-
-.painel-body .sidebar-perfil-avatar {
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.22);
-  color: #fff;
-  font-family: var(--fonte-titulo);
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.painel-body .sidebar-perfil-info {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-  overflow: hidden;
-}
-
-.painel-body .sidebar-perfil-nome {
-  font-size: 14px;
-  font-weight: 600;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.painel-body .sidebar-perfil-link {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.sidebar.colapsada .sidebar-perfil {
-  padding: 10px 0;
-  justify-content: center;
-}
-
-.sidebar.colapsada .sidebar-perfil-info {
   display: none;
 }
 
@@ -10730,27 +10673,11 @@
 /* ---- Menu lateral: setinha branca dentro da aba azul; fechado, some por completo ---- */
 
 @media (min-width: 769px) {
-  .painel-body .btn-colapsar-sidebar {
-    top: 26px;
-    right: 12px;
-    width: 28px;
-    height: 28px;
-    border: none;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-    color: #fff;
-    cursor: pointer;
-  }
-
-  .painel-body .btn-colapsar-sidebar:hover {
-    color: #fff;
-    opacity: 0.75;
-  }
-
-  .painel-body .btn-colapsar-sidebar svg {
-    width: 18px;
-    height: 18px;
+  /* Aberto: quem colapsa o menu agora é a linha "Recolher" dentro de
+     Conta — a setinha só reaparece (fixa, flutuando) quando o menu já
+     está fechado, pra dar um jeito de reabrir. */
+  .painel-body .sidebar:not(.colapsada) .btn-colapsar-sidebar {
+    display: none;
   }
 
   /* Fechado: o menu some por completo e sobra só a setinha, numa abinha azul na borda da tela. */
@@ -10765,14 +10692,17 @@
   }
 
   .painel-body .sidebar.colapsada .btn-colapsar-sidebar {
+    display: flex;
     position: fixed;
     top: 24px;
     left: 0;
     right: auto;
     width: 30px;
     height: 44px;
+    border: none;
     border-radius: 0 12px 12px 0;
     background: var(--coral);
+    color: #fff;
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.12);
     z-index: 30;
   }

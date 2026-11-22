@@ -247,13 +247,13 @@ input:focus {
 /* ---- Sidebar ---- */
 
 .sidebar {
-  width: 216px;
+  width: 232px;
   flex-shrink: 0;
   background: var(--branco);
   border-right: 1px solid var(--borda);
   display: flex;
   flex-direction: column;
-  padding: 24px 16px;
+  padding: 24px 18px;
   position: sticky;
   top: 0;
   height: 100vh;
@@ -305,12 +305,12 @@ input:focus {
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
   background: transparent;
   border: none;
   border-radius: var(--raio-sm);
-  padding: 9px 12px;
-  font-size: 14px;
+  padding: 11px 14px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--texto-suave);
   text-align: left;
@@ -325,16 +325,16 @@ input:focus {
 
 .nav-icon {
   flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+  width: 19px;
+  height: 19px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .nav-icon svg {
-  width: 18px;
-  height: 18px;
+  width: 19px;
+  height: 19px;
 }
 
 .nav-icon-img {

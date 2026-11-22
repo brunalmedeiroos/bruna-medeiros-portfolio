@@ -16,9 +16,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20261122a">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20261122b">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261122a">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261122b">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -79,12 +79,10 @@
               <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.2"/><path d="M3.5 7 12 13l8.5-6"/></svg></span>
               <span data-i18n="nav_email">E-mail</span>
             </button>
-            <button class="nav-item" data-tab="ferramentas" type="button">
-              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 4.9L4 16.5V20h3.5l5.3-5.3a4 4 0 0 0 4.9-5.4l-2.6 2.6-2.1-.6-.6-2.1 2.6-2.6Z"/></svg></span>
-              <span data-i18n="nav_ferramentas">Ferramentas</span>
-            </button>
           </div>
         </div>
+
+        <div class="nav-divisor"></div>
 
         <div class="nav-grupo" data-grupo="erp">
           <div class="nav-group-label">
@@ -105,15 +103,34 @@
             </button>
           </div>
         </div>
-      </nav>
 
-      <button class="sidebar-perfil" id="btn-abrir-perfil" type="button">
-        <span class="sidebar-perfil-avatar" id="sidebar-perfil-avatar">B</span>
-        <span class="sidebar-perfil-info">
-          <span class="sidebar-perfil-nome" id="sidebar-perfil-nome">Bru</span>
-          <span class="sidebar-perfil-link" data-i18n="sidebar_ver_perfil">Ver perfil</span>
-        </span>
-      </button>
+        <div class="nav-divisor"></div>
+
+        <div class="nav-grupo" data-grupo="conta">
+          <div class="nav-group-label">
+            <span data-i18n="nav_grupo_conta">Conta</span>
+          </div>
+          <div class="nav-group-itens">
+            <button class="nav-item" data-tab="ferramentas" type="button">
+              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 4.9L4 16.5V20h3.5l5.3-5.3a4 4 0 0 0 4.9-5.4l-2.6 2.6-2.1-.6-.6-2.1 2.6-2.6Z"/></svg></span>
+              <span data-i18n="nav_ferramentas">Ferramentas</span>
+            </button>
+            <button class="nav-item" id="btn-abrir-perfil" type="button">
+              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.3" r="3.4"/><path d="M5 20c0-3.6 3.1-6.2 7-6.2s7 2.6 7 6.2"/></svg></span>
+              <span data-i18n="nav_perfil">Perfil</span>
+            </button>
+            <button class="nav-item" id="btn-recolher-sidebar" type="button">
+              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6l-6 6 6 6"/><path d="M18 6l-6 6 6 6"/></svg></span>
+              <span data-i18n="nav_recolher">Recolher</span>
+            </button>
+            <div class="nav-divisor nav-divisor-conta"></div>
+            <button class="nav-item nav-item-sair" id="btn-sair-sidebar" type="button">
+              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></span>
+              <span data-i18n="nav_sair">Sair</span>
+            </button>
+          </div>
+        </div>
+      </nav>
     </aside>
 
     <!-- ================= Conteúdo ================= -->
@@ -198,9 +215,9 @@
             <button type="button" id="dash-atencao-ver-tudo" class="dash-atencao-ver-tudo" hidden></button>
           </div>
           </div>
-          <!-- O card "Avisos no celular" só aparece aqui enquanto as notificações não estiverem ativadas neste aparelho; depois fica em Ver perfil > Notificação. -->
+          <!-- O card "Avisos no celular" só aparece aqui enquanto as notificações não estiverem ativadas neste aparelho; depois fica em Perfil > Notificação. -->
           <div id="aviso-host-dash">
-            <p class="aviso-msg" id="aviso-nota-movido" hidden>✅ Notificações ativadas! Pra testar ou ver os próximos avisos, vá em Ver perfil &gt; Notificação.</p>
+            <p class="aviso-msg" id="aviso-nota-movido" hidden>✅ Notificações ativadas! Pra testar ou ver os próximos avisos, vá em Perfil &gt; Notificação.</p>
           </div>
         </section>
 
@@ -4943,7 +4960,11 @@
         nav_grupo_gestao: 'Gestão',
         nav_grupo_principal: 'Principal',
         nav_grupo_erp: 'ERP',
+        nav_grupo_conta: 'Conta',
         nav_calculadora_trabalhos: 'Calculadora Trabalhos',
+        nav_perfil: 'Perfil',
+        nav_recolher: 'Recolher',
+        nav_sair: 'Sair',
         placeholder_em_breve: 'Em breve — essa área ainda está sendo construída.',
 
         dash_pergunta: 'O que eu preciso saber agora?',
@@ -5009,7 +5030,6 @@
         config_senha_nao_coincide: 'As senhas não coincidem.',
         config_senha_sucesso: 'Senha alterada com sucesso.',
         config_senha_erro: 'Não foi possível alterar a senha agora. Tente de novo.',
-        sidebar_ver_perfil: 'Ver perfil',
         erro_salvar_generico: 'Não foi possível salvar agora. Tente de novo em instantes.',
         erro_excluir_generico: 'Não foi possível excluir agora. Tente de novo em instantes.',
         confirm_titulo_padrao: 'Confirmar',
@@ -6339,7 +6359,11 @@
         nav_grupo_gestao: 'Management',
         nav_grupo_principal: 'Main',
         nav_grupo_erp: 'ERP',
+        nav_grupo_conta: 'Account',
         nav_calculadora_trabalhos: 'Pricing Calculator',
+        nav_perfil: 'Profile',
+        nav_recolher: 'Collapse',
+        nav_sair: 'Log out',
         placeholder_em_breve: 'Coming soon — this area is still being built.',
 
         dash_pergunta: 'What do I need to know right now?',
@@ -6405,7 +6429,6 @@
         config_senha_nao_coincide: "Passwords don't match.",
         config_senha_sucesso: 'Password changed successfully.',
         config_senha_erro: "Couldn't change the password right now. Try again.",
-        sidebar_ver_perfil: 'View profile',
         erro_salvar_generico: "Couldn't save right now. Try again shortly.",
         erro_excluir_generico: "Couldn't delete right now. Try again shortly.",
         confirm_titulo_padrao: 'Confirm',
@@ -7640,16 +7663,6 @@
         configCache = padrao;
       }
       preencherFormularioConfiguracoes();
-      renderizarPerfil();
-    }
-
-    // Iniciais/nome exibidos no card fixo da sidebar (configCache.nome, com
-    // 'Bru' de fallback).
-    function renderizarPerfil() {
-      const nome = (configCache && configCache.nome) || 'Bru';
-      const inicial = nome.trim().charAt(0).toUpperCase() || 'B';
-      document.getElementById('sidebar-perfil-nome').textContent = nome;
-      document.getElementById('sidebar-perfil-avatar').textContent = inicial;
     }
 
     function abrirModalConfiguracoes(pagina) {
@@ -7716,7 +7729,6 @@
       const nome = document.getElementById('config-nome').value.trim();
       await salvarConfiguracao('nome', nome || null);
       renderizarCabecalhoDashboard();
-      renderizarPerfil();
       configNomeSnapshotInicial = document.getElementById('config-nome').value;
     }
 
@@ -7773,6 +7785,16 @@
       });
     }
 
+    // Usado pelo botão "Sair" do menu (Conta) e pelo da aba Configurações.
+    async function fazerLogoutComConfirmacao() {
+      const confirmou = await confirmarAcao(tr('confirm_sair_mensagem'), {
+        titulo: tr('confirm_sair_titulo'),
+        textoConfirmar: tr('confirm_sair_botao'),
+        perigo: false,
+      });
+      if (confirmou) Auth.logout();
+    }
+
     function configurarEventos() {
       document.querySelectorAll('.nav-item[data-tab]').forEach((btn) => {
         btn.addEventListener('click', () => trocarAba(btn.dataset.tab));
@@ -7792,13 +7814,12 @@
         btn.addEventListener('click', () => trocarSubPaginaConfig(btn.dataset.configPagina));
       });
       document.getElementById('config-inicio-semana').addEventListener('change', (e) => salvarConfiguracao('inicio_semana', e.target.value));
-      document.getElementById('config-btn-sair').addEventListener('click', async () => {
-        const confirmou = await confirmarAcao(tr('confirm_sair_mensagem'), {
-          titulo: tr('confirm_sair_titulo'),
-          textoConfirmar: tr('confirm_sair_botao'),
-          perigo: false,
-        });
-        if (confirmou) Auth.logout();
+      document.getElementById('config-btn-sair').addEventListener('click', fazerLogoutComConfirmacao);
+      document.getElementById('btn-sair-sidebar').addEventListener('click', fazerLogoutComConfirmacao);
+      // "Recolher" do grupo Conta aciona o mesmo colapso do botão de seta
+      // no topo da sidebar (ver configurarColapsarSidebar).
+      document.getElementById('btn-recolher-sidebar').addEventListener('click', () => {
+        document.getElementById('btn-colapsar-sidebar').click();
       });
       document.getElementById('config-salvar-nome').addEventListener('click', salvarNomePerfil);
       document.getElementById('config-salvar-senha').addEventListener('click', salvarSenhaPerfil);
@@ -28221,7 +28242,7 @@
       avisosPosicionarCard(ativo);
     }
 
-    // Com as notificações ativadas neste aparelho o card sai do Dashboard e fica em Ver perfil > Notificação.
+    // Com as notificações ativadas neste aparelho o card sai do Dashboard e fica em Perfil > Notificação.
     function avisosPosicionarCard(ativo) {
       const card = document.getElementById('dash-card-avisos');
       const destino = document.getElementById(ativo ? 'config-pagina-notificacoes' : 'aviso-host-dash');

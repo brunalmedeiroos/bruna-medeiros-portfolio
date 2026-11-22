@@ -7536,7 +7536,15 @@
   padding: 0;
   color: var(--grafite);
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.painel-body .dash-cabecalho {
   flex-direction: column;
+  align-items: stretch;
   gap: 18px;
 }
 
@@ -7651,22 +7659,9 @@
   }
 }
 
-/* Título de cima some (o nome fica na capa) e o sino sobe pra cima do card. */
-.painel-body .topbar.topbar-sobre-capa {
-  height: 0;
-  margin-bottom: 0;
-  align-items: flex-start;
-  justify-content: flex-end;
-  position: relative;
-  z-index: 20;
-}
-
-.painel-body .topbar.topbar-sobre-capa .topbar-acoes {
-  margin: 20px 22px 0 0;
-}
-
+/* O nome da página já está marcado no menu lateral — não repete aqui. */
 .painel-body .pg-capa-linha {
-  padding-right: 64px;
+  display: none;
 }
 
 .painel-body .pg-capa-nav #pl-hub {
@@ -8500,12 +8495,22 @@
   }
 }
 
-/* Ícone da Nota rápida: a mesma imagem do app Notas do portfólio, no canto
-   inferior esquerdo da capa azul do Dashboard. */
+/* Rodapé do Dashboard: saudação à esquerda, ações (nota, nova referência,
+   notificações) alinhadas numa linha só à direita. */
 .painel-body .dash-capa-rodape {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 18px;
+  width: 100%;
+}
+
+.painel-body .dash-capa-acoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .painel-body .dash-nota-icone {
@@ -8534,29 +8539,21 @@
   transform: translateY(-4px) scale(1.06);
 }
 
-/* Ícone da Nota rápida: menor e no canto inferior direito da capa azul. */
-.painel-body .dash-cabecalho {
-  position: relative;
-}
-
-.painel-body .dash-cabecalho .dash-nota-icone {
-  position: absolute;
-  right: 24px;
-  bottom: 22px;
+/* Ícone da Nota rápida: menor, alinhado com as outras ações na mesma linha. */
+.painel-body .dash-cabecalho .dash-nota-icone,
+.painel-body .dash-capa-acoes .dash-nota-icone {
   width: 42px;
   height: 42px;
+  flex-shrink: 0;
 }
 
-.painel-body .pg-capa {
-  position: relative;
-}
-
+/* Notas de outras abas (fora o Dashboard): sozinha, empurrada pra ponta
+   direita da linha — sem sino pra disputar o canto com ela. */
 .painel-body .pg-capa > .dash-nota-icone {
-  position: absolute;
-  right: 24px;
-  bottom: 22px;
+  margin-left: auto;
   width: 42px;
   height: 42px;
+  flex-shrink: 0;
 }
 
 .painel-body .dash-nota-icone[hidden] {
@@ -8564,17 +8561,9 @@
 }
 
 @media (max-width: 700px) {
-  .painel-body .dash-cabecalho .dash-nota-icone {
-    right: 16px;
-    bottom: 16px;
-    width: 38px;
-    height: 38px;
-  }
-
+  .painel-body .dash-cabecalho .dash-nota-icone,
+  .painel-body .dash-capa-acoes .dash-nota-icone,
   .painel-body .pg-capa > .dash-nota-icone {
-    right: 16px;
-    top: 16px;
-    bottom: auto;
     width: 38px;
     height: 38px;
   }
@@ -12301,8 +12290,6 @@
 }
 
 .painel-body .dash-btn-nova-ref {
-  margin-left: auto;
-  margin-right: 62px; /* deixa livre o ícone da Nota rápida, que fica no canto */
   flex-shrink: 0;
   padding: 11px 20px;
   border: none;
@@ -12326,10 +12313,9 @@
     flex-wrap: wrap;
   }
 
-  .painel-body .dash-btn-nova-ref {
-    width: calc(100% - 62px);
-    margin-left: 0;
-    margin-right: 0;
+  .painel-body .dash-capa-acoes {
+    flex-wrap: wrap;
+    width: 100%;
   }
 }
 

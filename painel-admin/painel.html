@@ -16,9 +16,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261122c">
+<link rel="stylesheet" href="css/style.css?v=20261122d">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261122c">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261122d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -141,17 +141,6 @@
             <button class="filtro-btn" data-periodo="30" type="button">30d</button>
             <button class="filtro-btn" data-periodo="90" type="button">90d</button>
           </div>
-
-          <div class="notif-wrapper">
-            <button class="notif-sino" id="notif-sino-btn" type="button" data-i18n-aria="notif_titulo" aria-label="Notificações">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span class="notif-badge" id="notif-badge" hidden>0</span>
-            </button>
-            <div class="notif-dropdown" id="notif-dropdown" hidden>
-              <p class="notif-dropdown-titulo" data-i18n="notif_titulo">Notificações</p>
-              <div id="notif-dropdown-lista"></div>
-            </div>
-          </div>
         </div>
       </header>
 
@@ -177,14 +166,26 @@
               <h2 class="pg-capa-titulo" data-i18n="titulo_dashboard">Dashboard</h2>
             </div>
             <div class="dash-capa-rodape">
-              <button type="button" id="btn-nota-abrir" class="dash-nota-icone" title="Nota rápida" aria-label="Nota rápida">
-                <img src="img/notas.jpg" alt="">
-              </button>
               <div class="dash-capa-texto">
                 <h2 class="saudacao" id="dash-saudacao">Bom dia, Bru!</h2>
                 <p class="dash-data" id="dash-data">Hoje</p>
               </div>
-              <button type="button" id="dash-btn-nova-ref" class="dash-btn-nova-ref">🔍 Nova referência</button>
+              <div class="dash-capa-acoes">
+                <button type="button" id="btn-nota-abrir" class="dash-nota-icone" title="Nota rápida" aria-label="Nota rápida">
+                  <img src="img/notas.jpg" alt="">
+                </button>
+                <button type="button" id="dash-btn-nova-ref" class="dash-btn-nova-ref">🔍 Nova referência</button>
+                <div class="notif-wrapper">
+                  <button class="notif-sino" id="notif-sino-btn" type="button" data-i18n-aria="notif_titulo" aria-label="Notificações">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    <span class="notif-badge" id="notif-badge" hidden>0</span>
+                  </button>
+                  <div class="notif-dropdown" id="notif-dropdown" hidden>
+                    <p class="notif-dropdown-titulo" data-i18n="notif_titulo">Notificações</p>
+                    <div id="notif-dropdown-lista"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -9773,11 +9774,8 @@
       capaDevolverMenu();
       const semCapa = CAPA_SEM.includes(aba);
       capa.hidden = semCapa;
-      // Com capa (a global ou a do próprio Dashboard), o nome da página fica só
-      // nela e o sino sobe pra cima do card. Só o E-mail ainda usa o título de cima.
-      const tituloNoTopo = aba === 'email';
-      document.getElementById('titulo-topo').hidden = !tituloNoTopo;
-      document.querySelector('.topbar').classList.toggle('topbar-sobre-capa', !tituloNoTopo);
+      // O nome da página só aparece marcado no menu lateral agora.
+      document.getElementById('titulo-topo').hidden = true;
       if (semCapa) return;
       document.getElementById('pg-capa-titulo').textContent = tr(TITULOS_ABA[aba]);
       const itemMenu = document.querySelector('.nav-item[data-tab="' + aba + '"]');

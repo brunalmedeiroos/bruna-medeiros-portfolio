@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20261122d">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261122d">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261122f">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -141,6 +141,21 @@
             <button class="filtro-btn" data-periodo="30" type="button">30d</button>
             <button class="filtro-btn" data-periodo="90" type="button">90d</button>
           </div>
+
+          <div class="notif-wrapper">
+            <button class="notif-sino" id="notif-sino-btn" type="button" data-i18n-aria="notif_titulo" aria-label="Notificações">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="notif-badge" id="notif-badge" hidden>0</span>
+            </button>
+            <div class="notif-dropdown" id="notif-dropdown" hidden>
+              <p class="notif-dropdown-titulo" data-i18n="notif_titulo">Notificações</p>
+              <div id="notif-dropdown-lista"></div>
+            </div>
+          </div>
+
+          <button type="button" class="topbar-avatar" id="btn-abrir-perfil-topbar" aria-label="Perfil">
+            <span id="topbar-avatar-inicial">B</span>
+          </button>
         </div>
       </header>
 
@@ -175,16 +190,6 @@
                   <img src="../painel-admin/img/notas.jpg" alt="">
                 </button>
                 <button type="button" id="dash-btn-nova-ref" class="dash-btn-nova-ref">🔍 Nova referência</button>
-                <div class="notif-wrapper">
-                  <button class="notif-sino" id="notif-sino-btn" type="button" data-i18n-aria="notif_titulo" aria-label="Notificações">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.73 21a2 2 0 01-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    <span class="notif-badge" id="notif-badge" hidden>0</span>
-                  </button>
-                  <div class="notif-dropdown" id="notif-dropdown" hidden>
-                    <p class="notif-dropdown-titulo" data-i18n="notif_titulo">Notificações</p>
-                    <div id="notif-dropdown-lista"></div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -1215,10 +1220,6 @@
                 <span class="card-label" data-i18n="ugc_em_producao">Em produção</span>
                 <span class="card-valor" id="ugc-num-producao">0</span>
               </div>
-              <div class="card-numero">
-                <span class="card-label" data-i18n="ugc_a_receber">A receber</span>
-                <span class="card-valor" id="ugc-num-receber">R$ 0</span>
-              </div>
             </div>
 
             <!-- Avisa quando o direito de uso pago por uma marca está perto de
@@ -1233,52 +1234,6 @@
               <h3 class="card-titulo" data-i18n="ugc_proximas_entregas">Próximas entregas</h3>
               <div id="ugc-proximas-entregas" class="ugc-proximas-lista"></div>
             </div>
-
-            <!-- Resultados: também só leitura, derivado de ugc_trabalhos/ugc_contratos -->
-            <div class="ugc-resultados-topo">
-              <div class="card ugc-resultados-card">
-                <span class="ugc-resultados-card-titulo" data-i18n="ugc_ganho_ugc">Ganho em UGC</span>
-                <span class="ugc-resultados-card-valor" id="ugc-num-ganho-ugc">R$ 0</span>
-                <div class="ugc-resultados-chips">
-                  <div class="ugc-resultados-chip">
-                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_trabalhos_finalizados">Campanhas finalizadas</span>
-                    <span class="ugc-resultados-chip-valor" id="ugc-num-fechados-ugc">0</span>
-                  </div>
-                  <div class="ugc-resultados-chip">
-                    <span class="ugc-resultados-chip-label" data-i18n="ugc_contratos_finalizados">Contratos finalizados</span>
-                    <span class="ugc-resultados-chip-valor" id="ugc-num-contratos-finalizados-ugc">0</span>
-                  </div>
-                  <div class="ugc-resultados-chip">
-                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_ticket_medio">Ticket médio</span>
-                    <span class="ugc-resultados-chip-valor" id="ugc-num-ticket-medio-ugc">—</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card ugc-resultados-card">
-                <span class="ugc-resultados-card-titulo" data-i18n="ugc_ganho_publicidade">Ganho em Publicidade</span>
-                <span class="ugc-resultados-card-valor" id="ugc-num-ganho-publicidade">R$ 0</span>
-                <div class="ugc-resultados-chips">
-                  <div class="ugc-resultados-chip">
-                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_trabalhos_finalizados">Campanhas finalizadas</span>
-                    <span class="ugc-resultados-chip-valor" id="ugc-num-fechados-publicidade">0</span>
-                  </div>
-                  <div class="ugc-resultados-chip">
-                    <span class="ugc-resultados-chip-label" data-i18n="ugc_contratos_finalizados">Contratos finalizados</span>
-                    <span class="ugc-resultados-chip-valor" id="ugc-num-contratos-finalizados-publicidade">0</span>
-                  </div>
-                  <div class="ugc-resultados-chip">
-                    <span class="ugc-resultados-chip-label" data-i18n="ugc_resultados_ticket_medio">Ticket médio</span>
-                    <span class="ugc-resultados-chip-valor" id="ugc-num-ticket-medio-publicidade">—</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="card ugc-resultados-total-card">
-              <span class="ugc-resultados-total-label" data-i18n="ugc_ganho_total">Ganho total</span>
-              <span class="ugc-resultados-total-valor" id="ugc-num-ganho-total">R$ 0</span>
-            </div>
           </div>
 
           <!-- Campanhas (antes "Trabalhos") -->
@@ -1291,16 +1246,6 @@
               <div class="card-numero">
                 <span class="card-label">Ativas</span>
                 <span class="card-valor" id="campanhas-num-ativas">0</span>
-              </div>
-              <div class="card-numero card-numero-dupla">
-                <span class="card-label">Valor total</span>
-                <span class="card-valor" id="campanhas-num-valor-total">R$ 0</span>
-                <span class="card-subvalor">Ticket médio por vídeo: <span id="campanhas-num-ticket-medio">—</span></span>
-              </div>
-              <div class="card-numero card-numero-dupla">
-                <span class="card-label">A receber</span>
-                <span class="card-valor" id="campanhas-num-a-receber">R$ 0</span>
-                <span class="card-subvalor">Já recebido: <span id="campanhas-num-ja-recebido">R$ 0</span></span>
               </div>
             </div>
 
@@ -1830,140 +1775,112 @@
           </div>
         </section>
 
-        <!-- Financeiro: resumo simples derivado de ugcTrabalhosCache (mesma
-             fonte do Dashboard e do UGC/Publicidade), sem cadastro próprio —
-             ver renderizarFinanceiro(). O card de insight não usa nenhuma IA:
-             é um texto escolhido por regra simples (maior cliente do mês ou
-             variação vs mês passado), calculado na hora. -->
+        <!-- Financeiro: receitas vêm de ugcTrabalhosCache (trabalhos de marca) +
+             financeiro_receitas_avulsas (lançamentos manuais fora de um trabalho);
+             despesas vêm de financeiro_despesas, cadastro manual. Tudo filtrado
+             pelo mês escolhido em financeiroMesAtual — ver renderizarFinanceiro(). -->
         <section id="panel-financeiro" class="tab-panel" hidden>
-          <div class="financeiro-sync-topo">
-            <span class="financeiro-extrato-status" id="financeiro-extrato-status"></span>
-            <button type="button" class="cal-btn cal-btn-primario" id="financeiro-extrato-sincronizar">Sincronizar agora</button>
+          <div class="financeiro-topo">
+            <div class="cal-topo-nav">
+              <button id="fin-mes-anterior" class="cal-btn cal-btn-icon" type="button" aria-label="Mês anterior">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <span class="cal-mes-label" id="fin-mes-label">Mês</span>
+              <button id="fin-mes-proximo" class="cal-btn cal-btn-icon" type="button" aria-label="Próximo mês">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+            <button type="button" class="cal-btn cal-btn-primario" id="fin-btn-novo-registro">+ Novo Registro</button>
+          </div>
+
+          <div class="cards-numeros cards-numeros-financeiro">
+            <div class="card-numero">
+              <span class="card-label">Previsto</span>
+              <span class="card-valor" id="fin-previsto">R$ 0</span>
+            </div>
+            <div class="card-numero">
+              <span class="card-label">Recebido</span>
+              <span class="card-valor" id="fin-recebido">R$ 0</span>
+            </div>
+            <div class="card-numero">
+              <span class="card-label">Pendente</span>
+              <span class="card-valor" id="fin-pendente">R$ 0</span>
+            </div>
+            <div class="card-numero">
+              <span class="card-label">Despesas</span>
+              <span class="card-valor" id="fin-despesas">R$ 0</span>
+            </div>
+            <div class="card-numero">
+              <span class="card-label">Lucro Líquido</span>
+              <span class="card-valor" id="fin-lucro-liquido">R$ 0</span>
+            </div>
           </div>
 
           <div class="financeiro-subnav">
-            <button class="financeiro-subnav-btn ativo" data-financeiro-pagina="visao-geral" type="button">Visão Geral</button>
-            <button class="financeiro-subnav-btn" data-financeiro-pagina="negocio" type="button">Negócio</button>
-            <button class="financeiro-subnav-btn" data-financeiro-pagina="pessoal" type="button">Pessoal</button>
+            <button class="financeiro-subnav-btn ativo" data-financeiro-pagina="receitas" type="button">Receitas</button>
+            <button class="financeiro-subnav-btn" data-financeiro-pagina="despesas" type="button">Despesas</button>
+            <button class="financeiro-subnav-btn" data-financeiro-pagina="historico" type="button">Histórico</button>
           </div>
 
-          <!-- Visão Geral: resumo enxuto juntando negócio (ugcTrabalhosCache) e
-               pessoal (financeiro_transacoes) — ver renderizarFinanceiroVisaoGeral().
-               Só 4 números +, se houver, os lançamentos ainda não classificados. -->
-          <div id="financeiro-pagina-visao-geral" class="financeiro-pagina">
-            <div class="cards-numeros cards-numeros-financeiro-visao-geral">
-              <div class="card-numero">
-                <span class="card-label">Recebido (negócio) no mês</span>
-                <span class="card-valor" id="fin-vg-recebido-negocio">R$ 0</span>
-              </div>
-              <div class="card-numero">
-                <span class="card-label">Gastos pessoais no mês</span>
-                <span class="card-valor" id="fin-vg-gasto-pessoal">R$ 0</span>
-              </div>
-              <div class="card-numero">
-                <span class="card-label">Saldo do mês</span>
-                <span class="card-valor" id="fin-vg-saldo">R$ 0</span>
-              </div>
-              <div class="card-numero">
-                <span class="card-label">Pendente a receber</span>
-                <span class="card-valor" id="fin-vg-pendente">R$ 0</span>
-              </div>
-            </div>
-
-            <div class="card financeiro-extrato-card financeiro-nao-classificados-card" id="financeiro-nao-classificados-card" hidden>
-              <h3 class="financeiro-extrato-titulo">⚠️ Lançamentos não classificados (<span id="fin-vg-nao-classificados-contagem">0</span>)</h3>
-              <div id="financeiro-nao-classificados-lista" class="financeiro-extrato-lista"></div>
-            </div>
-          </div>
-
-          <!-- Negócio: mesmo conteúdo de sempre (insight, ritmo, pendente/recebido,
-               tudo baseado em ugcTrabalhosCache — ver renderizarFinanceiro() e
-               renderizarRitmoRecebimento()), mais o extrato bancário já filtrado
-               pra só os lançamentos marcados como negócio. -->
-          <div id="financeiro-pagina-negocio" class="financeiro-pagina" hidden>
-            <div class="financeiro-topo">
-              <div class="card financeiro-insight-card">
-                <h3 class="financeiro-insight-titulo" data-i18n="financeiro_insight_titulo">Como está seu faturamento?</h3>
-                <p class="financeiro-insight-texto" id="financeiro-insight-texto"></p>
-
-                <div class="financeiro-chips">
-                  <div class="financeiro-chip">
-                    <span class="financeiro-chip-label" id="financeiro-chip-mes-label">Recebido em</span>
-                    <span class="financeiro-chip-valor" id="financeiro-chip-mes-valor">R$ 0</span>
-                  </div>
-                  <div class="financeiro-chip">
-                    <span class="financeiro-chip-label" data-i18n="financeiro_chip_variacao">Vs. mês anterior</span>
-                    <span class="financeiro-chip-valor" id="financeiro-chip-variacao">—</span>
-                  </div>
-                  <div class="financeiro-chip">
-                    <span class="financeiro-chip-label" data-i18n="financeiro_chip_maior_cliente">Maior cliente</span>
-                    <span class="financeiro-chip-valor" id="financeiro-chip-maior-cliente">—</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Ritmo de recebimento: compara o acumulado deste mês com o
-                   acumulado do mês passado, dia a dia — ver
-                   renderizarRitmoRecebimento(). SVG desenhado na hora, sem
-                   biblioteca de gráfico. -->
-              <div class="card financeiro-ritmo-card">
-                <span class="financeiro-ritmo-titulo" data-i18n="financeiro_ritmo_titulo">Ritmo de recebimento</span>
-
-                <div class="financeiro-ritmo-numero-linha">
-                  <span class="financeiro-ritmo-valor" id="financeiro-ritmo-valor">R$ 0</span>
-                  <span class="financeiro-ritmo-rotulo" id="financeiro-ritmo-rotulo"></span>
-                </div>
-                <p class="financeiro-ritmo-comparacao" id="financeiro-ritmo-comparacao"></p>
-
-                <div class="financeiro-ritmo-grafico" id="financeiro-ritmo-grafico"></div>
-
-                <div class="financeiro-ritmo-legenda">
-                  <span class="financeiro-ritmo-legenda-item">
-                    <span class="financeiro-ritmo-legenda-linha financeiro-ritmo-legenda-atual"></span>
-                    <span data-i18n="financeiro_ritmo_este_mes">Este mês</span>
-                  </span>
-                  <span class="financeiro-ritmo-legenda-item">
-                    <span class="financeiro-ritmo-legenda-linha financeiro-ritmo-legenda-passado"></span>
-                    <span data-i18n="financeiro_ritmo_mes_passado">Mês passado</span>
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div class="cards-numeros cards-numeros-dashboard">
-              <div class="card-numero">
-                <span class="card-label" data-i18n="financeiro_pendente">Pendente</span>
-                <span class="card-valor" id="financeiro-num-pendente">R$ 0</span>
-              </div>
-              <div class="card-numero">
-                <span class="card-label" data-i18n="financeiro_recebido_total">Recebido no total</span>
-                <span class="card-valor" id="financeiro-num-recebido-total">R$ 0</span>
-              </div>
-            </div>
-
+          <div id="financeiro-pagina-receitas" class="financeiro-pagina">
             <div class="card financeiro-extrato-card">
-              <h3 class="financeiro-extrato-titulo">💳 Extrato — Negócio</h3>
-              <div id="financeiro-extrato-negocio-lista" class="financeiro-extrato-lista"></div>
+              <div id="fin-lista-receitas" class="financeiro-extrato-lista"></div>
+              <p class="texto-vazio" id="fin-receitas-vazio" hidden>Nenhuma receita neste mês.</p>
             </div>
           </div>
 
-          <!-- Pessoal: lançamentos bancários marcados como pessoal (gastos de casa,
-               compras etc.) — ver renderizarFinanceiroPessoalResumo(). -->
-          <div id="financeiro-pagina-pessoal" class="financeiro-pagina" hidden>
-            <div class="cards-numeros cards-numeros-dashboard">
-              <div class="card-numero">
-                <span class="card-label">Gasto no mês</span>
-                <span class="card-valor" id="fin-pessoal-gasto-mes">R$ 0</span>
-              </div>
-              <div class="card-numero">
-                <span class="card-label">Maior categoria</span>
-                <span class="card-valor" id="fin-pessoal-maior-categoria">—</span>
-              </div>
-            </div>
-
+          <div id="financeiro-pagina-despesas" class="financeiro-pagina" hidden>
             <div class="card financeiro-extrato-card">
-              <h3 class="financeiro-extrato-titulo">🏠 Extrato — Pessoal</h3>
-              <div id="financeiro-extrato-pessoal-lista" class="financeiro-extrato-lista"></div>
+              <div id="fin-lista-despesas" class="financeiro-extrato-lista"></div>
+              <p class="texto-vazio" id="fin-despesas-vazio" hidden>Nenhuma despesa neste mês.</p>
+            </div>
+          </div>
+
+          <div id="financeiro-pagina-historico" class="financeiro-pagina" hidden>
+            <div class="card financeiro-extrato-card">
+              <div id="fin-lista-historico" class="financeiro-extrato-lista"></div>
+              <p class="texto-vazio" id="fin-historico-vazio" hidden>Nada neste mês ainda.</p>
+            </div>
+          </div>
+
+          <!-- Modal Novo Registro / editar — tipo Receita avulsa ou Despesa. -->
+          <div id="fin-modal-overlay" class="pl-modal-overlay" hidden>
+            <div class="pl-modal">
+              <div class="cal-dia-topo">
+                <h3 class="card-titulo" id="fin-modal-titulo">Novo registro</h3>
+                <button id="fin-modal-fechar" class="cal-btn cal-btn-icon" type="button" aria-label="Fechar">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+              </div>
+              <div class="financeiro-tipo-grupo" id="fin-modal-tipo-grupo">
+                <button type="button" class="financeiro-tipo-btn ativo" data-fin-tipo="receita">Receita</button>
+                <button type="button" class="financeiro-tipo-btn" data-fin-tipo="despesa">Despesa</button>
+              </div>
+              <form id="fin-form-registro" class="cal-form">
+                <div class="cal-form-campo">
+                  <label for="fin-form-descricao">Descrição</label>
+                  <input type="text" id="fin-form-descricao" required>
+                </div>
+                <div class="cal-form-campo" id="fin-form-categoria-campo">
+                  <label for="fin-form-categoria">Categoria</label>
+                  <select id="fin-form-categoria"></select>
+                </div>
+                <div class="cal-form-linha">
+                  <div class="cal-form-campo">
+                    <label for="fin-form-valor">Valor</label>
+                    <input type="number" id="fin-form-valor" step="0.01" min="0" required>
+                  </div>
+                  <div class="cal-form-campo">
+                    <label for="fin-form-data">Data</label>
+                    <input type="date" id="fin-form-data" required>
+                  </div>
+                </div>
+                <div class="cal-form-acoes">
+                  <button type="button" id="fin-form-excluir" class="cal-btn pl-btn-excluir" hidden>Excluir</button>
+                  <button type="button" id="fin-form-cancelar" class="cal-btn">Cancelar</button>
+                  <button type="submit" class="cal-btn cal-btn-primario">Salvar</button>
+                </div>
+              </form>
             </div>
           </div>
         </section>
@@ -4620,8 +4537,13 @@
     let ugcPropostaSnapshotInicial = '';
 
     let financeiroAbaCarregada = false;
-    let financeiroTransacoesCache = [];
-    let financeiroSubAbaAtual = 'visao-geral'; // 'visao-geral' | 'negocio' | 'pessoal'
+    let financeiroDespesasCache = [];
+    let financeiroReceitasAvulsasCache = [];
+    let financeiroSubAbaAtual = 'receitas'; // 'receitas' | 'despesas' | 'historico'
+    let financeiroMesAtual = new Date();
+    let financeiroModalTipo = 'receita'; // 'receita' | 'despesa'
+    let financeiroModalEditando = null; // { tipo: 'receita'|'despesa', id } ao editar um lançamento manual
+    const FIN_CATEGORIAS_DESPESA = ['Equipamento', 'Props', 'Edição/Terceiros', 'Transporte', 'Software/Assinaturas', 'Outro'];
 
     let metasAbaCarregada = false;
     let metasCache = [];
@@ -4723,24 +4645,6 @@
         titulo_calculadora_trabalhos: 'Precificação',
         priv_esconder: 'Esconder valores e dados financeiros',
         priv_mostrar: 'Mostrar valores e dados financeiros',
-        financeiro_pendente: 'Pendente',
-        financeiro_recebido_total: 'Recebido no total',
-        financeiro_insight_titulo: 'Como está seu faturamento?',
-        financeiro_chip_recebido_em: 'Recebido em',
-        financeiro_chip_variacao: 'Vs. mês anterior',
-        financeiro_chip_maior_cliente: 'Maior cliente',
-        financeiro_insight_maior_cliente: '{nome}, a {marca} puxou {pct}% do que você recebeu esse mês!',
-        financeiro_insight_crescimento: '{nome}, você recebeu {pct}% a mais que no mês passado! Continue assim.',
-        financeiro_insight_queda: '{nome}, seus recebimentos caíram {pct}% em relação ao mês passado.',
-        financeiro_insight_vazio: '{nome}, nenhum recebimento confirmado ainda esse mês.',
-        financeiro_insight_estavel: '{nome}, seu faturamento esse mês está estável em relação ao mês passado.',
-        financeiro_ritmo_titulo: 'Ritmo de recebimento',
-        financeiro_ritmo_acima: 'acima',
-        financeiro_ritmo_abaixo: 'abaixo',
-        financeiro_ritmo_vs: 'vs',
-        financeiro_ritmo_mes_anterior_curto: 'mês anterior',
-        financeiro_ritmo_este_mes: 'Este mês',
-        financeiro_ritmo_mes_passado: 'Mês passado',
         nav_dashboard: 'Dashboard',
         nav_portfolio: 'Portfólio',
         pf_editar: '✏️ Editar portfólio',
@@ -5527,7 +5431,6 @@
         ugc_resultados: '📈 Resultados',
         ugc_trabalhos_ativos: 'Campanhas ativas',
         ugc_em_producao: 'Em produção',
-        ugc_a_receber: 'A receber',
         ugc_direitos_uso_vencendo: 'Direitos de uso vencendo',
         ugc_proximas_entregas: 'Próximas entregas',
         ugc_nenhum_trabalho: 'Nenhum trabalho ainda.',
@@ -5644,12 +5547,6 @@
         ugc_adicionar_servico_aria: 'Adicionar serviço',
         ugc_publicidade: 'Publicidade',
         ugc_condicoes_direitos: 'Condições/Direitos',
-        ugc_resultados_trabalhos_finalizados: 'Campanhas finalizadas',
-        ugc_resultados_ticket_medio: 'Ticket médio',
-        ugc_contratos_finalizados: 'Contratos finalizados',
-        ugc_ganho_ugc: 'Ganho em UGC',
-        ugc_ganho_publicidade: 'Ganho em Publicidade',
-        ugc_ganho_total: 'Ganho total',
         ugc_produto: 'Produto',
         ugc_tipo_trabalho: 'Tipo de trabalho',
         ugc_entregaveis: 'Entregáveis',
@@ -6120,24 +6017,6 @@
         titulo_calculadora_trabalhos: 'Pricing',
         priv_esconder: 'Hide amounts and financial data',
         priv_mostrar: 'Show amounts and financial data',
-        financeiro_pendente: 'Pending',
-        financeiro_recebido_total: 'Total received',
-        financeiro_insight_titulo: "How's your revenue?",
-        financeiro_chip_recebido_em: 'Received in',
-        financeiro_chip_variacao: 'Vs. last month',
-        financeiro_chip_maior_cliente: 'Biggest client',
-        financeiro_insight_maior_cliente: '{nome}, {marca} made up {pct}% of what you received this month!',
-        financeiro_insight_crescimento: '{nome}, you received {pct}% more than last month! Keep it up.',
-        financeiro_insight_queda: '{nome}, your revenue dropped {pct}% compared to last month.',
-        financeiro_insight_vazio: '{nome}, no confirmed payments yet this month.',
-        financeiro_insight_estavel: "{nome}, your revenue this month is steady compared to last month.",
-        financeiro_ritmo_titulo: 'Payment pace',
-        financeiro_ritmo_acima: 'ahead',
-        financeiro_ritmo_abaixo: 'behind',
-        financeiro_ritmo_vs: 'vs',
-        financeiro_ritmo_mes_anterior_curto: 'last month',
-        financeiro_ritmo_este_mes: 'This month',
-        financeiro_ritmo_mes_passado: 'Last month',
         nav_dashboard: 'Dashboard',
         nav_portfolio: 'Portfolio',
         pf_editar: '✏️ Edit portfolio',
@@ -6925,7 +6804,6 @@
         ugc_resultados: '📈 Results',
         ugc_trabalhos_ativos: 'Active jobs',
         ugc_em_producao: 'In production',
-        ugc_a_receber: 'Receivable',
         ugc_direitos_uso_vencendo: 'Usage rights expiring',
         ugc_proximas_entregas: 'Upcoming deliveries',
         ugc_nenhum_trabalho: 'No jobs yet.',
@@ -7042,12 +6920,6 @@
         ugc_adicionar_servico_aria: 'Add service',
         ugc_publicidade: 'Advertising',
         ugc_condicoes_direitos: 'Terms/Rights',
-        ugc_resultados_trabalhos_finalizados: 'Finished jobs',
-        ugc_resultados_ticket_medio: 'Average ticket',
-        ugc_contratos_finalizados: 'Finished contracts',
-        ugc_ganho_ugc: 'UGC earnings',
-        ugc_ganho_publicidade: 'Advertising earnings',
-        ugc_ganho_total: 'Total earnings',
         ugc_produto: 'Product',
         ugc_tipo_trabalho: 'Job type',
         ugc_entregaveis: 'Deliverables',
@@ -7696,6 +7568,14 @@
     function preencherFormularioConfiguracoes() {
       document.getElementById('config-inicio-semana').value = configCache.inicio_semana;
       document.getElementById('config-nome').value = configCache.nome || '';
+      renderizarAvatarTopbar();
+    }
+
+    // Bolinha com a inicial do nome, no menu de cima — até ela cadastrar uma
+    // foto de verdade (campo ainda não existe em painel_configuracoes).
+    function renderizarAvatarTopbar() {
+      const nome = (configCache && configCache.nome) || 'Bru';
+      document.getElementById('topbar-avatar-inicial').textContent = nome.trim().charAt(0).toUpperCase() || 'B';
     }
 
     function mostrarConfigSalvo() {
@@ -7724,6 +7604,7 @@
       const nome = document.getElementById('config-nome').value.trim();
       await salvarConfiguracao('nome', nome || null);
       renderizarCabecalhoDashboard();
+      renderizarAvatarTopbar();
       configNomeSnapshotInicial = document.getElementById('config-nome').value;
     }
 
@@ -7801,6 +7682,7 @@
 
       // Configurações (modal, não é aba)
       document.getElementById('btn-abrir-perfil').addEventListener('click', () => abrirModalConfiguracoes('perfil'));
+      document.getElementById('btn-abrir-perfil-topbar').addEventListener('click', () => abrirModalConfiguracoes('perfil'));
       document.getElementById('config-modal-fechar').addEventListener('click', fecharModalConfiguracoes);
       document.getElementById('config-modal-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'config-modal-overlay') fecharModalConfiguracoes();
@@ -8082,7 +7964,25 @@
       });
       document.getElementById('clientes-modal-add-link').addEventListener('click', adicionarLinkModal);
 
-      document.getElementById('financeiro-extrato-sincronizar').addEventListener('click', sincronizarPluggy);
+      document.getElementById('fin-mes-anterior').addEventListener('click', () => financeiroNavegarMes(-1));
+      document.getElementById('fin-mes-proximo').addEventListener('click', () => financeiroNavegarMes(1));
+      document.getElementById('fin-btn-novo-registro').addEventListener('click', () => abrirModalFinanceiro(null, financeiroSubAbaAtual === 'despesas' ? 'despesa' : 'receita'));
+      document.getElementById('fin-modal-fechar').addEventListener('click', fecharModalFinanceiro);
+      document.getElementById('fin-modal-overlay').addEventListener('click', (e) => {
+        if (e.target.id === 'fin-modal-overlay') fecharModalFinanceiro();
+      });
+      document.querySelectorAll('.financeiro-tipo-btn').forEach((btn) => {
+        btn.addEventListener('click', () => trocarTipoModalFinanceiro(btn.dataset.finTipo));
+      });
+      document.getElementById('fin-form-registro').addEventListener('submit', (e) => {
+        e.preventDefault();
+        salvarModalFinanceiro();
+      });
+      document.getElementById('fin-form-cancelar').addEventListener('click', fecharModalFinanceiro);
+      document.getElementById('fin-form-excluir').addEventListener('click', excluirModalFinanceiro);
+      document.getElementById('fin-form-categoria').innerHTML = FIN_CATEGORIAS_DESPESA
+        .map((cat) => `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`)
+        .join('');
 
       // Metas — Visão Geral / Metas / Hábitos
       document.querySelectorAll('.metas-subnav-btn').forEach((btn) => {
@@ -9860,7 +9760,8 @@
       }
       if (aba === 'financeiro' && !financeiroAbaCarregada) {
         financeiroAbaCarregada = true;
-        carregarFinanceiroTransacoes();
+        carregarFinanceiroDespesas();
+        carregarFinanceiroReceitasAvulsas();
       }
       if (aba === 'metas') {
         trocarSubAbaMetas('visao-geral');
@@ -17305,9 +17206,7 @@
       renderizarPrecos();
       renderizarPacotes();
       renderizarOrcPagina();
-      renderizarResultadosUGC();
       renderizarFinanceiro();
-      renderizarRitmoRecebimento();
       renderizarAtencaoDashboard();
       // Entregas de UGC aparecem no Calendário (só leitura) — como o
       // Calendário costuma renderizar antes desta função terminar de
@@ -17394,288 +17293,229 @@
     // sistema não guarda uma data separada de quando o pagamento realmente
     // caiu), então o valor pode não bater exatamente com o extrato bancário
     // se o pagamento demorar a cair depois da entrega.
-    function renderizarFinanceiro() {
-      const hoje = new Date();
-      const anoMes = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0');
-      const mesPassadoData = new Date(hoje.getFullYear(), hoje.getMonth() - 1, 1);
-      const anoMesPassado = mesPassadoData.getFullYear() + '-' + String(mesPassadoData.getMonth() + 1).padStart(2, '0');
-
-      const recebidosMes = ugcTrabalhosCache.filter((t) => t.status_pagamento === 'Recebido' && t.data_entrega && t.data_entrega.startsWith(anoMes));
-      const recebidosMesPassado = ugcTrabalhosCache.filter((t) => t.status_pagamento === 'Recebido' && t.data_entrega && t.data_entrega.startsWith(anoMesPassado));
-
-      const recebidoMes = recebidosMes.reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
-      const recebidoMesPassado = recebidosMesPassado.reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
-      const pendente = ugcTrabalhosCache
-        .filter((t) => t.status_pagamento === 'Pendente' && t.status !== 'Cancelado')
-        .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
-      const recebidoTotal = ugcTrabalhosCache
-        .filter((t) => t.status_pagamento === 'Recebido')
-        .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
-
-      document.getElementById('financeiro-num-pendente').textContent = formatarMoeda(pendente);
-      document.getElementById('financeiro-num-recebido-total').textContent = formatarMoeda(recebidoTotal);
-
-      // Maior cliente do mês, pra chip e pro insight.
-      const porMarca = {};
-      recebidosMes.forEach((t) => {
-        porMarca[t.marca] = (porMarca[t.marca] || 0) + (Number(t.valor) || 0);
-      });
-      let maiorMarca = null;
-      let maiorValor = 0;
-      Object.entries(porMarca).forEach(([marca, valor]) => {
-        if (valor > maiorValor) {
-          maiorMarca = marca;
-          maiorValor = valor;
-        }
-      });
-
-      const variacaoPct = recebidoMesPassado > 0
-        ? ((recebidoMes - recebidoMesPassado) / recebidoMesPassado) * 100
-        : (recebidoMes > 0 ? 100 : 0);
-
-      const nomeMes = hoje.toLocaleDateString(localeAtual(), { month: 'long' });
-      document.getElementById('financeiro-chip-mes-label').textContent =
-        `${tr('financeiro_chip_recebido_em')} ${nomeMes}`.toUpperCase();
-      document.getElementById('financeiro-chip-mes-valor').textContent = formatarMoeda(recebidoMes);
-
-      const chipVariacao = document.getElementById('financeiro-chip-variacao');
-      if (recebidoMesPassado === 0 && recebidoMes === 0) {
-        chipVariacao.textContent = '—';
-        chipVariacao.className = 'financeiro-chip-valor';
-      } else {
-        const seta = variacaoPct >= 0 ? '↗' : '↘';
-        chipVariacao.textContent = `${seta} ${Math.abs(Math.round(variacaoPct))}%`;
-        chipVariacao.className = 'financeiro-chip-valor ' + (variacaoPct >= 0 ? 'financeiro-chip-positivo' : 'financeiro-chip-negativo');
-      }
-
-      document.getElementById('financeiro-chip-maior-cliente').textContent = maiorMarca || '—';
-
-      const nome = (configCache && configCache.nome) || 'Bru';
-      const textoInsight = document.getElementById('financeiro-insight-texto');
-      if (maiorMarca && recebidoMes > 0 && maiorValor / recebidoMes >= 0.4) {
-        const pct = Math.round((maiorValor / recebidoMes) * 100);
-        textoInsight.textContent = tr('financeiro_insight_maior_cliente')
-          .replace('{nome}', nome).replace('{marca}', maiorMarca).replace('{pct}', pct);
-      } else if (recebidoMesPassado > 0 && Math.abs(variacaoPct) >= 10) {
-        const pct = Math.round(Math.abs(variacaoPct));
-        textoInsight.textContent = (variacaoPct > 0 ? tr('financeiro_insight_crescimento') : tr('financeiro_insight_queda'))
-          .replace('{nome}', nome).replace('{pct}', pct);
-      } else if (recebidoMes === 0) {
-        textoInsight.textContent = tr('financeiro_insight_vazio').replace('{nome}', nome);
-      } else {
-        textoInsight.textContent = tr('financeiro_insight_estavel').replace('{nome}', nome);
-      }
-
-      renderizarFinanceiroVisaoGeral();
+    function financeiroAnoMes(data) {
+      return data.getFullYear() + '-' + String(data.getMonth() + 1).padStart(2, '0');
     }
 
-    // Ritmo de recebimento — compara o acumulado (dia a dia) deste mês com o
-    // acumulado do mês passado no mesmo período, tipo um "photo finish".
-    // Gráfico em SVG puro, sem biblioteca — os pontos já vêm em porcentagem
-    // do viewBox, então o SVG escala junto com o cartão.
-    function acumuladoPorDia(trabalhos, totalDias, limiteDia) {
-      const porDia = new Array(totalDias + 1).fill(0);
-      trabalhos.forEach((t) => {
-        const dia = Number(t.data_entrega.slice(8, 10));
-        if (dia >= 1 && dia <= totalDias) porDia[dia] += Number(t.valor) || 0;
-      });
-      const pontos = [];
-      let soma = 0;
-      const ate = limiteDia || totalDias;
-      for (let d = 1; d <= ate; d++) {
-        soma += porDia[d];
-        pontos.push(soma);
-      }
-      return pontos;
+    function financeiroNavegarMes(delta) {
+      financeiroMesAtual = new Date(financeiroMesAtual.getFullYear(), financeiroMesAtual.getMonth() + delta, 1);
+      renderizarFinanceiro();
     }
 
-    function formatarMoedaEixo(valor) {
-      if (valor >= 1000) {
-        const milhares = valor / 1000;
-        return 'R$ ' + (Number.isInteger(milhares) ? milhares : milhares.toFixed(1).replace('.', ',')) + 'k';
-      }
-      return 'R$ ' + Math.round(valor);
+    function financeiroAtualizarMesLabel() {
+      const nomeMes = financeiroMesAtual.toLocaleDateString(localeAtual(), { month: 'long' });
+      document.getElementById('fin-mes-label').textContent =
+        `${nomeMes.charAt(0).toUpperCase()}${nomeMes.slice(1)} ${financeiroMesAtual.getFullYear()}`;
     }
 
-    // ---- Extrato bancário (Pluggy / MeuPluggy) ----
-    // Lançamentos puxados do Open Finance pela Edge Function pluggy-sync
-    // (agendada todo dia, mais o botão "Sincronizar agora" aqui). A
-    // classificação negócio/pessoal é só local, edição direta no Supabase —
-    // nunca é sobrescrita por uma sincronização nova (ver pluggy-sync).
-    // A lista é dividida por sub-aba (Negócio/Pessoal/não classificados) em
-    // vez de um filtro único — ver renderizarFinanceiroExtratos().
-    async function carregarFinanceiroTransacoes() {
+    // Despesas e receitas avulsas — cadastro manual (financeiro_despesas /
+    // financeiro_receitas_avulsas). As receitas de trabalho de marca não
+    // passam por aqui: vêm direto de ugcTrabalhosCache, já carregado pro
+    // Dashboard/UGC/Publicidade.
+    async function carregarFinanceiroDespesas() {
       try {
-        const { data, error } = await Auth.sb
-          .from('financeiro_transacoes')
-          .select('*')
-          .order('data', { ascending: false });
+        const { data, error } = await Auth.sb.from('financeiro_despesas').select('*').order('data', { ascending: false });
         if (error) throw error;
-        financeiroTransacoesCache = data || [];
+        financeiroDespesasCache = data || [];
       } catch (err) {
-        console.error('Erro ao carregar extrato bancário:', err);
-        financeiroTransacoesCache = [];
+        console.error('Erro ao carregar despesas:', err);
+        financeiroDespesasCache = [];
       }
-      renderizarFinanceiroExtratos();
+      renderizarFinanceiro();
     }
 
-    async function sincronizarPluggy() {
-      const btn = document.getElementById('financeiro-extrato-sincronizar');
-      const status = document.getElementById('financeiro-extrato-status');
-      btn.disabled = true;
-      status.textContent = 'Sincronizando...';
+    async function carregarFinanceiroReceitasAvulsas() {
       try {
-        const resultado = await chamarFuncao('pluggy-sync', { method: 'POST' });
-        if (!resultado.ok) throw new Error(resultado.error || 'erro_desconhecido');
-        await carregarFinanceiroTransacoes();
-        status.textContent = `Sincronizado agora · ${resultado.processados} lançamento(s) de ${resultado.itens} conexão(ões)`;
-      } catch (err) {
-        console.error('Erro ao sincronizar extrato bancário:', err);
-        status.textContent = `Não consegui sincronizar: ${err.message || err}`;
-      } finally {
-        btn.disabled = false;
-      }
-    }
-
-    async function definirClassificacaoTransacao(id, classificacao) {
-      const linha = financeiroTransacoesCache.find((t) => t.id === id);
-      if (!linha) return;
-      linha.classificacao = classificacao;
-      renderizarFinanceiroExtratos();
-      try {
-        const { error } = await Auth.sb.from('financeiro_transacoes').update({ classificacao }).eq('id', id);
+        const { data, error } = await Auth.sb.from('financeiro_receitas_avulsas').select('*').order('data', { ascending: false });
         if (error) throw error;
+        financeiroReceitasAvulsasCache = data || [];
       } catch (err) {
-        console.error('Erro ao classificar lançamento:', err);
+        console.error('Erro ao carregar receitas avulsas:', err);
+        financeiroReceitasAvulsasCache = [];
       }
+      renderizarFinanceiro();
     }
 
-    // Desenha uma lista de lançamentos (com dropdown de classificação) num
-    // container qualquer — reaproveitada pelas 3 listas (Negócio, Pessoal e
-    // "não classificados" na Visão Geral).
-    function renderizarListaTransacoes(containerId, transacoes, mensagemVazia) {
+    // Uma linha de Receitas/Despesas/Histórico — reaproveitada pelas 3 listas.
+    // onClick abre o trabalho em UGC/Publicidade (receita de trabalho) ou o
+    // modal de edição (receita avulsa / despesa).
+    function financeiroLinhaHtml(item) {
+      const sinal = item.tipoFluxo === 'despesa' ? '-' : '+';
+      const classeValor = item.tipoFluxo === 'despesa' ? 'financeiro-extrato-valor-negativo' : 'financeiro-extrato-valor-positivo';
+      return `
+        <button type="button" class="financeiro-extrato-linha financeiro-extrato-linha-btn" data-key="${item.key}">
+          <span class="financeiro-extrato-data">${formatarDataExtrato(new Date(item.data + 'T00:00:00'))}</span>
+          <span class="financeiro-extrato-descricao">
+            ${escapeHtml(item.descricao)}
+            ${item.tag ? `<span class="financeiro-extrato-categoria">${escapeHtml(item.tag)}</span>` : ''}
+          </span>
+          <span class="financeiro-extrato-valor ${classeValor}">${sinal} ${formatarMoeda(Math.abs(item.valor))}</span>
+        </button>
+      `;
+    }
+
+    function financeiroRenderizarLista(containerId, vazioId, itens) {
       const lista = document.getElementById(containerId);
-      if (!lista) return;
+      const vazio = document.getElementById(vazioId);
+      vazio.hidden = itens.length > 0;
+      lista.innerHTML = itens.map(financeiroLinhaHtml).join('');
+      lista.querySelectorAll('.financeiro-extrato-linha-btn').forEach((btn) => {
+        btn.addEventListener('click', () => financeiroAbrirItem(btn.dataset.key, itens));
+      });
+    }
 
-      if (transacoes.length === 0) {
-        lista.innerHTML = `<p class="texto-vazio">${mensagemVazia}</p>`;
-        return;
+    function financeiroAbrirItem(key, itens) {
+      const item = itens.find((i) => i.key === key);
+      if (!item) return;
+      if (item.tipo === 'trabalho') {
+        trocarAba('ugc');
+        trocarSubAbaUGC('trabalhos');
+        abrirModalTrabalho(item.origem);
+      } else {
+        abrirModalFinanceiro(item.origem, item.tipoFluxo);
       }
-
-      lista.innerHTML = transacoes
-        .map((t) => {
-          const positivo = t.tipo === 'CREDIT';
-          return `
-            <div class="financeiro-extrato-linha" data-id="${t.id}">
-              <span class="financeiro-extrato-data">${formatarDataExtrato(new Date(t.data + 'T00:00:00'))}</span>
-              <span class="financeiro-extrato-descricao">
-                ${escapeHtml(t.descricao)}
-                ${t.categoria_pluggy ? `<span class="financeiro-extrato-categoria">${escapeHtml(t.categoria_pluggy)}</span>` : ''}
-              </span>
-              <span class="financeiro-extrato-valor ${positivo ? 'financeiro-extrato-valor-positivo' : 'financeiro-extrato-valor-negativo'}">
-                ${positivo ? '+' : '-'} ${formatarMoeda(Math.abs(t.valor))}
-              </span>
-              <select class="financeiro-extrato-classificacao" data-id="${t.id}">
-                <option value="" ${!t.classificacao ? 'selected' : ''}>Classificar...</option>
-                <option value="negocio" ${t.classificacao === 'negocio' ? 'selected' : ''}>Negócio</option>
-                <option value="pessoal" ${t.classificacao === 'pessoal' ? 'selected' : ''}>Pessoal</option>
-                <option value="ignorado" ${t.classificacao === 'ignorado' ? 'selected' : ''}>Ignorar</option>
-              </select>
-            </div>
-          `;
-        })
-        .join('');
-
-      lista.querySelectorAll('.financeiro-extrato-classificacao').forEach((sel) => {
-        sel.addEventListener('change', (e) => definirClassificacaoTransacao(sel.dataset.id, e.target.value || null));
-      });
     }
 
-    function renderizarFinanceiroExtratos() {
-      const semLancamentos = 'Nenhum lançamento ainda. Clique em "Sincronizar agora" pra puxar seu extrato.';
+    function renderizarFinanceiro() {
+      financeiroAtualizarMesLabel();
+      const anoMes = financeiroAnoMes(financeiroMesAtual);
 
-      renderizarListaTransacoes(
-        'financeiro-extrato-negocio-lista',
-        financeiroTransacoesCache.filter((t) => t.classificacao === 'negocio'),
-        financeiroTransacoesCache.length === 0 ? semLancamentos : 'Nenhum lançamento de negócio ainda.'
+      const trabalhosMes = ugcTrabalhosCache.filter(
+        (t) => t.status !== 'Cancelado' && !t.permuta && t.valor && t.data_entrega && t.data_entrega.startsWith(anoMes)
       );
-      renderizarListaTransacoes(
-        'financeiro-extrato-pessoal-lista',
-        financeiroTransacoesCache.filter((t) => t.classificacao === 'pessoal'),
-        financeiroTransacoesCache.length === 0 ? semLancamentos : 'Nenhum lançamento pessoal ainda.'
-      );
+      const receitasAvulsasMes = financeiroReceitasAvulsasCache.filter((r) => r.data && r.data.startsWith(anoMes));
+      const despesasMes = financeiroDespesasCache.filter((d) => d.data && d.data.startsWith(anoMes));
 
-      const naoClassificados = financeiroTransacoesCache.filter((t) => !t.classificacao);
-      const cardNaoClassificados = document.getElementById('financeiro-nao-classificados-card');
-      if (cardNaoClassificados) cardNaoClassificados.hidden = naoClassificados.length === 0;
-      document.getElementById('fin-vg-nao-classificados-contagem').textContent = naoClassificados.length;
-      renderizarListaTransacoes('financeiro-nao-classificados-lista', naoClassificados, '');
+      const recebidoTrabalhos = trabalhosMes
+        .filter((t) => t.status_pagamento === 'Recebido')
+        .reduce((soma, t) => soma + Number(t.valor), 0);
+      const pendente = trabalhosMes
+        .filter((t) => t.status_pagamento === 'Pendente')
+        .reduce((soma, t) => soma + Number(t.valor), 0);
+      const recebidoAvulso = receitasAvulsasMes.reduce((soma, r) => soma + Number(r.valor), 0);
+      const recebido = recebidoTrabalhos + recebidoAvulso;
+      const previsto = recebido + pendente;
+      const despesasTotal = despesasMes.reduce((soma, d) => soma + Number(d.valor), 0);
+      const lucroLiquido = recebido - despesasTotal;
 
-      renderizarFinanceiroVisaoGeral();
-      renderizarFinanceiroPessoalResumo();
+      document.getElementById('fin-previsto').textContent = formatarMoeda(previsto);
+      document.getElementById('fin-recebido').textContent = formatarMoeda(recebido);
+      document.getElementById('fin-pendente').textContent = formatarMoeda(pendente);
+      document.getElementById('fin-despesas').textContent = formatarMoeda(despesasTotal);
+      const campoLucro = document.getElementById('fin-lucro-liquido');
+      campoLucro.textContent = formatarMoeda(lucroLiquido);
+      campoLucro.className = 'card-valor ' + (lucroLiquido >= 0 ? 'financeiro-chip-positivo' : 'financeiro-chip-negativo');
+
+      const itensReceita = [
+        ...trabalhosMes.map((t) => ({
+          key: 'trabalho-' + t.id,
+          tipo: 'trabalho',
+          tipoFluxo: 'receita',
+          origem: t,
+          data: t.data_entrega,
+          descricao: t.marca,
+          tag: t.status_pagamento === 'Pendente' ? 'Pendente' : 'Recebido',
+          valor: Number(t.valor),
+        })),
+        ...receitasAvulsasMes.map((r) => ({
+          key: 'avulsa-' + r.id,
+          tipo: 'avulsa',
+          tipoFluxo: 'receita',
+          origem: r,
+          data: r.data,
+          descricao: r.descricao,
+          tag: '',
+          valor: Number(r.valor),
+        })),
+      ].sort((a, b) => b.data.localeCompare(a.data));
+
+      const itensDespesa = despesasMes
+        .map((d) => ({
+          key: 'despesa-' + d.id,
+          tipo: 'despesa',
+          tipoFluxo: 'despesa',
+          origem: d,
+          data: d.data,
+          descricao: d.descricao,
+          tag: d.categoria || '',
+          valor: Number(d.valor),
+        }))
+        .sort((a, b) => b.data.localeCompare(a.data));
+
+      const itensHistorico = [...itensReceita, ...itensDespesa].sort((a, b) => b.data.localeCompare(a.data));
+
+      financeiroRenderizarLista('fin-lista-receitas', 'fin-receitas-vazio', itensReceita);
+      financeiroRenderizarLista('fin-lista-despesas', 'fin-despesas-vazio', itensDespesa);
+      financeiroRenderizarLista('fin-lista-historico', 'fin-historico-vazio', itensHistorico);
     }
 
-    // Visão Geral — resumo enxuto juntando negócio (ugcTrabalhosCache) e
-    // pessoal (financeiro_transacoes). Chamada tanto quando os trabalhos de
-    // UGC atualizam (renderizarFinanceiro) quanto quando o extrato bancário
-    // atualiza (renderizarFinanceiroExtratos), pra ficar em dia não importa
-    // qual fonte carregou primeiro.
-    function renderizarFinanceiroVisaoGeral() {
-      const campoRecebido = document.getElementById('fin-vg-recebido-negocio');
-      if (!campoRecebido) return;
-
-      const hoje = new Date();
-      const anoMes = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0');
-
-      const recebidoMes = ugcTrabalhosCache
-        .filter((t) => t.status_pagamento === 'Recebido' && t.data_entrega && t.data_entrega.startsWith(anoMes))
-        .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
-      const pendente = ugcTrabalhosCache
-        .filter((t) => t.status_pagamento === 'Pendente' && t.status !== 'Cancelado')
-        .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
-      const gastoPessoalMes = financeiroTransacoesCache
-        .filter((t) => t.classificacao === 'pessoal' && t.tipo === 'DEBIT' && t.data && t.data.startsWith(anoMes))
-        .reduce((soma, t) => soma + Math.abs(Number(t.valor) || 0), 0);
-
-      campoRecebido.textContent = formatarMoeda(recebidoMes);
-      document.getElementById('fin-vg-gasto-pessoal').textContent = formatarMoeda(gastoPessoalMes);
-      document.getElementById('fin-vg-pendente').textContent = formatarMoeda(pendente);
-
-      const saldo = recebidoMes - gastoPessoalMes;
-      const campoSaldo = document.getElementById('fin-vg-saldo');
-      campoSaldo.textContent = formatarMoeda(saldo);
-      campoSaldo.className = 'card-valor ' + (saldo >= 0 ? 'financeiro-chip-positivo' : 'financeiro-chip-negativo');
+    // ---- Modal "Novo Registro" (Receita avulsa / Despesa) ----
+    function trocarTipoModalFinanceiro(tipo) {
+      financeiroModalTipo = tipo;
+      document.querySelectorAll('.financeiro-tipo-btn').forEach((b) => b.classList.toggle('ativo', b.dataset.finTipo === tipo));
+      document.getElementById('fin-form-categoria-campo').hidden = tipo !== 'despesa';
     }
 
-    // Pessoal — gasto do mês e maior categoria, só com os lançamentos
-    // marcados como pessoal (gastos de casa, compras etc.).
-    function renderizarFinanceiroPessoalResumo() {
-      const campoGasto = document.getElementById('fin-pessoal-gasto-mes');
-      if (!campoGasto) return;
+    function abrirModalFinanceiro(item, tipo) {
+      financeiroModalEditando = item ? { tipo, id: item.id } : null;
+      document.getElementById('fin-modal-titulo').textContent = item ? 'Editar registro' : 'Novo registro';
+      document.getElementById('fin-modal-tipo-grupo').hidden = !!item;
+      trocarTipoModalFinanceiro(tipo);
+      document.getElementById('fin-form-descricao').value = item ? item.descricao : '';
+      document.getElementById('fin-form-valor').value = item ? item.valor : '';
+      document.getElementById('fin-form-data').value = item ? item.data : dataParaISO(new Date());
+      document.getElementById('fin-form-categoria').value = item && item.categoria ? item.categoria : FIN_CATEGORIAS_DESPESA[0];
+      document.getElementById('fin-form-excluir').hidden = !item;
+      document.getElementById('fin-modal-overlay').hidden = false;
+    }
 
-      const hoje = new Date();
-      const anoMes = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0');
+    function fecharModalFinanceiro() {
+      document.getElementById('fin-modal-overlay').hidden = true;
+      financeiroModalEditando = null;
+    }
 
-      const gastosMes = financeiroTransacoesCache.filter(
-        (t) => t.classificacao === 'pessoal' && t.tipo === 'DEBIT' && t.data && t.data.startsWith(anoMes)
-      );
-      const totalMes = gastosMes.reduce((soma, t) => soma + Math.abs(Number(t.valor) || 0), 0);
-      campoGasto.textContent = formatarMoeda(totalMes);
+    async function salvarModalFinanceiro() {
+      const descricao = document.getElementById('fin-form-descricao').value.trim();
+      const valor = Number(document.getElementById('fin-form-valor').value);
+      const data = document.getElementById('fin-form-data').value;
+      if (!descricao || !valor || !data) return;
 
-      const porCategoria = {};
-      gastosMes.forEach((t) => {
-        const cat = t.categoria_pluggy || 'Outros';
-        porCategoria[cat] = (porCategoria[cat] || 0) + Math.abs(Number(t.valor) || 0);
-      });
-      let maiorCategoria = null;
-      let maiorValor = 0;
-      Object.entries(porCategoria).forEach(([cat, valor]) => {
-        if (valor > maiorValor) {
-          maiorCategoria = cat;
-          maiorValor = valor;
+      const tabela = financeiroModalTipo === 'despesa' ? 'financeiro_despesas' : 'financeiro_receitas_avulsas';
+      const linha = { descricao, valor, data };
+      if (financeiroModalTipo === 'despesa') linha.categoria = document.getElementById('fin-form-categoria').value;
+
+      try {
+        if (financeiroModalEditando) {
+          const { error } = await Auth.sb.from(tabela).update(linha).eq('id', financeiroModalEditando.id);
+          if (error) throw error;
+        } else {
+          const { error } = await Auth.sb.from(tabela).insert(linha);
+          if (error) throw error;
         }
-      });
-      document.getElementById('fin-pessoal-maior-categoria').textContent = maiorCategoria || '—';
+        fecharModalFinanceiro();
+        if (financeiroModalTipo === 'despesa') await carregarFinanceiroDespesas();
+        else await carregarFinanceiroReceitasAvulsas();
+      } catch (err) {
+        console.error('Erro ao salvar registro financeiro:', err);
+        alert(tr('erro_salvar_generico'));
+      }
+    }
+
+    async function excluirModalFinanceiro() {
+      if (!financeiroModalEditando) return;
+      if (!(await confirmarAcao('Excluir este registro?'))) return;
+      const { tipo, id } = financeiroModalEditando;
+      const tabela = tipo === 'despesa' ? 'financeiro_despesas' : 'financeiro_receitas_avulsas';
+      try {
+        const { error } = await Auth.sb.from(tabela).delete().eq('id', id);
+        if (error) throw error;
+        fecharModalFinanceiro();
+        if (tipo === 'despesa') await carregarFinanceiroDespesas();
+        else await carregarFinanceiroReceitasAvulsas();
+      } catch (err) {
+        console.error('Erro ao excluir registro financeiro:', err);
+        alert(tr('erro_excluir_generico'));
+      }
     }
 
     // ==========================================================================
@@ -18196,80 +18036,14 @@
       }
     }
 
-    function renderizarRitmoRecebimento() {
-      const hoje = new Date();
-      const diaHoje = hoje.getDate();
-      const anoAtual = hoje.getFullYear();
-      const mesAtual = hoje.getMonth();
-      const mesPassadoData = new Date(anoAtual, mesAtual - 1, 1);
-
-      const anoMesAtualStr = anoAtual + '-' + String(mesAtual + 1).padStart(2, '0');
-      const anoMesPassadoStr = mesPassadoData.getFullYear() + '-' + String(mesPassadoData.getMonth() + 1).padStart(2, '0');
-
-      const recebidosMes = ugcTrabalhosCache.filter((t) => t.status_pagamento === 'Recebido' && t.data_entrega && t.data_entrega.startsWith(anoMesAtualStr));
-      const recebidosMesPassado = ugcTrabalhosCache.filter((t) => t.status_pagamento === 'Recebido' && t.data_entrega && t.data_entrega.startsWith(anoMesPassadoStr));
-
-      const diasMesAtual = new Date(anoAtual, mesAtual + 1, 0).getDate();
-      const diasMesPassado = new Date(mesPassadoData.getFullYear(), mesPassadoData.getMonth() + 1, 0).getDate();
-
-      const pontosAtual = acumuladoPorDia(recebidosMes, diasMesAtual, diaHoje);
-      const pontosPassado = acumuladoPorDia(recebidosMesPassado, diasMesPassado);
-
-      const totalAtualAteHoje = pontosAtual[pontosAtual.length - 1] || 0;
-      const totalPassadoMesmoDia = pontosPassado[Math.min(diaHoje, diasMesPassado) - 1] || 0;
-      const diffValor = totalAtualAteHoje - totalPassadoMesmoDia;
-      const diffPct = totalPassadoMesmoDia > 0 ? (diffValor / totalPassadoMesmoDia) * 100 : (totalAtualAteHoje > 0 ? 100 : 0);
-
-      document.getElementById('financeiro-ritmo-valor').textContent = formatarMoeda(Math.abs(diffValor));
-      document.getElementById('financeiro-ritmo-rotulo').textContent = tr(diffValor >= 0 ? 'financeiro_ritmo_acima' : 'financeiro_ritmo_abaixo');
-
-      const seta = diffValor >= 0 ? '↗' : '↘';
-      const comparacao = document.getElementById('financeiro-ritmo-comparacao');
-      comparacao.innerHTML = `<span class="${diffValor >= 0 ? 'financeiro-chip-positivo' : 'financeiro-chip-negativo'}">${seta} ${Math.abs(Math.round(diffPct))}%</span> ${tr('financeiro_ritmo_vs')} ${formatarMoeda(totalPassadoMesmoDia)} ${tr('financeiro_ritmo_mes_anterior_curto')}`;
-
-      // ---- SVG ----
-      const maxDias = Math.max(diasMesAtual, diasMesPassado);
-      const maxValor = Math.max(...pontosAtual, ...pontosPassado, 1);
-      const W = 400;
-      const H = 160;
-      const padL = 46;
-      const padR = 8;
-      const padT = 10;
-      const padB = 8;
-      const escalaX = (dia) => padL + ((dia - 1) / (maxDias - 1)) * (W - padL - padR);
-      const escalaY = (valor) => (H - padB) - (valor / maxValor) * (H - padB - padT);
-
-      const caminho = (pontos) => pontos.map((v, i) => `${i === 0 ? 'M' : 'L'} ${escalaX(i + 1).toFixed(1)} ${escalaY(v).toFixed(1)}`).join(' ');
-
-      const marcasY = [0, maxValor / 2, maxValor];
-      const eixosY = marcasY
-        .map((v) => `<text x="0" y="${(escalaY(v) + 3).toFixed(1)}" class="financeiro-ritmo-eixo">${formatarMoedaEixo(v)}</text>`)
-        .join('');
-
-      const ultimo = pontosAtual.length ? { x: escalaX(pontosAtual.length), y: escalaY(pontosAtual[pontosAtual.length - 1]) } : null;
-
-      document.getElementById('financeiro-ritmo-grafico').innerHTML = `
-        <svg viewBox="0 0 ${W} ${H}" class="financeiro-ritmo-svg">
-          ${eixosY}
-          <path d="${caminho(pontosPassado)}" class="financeiro-ritmo-linha-passado" fill="none" />
-          <path d="${caminho(pontosAtual)}" class="financeiro-ritmo-linha-atual" fill="none" />
-          ${ultimo ? `<circle cx="${ultimo.x.toFixed(1)}" cy="${ultimo.y.toFixed(1)}" r="4" class="financeiro-ritmo-ponto" />` : ''}
-        </svg>
-      `;
-    }
-
     // ---- Visão Geral: 100% derivada de ugcTrabalhosCache, sem cadastro próprio ----
     function renderizarVisaoGeralUGC() {
       renderizarDireitosUsoAlerta();
       const ativos = ugcTrabalhosCache.filter((t) => t.status !== 'Entregue' && t.status !== 'Cancelado');
       const emProducao = ugcTrabalhosCache.filter((t) => UGC_STATUS_EM_PRODUCAO.includes(t.status));
-      const aReceber = ugcTrabalhosCache
-        .filter((t) => t.status_pagamento === 'Pendente' && t.status !== 'Cancelado')
-        .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
 
       document.getElementById('ugc-num-ativos').textContent = formatarNumero(ativos.length);
       document.getElementById('ugc-num-producao').textContent = formatarNumero(emProducao.length);
-      document.getElementById('ugc-num-receber').textContent = formatarMoeda(aReceber);
 
       const proximas = obterEntregasPendentes().slice(0, 5);
 
@@ -18296,43 +18070,6 @@
           }
         });
       });
-    }
-
-    // ---- Resultados: também só leitura, derivado de ugcTrabalhosCache/ugcContratosCache ----
-    function renderizarResultadosUGC() {
-      // "Finalizado" aqui usa o mesmo critério do Ganho (status_pagamento) — um trabalho
-      // Entregue mas ainda não pago não conta como finalizado, senão a contagem diverge
-      // do valor de Ganho total mostrado logo abaixo.
-      const fechadosPorTipo = (tipo) => ugcTrabalhosCache.filter((t) => t.status_pagamento === 'Recebido' && t.tipo_trabalho === tipo);
-      const fechadosUgc = fechadosPorTipo('UGC');
-      const fechadosPublicidade = fechadosPorTipo('Publicidade');
-
-      const contratosFinalizadosPorTipo = (tipo) =>
-        ugcContratosCache.filter((c) => c.status === 'Encerrado' && c.tipo_trabalho === tipo);
-      const contratosFinalizadosUgc = contratosFinalizadosPorTipo('UGC');
-      const contratosFinalizadosPublicidade = contratosFinalizadosPorTipo('Publicidade');
-
-      const ganhoPorTipo = (tipo) =>
-        ugcTrabalhosCache
-          .filter((t) => t.tipo_trabalho === tipo && t.status_pagamento === 'Recebido')
-          .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
-
-      const ganhoUgc = ganhoPorTipo('UGC');
-      const ganhoPublicidade = ganhoPorTipo('Publicidade');
-
-      // Ticket médio = ganho ÷ trabalhos finalizados do mesmo tipo. Sem nenhum
-      // finalizado ainda não há o que dividir — mostra "—" pra não sugerir R$ 0.
-      const ticketMedio = (ganho, quantidade) => (quantidade > 0 ? formatarMoeda(ganho / quantidade) : '—');
-
-      document.getElementById('ugc-num-fechados-ugc').textContent = formatarNumero(fechadosUgc.length);
-      document.getElementById('ugc-num-fechados-publicidade').textContent = formatarNumero(fechadosPublicidade.length);
-      document.getElementById('ugc-num-contratos-finalizados-ugc').textContent = formatarNumero(contratosFinalizadosUgc.length);
-      document.getElementById('ugc-num-contratos-finalizados-publicidade').textContent = formatarNumero(contratosFinalizadosPublicidade.length);
-      document.getElementById('ugc-num-ganho-ugc').textContent = formatarMoeda(ganhoUgc);
-      document.getElementById('ugc-num-ganho-publicidade').textContent = formatarMoeda(ganhoPublicidade);
-      document.getElementById('ugc-num-ticket-medio-ugc').textContent = ticketMedio(ganhoUgc, fechadosUgc.length);
-      document.getElementById('ugc-num-ticket-medio-publicidade').textContent = ticketMedio(ganhoPublicidade, fechadosPublicidade.length);
-      document.getElementById('ugc-num-ganho-total').textContent = formatarMoeda(ganhoUgc + ganhoPublicidade);
     }
 
     // ---- Campanhas (antes "Trabalhos") ----
@@ -18371,22 +18108,9 @@
     function renderizarResumoCampanhas() {
       const total = ugcTrabalhosCache.length;
       const ativas = ugcTrabalhosCache.filter((t) => t.status !== 'Entregue' && t.status !== 'Cancelado').length;
-      const valorTotal = ugcTrabalhosCache.reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
-      const qtdTotalVideos = ugcTrabalhosCache.reduce((soma, t) => soma + qtdEntregaveisCampanha(t.id), 0);
-      const ticketMedio = qtdTotalVideos > 0 ? formatarMoeda(valorTotal / qtdTotalVideos) : '—';
-      const aReceber = ugcTrabalhosCache
-        .filter((t) => t.status_pagamento === 'Pendente' && t.status !== 'Cancelado')
-        .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
-      const jaRecebido = ugcTrabalhosCache
-        .filter((t) => t.status_pagamento === 'Recebido')
-        .reduce((soma, t) => soma + (Number(t.valor) || 0), 0);
 
       document.getElementById('campanhas-num-total').textContent = formatarNumero(total);
       document.getElementById('campanhas-num-ativas').textContent = formatarNumero(ativas);
-      document.getElementById('campanhas-num-valor-total').textContent = formatarMoeda(valorTotal);
-      document.getElementById('campanhas-num-ticket-medio').textContent = ticketMedio;
-      document.getElementById('campanhas-num-a-receber').textContent = formatarMoeda(aReceber);
-      document.getElementById('campanhas-num-ja-recebido').textContent = formatarMoeda(jaRecebido);
     }
 
     const CAMPANHAS_COLUNAS = [

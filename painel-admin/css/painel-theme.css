@@ -7919,19 +7919,22 @@
   }
 }
 
-/* Ícones do menu lateral: emojis (Ferramentas ainda usa a imagem). */
-.painel-body .sidebar .nav-icon-emoji {
-  flex-shrink: 0;
-  width: 22px;
-  font-style: normal;
-  font-size: 18px;
-  line-height: 1;
-  text-align: center;
+/* Ícones do menu lateral: linhas simples em SVG (currentColor, acompanha a
+   cor do item — branco normal, grafite quando ativo). */
+.painel-body .sidebar .nav-icon svg {
+  stroke: currentColor;
 }
 
 .painel-body .pg-capa-emoji {
   font-size: 24px;
   line-height: 1;
+}
+
+.painel-body #pg-capa-icone-emoji svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+  stroke: currentColor;
 }
 
 .painel-body .pg-capa-icone img[hidden] {

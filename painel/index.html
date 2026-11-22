@@ -16,9 +16,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../painel-admin/css/style.css?v=20260924a">
+<link rel="stylesheet" href="../painel-admin/css/style.css?v=20261122a">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261107g">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261122a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -46,77 +46,62 @@
       <div class="sidebar-logo">Bru | <span class="logo-dot">Painel</span></div>
 
       <nav class="sidebar-nav">
-        <button class="nav-item active" data-tab="overview" type="button">
-          <i class="nav-icon-emoji" aria-hidden="true">🏠</i>
-          <span data-i18n="nav_dashboard">Dashboard</span>
-        </button>
-
-        <button class="nav-item" data-tab="calendario" type="button">
-          <i class="nav-icon-emoji" aria-hidden="true">🗓️</i>
-          <span data-i18n="nav_calendario">Calendário</span>
-        </button>
-
-        <button class="nav-item" data-tab="ferramentas" type="button">
-          <i class="nav-icon-emoji" aria-hidden="true">🧰</i>
-          <span data-i18n="nav_ferramentas">Ferramentas</span>
-        </button>
-
-        <div class="nav-grupo" data-grupo="fontes-renda">
+        <div class="nav-grupo" data-grupo="principal">
           <div class="nav-group-label">
-            <span data-i18n="nav_grupo_fontes_renda">Fontes de renda</span>
+            <span data-i18n="nav_grupo_principal">Principal</span>
           </div>
           <div class="nav-group-itens">
+            <button class="nav-item active" data-tab="overview" type="button">
+              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.6"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="1.6"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="1.6"/><rect x="13" y="13" width="7.5" height="7.5" rx="1.6"/></svg></span>
+              <span data-i18n="nav_dashboard">Dashboard</span>
+            </button>
             <button class="nav-item" data-tab="ugc" type="button">
-              <i class="nav-icon-emoji" aria-hidden="true">📢</i>
+              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4a1 1 0 0 0 1 1h2l9 4.5V4.5L6 9H4a1 1 0 0 0-1 1Z"/><path d="M18.5 9a4 4 0 0 1 0 6"/></svg></span>
               <span data-i18n="nav_ugc">UGC/Publicidade</span>
             </button>
-            <button class="nav-item" data-tab="clientes" type="button">
-              <i class="nav-icon-emoji" aria-hidden="true">👥</i>
-              <span data-i18n="nav_clientes">Clientes</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="nav-grupo" data-grupo="criacao">
-          <div class="nav-group-label">
-            <span data-i18n="nav_grupo_criacao">Criação de Conteúdo</span>
-          </div>
-          <div class="nav-group-itens">
             <button class="nav-item" data-tab="planejador" type="button">
-              <i class="nav-icon-emoji" aria-hidden="true">✨</i>
+              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M10 8.3v7.4l6-3.7-6-3.7Z" fill="currentColor" stroke="none"/></svg></span>
               <span data-i18n="nav_planejador">Meus conteúdos</span>
             </button>
-            <button class="nav-item" data-tab="instagram" type="button">
-              <i class="nav-icon-emoji" aria-hidden="true">📸</i>
-              <span data-i18n="nav_instagram">Instagram</span>
+            <button class="nav-item" data-tab="clientes" type="button">
+              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 7.5 12 12l8-4.5L12 3Z"/><path d="M4 7.5v9L12 21l8-4.5v-9"/><path d="M12 12v9"/></svg></span>
+              <span data-i18n="nav_clientes">Meus produtos</span>
+            </button>
+            <button class="nav-item" data-tab="desafios" type="button">
+              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v4a5 5 0 0 1-10 0V4Z"/><path d="M7 5H5a3 3 0 0 0 3 4"/><path d="M17 5h2a3 3 0 0 1-3 4"/><path d="M12 13v3"/><path d="M9 20h6"/><path d="M10 20l.6-3.5h2.8L14 20"/></svg></span>
+              <span data-i18n="nav_desafios">Desafio UGC</span>
             </button>
             <button class="nav-item" data-tab="portfolio" type="button">
-              <i class="nav-icon-emoji" aria-hidden="true">📈</i>
+              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V13"/><path d="M11 20V8"/><path d="M18 20v-5"/><path d="M3 20h18"/></svg></span>
               <span data-i18n="nav_portfolio">Portfólio</span>
+            </button>
+            <button class="nav-item" data-tab="email" type="button">
+              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.2"/><path d="M3.5 7 12 13l8.5-6"/></svg></span>
+              <span data-i18n="nav_email">E-mail</span>
+            </button>
+            <button class="nav-item" data-tab="ferramentas" type="button">
+              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 4.9L4 16.5V20h3.5l5.3-5.3a4 4 0 0 0 4.9-5.4l-2.6 2.6-2.1-.6-.6-2.1 2.6-2.6Z"/></svg></span>
+              <span data-i18n="nav_ferramentas">Ferramentas</span>
             </button>
           </div>
         </div>
 
-        <div class="nav-grupo" data-grupo="gestao">
+        <div class="nav-grupo" data-grupo="erp">
           <div class="nav-group-label">
-            <span data-i18n="nav_grupo_gestao">Gestão</span>
+            <span data-i18n="nav_grupo_erp">ERP</span>
           </div>
           <div class="nav-group-itens">
             <button class="nav-item" data-tab="financeiro" type="button">
-              <i class="nav-icon-emoji" aria-hidden="true">💳</i>
+              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5.5" width="19" height="13" rx="2"/><path d="M2.5 10h19"/><path d="M6 14.5h4"/></svg></span>
               <span data-i18n="nav_financeiro">Financeiro</span>
             </button>
-            <button class="nav-item" data-tab="metas" type="button">
-              <i class="nav-icon-emoji" aria-hidden="true">🎯</i>
-              <span data-i18n="nav_metas">Metas</span>
+            <button class="nav-item" data-tab="calendario" type="button">
+              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.2"/><path d="M3.5 10h17"/><path d="M8 3v4"/><path d="M16 3v4"/></svg></span>
+              <span data-i18n="nav_calendario">Calendário</span>
             </button>
-            <button class="nav-item" data-tab="desafios" type="button">
-              <i class="nav-icon-emoji" aria-hidden="true">🏆</i>
-              <span data-i18n="nav_desafios">Desafio UGC</span>
-            </button>
-            <button class="nav-item" data-tab="email" type="button">
-              <i class="nav-icon-emoji" aria-hidden="true">📥</i>
-              <span data-i18n="nav_email">E-mail</span>
+            <button class="nav-item" data-tab="calculadora-trabalhos" type="button">
+              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="3" width="13" height="18" rx="2.2"/><path d="M8 7.3h8"/><path d="M8.3 12h.01M12 12h.01M15.7 12h.01M8.3 15.7h.01M12 15.7h.01M15.7 15.7h.01"/></svg></span>
+              <span data-i18n="nav_calculadora_trabalhos">Calculadora Trabalhos</span>
             </button>
           </div>
         </div>
@@ -1028,6 +1013,7 @@
             <button class="pl-hub-card" data-pagina="achados" type="button" data-i18n="pl_achados">Achados</button>
             <button class="pl-hub-card" data-pagina="roteiros" type="button">📜 Transcrição de Vídeos</button>
             <button class="pl-hub-card" data-pagina="radar" type="button" data-i18n="pl_radar">Radar de Notícias</button>
+            <button class="pl-hub-card" id="pl-hub-btn-instagram" type="button" data-i18n="nav_instagram">Instagram</button>
           </div>
 
           <div id="pl-pagina-visao-geral" class="pl-pagina">
@@ -1202,7 +1188,6 @@
             <button class="ugc-subnav-btn" data-ugc-pagina="roteiros" type="button" data-i18n="ugc_roteiros">Roteiros</button>
             <button class="ugc-subnav-btn" data-ugc-pagina="prospeccao" type="button" data-i18n="ugc_prospeccao">Prospecção</button>
             <button class="ugc-subnav-btn" data-ugc-pagina="contratos" type="button" data-i18n="ugc_contratos">Contratos</button>
-            <button class="ugc-subnav-btn" data-ugc-pagina="precos" type="button" data-i18n="ugc_precos">Preços</button>
           </div>
 
           <!-- Visão Geral: só leitura, tudo derivado de ugc_trabalhos -->
@@ -1459,7 +1444,11 @@
               <div id="ugc-contratos-lista" class="cal-todas-linhas"></div>
             </div>
           </div>
-          <div id="ugc-pagina-precos" class="ugc-pagina" hidden>
+
+        </section>
+
+        <!-- ---------- Aba: Calculadora Trabalhos (ex-Preços, dentro de UGC/Publi) ---------- -->
+        <section id="panel-calculadora-trabalhos" class="tab-panel" hidden>
             <div class="card ugc-proposta-card">
               <div class="ugc-precos-topo">
                 <div>
@@ -1550,8 +1539,6 @@
               </div>
               <div id="ugc-precos-lista-adicionais" class="ugc-precos-lista"></div>
             </div>
-          </div>
-
         </section>
 
         <!-- ---------- Aba: Ferramentas ---------- -->
@@ -4687,6 +4674,7 @@
       financeiro: 'titulo_financeiro',
       metas: 'titulo_metas',
       desafios: 'titulo_desafios',
+      'calculadora-trabalhos': 'titulo_calculadora_trabalhos',
     };
 
     let configCache = null;
@@ -4714,10 +4702,11 @@
         titulo_planejador: 'Meus conteúdos',
         titulo_radar: 'Radar de Notícias',
         titulo_ugc: 'UGC/Publicidade',
-        titulo_clientes: 'Clientes',
+        titulo_clientes: 'Meus produtos',
         titulo_financeiro: 'Financeiro',
         titulo_metas: 'Metas',
         titulo_desafios: 'Desafio UGC',
+        titulo_calculadora_trabalhos: 'Calculadora Trabalhos',
         priv_esconder: 'Esconder valores e dados financeiros',
         priv_mostrar: 'Mostrar valores e dados financeiros',
         financeiro_pendente: 'Pendente',
@@ -4942,7 +4931,7 @@
         nav_planejador: 'Meus conteúdos',
         nav_radar: 'Radar de Notícias',
         nav_ugc: 'UGC/Publicidade',
-        nav_clientes: 'Clientes',
+        nav_clientes: 'Meus produtos',
         nav_financeiro: 'Financeiro',
         nav_metas: 'Metas',
         nav_desafios: 'Desafio UGC',
@@ -4952,6 +4941,9 @@
 
         nav_grupo_criacao: 'Criação de Conteúdo',
         nav_grupo_gestao: 'Gestão',
+        nav_grupo_principal: 'Principal',
+        nav_grupo_erp: 'ERP',
+        nav_calculadora_trabalhos: 'Calculadora Trabalhos',
         placeholder_em_breve: 'Em breve — essa área ainda está sendo construída.',
 
         dash_pergunta: 'O que eu preciso saber agora?',
@@ -6105,10 +6097,11 @@
         titulo_planejador: 'My content',
         titulo_radar: 'News Radar',
         titulo_ugc: 'UGC/Advertising',
-        titulo_clientes: 'Clients',
+        titulo_clientes: 'My products',
         titulo_financeiro: 'Finance',
         titulo_metas: 'Goals',
         titulo_desafios: 'UGC Challenge',
+        titulo_calculadora_trabalhos: 'Pricing Calculator',
         priv_esconder: 'Hide amounts and financial data',
         priv_mostrar: 'Show amounts and financial data',
         financeiro_pendente: 'Pending',
@@ -6333,7 +6326,7 @@
         nav_planejador: 'My content',
         nav_radar: 'News Radar',
         nav_ugc: 'UGC/Advertising',
-        nav_clientes: 'Clients',
+        nav_clientes: 'My products',
         nav_financeiro: 'Finance',
         nav_metas: 'Goals',
         nav_desafios: 'UGC Challenge',
@@ -6344,6 +6337,9 @@
         // Affiliate
         nav_grupo_criacao: 'Content Creation',
         nav_grupo_gestao: 'Management',
+        nav_grupo_principal: 'Main',
+        nav_grupo_erp: 'ERP',
+        nav_calculadora_trabalhos: 'Pricing Calculator',
         placeholder_em_breve: 'Coming soon — this area is still being built.',
 
         dash_pergunta: 'What do I need to know right now?',
@@ -7877,9 +7873,12 @@
       document.getElementById('btn-instagram-desconectar').addEventListener('click', desconectarInstagram);
 
       // Planejador de Conteúdo
-      document.querySelectorAll('.pl-hub-card').forEach((btn) => {
+      document.querySelectorAll('.pl-hub-card[data-pagina]').forEach((btn) => {
         btn.addEventListener('click', () => abrirPaginaPlanejador(btn.dataset.pagina));
       });
+      // Instagram vive na própria aba (não é uma página do hub): o botão
+      // aqui dentro só leva pra lá, sem entrar no abrirPaginaPlanejador.
+      document.getElementById('pl-hub-btn-instagram').addEventListener('click', () => trocarAba('instagram'));
       document.getElementById('pl-modal-fechar').addEventListener('click', fecharModalIdeia);
       document.getElementById('pl-modal-salvar').addEventListener('click', salvarModalIdeia);
       document.getElementById('pl-modal-excluir').addEventListener('click', excluirModalIdeia);
@@ -9772,12 +9771,9 @@
       if (semCapa) return;
       document.getElementById('pg-capa-titulo').textContent = tr(TITULOS_ABA[aba]);
       const itemMenu = document.querySelector('.nav-item[data-tab="' + aba + '"]');
-      const emojiMenu = itemMenu && itemMenu.querySelector('.nav-icon-emoji');
-      const imgMenu = itemMenu && itemMenu.querySelector('img');
-      document.getElementById('pg-capa-icone-emoji').textContent = emojiMenu ? emojiMenu.textContent : '';
-      const imgCapa = document.getElementById('pg-capa-icone-img');
-      imgCapa.hidden = !!emojiMenu || !imgMenu;
-      imgCapa.src = !emojiMenu && imgMenu ? imgMenu.getAttribute('src') : '';
+      const iconeMenu = itemMenu && itemMenu.querySelector('.nav-icon');
+      document.getElementById('pg-capa-icone-emoji').innerHTML = iconeMenu ? iconeMenu.innerHTML : '';
+      document.getElementById('pg-capa-icone-img').hidden = true;
 
       const no = CAPA_MENUS[aba] ? document.querySelector('#panel-' + aba + ' ' + CAPA_MENUS[aba]) : null;
       if (no) {

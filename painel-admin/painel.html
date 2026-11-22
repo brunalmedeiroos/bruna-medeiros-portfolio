@@ -16,9 +16,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=20261122b">
+<link rel="stylesheet" href="css/style.css?v=20261122c">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261122b">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261122c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -118,10 +118,6 @@
             <button class="nav-item" id="btn-abrir-perfil" type="button">
               <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.3" r="3.4"/><path d="M5 20c0-3.6 3.1-6.2 7-6.2s7 2.6 7 6.2"/></svg></span>
               <span data-i18n="nav_perfil">Perfil</span>
-            </button>
-            <button class="nav-item" id="btn-recolher-sidebar" type="button">
-              <span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6l-6 6 6 6"/><path d="M18 6l-6 6 6 6"/></svg></span>
-              <span data-i18n="nav_recolher">Recolher</span>
             </button>
             <div class="nav-divisor nav-divisor-conta"></div>
             <button class="nav-item nav-item-sair" id="btn-sair-sidebar" type="button">
@@ -4723,7 +4719,7 @@
         titulo_financeiro: 'Financeiro',
         titulo_metas: 'Metas',
         titulo_desafios: 'Desafio UGC',
-        titulo_calculadora_trabalhos: 'Calculadora Trabalhos',
+        titulo_calculadora_trabalhos: 'Precificação',
         priv_esconder: 'Esconder valores e dados financeiros',
         priv_mostrar: 'Mostrar valores e dados financeiros',
         financeiro_pendente: 'Pendente',
@@ -4961,9 +4957,8 @@
         nav_grupo_principal: 'Principal',
         nav_grupo_erp: 'ERP',
         nav_grupo_conta: 'Conta',
-        nav_calculadora_trabalhos: 'Calculadora Trabalhos',
+        nav_calculadora_trabalhos: 'Precificação',
         nav_perfil: 'Perfil',
-        nav_recolher: 'Recolher',
         nav_sair: 'Sair',
         placeholder_em_breve: 'Em breve — essa área ainda está sendo construída.',
 
@@ -6121,7 +6116,7 @@
         titulo_financeiro: 'Finance',
         titulo_metas: 'Goals',
         titulo_desafios: 'UGC Challenge',
-        titulo_calculadora_trabalhos: 'Pricing Calculator',
+        titulo_calculadora_trabalhos: 'Pricing',
         priv_esconder: 'Hide amounts and financial data',
         priv_mostrar: 'Show amounts and financial data',
         financeiro_pendente: 'Pending',
@@ -6360,9 +6355,8 @@
         nav_grupo_principal: 'Main',
         nav_grupo_erp: 'ERP',
         nav_grupo_conta: 'Account',
-        nav_calculadora_trabalhos: 'Pricing Calculator',
+        nav_calculadora_trabalhos: 'Pricing',
         nav_perfil: 'Profile',
-        nav_recolher: 'Collapse',
         nav_sair: 'Log out',
         placeholder_em_breve: 'Coming soon — this area is still being built.',
 
@@ -7816,11 +7810,6 @@
       document.getElementById('config-inicio-semana').addEventListener('change', (e) => salvarConfiguracao('inicio_semana', e.target.value));
       document.getElementById('config-btn-sair').addEventListener('click', fazerLogoutComConfirmacao);
       document.getElementById('btn-sair-sidebar').addEventListener('click', fazerLogoutComConfirmacao);
-      // "Recolher" do grupo Conta aciona o mesmo colapso do botão de seta
-      // no topo da sidebar (ver configurarColapsarSidebar).
-      document.getElementById('btn-recolher-sidebar').addEventListener('click', () => {
-        document.getElementById('btn-colapsar-sidebar').click();
-      });
       document.getElementById('config-salvar-nome').addEventListener('click', salvarNomePerfil);
       document.getElementById('config-salvar-senha').addEventListener('click', salvarSenhaPerfil);
 

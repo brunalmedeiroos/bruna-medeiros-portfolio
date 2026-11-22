@@ -7532,10 +7532,9 @@
    da página, com o menu interno da página dentro do próprio card.
    ========================================================================== */
 .painel-body .pg-capa {
-  background: linear-gradient(135deg, var(--coral) 0%, var(--coral-hover) 100%);
-  border-radius: var(--raio-lg);
-  padding: 22px 28px;
-  color: var(--branco);
+  background: transparent;
+  padding: 0;
+  color: var(--grafite);
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -7556,7 +7555,8 @@
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.22);
+  background: var(--coral);
+  color: var(--branco);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -7575,7 +7575,7 @@
   font-weight: 700;
   line-height: 1.15;
   margin: 0;
-  color: var(--branco);
+  color: var(--grafite);
 }
 
 .painel-body .pg-capa-nav .ugc-subnav,
@@ -7603,13 +7603,13 @@
 .painel-body .pg-capa-nav .metas-subnav-btn,
 .painel-body .pg-capa-nav .clientes-subnav-btn,
 .painel-body .pg-capa-nav .cal-filtro-btn {
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  border: 1px solid rgba(var(--grafite-rgb), 0.14);
   border-radius: 999px;
   padding: 7px 16px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--branco);
+  color: var(--texto-suave);
 }
 
 .painel-body .pg-capa-nav .ugc-subnav-btn:hover,
@@ -7618,8 +7618,7 @@
 .painel-body .pg-capa-nav .metas-subnav-btn:hover,
 .painel-body .pg-capa-nav .clientes-subnav-btn:hover,
 .painel-body .pg-capa-nav .cal-filtro-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  color: var(--branco);
+  color: var(--grafite);
 }
 
 .painel-body .pg-capa-nav .ugc-subnav-btn.ativo,
@@ -7628,9 +7627,9 @@
 .painel-body .pg-capa-nav .metas-subnav-btn.ativo,
 .painel-body .pg-capa-nav .clientes-subnav-btn.ativo,
 .painel-body .pg-capa-nav .cal-filtro-btn.ativo {
-  background: var(--branco);
-  border-color: var(--branco);
-  color: var(--coral-hover);
+  background: var(--coral);
+  border-color: var(--coral);
+  color: var(--branco);
 }
 
 @media (max-width: 700px) {
@@ -7678,27 +7677,26 @@
 }
 
 .painel-body .pg-capa-nav .pl-hub-card {
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  border: 1px solid rgba(var(--grafite-rgb), 0.14);
   border-radius: 999px;
   padding: 7px 16px;
   font-size: 13px;
   font-weight: 600;
   font-family: var(--fonte-corpo);
-  color: var(--branco);
+  color: var(--texto-suave);
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
 }
 
 .painel-body .pg-capa-nav .pl-hub-card:hover {
-  background: rgba(255, 255, 255, 0.3);
-  color: var(--branco);
+  color: var(--grafite);
 }
 
 .painel-body .pg-capa-nav .pl-hub-card.ativo {
-  background: var(--branco);
-  border-color: var(--branco);
-  color: var(--coral-hover);
+  background: var(--coral);
+  border-color: var(--coral);
+  color: var(--branco);
 }
 
 /* ---- Abordagem por marca (Base de contatos) ---- */
@@ -7889,13 +7887,11 @@
    e Nota rápida.
    ========================================================================== */
 .painel-body .dash-cabecalho .saudacao {
-  color: var(--branco);
   font-size: 34px;
   line-height: 1.15;
 }
 
 .painel-body .dash-cabecalho .dash-data {
-  color: rgba(255, 255, 255, 0.9);
   font-size: 15px;
 }
 
@@ -10670,16 +10666,9 @@
   box-shadow: inset 0 0 0 1px rgba(var(--grafite-rgb), 0.15);
 }
 
-/* ---- Menu lateral: setinha branca dentro da aba azul; fechado, some por completo ---- */
+/* ---- Menu lateral: setinha ao lado do "Bru | Painel"; fechado, some por completo ---- */
 
 @media (min-width: 769px) {
-  /* Aberto: quem colapsa o menu agora é a linha "Recolher" dentro de
-     Conta — a setinha só reaparece (fixa, flutuando) quando o menu já
-     está fechado, pra dar um jeito de reabrir. */
-  .painel-body .sidebar:not(.colapsada) .btn-colapsar-sidebar {
-    display: none;
-  }
-
   /* Fechado: o menu some por completo e sobra só a setinha, numa abinha azul na borda da tela. */
   .painel-body .sidebar.colapsada {
     width: 0;
@@ -13449,23 +13438,23 @@
 }
 
 .painel-body .pg-capa-nav .dg-subnav-btn {
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
+  border: 1px solid rgba(var(--grafite-rgb), 0.14);
   border-radius: 999px;
   padding: 7px 16px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--branco);
+  color: var(--texto-suave);
 }
 
 .painel-body .pg-capa-nav .dg-subnav-btn:hover {
-  background: rgba(255, 255, 255, 0.28);
+  color: var(--grafite);
 }
 
 .painel-body .pg-capa-nav .dg-subnav-btn.ativo {
-  background: var(--branco);
-  border-color: var(--branco);
-  color: var(--grafite);
+  background: var(--coral);
+  border-color: var(--coral);
+  color: var(--branco);
 }
 
 .painel-body .dg-conteudo {
@@ -14134,16 +14123,10 @@
   color: var(--branco);
 }
 
-.painel-body .pg-capa-nav .ugc-olho {
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: var(--branco);
-}
-
 .painel-body.modo-privado .pg-capa-nav .ugc-olho {
-  background: var(--branco);
-  border-color: var(--branco);
-  color: var(--grafite);
+  background: var(--grafite);
+  border-color: var(--grafite);
+  color: var(--branco);
 }
 
 .painel-body .valor-sensivel {

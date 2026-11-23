@@ -511,6 +511,15 @@ verify_jwt = false
 import_map = "./functions/radar-atualizar/deno.json"
 entrypoint = "./functions/radar-atualizar/index.ts"
 
+# Mesmo esquema do radar-atualizar acima: aceita tanto o segredo de cron
+# quanto a sessão da usuária logada (checado no próprio código da função),
+# por isso o gateway não pode exigir um JWT válido sozinho.
+[functions.planejamento-semanal]
+enabled = true
+verify_jwt = false
+import_map = "./functions/planejamento-semanal/deno.json"
+entrypoint = "./functions/planejamento-semanal/index.ts"
+
 # Substitui a antiga instagram-automacao-processar (polling a cada 10
 # min): recebe comentários/mensagens em tempo real. Precisa ficar
 # pública (verify_jwt = false) porque é a própria Meta que chama.

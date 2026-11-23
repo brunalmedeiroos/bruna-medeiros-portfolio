@@ -124,7 +124,13 @@ export async function obterAccessTokenValidoTiktok(supabaseAdmin: any) {
     .eq("id", 1)
     .maybeSingle();
 
-  if (error) throw new Error(`Erro lendo tiktok_tokens: ${error.message}`);
+  if (error) {
+    // Código 42P01 = tabela não existe ainda (o SQL de
+    // painel-admin/tiktok-oauth-tabelas.sql não foi rodado) — trata como
+    // "não conectado" em vez de estourar um erro feio no painel.
+    if (error.code === "42P01") return null;
+    throw new Error(`Erro lendo tiktok_tokens: ${error.message}`);
+  }
   if (!linha) return null;
 
   const accessTokenAtual = (await lerSegredo(supabaseAdmin, linha.access_token)) as string;

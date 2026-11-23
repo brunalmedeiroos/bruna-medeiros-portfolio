@@ -11624,9 +11624,9 @@
 
 .painel-body .ach-lista {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
-  gap: 14px;
-  align-items: start;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  align-items: stretch;
 }
 
 .painel-body .ach-lista > .texto-vazio {
@@ -11635,25 +11635,28 @@
 
 .painel-body .ach-card {
   display: flex;
-  gap: 12px;
-  padding: 12px;
+  flex-direction: column;
   background: var(--branco);
   border: 1px solid var(--borda);
   border-radius: 18px;
   box-shadow: var(--sombra);
+  overflow: hidden;
+}
+
+.painel-body .ach-card-topo {
+  position: relative;
 }
 
 .painel-body .ach-thumb {
   position: relative;
   display: flex;
-  flex-shrink: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   align-items: center;
   justify-content: center;
-  width: 84px;
-  height: 84px;
   padding: 0;
   border: none;
-  border-radius: 14px;
+  border-radius: 0;
   background: linear-gradient(160deg, #d5e3ef, #9cbbd8);
   overflow: hidden;
   text-decoration: none;
@@ -11675,22 +11678,60 @@
 }
 
 .painel-body .ach-thumb-emoji {
-  font-size: 30px;
+  font-size: 40px;
 }
 
 .painel-body .ach-thumb-play {
   position: absolute;
-  right: 5px;
-  bottom: 5px;
+  right: 8px;
+  bottom: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.9);
   color: var(--grafite);
-  font-size: 10px;
+  font-size: 11px;
+}
+
+/* Selo da fonte (ex: Instagram) no canto superior esquerdo da imagem. */
+.painel-body .ach-card-selo {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  font-size: 13px;
+}
+
+/* Coraçãozinho de favoritar no canto superior direito da imagem. */
+.painel-body .ach-card-favorito {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.4);
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.painel-body .ach-card-favorito:hover {
+  transform: scale(1.1);
 }
 
 .painel-body .ach-corpo {
@@ -11699,6 +11740,7 @@
   flex-direction: column;
   gap: 6px;
   min-width: 0;
+  padding: 12px;
 }
 
 .painel-body .ach-titulo {
@@ -11735,13 +11777,6 @@
   text-decoration: none;
 }
 
-.painel-body .ach-chips-sep {
-  align-self: stretch;
-  width: 1px;
-  margin: 2px 4px;
-  background: var(--borda);
-}
-
 .painel-body .rt-link-achados {
   padding: 0;
   border: none;
@@ -11757,13 +11792,6 @@
 .painel-body .rt-m-guardar {
   padding: 4px 10px;
   font-size: 11.5px;
-}
-
-@media (max-width: 480px) {
-  .painel-body .ach-thumb {
-    width: 72px;
-    height: 72px;
-  }
 }
 
 .painel-body .ach-etq {

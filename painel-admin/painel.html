@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20261123c">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261123b">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261123c">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -4288,12 +4288,16 @@
     let achImgsContador = 0;
     let achViewerLista = [];
     let achViewerIndice = 0;
-    let achOrigem = ''; // '', 'ideia' (sem link) ou 'ref' (com link)
     let achBusca = '';
     let achColunasOk = null; // as colunas novas existem (achados-referencias.sql já rodado); null = ainda não conferi
+    let achFavoritoOk = null; // a coluna favorito existe (achados-favorito.sql já rodado); null = ainda não conferi
     let achCategoriaModal = 'Gancho';
     let dataAgendarAtual = null; // data (ISO) do dia clicado no "+" do calendário do cronograma
     const ACHADOS_COLUNAS = ['Gancho', 'Frase', 'Formato', 'Carrossel', 'Música', 'CTA', 'Avulso'];
+    // Categorias oferecidas pra achados novos (chips de filtro e modal de criar/editar).
+    // Avulso saiu da lista — achados antigos com essa categoria continuam existindo e
+    // aparecem em "Todos", só não tem mais chip próprio nem é mais oferecida pra escolher.
+    const ACH_CATEGORIAS_ATIVAS = ['Gancho', 'Frase', 'Formato', 'Carrossel', 'Música', 'CTA'];
     // Nome da coluna é gravado em achados.coluna em português (é o "código");
     // aqui só traduz o rótulo mostrado, sem tocar no valor salvo.
     const ACHADOS_COLUNA_CHAVE = {
@@ -5235,7 +5239,7 @@
         pl_banco_ideias: '💡 Banco de ideias',
         pl_banco_ideias_teste: '💡 Roteiros',
         pl_banco_desc: 'Minhas ideias organizadas por pilar de conteúdo, com espaço pro roteiro.',
-        pl_achados: '🔍 Achados',
+        pl_achados: '🔍 Banco de Achados',
         pl_radar: '🗞️ Radar de Notícias',
         pl_achados_desc: 'Ganchos, frases, formatos, músicas e CTAs pra virarem ideia depois.',
         pl_visao_geral: 'Visão geral',
@@ -6598,7 +6602,7 @@
         pl_banco_ideias: '💡 Idea bank',
         pl_banco_ideias_teste: '💡 Scripts',
         pl_banco_desc: 'My ideas organized by content pillar, with room for the script.',
-        pl_achados: '🔍 Finds',
+        pl_achados: '🔍 Finds Bank',
         pl_radar: '🗞️ News Radar',
         pl_achados_desc: 'Hooks, phrases, formats, music, and CTAs to turn into an idea later.',
         pl_visao_geral: 'Overview',
@@ -7763,8 +7767,8 @@
       document.getElementById('ach-chips').addEventListener('click', (e) => {
         const b = e.target.closest('.rt-chip');
         if (!b) return;
-        if (b.dataset.origem) achOrigem = achOrigem === b.dataset.origem ? '' : b.dataset.origem;
-        else achFiltro = b.dataset.filtro;
+        const alvo = b.dataset.filtro;
+        achFiltro = (alvo === 'todos' || achFiltro !== alvo) ? alvo : 'todos';
         renderizarAchados();
       });
       document.getElementById('ach-lista').addEventListener('click', (e) => {
@@ -8936,7 +8940,6 @@
       } else if (acao === 'achados') {
         achBusca = String(roteiro.url || '').replace(/^https?:\/\/(www\.)?/, '');
         achFiltro = 'todos';
-        achOrigem = '';
         document.getElementById('ach-busca').value = achBusca;
         abrirPaginaPlanejador('achados');
       } else if (acao === 'retentar') {
@@ -15052,6 +15055,26 @@
       return achColunasOk;
     }
 
+    // A coluna favorito vem do achados-favorito.sql.
+    async function achVerFavorito() {
+      if (achFavoritoOk !== null) return achFavoritoOk;
+      const { error } = await Auth.sb.from('planejador_achados').select('favorito').limit(1);
+      achFavoritoOk = !error;
+      return achFavoritoOk;
+    }
+
+    async function achAlternarFavorito(a) {
+      const novo = !a.favorito;
+      a.favorito = novo;
+      renderizarAchados();
+      const { error } = await Auth.sb.from('planejador_achados').update({ favorito: novo }).eq('id', a.id);
+      if (error) {
+        a.favorito = !novo;
+        renderizarAchados();
+        console.error('Erro ao favoritar achado:', error);
+      }
+    }
+
     // A chave da Supadata normalmente só é lida ao abrir a Transcrição de Vídeos; aqui ela é lida na hora.
     async function rtGarantirChave() {
       if (rtChave) return true;
@@ -15090,10 +15113,9 @@
       const busca = rtNorm(achBusca).trim();
       return achadosCache
         .filter((a) => {
-          if (achFiltro !== 'todos' && a.coluna !== achFiltro) return false;
-          if (achOrigem === 'ideia' && (a.url || achTemImagens(a))) return false;
-          if (achOrigem === 'ref' && !a.url) return false;
-          if (achOrigem === 'post' && !achEhPost(a)) return false;
+          if (achFiltro === 'favoritos' && !a.favorito) return false;
+          if (achFiltro === 'ideia' && (a.url || achTemImagens(a))) return false;
+          if (ACH_CATEGORIAS_ATIVAS.includes(achFiltro) && a.coluna !== achFiltro) return false;
           if (!busca) return true;
           const f = achFonte(a);
           return rtNorm([a.conteudo, a.observacoes, a.como_usar, a.como_adaptar, a.url, f && f.perfil].join(' ')).includes(busca);
@@ -15105,19 +15127,16 @@
       const lista = document.getElementById('ach-lista');
       if (!lista) return;
       if (achColunasOk === null) achVerColunas().then(renderizarAchados);
+      if (achFavoritoOk === null) achVerFavorito().then(renderizarAchados);
       document.getElementById('ach-btn-ganchos').hidden = achFiltro !== 'Gancho';
       document.getElementById('ach-aviso-colunas').hidden = achColunasOk !== false;
 
-      const chip = (atributo, chave, rotulo, n, ativo) => `<button type="button" class="rt-chip${ativo ? ' ativo' : ''}" data-${atributo}="${escapeHtml(chave)}">${escapeHtml(rotulo)} (${n})</button>`;
-      const categorias = [chip('filtro', 'todos', 'Todos', achadosCache.length, achFiltro === 'todos')].concat(
-        ACHADOS_COLUNAS.map((c) => chip('filtro', c, traduzirColunaAchado(c), achadosCache.filter((a) => a.coluna === c).length, achFiltro === c))
-      );
-      const origens = [
-        chip('origem', 'ideia', '💡 Minhas ideias', achadosCache.filter((a) => !a.url && !achTemImagens(a)).length, achOrigem === 'ideia'),
-        chip('origem', 'ref', '🔗 Referências', achadosCache.filter((a) => !!a.url).length, achOrigem === 'ref'),
-        chip('origem', 'post', '🖼️ Posts', achadosCache.filter((a) => achEhPost(a)).length, achOrigem === 'post'),
-      ];
-      document.getElementById('ach-chips').innerHTML = categorias.join('') + '<span class="ach-chips-sep" aria-hidden="true"></span>' + origens.join('');
+      const chip = (chave, rotulo, n, ativo) => `<button type="button" class="rt-chip${ativo ? ' ativo' : ''}" data-filtro="${escapeHtml(chave)}">${escapeHtml(rotulo)} (${n})</button>`;
+      const chips = [chip('todos', 'Todos', achadosCache.length, achFiltro === 'todos')]
+        .concat(achFavoritoOk ? [chip('favoritos', '❤️ Favoritos', achadosCache.filter((a) => a.favorito).length, achFiltro === 'favoritos')] : [])
+        .concat(ACH_CATEGORIAS_ATIVAS.map((c) => chip(c, `${ACH_EMOJI[c]} ${traduzirColunaAchado(c)}`, achadosCache.filter((a) => a.coluna === c).length, achFiltro === c)))
+        .concat([chip('ideia', '💡 Minhas ideias', achadosCache.filter((a) => !a.url && !achTemImagens(a)).length, achFiltro === 'ideia')]);
+      document.getElementById('ach-chips').innerHTML = chips.join('');
 
       if (achadosCache.length === 0) {
         lista.innerHTML = '<p class="texto-vazio">Nenhuma referência ainda. Clique em + Nova referência pra guardar a primeira.</p>';
@@ -15472,8 +15491,16 @@
       botoes.push('<button type="button" class="cal-btn" data-a="editar">✏️ Editar</button>');
 
       const origem = f ? `<span class="rt-fonte">${f.emoji} ${escapeHtml(f.nome)}</span>` : temImagens ? '' : '<span class="rt-fonte">💡 Minha ideia</span>';
+      const selo = f ? `<span class="ach-card-selo" aria-hidden="true">${f.emoji}</span>` : '';
+      const favoritoBtn = achFavoritoOk
+        ? `<button type="button" class="ach-card-favorito${a.favorito ? ' ativo' : ''}" data-a="favorito" aria-label="${a.favorito ? 'Tirar dos favoritos' : 'Favoritar'}" title="${a.favorito ? 'Tirar dos favoritos' : 'Favoritar'}">${a.favorito ? '❤️' : '🤍'}</button>`
+        : '';
       return `<article class="ach-card" data-id="${escapeHtml(a.id)}">
-        ${thumb}
+        <div class="ach-card-topo">
+          ${thumb}
+          ${selo}
+          ${favoritoBtn}
+        </div>
         <div class="ach-corpo">
           <h4 class="ach-titulo${mostraSelo ? '' : ' ach-titulo-longo'}">${escapeHtml(a.conteudo)}</h4>
           <div class="rt-etiquetas">
@@ -15494,7 +15521,9 @@
       if (!a) return;
       const acao = botao.dataset.a;
       const f = achFonte(a);
-      if (acao === 'imagens') {
+      if (acao === 'favorito') {
+        achAlternarFavorito(a);
+      } else if (acao === 'imagens') {
         achAbrirImagens(a, 0);
       } else if (acao === 'ver') {
         rtAbrirVideo({ url: a.url, titulo: a.conteudo, fonte: f ? f.chave : 'manual', perfil: f ? f.perfil : null });
@@ -15777,7 +15806,10 @@
     // ---- modal: criar e editar uma referência ----
 
     function achDesenharCategorias() {
-      document.getElementById('pl-modal-achado-categorias').innerHTML = ACHADOS_COLUNAS.map(
+      // Se o achado sendo editado já tem uma categoria que saiu da lista ativa
+      // (ex: Avulso), ela continua aparecendo aqui (só não é mais o padrão pra achado novo).
+      const categorias = ACH_CATEGORIAS_ATIVAS.includes(achCategoriaModal) ? ACH_CATEGORIAS_ATIVAS : ACH_CATEGORIAS_ATIVAS.concat(achCategoriaModal);
+      document.getElementById('pl-modal-achado-categorias').innerHTML = categorias.map(
         (c) => `<button type="button" class="rt-chip${achCategoriaModal === c ? ' ativo' : ''}" data-cat="${escapeHtml(c)}">${ACH_EMOJI[c]} ${escapeHtml(traduzirColunaAchado(c))}</button>`
       ).join('');
     }
@@ -15790,7 +15822,7 @@
       achadoAbertoId = achado ? achado.id : null;
       achadoNovo = !achado;
       // vindo de um vídeo da transcrição, a categoria fica sem escolha: é ela que classifica
-      achCategoriaModal = achado ? achado.coluna : preencher ? '' : ACHADOS_COLUNAS.includes(achFiltro) ? achFiltro : 'Gancho';
+      achCategoriaModal = achado ? achado.coluna : preencher ? '' : ACH_CATEGORIAS_ATIVAS.includes(achFiltro) ? achFiltro : 'Gancho';
       achPreenchido = preencher || null;
       document.getElementById('pl-modal-achado-coluna').textContent = achado ? 'Editar referência' : preencher ? 'Enviar para os Achados' : 'Nova referência';
       document.getElementById('pl-modal-achado-url').value = (achado && achado.url) || (preencher && preencher.url) || '';

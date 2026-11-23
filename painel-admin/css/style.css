@@ -424,20 +424,24 @@ input:focus {
 .main {
   flex: 1;
   min-width: 0;
-  padding: 32px 40px 60px;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Barra do topo "costurada" com a sidebar: mesmo branco, mesma borda,
+   ocupando a largura inteira — não é um cartão flutuando sobre o fundo. */
 .topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 16px;
-  margin-bottom: 28px;
-  padding: 14px 20px;
+  padding: 16px 40px;
   background: var(--branco);
-  border-radius: var(--raio-sm);
-  box-shadow: var(--sombra);
+  border-bottom: 1px solid var(--borda);
+  position: sticky;
+  top: 0;
+  z-index: 15;
 }
 
 .topbar h1 {
@@ -481,6 +485,7 @@ input:focus {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  padding: 32px 40px 60px;
 }
 
 .tab-panel {
@@ -946,8 +951,12 @@ input:focus {
     display: none;
   }
 
-  .main {
+  .conteudo {
     padding: 24px 16px 40px;
+  }
+
+  .topbar {
+    padding: 14px 16px;
   }
 
   .cards-numeros {

@@ -351,6 +351,23 @@ section{ position:relative; }
   width:100%; aspect-ratio: 4 / 5; object-fit:cover; object-position:center 82%; display:block;
   border-radius:4px; box-shadow: 0 24px 50px rgba(59,74,107,0.28);
 }
+/* Sobre: fotos passando em scroll contínuo (vertical), em vez de uma foto fixa só */
+.about-photo-scroll{ position:relative; height:620px; overflow:hidden; }
+.about-photo-scroll::before, .about-photo-scroll::after{
+  content:""; position:absolute; left:0; right:0; height:90px; z-index:2; pointer-events:none;
+}
+.about-photo-scroll::before{ top:0; background: linear-gradient(var(--blue-dark), transparent); }
+.about-photo-scroll::after{ bottom:0; background: linear-gradient(transparent, var(--blue-dark)); }
+.about-scroll-track{
+  display:flex; flex-direction:column; gap:22px; width:100%;
+  animation: about-scroll-v 34s linear infinite;
+}
+.about-scroll-track img{
+  width:100%; aspect-ratio: 4/5; object-fit:cover; border-radius:18px;
+  box-shadow: 0 20px 40px rgba(59,74,107,0.3);
+}
+@keyframes about-scroll-v{ from{ transform: translateY(0); } to{ transform: translateY(-50%); } }
+@media (prefers-reduced-motion: reduce){ .about-scroll-track{ animation:none; } }
 
 /* =====================================================================
    03 — FAIXA DE MARCAS — fundo amarelo manteiga
@@ -914,8 +931,18 @@ a.info-value:hover{ text-decoration:underline; }
         <h2 class="about-title" id="notesTitle"><span class="hl-box"></span><span class="hl-cursor"></span><span class="hl-text" data-texto="sobre_titulo" data-destaque="script" data-pt-html="Oii!! sou a &lt;span class=&quot;script&quot;&gt;Bruna&lt;/span&gt;," data-en-html="Hii!! I'm &lt;span class=&quot;script&quot;&gt;Bruna&lt;/span&gt;,">Oii!! sou a <span class="script">Bruna</span>,</span></h2>
         <p id="notesText" data-texto="sobre_texto" data-destaque="notes-highlight" data-pt-html="tenho 20 anos, criadora de conteúdo. Sempre fui apaixonada pelo audiovisual e meu olhar está em transformar produtos em experiências reais. Por isso, antes de criar qualquer conteúdo, penso em &lt;span class=&quot;notes-highlight&quot;&gt;como uma marca pode se conectar às pessoas de forma natural&lt;/span&gt;, respeitando sua comunicação e criando histórias que façam sentido. Hoje trabalho com marcas de diferentes nichos, desenvolvendo conteúdos estratégicos, autênticos e pensados para &lt;span class=&quot;notes-highlight&quot;&gt;gerar identificação e resultados&lt;/span&gt;." data-en-html="I'm 20 years old, a content creator. I've always been passionate about audiovisual work, and my focus is turning products into real experiences. That's why, before creating any content, I think about &lt;span class=&quot;notes-highlight&quot;&gt;how a brand can connect with people naturally&lt;/span&gt;, respecting their voice and telling stories that make sense. Today I work with brands across different niches, developing strategic, authentic content built to &lt;span class=&quot;notes-highlight&quot;&gt;create identification and results&lt;/span&gt;.">tenho 20 anos, criadora de conteúdo. Sempre fui apaixonada pelo audiovisual e meu olhar está em transformar produtos em experiências reais. Por isso, antes de criar qualquer conteúdo, penso em <span class="notes-highlight">como uma marca pode se conectar às pessoas de forma natural</span>, respeitando sua comunicação e criando histórias que façam sentido. Hoje trabalho com marcas de diferentes nichos, desenvolvendo conteúdos estratégicos, autênticos e pensados para <span class="notes-highlight">gerar identificação e resultados</span>.</p>
       </div>
-      <div class="about-photo">
-        <img data-foto="sobre" src="fotos/sobre.jpg" alt="Bruna Medeiros">
+      <div class="about-photo about-photo-scroll">
+        <div class="about-scroll-track">
+          <img src="fotos/sobre-scroll-1.jpg" alt="Bruna Medeiros">
+          <img src="fotos/sobre-scroll-2.jpg" alt="Bruna Medeiros">
+          <img src="fotos/sobre-scroll-3.jpg" alt="Bruna Medeiros">
+          <img src="fotos/sobre-scroll-4.jpg" alt="Bruna Medeiros">
+          <!-- duplicado (as mesmas 4 de novo) pra fechar o loop contínuo do scroll -->
+          <img src="fotos/sobre-scroll-1.jpg" alt="" aria-hidden="true">
+          <img src="fotos/sobre-scroll-2.jpg" alt="" aria-hidden="true">
+          <img src="fotos/sobre-scroll-3.jpg" alt="" aria-hidden="true">
+          <img src="fotos/sobre-scroll-4.jpg" alt="" aria-hidden="true">
+        </div>
       </div>
     </div>
   </div>

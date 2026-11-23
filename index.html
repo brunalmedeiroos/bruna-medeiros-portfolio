@@ -86,12 +86,11 @@
 *{ box-sizing: border-box; margin:0; padding:0; }
 html{ scroll-behavior: smooth; }
 body{
-  cursor: url('icons/cursor.png') 32 32, auto;
   font-family: var(--font-body);
   color: var(--blue-dark);
   background: var(--offwhite);
   overflow-x: hidden;
-  cursor: default;
+  cursor: url('icons/cursor.png') 32 32, auto;
 }
 /* uma única camada de fundo fixa atrás do site inteiro — em vez de repetir a mesma
    imagem com background-attachment:fixed em cada seção (o que, dependendo do navegador,
@@ -230,6 +229,13 @@ section{ position:relative; }
 }
 .nav-tab.is-cta:hover{ background: #fff; color: var(--blue-dark); }
 
+.midiakit-btn{
+  flex-shrink:0; display:flex; align-items:center; font-weight:800; font-size:.8rem;
+  letter-spacing:.03em; color: var(--offwhite); border:1.5px solid var(--offwhite);
+  background:transparent; padding:8px 16px; border-radius:999px; text-decoration:none;
+  white-space:nowrap; transition: background .2s ease, color .2s ease;
+}
+.midiakit-btn:hover{ background: var(--offwhite); color: var(--blue-dark); }
 .lang-toggle{
   flex-shrink:0; margin-left:6px; display:flex; align-items:center; gap:2px;
   border:1.5px solid var(--offwhite); background:transparent;
@@ -652,12 +658,9 @@ section{ position:relative; }
 #feedbacks .wrap{ max-width:1280px; }
 
 /* =====================================================================
-   MÉTRICAS DO MEU PERFIL — TikTok e Instagram lado a lado (últimos 30 dias)
+   Métricas (TikTok/Instagram) — classes mantidas pro Mídia Kit reaproveitar;
+   a seção #metricas em si saiu do portfólio (virou o Mídia Kit, à parte).
 ===================================================================== */
-#metricas{ padding: 100px 0 110px; }
-#metricas .wrap{ max-width:1280px; }
-#metricas .services-head{ margin-bottom:56px; }
-#metricas .services-sub{ color: var(--offwhite); }
 .metricas-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:34px; align-items:stretch; }
 .metrica-card{
   background:#fff; border-radius:26px; padding:38px 38px 34px;
@@ -890,9 +893,9 @@ a.info-value:hover{ text-decoration:underline; }
       <a href="#servicos" class="nav-tab" data-texto="menu_servicos" data-pt="Serviços" data-en="Services">Serviços</a>
       <a href="#resultados" class="nav-tab" data-pt="Resultados" data-en="Results" style="display:none">Resultados</a>
       <a href="#feedbacks" class="nav-tab" data-texto="menu_feedbacks" data-pt="Feedbacks" data-en="Feedback">Feedbacks</a>
-      <a href="#metricas" class="nav-tab" data-pt="Métricas" data-en="Metrics">Métricas</a>
       <a href="#contato" class="nav-tab is-cta" data-texto="menu_proposta" data-pt="Solicitar proposta" data-en="Request a proposal">Solicitar proposta</a>
     </nav>
+    <a href="/midiakit/" class="midiakit-btn" data-pt="Mídia Kit" data-en="Media Kit">Mídia Kit</a>
     <div class="lang-toggle" id="langToggle" role="group" aria-label="Switch language / Mudar idioma">
       <button type="button" class="lang-option" data-lang="pt">PT</button>
       <button type="button" class="lang-option" data-lang="en">EN</button>
@@ -936,7 +939,7 @@ a.info-value:hover{ text-decoration:underline; }
     <div class="about-panel">
       <div class="about-text">
         <h2 class="about-title" id="notesTitle"><span class="hl-box"></span><span class="hl-cursor"></span><span class="hl-text" data-texto="sobre_titulo" data-destaque="script" data-pt-html="Oii!! sou a &lt;span class=&quot;script&quot;&gt;Bruna&lt;/span&gt;," data-en-html="Hii!! I'm &lt;span class=&quot;script&quot;&gt;Bruna&lt;/span&gt;,">Oii!! sou a <span class="script">Bruna</span>,</span></h2>
-        <p id="notesText" data-texto="sobre_texto" data-destaque="notes-highlight" data-pt-html="tenho 20 anos, criadora de conteúdo. Sempre fui apaixonada pelo audiovisual e meu olhar está em transformar produtos em experiências reais. Por isso, antes de criar qualquer conteúdo, penso em &lt;span class=&quot;notes-highlight&quot;&gt;como uma marca pode se conectar às pessoas de forma natural&lt;/span&gt;, respeitando sua comunicação e criando histórias que façam sentido. Hoje trabalho com marcas de diferentes nichos, desenvolvendo conteúdos estratégicos, autênticos e pensados para &lt;span class=&quot;notes-highlight&quot;&gt;gerar identificação e resultados&lt;/span&gt;." data-en-html="I'm 20 years old, a content creator. I've always been passionate about audiovisual work, and my focus is turning products into real experiences. That's why, before creating any content, I think about &lt;span class=&quot;notes-highlight&quot;&gt;how a brand can connect with people naturally&lt;/span&gt;, respecting their voice and telling stories that make sense. Today I work with brands across different niches, developing strategic, authentic content built to &lt;span class=&quot;notes-highlight&quot;&gt;create identification and results&lt;/span&gt;.">tenho 20 anos, criadora de conteúdo. Sempre fui apaixonada pelo audiovisual e meu olhar está em transformar produtos em experiências reais. Por isso, antes de criar qualquer conteúdo, penso em <span class="notes-highlight">como uma marca pode se conectar às pessoas de forma natural</span>, respeitando sua comunicação e criando histórias que façam sentido. Hoje trabalho com marcas de diferentes nichos, desenvolvendo conteúdos estratégicos, autênticos e pensados para <span class="notes-highlight">gerar identificação e resultados</span>.</p>
+        <p id="notesText" data-texto="sobre_texto" data-destaque="notes-highlight" data-pt-html="tenho 20 anos, criadora de conteúdo. Sempre fui apaixonada pelo audiovisual e meu olhar está em transformar produtos em experiências reais. Por isso, antes de criar qualquer conteúdo, penso em &lt;span class=&quot;notes-highlight&quot;&gt;como uma marca pode se conectar às pessoas de forma natural&lt;/span&gt;, respeitando sua comunicação e criando histórias que façam sentido. Hoje trabalho com marcas de diferentes nichos, desenvolvendo conteúdos estratégicos, autênticos e pensados para &lt;span class=&quot;notes-highlight&quot;&gt;gerar identificação e resultados&lt;/span&gt;, que vende para a Gen Z." data-en-html="I'm 20 years old, a content creator. I've always been passionate about audiovisual work, and my focus is turning products into real experiences. That's why, before creating any content, I think about &lt;span class=&quot;notes-highlight&quot;&gt;how a brand can connect with people naturally&lt;/span&gt;, respecting their voice and telling stories that make sense. Today I work with brands across different niches, developing strategic, authentic content built to &lt;span class=&quot;notes-highlight&quot;&gt;create identification and results&lt;/span&gt;, content made to sell to Gen Z.">tenho 20 anos, criadora de conteúdo. Sempre fui apaixonada pelo audiovisual e meu olhar está em transformar produtos em experiências reais. Por isso, antes de criar qualquer conteúdo, penso em <span class="notes-highlight">como uma marca pode se conectar às pessoas de forma natural</span>, respeitando sua comunicação e criando histórias que façam sentido. Hoje trabalho com marcas de diferentes nichos, desenvolvendo conteúdos estratégicos, autênticos e pensados para <span class="notes-highlight">gerar identificação e resultados</span>, que vende para a Gen Z.</p>
       </div>
       <div class="about-photo about-photo-scroll">
         <div class="about-scroll-track">
@@ -1277,9 +1280,9 @@ a.info-value:hover{ text-decoration:underline; }
       <div class="widget-glass">
         <h3 data-texto="servicos_2_titulo" data-pt="Publicidade no meu perfil" data-en="Advertising on my profile">Publicidade no meu perfil</h3>
         <p data-texto="servicos_2_texto" data-pt="Conteúdo publicado para minha audiência com alcance orgânico real." data-en="Content published to my audience with real organic reach.">Conteúdo publicado para minha audiência com alcance orgânico real.</p>
-        <a href="https://wa.me/5585992805861?text=Oi%2C%20Bruna!%20quero%20solicitar%20uma%20proposta" target="_blank" rel="noopener" class="widget-cta" data-contato="whatsapp" data-contato-msg="1">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
-          <span data-pt="solicitar proposta" data-en="request a proposal">solicitar proposta</span>
+        <a href="/midiakit/" class="widget-cta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5a2 2 0 0 1 2-2h8l6 6v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/></svg>
+          <span data-pt="ver mídia kit" data-en="view media kit">ver mídia kit</span>
         </a>
       </div>
       <div class="widget-glass">
@@ -1432,73 +1435,6 @@ a.info-value:hover{ text-decoration:underline; }
     </div>
       </div>
       <button type="button" class="catalog-arrow catalog-arrow--next" id="feedbackNext" aria-label="Próximos feedbacks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
-    </div>
-  </div>
-</section>
-
-<!-- =========================================================
-     07 — MÉTRICAS DO MEU PERFIL
-========================================================== -->
-<section class="section section--dark" id="metricas">
-  <div class="wrap">
-    <div class="services-head">
-      <h2 class="section-title" data-pt="métricas do meu perfil" data-en="my profile metrics">métricas do meu perfil</h2>
-      <p class="services-sub" data-pt="dados dos últimos 30 dias." data-en="data from the last 30 days.">dados dos últimos 30 dias.</p>
-    </div>
-
-    <div class="metricas-grid">
-      <div class="metrica-card">
-        <div class="metrica-topo">
-          <div class="metrica-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2.1 4.3 5 4.6"/></svg></div>
-          <h3>TikTok</h3>
-        </div>
-        <div class="metrica-numeros">
-          <div class="metrica-num"><strong data-pt="12 mil" data-en="12K">12 mil</strong><span data-pt="seguidores" data-en="followers">seguidores</span></div>
-          <div class="metrica-num"><strong data-pt="10 mil" data-en="10K">10 mil</strong><span data-pt="visualizações" data-en="views">visualizações</span></div>
-        </div>
-        <div class="metrica-bloco">
-          <h4 data-pt="gênero do público" data-en="audience gender">gênero do público</h4>
-          <div class="metrica-genero" role="img" aria-label="Feminino 74%, masculino 24%"><i class="fem" style="width:74%"></i><i class="masc" style="width:24%"></i></div>
-          <div class="metrica-legenda">
-            <span class="fem"><em></em><b data-pt="Feminino" data-en="Female" style="font-weight:600">Feminino</b> <strong data-pt="74%" data-en="74%">74%</strong></span>
-            <span class="masc"><em></em><b data-pt="Masculino" data-en="Male" style="font-weight:600">Masculino</b> <strong data-pt="24%" data-en="24%">24%</strong></span>
-          </div>
-        </div>
-        <div class="metrica-bloco">
-          <h4 data-pt="faixa de idade" data-en="age range">faixa de idade</h4>
-          <div class="metrica-linha"><span data-pt="18-24 anos" data-en="18-24 years old">18-24 anos</span><strong data-pt="54,8%" data-en="54.8%">54,8%</strong></div>
-        </div>
-        <div class="metrica-bloco">
-          <h4 data-pt="localização" data-en="location">localização</h4>
-          <div class="metrica-linha"><span data-pt="Brasil" data-en="Brazil">Brasil</span><strong data-pt="99,0%" data-en="99.0%">99,0%</strong></div>
-        </div>
-      </div>
-      <div class="metrica-card">
-        <div class="metrica-topo">
-          <div class="metrica-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="0.6" fill="currentColor"/></svg></div>
-          <h3>Instagram</h3>
-        </div>
-        <div class="metrica-numeros">
-          <div class="metrica-num"><strong data-pt="579" data-en="579">579</strong><span data-pt="seguidores" data-en="followers">seguidores</span></div>
-          <div class="metrica-num"><strong data-pt="+48 mil" data-en="+48K">+48 mil</strong><span data-pt="visualizações" data-en="views">visualizações</span></div>
-        </div>
-        <div class="metrica-bloco">
-          <h4 data-pt="gênero do público" data-en="audience gender">gênero do público</h4>
-          <div class="metrica-genero" role="img" aria-label="Feminino 91,5%, masculino 8,5%"><i class="fem" style="width:91.5%"></i><i class="masc" style="width:8.5%"></i></div>
-          <div class="metrica-legenda">
-            <span class="fem"><em></em><b data-pt="Feminino" data-en="Female" style="font-weight:600">Feminino</b> <strong data-pt="91,5%" data-en="91.5%">91,5%</strong></span>
-            <span class="masc"><em></em><b data-pt="Masculino" data-en="Male" style="font-weight:600">Masculino</b> <strong data-pt="8,5%" data-en="8.5%">8,5%</strong></span>
-          </div>
-        </div>
-        <div class="metrica-bloco">
-          <h4 data-pt="faixa de idade" data-en="age range">faixa de idade</h4>
-          <div class="metrica-linha"><span data-pt="25-34 anos" data-en="25-34 years old">25-34 anos</span><strong data-pt="41,9%" data-en="41.9%">41,9%</strong></div>
-        </div>
-        <div class="metrica-bloco">
-          <h4 data-pt="localização" data-en="location">localização</h4>
-          <div class="metrica-linha"><span data-pt="Brasil" data-en="Brazil">Brasil</span><strong data-pt="94,8%" data-en="94.8%">94,8%</strong></div>
-        </div>
-      </div>
     </div>
   </div>
 </section>
@@ -1924,6 +1860,7 @@ a.info-value:hover{ text-decoration:underline; }
     var grade = document.getElementById('widgetsGrid');
     if (!grade || !Array.isArray(servicos) || !servicos.length) return;
     var ctaIcone = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>';
+    var ctaIconeMidiaKit = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5a2 2 0 0 1 2-2h8l6 6v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/></svg>';
     grade.innerHTML = '';
     servicos.forEach(function(sv, i){
       if (!sv.titulo) return;
@@ -1940,12 +1877,18 @@ a.info-value:hover{ text-decoration:underline; }
       p.textContent = currentLang === 'en' ? den : dpt;
       var a = document.createElement('a');
       a.className = 'widget-cta';
-      a.target = '_blank';
-      a.rel = 'noopener';
-      a.setAttribute('href', '#');
-      a.setAttribute('data-contato', 'whatsapp');
-      a.setAttribute('data-contato-msg', '1');
-      a.innerHTML = ctaIcone + '<span data-pt="solicitar proposta" data-en="request a proposal">' + (currentLang === 'en' ? 'request a proposal' : 'solicitar proposta') + '</span>';
+      // "Publicidade no meu perfil" não pede proposta por whatsapp — leva pro Mídia Kit.
+      if (sv.titulo === 'Publicidade no meu perfil'){
+        a.setAttribute('href', '/midiakit/');
+        a.innerHTML = ctaIconeMidiaKit + '<span data-pt="ver mídia kit" data-en="view media kit">' + (currentLang === 'en' ? 'view media kit' : 'ver mídia kit') + '</span>';
+      } else {
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.setAttribute('href', '#');
+        a.setAttribute('data-contato', 'whatsapp');
+        a.setAttribute('data-contato-msg', '1');
+        a.innerHTML = ctaIcone + '<span data-pt="solicitar proposta" data-en="request a proposal">' + (currentLang === 'en' ? 'request a proposal' : 'solicitar proposta') + '</span>';
+      }
       card.appendChild(h3);
       card.appendChild(p);
       card.appendChild(a);

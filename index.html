@@ -86,6 +86,7 @@
 *{ box-sizing: border-box; margin:0; padding:0; }
 html{ scroll-behavior: smooth; }
 body{
+  cursor: url('icons/cursor.png') 32 32, auto;
   font-family: var(--font-body);
   color: var(--blue-dark);
   background: var(--offwhite);
@@ -492,6 +493,33 @@ section{ position:relative; }
 .file-modal-window.is-video .file-modal-body{ aspect-ratio: 9/16; }
 .file-modal-caption{ padding:14px 22px 18px; font-size:.85rem; color: var(--blue-dark-70); font-weight:600; }
 
+/* "Conteúdos em destaque" — carrossel coverflow: o card mais perto do centro
+   fica um pouco maior (classe is-focus, alternada via JS ao rolar). */
+#destaque .section-kicker{ justify-content:center; }
+.destaque-grid{
+  display:flex; align-items:flex-end; gap:30px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
+  padding:30px 4px 20px; scrollbar-width:none;
+}
+.destaque-grid::-webkit-scrollbar{ display:none; }
+.destaque-card{
+  flex:0 0 230px; scroll-snap-align:center; cursor:pointer; opacity:.68;
+  transition: transform .35s ease, opacity .35s ease;
+}
+.destaque-card:hover{ opacity:.9; }
+.destaque-card.is-focus{ transform: scale(1.1); opacity:1; z-index:2; }
+.destaque-nome{
+  display:block; text-align:center; font-family: var(--font-display); font-weight:700;
+  font-size:.82rem; letter-spacing:.05em; text-transform:uppercase; color: var(--blue-dark);
+  margin-bottom:14px;
+}
+.destaque-thumb{
+  position:relative; aspect-ratio: 9/16; border-radius:22px; overflow:hidden;
+  background: var(--blue-dark); box-shadow: 0 14px 28px rgba(59,74,107,0.26);
+}
+.destaque-thumb img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.destaque-card .play-badge{ position:absolute; inset:0; z-index:2; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .25s ease; }
+.destaque-card:hover .play-badge, .destaque-card.is-focus .play-badge{ opacity:1; }
+
 /* =====================================================================
    05 — SERVIÇOS — frase em cima, serviços em caixinhas embaixo, fundo azul claro
 ===================================================================== */
@@ -889,6 +917,55 @@ a.info-value:hover{ text-decoration:underline; }
       <div class="about-photo">
         <img data-foto="sobre" src="fotos/sobre.jpg" alt="Bruna Medeiros">
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     02B — CONTEÚDOS EM DESTAQUE
+========================================================== -->
+<section class="section section--gray" id="destaque">
+  <div class="wrap">
+    <span class="section-kicker" data-pt="conteúdos em destaque" data-en="featured content">conteúdos em destaque</span>
+
+    <div class="catalog catalog--destaque">
+      <button type="button" class="catalog-arrow catalog-arrow--prev" id="destaquePrev" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <div class="destaque-grid" id="destaqueGrid">
+
+        <div class="destaque-card" data-title="Sob Investigação" data-youtube="TJHAEILafv0">
+          <span class="destaque-nome">Sob Investigação</span>
+          <div class="destaque-thumb">
+            <img src="https://i.ytimg.com/vi/TJHAEILafv0/maxresdefault.jpg" alt="" loading="lazy">
+            <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+          </div>
+        </div>
+
+        <div class="destaque-card" data-title="Imersão Portfólio Claude" data-youtube="x7Fd9mtw5VQ">
+          <span class="destaque-nome">Imersão Portfólio Claude</span>
+          <div class="destaque-thumb">
+            <img src="https://i.ytimg.com/vi/x7Fd9mtw5VQ/maxresdefault.jpg" alt="" loading="lazy">
+            <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+          </div>
+        </div>
+
+        <div class="destaque-card" data-title="Tostitos®" data-youtube="xfpeEP8Ig5A">
+          <span class="destaque-nome">Tostitos®</span>
+          <div class="destaque-thumb">
+            <img src="https://i.ytimg.com/vi/xfpeEP8Ig5A/maxresdefault.jpg" alt="" loading="lazy">
+            <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+          </div>
+        </div>
+
+        <div class="destaque-card" data-title="Pichau" data-youtube="LqBW1uhjHtc">
+          <span class="destaque-nome">Pichau</span>
+          <div class="destaque-thumb">
+            <img src="https://i.ytimg.com/vi/LqBW1uhjHtc/maxresdefault.jpg" alt="" loading="lazy">
+            <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+          </div>
+        </div>
+
+      </div>
+      <button type="button" class="catalog-arrow catalog-arrow--next" id="destaqueNext" aria-label="Próximo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
     </div>
   </div>
 </section>
@@ -2077,38 +2154,65 @@ a.info-value:hover{ text-decoration:underline; }
   var modalPlaceholder = document.getElementById('modalPlaceholder');
   var modalVideoFrame = document.getElementById('modalVideoFrame');
 
-  cards.forEach(function(card){
-    card.addEventListener('click', function(){
-      var title = card.getAttribute('data-title') || 'arquivo';
-      var youtubeId = card.getAttribute('data-youtube');
-      modalFname.textContent = title;
+  function abrirModalDeArquivo(card){
+    var title = card.getAttribute('data-title') || 'arquivo';
+    var youtubeId = card.getAttribute('data-youtube');
+    modalFname.textContent = title;
 
-      if (youtubeId) {
-        modalPlaceholder.hidden = true;
-        modalVideoFrame.hidden = false;
-        retEnviar();
-        retIniciar(youtubeId, title);
-        modalVideoFrame.src = 'https://www.youtube-nocookie.com/embed/' + youtubeId + '?autoplay=1&rel=0&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
-        modalWindow.classList.add('is-video');
-        // conta a visualização pro painel (aba Portfólio > Vídeos mais vistos)
-        enviarTrack('event', { event_type: 'video_view', event_name: youtubeId, session_id: getSessionId(), page_path: location.pathname, metadata: { title: title } });
+    if (youtubeId) {
+      modalPlaceholder.hidden = true;
+      modalVideoFrame.hidden = false;
+      retEnviar();
+      retIniciar(youtubeId, title);
+      modalVideoFrame.src = 'https://www.youtube-nocookie.com/embed/' + youtubeId + '?autoplay=1&rel=0&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
+      modalWindow.classList.add('is-video');
+      // conta a visualização pro painel (aba Portfólio > Vídeos mais vistos)
+      enviarTrack('event', { event_type: 'video_view', event_name: youtubeId, session_id: getSessionId(), page_path: location.pathname, metadata: { title: title } });
+    } else {
+      modalVideoFrame.hidden = true;
+      modalVideoFrame.src = '';
+      modalPlaceholder.hidden = false;
+      modalWindow.classList.remove('is-video');
+      if (currentLang === 'en'){
+        var typeEn = card.getAttribute('data-type') === 'video' ? 'Video' : 'Photo';
+        modalCaption.textContent = typeEn + ' — replace this placeholder with the real file (' + title + ')';
       } else {
-        modalVideoFrame.hidden = true;
-        modalVideoFrame.src = '';
-        modalPlaceholder.hidden = false;
-        modalWindow.classList.remove('is-video');
-        if (currentLang === 'en'){
-          var typeEn = card.getAttribute('data-type') === 'video' ? 'Video' : 'Photo';
-          modalCaption.textContent = typeEn + ' — replace this placeholder with the real file (' + title + ')';
-        } else {
-          var typePt = card.getAttribute('data-type') === 'video' ? 'Vídeo' : 'Foto';
-          modalCaption.textContent = typePt + ' — substitua este placeholder pelo arquivo real (' + title + ')';
-        }
+        var typePt = card.getAttribute('data-type') === 'video' ? 'Vídeo' : 'Foto';
+        modalCaption.textContent = typePt + ' — substitua este placeholder pelo arquivo real (' + title + ')';
       }
+    }
 
-      modal.classList.add('is-open');
-    });
+    modal.classList.add('is-open');
+  }
+
+  cards.forEach(function(card){
+    card.addEventListener('click', function(){ abrirModalDeArquivo(card); });
   });
+
+  /* ---------------- Conteúdos em destaque (carrossel coverflow) ---------------- */
+  var destaqueCards = document.querySelectorAll('.destaque-card');
+  destaqueCards.forEach(function(card){
+    card.addEventListener('click', function(){ abrirModalDeArquivo(card); });
+  });
+  ligarSetas(document.getElementById('destaqueGrid'), document.getElementById('destaquePrev'), document.getElementById('destaqueNext'));
+  (function(){
+    var trilho = document.getElementById('destaqueGrid');
+    if (!trilho || !destaqueCards.length) return;
+    function atualizarFoco(){
+      var centroTrilho = trilho.getBoundingClientRect().left + trilho.clientWidth / 2;
+      var maisPerto = null, menorDist = Infinity;
+      destaqueCards.forEach(function(card){
+        var r = card.getBoundingClientRect();
+        var centroCard = r.left + r.width / 2;
+        var dist = Math.abs(centroCard - centroTrilho);
+        if (dist < menorDist){ menorDist = dist; maisPerto = card; }
+      });
+      destaqueCards.forEach(function(card){ card.classList.toggle('is-focus', card === maisPerto); });
+    }
+    trilho.addEventListener('scroll', atualizarFoco, { passive: true });
+    window.addEventListener('resize', atualizarFoco);
+    atualizarFoco();
+  })();
 
   /* ---------------- Retenção dos vídeos: até onde a pessoa assistiu ----------------
      O player do YouTube avisa a posição do vídeo (a cada instante) pra esta página. O vídeo é dividido

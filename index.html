@@ -409,6 +409,13 @@ section{ position:relative; }
    04 — PORTFÓLIO — nichos em botões e vídeos em catálogo (setinhas)
 ===================================================================== */
 #portfolio{ padding: 110px 0 100px; }
+/* Todos os nichos aparecem sempre, cada um na sua fileira; os botões de
+   nicho acima só rolam a tela até a fileira — não escondem os outros. */
+.nichos-colunas{ display:flex; flex-direction:column; gap:52px; }
+.nicho-bloco-titulo{
+  font-family: var(--font-display); font-weight:700; font-size:1.3rem;
+  color: var(--ink); margin-bottom:16px;
+}
 #portfolio .wrap{ max-width:1280px; }
 /* título centralizado na tela; a contagem de vídeos fica no canto direito */
 .portfolio-head{ position:relative; display:flex; align-items:flex-end; justify-content:center; gap:20px; margin-bottom:30px; text-align:center; }
@@ -1066,41 +1073,22 @@ a.info-value:hover{ text-decoration:underline; }
           <button class="folder-tab" data-filter="experiencia" data-pt="Experiência" data-en="Experience">Experiência</button>
     </nav>
 
-    <!-- catálogo: vídeos do nicho escolhido, passa de lado nas setinhas -->
-    <div class="catalog">
-      <button type="button" class="catalog-arrow catalog-arrow--prev" id="videosPrev" aria-label="Vídeos anteriores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
-      <div class="files-grid" id="filesGrid">
+    <!-- catálogo: TODOS os nichos aparecem sempre, cada um na sua fileira com setinhas
+         próprias; clicar num botão de nicho só rola a tela até a fileira dele. -->
+    <div class="nichos-colunas" id="nichosColunas">
 
-        <div class="file-card" data-cat="tech" data-type="video" data-title="Hollyland Lark A1" data-youtube="lMDEHNtGsSs">
+      <div class="nicho-bloco" data-nicho-bloco="tech">
+        <h3 class="nicho-bloco-titulo" data-pt="Tech" data-en="Tech">Tech</h3>
+        <div class="catalog">
+          <button type="button" class="catalog-arrow catalog-arrow--prev" aria-label="Vídeos anteriores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <div class="files-grid" data-nicho-grid="tech">
+
+            <div class="file-card" data-cat="tech" data-type="video" data-title="Hollyland Lark A1" data-youtube="lMDEHNtGsSs">
               <div class="file-thumb">
                 <img class="file-thumb-img" src="https://i.ytimg.com/vi/lMDEHNtGsSs/maxresdefault.jpg" alt="" loading="lazy">
                 <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
               </div>
               <div class="file-meta"><span class="fname">Hollyland Lark A1</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
-            </div>
-
-            <div class="file-card" data-cat="entretenimento" data-type="video" data-title="Chein Rui" data-youtube="Kjs1IYVCnMc">
-              <div class="file-thumb">
-                <img class="file-thumb-img" src="https://i.ytimg.com/vi/Kjs1IYVCnMc/maxresdefault.jpg" alt="" loading="lazy">
-                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
-              </div>
-              <div class="file-meta"><span class="fname">Chein Rui</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
-            </div>
-
-            <div class="file-card" data-cat="beleza" data-type="video" data-title="Fino Premium Touch" data-youtube="spKbkwGxABk">
-              <div class="file-thumb">
-                <img class="file-thumb-img" src="https://i.ytimg.com/vi/spKbkwGxABk/maxresdefault.jpg" alt="" loading="lazy">
-                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
-              </div>
-              <div class="file-meta"><span class="fname">Fino Premium Touch</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
-            </div>
-
-            <div class="file-card" data-cat="experiencia" data-type="video" data-title="Kopenhagen" data-youtube="qKJ9jTrh52k">
-              <div class="file-thumb">
-                <img class="file-thumb-img" src="https://i.ytimg.com/vi/qKJ9jTrh52k/maxresdefault.jpg" alt="" loading="lazy">
-                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
-              </div>
-              <div class="file-meta"><span class="fname">Kopenhagen</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
             </div>
 
             <div class="file-card" data-cat="tech" data-type="video" data-title="Mercado Livre" data-youtube="p9GsOJ5geoI">
@@ -1109,14 +1097,6 @@ a.info-value:hover{ text-decoration:underline; }
                 <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
               </div>
               <div class="file-meta"><span class="fname">Mercado Livre</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
-            </div>
-
-            <div class="file-card" data-cat="entretenimento" data-type="video" data-title="Kindle" data-youtube="L_T7FaWzNf0">
-              <div class="file-thumb">
-                <img class="file-thumb-img" src="https://i.ytimg.com/vi/L_T7FaWzNf0/maxresdefault.jpg" alt="" loading="lazy">
-                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
-              </div>
-              <div class="file-meta"><span class="fname">Kindle</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
             </div>
 
             <div class="file-card" data-cat="tech" data-type="video" data-title="DJI Osmo Mobile SE" data-youtube="DvWUawGPVp4">
@@ -1141,6 +1121,25 @@ a.info-value:hover{ text-decoration:underline; }
                 <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
               </div>
               <div class="file-meta"><span class="fname">Acer</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+            </div>
+
+          </div>
+          <button type="button" class="catalog-arrow catalog-arrow--next" aria-label="Próximos vídeos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+
+      <div class="nicho-bloco" data-nicho-bloco="beleza">
+        <h3 class="nicho-bloco-titulo" data-pt="Beleza" data-en="Beauty">Beleza</h3>
+        <div class="catalog">
+          <button type="button" class="catalog-arrow catalog-arrow--prev" aria-label="Vídeos anteriores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <div class="files-grid" data-nicho-grid="beleza">
+
+            <div class="file-card" data-cat="beleza" data-type="video" data-title="Fino Premium Touch" data-youtube="spKbkwGxABk">
+              <div class="file-thumb">
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/spKbkwGxABk/maxresdefault.jpg" alt="" loading="lazy">
+                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+              </div>
+              <div class="file-meta"><span class="fname">Fino Premium Touch</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
             </div>
 
             <div class="file-card" data-cat="beleza" data-type="video" data-title="Labotrat" data-youtube="sHYB8Q1_zQU">
@@ -1175,6 +1174,52 @@ a.info-value:hover{ text-decoration:underline; }
               <div class="file-meta"><span class="fname">Eudora</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
             </div>
 
+          </div>
+          <button type="button" class="catalog-arrow catalog-arrow--next" aria-label="Próximos vídeos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+
+      <div class="nicho-bloco" data-nicho-bloco="entretenimento">
+        <h3 class="nicho-bloco-titulo" data-pt="Entretenimento" data-en="Entertainment">Entretenimento</h3>
+        <div class="catalog">
+          <button type="button" class="catalog-arrow catalog-arrow--prev" aria-label="Vídeos anteriores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <div class="files-grid" data-nicho-grid="entretenimento">
+
+            <div class="file-card" data-cat="entretenimento" data-type="video" data-title="Chein Rui" data-youtube="Kjs1IYVCnMc">
+              <div class="file-thumb">
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/Kjs1IYVCnMc/maxresdefault.jpg" alt="" loading="lazy">
+                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+              </div>
+              <div class="file-meta"><span class="fname">Chein Rui</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+            </div>
+
+            <div class="file-card" data-cat="entretenimento" data-type="video" data-title="Kindle" data-youtube="L_T7FaWzNf0">
+              <div class="file-thumb">
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/L_T7FaWzNf0/maxresdefault.jpg" alt="" loading="lazy">
+                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+              </div>
+              <div class="file-meta"><span class="fname">Kindle</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+            </div>
+
+          </div>
+          <button type="button" class="catalog-arrow catalog-arrow--next" aria-label="Próximos vídeos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+
+      <div class="nicho-bloco" data-nicho-bloco="experiencia">
+        <h3 class="nicho-bloco-titulo" data-pt="Experiência" data-en="Experience">Experiência</h3>
+        <div class="catalog">
+          <button type="button" class="catalog-arrow catalog-arrow--prev" aria-label="Vídeos anteriores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+          <div class="files-grid" data-nicho-grid="experiencia">
+
+            <div class="file-card" data-cat="experiencia" data-type="video" data-title="Kopenhagen" data-youtube="qKJ9jTrh52k">
+              <div class="file-thumb">
+                <img class="file-thumb-img" src="https://i.ytimg.com/vi/qKJ9jTrh52k/maxresdefault.jpg" alt="" loading="lazy">
+                <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+              </div>
+              <div class="file-meta"><span class="fname">Kopenhagen</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
+            </div>
+
             <div class="file-card" data-cat="experiencia" data-type="video" data-title="Imersão Portfólio Claude" data-youtube="x7Fd9mtw5VQ">
               <div class="file-thumb">
                 <img class="file-thumb-img" src="https://i.ytimg.com/vi/x7Fd9mtw5VQ/maxresdefault.jpg" alt="" loading="lazy">
@@ -1183,8 +1228,11 @@ a.info-value:hover{ text-decoration:underline; }
               <div class="file-meta"><span class="fname">Imersão Portfólio Claude</span><span class="ftag" data-pt="vídeo" data-en="video">vídeo</span></div>
             </div>
 
+          </div>
+          <button type="button" class="catalog-arrow catalog-arrow--next" aria-label="Próximos vídeos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+        </div>
       </div>
-      <button type="button" class="catalog-arrow catalog-arrow--next" id="videosNext" aria-label="Próximos vídeos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+
     </div>
   </div>
 </section>
@@ -1737,11 +1785,54 @@ a.info-value:hover{ text-decoration:underline; }
 
   /* Nichos, textos e fotos editados no painel (Portfólio > Editar portfólio).
      Sem itens (ou com erro), o HTML fixo fica como está. */
+  // Uma fileira (título + catálogo com setinhas) pra um nicho — usada tanto
+  // pelos 4 nichos fixos do HTML quanto pelos nichos vindos do painel.
+  function criarNichoBloco(categoria, pt, en){
+    var bloco = document.createElement('div');
+    bloco.className = 'nicho-bloco';
+    bloco.setAttribute('data-nicho-bloco', categoria);
+
+    var titulo = document.createElement('h3');
+    titulo.className = 'nicho-bloco-titulo';
+    titulo.setAttribute('data-pt', pt);
+    titulo.setAttribute('data-en', en);
+    titulo.textContent = currentLang === 'en' ? en : pt;
+
+    var catalogo = document.createElement('div');
+    catalogo.className = 'catalog';
+    var prev = document.createElement('button');
+    prev.type = 'button'; prev.className = 'catalog-arrow catalog-arrow--prev'; prev.setAttribute('aria-label', 'Vídeos anteriores');
+    prev.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>';
+    var grid = document.createElement('div');
+    grid.className = 'files-grid';
+    grid.setAttribute('data-nicho-grid', categoria);
+    var next = document.createElement('button');
+    next.type = 'button'; next.className = 'catalog-arrow catalog-arrow--next'; next.setAttribute('aria-label', 'Próximos vídeos');
+    next.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>';
+    catalogo.appendChild(prev); catalogo.appendChild(grid); catalogo.appendChild(next);
+
+    bloco.appendChild(titulo);
+    bloco.appendChild(catalogo);
+    return bloco;
+  }
+
+  // Acha a grade (files-grid) de um nicho pelo valor exato da categoria —
+  // sem montar seletor dinâmico, pra não quebrar se a categoria tiver aspas.
+  function gridDoNicho(categoria){
+    var grids = document.querySelectorAll('[data-nicho-grid]');
+    for (var i = 0; i < grids.length; i++){
+      if (grids[i].getAttribute('data-nicho-grid') === categoria) return grids[i];
+    }
+    return null;
+  }
+
   function aplicarNichos(nichos){
     if (!Array.isArray(nichos) || !nichos.length) return;
     var nav = document.getElementById('folderTabs');
-    if (!nav) return;
+    var colunas = document.getElementById('nichosColunas');
+    if (!nav || !colunas) return;
     nav.querySelectorAll('.folder-tab').forEach(function(b){ b.remove(); });
+    colunas.querySelectorAll('.nicho-bloco').forEach(function(b){ b.remove(); });
     var catAtiva = (nichos.filter(function(n){ return n.categoria === 'tech'; })[0] || nichos[0]).categoria;
     nichos.forEach(function(n, i){
       if (!n.categoria || !n.titulo) return;
@@ -1752,6 +1843,8 @@ a.info-value:hover{ text-decoration:underline; }
       b.setAttribute('data-en', n.texto_en || n.titulo);
       b.textContent = currentLang === 'en' ? (n.texto_en || n.titulo) : n.titulo;
       nav.appendChild(b);
+
+      colunas.appendChild(criarNichoBloco(n.categoria, n.titulo, n.texto_en || n.titulo));
     });
   }
 
@@ -1910,19 +2003,23 @@ a.info-value:hover{ text-decoration:underline; }
         aplicarFotos(resposta.fotos);
         aplicarMarcas(resposta.marcas);
         aplicarFeedbacks(resposta.feedbacks);
-        var grid = document.getElementById('filesGrid');
-        if (!grid) return;
+        if (!document.getElementById('nichosColunas')) return;
         // Vídeos editados no painel (Portfólio > Editar) substituem os fixos do HTML.
+        // Cada card vai pra fileira do próprio nicho (não existe mais uma grade única).
         if (Array.isArray(resposta.videos) && resposta.videos.length){
-          grid.querySelectorAll('.file-card').forEach(function(c){ c.remove(); });
+          document.querySelectorAll('.file-card').forEach(function(c){ c.remove(); });
           resposta.videos.forEach(function(v){
             if (!v.youtube_id || !v.titulo) return;
-            grid.appendChild(criarCardPortfolio({ marca: v.titulo, portfolio_youtube_id: v.youtube_id, portfolio_categoria: v.categoria }));
+            var destino = gridDoNicho(v.categoria);
+            if (!destino) return;
+            destino.appendChild(criarCardPortfolio({ marca: v.titulo, portfolio_youtube_id: v.youtube_id, portfolio_categoria: v.categoria }));
           });
         }
         resposta.itens.forEach(function(item){
           if (!item.portfolio_youtube_id || !item.marca) return;
-          grid.appendChild(criarCardPortfolio(item));
+          var destino = gridDoNicho(item.portfolio_categoria);
+          if (!destino) return;
+          destino.appendChild(criarCardPortfolio(item));
         });
       })
       .catch(function(err){
@@ -2137,39 +2234,37 @@ a.info-value:hover{ text-decoration:underline; }
   await carregarPortfolioPublicavel();
   iniciarPromo(portfolioExtras);
 
-  var atualizarSetasVideos;
   var tabs = document.querySelectorAll('.folder-tab');
   var cards = document.querySelectorAll('.file-card');
   var countEl = document.getElementById('finderCount');
 
-  function updateFinderCount(visible){
+  // Todos os nichos ficam sempre visíveis, cada um na sua fileira; clicar
+  // num botão de nicho só rola a tela até a fileira dele (não esconde as
+  // outras). A contagem no topo passa a somar todos os vídeos de uma vez.
+  function atualizarContagemTotal(){
+    var total = document.querySelectorAll('.nicho-bloco .file-card').length;
     if (currentLang === 'en'){
-      countEl.textContent = visible + (visible === 1 ? ' video' : ' videos');
+      countEl.textContent = total + (total === 1 ? ' video' : ' videos');
     } else {
-      countEl.textContent = visible + (visible === 1 ? ' vídeo' : ' vídeos');
+      countEl.textContent = total + (total === 1 ? ' vídeo' : ' vídeos');
     }
   }
+  atualizarContagemTotal();
 
-  function applyFilter(filter){
-    var visible = 0;
-    cards.forEach(function(card){
-      var match = card.getAttribute('data-cat') === filter;
-      card.classList.toggle('is-hidden', !match);
-      if (match) visible++;
-    });
-    updateFinderCount(visible);
-    var trilhoVideos = document.getElementById('filesGrid');
-    if (trilhoVideos) trilhoVideos.scrollLeft = 0;
-    if (typeof atualizarSetasVideos === 'function') atualizarSetasVideos();
-  }
-
-  applyFilter(document.querySelector('.folder-tab.is-active').getAttribute('data-filter'));
+  document.querySelectorAll('.nicho-bloco').forEach(function(bloco){
+    ligarSetas(bloco.querySelector('.files-grid'), bloco.querySelector('.catalog-arrow--prev'), bloco.querySelector('.catalog-arrow--next'));
+  });
 
   tabs.forEach(function(tab){
     tab.addEventListener('click', function(){
       tabs.forEach(function(t){ t.classList.remove('is-active'); });
       tab.classList.add('is-active');
-      applyFilter(tab.getAttribute('data-filter'));
+      var alvo = tab.getAttribute('data-filter');
+      var destino = null;
+      document.querySelectorAll('.nicho-bloco').forEach(function(bloco){
+        if (bloco.getAttribute('data-nicho-bloco') === alvo) destino = bloco;
+      });
+      if (destino) destino.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
 
@@ -2319,9 +2414,7 @@ a.info-value:hover{ text-decoration:underline; }
     atualizar();
     return atualizar;
   }
-  atualizarSetasVideos = ligarSetas(document.getElementById('filesGrid'), document.getElementById('videosPrev'), document.getElementById('videosNext'));
   ligarSetas(document.getElementById('feedbackGrid'), document.getElementById('feedbackPrev'), document.getElementById('feedbackNext'));
-  atualizarSetasVideos();
 
   /* ---------------- Etiqueta do nicho em cada vídeo ---------------- */
   function rotularCards(){
@@ -2464,10 +2557,7 @@ a.info-value:hover{ text-decoration:underline; }
       var val = lang === 'en' ? el.getAttribute('data-en-placeholder') : el.getAttribute('data-pt-placeholder');
       if (val != null) el.placeholder = val;
     });
-    if (countEl){
-      var visibleNow = document.querySelectorAll('.file-card:not(.is-hidden)').length;
-      updateFinderCount(visibleNow);
-    }
+    if (countEl) atualizarContagemTotal();
     localStorage.setItem('portfolioLang', lang);
     if (langToggle){
       langToggle.querySelectorAll('.lang-option').forEach(function(btn){

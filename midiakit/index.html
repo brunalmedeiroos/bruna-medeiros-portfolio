@@ -12,6 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Pinyon+Script&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&family=Bitter:ital,wght@0,600;0,700;0,800&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
 <style>
 
+
 /* =====================================================================
    COMO ADICIONAR A FONTE "BOOTZY TM"
    1) Coloque os arquivos da fonte em uma pasta /fonts ao lado deste HTML
@@ -347,27 +348,20 @@ section{ position:relative; }
   width:100%; aspect-ratio: 4 / 5; object-fit:cover; object-position:center 82%; display:block;
   border-radius:4px; box-shadow: 0 24px 50px rgba(59,74,107,0.28);
 }
-/* Sobre: fotos empilhadas em diagonal, passando de baixo pra cima sem parar
-   (estilo "pilha de polaroids" — cada foto num ângulo levemente diferente). */
-.about-photo-stack{ position:relative; height:640px; width:100%; max-width:420px; overflow:hidden; }
-.about-photo-stack::before, .about-photo-stack::after{
-  content:""; position:absolute; left:0; right:0; height:110px; z-index:2; pointer-events:none;
-}
-.about-photo-stack::before{ top:0; background: linear-gradient(var(--blue-dark), transparent); }
-.about-photo-stack::after{ bottom:0; background: linear-gradient(transparent, var(--blue-dark)); }
-.about-stack-track{
-  display:flex; flex-direction:column; align-items:center; width:100%;
-  animation: about-scroll-v 30s linear infinite;
-}
+/* Sobre: baralho de fotos — uma foto fixa na frente, as outras espiando
+   um pedacinho em cima e embaixo, trocando de tempos em tempos (a de baixo
+   sobe e vira a da frente, a da frente sobe e sai por cima). */
+.about-photo-stack{ position:relative; height:560px; width:100%; max-width:420px; margin:0 auto; }
 .about-stack-card{
-  width:76%; flex-shrink:0; margin-bottom:-36px; border-radius:18px; overflow:hidden;
-  box-shadow: 0 20px 40px rgba(59,74,107,0.35);
+  position:absolute; left:50%; top:50%; width:84%; aspect-ratio: 4/5;
+  border-radius:20px; overflow:hidden; box-shadow: 0 24px 50px rgba(59,74,107,0.35);
+  opacity:0; z-index:1; pointer-events:none;
+  transform: translate(-50%,-50%); transition: transform .6s ease, opacity .6s ease;
 }
-.about-stack-card:nth-child(odd){ transform: rotate(-5deg) translateX(-14%); }
-.about-stack-card:nth-child(even){ transform: rotate(5deg) translateX(14%); }
-.about-stack-card img{ width:100%; aspect-ratio: 4/5; object-fit:cover; display:block; }
-@keyframes about-scroll-v{ from{ transform: translateY(0); } to{ transform: translateY(-50%); } }
-@media (prefers-reduced-motion: reduce){ .about-stack-track{ animation:none; } }
+.about-stack-card img{ width:100%; height:100%; object-fit:cover; display:block; }
+.about-stack-card.is-front{ opacity:1; z-index:5; transform: translate(-50%,-50%) scale(1); }
+.about-stack-card.is-peek-top{ opacity:1; z-index:3; transform: translate(-50%,-134%) scale(.94); }
+.about-stack-card.is-peek-bottom{ opacity:1; z-index:2; transform: translate(-50%,34%) scale(.94); }
 
 /* =====================================================================
    03 — FAIXA DE MARCAS — fundo amarelo manteiga
@@ -413,7 +407,7 @@ section{ position:relative; }
    nicho acima só rolam a tela até a fileira — não escondem os outros. */
 .nichos-colunas{ display:flex; flex-direction:column; gap:52px; }
 .nicho-bloco-titulo{
-  font-family: var(--font-display); font-weight:900; font-size:1.9rem; letter-spacing:-0.5px;
+  font-family: var(--font-display); font-weight:900; font-style:italic; font-size:2.6rem; letter-spacing:-0.5px;
   color: var(--ink); margin-bottom:20px;
 }
 #portfolio .wrap{ max-width:1280px; }
@@ -526,20 +520,22 @@ section{ position:relative; }
 }
 .destaque-titulo .accent-italic{ color: var(--blue-light); font-style:italic; }
 .destaque-desc{ font-size:1.05rem; line-height:1.6; color: var(--blue-dark-70); font-weight:500; max-width:420px; margin-bottom:34px; }
-.destaque-stats{ display:flex; gap:30px; flex-wrap:wrap; }
-.destaque-stat strong{
-  display:block; font-family: var(--font-display); font-weight:900; letter-spacing:-1px;
-  font-size: clamp(1.7rem, 2.6vw, 2.3rem); color: var(--blue-dark); line-height:1; margin-bottom:6px;
+.destaque-stats-row{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 14px;
+  font-size:1.02rem; font-weight:600; color: var(--ink);
 }
-.destaque-stat span{ display:block; font-weight:700; font-size:.78rem; letter-spacing:.03em; color: var(--ink); }
+.destaque-stats-row strong{
+  font-family: var(--font-display); font-weight:900; color: var(--blue-dark); margin-right:5px;
+}
+.destaque-stats-row .sep{ color: var(--blue-light); font-weight:700; }
 .catalog--destaque{ min-width:0; }
 .destaque-grid{
-  display:flex; align-items:flex-end; gap:24px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
-  padding:30px 4px 20px; scrollbar-width:none;
+  display:flex; align-items:flex-end; gap:22px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
+  padding:30px 4px 20px; scrollbar-width:none; max-width:719px;
 }
 .destaque-grid::-webkit-scrollbar{ display:none; }
 .destaque-card{
-  flex:0 0 190px; scroll-snap-align:center; cursor:pointer; opacity:.68;
+  flex:0 0 225px; scroll-snap-align:center; cursor:pointer; opacity:.68;
   transition: transform .35s ease, opacity .35s ease;
 }
 .destaque-card:hover{ opacity:.9; }
@@ -868,6 +864,7 @@ a.info-value:hover{ text-decoration:underline; }
 .contact-cta h2{ font-size: clamp(1.8rem, 3.4vw, 2.6rem); line-height:1.1; }
 .popup-notification h4{ font-size:1.9rem; }
 
+
 /* =====================================================================
    MÍDIA KIT — cabeçalho com menu, números embaixo do texto do Sobre,
    e nichos que ela atende
@@ -898,17 +895,12 @@ a.info-value:hover{ text-decoration:underline; }
 }
 .midiakit-stats .midiakit-stat span{ display:block; font-weight:700; font-size:.8rem; letter-spacing:.03em; color: var(--offwhite); }
 
-#nichos .wrap{ text-align:center; }
-#nichos .section-title{ text-align:center; }
-.midiakit-nichos-grid{
-  display:grid; grid-template-columns: repeat(4, 1fr); gap:26px; margin-top:20px;
+.midiakit-nichos-linha{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 14px; margin-top:22px;
+  font-family: var(--font-display); font-weight:800; font-size:1.1rem; color: var(--butter);
 }
-.midiakit-nicho-card{
-  background:#fff; border-radius:22px; padding:38px 20px; display:flex; flex-direction:column;
-  align-items:center; gap:14px; box-shadow: 0 14px 30px rgba(59,74,107,0.14);
-}
-.midiakit-nicho-card .emoji{ font-size:2.4rem; }
-.midiakit-nicho-card span{ font-family: var(--font-display); font-weight:800; font-size:1.1rem; color: var(--blue-dark); }
+.midiakit-nichos-linha .sep{ color: var(--offwhite); opacity:.6; font-weight:700; }
+
 </style>
 </head>
 <body>
@@ -924,7 +916,7 @@ a.info-value:hover{ text-decoration:underline; }
     <span class="midiakit-logo">Bruna Medeiros<span style="color:var(--butter)">.</span></span>
     <nav class="midiakit-nav">
       <a href="#sobre" class="nav-tab">Sobre mim</a>
-      <a href="#nichos" class="nav-tab">Nichos</a>
+      <a href="#nichos-linha" class="nav-tab">Nichos</a>
       <a href="#marcas" class="nav-tab">Marcas</a>
       <a href="../" class="midiakit-voltar">&larr; portfólio</a>
     </nav>
@@ -968,25 +960,16 @@ a.info-value:hover{ text-decoration:underline; }
           <div class="midiakit-stat"><strong>+600Mil</strong><span>views somadas</span></div>
           <div class="midiakit-stat"><strong>+4 anos</strong><span>na internet</span></div>
         </div>
+        <div class="midiakit-nichos-linha" id="nichos-linha">
+          <span>Tech</span><span class="sep" aria-hidden="true">|</span>
+          <span>Papelaria</span><span class="sep" aria-hidden="true">|</span>
+          <span>Beleza</span><span class="sep" aria-hidden="true">|</span>
+          <span>Lifestyle</span>
+        </div>
       </div>
       <div class="about-photo">
         <img src="../fotos/sobre.jpg" alt="Bruna Medeiros">
       </div>
-    </div>
-  </div>
-</section>
-
-<!-- =========================================================
-     NICHOS
-========================================================== -->
-<section class="section section--blue" id="nichos">
-  <div class="wrap">
-    <h2 class="section-title">nichos que atuo</h2>
-    <div class="midiakit-nichos-grid">
-      <div class="midiakit-nicho-card"><span class="emoji">💻</span><span>Tech</span></div>
-      <div class="midiakit-nicho-card"><span class="emoji">📚</span><span>Papelaria</span></div>
-      <div class="midiakit-nicho-card"><span class="emoji">💄</span><span>Beleza</span></div>
-      <div class="midiakit-nicho-card"><span class="emoji">🌿</span><span>Lifestyle</span></div>
     </div>
   </div>
 </section>

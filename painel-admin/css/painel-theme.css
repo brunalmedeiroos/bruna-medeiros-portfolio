@@ -10803,6 +10803,10 @@
   border-radius: 14px;
 }
 
+.painel-body .pl-sugestao-usada {
+  opacity: 0.6;
+}
+
 .painel-body .pl-sugestao-tipo {
   font-size: 12px;
   font-weight: 600;

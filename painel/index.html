@@ -10444,7 +10444,8 @@
         let precisouRecarregar = false;
 
         for (const [serieId, ultima] of porSerie) {
-          if (ultima.data < hojeISO) continue; // série encerrada (sem ocorrência futura) — não reabastece sozinha
+          if (ultima.serie_encerrada) continue; // encerrada manualmente (excluirSerieDeTarefas) — nunca mais reabastece
+          if (ultima.data < hojeISO) continue; // sem ocorrência futura — não reabastece sozinha
           if (ultima.data >= limiteISO) continue;
 
           const novasDatas = datasOcorrenciasFuturas(ultima.recorrencia, ultima.data, ultima.dias_semana);
@@ -11064,10 +11065,24 @@
       if (error) throw error;
     }
 
+    // Marca as ocorrências restantes (passadas) de uma série como encerrada,
+    // pra toparOcorrenciasDasSeries() nunca mais gerar novas datas pra ela —
+    // sem isso, a ocorrência mais recente que sobrou (ainda no futuro, só
+    // antes da data de corte) fazia o reabastecimento recriar exatamente o
+    // que acabou de ser excluído.
+    async function marcarSerieEncerrada(serieId) {
+      const { error } = await Auth.sb
+        .from('painel_tarefas')
+        .update({ serie_encerrada: true })
+        .eq('serie_id', serieId);
+      if (error) throw error;
+    }
+
     // Apaga uma série inteira a partir de uma ocorrência específica.
     async function excluirSerieDeTarefas(tarefa) {
       try {
         await excluirOcorrenciasDaSerie(tarefa.serie_id, tarefa.data);
+        await marcarSerieEncerrada(tarefa.serie_id);
         await carregarTarefas();
       } catch (err) {
         console.error('Erro ao excluir série de tarefas:', err);

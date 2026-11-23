@@ -359,21 +359,6 @@ section{ position:relative; }
   width:100%; aspect-ratio: 4 / 5; object-fit:cover; object-position:center 82%; display:block;
   border-radius:4px; box-shadow: 0 24px 50px rgba(59,74,107,0.28);
 }
-/* Sobre: baralho de fotos — uma foto fixa na frente, as outras espiando
-   um pedacinho em cima e embaixo, trocando de tempos em tempos (a de baixo
-   sobe e vira a da frente, a da frente sobe e sai por cima). */
-.about-photo-stack{ position:relative; height:560px; width:100%; max-width:420px; margin:0 auto; overflow:hidden; }
-.about-stack-card{
-  position:absolute; left:50%; top:60px; width:84%; aspect-ratio: 4/5;
-  border-radius:20px; overflow:hidden; box-shadow: 0 24px 50px rgba(59,74,107,0.35);
-  opacity:0; z-index:1; pointer-events:none;
-  transform: translateX(-50%); transition: top .6s ease, opacity .6s ease;
-}
-.about-stack-card img{ width:100%; height:100%; object-fit:cover; display:block; }
-.about-stack-card.is-front{ top:60px; opacity:1; z-index:5; }
-.about-stack-card.is-peek-top{ top:-381px; opacity:1; z-index:3; }
-.about-stack-card.is-peek-bottom{ top:501px; opacity:1; z-index:2; }
-
 /* =====================================================================
    03 — FAIXA DE MARCAS — fundo amarelo manteiga
 ===================================================================== */
@@ -948,11 +933,8 @@ a.info-value:hover{ text-decoration:underline; }
 <section class="section section--dark" id="sobre">
   <div class="wrap">
     <div class="about-panel about-panel-reverse">
-      <div class="about-photo about-photo-stack" id="sobreShuffle">
-        <div class="about-stack-card"><img src="fotos/sobre-scroll-1.jpg" alt="Bruna Medeiros"></div>
-        <div class="about-stack-card"><img src="fotos/sobre-scroll-2.jpg" alt="Bruna Medeiros"></div>
-        <div class="about-stack-card"><img src="fotos/sobre-scroll-3.jpg" alt="Bruna Medeiros"></div>
-        <div class="about-stack-card"><img src="fotos/sobre-scroll-4.jpg" alt="Bruna Medeiros"></div>
+      <div class="about-photo">
+        <img src="fotos/sobre.jpg" alt="Bruna Medeiros">
       </div>
       <div class="about-text">
         <h2 class="about-title" id="notesTitle"><span class="hl-box"></span><span class="hl-cursor"></span><span class="hl-text" data-texto="sobre_titulo" data-destaque="script" data-pt-html="Oii!! sou a &lt;span class=&quot;script&quot;&gt;Bruna&lt;/span&gt;," data-en-html="Hii!! I'm &lt;span class=&quot;script&quot;&gt;Bruna&lt;/span&gt;,">Oii!! sou a <span class="script">Bruna</span>,</span></h2>
@@ -982,18 +964,18 @@ a.info-value:hover{ text-decoration:underline; }
       <button type="button" class="catalog-arrow catalog-arrow--prev" id="destaquePrev" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
       <div class="destaque-grid" id="destaqueGrid">
 
-        <div class="destaque-card" data-title="Sob Investigação" data-youtube="TJHAEILafv0">
-          <span class="destaque-nome">Sob Investigação</span>
-          <div class="destaque-thumb">
-            <img src="https://i.ytimg.com/vi/TJHAEILafv0/maxresdefault.jpg" alt="" loading="lazy">
-            <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
-          </div>
-        </div>
-
         <div class="destaque-card" data-title="Imersão Portfólio Claude" data-youtube="x7Fd9mtw5VQ">
           <span class="destaque-nome">Imersão Portfólio Claude</span>
           <div class="destaque-thumb">
             <img src="https://i.ytimg.com/vi/x7Fd9mtw5VQ/maxresdefault.jpg" alt="" loading="lazy">
+            <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
+          </div>
+        </div>
+
+        <div class="destaque-card" data-title="Sob Investigação" data-youtube="TJHAEILafv0">
+          <span class="destaque-nome">Sob Investigação</span>
+          <div class="destaque-thumb">
+            <img src="https://i.ytimg.com/vi/TJHAEILafv0/maxresdefault.jpg" alt="" loading="lazy">
             <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
           </div>
         </div>
@@ -2207,24 +2189,6 @@ a.info-value:hover{ text-decoration:underline; }
     }
   }
 
-  // Baralho de fotos do Sobre: uma foto na frente, a anterior espiando em
-  // cima (saindo), a próxima espiando embaixo (entrando) — troca sozinho.
-  (function(){
-    var stack = document.getElementById('sobreShuffle');
-    if (!stack) return;
-    var cartas = Array.prototype.slice.call(stack.querySelectorAll('.about-stack-card'));
-    var n = cartas.length;
-    if (!n) return;
-    var frente = 0;
-    function renderizar(){
-      cartas.forEach(function(c){ c.classList.remove('is-front', 'is-peek-top', 'is-peek-bottom'); });
-      cartas[frente].classList.add('is-front');
-      cartas[(frente - 1 + n) % n].classList.add('is-peek-top');
-      cartas[(frente + 1) % n].classList.add('is-peek-bottom');
-    }
-    renderizar();
-    setInterval(function(){ frente = (frente + 1) % n; renderizar(); }, 2800);
-  })();
   atualizarContagemTotal();
 
   document.querySelectorAll('.nicho-bloco').forEach(function(bloco){
@@ -2289,15 +2253,18 @@ a.info-value:hover{ text-decoration:underline; }
 
   /* ---------------- Conteúdos em destaque (carrossel coverflow) ---------------- */
   var destaqueCards = document.querySelectorAll('.destaque-card');
-  /* Só o vídeo do meio é clicável; pra ver o do lado, primeiro clica na
-     setinha (que anda um vídeo de cada vez) e depois dá o play. Começa
-     sempre com o primeiro ("Sob Investigação") centralizado. */
+  /* Só o vídeo do meio é clicável; pra ver o do lado, clica na setinha
+     (anda um vídeo por vez, em loop) ou espera — ele mesmo anda sozinho
+     a cada 4s. Começa com "Sob Investigação" (o segundo) no centro.
+     O loop automático só para se a pessoa der o play naquele vídeo. */
   (function(){
     var trilho = document.getElementById('destaqueGrid');
     var setaAnterior = document.getElementById('destaquePrev');
     var setaProxima = document.getElementById('destaqueNext');
     if (!trilho || !destaqueCards.length) return;
-    var indiceAtivo = 0;
+    var n = destaqueCards.length;
+    var indiceAtivo = 1;
+    var autoTimer = null;
 
     function centralizar(indice, instantaneo){
       var card = destaqueCards[indice];
@@ -2307,23 +2274,31 @@ a.info-value:hover{ text-decoration:underline; }
     }
     function atualizarFoco(){
       destaqueCards.forEach(function(card, i){ card.classList.toggle('is-focus', i === indiceAtivo); });
-      if (setaAnterior) setaAnterior.disabled = indiceAtivo <= 0;
-      if (setaProxima) setaProxima.disabled = indiceAtivo >= destaqueCards.length - 1;
     }
-    if (setaAnterior) setaAnterior.addEventListener('click', function(){
-      if (indiceAtivo <= 0) return;
-      indiceAtivo--; centralizar(indiceAtivo); atualizarFoco();
-    });
-    if (setaProxima) setaProxima.addEventListener('click', function(){
-      if (indiceAtivo >= destaqueCards.length - 1) return;
-      indiceAtivo++; centralizar(indiceAtivo); atualizarFoco();
-    });
+    function irPara(indice){
+      indiceAtivo = (indice + n) % n;
+      centralizar(indiceAtivo); atualizarFoco();
+    }
+    function iniciarAuto(){
+      pararAuto();
+      autoTimer = setInterval(function(){ irPara(indiceAtivo + 1); }, 4000);
+    }
+    function pararAuto(){
+      if (autoTimer){ clearInterval(autoTimer); autoTimer = null; }
+    }
+    if (setaAnterior) setaAnterior.addEventListener('click', function(){ irPara(indiceAtivo - 1); iniciarAuto(); });
+    if (setaProxima) setaProxima.addEventListener('click', function(){ irPara(indiceAtivo + 1); iniciarAuto(); });
     destaqueCards.forEach(function(card, i){
-      card.addEventListener('click', function(){ if (i === indiceAtivo) abrirModalDeArquivo(card); });
+      card.addEventListener('click', function(){
+        if (i !== indiceAtivo) return;
+        pararAuto();
+        abrirModalDeArquivo(card);
+      });
     });
     window.addEventListener('resize', function(){ centralizar(indiceAtivo, true); });
     atualizarFoco();
-    centralizar(0, true);
+    centralizar(indiceAtivo, true);
+    iniciarAuto();
   })();
 
   /* ---------------- Retenção dos vídeos: até onde a pessoa assistiu ----------------

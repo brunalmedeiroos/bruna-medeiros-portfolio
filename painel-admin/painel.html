@@ -1003,6 +1003,35 @@
           </div>
         </section>
 
+        <!-- ---------- Aba: TikTok ---------- -->
+        <section id="panel-tiktok" class="tab-panel" hidden>
+          <div class="card card-instagram-conectar" id="tiktok-conectar" hidden>
+            <h3 class="card-titulo" data-i18n="tiktok_conectar_titulo">Conectar seu TikTok</h3>
+            <p class="instagram-conectar-texto" data-i18n="tiktok_conectar_texto">
+              Conecte sua conta do TikTok pra ver seguidores, curtidas e
+              vídeos direto aqui. Essa conexão só funciona depois que o
+              TikTok aprovar o aplicativo.
+            </p>
+            <button id="btn-tiktok-conectar" class="cal-btn cal-btn-primario" type="button" data-i18n="tiktok_conectar_btn">Conectar TikTok</button>
+            <p class="instagram-conectar-erro" id="tiktok-conectar-erro" hidden></p>
+          </div>
+
+          <div class="card" id="tiktok-conectado" hidden>
+            <div class="instagram-topo">
+              <span class="instagram-perfil-nome" id="tiktok-perfil-nome">@usuario</span>
+              <div class="ugc-trabalhos-topo-acoes">
+                <button id="btn-tiktok-desconectar" class="cal-btn" type="button" data-i18n="instagram_desconectar">Desconectar</button>
+              </div>
+            </div>
+            <p class="instagram-avisos" id="tiktok-avisos" hidden></p>
+            <p class="instagram-conectar-texto" data-i18n="tiktok_em_breve">
+              As métricas do TikTok (seguidores, curtidas, views) aparecem
+              aqui assim que essa parte do Mídia Kit for montada — por
+              enquanto, só a conexão já fica guardada.
+            </p>
+          </div>
+        </section>
+
         <!-- ---------- Aba: Planejador de Conteúdo ---------- -->
         <section id="panel-planejador" class="tab-panel" hidden>
           <div id="pl-hub" class="pl-hub">
@@ -1012,6 +1041,7 @@
             <button class="pl-hub-card" data-pagina="roteiros" type="button">📜 Transcrição de Vídeos</button>
             <button class="pl-hub-card" data-pagina="radar" type="button" data-i18n="pl_radar">Radar de Notícias</button>
             <button class="pl-hub-card" id="pl-hub-btn-instagram" type="button" data-i18n="nav_instagram">Instagram</button>
+            <button class="pl-hub-card" id="pl-hub-btn-tiktok" type="button" data-i18n="nav_tiktok">TikTok</button>
           </div>
 
           <div id="pl-pagina-visao-geral" class="pl-pagina">
@@ -4261,6 +4291,7 @@
     let tarefasChecklistCache = []; // itens de checklist de todas as tarefas (painel_tarefas_checklist)
     let calFormChecklist = []; // itens de checklist do formulário aberto no momento (antes de salvar)
     let instagramAbaCarregada = false;
+    let tiktokAbaCarregada = false;
     let instagramSubAbaAtual = 'visao-geral';
     let instagramMediaCache = [];
     let instagramAutomacoesCarregadas = false;
@@ -4602,6 +4633,7 @@
       email: 'titulo_email',
       ferramentas: 'titulo_ferramentas',
       instagram: 'titulo_instagram',
+      tiktok: 'titulo_tiktok',
       planejador: 'titulo_planejador',
       ugc: 'titulo_ugc',
       clientes: 'titulo_clientes',
@@ -4633,6 +4665,7 @@
         titulo_email: 'E-mail',
         titulo_ferramentas: 'Ferramentas',
         titulo_instagram: 'Instagram',
+        titulo_tiktok: 'TikTok',
         titulo_planejador: 'Meus conteúdos',
         titulo_radar: 'Radar de Notícias',
         titulo_ugc: 'UGC/Publicidade',
@@ -4844,6 +4877,7 @@
         nav_email: 'E-mail',
         nav_ferramentas: 'Ferramentas',
         nav_instagram: 'Instagram',
+        nav_tiktok: 'TikTok',
         nav_planejador: 'Meus conteúdos',
         nav_radar: 'Radar de Notícias',
         nav_ugc: 'UGC/Publicidade',
@@ -5080,6 +5114,11 @@
         instagram_conectar_titulo: 'Conectar seu Instagram',
         instagram_conectar_texto: 'Conecte a conta Business/Criador do seu Instagram (vinculada a uma Página do Facebook) pra ver seguidores, alcance, cliques no link da bio e o desempenho dos seus posts direto aqui.',
         instagram_conectar_btn: 'Conectar Instagram',
+        tiktok_conectar_titulo: 'Conectar seu TikTok',
+        tiktok_conectar_texto: 'Conecte sua conta do TikTok pra ver seguidores, curtidas e vídeos direto aqui. Essa conexão só funciona depois que o TikTok aprovar o aplicativo.',
+        tiktok_conectar_btn: 'Conectar TikTok',
+        tiktok_em_breve: 'As métricas do TikTok (seguidores, curtidas, views) aparecem aqui assim que essa parte do Mídia Kit for montada — por enquanto, só a conexão já fica guardada.',
+        tiktok_desconectar_confirmar: 'Desconectar o TikTok? Você vai precisar autorizar de novo pra reconectar.',
         instagram_atualizar_metricas_aria: 'Atualizar métricas',
         instagram_seguidores: '👥 Seguidores',
         instagram_alcance: '📢 Alcance',
@@ -5995,6 +6034,7 @@
         titulo_email: 'Email',
         titulo_ferramentas: 'Tools',
         titulo_instagram: 'Instagram',
+        titulo_tiktok: 'TikTok',
         titulo_planejador: 'My content',
         titulo_radar: 'News Radar',
         titulo_ugc: 'UGC/Advertising',
@@ -6206,6 +6246,7 @@
         nav_email: 'Email',
         nav_ferramentas: 'Tools',
         nav_instagram: 'Instagram',
+        nav_tiktok: 'TikTok',
         nav_planejador: 'My content',
         nav_radar: 'News Radar',
         nav_ugc: 'UGC/Advertising',
@@ -6443,6 +6484,11 @@
         instagram_conectar_titulo: 'Connect your Instagram',
         instagram_conectar_texto: 'Connect your Instagram Business/Creator account (linked to a Facebook Page) to see followers, reach, bio link clicks, and how your posts are performing, right here.',
         instagram_conectar_btn: 'Connect Instagram',
+        tiktok_conectar_titulo: 'Connect your TikTok',
+        tiktok_conectar_texto: "Connect your TikTok account to see followers, likes, and videos right here. This connection only works once TikTok approves the app.",
+        tiktok_conectar_btn: 'Connect TikTok',
+        tiktok_em_breve: "TikTok metrics (followers, likes, views) will show up here once that part of the Media Kit is built — for now, the connection itself is already saved.",
+        tiktok_desconectar_confirmar: 'Disconnect TikTok? You will need to authorize again to reconnect.',
         instagram_atualizar_metricas_aria: 'Refresh metrics',
         instagram_seguidores: '👥 Followers',
         instagram_alcance: '📢 Reach',
@@ -7732,14 +7778,17 @@
       document.getElementById('btn-instagram-conectar').addEventListener('click', conectarInstagram);
       document.getElementById('btn-instagram-atualizar').addEventListener('click', carregarInstagram);
       document.getElementById('btn-instagram-desconectar').addEventListener('click', desconectarInstagram);
+      document.getElementById('btn-tiktok-conectar').addEventListener('click', conectarTiktok);
+      document.getElementById('btn-tiktok-desconectar').addEventListener('click', desconectarTiktok);
 
       // Planejador de Conteúdo
       document.querySelectorAll('.pl-hub-card[data-pagina]').forEach((btn) => {
         btn.addEventListener('click', () => abrirPaginaPlanejador(btn.dataset.pagina));
       });
-      // Instagram vive na própria aba (não é uma página do hub): o botão
-      // aqui dentro só leva pra lá, sem entrar no abrirPaginaPlanejador.
+      // Instagram e TikTok vivem na própria aba (não são página do hub):
+      // o botão aqui dentro só leva pra lá, sem entrar no abrirPaginaPlanejador.
       document.getElementById('pl-hub-btn-instagram').addEventListener('click', () => trocarAba('instagram'));
+      document.getElementById('pl-hub-btn-tiktok').addEventListener('click', () => trocarAba('tiktok'));
       document.getElementById('pl-modal-fechar').addEventListener('click', fecharModalIdeia);
       document.getElementById('pl-modal-salvar').addEventListener('click', salvarModalIdeia);
       document.getElementById('pl-modal-excluir').addEventListener('click', excluirModalIdeia);
@@ -9657,7 +9706,7 @@
     const CAPA_MENUS = { ugc: '.ugc-subnav', instagram: '.instagram-subnav', ferramentas: '.ferr-modos', planejador: '#pl-hub', financeiro: '.financeiro-subnav', metas: '.metas-subnav', desafios: '.dg-subnav', clientes: '.clientes-subnav' };
     const CAPA_SEM = ['overview', 'email'];
     // Abas que mostram o ícone da Nota rápida na capa (o Dashboard tem o dele).
-    const NOTA_ABAS = ['ferramentas', 'clientes', 'planejador', 'instagram', 'financeiro', 'metas', 'desafios'];
+    const NOTA_ABAS = ['ferramentas', 'clientes', 'planejador', 'instagram', 'tiktok', 'financeiro', 'metas', 'desafios'];
     let capaMenuMovido = null;
     let capaObservador = null;
 
@@ -9744,6 +9793,10 @@
           instagramAbaCarregada = true;
           carregarInstagram();
         }
+      }
+      if (aba === 'tiktok' && !tiktokAbaCarregada) {
+        tiktokAbaCarregada = true;
+        carregarTiktok();
       }
       if ((aba === 'planejador' || aba === 'calendario') && !planejadorAbaCarregada) {
         planejadorAbaCarregada = true;
@@ -11277,6 +11330,86 @@
         mostrarInstagramConectado();
         document.getElementById('instagram-avisos').hidden = false;
         document.getElementById('instagram-avisos').textContent = tr('instagram_erro_carregar_generico');
+      }
+    }
+
+    // ---------------- TikTok (só a conexão por enquanto — ver tiktok-metrics) ----------------
+    function mostrarTiktokDesconectado(mensagemErro) {
+      document.getElementById('tiktok-conectar').hidden = false;
+      document.getElementById('tiktok-conectado').hidden = true;
+      const erroEl = document.getElementById('tiktok-conectar-erro');
+      if (mensagemErro) {
+        erroEl.textContent = mensagemErro;
+        erroEl.hidden = false;
+      } else {
+        erroEl.hidden = true;
+      }
+    }
+
+    function mostrarTiktokConectado() {
+      document.getElementById('tiktok-conectar').hidden = true;
+      document.getElementById('tiktok-conectado').hidden = false;
+    }
+
+    async function conectarTiktok() {
+      const btn = document.getElementById('btn-tiktok-conectar');
+      btn.disabled = true;
+      btn.textContent = tr('conectando');
+      try {
+        const resultado = await chamarFuncao('tiktok-oauth-start');
+        if (resultado.ok) {
+          window.location.href = resultado.url;
+          return;
+        }
+        mostrarTiktokDesconectado(resultado.error || tr('erro_iniciar_conexao'));
+      } catch (err) {
+        console.error('Erro ao conectar TikTok:', err);
+        mostrarTiktokDesconectado(tr('erro_iniciar_conexao'));
+      }
+      btn.disabled = false;
+      btn.textContent = tr('tiktok_conectar_btn');
+    }
+
+    async function desconectarTiktok() {
+      if (!(await confirmarAcao(tr('tiktok_desconectar_confirmar'), { textoConfirmar: tr('instagram_desconectar'), perigo: true }))) return;
+      const btn = document.getElementById('btn-tiktok-desconectar');
+      btn.disabled = true;
+      try {
+        const resultado = await chamarFuncao('tiktok-oauth-disconnect', { method: 'POST' });
+        if (!resultado.ok) throw new Error(resultado.error || 'erro desconhecido');
+        tiktokAbaCarregada = false;
+        mostrarTiktokDesconectado();
+      } catch (err) {
+        console.error('Erro ao desconectar TikTok:', err);
+        alert(tr('erro_salvar_generico'));
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function carregarTiktok() {
+      try {
+        const resultado = await chamarFuncao('tiktok-metrics');
+        if (!resultado.ok) {
+          mostrarTiktokDesconectado(resultado.error);
+          return;
+        }
+        if (!resultado.conectado) {
+          mostrarTiktokDesconectado();
+          return;
+        }
+        mostrarTiktokConectado();
+        document.getElementById('tiktok-perfil-nome').textContent = resultado.perfil?.username ? '@' + resultado.perfil.username : '—';
+        const avisoEl = document.getElementById('tiktok-avisos');
+        if (resultado.erros && resultado.erros.length) {
+          avisoEl.textContent = resultado.erros.join(' ');
+          avisoEl.hidden = false;
+        } else {
+          avisoEl.hidden = true;
+        }
+      } catch (err) {
+        console.error('Erro ao carregar o TikTok:', err);
+        mostrarTiktokDesconectado(tr('instagram_erro_carregar_generico'));
       }
     }
 

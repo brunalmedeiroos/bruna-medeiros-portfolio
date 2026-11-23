@@ -505,6 +505,27 @@ enabled = true
 import_map = "./functions/instagram-oauth-disconnect/deno.json"
 entrypoint = "./functions/instagram-oauth-disconnect/index.ts"
 
+[functions.tiktok-oauth-start]
+enabled = true
+import_map = "./functions/tiktok-oauth-start/deno.json"
+entrypoint = "./functions/tiktok-oauth-start/index.ts"
+
+[functions.tiktok-oauth-callback]
+enabled = true
+verify_jwt = false
+import_map = "./functions/tiktok-oauth-callback/deno.json"
+entrypoint = "./functions/tiktok-oauth-callback/index.ts"
+
+[functions.tiktok-oauth-disconnect]
+enabled = true
+import_map = "./functions/tiktok-oauth-disconnect/deno.json"
+entrypoint = "./functions/tiktok-oauth-disconnect/index.ts"
+
+[functions.tiktok-metrics]
+enabled = true
+import_map = "./functions/tiktok-metrics/deno.json"
+entrypoint = "./functions/tiktok-metrics/index.ts"
+
 [functions.radar-atualizar]
 enabled = true
 verify_jwt = false

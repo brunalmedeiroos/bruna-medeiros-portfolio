@@ -6019,11 +6019,28 @@
   padding-top: 8px;
 }
 
-/* Banco de ideias: uma linha por cor de pasta */
+/* Banco de ideias: as pastas de cada cor ficam agrupadas, mas os grupos
+   ficam lado a lado (não um embaixo do outro) enquanto houver espaço. */
 .painel-body .bt-pastas-linhas {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 22px;
+}
+
+/* Dentro de cada grupo de cor, troca o grid (que não encolhe bem dentro de
+   um flex item) por flex-wrap, pra várias pastas da mesma cor continuarem
+   lado a lado entre si quando houver mais de uma. */
+.painel-body .bt-pastas-linhas > .ferr-pastas-grade {
+  display: flex;
+  flex-wrap: wrap;
+  width: auto;
+  max-width: 100%;
+}
+
+.painel-body .bt-pastas-linhas > .ferr-pastas-grade > .ferr-pasta {
+  flex: 0 0 190px;
 }
 
 .painel-body .bt-pastas-linhas .bt-subpastas {

@@ -7784,8 +7784,12 @@
         const item = b.closest('.pl-sugestao-item');
         const sugestao = item && planejamentoSemanalCache.find((s) => s.id === item.dataset.id);
         if (!sugestao) return;
-        if (b.dataset.a === 'descartar') planejamentoMudarStatus(sugestao, 'descartada');
-        else if (sugestao.tipo === 'achado') planejamentoUsarAchado(sugestao);
+        const acao = b.dataset.a;
+        if (acao === 'descartar') planejamentoMudarStatus(sugestao, 'descartada');
+        else if (acao === 'abrir') {
+          if (sugestao.tipo === 'achado') planejamentoUsarAchado(sugestao);
+          else planejamentoAbrirIdeiaCriada(sugestao);
+        } else if (sugestao.tipo === 'achado') planejamentoUsarAchado(sugestao);
         else planejamentoUsarIdeia(sugestao);
       });
       document.getElementById('ach-busca').addEventListener('input', (e) => {
@@ -12918,29 +12922,36 @@
           ${s.descricao ? `<p class="pl-sugestao-descricao">${escapeHtml(s.descricao)}</p>` : ''}
           ${s.pilar_sugerido ? `<span class="rt-etq">${escapeHtml(s.pilar_sugerido)}</span>` : ''}
           <div class="pl-sugestao-acoes">
-            ${s.status === 'pendente' ? '<button type="button" class="cal-btn cal-btn-primario" data-a="usar">✅ Usar</button>' : ''}
+            ${s.status === 'pendente'
+              ? '<button type="button" class="cal-btn cal-btn-primario" data-a="usar">✅ Usar</button>'
+              : '<button type="button" class="cal-btn cal-btn-primario" data-a="abrir">↗ Abrir</button>'}
             <button type="button" class="cal-btn" data-a="descartar">✖ ${s.status === 'aceita' ? 'Remover da lista' : 'Descartar'}</button>
           </div>
         </div>
       `).join('');
     }
 
-    async function planejamentoMudarStatus(sugestao, novoStatus) {
+    async function planejamentoMudarStatus(sugestao, novoStatus, camposExtra) {
       sugestao.status = novoStatus;
+      Object.assign(sugestao, camposExtra);
       renderizarPlanejamentoSemanal();
-      const { error } = await Auth.sb.from('planejamento_semanal').update({ status: novoStatus }).eq('id', sugestao.id);
+      const { error } = await Auth.sb.from('planejamento_semanal').update({ status: novoStatus, ...camposExtra }).eq('id', sugestao.id);
       if (error) console.error('Erro ao atualizar sugestão semanal:', error);
     }
 
-    // "Usar" uma sugestão do tipo achado: leva pro Banco de Achados pra ela ver
-    // e adaptar — não cria ideia sozinho, o achado ainda precisa virar roteiro.
+    // "Usar" (ou reabrir, se já usada) uma sugestão do tipo achado: leva pro
+    // Banco de Achados pra ela ver e adaptar — não cria ideia sozinho, o
+    // achado ainda precisa virar roteiro. Marcar como aceita de novo numa
+    // sugestão que já está aceita não tem efeito nenhum, então é seguro
+    // reaproveitar esta mesma função pro botão "Abrir".
     function planejamentoUsarAchado(sugestao) {
-      planejamentoMudarStatus(sugestao, 'aceita');
+      if (sugestao.status === 'pendente') planejamentoMudarStatus(sugestao, 'aceita');
       achBusca = '';
       achFiltro = 'todos';
       abrirPaginaPlanejador('achados');
       const achado = achadosCache.find((a) => a.id === sugestao.achado_id);
       if (achado) abrirModalAchado(achado);
+      else alert('Não encontrei mais esse achado — pode ter sido excluído.');
     }
 
     // "Usar" uma sugestão do tipo ideia: mesmo modal de escolher pasta do
@@ -12959,10 +12970,19 @@
             btConteudos.push(criada[0]);
             btAtualizarCronograma();
           }
-          await planejamentoMudarStatus(sugestao, 'aceita');
+          await planejamentoMudarStatus(sugestao, 'aceita', { ideia_criada_id: criada && criada[0] ? criada[0].id : null });
           alert('Ideia adicionada ao Banco de ideias & Roteiros!');
         },
       });
+    }
+
+    // Reabre (sem criar de novo) a ideia que nasceu de uma sugestão já aceita.
+    async function planejamentoAbrirIdeiaCriada(sugestao) {
+      abrirPaginaPlanejador('banco-teste');
+      if (!btCarregado) await btCarregar();
+      const c = btConteudos.find((x) => x.id === sugestao.ideia_criada_id);
+      if (c) btAbrirConteudo(c);
+      else alert('Não encontrei mais essa ideia — pode ter sido excluída ou movida.');
     }
 
     async function gerarPlanejamentoSemanal() {

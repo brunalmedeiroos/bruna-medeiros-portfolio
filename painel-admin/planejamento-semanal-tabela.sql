@@ -24,6 +24,11 @@ create table if not exists public.planejamento_semanal (
   status text not null default 'pendente' check (status in ('pendente', 'aceita', 'descartada'))
 );
 
+-- Guarda qual ideia (em ideias_conteudos) nasceu de uma sugestão do tipo
+-- "ideia" quando ela é aceita, pra poder abrir de novo depois (botão Abrir).
+alter table public.planejamento_semanal
+  add column if not exists ideia_criada_id uuid references public.ideias_conteudos(id) on delete set null;
+
 create index if not exists planejamento_semanal_semana_idx on public.planejamento_semanal (semana desc);
 create index if not exists planejamento_semanal_status_idx on public.planejamento_semanal (status);
 

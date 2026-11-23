@@ -21,6 +21,7 @@
   --grafite-rgb: 75, 57, 53;              /* mesma cor acima, em R,G,B: base de toda tinta/sombra sutil */
   --texto-suave: rgba(var(--grafite-rgb), 0.7);
   --borda: rgba(var(--grafite-rgb), 0.18);         /* mesma borda usada nos inputs do site */
+  --butter: #FFF7C5;                      /* --butter: amarelo manteiga (camada "Meus conteúdos" do Calendário) */
 
   /* ---- Raio e sombra extraídos do card genérico do site (.services-window),
      com cantos um pouco maiores e sombra em duas camadas (mais rasa e mais
@@ -432,7 +433,14 @@
 }
 
 .painel-body .cal-evento-chip-ugc {
-  background: rgba(var(--grafite-rgb), 0.75);
+  background: var(--coral);
+  color: var(--branco);
+  cursor: pointer;
+}
+
+.painel-body .cal-evento-chip-conteudo {
+  background: var(--butter);
+  color: var(--grafite);
   cursor: pointer;
 }
 
@@ -945,54 +953,10 @@
 }
 
 /* ==========================================================================
-   Calendário — conexão com o Google Agenda (agenda dedicada "Creator
-   Center") e as visões de Semana/Dia (grade de horas, estilo Google Agenda).
+   Calendário — só visão mensal, sem Google Agenda. As duas camadas de
+   leitura (Envio de trabalhos / Meus conteúdos) são indicadas por uma
+   legenda fixa no topo, ao lado da navegação de mês.
    ========================================================================== */
-
-.painel-body .card-google-agenda-conectar {
-  max-width: 480px;
-  margin: 0 auto 20px;
-  text-align: center;
-}
-
-.painel-body .cal-google-conectar-texto {
-  font-size: 14px;
-  color: var(--texto-suave);
-  margin: 12px 0 20px;
-  line-height: 1.5;
-}
-
-.painel-body .cal-google-conectar-erro {
-  font-size: 13px;
-  color: #b3413b;
-  margin-top: 14px;
-}
-
-.painel-body .cal-google-status {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-  padding: 10px 16px;
-  background: var(--branco);
-  border: 1px solid var(--borda);
-  border-radius: var(--raio-sm);
-}
-
-.painel-body .cal-google-status-texto {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--grafite);
-  flex: 1;
-}
-
-.painel-body .cal-google-status .cal-btn-icon {
-  width: 30px;
-  height: 30px;
-  box-shadow: none;
-}
-
-/* ---- Cabeçalho do mês: setas+rótulo de um lado, alternador Mês/Semana/Dia do outro ---- */
 
 .painel-body .cal-topo {
   flex-wrap: wrap;
@@ -1005,227 +969,34 @@
   gap: 4px;
 }
 
-.painel-body .cal-visao-grupo {
+.painel-body .cal-legenda-grupo {
   display: flex;
-  gap: 6px;
-  background: var(--branco);
-  border: 1px solid var(--borda);
-  border-radius: var(--raio-sm);
-  padding: 4px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.painel-body .cal-visao-btn {
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  padding: 6px 12px;
+.painel-body .cal-legenda-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 13px;
   font-weight: 600;
-  font-family: var(--fonte-corpo);
-  color: var(--texto-suave);
-  cursor: pointer;
-}
-
-.painel-body .cal-visao-btn:hover {
-  color: var(--grafite);
-}
-
-.painel-body .cal-visao-btn.ativo {
-  background: var(--coral);
-  color: var(--branco);
-}
-
-/* ---- Visões Semana/Dia: grade de horas ---- */
-
-.painel-body .cal-grade-semana,
-.painel-body .cal-grade-dia {
-  margin-top: 6px;
-}
-
-.painel-body .cal-grade-cabecalho,
-.painel-body .cal-grade-dia-todo-linha,
-.painel-body .cal-grade-corpo {
-  display: grid;
-}
-
-.painel-body .cal-grade-dia-cabecalho {
-  background: transparent;
-  border: none;
-  border-radius: var(--raio-sm);
-  padding: 6px 4px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  cursor: pointer;
-  font-family: var(--fonte-corpo);
-}
-
-.painel-body .cal-grade-dia-cabecalho:hover {
-  background: rgba(var(--grafite-rgb), 0.06);
-}
-
-.painel-body .cal-grade-dia-cabecalho-semana {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
   color: var(--texto-suave);
 }
 
-.painel-body .cal-grade-dia-cabecalho-num {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--grafite);
-  width: 30px;
-  height: 30px;
+.painel-body .cal-legenda-bolinha {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-shrink: 0;
 }
 
-.painel-body .cal-grade-dia-cabecalho.cal-dia-hoje .cal-grade-dia-cabecalho-num {
+.painel-body .cal-legenda-trabalho {
   background: var(--coral);
-  color: var(--branco);
 }
 
-.painel-body .cal-grade-dia-cabecalho.cal-dia-selecionado .cal-grade-dia-cabecalho-num {
-  border: 2px solid var(--grafite);
-}
-
-.painel-body .cal-grade-dia-todo-linha {
-  min-height: 28px;
-  border-bottom: 1px solid var(--borda);
-  padding-bottom: 6px;
-  margin-bottom: 4px;
-}
-
-.painel-body .cal-grade-dia-todo-coluna {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 0 3px;
-}
-
-.painel-body .cal-evento-dia-todo {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--branco);
-  background: var(--coral);
-  border-radius: 6px;
-  padding: 3px 6px;
-  cursor: pointer;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.painel-body .cal-evento-dia-todo-ugc {
-  background: rgba(var(--grafite-rgb), 0.75);
-}
-
-.painel-body .cal-evento-dia-todo-feito {
-  opacity: 0.5;
-  text-decoration: line-through;
-}
-
-.painel-body .cal-grade-corpo {
-  max-height: 600px;
-  overflow-y: auto;
-  border: 1px solid var(--borda);
-  border-radius: var(--raio-sm);
-}
-
-.painel-body .cal-horas-coluna {
-  border-right: 1px solid var(--borda);
-}
-
-.painel-body .cal-hora-linha {
-  height: 48px;
-  font-size: 10px;
-  color: var(--texto-suave);
-  text-align: right;
-  padding-right: 6px;
-  box-sizing: border-box;
-  transform: translateY(-6px);
-}
-
-.painel-body .cal-dia-coluna {
-  position: relative;
-  border-right: 1px solid var(--borda);
-}
-
-.painel-body .cal-dia-coluna-linha {
-  height: 48px;
-  border-top: 1px solid var(--borda);
-  box-sizing: border-box;
-  cursor: pointer;
-}
-
-.painel-body .cal-dia-coluna-linha:hover {
-  background: rgba(var(--grafite-rgb), 0.04);
-}
-
-.painel-body .cal-evento-bloco {
-  position: absolute;
-  left: 3px;
-  right: 3px;
-  background: var(--coral);
-  color: var(--branco);
-  border-radius: 6px;
-  padding: 3px 6px;
-  overflow: hidden;
-  cursor: grab;
-  display: flex;
-  flex-direction: column;
-  line-height: 1.25;
-  touch-action: none;
-  user-select: none;
-}
-
-.painel-body .cal-evento-bloco-horario {
-  font-size: 10px;
-  font-weight: 600;
-  opacity: 0.85;
-}
-
-.painel-body .cal-evento-bloco-titulo {
-  font-size: 12px;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.painel-body .cal-evento-bloco-feito {
-  /* opacity em vez de trocar o background — a cor de categoria é aplicada
-     via style inline (maior prioridade que uma classe). */
-  opacity: 0.5;
-}
-
-.painel-body .cal-evento-bloco-feito .cal-evento-bloco-titulo {
-  text-decoration: line-through;
-}
-
-.painel-body .cal-evento-bloco-redimensionar {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 8px;
-  cursor: ns-resize;
-  touch-action: none;
-}
-
-@media (max-width: 480px) {
-  .painel-body .cal-visao-btn {
-    padding: 6px 8px;
-    font-size: 12px;
-  }
-
-  .painel-body .cal-grade-corpo {
-    max-height: 420px;
-  }
+.painel-body .cal-legenda-conteudo {
+  background: var(--butter);
 }
 
 /* ==========================================================================
@@ -13079,28 +12850,6 @@
 /* dentro de um dia que já passou o dia todo já está apagado: o verde do publicado não precisa apagar de novo */
 .painel-body .pl-cron-dia-passado:not(.pl-cron-dia-fora) .pl-cron-etapa-publicado {
   opacity: 1;
-}
-
-/* Calendário: arrastar um evento pra outro dia da semana */
-.painel-body .cal-evento-arrastando {
-  z-index: 20;
-  opacity: 0.92;
-  cursor: grabbing;
-  box-shadow: 0 10px 24px rgba(var(--grafite-rgb), 0.3);
-}
-
-.painel-body .cal-dia-coluna-alvo {
-  background: rgba(var(--coral-rgb), 0.14);
-}
-
-.painel-body .cal-evento-dia-todo {
-  touch-action: none;
-  user-select: none;
-}
-
-.painel-body .cal-grade-dia-todo-coluna:has(.cal-evento-arrastando) {
-  position: relative;
-  z-index: 20;
 }
 
 /* ==========================================================================

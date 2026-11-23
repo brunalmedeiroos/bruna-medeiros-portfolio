@@ -10771,6 +10771,65 @@
   outline-offset: 2px;
 }
 
+/* ---- Visão geral de Meus conteúdos: Planejamento da semana ---- */
+
+.painel-body .pl-planejamento-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.painel-body .pl-planejamento-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.painel-body .pl-planejamento-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.painel-body .pl-sugestao-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px;
+  background: var(--creme);
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+}
+
+.painel-body .pl-sugestao-tipo {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--texto-suave);
+}
+
+.painel-body .pl-sugestao-titulo {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-size: 15px;
+  color: var(--grafite);
+}
+
+.painel-body .pl-sugestao-descricao {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--texto-suave);
+}
+
+.painel-body .pl-sugestao-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
 /* ---- Visão geral de Meus conteúdos: Equilíbrio de Função ---- */
 
 .painel-body .pl-eq-card {

@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../painel-admin/css/style.css?v=20261123c">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261123c">
+<link rel="stylesheet" href="../painel-admin/css/painel-theme.css?v=20261123d">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -1046,6 +1046,16 @@
                 <p class="cal-todas-resumo" id="pl-vg-travando-frase">Quantos conteúdos em cada etapa, do banco de ideias até postado.</p>
                 <div class="pl-vg-travando-banco" id="pl-vg-travando-banco"></div>
                 <div id="pl-vg-pipeline"></div>
+              </div>
+
+              <div class="card pl-planejamento-card" id="pl-planejamento-card">
+                <div class="pl-planejamento-cabecalho">
+                  <h3 class="card-titulo">🗓️ Planejamento da semana</h3>
+                  <button type="button" id="pl-planejamento-gerar" class="cal-btn">🔄 Gerar agora</button>
+                </div>
+                <p class="cal-todas-resumo" id="pl-planejamento-aviso-tabela" hidden>Falta rodar o arquivo planejamento-semanal-tabela.sql no SQL Editor do Supabase.</p>
+                <p class="cal-todas-resumo" id="pl-planejamento-resumo"></p>
+                <div id="pl-planejamento-lista" class="pl-planejamento-lista"></div>
               </div>
 
               <div class="card pl-eq-card" id="pl-vg-equilibrio" hidden>
@@ -4293,6 +4303,12 @@
     let achFavoritoOk = null; // a coluna favorito existe (achados-favorito.sql já rodado); null = ainda não conferi
     let achCategoriaModal = 'Gancho';
     let dataAgendarAtual = null; // data (ISO) do dia clicado no "+" do calendário do cronograma
+    let planejamentoSemanalCache = [];
+    let planejamentoOk = null; // a tabela planejamento_semanal existe (planejamento-semanal-tabela.sql já rodado); null = ainda não conferi
+    // Contexto genérico do modal "escolher pilar": quem abre define o que
+    // acontece ao confirmar — reaproveitado pelo Radar (usar notícia) e pelo
+    // Planejamento semanal (usar sugestão de ideia), em vez de duplicar o modal.
+    let pilarModalContexto = null; // { pilarSugerido, aoConfirmar(pilarId) }
     const ACHADOS_COLUNAS = ['Gancho', 'Frase', 'Formato', 'Carrossel', 'Música', 'CTA', 'Avulso'];
     // Categorias oferecidas pra achados novos (chips de filtro e modal de criar/editar).
     // Avulso saiu da lista — achados antigos com essa categoria continuam existindo e
@@ -7760,6 +7776,18 @@
       document.getElementById('pl-modal-achado-excluir').addEventListener('click', excluirModalAchado);
       document.getElementById('ach-btn-nova').addEventListener('click', () => abrirModalAchado(null));
       glLigarEventos();
+      // Planejamento da semana
+      document.getElementById('pl-planejamento-gerar').addEventListener('click', gerarPlanejamentoSemanal);
+      document.getElementById('pl-planejamento-lista').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-a]');
+        if (!b) return;
+        const item = b.closest('.pl-sugestao-item');
+        const sugestao = item && planejamentoSemanalCache.find((s) => s.id === item.dataset.id);
+        if (!sugestao) return;
+        if (b.dataset.a === 'descartar') planejamentoMudarStatus(sugestao, 'descartada');
+        else if (sugestao.tipo === 'achado') planejamentoUsarAchado(sugestao);
+        else planejamentoUsarIdeia(sugestao);
+      });
       document.getElementById('ach-busca').addEventListener('input', (e) => {
         achBusca = e.target.value;
         renderizarAchados();
@@ -7861,7 +7889,29 @@
       document.getElementById('radar-modal-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'radar-modal-overlay') fecharModalRadar();
       });
-      document.getElementById('radar-modal-usar-ideia').addEventListener('click', abrirModalEscolherPilar);
+      document.getElementById('radar-modal-usar-ideia').addEventListener('click', () => {
+        const item = radarCache.find((i) => i.id === radarAbertaId);
+        if (!item) return;
+        abrirModalEscolherPilarGenerico({
+          pilarSugerido: item.pilar_sugerido,
+          aoConfirmar: async (pilarId) => {
+            const proxima = btConteudosDaPasta(pilarId).reduce((max, c) => Math.max(max, c.ordem || 0), -1) + 1;
+            const { data: criada, error: erroIdeia } = await Auth.sb
+              .from('ideias_conteudos')
+              .insert({ pasta_id: pilarId, titulo: item.titulo, status: 'Roteiro pronto', roteiro_breve: item.adaptacao || '', ordem: proxima })
+              .select();
+            if (erroIdeia) throw erroIdeia;
+            if (criada && criada[0]) {
+              btConteudos.push(criada[0]);
+              btAtualizarCronograma();
+            }
+            await Auth.sb.from('radar_noticias').update({ usada: true }).eq('id', radarAbertaId);
+            fecharModalRadar();
+            await carregarRadar();
+            alert(tr('radar_ideia_adicionada'));
+          },
+        });
+      });
       document.getElementById('radar-modal-pilar-fechar').addEventListener('click', fecharModalEscolherPilar);
       document.getElementById('radar-pilar-confirmar').addEventListener('click', confirmarUsarIdeia);
       document.getElementById('radar-modal-pilar-overlay').addEventListener('click', (e) => {
@@ -12811,6 +12861,7 @@
         ideiasCache = ideias.data || [];
         achadosCache = achados.data || [];
         btCarregar().then(btAtualizarCronograma); // conteúdos do Banco de ideias & Roteiros também entram no cronograma
+        carregarPlanejamentoSemanal();
 
         renderizarBancoIdeias();
         renderizarAchados();
@@ -12820,6 +12871,111 @@
         console.error('Erro ao carregar planejador:', err);
         const alvoErro = document.getElementById('pl-colunas-banco');
         if (alvoErro) alvoErro.innerHTML = `<p class="texto-erro">${escapeHtml(tr('pl_erro_carregar'))}</p>`;
+      }
+    }
+
+    // ==========================================================================
+    // Planejamento da semana (agente de sugestão semanal): olha achados ainda
+    // não usados, ideias existentes, o que já foi postado e as tendências do
+    // Radar, e pede pro Gemini até 6 sugestões — ver
+    // planejamento-semanal-tabela.sql e supabase/functions/planejamento-semanal.
+    // ==========================================================================
+
+    async function carregarPlanejamentoSemanal() {
+      try {
+        const { data, error } = await Auth.sb.from('planejamento_semanal').select('*').order('created_at', { ascending: false });
+        if (error) throw error;
+        planejamentoSemanalCache = data || [];
+        planejamentoOk = true;
+      } catch (err) {
+        console.error('Planejamento semanal ainda não disponível (planejamento-semanal-tabela.sql):', err);
+        planejamentoSemanalCache = [];
+        planejamentoOk = false;
+      }
+      renderizarPlanejamentoSemanal();
+    }
+
+    function renderizarPlanejamentoSemanal() {
+      const lista = document.getElementById('pl-planejamento-lista');
+      if (!lista) return;
+      document.getElementById('pl-planejamento-aviso-tabela').hidden = planejamentoOk !== false;
+      document.getElementById('pl-planejamento-gerar').hidden = planejamentoOk === false;
+
+      const pendentes = planejamentoSemanalCache.filter((s) => s.status === 'pendente');
+      document.getElementById('pl-planejamento-resumo').textContent = planejamentoOk === false
+        ? ''
+        : pendentes.length === 0
+          ? 'Nenhuma sugestão pendente agora. Toda segunda de manhã chega um planejamento novo, ou clique em "Gerar agora".'
+          : `${pendentes.length} ${pendentes.length === 1 ? 'sugestão' : 'sugestões'} pra essa semana.`;
+
+      lista.innerHTML = pendentes.map((s) => `
+        <div class="pl-sugestao-item" data-id="${escapeHtml(s.id)}">
+          <span class="pl-sugestao-tipo">${s.tipo === 'achado' ? '🔁 Reaproveitar achado' : '✨ Ideia nova'}</span>
+          <h4 class="pl-sugestao-titulo">${escapeHtml(s.titulo)}</h4>
+          ${s.descricao ? `<p class="pl-sugestao-descricao">${escapeHtml(s.descricao)}</p>` : ''}
+          ${s.pilar_sugerido ? `<span class="rt-etq">${escapeHtml(s.pilar_sugerido)}</span>` : ''}
+          <div class="pl-sugestao-acoes">
+            <button type="button" class="cal-btn cal-btn-primario" data-a="usar">✅ Usar</button>
+            <button type="button" class="cal-btn" data-a="descartar">✖ Descartar</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async function planejamentoMudarStatus(sugestao, novoStatus) {
+      sugestao.status = novoStatus;
+      renderizarPlanejamentoSemanal();
+      const { error } = await Auth.sb.from('planejamento_semanal').update({ status: novoStatus }).eq('id', sugestao.id);
+      if (error) console.error('Erro ao atualizar sugestão semanal:', error);
+    }
+
+    // "Usar" uma sugestão do tipo achado: leva pro Banco de Achados pra ela ver
+    // e adaptar — não cria ideia sozinho, o achado ainda precisa virar roteiro.
+    function planejamentoUsarAchado(sugestao) {
+      planejamentoMudarStatus(sugestao, 'aceita');
+      achBusca = '';
+      achFiltro = 'todos';
+      abrirPaginaPlanejador('achados');
+      const achado = achadosCache.find((a) => a.id === sugestao.achado_id);
+      if (achado) abrirModalAchado(achado);
+    }
+
+    // "Usar" uma sugestão do tipo ideia: mesmo modal de escolher pasta do
+    // Radar de Notícias, criando direto em ideias_conteudos (Banco de ideias & Roteiros).
+    function planejamentoUsarIdeia(sugestao) {
+      abrirModalEscolherPilarGenerico({
+        pilarSugerido: sugestao.pilar_sugerido,
+        aoConfirmar: async (pilarId) => {
+          const proxima = btConteudosDaPasta(pilarId).reduce((max, c) => Math.max(max, c.ordem || 0), -1) + 1;
+          const { data: criada, error } = await Auth.sb
+            .from('ideias_conteudos')
+            .insert({ pasta_id: pilarId, titulo: sugestao.titulo, status: 'Roteiro pronto', roteiro_breve: sugestao.descricao || '', ordem: proxima })
+            .select();
+          if (error) throw error;
+          if (criada && criada[0]) {
+            btConteudos.push(criada[0]);
+            btAtualizarCronograma();
+          }
+          await planejamentoMudarStatus(sugestao, 'aceita');
+          alert('Ideia adicionada ao Banco de ideias & Roteiros!');
+        },
+      });
+    }
+
+    async function gerarPlanejamentoSemanal() {
+      const btn = document.getElementById('pl-planejamento-gerar');
+      btn.disabled = true;
+      btn.textContent = '⏳ Gerando…';
+      try {
+        const resultado = await chamarFuncao('planejamento-semanal', { method: 'POST' });
+        if (!resultado.ok) throw new Error(resultado.error || 'erro desconhecido');
+        await carregarPlanejamentoSemanal();
+      } catch (err) {
+        console.error('Erro ao gerar planejamento semanal:', err);
+        alert('Não consegui gerar as sugestões agora. Tenta de novo daqui a pouco.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '🔄 Gerar agora';
       }
     }
 
@@ -16587,8 +16743,13 @@
 
     // Manda uma notícia do Radar direto pro Banco de Ideias, com o roteiro
     // já preenchido em "roteiro breve" — só falta escolher o pilar.
-    async function abrirModalEscolherPilar() {
-      if (!radarAbertaId) return;
+    // Modal genérico "escolher pilar": quem chama passa o pilar sugerido (se
+    // tiver) e o que fazer ao confirmar (aoConfirmar(pilarId), que pode
+    // lançar erro — o alerta de erro genérico cobre quem não tratar sozinho).
+    // Reaproveitado pelo Radar de Notícias (usar notícia) e pelo Planejamento
+    // semanal (usar sugestão de ideia), pra não duplicar este modal.
+    async function abrirModalEscolherPilarGenerico(contexto) {
+      pilarModalContexto = contexto;
       // A ideia vai pro Banco de ideias & Roteiros: escolhe-se a pasta (de qualquer nível).
       if (!btCarregado) await btCarregar();
       const opcoes = btOrdenar(btGrupos)
@@ -16600,16 +16761,16 @@
         .join('');
       if (!opcoes) {
         alert('Crie uma pasta no Banco de ideias & Roteiros primeiro, pra eu saber onde guardar essa ideia.');
+        pilarModalContexto = null;
         return;
       }
       const select = document.getElementById('radar-pilar-select');
       select.innerHTML = opcoes;
 
-      // Sugestão do Gemini: só aparece se existir uma pasta com o mesmo nome do pilar sugerido.
-      const item = radarCache.find((i) => i.id === radarAbertaId);
+      // Sugestão (do Gemini, Radar ou Planejamento): só aparece se existir uma pasta com o mesmo nome.
       const sugestaoEl = document.getElementById('radar-pilar-sugestao');
-      const pastaSugerida = item && item.pilar_sugerido
-        ? btPastas.find((p) => p.nome.trim().toLowerCase() === item.pilar_sugerido.trim().toLowerCase())
+      const pastaSugerida = contexto.pilarSugerido
+        ? btPastas.find((p) => p.nome.trim().toLowerCase() === contexto.pilarSugerido.trim().toLowerCase())
         : null;
       if (pastaSugerida) {
         select.value = pastaSugerida.id;
@@ -16624,37 +16785,21 @@
 
     function fecharModalEscolherPilar() {
       document.getElementById('radar-modal-pilar-overlay').hidden = true;
+      pilarModalContexto = null;
     }
 
     async function confirmarUsarIdeia() {
       const pilarId = document.getElementById('radar-pilar-select').value;
-      if (!pilarId || !radarAbertaId) return;
-      const item = radarCache.find((i) => i.id === radarAbertaId);
-      if (!item) return;
+      if (!pilarId || !pilarModalContexto) return;
 
       const btn = document.getElementById('radar-pilar-confirmar');
       btn.disabled = true;
       btn.textContent = tr('radar_adicionando');
       try {
-        const proxima = btConteudosDaPasta(pilarId).reduce((max, c) => Math.max(max, c.ordem || 0), -1) + 1;
-        const { data: criada, error: erroIdeia } = await Auth.sb
-          .from('ideias_conteudos')
-          .insert({ pasta_id: pilarId, titulo: item.titulo, status: 'Roteiro pronto', roteiro_breve: item.adaptacao || '', ordem: proxima })
-          .select();
-        if (erroIdeia) throw erroIdeia;
-        if (criada && criada[0]) {
-          btConteudos.push(criada[0]);
-          btAtualizarCronograma();
-        }
-
-        await Auth.sb.from('radar_noticias').update({ usada: true }).eq('id', radarAbertaId);
-
+        await pilarModalContexto.aoConfirmar(pilarId);
         fecharModalEscolherPilar();
-        fecharModalRadar();
-        await carregarRadar();
-        alert(tr('radar_ideia_adicionada'));
       } catch (err) {
-        console.error('Erro ao usar ideia do radar:', err);
+        console.error('Erro ao usar ideia:', err);
         alert(tr('radar_erro_adicionar_ideia'));
       } finally {
         btn.disabled = false;

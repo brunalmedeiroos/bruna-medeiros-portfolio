@@ -263,7 +263,7 @@ input:focus {
 .btn-colapsar-sidebar {
   position: absolute;
   top: 24px;
-  right: -13px;
+  right: 14px;
   width: 26px;
   height: 26px;
   border-radius: 50%;
@@ -434,6 +434,10 @@ input:focus {
   flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 28px;
+  padding: 14px 20px;
+  background: var(--branco);
+  border-radius: var(--raio-sm);
+  box-shadow: var(--sombra);
 }
 
 .topbar h1 {

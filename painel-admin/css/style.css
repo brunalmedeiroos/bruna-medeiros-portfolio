@@ -404,9 +404,19 @@ input:focus {
   display: none;
 }
 
+/* A setinha fica fixa no topo (top:24px) independente do que tem embaixo;
+   sem a logo (escondida aqui), o menu encostaria nela — este respiro evita
+   a sobreposição. */
+.sidebar.colapsada .sidebar-nav {
+  margin-top: 38px;
+}
+
 .sidebar.colapsada .nav-item {
   justify-content: center;
-  padding: 12px;
+  align-self: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
 }
 
 .sidebar.colapsada .btn-sair {

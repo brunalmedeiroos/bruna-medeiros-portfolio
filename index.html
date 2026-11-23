@@ -359,27 +359,20 @@ section{ position:relative; }
   width:100%; aspect-ratio: 4 / 5; object-fit:cover; object-position:center 82%; display:block;
   border-radius:4px; box-shadow: 0 24px 50px rgba(59,74,107,0.28);
 }
-/* Sobre: fotos empilhadas em diagonal, passando de baixo pra cima sem parar
-   (estilo "pilha de polaroids" — cada foto num ângulo levemente diferente). */
-.about-photo-stack{ position:relative; height:640px; width:100%; max-width:420px; overflow:hidden; }
-.about-photo-stack::before, .about-photo-stack::after{
-  content:""; position:absolute; left:0; right:0; height:110px; z-index:2; pointer-events:none;
-}
-.about-photo-stack::before{ top:0; background: linear-gradient(var(--blue-dark), transparent); }
-.about-photo-stack::after{ bottom:0; background: linear-gradient(transparent, var(--blue-dark)); }
-.about-stack-track{
-  display:flex; flex-direction:column; align-items:center; width:100%;
-  animation: about-scroll-v 30s linear infinite;
-}
+/* Sobre: baralho de fotos — uma foto fixa na frente, as outras espiando
+   um pedacinho em cima e embaixo, trocando de tempos em tempos (a de baixo
+   sobe e vira a da frente, a da frente sobe e sai por cima). */
+.about-photo-stack{ position:relative; height:560px; width:100%; max-width:420px; margin:0 auto; }
 .about-stack-card{
-  width:76%; flex-shrink:0; margin-bottom:-36px; border-radius:18px; overflow:hidden;
-  box-shadow: 0 20px 40px rgba(59,74,107,0.35);
+  position:absolute; left:50%; top:50%; width:84%; aspect-ratio: 4/5;
+  border-radius:20px; overflow:hidden; box-shadow: 0 24px 50px rgba(59,74,107,0.35);
+  opacity:0; z-index:1; pointer-events:none;
+  transform: translate(-50%,-50%); transition: transform .6s ease, opacity .6s ease;
 }
-.about-stack-card:nth-child(odd){ transform: rotate(-5deg) translateX(-14%); }
-.about-stack-card:nth-child(even){ transform: rotate(5deg) translateX(14%); }
-.about-stack-card img{ width:100%; aspect-ratio: 4/5; object-fit:cover; display:block; }
-@keyframes about-scroll-v{ from{ transform: translateY(0); } to{ transform: translateY(-50%); } }
-@media (prefers-reduced-motion: reduce){ .about-stack-track{ animation:none; } }
+.about-stack-card img{ width:100%; height:100%; object-fit:cover; display:block; }
+.about-stack-card.is-front{ opacity:1; z-index:5; transform: translate(-50%,-50%) scale(1); }
+.about-stack-card.is-peek-top{ opacity:1; z-index:3; transform: translate(-50%,-134%) scale(.94); }
+.about-stack-card.is-peek-bottom{ opacity:1; z-index:2; transform: translate(-50%,34%) scale(.94); }
 
 /* =====================================================================
    03 — FAIXA DE MARCAS — fundo amarelo manteiga
@@ -425,7 +418,7 @@ section{ position:relative; }
    nicho acima só rolam a tela até a fileira — não escondem os outros. */
 .nichos-colunas{ display:flex; flex-direction:column; gap:52px; }
 .nicho-bloco-titulo{
-  font-family: var(--font-display); font-weight:900; font-size:1.9rem; letter-spacing:-0.5px;
+  font-family: var(--font-display); font-weight:900; font-style:italic; font-size:2.6rem; letter-spacing:-0.5px;
   color: var(--ink); margin-bottom:20px;
 }
 #portfolio .wrap{ max-width:1280px; }
@@ -531,27 +524,29 @@ section{ position:relative; }
 
 /* "Conteúdos em destaque" — texto + números à esquerda, carrossel coverflow
    à direita (o card mais perto do centro fica maior, classe is-focus). */
-.destaque-panel{ display:grid; grid-template-columns: 0.8fr 1.2fr; gap:60px; align-items:center; }
+.destaque-panel{ display:grid; grid-template-columns: 0.92fr 1.08fr; gap:60px; align-items:center; }
 .destaque-titulo{
   font-family: var(--font-display); font-weight:900; letter-spacing:-0.5px;
   font-size: clamp(2.2rem, 3.6vw, 3.1rem); line-height:1.1; color: var(--ink); margin-bottom:18px;
 }
 .destaque-titulo .accent-italic{ color: var(--blue-light); font-style:italic; }
 .destaque-desc{ font-size:1.05rem; line-height:1.6; color: var(--blue-dark-70); font-weight:500; max-width:420px; margin-bottom:34px; }
-.destaque-stats{ display:flex; gap:30px; flex-wrap:wrap; }
-.destaque-stat strong{
-  display:block; font-family: var(--font-display); font-weight:900; letter-spacing:-1px;
-  font-size: clamp(1.7rem, 2.6vw, 2.3rem); color: var(--blue-dark); line-height:1; margin-bottom:6px;
+.destaque-stats-row{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 8px;
+  font-size:.86rem; font-weight:600; color: var(--ink);
 }
-.destaque-stat span{ display:block; font-weight:700; font-size:.78rem; letter-spacing:.03em; color: var(--ink); }
+.destaque-stats-row strong{
+  font-family: var(--font-display); font-weight:900; color: var(--blue-dark); margin-right:5px;
+}
+.destaque-stats-row .sep{ color: var(--blue-light); font-weight:700; }
 .catalog--destaque{ min-width:0; }
 .destaque-grid{
-  display:flex; align-items:flex-end; gap:24px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
-  padding:30px 4px 20px; scrollbar-width:none;
+  display:flex; align-items:flex-end; gap:22px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
+  padding:30px 4px 20px; scrollbar-width:none; max-width:719px;
 }
 .destaque-grid::-webkit-scrollbar{ display:none; }
 .destaque-card{
-  flex:0 0 190px; scroll-snap-align:center; cursor:pointer; opacity:.68;
+  flex:0 0 225px; scroll-snap-align:center; cursor:pointer; opacity:.68;
   transition: transform .35s ease, opacity .35s ease;
 }
 .destaque-card:hover{ opacity:.9; }
@@ -956,18 +951,11 @@ a.info-value:hover{ text-decoration:underline; }
 <section class="section section--dark" id="sobre">
   <div class="wrap">
     <div class="about-panel about-panel-reverse">
-      <div class="about-photo about-photo-stack">
-        <div class="about-stack-track">
-          <div class="about-stack-card"><img src="fotos/sobre-scroll-1.jpg" alt="Bruna Medeiros"></div>
-          <div class="about-stack-card"><img src="fotos/sobre-scroll-2.jpg" alt="Bruna Medeiros"></div>
-          <div class="about-stack-card"><img src="fotos/sobre-scroll-3.jpg" alt="Bruna Medeiros"></div>
-          <div class="about-stack-card"><img src="fotos/sobre-scroll-4.jpg" alt="Bruna Medeiros"></div>
-          <!-- duplicado (as mesmas 4 de novo) pra fechar o loop contínuo do scroll -->
-          <div class="about-stack-card"><img src="fotos/sobre-scroll-1.jpg" alt="" aria-hidden="true"></div>
-          <div class="about-stack-card"><img src="fotos/sobre-scroll-2.jpg" alt="" aria-hidden="true"></div>
-          <div class="about-stack-card"><img src="fotos/sobre-scroll-3.jpg" alt="" aria-hidden="true"></div>
-          <div class="about-stack-card"><img src="fotos/sobre-scroll-4.jpg" alt="" aria-hidden="true"></div>
-        </div>
+      <div class="about-photo about-photo-stack" id="sobreShuffle">
+        <div class="about-stack-card"><img src="fotos/sobre-scroll-1.jpg" alt="Bruna Medeiros"></div>
+        <div class="about-stack-card"><img src="fotos/sobre-scroll-2.jpg" alt="Bruna Medeiros"></div>
+        <div class="about-stack-card"><img src="fotos/sobre-scroll-3.jpg" alt="Bruna Medeiros"></div>
+        <div class="about-stack-card"><img src="fotos/sobre-scroll-4.jpg" alt="Bruna Medeiros"></div>
       </div>
       <div class="about-text">
         <h2 class="about-title" id="notesTitle"><span class="hl-box"></span><span class="hl-cursor"></span><span class="hl-text" data-texto="sobre_titulo" data-destaque="script" data-pt-html="Oii!! sou a &lt;span class=&quot;script&quot;&gt;Bruna&lt;/span&gt;," data-en-html="Hii!! I'm &lt;span class=&quot;script&quot;&gt;Bruna&lt;/span&gt;,">Oii!! sou a <span class="script">Bruna</span>,</span></h2>
@@ -986,10 +974,12 @@ a.info-value:hover{ text-decoration:underline; }
       <div class="destaque-text">
         <h2 class="destaque-titulo" data-pt-html="Conteúdos em &lt;span class=&quot;accent-italic&quot;&gt;destaque&lt;/span&gt;" data-en-html="Featured &lt;span class=&quot;accent-italic&quot;&gt;content&lt;/span&gt;">Conteúdos em <span class="accent-italic">destaque</span></h2>
         <p class="destaque-desc" data-pt="Meus vídeos em destaque mais amados, com formatos diferentes, pra você dar uma explorada." data-en="My most-loved featured videos, in different formats, for you to explore.">Meus vídeos em destaque mais amados, com formatos diferentes, pra você dar uma explorada.</p>
-        <div class="destaque-stats">
-          <div class="destaque-stat"><strong>+10</strong><span data-pt="marcas trabalhadas" data-en="brands worked with">marcas trabalhadas</span></div>
-          <div class="destaque-stat"><strong>+600Mil</strong><span data-pt="views somadas" data-en="views combined">views somadas</span></div>
-          <div class="destaque-stat"><strong>+4 anos</strong><span data-pt="na internet" data-en="online">na internet</span></div>
+        <div class="destaque-stats-row">
+          <span><strong>+10</strong><span data-pt="marcas trabalhadas" data-en="brands worked with">marcas trabalhadas</span></span>
+          <span class="sep" aria-hidden="true">|</span>
+          <span><strong>+600Mil</strong><span data-pt="views somadas" data-en="views combined">views somadas</span></span>
+          <span class="sep" aria-hidden="true">|</span>
+          <span><strong>+4 anos</strong><span data-pt="na internet" data-en="online">na internet</span></span>
         </div>
       </div>
 
@@ -2221,6 +2211,25 @@ a.info-value:hover{ text-decoration:underline; }
       countEl.textContent = total + (total === 1 ? ' vídeo' : ' vídeos');
     }
   }
+
+  // Baralho de fotos do Sobre: uma foto na frente, a anterior espiando em
+  // cima (saindo), a próxima espiando embaixo (entrando) — troca sozinho.
+  (function(){
+    var stack = document.getElementById('sobreShuffle');
+    if (!stack) return;
+    var cartas = Array.prototype.slice.call(stack.querySelectorAll('.about-stack-card'));
+    var n = cartas.length;
+    if (!n) return;
+    var frente = 0;
+    function renderizar(){
+      cartas.forEach(function(c){ c.classList.remove('is-front', 'is-peek-top', 'is-peek-bottom'); });
+      cartas[frente].classList.add('is-front');
+      cartas[(frente - 1 + n) % n].classList.add('is-peek-top');
+      cartas[(frente + 1) % n].classList.add('is-peek-bottom');
+    }
+    renderizar();
+    setInterval(function(){ frente = (frente + 1) % n; renderizar(); }, 2800);
+  })();
   atualizarContagemTotal();
 
   document.querySelectorAll('.nicho-bloco').forEach(function(bloco){

@@ -525,9 +525,10 @@ section{ position:relative; }
 .destaque-stats-row span{ font-weight:700; font-size:.78rem; letter-spacing:.03em; color: var(--ink); }
 .catalog--destaque{ min-width:0; }
 .destaque-grid{
-  display:flex; align-items:flex-end; gap:22px; overflow-x:hidden; scroll-behavior:smooth;
-  padding:30px 4px 20px; max-width:719px;
+  display:flex; align-items:flex-end; gap:22px; overflow:hidden; scroll-behavior:smooth;
+  padding:30px 4px 20px; max-width:719px; scrollbar-width:none;
 }
+.destaque-grid::-webkit-scrollbar{ display:none; }
 .destaque-card{
   flex:0 0 225px; cursor:default; opacity:.68;
   transition: transform .35s ease, opacity .35s ease;
@@ -964,6 +965,41 @@ a.info-value:hover{ text-decoration:underline; }
       <button type="button" class="catalog-arrow catalog-arrow--prev" id="destaquePrev" aria-label="Anterior"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
       <div class="destaque-grid" id="destaqueGrid">
 
+        <!-- duas cópias antes (invisíveis pra leitor de tela) — espaço de
+             sobra pro carrossel "rodar" pra trás, igual a faixa de marcas -->
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Imersão Portfólio Claude" data-youtube="x7Fd9mtw5VQ">
+          <span class="destaque-nome">Imersão Portfólio Claude</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/x7Fd9mtw5VQ/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
+        </div>
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Sob Investigação" data-youtube="TJHAEILafv0">
+          <span class="destaque-nome">Sob Investigação</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/TJHAEILafv0/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
+        </div>
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Tostitos®" data-youtube="xfpeEP8Ig5A">
+          <span class="destaque-nome">Tostitos®</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/xfpeEP8Ig5A/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
+        </div>
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Pichau" data-youtube="LqBW1uhjHtc">
+          <span class="destaque-nome">Pichau</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/LqBW1uhjHtc/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
+        </div>
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Imersão Portfólio Claude" data-youtube="x7Fd9mtw5VQ">
+          <span class="destaque-nome">Imersão Portfólio Claude</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/x7Fd9mtw5VQ/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
+        </div>
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Sob Investigação" data-youtube="TJHAEILafv0">
+          <span class="destaque-nome">Sob Investigação</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/TJHAEILafv0/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
+        </div>
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Tostitos®" data-youtube="xfpeEP8Ig5A">
+          <span class="destaque-nome">Tostitos®</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/xfpeEP8Ig5A/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
+        </div>
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Pichau" data-youtube="LqBW1uhjHtc">
+          <span class="destaque-nome">Pichau</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/LqBW1uhjHtc/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
+        </div>
+
         <div class="destaque-card" data-title="Imersão Portfólio Claude" data-youtube="x7Fd9mtw5VQ">
           <span class="destaque-nome">Imersão Portfólio Claude</span>
           <div class="destaque-thumb">
@@ -994,6 +1030,40 @@ a.info-value:hover{ text-decoration:underline; }
             <img src="https://i.ytimg.com/vi/LqBW1uhjHtc/maxresdefault.jpg" alt="" loading="lazy">
             <div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div>
           </div>
+        </div>
+
+        <!-- duas cópias depois — mesmo motivo, pra "rodar" pra frente sem fim -->
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Imersão Portfólio Claude" data-youtube="x7Fd9mtw5VQ">
+          <span class="destaque-nome">Imersão Portfólio Claude</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/x7Fd9mtw5VQ/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
+        </div>
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Sob Investigação" data-youtube="TJHAEILafv0">
+          <span class="destaque-nome">Sob Investigação</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/TJHAEILafv0/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
+        </div>
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Tostitos®" data-youtube="xfpeEP8Ig5A">
+          <span class="destaque-nome">Tostitos®</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/xfpeEP8Ig5A/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
+        </div>
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Pichau" data-youtube="LqBW1uhjHtc">
+          <span class="destaque-nome">Pichau</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/LqBW1uhjHtc/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
+        </div>
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Imersão Portfólio Claude" data-youtube="x7Fd9mtw5VQ">
+          <span class="destaque-nome">Imersão Portfólio Claude</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/x7Fd9mtw5VQ/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
+        </div>
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Sob Investigação" data-youtube="TJHAEILafv0">
+          <span class="destaque-nome">Sob Investigação</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/TJHAEILafv0/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
+        </div>
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Tostitos®" data-youtube="xfpeEP8Ig5A">
+          <span class="destaque-nome">Tostitos®</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/xfpeEP8Ig5A/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
+        </div>
+        <div class="destaque-card is-clone" aria-hidden="true" data-title="Pichau" data-youtube="LqBW1uhjHtc">
+          <span class="destaque-nome">Pichau</span>
+          <div class="destaque-thumb"><img src="https://i.ytimg.com/vi/LqBW1uhjHtc/maxresdefault.jpg" alt="" loading="lazy"><div class="play-badge"><div class="circle"><span class="play-triangle"></span></div></div></div>
         </div>
 
       </div>
@@ -2262,10 +2332,21 @@ a.info-value:hover{ text-decoration:underline; }
     var setaAnterior = document.getElementById('destaquePrev');
     var setaProxima = document.getElementById('destaqueNext');
     if (!trilho || !destaqueCards.length) return;
-    var n = destaqueCards.length;
-    var indiceAtivo = 1;
+    /* 20 cartões no total: duas cópias antes + os 4 de verdade + duas
+       cópias depois (mesma ideia da faixa de marcas). Só os 4 do meio
+       contam como "de verdade"; ao entrar numa cópia, depois da rolagem
+       a gente volta pro cartão de verdade equivalente sem o usuário
+       perceber — a folga de duas cópias de cada lado é só pra aguentar
+       cliques rápidos nas setinhas sem travar. */
+    var realN = 4;
+    var inicioReal = realN * 2;
+    var indiceAtivo = inicioReal + 1; // Sob Investigação, o segundo
     var autoTimer = null;
+    var larguraVolta = 0;
 
+    function medirLargura(){
+      larguraVolta = destaqueCards[inicioReal + realN].offsetLeft - destaqueCards[inicioReal].offsetLeft;
+    }
     function centralizar(indice, instantaneo){
       var card = destaqueCards[indice];
       if (!card) return;
@@ -2275,9 +2356,23 @@ a.info-value:hover{ text-decoration:underline; }
     function atualizarFoco(){
       destaqueCards.forEach(function(card, i){ card.classList.toggle('is-focus', i === indiceAtivo); });
     }
+    function reencaixarSeNecessario(){
+      while (indiceAtivo >= inicioReal + realN){
+        indiceAtivo -= realN;
+        trilho.scrollLeft -= larguraVolta;
+      }
+      while (indiceAtivo < inicioReal){
+        indiceAtivo += realN;
+        trilho.scrollLeft += larguraVolta;
+      }
+      atualizarFoco();
+    }
     function irPara(indice){
-      indiceAtivo = (indice + n) % n;
-      centralizar(indiceAtivo); atualizarFoco();
+      indiceAtivo = Math.max(0, Math.min(destaqueCards.length - 1, indice));
+      atualizarFoco();
+      centralizar(indiceAtivo);
+      clearTimeout(trilho._reencaixeTimer);
+      trilho._reencaixeTimer = setTimeout(reencaixarSeNecessario, 650);
     }
     function iniciarAuto(){
       pararAuto();
@@ -2295,7 +2390,8 @@ a.info-value:hover{ text-decoration:underline; }
         abrirModalDeArquivo(card);
       });
     });
-    window.addEventListener('resize', function(){ centralizar(indiceAtivo, true); });
+    window.addEventListener('resize', function(){ medirLargura(); centralizar(indiceAtivo, true); });
+    medirLargura();
     atualizarFoco();
     centralizar(indiceAtivo, true);
     iniciarAuto();

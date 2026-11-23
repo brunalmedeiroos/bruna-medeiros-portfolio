@@ -362,17 +362,17 @@ section{ position:relative; }
 /* Sobre: baralho de fotos — uma foto fixa na frente, as outras espiando
    um pedacinho em cima e embaixo, trocando de tempos em tempos (a de baixo
    sobe e vira a da frente, a da frente sobe e sai por cima). */
-.about-photo-stack{ position:relative; height:560px; width:100%; max-width:420px; margin:0 auto; }
+.about-photo-stack{ position:relative; height:560px; width:100%; max-width:420px; margin:0 auto; overflow:hidden; }
 .about-stack-card{
-  position:absolute; left:50%; top:50%; width:84%; aspect-ratio: 4/5;
+  position:absolute; left:50%; top:60px; width:84%; aspect-ratio: 4/5;
   border-radius:20px; overflow:hidden; box-shadow: 0 24px 50px rgba(59,74,107,0.35);
   opacity:0; z-index:1; pointer-events:none;
-  transform: translate(-50%,-50%); transition: transform .6s ease, opacity .6s ease;
+  transform: translateX(-50%); transition: top .6s ease, opacity .6s ease;
 }
 .about-stack-card img{ width:100%; height:100%; object-fit:cover; display:block; }
-.about-stack-card.is-front{ opacity:1; z-index:5; transform: translate(-50%,-50%) scale(1); }
-.about-stack-card.is-peek-top{ opacity:1; z-index:3; transform: translate(-50%,-134%) scale(.94); }
-.about-stack-card.is-peek-bottom{ opacity:1; z-index:2; transform: translate(-50%,34%) scale(.94); }
+.about-stack-card.is-front{ top:60px; opacity:1; z-index:5; }
+.about-stack-card.is-peek-top{ top:-381px; opacity:1; z-index:3; }
+.about-stack-card.is-peek-bottom{ top:501px; opacity:1; z-index:2; }
 
 /* =====================================================================
    03 — FAIXA DE MARCAS — fundo amarelo manteiga
@@ -527,30 +527,27 @@ section{ position:relative; }
 .destaque-panel{ display:grid; grid-template-columns: 0.92fr 1.08fr; gap:60px; align-items:center; }
 .destaque-titulo{
   font-family: var(--font-display); font-weight:900; letter-spacing:-0.5px;
-  font-size: clamp(2.2rem, 3.6vw, 3.1rem); line-height:1.1; color: var(--ink); margin-bottom:18px;
+  font-size: clamp(2.7rem, 4.4vw, 3.8rem); line-height:1.1; color: var(--ink); margin-bottom:18px;
 }
 .destaque-titulo .accent-italic{ color: var(--blue-light); font-style:italic; }
 .destaque-desc{ font-size:1.05rem; line-height:1.6; color: var(--blue-dark-70); font-weight:500; max-width:420px; margin-bottom:34px; }
-.destaque-stats-row{
-  display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 8px;
-  font-size:.86rem; font-weight:600; color: var(--ink);
-}
+.destaque-stats-row{ display:flex; gap:34px; flex-wrap:wrap; }
+.destaque-stats-row .destaque-stat{ display:flex; flex-direction:column; }
 .destaque-stats-row strong{
-  font-family: var(--font-display); font-weight:900; color: var(--blue-dark); margin-right:5px;
+  font-family: var(--font-display); font-weight:900; letter-spacing:-1px;
+  font-size: clamp(1.8rem, 2.6vw, 2.3rem); color: var(--blue-dark); line-height:1; margin-bottom:6px;
 }
-.destaque-stats-row .sep{ color: var(--blue-light); font-weight:700; }
+.destaque-stats-row span{ font-weight:700; font-size:.78rem; letter-spacing:.03em; color: var(--ink); }
 .catalog--destaque{ min-width:0; }
 .destaque-grid{
-  display:flex; align-items:flex-end; gap:22px; overflow-x:auto; scroll-snap-type:x mandatory; scroll-behavior:smooth;
-  padding:30px 4px 20px; scrollbar-width:none; max-width:719px;
+  display:flex; align-items:flex-end; gap:22px; overflow-x:hidden; scroll-behavior:smooth;
+  padding:30px 4px 20px; max-width:719px;
 }
-.destaque-grid::-webkit-scrollbar{ display:none; }
 .destaque-card{
-  flex:0 0 225px; scroll-snap-align:center; cursor:pointer; opacity:.68;
+  flex:0 0 225px; cursor:default; opacity:.68;
   transition: transform .35s ease, opacity .35s ease;
 }
-.destaque-card:hover{ opacity:.9; }
-.destaque-card.is-focus{ transform: scale(1.1); opacity:1; z-index:2; }
+.destaque-card.is-focus{ transform: scale(1.1); opacity:1; z-index:2; cursor:pointer; }
 .destaque-nome{
   display:block; text-align:center; font-family: var(--font-display); font-weight:700;
   font-size:.82rem; letter-spacing:.05em; text-transform:uppercase; color: var(--blue-dark);
@@ -562,7 +559,7 @@ section{ position:relative; }
 }
 .destaque-thumb img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .destaque-card .play-badge{ position:absolute; inset:0; z-index:2; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .25s ease; }
-.destaque-card:hover .play-badge, .destaque-card.is-focus .play-badge{ opacity:1; }
+.destaque-card.is-focus .play-badge{ opacity:1; }
 
 /* =====================================================================
    05 — SERVIÇOS — frase em cima, serviços em caixinhas embaixo, fundo azul claro
@@ -975,11 +972,9 @@ a.info-value:hover{ text-decoration:underline; }
         <h2 class="destaque-titulo" data-pt-html="Conteúdos em &lt;span class=&quot;accent-italic&quot;&gt;destaque&lt;/span&gt;" data-en-html="Featured &lt;span class=&quot;accent-italic&quot;&gt;content&lt;/span&gt;">Conteúdos em <span class="accent-italic">destaque</span></h2>
         <p class="destaque-desc" data-pt="Meus vídeos em destaque mais amados, com formatos diferentes, pra você dar uma explorada." data-en="My most-loved featured videos, in different formats, for you to explore.">Meus vídeos em destaque mais amados, com formatos diferentes, pra você dar uma explorada.</p>
         <div class="destaque-stats-row">
-          <span><strong>+10</strong><span data-pt="marcas trabalhadas" data-en="brands worked with">marcas trabalhadas</span></span>
-          <span class="sep" aria-hidden="true">|</span>
-          <span><strong>+600Mil</strong><span data-pt="views somadas" data-en="views combined">views somadas</span></span>
-          <span class="sep" aria-hidden="true">|</span>
-          <span><strong>+4 anos</strong><span data-pt="na internet" data-en="online">na internet</span></span>
+          <div class="destaque-stat"><strong>+10</strong><span data-pt="marcas trabalhadas" data-en="brands worked with">marcas trabalhadas</span></div>
+          <div class="destaque-stat"><strong>+600Mil</strong><span data-pt="views somadas" data-en="views combined">views somadas</span></div>
+          <div class="destaque-stat"><strong>+4 anos</strong><span data-pt="na internet" data-en="online">na internet</span></div>
         </div>
       </div>
 
@@ -2294,27 +2289,41 @@ a.info-value:hover{ text-decoration:underline; }
 
   /* ---------------- Conteúdos em destaque (carrossel coverflow) ---------------- */
   var destaqueCards = document.querySelectorAll('.destaque-card');
-  destaqueCards.forEach(function(card){
-    card.addEventListener('click', function(){ abrirModalDeArquivo(card); });
-  });
-  ligarSetas(document.getElementById('destaqueGrid'), document.getElementById('destaquePrev'), document.getElementById('destaqueNext'));
+  /* Só o vídeo do meio é clicável; pra ver o do lado, primeiro clica na
+     setinha (que anda um vídeo de cada vez) e depois dá o play. Começa
+     sempre com o primeiro ("Sob Investigação") centralizado. */
   (function(){
     var trilho = document.getElementById('destaqueGrid');
+    var setaAnterior = document.getElementById('destaquePrev');
+    var setaProxima = document.getElementById('destaqueNext');
     if (!trilho || !destaqueCards.length) return;
-    function atualizarFoco(){
-      var centroTrilho = trilho.getBoundingClientRect().left + trilho.clientWidth / 2;
-      var maisPerto = null, menorDist = Infinity;
-      destaqueCards.forEach(function(card){
-        var r = card.getBoundingClientRect();
-        var centroCard = r.left + r.width / 2;
-        var dist = Math.abs(centroCard - centroTrilho);
-        if (dist < menorDist){ menorDist = dist; maisPerto = card; }
-      });
-      destaqueCards.forEach(function(card){ card.classList.toggle('is-focus', card === maisPerto); });
+    var indiceAtivo = 0;
+
+    function centralizar(indice, instantaneo){
+      var card = destaqueCards[indice];
+      if (!card) return;
+      var alvo = card.offsetLeft - (trilho.clientWidth - card.offsetWidth) / 2;
+      trilho.scrollTo({ left: alvo, behavior: instantaneo ? 'auto' : 'smooth' });
     }
-    trilho.addEventListener('scroll', atualizarFoco, { passive: true });
-    window.addEventListener('resize', atualizarFoco);
+    function atualizarFoco(){
+      destaqueCards.forEach(function(card, i){ card.classList.toggle('is-focus', i === indiceAtivo); });
+      if (setaAnterior) setaAnterior.disabled = indiceAtivo <= 0;
+      if (setaProxima) setaProxima.disabled = indiceAtivo >= destaqueCards.length - 1;
+    }
+    if (setaAnterior) setaAnterior.addEventListener('click', function(){
+      if (indiceAtivo <= 0) return;
+      indiceAtivo--; centralizar(indiceAtivo); atualizarFoco();
+    });
+    if (setaProxima) setaProxima.addEventListener('click', function(){
+      if (indiceAtivo >= destaqueCards.length - 1) return;
+      indiceAtivo++; centralizar(indiceAtivo); atualizarFoco();
+    });
+    destaqueCards.forEach(function(card, i){
+      card.addEventListener('click', function(){ if (i === indiceAtivo) abrirModalDeArquivo(card); });
+    });
+    window.addEventListener('resize', function(){ centralizar(indiceAtivo, true); });
     atualizarFoco();
+    centralizar(0, true);
   })();
 
   /* ---------------- Retenção dos vídeos: até onde a pessoa assistiu ----------------

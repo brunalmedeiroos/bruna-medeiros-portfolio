@@ -52,11 +52,49 @@ const Titulo: React.FC = () => {
 // de/ate em segundos do vídeo; a legenda some enquanto a frase aparece
 const DESTAQUES = [
   { de: 13.7, ate: 14.72, texto: "E OLHA ISSO!" },
-  { de: 23.84, ate: 26.9, texto: "COMPRINHAS\n+ PINTURA" },
+  { de: 24.54, ate: 27.4, texto: "COMPRINHAS", linha2: { texto: "PINTURA", de: 26.54 } },
   { de: 30.92, ate: 32.0, texto: "COMENTA QUARTO" },
 ];
 const DIGITA = 0.4;
-const Destaque: React.FC<{ texto: string }> = ({ texto }) => {
+// linha que digita sozinha (com o teclado) a partir de `de` segundos dentro da frase
+const Linha: React.FC<{ texto: string; de: number; cursorAte?: number }> = ({ texto, de, cursorAte }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const t = frame / fps - de;
+  const n = Math.floor(interpolate(t, [0, DIGITA], [0, texto.length], cl));
+  const comCursor = t >= 0 && (cursorAte === undefined || t + de < cursorAte);
+  const pisca = comCursor && !(t > DIGITA && Math.floor(t * 2.5) % 2 === 1) ? 1 : 0;
+  return (
+    <div>
+      {t >= 0 ? (
+        <Sequence from={Math.round(de * fps)} layout="none">
+          <Audio src={S("teclado-bru.wav")} volume={(fr) => 0.9 * interpolate(fr, [0, Math.round(DIGITA * fps), Math.round(DIGITA * fps) + 4], [1, 1, 0], cl)} />
+        </Sequence>
+      ) : null}
+      {texto.slice(0, Math.max(0, n))}
+      <span style={{ color: CORES.destaque, opacity: pisca }}>|</span>
+      <span style={{ opacity: 0 }}>{texto.slice(Math.max(0, n))}</span>
+    </div>
+  );
+};
+const Destaque: React.FC<{ texto: string; linha2?: { texto: string; de: number } }> = ({ texto, linha2 }) => {
+  const frame = useCurrentFrame();
+  const { fps, durationInFrames } = useVideoConfig();
+  const t = frame / fps;
+  const sai = interpolate(t, [durationInFrames / fps - 0.18, durationInFrames / fps], [1, 0], cl);
+  if (linha2) {
+    return (
+      <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", opacity: sai }}>
+        <div style={{ fontFamily: F.legenda, fontSize: 96, lineHeight: 1.15, textAlign: "center", color: CORES.claro, whiteSpace: "pre", textShadow: "0 3px 6px rgba(40,30,28,0.6), 0 6px 26px rgba(40,30,28,0.65)" }}>
+          <Linha texto={texto} de={0} cursorAte={linha2.de} />
+          <Linha texto={linha2.texto} de={linha2.de} />
+        </div>
+      </AbsoluteFill>
+    );
+  }
+  return <DestaqueSimples texto={texto} />;
+};
+const DestaqueSimples: React.FC<{ texto: string }> = ({ texto }) => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
   const t = frame / fps;
@@ -116,6 +154,7 @@ const SONS: [number, string, number, number?][] = [
   [12.18, "obra.wav", 0.2],
   [15.46, "brilho2.wav", 0.25, 1.5], // apaixonada
   [20.8, "brilho.wav", 0.25], // iluminação
+  [36.44, "brilho.wav", 0.25], // resultado final (na palavra "final")
 ];
 const Sons: React.FC = () => {
   const { fps } = useVideoConfig();
@@ -143,7 +182,7 @@ export const Reel07: React.FC<{ showSafeArea: boolean }> = ({ showSafeArea }) =>
       <OffthreadVideo src={staticFile("reforma/IMG_3389.mp4")} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
       {DESTAQUES.map((d, i) => (
         <Sequence key={i} from={Math.round(d.de * fps)} durationInFrames={Math.round((d.ate - d.de) * fps)}>
-          <Destaque texto={d.texto} />
+          <Destaque texto={d.texto} linha2={"linha2" in d && d.linha2 ? { texto: d.linha2.texto, de: d.linha2.de - d.de } : undefined} />
         </Sequence>
       ))}
       <Sequence durationInFrames={Math.round(TIT.fim * fps)}>

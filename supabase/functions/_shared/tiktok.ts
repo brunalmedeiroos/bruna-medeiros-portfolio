@@ -113,6 +113,36 @@ export async function buscarPerfilTiktok(accessToken: string) {
   };
 }
 
+// Soma o view_count de todos os vídeos públicos da conta — o TikTok não
+// devolve isso pronto (diferente de seguidores/curtidas), então pede a
+// lista de vídeos paginada e vai somando. Limite de 10 páginas (~200
+// vídeos) só por segurança, pra nunca entrar num loop sem fim.
+export async function somarViewsTiktok(accessToken: string): Promise<number> {
+  const url = "https://open.tiktokapis.com/v2/video/list/?fields=view_count";
+  let soma = 0;
+  let cursor: number | undefined;
+  let temMais = true;
+  let paginas = 0;
+
+  while (temMais && paginas < 10) {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
+      body: JSON.stringify(cursor ? { max_count: 20, cursor } : { max_count: 20 }),
+    });
+    const data = await res.json();
+    if (!res.ok || (data.error?.code && data.error.code !== "ok")) {
+      throw new Error(`Erro ao listar vídeos do TikTok (${res.status}): ${JSON.stringify(data.error || data)}`);
+    }
+    const videos: Array<{ view_count?: number }> = data.data?.videos || [];
+    soma += videos.reduce((s, v) => s + (v.view_count || 0), 0);
+    temMais = !!data.data?.has_more;
+    cursor = data.data?.cursor;
+    paginas++;
+  }
+  return soma;
+}
+
 // Lê o token guardado e renova sozinho se estiver perto de vencer (o
 // access_token do TikTok dura só ~24h — bem menos folga do que o do
 // Instagram, por isso a margem de renovação é em horas, não em dias).

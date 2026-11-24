@@ -196,6 +196,38 @@ export async function obterAccessTokenValido(supabaseAdmin: any) {
   return { ...linha, access_token: renovado.access_token, expires_at: novoExpiraEm };
 }
 
+// Algumas métricas de conta (ex: total_interactions) só existem no modo
+// "total_value" (um número só pro período, não uma série por dia) — formato
+// de resposta diferente do insightDeConta/insightDeContaPorDia abaixo.
+export async function insightTotalValue(
+  igUserId: string,
+  accessToken: string,
+  metrica: string,
+  dataInicio: string,
+  dataFim: string,
+  erros?: string[],
+): Promise<number | null> {
+  try {
+    const resposta = await chamarGraph(`/${igUserId}/insights`, {
+      metric: metrica,
+      metric_type: "total_value",
+      period: "day",
+      since: dataInicio,
+      until: dataFim,
+      access_token: accessToken,
+    });
+    const valor = resposta.data?.[0]?.total_value?.value;
+    if (typeof valor !== "number") {
+      erros?.push(`insight total_value [${metrica}]: resposta sem total_value nesse período`);
+      return null;
+    }
+    return valor;
+  } catch (e) {
+    erros?.push(`insight total_value [${metrica}]: ${(e as Error).message}`);
+    return null;
+  }
+}
+
 // Tenta pegar um valor de insight de conta testando uma lista de nomes de
 // métrica em ordem (a primeira que a API aceitar "ganha"). Soma os valores
 // diários do período pedido. Devolve null se nenhuma funcionar.

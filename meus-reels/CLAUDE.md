@@ -48,3 +48,7 @@ Skills do Remotion (`remotion-dev/skills`) em `.claude/skills`. Usar `remotion-b
 
 ## Skill /meusreels
 O jeito de editar da Bruna está salvo na skill `/meusreels` (`.claude/skills/meusreels/`). Uso: `/meusreels + vídeo + roteiro + materiais`. Reels 01 (câmera traseira) foi o primeiro e serviu de modelo.
+
+## /modelocapcut (cortar à mão)
+Quando a Bruna pedir /modelocapcut, abrir para ela o editor de cortes estilo CapCut (`ferramentas/modelocapcut/`: `preparar.py` + `editor.html`, publicado como Artifact com o banco `db`): fala em cima, linha do tempo com onda, palavras e blocos; espaço toca, S divide, Delete apaga, arrastar a ponta muda o trecho, ⌘Z desfaz, Salvar grava em `cortes/<id>`.
+Depois que ela salvar, **os cortes dela mandam**: usar exatamente esses tempos como base da edição, sem mudar sem avisar. Se uma emenda comer o fim de uma palavra, mostrar o ponto e perguntar antes de mexer.

@@ -1,0 +1,319 @@
+<title>Modelo CapCut · Reforma ep. 2</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: editor de uma tela no estilo CapCut. Em cima a fala, no meio a barra de ferramentas, embaixo a linha do tempo rolável. Visual escuro fixo, como um editor de vídeo. */
+:root {
+  --bg: #111114; --painel: #1b1b20; --trilha: #24242b; --linha: #34343d;
+  --texto: #ecebf0; --suave: #9a99a6; --clip: #1d9e93; --clip-forte: #27c2b3;
+  --corte: #3a2a2e; --sel: #e8bf68; --play: #ffffff; --perigo: #ff7a7a;
+  --f-titulo: "Space Grotesk", system-ui, sans-serif; --f-texto: "Inter", system-ui, sans-serif;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--texto); font-family: var(--f-texto); font-size: 14px; display: flex; flex-direction: column; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 12px; gap: 12px; box-sizing: border-box; overflow: hidden; }
+header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { font-family: var(--f-titulo); font-size: 18px; margin: 0; letter-spacing: -0.2px; }
+h1 small { color: var(--suave); font-weight: 500; font-family: var(--f-texto); font-size: 13px; margin-left: 6px; }
+.status { color: var(--suave); font-size: 13px; }
+.status.ok { color: var(--clip-forte); } .status.erro { color: var(--perigo); }
+.palco { background: var(--painel); border-radius: 12px; padding: 18px 16px; min-height: 120px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; text-align: center; }
+.fala { font-family: var(--f-titulo); font-size: clamp(22px, 4.5vw, 34px); line-height: 1.25; max-width: 30ch; text-wrap: balance; min-height: 2.5em; }
+.fala span { color: #6d6c78; transition: color .08s; }
+.fala span.dita { color: var(--texto); }
+.fala span.agora { color: var(--sel); }
+.fala span.cortada { text-decoration: line-through; color: #5a4a50; }
+.tempos { display: flex; gap: 18px; color: var(--suave); font-size: 13px; font-variant-numeric: tabular-nums; flex-wrap: wrap; justify-content: center; }
+.tempos b { color: var(--texto); font-weight: 600; }
+.barra { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+button { font: 600 13px var(--f-texto); color: var(--texto); background: var(--trilha); border: 1px solid var(--linha); border-radius: 8px; padding: 8px 12px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+button:hover { background: #2e2e37; }
+button:focus-visible { outline: 2px solid var(--sel); outline-offset: 2px; }
+button:disabled { opacity: .4; cursor: default; }
+button.principal { background: var(--clip); border-color: var(--clip-forte); }
+button.principal:hover { background: var(--clip-forte); }
+kbd { font: 500 11px var(--f-texto); color: var(--suave); border: 1px solid var(--linha); border-radius: 4px; padding: 0 4px; }
+.espaco { flex: 1; }
+label.chave { display: inline-flex; gap: 6px; align-items: center; color: var(--suave); font-size: 13px; cursor: pointer; }
+.zoom { display: inline-flex; gap: 6px; align-items: center; color: var(--suave); font-size: 13px; }
+.zoom input { width: 110px; accent-color: var(--sel); }
+.linha-tempo { flex: 1; min-height: 190px; background: var(--painel); border-radius: 12px; overflow-x: auto; overflow-y: hidden; position: relative; user-select: none; -webkit-user-select: none; touch-action: pan-x; }
+.conteudo { position: relative; height: 100%; min-height: 190px; }
+.regua, .palavras, .trilha { position: absolute; left: 0; }
+.regua { top: 0; height: 22px; border-bottom: 1px solid var(--linha); }
+.regua i { position: absolute; top: 0; height: 22px; border-left: 1px solid var(--linha); font: normal 10px var(--f-texto); color: var(--suave); padding-left: 3px; line-height: 22px; font-variant-numeric: tabular-nums; }
+.palavras { top: 28px; height: 30px; }
+.palavras span { position: absolute; top: 4px; font-size: 12px; color: var(--texto); white-space: nowrap; padding: 2px 4px; border-radius: 4px; background: #2a2a33; cursor: pointer; }
+.palavras span.fora { background: transparent; color: #6a5d62; text-decoration: line-through; }
+.trilha { top: 66px; height: 96px; }
+.trilha canvas { position: absolute; left: 0; top: 0; height: 96px; }
+.bloco { position: absolute; top: 0; height: 96px; border-radius: 6px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); cursor: pointer; }
+.bloco.sel { box-shadow: inset 0 0 0 2px var(--sel); }
+.ponta { position: absolute; top: 0; width: 12px; height: 96px; cursor: ew-resize; touch-action: none; }
+.ponta::after { content: ""; position: absolute; top: 34px; left: 4px; width: 4px; height: 28px; border-radius: 2px; background: rgba(255,255,255,.55); }
+.bloco.sel .ponta::after { background: var(--sel); }
+.ponta.esq { left: -2px; } .ponta.dir { right: -2px; }
+.cursor { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--play); pointer-events: none; z-index: 5; }
+.cursor::before { content: ""; position: absolute; top: 0; left: -5px; border: 6px solid transparent; border-top-color: var(--play); }
+.dica { color: var(--suave); font-size: 12px; line-height: 1.5; }
+@media (max-width: 560px) { .dica .teclas { display: none; } kbd { display: none; } }
+@media (prefers-reduced-motion: reduce) { .fala span { transition: none; } }
+</style>
+
+<header>
+  <h1>Modelo CapCut <small>Diário de reforma ep. 2 · narração</small></h1>
+  <span class="status" id="status">Carregando a narração…</span>
+</header>
+
+<section class="palco" aria-live="polite">
+  <div class="fala" id="fala">Eu tô reformando o meu quarto…</div>
+  <div class="tempos">
+    <span>Cursor <b id="tCursor">0:00.0</b></span>
+    <span>Fica no vídeo <b id="tFinal">0:00</b> <small>(com 1,1x: <b id="tFinal11">0:00</b>)</small></span>
+    <span>Trechos <b id="nTrechos">0</b></span>
+  </div>
+</section>
+
+<div class="barra">
+  <button id="bPlay" class="principal" aria-label="Tocar">▶ Tocar <kbd>espaço</kbd></button>
+  <button id="bDividir">Dividir <kbd>S</kbd></button>
+  <button id="bApagar">Apagar trecho <kbd>Delete</kbd></button>
+  <button id="bDesfazer">Desfazer <kbd>⌘Z</kbd></button>
+  <button id="bRefazer">Refazer</button>
+  <label class="chave"><input type="checkbox" id="soCortes" checked> Tocar só o que fica</label>
+  <span class="espaco"></span>
+  <span class="zoom"><label for="zoom">Zoom</label><input type="range" id="zoom" min="20" max="240" value="70"></span>
+  <button id="bVoltar">Voltar ao corte automático</button>
+  <button id="bSalvar" class="principal">Salvar cortes</button>
+</div>
+
+<div class="linha-tempo" id="lt">
+  <div class="conteudo" id="conteudo">
+    <div class="regua" id="regua"></div>
+    <div class="palavras" id="palavras"></div>
+    <div class="trilha" id="trilha"><canvas id="onda"></canvas></div>
+    <div class="cursor" id="cursor"></div>
+  </div>
+</div>
+
+<p class="dica">Cada bloco verde é um trecho que fica no vídeo; o que está escuro sai. <span class="teclas">Clique para mover o cursor · ← → anda um quadro · S divide no cursor · clique no bloco + Delete apaga · arraste a ponta do bloco para aumentar ou diminuir · ⌘Z desfaz.</span> Quando terminar, toque em <b>Salvar cortes</b> e me avise no chat.</p>
+
+<audio id="audio" src="audio.mp3" preload="auto"></audio>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const audio = $("audio"), lt = $("lt"), conteudo = $("conteudo"), trilha = $("trilha"), onda = $("onda");
+  const QUADRO = 1 / 30, MIN = 0.05, DOC = "cortes/ep2";
+  let D = null, trechos = [], padrao = [], sel = null, px = 70, hist = [], futuro = [], db = null, blocos = [];
+
+  const fmt = (t, dec) => { t = Math.max(0, t); const m = Math.floor(t / 60), s = t - m * 60; return m + ":" + (dec ? s.toFixed(1).padStart(4, "0") : String(Math.floor(s)).padStart(2, "0")); };
+  const status = (txt, cls) => { const el = $("status"); el.textContent = txt; el.className = "status" + (cls ? " " + cls : ""); };
+  const copia = (a) => a.map((x) => [x[0], x[1]]);
+  const dentro = (t) => trechos.findIndex((x) => t >= x[0] && t < x[1]);
+  const total = () => trechos.reduce((s, x) => s + x[1] - x[0], 0);
+
+  function marca() { hist.push(copia(trechos)); if (hist.length > 200) hist.shift(); futuro = []; atualizaBotoes(); }
+  function atualizaBotoes() { $("bDesfazer").disabled = !hist.length; $("bRefazer").disabled = !futuro.length; $("bApagar").disabled = sel === null; }
+
+  // ---------- desenho ----------
+  function desenhaOnda() {
+    const w = Math.ceil(D.dur * px), h = 96;
+    onda.width = w; onda.height = h; onda.style.width = w + "px";
+    const c = onda.getContext("2d");
+    c.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--corte").trim(); c.fillRect(0, 0, w, h);
+    const corClip = getComputedStyle(document.documentElement).getPropertyValue("--clip").trim();
+    for (const [s, e] of trechos) { c.fillStyle = corClip; c.fillRect(s * px, 0, (e - s) * px, h); }
+    const pps = D.picosPorSeg;
+    for (let x = 0; x < w; x++) {
+      const t = x / px, i0 = Math.floor(t * pps), i1 = Math.max(i0 + 1, Math.floor((x + 1) / px * pps));
+      let m = 0; for (let i = i0; i < i1 && i < D.picos.length; i++) m = Math.max(m, D.picos[i]);
+      const a = Math.min(1, m * 1.6) * (h / 2 - 6);
+      c.fillStyle = dentro(t) >= 0 ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.22)";
+      c.fillRect(x, h / 2 - a, 1, a * 2 || 1);
+    }
+  }
+  function desenhaBlocos() {
+    blocos.forEach((b) => b.remove()); blocos = [];
+    trechos.forEach(([s, e], i) => {
+      const b = document.createElement("div");
+      b.className = "bloco" + (i === sel ? " sel" : "");
+      b.style.left = s * px + "px"; b.style.width = Math.max(2, (e - s) * px) + "px";
+      b.dataset.i = i;
+      const pe = document.createElement("div"); pe.className = "ponta esq"; pe.dataset.lado = "0";
+      const pd = document.createElement("div"); pd.className = "ponta dir"; pd.dataset.lado = "1";
+      b.append(pe, pd); trilha.append(b); blocos.push(b);
+    });
+  }
+  function desenhaRegua() {
+    const r = $("regua"); r.textContent = ""; const w = Math.ceil(D.dur * px);
+    r.style.width = w + "px";
+    const passo = px < 40 ? 5 : px < 90 ? 2 : 1;
+    for (let t = 0; t <= D.dur; t += passo) { const i = document.createElement("i"); i.style.left = t * px + "px"; i.textContent = fmt(t); r.append(i); }
+  }
+  function desenhaPalavras() {
+    const p = $("palavras"); p.textContent = "";
+    let ultimoFim = -1;
+    D.palavras.forEach(([w, s], k) => {
+      const el = document.createElement("span"); el.textContent = w; el.dataset.k = k;
+      const x = s * px; el.style.left = x + "px";
+      el.style.top = (x < ultimoFim ? 16 : 2) + "px";
+      if (x >= ultimoFim) ultimoFim = x + w.length * 7 + 10;
+      el.className = dentro(s + 0.05) >= 0 ? "" : "fora";
+      p.append(el);
+    });
+  }
+  function redesenha() {
+    conteudo.style.width = Math.ceil(D.dur * px) + 40 + "px";
+    desenhaOnda(); desenhaBlocos(); desenhaPalavras();
+    $("tFinal").textContent = fmt(total()); $("tFinal11").textContent = fmt(total() / 1.1);
+    $("nTrechos").textContent = trechos.length; atualizaBotoes(); falaAgora();
+  }
+
+  // ---------- fala em cima (palavra atual) ----------
+  let fraseIni = -1;
+  function falaAgora() {
+    if (!D) return;
+    const t = audio.currentTime, P = D.palavras;
+    let k = P.findIndex((x) => x[1] > t) - 1; if (k < -1) k = P.length - 1; if (k < 0) k = 0;
+    let a = k; while (a > 0 && !/[.!?]$/.test(P[a - 1][0]) && k - a < 12) a--;
+    let b = k; while (b < P.length - 1 && !/[.!?]$/.test(P[b][0]) && b - a < 18) b++;
+    if (a !== fraseIni || true) {
+      const f = $("fala"); f.textContent = "";
+      for (let i = a; i <= b; i++) {
+        const s = document.createElement("span"); s.textContent = P[i][0] + " ";
+        const cortada = dentro(P[i][1] + 0.05) < 0;
+        s.className = cortada ? "cortada" : i === k && t >= P[i][1] ? "agora" : P[i][1] <= t ? "dita" : "";
+        f.append(s);
+      }
+      fraseIni = a;
+    }
+    $("tCursor").textContent = fmt(t, true);
+    $("cursor").style.left = t * px + "px";
+  }
+
+  // ---------- tocar ----------
+  function tocar() {
+    if (audio.paused) {
+      if ($("soCortes").checked && trechos.length) {
+        const i = dentro(audio.currentTime);
+        if (i < 0) { const prox = trechos.find((x) => x[0] > audio.currentTime) || trechos[0]; audio.currentTime = prox[0]; }
+      }
+      audio.play().catch(() => status("Toque em Tocar de novo para liberar o som.", "erro"));
+    } else audio.pause();
+  }
+  audio.addEventListener("play", () => { $("bPlay").textContent = "❚❚ Pausar"; loop(); });
+  audio.addEventListener("pause", () => { $("bPlay").innerHTML = "▶ Tocar <kbd>espaço</kbd>"; });
+  function loop() {
+    if (audio.paused) return;
+    if ($("soCortes").checked && trechos.length) {
+      const t = audio.currentTime;
+      if (dentro(t) < 0) {
+        const prox = trechos.find((x) => x[0] > t - 0.001);
+        if (prox) audio.currentTime = prox[0]; else { audio.pause(); audio.currentTime = trechos[trechos.length - 1][1]; }
+      }
+    }
+    falaAgora(); seguir();
+    requestAnimationFrame(loop);
+  }
+  function seguir() {
+    const x = audio.currentTime * px;
+    if (x < lt.scrollLeft + 40 || x > lt.scrollLeft + lt.clientWidth - 80) lt.scrollLeft = x - lt.clientWidth * 0.3;
+  }
+  function vaiPara(t) { audio.currentTime = Math.min(Math.max(0, t), D.dur); falaAgora(); }
+
+  // ---------- editar ----------
+  function dividir() {
+    const t = audio.currentTime, i = dentro(t);
+    if (i < 0) { status("Coloque o cursor dentro de um bloco para dividir.", "erro"); return; }
+    const [s, e] = trechos[i];
+    if (t - s < MIN || e - t < MIN) return;
+    marca(); trechos.splice(i, 1, [s, t], [t, e]); sel = i + 1; redesenha(); status("Dividido em " + fmt(t, true) + ".");
+  }
+  function apagar() {
+    if (sel === null) return;
+    marca(); trechos.splice(sel, 1); sel = null; redesenha(); status("Trecho apagado. ⌘Z desfaz.");
+  }
+  function desfazer() { if (!hist.length) return; futuro.push(copia(trechos)); trechos = hist.pop(); sel = null; redesenha(); }
+  function refazer() { if (!futuro.length) return; hist.push(copia(trechos)); trechos = futuro.pop(); sel = null; redesenha(); }
+
+  // clique e arrasto na trilha
+  let arrasto = null;
+  trilha.addEventListener("pointerdown", (ev) => {
+    const ponta = ev.target.closest(".ponta"), bloco = ev.target.closest(".bloco");
+    const t = (ev.clientX - trilha.getBoundingClientRect().left) / px;
+    if (ponta && bloco) {
+      const i = +bloco.dataset.i, lado = +ponta.dataset.lado;
+      marca(); sel = i; arrasto = { i, lado };
+      ponta.setPointerCapture(ev.pointerId); ev.preventDefault();
+      blocos.forEach((b, j) => b.classList.toggle("sel", j === i)); atualizaBotoes();
+      return;
+    }
+    if (bloco) { sel = +bloco.dataset.i; blocos.forEach((b, j) => b.classList.toggle("sel", j === sel)); atualizaBotoes(); }
+    else { sel = null; blocos.forEach((b) => b.classList.remove("sel")); atualizaBotoes(); }
+    vaiPara(t);
+  });
+  trilha.addEventListener("pointermove", (ev) => {
+    if (!arrasto) return;
+    const { i, lado } = arrasto, t = (ev.clientX - trilha.getBoundingClientRect().left) / px;
+    const seg = trechos[i];
+    if (lado === 0) { const lim = i > 0 ? trechos[i - 1][1] : 0; seg[0] = Math.min(Math.max(t, lim), seg[1] - MIN); vaiPara(seg[0]); }
+    else { const lim = i < trechos.length - 1 ? trechos[i + 1][0] : D.dur; seg[1] = Math.max(Math.min(t, lim), seg[0] + MIN); vaiPara(Math.max(seg[0], seg[1] - 0.6)); }
+    const b = blocos[i]; b.style.left = seg[0] * px + "px"; b.style.width = (seg[1] - seg[0]) * px + "px";
+    $("tFinal").textContent = fmt(total()); $("tFinal11").textContent = fmt(total() / 1.1);
+  });
+  const solta = () => { if (!arrasto) return; arrasto = null; const s = sel; redesenha(); sel = s; status("Ponta ajustada."); };
+  trilha.addEventListener("pointerup", solta); trilha.addEventListener("pointercancel", solta);
+  $("palavras").addEventListener("click", (ev) => { const s = ev.target.closest("span"); if (s) vaiPara(D.palavras[+s.dataset.k][1]); });
+  $("regua").addEventListener("click", (ev) => vaiPara((ev.clientX - $("regua").getBoundingClientRect().left) / px));
+
+  document.addEventListener("keydown", (ev) => {
+    if (ev.target.matches("input[type=range]")) return;
+    const k = ev.key.toLowerCase();
+    if (k === " ") { ev.preventDefault(); tocar(); }
+    else if (k === "s" && !ev.metaKey && !ev.ctrlKey) { ev.preventDefault(); dividir(); }
+    else if (k === "delete" || k === "backspace") { ev.preventDefault(); apagar(); }
+    else if (k === "arrowleft") { ev.preventDefault(); vaiPara(audio.currentTime - QUADRO); seguir(); }
+    else if (k === "arrowright") { ev.preventDefault(); vaiPara(audio.currentTime + QUADRO); seguir(); }
+    else if (k === "z" && (ev.metaKey || ev.ctrlKey)) { ev.preventDefault(); ev.shiftKey ? refazer() : desfazer(); }
+  });
+  $("bPlay").onclick = tocar; $("bDividir").onclick = dividir; $("bApagar").onclick = apagar;
+  $("bDesfazer").onclick = desfazer; $("bRefazer").onclick = refazer;
+  $("zoom").oninput = (ev) => { const meio = (lt.scrollLeft + lt.clientWidth / 2) / px; px = +ev.target.value; desenhaRegua(); redesenha(); lt.scrollLeft = meio * px - lt.clientWidth / 2; };
+  $("bVoltar").onclick = () => { marca(); trechos = copia(padrao); sel = null; redesenha(); status("Voltei para o corte automático. ⌘Z desfaz."); };
+
+  // ---------- salvar ----------
+  $("bSalvar").onclick = async () => {
+    if (!db) { status("Não consegui salvar nesta janela. Abra o link no navegador logado no Claude.", "erro"); return; }
+    $("bSalvar").disabled = true; status("Salvando…");
+    try {
+      await db.doc(DOC).set({ trechos: trechos.map(([s, e]) => ({ s: +s.toFixed(3), e: +e.toFixed(3) })), duracao: +total().toFixed(2), salvoEm: Date.now() });
+      status("Cortes salvos às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) + ". Pode me avisar no chat.", "ok");
+    } catch (e) { status("Não salvou (" + (e && e.code || "erro") + "). Tente de novo.", "erro"); }
+    $("bSalvar").disabled = false;
+  };
+
+  // ---------- início ----------
+  async function iniciar() {
+    try { D = await (await fetch("dados.json")).json(); }
+    catch { status("Não consegui carregar os dados da narração.", "erro"); return; }
+    padrao = copia(D.trechos); trechos = copia(padrao);
+    desenhaRegua(); redesenha();
+    status("Corte automático carregado. Ajuste e salve.");
+    try {
+      db = window.claude ? await window.claude.use("db") : null;
+      if (db) {
+        const timer = setTimeout(() => {}, 10000);
+        const snap = await db.doc(DOC).get();
+        clearTimeout(timer);
+        const v = snap && (snap.data ? snap.data() : snap);
+        if (v && Array.isArray(v.trechos) && v.trechos.length) {
+          trechos = v.trechos.map((x) => [x.s, x.e]); redesenha();
+          status("Abri os seus cortes salvos.", "ok");
+        }
+      }
+    } catch { /* sem banco: edição funciona, só não salva */ }
+  }
+  iniciar();
+})();
+</script>

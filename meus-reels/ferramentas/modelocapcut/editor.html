@@ -2,322 +2,405 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
 <style>
-/* Layout: editor de uma tela no estilo CapCut. Em cima a fala, no meio a barra de ferramentas, embaixo a linha do tempo rolável. Visual escuro fixo, como um editor de vídeo. */
+/* Layout: editor de vídeo de uma tela, estilo CapCut. Prévia 9:16 + painel do item selecionado em cima; barra de ferramentas; linha do tempo com 3 faixas (cenas, narração, sons). Visual escuro fixo. */
 :root {
   --bg: #111114; --painel: #1b1b20; --trilha: #24242b; --linha: #34343d;
-  --texto: #ecebf0; --suave: #9a99a6; --clip: #1d9e93; --clip-forte: #27c2b3;
-  --corte: #3a2a2e; --sel: #e8bf68; --play: #ffffff; --perigo: #ff7a7a;
+  --texto: #ecebf0; --suave: #9a99a6; --cena: #3b5bdb; --voz: #1d9e93; --voz-forte: #27c2b3;
+  --som: #d9822b; --sel: #f0c66e; --play: #ffffff; --perigo: #ff7a7a; --vazio: #2b2228;
   --f-titulo: "Space Grotesk", system-ui, sans-serif; --f-texto: "Inter", system-ui, sans-serif;
   color-scheme: dark;
 }
 html, body { height: 100%; }
-body { background: var(--bg); color: var(--texto); font-family: var(--f-texto); font-size: 14px; display: flex; flex-direction: column; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 12px; gap: 12px; box-sizing: border-box; overflow: hidden; }
+body { background: var(--bg); color: var(--texto); font-family: var(--f-texto); font-size: 14px; display: flex; flex-direction: column; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 10px; gap: 10px; box-sizing: border-box; overflow: hidden; }
 header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-h1 { font-family: var(--f-titulo); font-size: 18px; margin: 0; letter-spacing: -0.2px; }
-h1 small { color: var(--suave); font-weight: 500; font-family: var(--f-texto); font-size: 13px; margin-left: 6px; }
+h1 { font-family: var(--f-titulo); font-size: 18px; margin: 0; }
+h1 small { color: var(--suave); font: 500 13px var(--f-texto); margin-left: 6px; }
 .status { color: var(--suave); font-size: 13px; }
-.status.ok { color: var(--clip-forte); } .status.erro { color: var(--perigo); }
-.palco { background: var(--painel); border-radius: 12px; padding: 12px 16px; display: flex; justify-content: center; align-items: center; gap: 20px; text-align: center; }
-.palco video { height: min(38vh, 340px); aspect-ratio: 9 / 16; max-width: 45%; border-radius: 8px; background: #000; object-fit: cover; }
-.texto-palco { display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 0; flex: 1; }
-.fala { font-family: var(--f-titulo); font-size: clamp(16px, 3.6vw, 30px); line-height: 1.25; max-width: 30ch; text-wrap: balance; min-height: 2.5em; }
-.fala span { color: #6d6c78; transition: color .08s; }
-.fala span.dita { color: var(--texto); }
-.fala span.agora { color: var(--sel); }
-.fala span.cortada { text-decoration: line-through; color: #5a4a50; }
-.tempos { display: flex; gap: 18px; color: var(--suave); font-size: 13px; font-variant-numeric: tabular-nums; flex-wrap: wrap; justify-content: center; }
-.tempos b { color: var(--texto); font-weight: 600; }
-.barra { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-button { font: 600 13px var(--f-texto); color: var(--texto); background: var(--trilha); border: 1px solid var(--linha); border-radius: 8px; padding: 8px 12px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+.status.ok { color: var(--voz-forte); } .status.erro { color: var(--perigo); }
+.topo { display: flex; gap: 14px; min-height: 0; flex: 0 1 auto; }
+.previa { position: relative; height: min(40vh, 380px); aspect-ratio: 9 / 16; background: #000; border-radius: 10px; overflow: hidden; flex: none; max-width: 42vw; }
+.previa video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; visibility: hidden; }
+.previa video.ativo { visibility: visible; }
+.previa .leg { position: absolute; left: 6%; right: 6%; bottom: 28%; text-align: center; font: 700 clamp(11px, 1.6vw, 15px) var(--f-titulo); color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.8); }
+.painel { flex: 1; min-width: 0; background: var(--painel); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; max-height: min(40vh, 380px); }
+.painel h2 { font: 700 15px var(--f-titulo); margin: 0; }
+.painel .info { color: var(--suave); font-size: 13px; font-variant-numeric: tabular-nums; }
+.painel .info b { color: var(--texto); }
+.linha { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.linha label { color: var(--suave); font-size: 13px; min-width: 110px; }
+.linha input[type=range] { flex: 1; min-width: 120px; accent-color: var(--sel); }
+.linha output { font-variant-numeric: tabular-nums; min-width: 48px; text-align: right; }
+.grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)); gap: 6px; }
+.grade button { padding: 0; border-radius: 6px; overflow: hidden; display: block; position: relative; background: #000; border: 2px solid transparent; aspect-ratio: 9 / 16; }
+.grade button.atual { border-color: var(--sel); }
+.grade img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.grade span { position: absolute; left: 0; right: 0; bottom: 0; font-size: 9px; background: rgba(0,0,0,.65); color: #fff; padding: 1px 2px; white-space: nowrap; overflow: hidden; }
+button, select { font: 600 13px var(--f-texto); color: var(--texto); background: var(--trilha); border: 1px solid var(--linha); border-radius: 8px; padding: 7px 11px; cursor: pointer; }
 button:hover { background: #2e2e37; }
-button:focus-visible { outline: 2px solid var(--sel); outline-offset: 2px; }
+button:focus-visible, select:focus-visible { outline: 2px solid var(--sel); outline-offset: 2px; }
 button:disabled { opacity: .4; cursor: default; }
-button.principal { background: var(--clip); border-color: var(--clip-forte); }
-button.principal:hover { background: var(--clip-forte); }
-kbd { font: 500 11px var(--f-texto); color: var(--suave); border: 1px solid var(--linha); border-radius: 4px; padding: 0 4px; }
+button.principal { background: var(--voz); border-color: var(--voz-forte); }
+kbd { font: 500 11px var(--f-texto); color: var(--suave); border: 1px solid var(--linha); border-radius: 4px; padding: 0 4px; margin-left: 4px; }
+.barra { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .espaco { flex: 1; }
-label.chave { display: inline-flex; gap: 6px; align-items: center; color: var(--suave); font-size: 13px; cursor: pointer; }
+.tempo { font: 600 14px var(--f-texto); font-variant-numeric: tabular-nums; color: var(--suave); }
+.tempo b { color: var(--texto); }
 .zoom { display: inline-flex; gap: 6px; align-items: center; color: var(--suave); font-size: 13px; }
-.zoom input { width: 110px; accent-color: var(--sel); }
-.linha-tempo { flex: 1; min-height: 190px; background: var(--painel); border-radius: 12px; overflow-x: auto; overflow-y: hidden; position: relative; user-select: none; -webkit-user-select: none; touch-action: pan-x; }
-.conteudo { position: relative; height: 100%; min-height: 190px; }
-.regua, .palavras, .trilha { position: absolute; left: 0; }
-.regua { top: 0; height: 22px; border-bottom: 1px solid var(--linha); }
+.zoom input { width: 100px; accent-color: var(--sel); }
+.lt { flex: 1; min-height: 230px; background: var(--painel); border-radius: 10px; overflow-x: auto; overflow-y: hidden; position: relative; user-select: none; -webkit-user-select: none; display: flex; }
+.rotulos { flex: none; width: 74px; position: sticky; left: 0; z-index: 8; background: var(--painel); border-right: 1px solid var(--linha); }
+.rotulos div { position: absolute; left: 8px; font-size: 12px; color: var(--suave); font-weight: 600; }
+.conteudo { position: relative; height: 100%; min-height: 230px; flex: none; }
+.regua { position: absolute; top: 0; left: 0; height: 22px; right: 0; border-bottom: 1px solid var(--linha); cursor: pointer; }
 .regua i { position: absolute; top: 0; height: 22px; border-left: 1px solid var(--linha); font: normal 10px var(--f-texto); color: var(--suave); padding-left: 3px; line-height: 22px; font-variant-numeric: tabular-nums; }
-.palavras { top: 28px; height: 30px; }
-.palavras span { position: absolute; top: 4px; font-size: 12px; color: var(--texto); white-space: nowrap; padding: 2px 4px; border-radius: 4px; background: #2a2a33; cursor: pointer; }
-.palavras span.fora { background: transparent; color: #6a5d62; text-decoration: line-through; }
-.trilha { top: 66px; height: 96px; }
-.trilha canvas { position: absolute; left: 0; top: 0; height: 96px; }
-.bloco { position: absolute; top: 0; height: 96px; border-radius: 6px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.12); cursor: pointer; }
-.bloco.sel { box-shadow: inset 0 0 0 2px var(--sel); }
-.ponta { position: absolute; top: 0; width: 12px; height: 96px; cursor: ew-resize; touch-action: none; }
-.ponta::after { content: ""; position: absolute; top: 34px; left: 4px; width: 4px; height: 28px; border-radius: 2px; background: rgba(255,255,255,.55); }
+.faixa { position: absolute; left: 0; right: 0; }
+.f-cenas { top: 30px; height: 64px; } .f-voz { top: 102px; height: 70px; } .f-sons { top: 180px; height: 34px; }
+.bloco { position: absolute; top: 0; height: 100%; border-radius: 6px; overflow: hidden; touch-action: none; cursor: grab; box-shadow: inset 0 0 0 1px rgba(255,255,255,.15); }
+.bloco.sel { box-shadow: inset 0 0 0 2px var(--sel); z-index: 2; }
+.bloco.cena { background-color: var(--cena); background-size: auto 100%; background-repeat: repeat-x; }
+.bloco.cena .nome { position: absolute; left: 4px; bottom: 3px; right: 4px; font-size: 10px; font-weight: 600; text-shadow: 0 1px 3px #000; white-space: nowrap; overflow: hidden; }
+.bloco.voz { background: var(--voz); }
+.bloco.voz canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.bloco.voz .txt { position: absolute; left: 4px; top: 2px; right: 4px; font-size: 10px; white-space: nowrap; overflow: hidden; color: #eafffb; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+.ponta { position: absolute; top: 0; width: 12px; height: 100%; cursor: ew-resize; touch-action: none; z-index: 3; }
+.ponta::after { content: ""; position: absolute; top: 30%; left: 4px; width: 4px; height: 40%; border-radius: 2px; background: rgba(255,255,255,.6); }
 .bloco.sel .ponta::after { background: var(--sel); }
-.ponta.esq { left: -2px; } .ponta.dir { right: -2px; }
-.cursor { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--play); pointer-events: none; z-index: 5; }
+.ponta.esq { left: 0; } .ponta.dir { right: 0; }
+.som { position: absolute; top: 4px; height: 26px; transform: translateX(-13px); display: flex; align-items: center; gap: 4px; cursor: grab; touch-action: none; }
+.som i { width: 18px; height: 18px; background: var(--som); transform: rotate(45deg); border-radius: 3px; flex: none; margin-left: 4px; }
+.som span { font-size: 10px; color: var(--suave); white-space: nowrap; }
+.som.sel i { outline: 2px solid var(--sel); }
+.cursor { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--play); pointer-events: none; z-index: 6; }
 .cursor::before { content: ""; position: absolute; top: 0; left: -5px; border: 6px solid transparent; border-top-color: var(--play); }
-.dica { color: var(--suave); font-size: 12px; line-height: 1.5; }
-@media (max-width: 560px) { .dica .teclas { display: none; } kbd { display: none; } }
-@media (prefers-reduced-motion: reduce) { .fala span { transition: none; } }
+.dica { color: var(--suave); font-size: 12px; margin: 0; }
+@media (max-width: 640px) { .topo { flex-direction: column; } .previa { height: 34vh; max-width: none; align-self: center; } .painel { max-height: none; } kbd { display: none; } }
 </style>
 
 <header>
-  <h1>Modelo CapCut <small>Diário de reforma ep. 2 · narração</small></h1>
-  <span class="status" id="status">Carregando a narração…</span>
+  <h1>Modelo CapCut <small>Diário de reforma ep. 2</small></h1>
+  <span class="status" id="status">Carregando…</span>
 </header>
 
-<section class="palco" aria-live="polite">
-  <video id="audio" src="video.mp4" preload="auto" playsinline></video>
-  <div class="texto-palco">
-  <div class="fala" id="fala">Eu tô reformando o meu quarto…</div>
-  <div class="tempos">
-    <span>Cursor <b id="tCursor">0:00.0</b></span>
-    <span>Fica no vídeo <b id="tFinal">0:00</b> <small>(com 1,1x: <b id="tFinal11">0:00</b>)</small></span>
-    <span>Trechos <b id="nTrechos">0</b></span>
-  </div>
-  </div>
-</section>
-
-<div class="barra">
-  <button id="bPlay" class="principal" aria-label="Tocar">▶ Tocar <kbd>espaço</kbd></button>
-  <button id="bDividir">Dividir <kbd>S</kbd></button>
-  <button id="bApagar">Apagar trecho <kbd>Delete</kbd></button>
-  <button id="bDesfazer">Desfazer <kbd>⌘Z</kbd></button>
-  <button id="bRefazer">Refazer</button>
-  <label class="chave"><input type="checkbox" id="soCortes" checked> Tocar só o que fica</label>
-  <span class="espaco"></span>
-  <span class="zoom"><label for="zoom">Zoom</label><input type="range" id="zoom" min="20" max="240" value="70"></span>
-  <button id="bVoltar">Voltar ao corte automático</button>
-  <button id="bSalvar" class="principal">Salvar cortes</button>
+<div class="topo">
+  <div class="previa" id="previa"><div class="leg" id="leg"></div></div>
+  <div class="painel" id="painel"></div>
 </div>
 
-<div class="linha-tempo" id="lt">
+<div class="barra">
+  <button id="bPlay" class="principal">▶ Tocar<kbd>espaço</kbd></button>
+  <span class="tempo"><b id="tAtual">0:00.0</b> / <span id="tTotal">0:00</span></span>
+  <button id="bDividir">Dividir<kbd>S</kbd></button>
+  <button id="bApagar">Apagar<kbd>Delete</kbd></button>
+  <button id="bDesfazer">Desfazer<kbd>⌘Z</kbd></button>
+  <button id="bRefazer">Refazer</button>
+  <span class="espaco"></span>
+  <span class="zoom"><label for="zoom">Zoom</label><input type="range" id="zoom" min="25" max="260" value="70"></span>
+  <button id="bOriginal">Voltar à prévia v1</button>
+  <button id="bSalvar" class="principal">Salvar edição</button>
+</div>
+
+<div class="lt" id="lt">
+  <div class="rotulos"><div style="top:52px">Cenas</div><div style="top:128px">Narração</div><div style="top:188px">Sons</div></div>
   <div class="conteudo" id="conteudo">
     <div class="regua" id="regua"></div>
-    <div class="palavras" id="palavras"></div>
-    <div class="trilha" id="trilha"><canvas id="onda"></canvas></div>
+    <div class="faixa f-cenas" id="fCenas"></div>
+    <div class="faixa f-voz" id="fVoz"></div>
+    <div class="faixa f-sons" id="fSons"></div>
     <div class="cursor" id="cursor"></div>
   </div>
 </div>
-
-<p class="dica">Cada bloco verde é um trecho que fica no vídeo; o que está escuro sai. A cena mostrada é a da prévia v1 (onde hoje está cortado, a tela fica preta). <span class="teclas">Clique para mover o cursor · ← → anda um quadro · S divide no cursor · clique no bloco + Delete apaga · arraste a ponta do bloco para aumentar ou diminuir · ⌘Z desfaz.</span> Quando terminar, toque em <b>Salvar cortes</b> e me avise no chat.</p>
-
+<p class="dica">Toque num bloco para selecionar e ajustar no painel. Arraste o meio de uma cena para escolher outro momento do take; arraste as pontas para mudar onde ela começa e termina. Na narração, as pontas aumentam ou diminuem a fala e o resto do vídeo anda junto. Os sons (losangos) você arrasta para a palavra certa.</p>
 
 <script>
 (() => {
   const $ = (id) => document.getElementById(id);
-  const audio = $("audio"), lt = $("lt"), conteudo = $("conteudo"), trilha = $("trilha"), onda = $("onda");
-  const QUADRO = 1 / 30, MIN = 0.05, DOC = "cortes/ep2";
-  let D = null, trechos = [], padrao = [], sel = null, px = 70, hist = [], futuro = [], db = null, blocos = [];
+  const DOC = "edicao/ep2", MIN = 0.1, QUADRO = 1 / 30;
+  let D, E, original, px = 70, sel = null, hist = [], futuro = [], db = null;
+  let tocando = false, t = 0, t0 = 0, relogio = 0, ultimoT = 0;
+  const videos = {}, sonsAudio = {};
+  let narr = null, ctx = null, ganho = null;
 
-  const fmt = (t, dec) => { t = Math.max(0, t); const m = Math.floor(t / 60), s = t - m * 60; return m + ":" + (dec ? s.toFixed(1).padStart(4, "0") : String(Math.floor(s)).padStart(2, "0")); };
+  const fmt = (x, dec) => { x = Math.max(0, x); const m = Math.floor(x / 60), s = x - m * 60; return m + ":" + (dec ? s.toFixed(1).padStart(4, "0") : String(Math.floor(s)).padStart(2, "0")); };
   const status = (txt, cls) => { const el = $("status"); el.textContent = txt; el.className = "status" + (cls ? " " + cls : ""); };
-  const copia = (a) => a.map((x) => [x[0], x[1]]);
-  const dentro = (t) => trechos.findIndex((x) => t >= x[0] && t < x[1]);
-  const total = () => trechos.reduce((s, x) => s + x[1] - x[0], 0);
+  const clona = (o) => JSON.parse(JSON.stringify(o));
+  const r3 = (x) => Math.round(x * 1000) / 1000;
 
-  function marca() { hist.push(copia(trechos)); if (hist.length > 200) hist.shift(); futuro = []; atualizaBotoes(); }
-  function atualizaBotoes() { $("bDesfazer").disabled = !hist.length; $("bRefazer").disabled = !futuro.length; $("bApagar").disabled = sel === null; }
+  // ---------- modelo ----------
+  function layoutVoz() { let c = 0; return E.narracao.map((b) => { const d = (b.e - b.s) / D.vel; const o = { ini: c, fim: c + d }; c += d; return o; }); }
+  function total() { const L = layoutVoz(); return L.length ? L[L.length - 1].fim : 0; }
+  function ajustaFim() {
+    const T = total(); const c = E.cenas;
+    while (c.length > 1 && c[c.length - 1].ini >= T - MIN) c.pop();
+    if (c.length) c[c.length - 1].fim = r3(T);
+    E.sons = E.sons.filter((s) => s.t < T);
+  }
+  function marca() { hist.push(clona(E)); if (hist.length > 150) hist.shift(); futuro = []; }
+  const cenaEm = (x) => E.cenas.findIndex((c) => x >= c.ini && x < c.fim);
+  const vozEm = (x, L) => (L || layoutVoz()).findIndex((b) => x >= b.ini && x < b.fim);
 
-  // ---------- desenho ----------
-  function desenhaOnda() {
-    const w = Math.ceil(D.dur * px), h = 96;
-    onda.width = w; onda.height = h; onda.style.width = w + "px";
-    const c = onda.getContext("2d");
-    c.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--corte").trim(); c.fillRect(0, 0, w, h);
-    const corClip = getComputedStyle(document.documentElement).getPropertyValue("--clip").trim();
-    for (const [s, e] of trechos) { c.fillStyle = corClip; c.fillRect(s * px, 0, (e - s) * px, h); }
-    const pps = D.picosPorSeg;
+  // ---------- linha do tempo ----------
+  function desenha() {
+    const T = total(), w = Math.ceil(T * px) + 60;
+    $("conteudo").style.width = w + "px";
+    $("tTotal").textContent = fmt(T);
+    const r = $("regua"); r.textContent = "";
+    const passo = px < 40 ? 5 : px < 110 ? 2 : 1;
+    for (let s = 0; s <= T; s += passo) { const i = document.createElement("i"); i.style.left = s * px + "px"; i.textContent = fmt(s); r.append(i); }
+    // cenas
+    const fc = $("fCenas"); fc.textContent = "";
+    E.cenas.forEach((c, i) => {
+      const b = document.createElement("div"); b.className = "bloco cena" + (sel && sel.tipo === "cena" && sel.i === i ? " sel" : "");
+      b.style.left = c.ini * px + "px"; b.style.width = Math.max(3, (c.fim - c.ini) * px) + "px";
+      b.style.backgroundImage = `url("takes/${c.take}.jpg")`;
+      b.dataset.tipo = "cena"; b.dataset.i = i;
+      const n = document.createElement("div"); n.className = "nome"; n.textContent = (D.takes[c.take]?.ep === 1 ? "ep1 · " : "") + c.take.replace("ep1_", "");
+      b.append(n, ponta("esq"), ponta("dir")); fc.append(b);
+    });
+    // narração
+    const fv = $("fVoz"); fv.textContent = ""; const L = layoutVoz();
+    E.narracao.forEach((v, i) => {
+      const b = document.createElement("div"); b.className = "bloco voz" + (sel && sel.tipo === "voz" && sel.i === i ? " sel" : "");
+      const larg = Math.max(3, (L[i].fim - L[i].ini) * px);
+      b.style.left = L[i].ini * px + "px"; b.style.width = larg + "px"; b.dataset.tipo = "voz"; b.dataset.i = i;
+      const cv = document.createElement("canvas"); cv.width = Math.ceil(larg); cv.height = 70; onda(cv, v);
+      const tx = document.createElement("div"); tx.className = "txt";
+      tx.textContent = D.palavras.filter((p) => p[1] + 0.05 >= v.s && p[1] < v.e).map((p) => p[0]).join(" ") + (v.vol !== 1 ? "  · " + Math.round(v.vol * 100) + "%" : "");
+      b.append(cv, tx, ponta("esq"), ponta("dir")); fv.append(b);
+    });
+    // sons
+    const fs = $("fSons"); fs.textContent = "";
+    E.sons.forEach((s, i) => {
+      const b = document.createElement("div"); b.className = "som" + (sel && sel.tipo === "som" && sel.i === i ? " sel" : "");
+      b.style.left = s.t * px + "px"; b.dataset.tipo = "som"; b.dataset.i = i;
+      const ic = document.createElement("i"); const sp = document.createElement("span"); sp.textContent = s.arq;
+      b.append(ic, sp); fs.append(b);
+    });
+    $("bApagar").disabled = !sel; $("bDesfazer").disabled = !hist.length; $("bRefazer").disabled = !futuro.length;
+    posCursor(); painel();
+  }
+  function ponta(lado) { const p = document.createElement("div"); p.className = "ponta " + lado; p.dataset.lado = lado; return p; }
+  function onda(cv, v) {
+    const c = cv.getContext("2d"), w = cv.width, h = cv.height, pps = D.picosPorSeg;
+    c.fillStyle = "rgba(255,255,255,0.7)";
     for (let x = 0; x < w; x++) {
-      const t = x / px, i0 = Math.floor(t * pps), i1 = Math.max(i0 + 1, Math.floor((x + 1) / px * pps));
-      let m = 0; for (let i = i0; i < i1 && i < D.picos.length; i++) m = Math.max(m, D.picos[i]);
-      const a = Math.min(1, m * 1.6) * (h / 2 - 6);
-      c.fillStyle = dentro(t) >= 0 ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.22)";
-      c.fillRect(x, h / 2 - a, 1, a * 2 || 1);
+      const r0 = v.s + (x / w) * (v.e - v.s), r1 = v.s + ((x + 1) / w) * (v.e - v.s);
+      let m = 0; for (let i = Math.floor(r0 * pps); i <= Math.floor(r1 * pps) && i < D.picos.length; i++) m = Math.max(m, D.picos[i]);
+      const a = Math.min(1, m * 1.6 * v.vol) * (h / 2 - 12); c.fillRect(x, h / 2 + 6 - a, 1, Math.max(1, a * 2));
     }
   }
-  function desenhaBlocos() {
-    blocos.forEach((b) => b.remove()); blocos = [];
-    trechos.forEach(([s, e], i) => {
-      const b = document.createElement("div");
-      b.className = "bloco" + (i === sel ? " sel" : "");
-      b.style.left = s * px + "px"; b.style.width = Math.max(2, (e - s) * px) + "px";
-      b.dataset.i = i;
-      const pe = document.createElement("div"); pe.className = "ponta esq"; pe.dataset.lado = "0";
-      const pd = document.createElement("div"); pd.className = "ponta dir"; pd.dataset.lado = "1";
-      b.append(pe, pd); trilha.append(b); blocos.push(b);
-    });
-  }
-  function desenhaRegua() {
-    const r = $("regua"); r.textContent = ""; const w = Math.ceil(D.dur * px);
-    r.style.width = w + "px";
-    const passo = px < 40 ? 5 : px < 90 ? 2 : 1;
-    for (let t = 0; t <= D.dur; t += passo) { const i = document.createElement("i"); i.style.left = t * px + "px"; i.textContent = fmt(t); r.append(i); }
-  }
-  function desenhaPalavras() {
-    const p = $("palavras"); p.textContent = "";
-    let ultimoFim = -1;
-    D.palavras.forEach(([w, s], k) => {
-      const el = document.createElement("span"); el.textContent = w; el.dataset.k = k;
-      const x = s * px; el.style.left = x + "px";
-      el.style.top = (x < ultimoFim ? 16 : 2) + "px";
-      if (x >= ultimoFim) ultimoFim = x + w.length * 7 + 10;
-      el.className = dentro(s + 0.05) >= 0 ? "" : "fora";
-      p.append(el);
-    });
-  }
-  function redesenha() {
-    conteudo.style.width = Math.ceil(D.dur * px) + 40 + "px";
-    desenhaOnda(); desenhaBlocos(); desenhaPalavras();
-    $("tFinal").textContent = fmt(total()); $("tFinal11").textContent = fmt(total() / 1.1);
-    $("nTrechos").textContent = trechos.length; atualizaBotoes(); falaAgora();
-  }
+  function posCursor() { $("cursor").style.left = t * px + 74 * 0 + "px"; $("tAtual").textContent = fmt(t, true); }
 
-  // ---------- fala em cima (palavra atual) ----------
-  let fraseIni = -1;
-  function falaAgora() {
-    if (!D) return;
-    const t = audio.currentTime, P = D.palavras;
-    let k = P.findIndex((x) => x[1] > t) - 1; if (k < -1) k = P.length - 1; if (k < 0) k = 0;
-    let a = k; while (a > 0 && !/[.!?]$/.test(P[a - 1][0]) && k - a < 12) a--;
-    let b = k; while (b < P.length - 1 && !/[.!?]$/.test(P[b][0]) && b - a < 18) b++;
-    if (a !== fraseIni || true) {
-      const f = $("fala"); f.textContent = "";
-      for (let i = a; i <= b; i++) {
-        const s = document.createElement("span"); s.textContent = P[i][0] + " ";
-        const cortada = dentro(P[i][1] + 0.05) < 0;
-        s.className = cortada ? "cortada" : i === k && t >= P[i][1] ? "agora" : P[i][1] <= t ? "dita" : "";
-        f.append(s);
-      }
-      fraseIni = a;
-    }
-    $("tCursor").textContent = fmt(t, true);
-    $("cursor").style.left = t * px + "px";
-  }
-
-  // ---------- tocar ----------
-  function tocar() {
-    if (audio.paused) {
-      if ($("soCortes").checked && trechos.length) {
-        const i = dentro(audio.currentTime);
-        if (i < 0) { const prox = trechos.find((x) => x[0] > audio.currentTime) || trechos[0]; audio.currentTime = prox[0]; }
-      }
-      audio.play().catch(() => status("Toque em Tocar de novo para liberar o som.", "erro"));
-    } else audio.pause();
-  }
-  audio.addEventListener("play", () => { $("bPlay").textContent = "❚❚ Pausar"; loop(); });
-  audio.addEventListener("pause", () => { $("bPlay").innerHTML = "▶ Tocar <kbd>espaço</kbd>"; });
-  function loop() {
-    if (audio.paused) return;
-    if ($("soCortes").checked && trechos.length) {
-      const t = audio.currentTime;
-      if (dentro(t) < 0) {
-        const prox = trechos.find((x) => x[0] > t - 0.001);
-        if (prox) audio.currentTime = prox[0]; else { audio.pause(); audio.currentTime = trechos[trechos.length - 1][1]; }
-      }
-    }
-    falaAgora(); seguir();
-    requestAnimationFrame(loop);
-  }
-  function seguir() {
-    const x = audio.currentTime * px;
-    if (x < lt.scrollLeft + 40 || x > lt.scrollLeft + lt.clientWidth - 80) lt.scrollLeft = x - lt.clientWidth * 0.3;
-  }
-  function vaiPara(t) { audio.currentTime = Math.min(Math.max(0, t), D.dur); falaAgora(); }
-
-  // ---------- editar ----------
-  function dividir() {
-    const t = audio.currentTime, i = dentro(t);
-    if (i < 0) { status("Coloque o cursor dentro de um bloco para dividir.", "erro"); return; }
-    const [s, e] = trechos[i];
-    if (t - s < MIN || e - t < MIN) return;
-    marca(); trechos.splice(i, 1, [s, t], [t, e]); sel = i + 1; redesenha(); status("Dividido em " + fmt(t, true) + ".");
-  }
-  function apagar() {
-    if (sel === null) return;
-    marca(); trechos.splice(sel, 1); sel = null; redesenha(); status("Trecho apagado. ⌘Z desfaz.");
-  }
-  function desfazer() { if (!hist.length) return; futuro.push(copia(trechos)); trechos = hist.pop(); sel = null; redesenha(); }
-  function refazer() { if (!futuro.length) return; hist.push(copia(trechos)); trechos = futuro.pop(); sel = null; redesenha(); }
-
-  // clique e arrasto na trilha
-  let arrasto = null;
-  trilha.addEventListener("pointerdown", (ev) => {
-    const ponta = ev.target.closest(".ponta"), bloco = ev.target.closest(".bloco");
-    const t = (ev.clientX - trilha.getBoundingClientRect().left) / px;
-    if (ponta && bloco) {
-      const i = +bloco.dataset.i, lado = +ponta.dataset.lado;
-      marca(); sel = i; arrasto = { i, lado };
-      ponta.setPointerCapture(ev.pointerId); ev.preventDefault();
-      blocos.forEach((b, j) => b.classList.toggle("sel", j === i)); atualizaBotoes();
+  // ---------- painel do item selecionado ----------
+  function painel() {
+    const p = $("painel"); p.textContent = "";
+    const h = (tag, txt, cls) => { const e = document.createElement(tag); if (txt != null) e.textContent = txt; if (cls) e.className = cls; return e; };
+    const slider = (rot, min, max, step, val, fmtv, on) => {
+      const l = h("div", null, "linha"); const id = "s" + Math.random().toString(36).slice(2, 7);
+      const lb = h("label", rot); lb.htmlFor = id; const inp = document.createElement("input"); inp.type = "range"; inp.id = id; inp.min = min; inp.max = max; inp.step = step; inp.value = val;
+      const o = h("output", fmtv(val)); let marcou = false;
+      inp.oninput = () => { if (!marcou) { marca(); marcou = true; } o.textContent = fmtv(+inp.value); on(+inp.value); };
+      inp.onchange = () => { marcou = false; desenha(); };
+      l.append(lb, inp, o); return l;
+    };
+    if (!sel) {
+      p.append(h("h2", "Nada selecionado"));
+      p.append(h("div", "Toque numa cena, num pedaço da narração ou num som na linha do tempo para ajustar.", "info"));
+      const l = h("div", null, "linha"); l.append(h("label", "Som no cursor"));
+      const s = document.createElement("select"); s.id = "novoSom"; D.arquivosSons.forEach((a) => { const o = document.createElement("option"); o.value = a; o.textContent = a; s.append(o); });
+      const b = h("button", "+ Adicionar som"); b.onclick = () => { marca(); E.sons.push({ t: r3(t), arq: s.value, vol: 0.3, nota: "" }); E.sons.sort((a, b) => a.t - b.t); sel = { tipo: "som", i: E.sons.findIndex((x) => x.t === r3(t) && x.arq === s.value) }; desenha(); };
+      l.append(s, b); p.append(l);
+      p.append(slider("Volume da voz", 0, 2, 0.05, E.vozGeral ?? 1, (v) => Math.round(v * 100) + "%", (v) => { E.vozGeral = v; }));
       return;
     }
-    if (bloco) { sel = +bloco.dataset.i; blocos.forEach((b, j) => b.classList.toggle("sel", j === sel)); atualizaBotoes(); }
-    else { sel = null; blocos.forEach((b) => b.classList.remove("sel")); atualizaBotoes(); }
-    vaiPara(t);
-  });
-  trilha.addEventListener("pointermove", (ev) => {
-    if (!arrasto) return;
-    const { i, lado } = arrasto, t = (ev.clientX - trilha.getBoundingClientRect().left) / px;
-    const seg = trechos[i];
-    if (lado === 0) { const lim = i > 0 ? trechos[i - 1][1] : 0; seg[0] = Math.min(Math.max(t, lim), seg[1] - MIN); vaiPara(seg[0]); }
-    else { const lim = i < trechos.length - 1 ? trechos[i + 1][0] : D.dur; seg[1] = Math.max(Math.min(t, lim), seg[0] + MIN); vaiPara(Math.max(seg[0], seg[1] - 0.6)); }
-    const b = blocos[i]; b.style.left = seg[0] * px + "px"; b.style.width = (seg[1] - seg[0]) * px + "px";
-    $("tFinal").textContent = fmt(total()); $("tFinal11").textContent = fmt(total() / 1.1);
-  });
-  const solta = () => { if (!arrasto) return; arrasto = null; const s = sel; redesenha(); sel = s; status("Ponta ajustada."); };
-  trilha.addEventListener("pointerup", solta); trilha.addEventListener("pointercancel", solta);
-  $("palavras").addEventListener("click", (ev) => { const s = ev.target.closest("span"); if (s) vaiPara(D.palavras[+s.dataset.k][1]); });
-  $("regua").addEventListener("click", (ev) => vaiPara((ev.clientX - $("regua").getBoundingClientRect().left) / px));
+    if (sel.tipo === "cena") {
+      const c = E.cenas[sel.i]; if (!c) { sel = null; return painel(); }
+      p.append(h("h2", "Cena " + (sel.i + 1) + (c.nota ? " · " + c.nota : "")));
+      const inf = h("div", null, "info"); inf.innerHTML = `Take <b></b> · no vídeo de <b>${fmt(c.ini, true)}</b> a <b>${fmt(c.fim, true)}</b> · começa em <b>${c.de.toFixed(1)} s</b> do take`; inf.querySelector("b").textContent = c.take; p.append(inf);
+      const l = h("div", null, "linha"); l.append(h("label", "Momento do take"));
+      const mexe = (d) => { marca(); const dur = D.takes[c.take].dur; c.de = r3(Math.min(Math.max(0, c.de + d), Math.max(0, dur - (c.fim - c.ini)))); mostra(true); desenha(); };
+      [["−1 s", -1], ["−0,2", -0.2], ["+0,2", 0.2], ["+1 s", 1]].forEach(([tx, d]) => { const b = h("button", tx); b.onclick = () => mexe(d); l.append(b); });
+      p.append(l);
+      p.append(slider("Zoom da cena", 1, 1.4, 0.01, c.zoom || 1, (v) => Math.round(v * 100) + "%", (v) => { c.zoom = v; mostra(true); }));
+      p.append(h("div", "Trocar o take (toque em um):", "info"));
+      const g = h("div", null, "grade");
+      Object.keys(D.takes).forEach((k) => {
+        const b = document.createElement("button"); if (k === c.take) b.className = "atual"; b.title = k;
+        const im = document.createElement("img"); im.src = "takes/" + k + ".jpg"; im.alt = k; const sp = h("span", (D.takes[k].ep === 1 ? "ep1 " : "") + k.replace("ep1_", "").replace("IMG_", ""));
+        b.append(im, sp);
+        b.onclick = () => { marca(); c.take = k; const dur = D.takes[k].dur; c.de = r3(Math.min(c.de, Math.max(0, dur - (c.fim - c.ini)))); mostra(true); desenha(); status("Take trocado para " + k + "."); };
+        g.append(b);
+      });
+      p.append(g);
+    } else if (sel.tipo === "voz") {
+      const v = E.narracao[sel.i]; if (!v) { sel = null; return painel(); }
+      const L = layoutVoz()[sel.i];
+      p.append(h("h2", "Narração · pedaço " + (sel.i + 1)));
+      p.append(h("div", D.palavras.filter((x) => x[1] + 0.05 >= v.s && x[1] < v.e).map((x) => x[0]).join(" "), "info"));
+      const inf = h("div", null, "info"); inf.innerHTML = `No vídeo de <b>${fmt(L.ini, true)}</b> a <b>${fmt(L.fim, true)}</b>`; p.append(inf);
+      p.append(slider("Volume deste pedaço", 0, 2, 0.05, v.vol, (x) => Math.round(x * 100) + "%", (x) => { v.vol = x; }));
+      p.append(slider("Volume da voz toda", 0, 2, 0.05, E.vozGeral ?? 1, (x) => Math.round(x * 100) + "%", (x) => { E.vozGeral = x; }));
+      p.append(h("div", "Arraste as pontas do bloco para pegar mais ou menos fala. Dividir corta no cursor; Apagar tira o pedaço e o resto anda junto.", "info"));
+    } else if (sel.tipo === "som") {
+      const s = E.sons[sel.i]; if (!s) { sel = null; return painel(); }
+      p.append(h("h2", "Som · " + s.arq + (s.nota ? " · " + s.nota : "")));
+      const inf = h("div", null, "info"); inf.innerHTML = `Toca em <b>${fmt(s.t, true)}</b>`; p.append(inf);
+      const l = h("div", null, "linha"); l.append(h("label", "Arquivo"));
+      const se = document.createElement("select"); se.id = "arqSom"; D.arquivosSons.forEach((a) => { const o = document.createElement("option"); o.value = a; o.textContent = a; if (a === s.arq) o.selected = true; se.append(o); });
+      se.onchange = () => { marca(); s.arq = se.value; tocaSom(s); desenha(); }; l.append(se);
+      const ouvir = h("button", "▶ Ouvir"); ouvir.onclick = () => tocaSom(s); l.append(ouvir); p.append(l);
+      p.append(slider("Volume", 0, 1, 0.01, s.vol, (x) => Math.round(x * 100) + "%", (x) => { s.vol = x; }));
+      const l2 = h("div", null, "linha"); l2.append(h("label", "Mover"));
+      [["−0,1 s", -0.1], ["+0,1 s", 0.1]].forEach(([tx, d]) => { const b = h("button", tx); b.onclick = () => { marca(); s.t = r3(Math.max(0, s.t + d)); desenha(); }; l2.append(b); });
+      const nc = h("button", "Para o cursor"); nc.onclick = () => { marca(); s.t = r3(t); desenha(); }; l2.append(nc); p.append(l2);
+    }
+  }
 
+  // ---------- prévia e som ----------
+  function video(take) {
+    if (!videos[take]) { const v = document.createElement("video"); v.src = "takes/" + take + ".mp4"; v.muted = true; v.playsInline = true; v.preload = "auto"; $("previa").insertBefore(v, $("leg")); videos[take] = v; }
+    return videos[take];
+  }
+  function mostra(forca) {
+    const i = cenaEm(Math.min(t, total() - 0.001)); const c = E.cenas[i];
+    for (const k in videos) if (!c || k !== c.take) { videos[k].classList.remove("ativo"); if (!videos[k].paused) videos[k].pause(); }
+    if (c) {
+      const v = video(c.take); v.classList.add("ativo"); v.style.transform = `scale(${c.zoom || 1})`;
+      const want = c.de + (t - c.ini);
+      if (tocando) { if (v.paused) { v.currentTime = want; v.play().catch(() => {}); } else if (Math.abs(v.currentTime - want) > 0.25) v.currentTime = want; }
+      else if (forca || Math.abs(v.currentTime - want) > 0.02) v.currentTime = want;
+    }
+    // legenda simples: palavra atual da narração
+    const L = layoutVoz(), j = vozEm(t, L);
+    if (j >= 0) { const v = E.narracao[j], raw = v.s + (t - L[j].ini) * D.vel; const ws = D.palavras.filter((p) => p[1] <= raw + 0.02 && p[1] >= v.s - 0.05 && p[1] < v.e); $("leg").textContent = ws.slice(-3).map((p) => p[0]).join(" "); }
+  }
+  function prepAudio() {
+    if (narr) return;
+    narr = new Audio("narracao.mp3"); narr.preload = "auto";
+    try { ctx = new (window.AudioContext || window.webkitAudioContext)(); const src = ctx.createMediaElementSource(narr); ganho = ctx.createGain(); src.connect(ganho).connect(ctx.destination); } catch { ctx = null; }
+    D.arquivosSons.forEach((a) => { const s = new Audio("sons/" + a + ".mp3"); s.preload = "auto"; sonsAudio[a] = s; });
+  }
+  function tocaSom(s) { prepAudio(); const a = sonsAudio[s.arq].cloneNode(); a.volume = Math.min(1, s.vol); a.play().catch(() => {}); }
+  function voz() {
+    const L = layoutVoz(), j = vozEm(t, L);
+    if (!tocando || j < 0) { if (narr && !narr.paused) narr.pause(); return; }
+    const v = E.narracao[j], raw = v.s + (t - L[j].ini) * D.vel, g = v.vol * (E.vozGeral ?? 1);
+    if (ganho) ganho.gain.value = g; else narr.volume = Math.min(1, g);
+    narr.playbackRate = D.vel; try { narr.preservesPitch = true; } catch {}
+    if (narr.paused || Math.abs(narr.currentTime - raw) > 0.12) { narr.currentTime = raw; if (narr.paused) narr.play().catch(() => {}); }
+  }
+  function tocar() {
+    prepAudio(); if (ctx && ctx.state === "suspended") ctx.resume();
+    if (tocando) { parar(); return; }
+    if (t >= total() - 0.05) t = 0;
+    tocando = true; t0 = t; relogio = performance.now(); ultimoT = t; $("bPlay").textContent = "❚❚ Pausar"; quadro();
+  }
+  function parar() { tocando = false; $("bPlay").innerHTML = "▶ Tocar<kbd>espaço</kbd>"; if (narr) narr.pause(); for (const k in videos) videos[k].pause(); }
+  function quadro() {
+    if (!tocando) return;
+    t = t0 + (performance.now() - relogio) / 1000;
+    if (t >= total()) { t = total(); parar(); posCursor(); return; }
+    for (const s of E.sons) if (s.t > ultimoT && s.t <= t) tocaSom(s);
+    ultimoT = t; mostra(); voz(); posCursor(); segue();
+    requestAnimationFrame(quadro);
+  }
+  function segue() { const lt = $("lt"), x = t * px + 74; if (x < lt.scrollLeft + 90 || x > lt.scrollLeft + lt.clientWidth - 80) lt.scrollLeft = x - lt.clientWidth * 0.3; }
+  function vaiPara(x) { t = Math.min(Math.max(0, x), Math.max(0, total() - 0.001)); if (tocando) { t0 = t; relogio = performance.now(); ultimoT = t; } posCursor(); mostra(true); }
+
+  // ---------- arrastar ----------
+  let arr = null;
+  $("conteudo").addEventListener("pointerdown", (ev) => {
+    const alvo = ev.target.closest("[data-tipo]"), pt = ev.target.closest(".ponta");
+    const x = (ev.clientX - $("conteudo").getBoundingClientRect().left) / px;
+    if (!alvo) { if (ev.target.closest(".faixa, .regua")) { sel = null; vaiPara(x); desenha(); } return; }
+    const tipo = alvo.dataset.tipo, i = +alvo.dataset.i;
+    sel = { tipo, i }; marca();
+    arr = { tipo, i, lado: pt ? pt.dataset.lado : "meio", x0: ev.clientX, orig: clona(E), mexeu: false };
+    alvo.setPointerCapture(ev.pointerId); ev.preventDefault();
+    if (!pt && tipo !== "som") vaiPara(x);
+    desenha();
+  });
+  $("conteudo").addEventListener("pointermove", (ev) => {
+    if (!arr) return;
+    const dx = (ev.clientX - arr.x0) / px; if (Math.abs(ev.clientX - arr.x0) > 2) arr.mexeu = true; if (!arr.mexeu) return;
+    const O = arr.orig, i = arr.i;
+    if (arr.tipo === "cena") {
+      const c = E.cenas[i], oc = O.cenas[i];
+      if (arr.lado === "meio") { const dur = D.takes[c.take].dur; c.de = r3(Math.min(Math.max(0, oc.de - dx), Math.max(0, dur - (c.fim - c.ini)))); t = Math.min(Math.max(c.ini, t), c.fim - 0.01); }
+      else if (arr.lado === "esq" && i > 0) { const p = E.cenas[i - 1], op = O.cenas[i - 1]; const n = Math.min(Math.max(op.ini + MIN, oc.ini + dx), oc.fim - MIN); c.ini = r3(n); p.fim = r3(n); c.de = r3(Math.max(0, oc.de + (n - oc.ini))); t = n; }
+      else if (arr.lado === "dir" && i < E.cenas.length - 1) { const nx = E.cenas[i + 1], on = O.cenas[i + 1]; const n = Math.min(Math.max(oc.ini + MIN, oc.fim + dx), on.fim - MIN); c.fim = r3(n); nx.ini = r3(n); nx.de = r3(Math.max(0, on.de + (n - on.ini))); t = Math.max(c.ini, n - 0.05); }
+    } else if (arr.tipo === "voz") {
+      const v = E.narracao[i], ov = O.narracao[i], dr = dx * D.vel;
+      if (arr.lado === "esq") v.s = r3(Math.min(Math.max(0, ov.s + dr), ov.e - MIN));
+      else if (arr.lado === "dir") v.e = r3(Math.max(Math.min(D.durRaw, ov.e + dr), ov.s + MIN));
+      else return;
+      E.cenas = clona(O.cenas); ajustaFim();
+    } else if (arr.tipo === "som") { E.sons[i].t = r3(Math.max(0, O.sons[i].t + dx)); }
+    desenha(); mostra(true);
+  });
+  const solta = () => {
+    if (!arr) return;
+    if (!arr.mexeu) hist.pop(); else if (arr.tipo === "voz") { ajustaFim(); status("Narração ajustada. O que vem depois andou junto."); }
+    if (arr.tipo === "som" && arr.mexeu) { E.sons.sort((a, b) => a.t - b.t); }
+    arr = null; desenha();
+  };
+  $("conteudo").addEventListener("pointerup", solta); $("conteudo").addEventListener("pointercancel", solta);
+
+  // ---------- ferramentas ----------
+  function dividir() {
+    if (sel && sel.tipo === "voz") {
+      const L = layoutVoz(), j = vozEm(t, L); if (j < 0) return status("Coloque o cursor dentro da narração.", "erro");
+      const v = E.narracao[j], raw = v.s + (t - L[j].ini) * D.vel; if (raw - v.s < MIN || v.e - raw < MIN) return;
+      marca(); E.narracao.splice(j, 1, { s: v.s, e: r3(raw), vol: v.vol }, { s: r3(raw), e: v.e, vol: v.vol }); sel = { tipo: "voz", i: j + 1 };
+    } else {
+      const i = cenaEm(t); if (i < 0) return; const c = E.cenas[i]; if (t - c.ini < MIN || c.fim - t < MIN) return;
+      marca(); const n = clona(c); n.ini = r3(t); n.de = r3(c.de + (t - c.ini)); n.nota = ""; c.fim = r3(t); E.cenas.splice(i + 1, 0, n); sel = { tipo: "cena", i: i + 1 };
+    }
+    desenha(); status("Dividido no cursor.");
+  }
+  function apagar() {
+    if (!sel) return; marca();
+    if (sel.tipo === "cena") { if (E.cenas.length < 2) { hist.pop(); return; } const i = sel.i, c = E.cenas[i]; if (i > 0) E.cenas[i - 1].fim = c.fim; else { E.cenas[1].ini = 0; E.cenas[1].de = r3(Math.max(0, E.cenas[1].de - (c.fim - c.ini))); } E.cenas.splice(i, 1); status("Cena apagada: a cena vizinha ocupou o lugar."); }
+    else if (sel.tipo === "voz") { if (E.narracao.length < 2) { hist.pop(); return; } E.narracao.splice(sel.i, 1); ajustaFim(); status("Pedaço da narração apagado. O resto andou junto."); }
+    else if (sel.tipo === "som") { E.sons.splice(sel.i, 1); status("Som apagado."); }
+    sel = null; desenha();
+  }
+  const desfazer = () => { if (!hist.length) return; futuro.push(clona(E)); E = hist.pop(); sel = null; desenha(); mostra(true); };
+  const refazer = () => { if (!futuro.length) return; hist.push(clona(E)); E = futuro.pop(); sel = null; desenha(); mostra(true); };
+  $("bPlay").onclick = tocar; $("bDividir").onclick = dividir; $("bApagar").onclick = apagar; $("bDesfazer").onclick = desfazer; $("bRefazer").onclick = refazer;
+  $("bOriginal").onclick = () => { marca(); E = clona(original); sel = null; desenha(); mostra(true); status("Voltei para a prévia v1. Desfazer traz sua edição de volta."); };
+  $("zoom").oninput = (ev) => { const lt = $("lt"), meio = (lt.scrollLeft + lt.clientWidth / 2 - 74) / px; px = +ev.target.value; desenha(); lt.scrollLeft = meio * px + 74 - lt.clientWidth / 2; };
   document.addEventListener("keydown", (ev) => {
-    if (ev.target.matches("input[type=range]")) return;
+    if (ev.target.matches("input, select")) return;
     const k = ev.key.toLowerCase();
     if (k === " ") { ev.preventDefault(); tocar(); }
     else if (k === "s" && !ev.metaKey && !ev.ctrlKey) { ev.preventDefault(); dividir(); }
     else if (k === "delete" || k === "backspace") { ev.preventDefault(); apagar(); }
-    else if (k === "arrowleft") { ev.preventDefault(); vaiPara(audio.currentTime - QUADRO); seguir(); }
-    else if (k === "arrowright") { ev.preventDefault(); vaiPara(audio.currentTime + QUADRO); seguir(); }
+    else if (k === "arrowleft") { ev.preventDefault(); vaiPara(t - QUADRO); }
+    else if (k === "arrowright") { ev.preventDefault(); vaiPara(t + QUADRO); }
     else if (k === "z" && (ev.metaKey || ev.ctrlKey)) { ev.preventDefault(); ev.shiftKey ? refazer() : desfazer(); }
+    else if (k === "escape") { sel = null; desenha(); }
   });
-  $("bPlay").onclick = tocar; $("bDividir").onclick = dividir; $("bApagar").onclick = apagar;
-  $("bDesfazer").onclick = desfazer; $("bRefazer").onclick = refazer;
-  $("zoom").oninput = (ev) => { const meio = (lt.scrollLeft + lt.clientWidth / 2) / px; px = +ev.target.value; desenhaRegua(); redesenha(); lt.scrollLeft = meio * px - lt.clientWidth / 2; };
-  $("bVoltar").onclick = () => { marca(); trechos = copia(padrao); sel = null; redesenha(); status("Voltei para o corte automático. ⌘Z desfaz."); };
 
   // ---------- salvar ----------
   $("bSalvar").onclick = async () => {
-    if (!db) { status("Não consegui salvar nesta janela. Abra o link no navegador logado no Claude.", "erro"); return; }
+    if (!db) return status("Não consegui salvar nesta janela. Abra o link logada no Claude.", "erro");
     $("bSalvar").disabled = true; status("Salvando…");
-    try {
-      await db.doc(DOC).set({ trechos: trechos.map(([s, e]) => ({ s: +s.toFixed(3), e: +e.toFixed(3) })), duracao: +total().toFixed(2), salvoEm: Date.now() });
-      status("Cortes salvos às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) + ". Pode me avisar no chat.", "ok");
-    } catch (e) { status("Não salvou (" + (e && e.code || "erro") + "). Tente de novo.", "erro"); }
+    try { await db.doc(DOC).set({ cenas: E.cenas, narracao: E.narracao, sons: E.sons, vozGeral: E.vozGeral ?? 1, duracao: r3(total()), salvoEm: Date.now() }); status("Edição salva às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) + ". Me avise no chat.", "ok"); }
+    catch (e) { status("Não salvou (" + ((e && e.code) || "erro") + "). Tente de novo.", "erro"); }
     $("bSalvar").disabled = false;
   };
 
   // ---------- início ----------
-  async function iniciar() {
-    try { D = await (await fetch("dados.json")).json(); }
-    catch { status("Não consegui carregar os dados da narração.", "erro"); return; }
-    padrao = copia(D.trechos); trechos = copia(padrao);
-    desenhaRegua(); redesenha();
-    status("Corte automático carregado. Ajuste e salve.");
+  (async () => {
+    try { D = await (await fetch("dados.json")).json(); } catch { return status("Não consegui carregar os dados.", "erro"); }
+    original = { cenas: D.cenas, narracao: D.narracao, sons: D.sons, vozGeral: 1 };
+    E = clona(original); desenha(); mostra(true);
+    status("Prévia v1 carregada. Ajuste e salve.");
     try {
       db = window.claude ? await window.claude.use("db") : null;
-      if (db) {
-        const timer = setTimeout(() => {}, 10000);
-        const snap = await db.doc(DOC).get();
-        clearTimeout(timer);
-        const v = snap && (snap.data ? snap.data() : snap);
-        if (v && Array.isArray(v.trechos) && v.trechos.length) {
-          trechos = v.trechos.map((x) => [x.s, x.e]); redesenha();
-          status("Abri os seus cortes salvos.", "ok");
-        }
-      }
-    } catch { /* sem banco: edição funciona, só não salva */ }
-  }
-  iniciar();
+      if (db) { const snap = await db.doc(DOC).get(); const v = snap && snap.exists ? snap.data() : null;
+        if (v && Array.isArray(v.cenas) && Array.isArray(v.narracao)) { E = { cenas: clona(v.cenas), narracao: clona(v.narracao), sons: clona(v.sons || []), vozGeral: v.vozGeral ?? 1 }; desenha(); mostra(true); status("Abri a sua edição salva.", "ok"); } }
+    } catch {}
+  })();
 })();
 </script>

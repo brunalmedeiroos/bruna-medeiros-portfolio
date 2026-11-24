@@ -2,7 +2,6 @@ import React from "react";
 import {
   AbsoluteFill,
   Audio,
-  Img,
   interpolate,
   OffthreadVideo,
   Sequence,
@@ -32,18 +31,6 @@ const Clip: React.FC<{ n: string; de: number; zoom?: number }> = ({ n, de, zoom 
   return (
     <AbsoluteFill style={{ transform: `scale(${z})` }}>
       <OffthreadVideo src={R(`${n}.mp4`)} startFrom={Math.round(de * fps)} muted style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-    </AbsoluteFill>
-  );
-};
-
-// foto das paredes de antes, com zoom lento
-const Foto: React.FC<{ n: string; x?: number }> = ({ n, x = 50 }) => {
-  const frame = useCurrentFrame();
-  const { durationInFrames } = useVideoConfig();
-  const z = interpolate(frame, [0, durationInFrames], [1.06, 1.14]);
-  return (
-    <AbsoluteFill style={{ overflow: "hidden", background: "#000" }}>
-      <Img src={R(n)} style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: `${x}% 50%`, transform: `scale(${z})` }} />
     </AbsoluteFill>
   );
 };
@@ -157,44 +144,46 @@ const Sons: React.FC = () => {
 // ---------- mapa de cenas ----------
 type Cena = [number, number, () => React.ReactNode];
 const v = (n: string, de: number, zoom = 1) => () => <Clip n={n} de={de} zoom={zoom} />;
-const f = (n: string, x?: number) => () => <Foto n={n} x={x} />;
 
 export const CENAS: Cena[] = [
-  [0.0, 0.98, v("IMG_3163", 1.0)], // eu tô reformando (ela na janela nova)
-  [0.98, 1.51, v("IMG_3128", 2.4)], // o meu quarto
-  [1.51, 2.19, v("IMG_3355", 0.3)], // que também é
-  [2.19, 3.29, v("IMG_3355", 3.0, 1.05)], // meu estúdio de gravação
-  [3.29, 3.8, f("parede-janela.jpg", 30)], // e que antes
-  [3.8, 4.25, f("parede-cama.jpg", 50)], // estava
-  [4.25, 4.75, f("parede-tv.jpg")], // assim
-  [4.75, 5.69, v("IMG_3162", 1.5)], // esse é o episódio 2
-  [5.69, 7.03, v("IMG_3355", 7.0)], // e se você não viu o primeiro
-  [7.03, 7.65, v("IMG_3162", 0.2, 1.05)], // eu recomendo assistir
-  [7.65, 8.67, v("IMG_2987", 3.0)], // antes e depois (cachorro)
-  [8.67, 10.48, v("IMG_3162", 3.0)], // voltar pra esse aqui pra você entender melhor
+  [0.0, 0.98, v("IMG_3128", 2.4)], // eu tô reformando (quarto já com cerâmica)
+  [0.98, 1.51, v("IMG_2937", 6.0, 1.05)], // o meu quarto
+  [1.51, 2.19, v("ep1_IMG_2727", 18)], // que também é (ep. 1: gravando)
+  [2.19, 3.29, v("ep1_IMG_2727", 61, 1.06)], // meu estúdio de gravação
+  [3.29, 3.8, v("ep1_IMG_2891", 0.3)], // e que antes (ep. 1: cama)
+  [3.8, 4.25, v("ep1_IMG_2892", 0.2)], // estava (ep. 1: escrivaninha)
+  [4.25, 4.75, v("ep1_IMG_2893", 0.2, 1.05)], // assim (ep. 1: porta antiga)
+  [4.75, 5.69, v("IMG_3355", 0.3)], // esse é o episódio 2
+  [5.69, 7.03, v("ep1_IMG_2699", 2.0)], // e se você não viu o primeiro (ep. 1: na cama)
+  [7.03, 7.85, v("ep1_copy_DDDA", 0.3)], // eu recomendo assistir
+  [7.85, 8.67, v("ep1_IMG_2699", 35.5)], // antes e depois
+  [8.67, 9.65, v("IMG_3355", 7.0)], // voltar pra esse aqui
+  [9.65, 10.48, v("ep1_IMG_2896", 0.2)], // pra você entender melhor (ep. 1: quarto vazio)
   [10.48, 11.34, v("IMG_2937", 0.0)], // a reforma começou
   [11.34, 12.26, v("IMG_3029", 0.0)], // colocando as cerâmicas
-  [12.26, 12.83, v("IMG_2937", 6.0, 1.05)], // na parede
-  [12.83, 13.3, v("IMG_3128", 4.5)], // e depois a
+  [12.26, 12.83, v("IMG_2937", 4.5, 1.05)], // na parede
+  [12.83, 13.3, v("ep1_IMG_2893", 1.2)], // e depois a (porta antiga)
   [13.3, 14.1, v("IMG_3026", 0.0)], // remoção dessa porta
   [14.1, 14.66, v("IMG_3027", 0.0, 1.05)], // pra colocar a
   [14.66, 15.1, v("IMG_3129", 0.0)], // janela
   [15.1, 16.39, v("IMG_3163", 39.0)], // e olha isso!
   [16.39, 18.16, v("IMG_3163", 4.0)], // eu tô completamente apaixonada
   [18.16, 19.03, v("IMG_3163", 30.0, 1.05)], // nessa nova janela
-  [19.03, 20.27, v("IMG_3355", 9.5)], // eu já tô imaginando os vídeos
+  [19.03, 20.27, v("ep1_IMG_2727", 95)], // eu já tô imaginando os vídeos
   [20.27, 21.73, v("IMG_3355", 14.5)], // que eu vou fazer aqui de frente pra essa janela
   [21.73, 23.48, v("IMG_3355", 18.0, 1.05)], // porque olha essa iluminação
   [23.48, 24.77, v("IMG_2896", 0.0)], // foi uma semana pra fazer essa etapa
   [24.77, 25.7, v("IMG_3028", 0.0)], // e agora nós
-  [25.7, 27.55, v("IMG_3162", 12.0)], // temos mais duas etapas
+  [25.7, 26.6, v("IMG_2937", 24.0)], // temos mais
+  [26.6, 27.55, v("IMG_3128", 0.0)], // duas etapas
   [27.55, 28.96, v("IMG_2937", 13.5)], // comprar as coisas que estão faltando
   [28.96, 30.11, v("IMG_2937", 21.0, 1.05)], // e a parte da pintura
-  [30.11, 31.84, v("IMG_2987", 0.0)], // olhando coisinhas aqui na Shopee
-  [31.84, 32.75, v("IMG_2937", 24.0)], // pra comprar e se vocês
+  [30.11, 31.0, v("IMG_2987", 0.0)], // olhando coisinhas
+  [31.0, 31.84, v("ep1_copy_DDDA", 4.0)], // aqui na Shopee
+  [31.84, 32.75, v("ep1_IMG_2727", 125, 1.06)], // pra comprar e se vocês
   [32.75, 34.21, v("IMG_3163", 48.0)], // quiserem ver tudo que eu estou escolhendo
-  [34.21, 35.32, v("IMG_3355", 4.5, 1.05)], // comenta QUARTO aqui
-  [35.32, 36.39, v("IMG_3162", 6.0)], // que no próximo episódio eu trago
+  [34.21, 35.32, v("ep1_IMG_2699", 24.0)], // comenta QUARTO aqui
+  [35.32, 36.39, v("ep1_IMG_2727", 40)], // que no próximo episódio eu trago
   [36.39, 38.37, v("IMG_3163", 49.5)], // todas as minhas escolhas pra essa reforma
   [38.37, 39.62, v("IMG_3355", 0.0)], // ai, não esquece de me seguir
   [39.62, 40.84, v("IMG_3355", 21.0)], // pra acompanhar e ver o resultado final

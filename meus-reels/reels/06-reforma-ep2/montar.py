@@ -7,7 +7,7 @@ SRC = os.path.join(D, "cru.wav")
 # fora: 1a tentativa "Ai, não esquece de me seguir pra conseguir acompanhar" (53,5-56,3)
 KEEP = [(0.3, 53.3), (56.35, 61.2)]
 VEL = 1.1
-r = subprocess.run(["ffmpeg","-hide_banner","-i",SRC,"-af","silencedetect=n=-40dB:d=0.18","-f","null","-"],capture_output=True,text=True).stderr
+r = subprocess.run(["ffmpeg","-hide_banner","-i",SRC,"-af","silencedetect=n=-38dB:d=0.10","-f","null","-"],capture_output=True,text=True).stderr
 t = [float(x) for x in re.findall(r"silence_(?:start|end): ([0-9.]+)", r)]
 sil = [(t[i], t[i+1]) for i in range(0, len(t)-1, 2)]
 ilhas = []
@@ -19,11 +19,11 @@ for a, b in KEEP:
         cur = max(cur, e)
     if b > cur: ilhas.append((cur, b))
 ilhas = [(a, b) for a, b in ilhas if b - a > 0.06]
-HEAD, TAIL, GAP = 0.03, 0.07, 0.06
+HEAD, TAIL, GAP = 0.02, 0.04, 0.0
 mapa, fc, lab, novo = [], [], [], 0.0
 for i, (a, b) in enumerate(ilhas):
     s0, e0 = max(0, a - HEAD), b + TAIL; d = e0 - s0
-    fc.append(f"[0:a]atrim={s0:.3f}:{e0:.3f},asetpts=PTS-STARTPTS,afade=t=in:d=0.015,afade=t=out:st={d-0.03:.3f}:d=0.03,apad=pad_dur={GAP}[a{i}]")
+    fc.append(f"[0:a]atrim={s0:.3f}:{e0:.3f},asetpts=PTS-STARTPTS,afade=t=in:d=0.015,afade=t=out:st={d-0.03:.3f}:d=0.03[a{i}]")
     lab.append(f"[a{i}]"); mapa.append([round(s0,3), round(e0,3), round(novo,3)]); novo += d + GAP
 fc.append("".join(lab) + f"concat=n={len(ilhas)}:v=0:a=1,atempo={VEL},loudnorm=I=-16:TP=-1.5:LRA=11:linear=true[out]")
 subprocess.run(["ffmpeg","-v","error","-y","-i",SRC,"-filter_complex",";".join(fc),"-map","[out]","-ar","48000",os.path.join(D,"narracao.wav")],check=True)

@@ -14,9 +14,10 @@ import { CORES } from "./identidade";
 import { SAFE_AREA, WIDTH } from "./config";
 import { F, useFontes } from "./Estilos";
 import { DURACAO_S, LEGENDA } from "./reel06-data";
+import { T } from "./reel06-tempo";
 
 // Reels 06 · Diário de reforma ep. 2 (só B-roll + narração, sem giz)
-// Todos os tempos em segundos do áudio final (public/reforma/narracao-ep2.wav).
+// Cenas, sons e destaque marcados no áudio v1 e convertidos com T() para o áudio atual (cortes mais justos).
 export const reel06Defaults = { showSafeArea: false };
 
 const R = (n: string) => staticFile(`reforma/${n}`);
@@ -62,7 +63,7 @@ const Titulo: React.FC = () => {
 };
 
 // ---------- frase de destaque no meio, digitando (como o "JÁ COMEÇOU!" do ep. 1) ----------
-const DEST = { de: 34.21, ate: 35.6, texto: "COMENTA QUARTO", digita: 0.4 };
+const DEST = { de: T(34.21), ate: T(35.6), texto: "COMENTA QUARTO", digita: 0.4 };
 const Destaque: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps, durationInFrames } = useVideoConfig();
@@ -123,7 +124,7 @@ const SONS: [number, string, number, number?][] = [
   [15.55, "suspeito.wav", 0.12], // e olha isso! (espanto)
   [17.16, "brilho2.wav", 0.25, 1.5], // apaixonada
   [22.71, "brilho.wav", 0.25], // iluminação
-  [DEST.de, "teclado-bru.wav", 0.9, DEST.digita + 0.2], // COMENTA QUARTO digitando
+  [34.21, "teclado-bru.wav", 0.9, DEST.digita + 0.2], // COMENTA QUARTO digitando
 ];
 const Sons: React.FC = () => {
   const { fps } = useVideoConfig();
@@ -132,7 +133,7 @@ const Sons: React.FC = () => {
       {SONS.map(([t, n, v, max], i) => {
         const dur = Math.round((max ?? 1.4) * fps);
         return (
-          <Sequence key={i} from={Math.round(t * fps)} durationInFrames={dur}>
+          <Sequence key={i} from={Math.round(T(t) * fps)} durationInFrames={dur}>
             <Audio src={S(n)} volume={(fr) => v * interpolate(fr, [0, dur - 6, dur], [1, 1, 0], cl)} />
           </Sequence>
         );
@@ -198,8 +199,8 @@ export const Reel06: React.FC<{ showSafeArea: boolean }> = ({ showSafeArea }) =>
   return (
     <AbsoluteFill style={{ background: "#000" }}>
       {CENAS.map(([de, ate, el], i) => {
-        const from = Math.round(de * fps);
-        const dur = Math.round(ate * fps) - from;
+        const from = Math.round(T(de) * fps);
+        const dur = Math.round(T(ate) * fps) - from;
         return (
           <Sequence key={i} from={from} durationInFrames={dur} premountFor={30}>
             {el()}

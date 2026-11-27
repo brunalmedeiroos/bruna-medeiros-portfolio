@@ -3238,14 +3238,32 @@
           <datalist id="ugc-roteiro-categorias-lista"></datalist>
         </div>
 
-        <div class="pl-modal-linha">
-          <div class="cal-form-campo">
-            <label for="ugc-roteiro-conceito" data-i18n="ugc_roteiro_conceito">Conceito do vídeo</label>
-            <textarea id="ugc-roteiro-conceito" class="ugc-roteiro-textarea-simples" rows="2" data-i18n-placeholder="ugc_roteiro_conceito_placeholder" placeholder="A ideia central do vídeo, em poucas linhas"></textarea>
+        <div class="cal-form-campo">
+          <label for="ugc-roteiro-conceito" data-i18n="ugc_roteiro_conceito">Conceito do vídeo</label>
+          <textarea id="ugc-roteiro-conceito" class="ugc-roteiro-textarea-simples" rows="2" data-i18n-placeholder="ugc_roteiro_conceito_placeholder" placeholder="A ideia central do vídeo, em poucas linhas"></textarea>
+        </div>
+
+        <div class="cal-form-campo">
+          <label data-i18n="ugc_direcao_cena_titulo">Direção de cena</label>
+          <div class="pl-modal-linha">
+            <div class="cal-form-campo">
+              <label for="ugc-roteiro-direcao-cenario" data-i18n="ugc_direcao_cenario">Cenário</label>
+              <textarea id="ugc-roteiro-direcao-cenario" class="ugc-roteiro-textarea-simples" rows="2"></textarea>
+            </div>
+            <div class="cal-form-campo">
+              <label for="ugc-roteiro-direcao-luz" data-i18n="ugc_direcao_luz">Luz</label>
+              <textarea id="ugc-roteiro-direcao-luz" class="ugc-roteiro-textarea-simples" rows="2"></textarea>
+            </div>
           </div>
-          <div class="cal-form-campo">
-            <label for="ugc-roteiro-direcao-cena" data-i18n="ugc_roteiro_direcao_cena">Direção de cena</label>
-            <textarea id="ugc-roteiro-direcao-cena" class="ugc-roteiro-textarea-simples" rows="2" data-i18n-placeholder="ugc_roteiro_direcao_cena_placeholder" placeholder="Cenário, luz, figurino, edição..."></textarea>
+          <div class="pl-modal-linha">
+            <div class="cal-form-campo">
+              <label for="ugc-roteiro-direcao-figurino" data-i18n="ugc_direcao_figurino">Figurino e beleza</label>
+              <textarea id="ugc-roteiro-direcao-figurino" class="ugc-roteiro-textarea-simples" rows="2"></textarea>
+            </div>
+            <div class="cal-form-campo">
+              <label for="ugc-roteiro-direcao-edicao" data-i18n="ugc_direcao_edicao">Edição</label>
+              <textarea id="ugc-roteiro-direcao-edicao" class="ugc-roteiro-textarea-simples" rows="2"></textarea>
+            </div>
           </div>
         </div>
 
@@ -5738,8 +5756,11 @@
         ugc_anexar_foto_moodboard: '+ Anexar foto',
         ugc_roteiro_conceito: 'Conceito do vídeo',
         ugc_roteiro_conceito_placeholder: 'A ideia central do vídeo, em poucas linhas',
-        ugc_roteiro_direcao_cena: 'Direção de cena',
-        ugc_roteiro_direcao_cena_placeholder: 'Cenário, luz, figurino, edição...',
+        ugc_direcao_cena_titulo: 'Direção de cena',
+        ugc_direcao_cenario: 'Cenário',
+        ugc_direcao_luz: 'Luz',
+        ugc_direcao_figurino: 'Figurino e beleza',
+        ugc_direcao_edicao: 'Edição',
         ugc_fotos_por_cena_titulo: 'Fotos de referência por cena',
         ugc_fotos_por_cena_nota: 'Reconhecido direto do texto do roteiro (linhas que começam com "Cena N —"). Anexa uma ou mais fotos de referência pra cada cena.',
         ugc_fotos_por_cena_vazio: 'Nenhuma cena reconhecida ainda — escreva no roteiro acima no formato "Cena 1 — Hook", "Fala:" e "Detalhes:".',
@@ -7120,8 +7141,11 @@
         ugc_anexar_foto_moodboard: '+ Attach photo',
         ugc_roteiro_conceito: 'Video concept',
         ugc_roteiro_conceito_placeholder: 'The core idea of the video, in a few lines',
-        ugc_roteiro_direcao_cena: 'Scene direction',
-        ugc_roteiro_direcao_cena_placeholder: 'Setting, lighting, wardrobe, editing...',
+        ugc_direcao_cena_titulo: 'Scene direction',
+        ugc_direcao_cenario: 'Setting',
+        ugc_direcao_luz: 'Lighting',
+        ugc_direcao_figurino: 'Wardrobe & beauty',
+        ugc_direcao_edicao: 'Editing',
         ugc_fotos_por_cena_titulo: 'Reference photos per scene',
         ugc_fotos_por_cena_nota: 'Recognized straight from the script text (lines starting with "Cena N —"). Attach one or more reference photos to each scene.',
         ugc_fotos_por_cena_vazio: 'No scene recognized yet — write in the script above using the format "Cena 1 — Hook", "Fala:" and "Detalhes:".',
@@ -19440,7 +19464,10 @@
       document.getElementById('ugc-roteiro-duracao').value = roteiro ? roteiro.duracao_prevista || '' : '';
       document.getElementById('ugc-roteiro-categoria').value = roteiro ? roteiro.categoria || '' : '';
       document.getElementById('ugc-roteiro-conceito').value = roteiro ? roteiro.conceito || '' : '';
-      document.getElementById('ugc-roteiro-direcao-cena').value = roteiro ? roteiro.direcao_cena || '' : '';
+      document.getElementById('ugc-roteiro-direcao-cenario').value = roteiro ? roteiro.direcao_cenario || '' : '';
+      document.getElementById('ugc-roteiro-direcao-luz').value = roteiro ? roteiro.direcao_luz || '' : '';
+      document.getElementById('ugc-roteiro-direcao-figurino').value = roteiro ? roteiro.direcao_figurino || '' : '';
+      document.getElementById('ugc-roteiro-direcao-edicao').value = roteiro ? roteiro.direcao_edicao || '' : '';
       // roteiro novo já nasce no nicho que estiver filtrado na lista
       ugcRoteiroNicho = roteiro ? roteiro.nicho || '' : filtroRoteirosNicho && filtroRoteirosNicho !== '__sem__' ? filtroRoteirosNicho : '';
       ugcRenderizarNichoOpcoes();
@@ -19491,7 +19518,10 @@
         duracao: document.getElementById('ugc-roteiro-duracao').value,
         categoria: document.getElementById('ugc-roteiro-categoria').value,
         conceito: document.getElementById('ugc-roteiro-conceito').value,
-        direcao_cena: document.getElementById('ugc-roteiro-direcao-cena').value,
+        direcao_cenario: document.getElementById('ugc-roteiro-direcao-cenario').value,
+        direcao_luz: document.getElementById('ugc-roteiro-direcao-luz').value,
+        direcao_figurino: document.getElementById('ugc-roteiro-direcao-figurino').value,
+        direcao_edicao: document.getElementById('ugc-roteiro-direcao-edicao').value,
         nicho: ugcRoteiroNicho,
         formato_video: ugcRoteiroFormato,
         conteudo: document.getElementById('ugc-roteiro-conteudo').innerHTML,
@@ -19571,7 +19601,10 @@
         duracao_prevista: document.getElementById('ugc-roteiro-duracao').value.trim() || null,
         categoria: document.getElementById('ugc-roteiro-categoria').value.trim() || null,
         conceito: document.getElementById('ugc-roteiro-conceito').value.trim() || null,
-        direcao_cena: document.getElementById('ugc-roteiro-direcao-cena').value.trim() || null,
+        direcao_cenario: document.getElementById('ugc-roteiro-direcao-cenario').value.trim() || null,
+        direcao_luz: document.getElementById('ugc-roteiro-direcao-luz').value.trim() || null,
+        direcao_figurino: document.getElementById('ugc-roteiro-direcao-figurino').value.trim() || null,
+        direcao_edicao: document.getElementById('ugc-roteiro-direcao-edicao').value.trim() || null,
         ...(ugcRoteiroNichoOk ? { nicho: ugcRoteiroNicho || null } : {}),
         ...(ugcFormatoColunaOk ? { formato_video: ugcRoteiroFormato || null } : {}),
         conteudo: conteudoRoteiroVazio(document.getElementById('ugc-roteiro-conteudo')) ? null : document.getElementById('ugc-roteiro-conteudo').innerHTML,

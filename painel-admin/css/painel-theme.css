@@ -3271,6 +3271,86 @@
   margin-top: 10px;
 }
 
+/* ---- Fotos de referência por cena (reconhecidas do texto do roteiro) ---- */
+
+.painel-body .ugc-roteiro-cena-fotos-item {
+  padding: 14px 0;
+  border-top: 1px solid var(--borda);
+}
+
+.painel-body .ugc-roteiro-cena-fotos-item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.painel-body .ugc-roteiro-cena-fotos-cabecalho {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.painel-body .ugc-roteiro-cena-fotos-numero {
+  font-weight: 700;
+  color: var(--coral);
+}
+
+.painel-body .ugc-roteiro-cena-fotos-funcao {
+  font-size: 13px;
+  color: var(--texto-suave);
+}
+
+/* ---- Paleta de cores do roteiro (vários tons com rótulo) ---- */
+
+.painel-body .ugc-roteiro-cores-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.painel-body .ugc-roteiro-cor-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--creme);
+  border-radius: var(--raio-sm);
+  padding: 5px 8px 5px 5px;
+}
+
+.painel-body .ugc-roteiro-cor-item input[type="color"] {
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+}
+
+.painel-body .ugc-roteiro-cor-item input[type="text"] {
+  width: 110px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+}
+
+.painel-body .ugc-roteiro-cor-item input[type="text"]:focus {
+  outline: none;
+}
+
+.painel-body .ugc-roteiro-cor-remover {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: transparent;
+  color: var(--texto-suave);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
 /* ---- Modal de trabalho (mais largo que o pl-modal padrão, por ter mais seções) ---- */
 
 .painel-body .pl-modal-grande {

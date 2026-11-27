@@ -88,51 +88,51 @@
     justify-content:space-between;
     align-items:flex-start;
     gap:16px;
-    margin-bottom:28px;
+    margin-bottom:32px;
+    flex-wrap:wrap;
+  }
+  .capa-titulo-selo{
+    font-family:var(--font-display);
+    font-style:italic;
+    font-weight:600;
+    font-size:1.3rem;
   }
   .capa-assinatura{
-    font-family:var(--font-display);
-    font-style:italic;
-    font-weight:500;
-    font-size:1.05rem;
-    opacity:.92;
-  }
-  .capa-selo{
+    position:relative;
     font-family:var(--font-mono);
-    font-size:10.5px;
-    letter-spacing:.14em;
-    text-transform:uppercase;
+    font-size:11px;
+    letter-spacing:.06em;
     opacity:.85;
-    white-space:nowrap;
+    text-align:right;
   }
-  .marca{
+  .capa-assinatura .nome{ display:block; font-family:var(--font-display); font-style:italic; font-size:1.05rem; letter-spacing:0; opacity:1; margin-bottom:2px; }
+
+  .capa-campos{
     position:relative;
-    font-family:var(--font-display);
-    font-style:italic;
-    font-weight:600;
-    font-size:clamp(2rem, 7vw, 3.1rem);
-    line-height:.98;
-    letter-spacing:-.01em;
-    text-wrap:balance;
-    margin-bottom:10px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:26px 36px;
   }
-  .detalhes{
-    position:relative;
-    font-size:14.5px;
-    font-weight:600;
-    opacity:.92;
-  }
-  .formato-pill{
-    position:relative;
-    display:inline-flex;
-    margin-top:20px;
+  .capa-campo{ min-width:0; }
+  .capa-campo-rotulo{
+    display:block;
     font-family:var(--font-mono);
-    font-size:11.5px;
-    letter-spacing:.04em;
-    background:rgba(0,0,0,.18);
-    padding:7px 14px;
-    border-radius:2px;
+    font-size:10px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    opacity:.72;
+    margin-bottom:5px;
   }
+  .capa-campo-valor{
+    display:block;
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1.25rem;
+    line-height:1.15;
+    text-wrap:balance;
+  }
+  .capa-campo-marca .capa-campo-valor{ font-style:italic; font-size:clamp(1.5rem, 4vw, 2.1rem); }
+  .capa-campo-campanha{ display:block; font-size:12.5px; font-weight:500; opacity:.8; margin-top:2px; }
 
   /* ---------- destaques ---------- */
   .cartao{
@@ -179,6 +179,31 @@
     align-self:center;
   }
   .secao-contagem{ font-weight:600; color:var(--ink-45); }
+
+  /* ---------- paleta de cores (moodboard) ---------- */
+  .cores-lista{
+    display:flex;
+    flex-wrap:wrap;
+    gap:14px 22px;
+    margin-top:18px;
+  }
+  .cor-chip{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .cor-chip-bolinha{
+    width:22px;
+    height:22px;
+    border-radius:50%;
+    box-shadow:0 0 0 1px var(--line), inset 0 0 0 1px rgba(255,255,255,.4);
+    flex-shrink:0;
+  }
+  .cor-chip-rotulo{
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-70);
+  }
 
   /* ---------- quadro livre de fotos (moodboard e por cena) — a Bruna
      arrasta cada foto pra posição que quiser no painel (pode sobrepor,
@@ -429,12 +454,24 @@
   <div id="conteudo" hidden>
     <header class="capa">
       <div class="capa-topo">
-        <span class="capa-assinatura">Bruna Medeiros</span>
-        <span class="capa-selo">Roteiro para aprovação</span>
+        <span class="capa-titulo-selo">Roteiro de Gravação</span>
+        <span class="capa-assinatura"><span class="nome">Bruna Medeiros</span>@brunalmedeiroos</span>
       </div>
-      <h1 id="rt-marca" class="marca"></h1>
-      <div id="rt-detalhes" class="detalhes"></div>
-      <span id="rt-formato" class="formato-pill" hidden></span>
+      <div class="capa-campos">
+        <div class="capa-campo capa-campo-marca">
+          <span class="capa-campo-rotulo">Marca</span>
+          <span id="rt-marca" class="capa-campo-valor"></span>
+          <span id="rt-campanha" class="capa-campo-campanha" hidden></span>
+        </div>
+        <div class="capa-campo">
+          <span class="capa-campo-rotulo">Produto</span>
+          <span id="rt-produto" class="capa-campo-valor">—</span>
+        </div>
+        <div class="capa-campo">
+          <span class="capa-campo-rotulo">Formato</span>
+          <span id="rt-formato" class="capa-campo-valor">—</span>
+        </div>
+      </div>
     </header>
 
     <div id="rt-conteudo-cartao" class="cartao" hidden>
@@ -445,8 +482,23 @@
     </div>
 
     <div id="rt-moodboard-secao" hidden>
-      <p class="secao-titulo"><span>Moodboard geral</span></p>
+      <p class="secao-titulo"><span>Moodboard</span></p>
       <div id="rt-moodboard"></div>
+      <div id="rt-cores" class="cores-lista" hidden></div>
+    </div>
+
+    <div id="rt-conceito-cartao" class="cartao" hidden>
+      <div class="destaque">
+        <h3>Conceito</h3>
+        <p id="rt-conceito" class="campo-texto"></p>
+      </div>
+    </div>
+
+    <div id="rt-direcao-cartao" class="cartao" hidden>
+      <div class="destaque">
+        <h3>Direção de cena</h3>
+        <p id="rt-direcao-cena" class="campo-texto"></p>
+      </div>
     </div>
 
     <div id="rt-cenas-secao">
@@ -650,16 +702,33 @@
     aplicarTemaMarca(roteiro.marca_cor);
     document.getElementById('topo').hidden = true;
     texto(document.getElementById('rt-marca'), roteiro.marca || 'Roteiro');
-    texto(
-      document.getElementById('rt-detalhes'),
-      [roteiro.produto, roteiro.campanha].filter(Boolean).join(' · ')
-    );
+    texto(document.getElementById('rt-produto'), roteiro.produto || '—');
+    if (roteiro.campanha) {
+      document.getElementById('rt-campanha').hidden = false;
+      texto(document.getElementById('rt-campanha'), roteiro.campanha);
+    }
 
     var formato = [roteiro.tipo_conteudo, roteiro.duracao_prevista].filter(Boolean).join(' · ');
-    if (formato) {
-      document.getElementById('rt-formato').hidden = false;
-      texto(document.getElementById('rt-formato'), formato);
+    texto(document.getElementById('rt-formato'), formato || '—');
+
+    var temCores = roteiro.cores && roteiro.cores.length > 0;
+    document.getElementById('rt-cores').hidden = !temCores;
+    if (temCores) {
+      document.getElementById('rt-cores').innerHTML = roteiro.cores
+        .map(function (c) {
+          return (
+            '<span class="cor-chip"><span class="cor-chip-bolinha" style="background:' + escapeHtml(c.hex || '#ccc') + '"></span>' +
+            (c.rotulo ? '<span class="cor-chip-rotulo">' + escapeHtml(c.rotulo) + '</span>' : '') +
+            '</span>'
+          );
+        })
+        .join('');
     }
+
+    document.getElementById('rt-conceito-cartao').hidden = !roteiro.conceito;
+    if (roteiro.conceito) texto(document.getElementById('rt-conceito'), roteiro.conceito);
+    document.getElementById('rt-direcao-cartao').hidden = !roteiro.direcao_cena;
+    if (roteiro.direcao_cena) texto(document.getElementById('rt-direcao-cena'), roteiro.direcao_cena);
 
     // O editor novo (painel > UGC/Publi > Roteiro) escreve tudo num único
     // campo de texto rico, sem cadastrar cena por cena. Se já não vierem

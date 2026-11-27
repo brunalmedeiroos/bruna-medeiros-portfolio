@@ -18,7 +18,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Fraunces:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css?v=20261123c">
 <!-- Paleta e tipografia do site principal (index.html) -->
-<link rel="stylesheet" href="css/painel-theme.css?v=20261123e">
+<link rel="stylesheet" href="css/painel-theme.css?v=20261126a">
 <!-- Supabase via CDN, seguido da lógica de autenticação compartilhada -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
@@ -3238,6 +3238,17 @@
           <datalist id="ugc-roteiro-categorias-lista"></datalist>
         </div>
 
+        <div class="pl-modal-linha">
+          <div class="cal-form-campo">
+            <label for="ugc-roteiro-conceito" data-i18n="ugc_roteiro_conceito">Conceito do vídeo</label>
+            <textarea id="ugc-roteiro-conceito" class="ugc-roteiro-textarea-simples" rows="2" data-i18n-placeholder="ugc_roteiro_conceito_placeholder" placeholder="A ideia central do vídeo, em poucas linhas"></textarea>
+          </div>
+          <div class="cal-form-campo">
+            <label for="ugc-roteiro-direcao-cena" data-i18n="ugc_roteiro_direcao_cena">Direção de cena</label>
+            <textarea id="ugc-roteiro-direcao-cena" class="ugc-roteiro-textarea-simples" rows="2" data-i18n-placeholder="ugc_roteiro_direcao_cena_placeholder" placeholder="Cenário, luz, figurino, edição..."></textarea>
+          </div>
+        </div>
+
         <div class="ugc-roteiro-destaque">
           <div class="cal-form-campo">
             <label data-i18n="ugc_roteiro_conteudo">Roteiro</label>
@@ -3296,6 +3307,13 @@
           </div>
         </div>
 
+        <div class="cal-form-campo">
+          <label data-i18n="ugc_fotos_por_cena_titulo">Fotos de referência por cena</label>
+          <span class="ugc-roteiro-destaque-nota" data-i18n="ugc_fotos_por_cena_nota">Reconhecido direto do texto do roteiro (linhas que começam com "Cena N —"). Anexa uma ou mais fotos de referência pra cada cena.</span>
+          <div id="ugc-roteiro-cenas-fotos-lista"></div>
+          <p id="ugc-roteiro-cenas-fotos-vazio" class="ugc-roteiro-destaque-nota" hidden data-i18n="ugc_fotos_por_cena_vazio">Nenhuma cena reconhecida ainda — escreva no roteiro acima no formato "Cena 1 — Hook", "Fala:" e "Detalhes:".</p>
+        </div>
+
         <div id="ugc-roteiro-comentarios-secao" hidden>
           <h4 class="ugc-modal-secao-titulo" data-i18n="ugc_comentarios_titulo">Comentários da marca</h4>
           <div id="ugc-roteiro-comentarios-lista" class="ugc-roteiro-comentarios-lista"></div>
@@ -3310,6 +3328,8 @@
             <button type="button" id="ugc-moodboard-anexar" class="cal-btn" data-i18n="ugc_anexar_foto_moodboard">+ Anexar foto</button>
             <input type="file" accept="image/*" multiple id="ugc-moodboard-input" hidden>
           </div>
+          <div class="ugc-roteiro-cores-lista" id="ugc-roteiro-cores-lista"></div>
+          <button type="button" id="ugc-roteiro-cor-add" class="cal-btn" data-i18n="ugc_adicionar_cor">+ Adicionar cor</button>
         </div>
 
         <div class="ugc-roteiro-rodape-acoes">
@@ -4407,6 +4427,7 @@
     let ugcAbaCarregada = false;
     let ugcTrabalhosCache = [];
     let ugcRoteirosCache = [];
+    let ugcRoteiroCenasCache = [];
     let ugcRoteiroVisualizacoesCache = [];
     let ugcRoteiroComentariosCache = [];
     let ugcBaseContatosCache = [];
@@ -4541,6 +4562,11 @@
     let ugcModalEntregaveis = [];
     let ugcRoteiroAbertoId = null;
     let ugcModalMoodboard = [];
+    let ugcModalCores = [];
+    // Array alinhado por posição com as cenas reconhecidas no texto do
+    // roteiro (ver extrairCenasDeTexto) — cada item é a lista de fotos
+    // daquela cena, no mesmo formato do moodboard ({url, rotulo, x, y, w}).
+    let ugcModalCenasFotos = [];
     let ugcRoteiroSnapshotInicial = '';
     let ugcContratoAbertoId = null;
     let ugcContratoSnapshotInicial = '';
@@ -5710,6 +5736,14 @@
         ugc_moodboard_titulo: 'Moodboard geral',
         ugc_moodboard_arraste_nota: 'Arraste as fotos pra posicionar como quiser — pode sobrepor, como numa colagem. Todas ficam do mesmo tamanho, não importa quantas você adicionar.',
         ugc_anexar_foto_moodboard: '+ Anexar foto',
+        ugc_roteiro_conceito: 'Conceito do vídeo',
+        ugc_roteiro_conceito_placeholder: 'A ideia central do vídeo, em poucas linhas',
+        ugc_roteiro_direcao_cena: 'Direção de cena',
+        ugc_roteiro_direcao_cena_placeholder: 'Cenário, luz, figurino, edição...',
+        ugc_fotos_por_cena_titulo: 'Fotos de referência por cena',
+        ugc_fotos_por_cena_nota: 'Reconhecido direto do texto do roteiro (linhas que começam com "Cena N —"). Anexa uma ou mais fotos de referência pra cada cena.',
+        ugc_fotos_por_cena_vazio: 'Nenhuma cena reconhecida ainda — escreva no roteiro acima no formato "Cena 1 — Hook", "Fala:" e "Detalhes:".',
+        ugc_adicionar_cor: '+ Adicionar cor',
         ugc_sem_detalhes_ainda: 'Sem detalhes ainda',
         ugc_referencia_rotulo_placeholder: 'Cenário, roupa, item...',
         ugc_remover_referencia_aria: 'Remover imagem de referência',
@@ -7084,6 +7118,14 @@
         ugc_moodboard_titulo: 'General moodboard',
         ugc_moodboard_arraste_nota: 'Drag the photos to place them anywhere — they can overlap, like a real collage. All stay the same size no matter how many you add.',
         ugc_anexar_foto_moodboard: '+ Attach photo',
+        ugc_roteiro_conceito: 'Video concept',
+        ugc_roteiro_conceito_placeholder: 'The core idea of the video, in a few lines',
+        ugc_roteiro_direcao_cena: 'Scene direction',
+        ugc_roteiro_direcao_cena_placeholder: 'Setting, lighting, wardrobe, editing...',
+        ugc_fotos_por_cena_titulo: 'Reference photos per scene',
+        ugc_fotos_por_cena_nota: 'Recognized straight from the script text (lines starting with "Cena N —"). Attach one or more reference photos to each scene.',
+        ugc_fotos_por_cena_vazio: 'No scene recognized yet — write in the script above using the format "Cena 1 — Hook", "Fala:" and "Detalhes:".',
+        ugc_adicionar_cor: '+ Add color',
         ugc_sem_detalhes_ainda: 'No details yet',
         ugc_referencia_rotulo_placeholder: 'Setting, outfit, prop...',
         ugc_remover_referencia_aria: 'Remove reference image',
@@ -8226,6 +8268,16 @@
           await anexarMoodboardImagem(arquivo);
         }
         renderizarMoodboardModal();
+      });
+      document.getElementById('ugc-roteiro-cor-add').addEventListener('click', () => {
+        ugcModalCores.push({ hex: '#9cbbd8', rotulo: '' });
+        renderizarCoresModal();
+      });
+      // Reconstrói os cards de "fotos por cena" sempre que o texto do
+      // roteiro muda — é assim que a lista de cenas fica em dia com o que
+      // a Bruna está escrevendo, sem precisar de um botão "atualizar".
+      document.getElementById('ugc-roteiro-conteudo').addEventListener('input', () => {
+        renderizarCenasFotosModal();
       });
       document.getElementById('ugc-modal-roteiro-overlay').addEventListener('click', (e) => {
         if (e.target.id === 'ugc-modal-roteiro-overlay') fecharModalRoteiro();
@@ -16970,10 +17022,24 @@
 
     async function carregarUGC() {
       try {
-        const [trabalhos, entregaveis, roteiros, visualizacoes, comentarios, contatos, contratos, precos, abordagens, pacotes, orcamento] = await Promise.all([
+        const [trabalhos, entregaveis, roteiros, cenas, visualizacoes, comentarios, contatos, contratos, precos, abordagens, pacotes, orcamento] = await Promise.all([
           buscarTudo('ugc_trabalhos'),
           buscarTudo('ugc_trabalho_entregaveis'),
           buscarTudo('ugc_roteiros'),
+          // Sem order por created_at (a tabela não tem essa coluna) — só as
+          // fotos de referência já anexadas por cena, pra reabrir o roteiro
+          // sem perder o que já foi anexado.
+          Auth.sb
+            .from('ugc_roteiro_cenas')
+            .select('roteiro_id, ordem, fala, descricao_cena, funcao_cena, referencias_imagens')
+            .then(({ data, error }) => {
+              if (error) throw error;
+              return data;
+            })
+            .catch((err) => {
+              console.error('Erro ao carregar cenas dos roteiros:', err);
+              return [];
+            }),
           buscarTudo('ugc_roteiro_visualizacoes'),
           buscarTudo('ugc_roteiro_comentarios'),
           // .catch: se a tabela ainda não existir (antes de rodar a
@@ -17022,6 +17088,7 @@
         ugcTrabalhosCache = trabalhos;
         ugcTrabalhoEntregaveisCache = entregaveis;
         ugcRoteirosCache = roteiros;
+        ugcRoteiroCenasCache = cenas;
         ugcRoteiroVisualizacoesCache = visualizacoes;
         ugcRoteiroComentariosCache = comentarios;
         ugcBaseContatosCache = contatos;
@@ -19153,6 +19220,194 @@
       }
     }
 
+    // ---- Reconhecimento de cenas dentro do texto do Roteiro ----
+    // Mesmo padrão aceito pelo link público (ver roteiro/index.html,
+    // extrairCenasDeTexto) — tem que ficar IGUAL nos dois lugares, senão o
+    // que a Bruna vê aqui (pra anexar foto por cena) não bate com o que a
+    // marca vê no link:
+    //   Cena 1 — Hook
+    //   Fala: ...
+    //   Detalhes: ...
+    function juntarLinhasCampoRoteiro(linhas) {
+      return linhas.join('\n').trim().replace(/\n{3,}/g, '\n\n');
+    }
+
+    function extrairCenasDeTextoRoteiro(texto) {
+      const linhas = texto.split('\n');
+      const cabecalhoRe = /^cena\s+\d+\s*[-–—]+\s*(.+)$/i;
+      const falaRe = /^(fala|narra[cç][aã]o)\s*:\s*(.*)$/i;
+      const detalhesRe = /^(detalhes|cena)\s*:\s*(.*)$/i;
+
+      const cenasEncontradas = [];
+      let atual = null;
+      let modo = null;
+
+      function finalizar(c) {
+        if (!c) return;
+        c.fala = juntarLinhasCampoRoteiro(c.falaLinhas);
+        c.descricao_cena = juntarLinhasCampoRoteiro(c.detalhesLinhas);
+        delete c.falaLinhas;
+        delete c.detalhesLinhas;
+      }
+
+      for (let i = 0; i < linhas.length; i++) {
+        const linhaBruta = linhas[i];
+        const linha = linhaBruta.trim();
+        const mCabecalho = linha.match(cabecalhoRe);
+        if (mCabecalho) {
+          if (atual) finalizar(atual);
+          atual = { funcao_cena: mCabecalho[1].trim(), falaLinhas: [], detalhesLinhas: [] };
+          cenasEncontradas.push(atual);
+          modo = null;
+          continue;
+        }
+        if (!atual) continue;
+
+        const mFala = linha.match(falaRe);
+        if (mFala) {
+          modo = 'fala';
+          if (mFala[2]) atual.falaLinhas.push(mFala[2]);
+          continue;
+        }
+        const mDetalhes = linha.match(detalhesRe);
+        if (mDetalhes) {
+          modo = 'detalhes';
+          if (mDetalhes[2]) atual.detalhesLinhas.push(mDetalhes[2]);
+          continue;
+        }
+        if (modo === 'fala') atual.falaLinhas.push(linhaBruta);
+        else if (modo === 'detalhes') atual.detalhesLinhas.push(linhaBruta);
+      }
+      if (atual) finalizar(atual);
+      return cenasEncontradas;
+    }
+
+    function extrairCenasDoConteudoRoteiro(html) {
+      if (!html) return [];
+      const aux = document.createElement('div');
+      aux.innerHTML = html.replace(/<\/(p|li|div|h[1-6])>/gi, '\n').replace(/<br\s*\/?>/gi, '\n');
+      return extrairCenasDeTextoRoteiro(aux.textContent || '');
+    }
+
+    // Lê as cenas já salvas no banco (ugc_roteiro_cenas) pro roteiro aberto,
+    // só pra recuperar as fotos já anexadas antes — alinhadas por posição
+    // (ordem), não por conteúdo, então reescrever o texto sem mudar a ORDEM
+    // das cenas mantém as fotos; mudar a ordem ou apagar uma cena do meio
+    // desalinha (ela acabaria pegando as fotos de outra), mas isso é raro e
+    // melhor do que não recuperar nada.
+    function fotosDasCenasSalvas(roteiroId) {
+      if (!roteiroId) return [];
+      return ugcRoteiroCenasCache
+        .filter((c) => c.roteiro_id === roteiroId)
+        .sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0))
+        .map((c) => (Array.isArray(c.referencias_imagens) ? c.referencias_imagens.map((ref) => ({ ...ref })) : []));
+    }
+
+    function renderizarCenasFotosModal() {
+      const cenas = extrairCenasDoConteudoRoteiro(document.getElementById('ugc-roteiro-conteudo').innerHTML);
+      // Ajusta o array de fotos pro mesmo tamanho das cenas reconhecidas
+      // agora, preservando o que já tinha em cada posição.
+      while (ugcModalCenasFotos.length < cenas.length) ugcModalCenasFotos.push([]);
+      ugcModalCenasFotos.length = cenas.length;
+
+      const cont = document.getElementById('ugc-roteiro-cenas-fotos-lista');
+      document.getElementById('ugc-roteiro-cenas-fotos-vazio').hidden = cenas.length > 0;
+      cont.innerHTML = cenas
+        .map(
+          (c, i) => `
+            <div class="ugc-roteiro-cena-fotos-item">
+              <div class="ugc-roteiro-cena-fotos-cabecalho">
+                <span class="ugc-roteiro-cena-fotos-numero">Cena ${i + 1}</span>
+                ${c.funcao_cena ? `<span class="ugc-roteiro-cena-fotos-funcao">${escapeHtml(c.funcao_cena)}</span>` : ''}
+              </div>
+              <div class="ugc-moodboard-canvas" id="ugc-cena-fotos-canvas-${i}"></div>
+              <div class="ugc-moodboard-controles" id="ugc-cena-fotos-lista-${i}"></div>
+              <div class="ugc-moodboard-acoes">
+                <button type="button" class="cal-btn ugc-cena-fotos-anexar" data-indice="${i}" data-i18n="ugc_anexar_foto_moodboard">+ Anexar foto</button>
+                <input type="file" accept="image/*" multiple class="ugc-cena-fotos-input" data-indice="${i}" hidden>
+              </div>
+            </div>
+          `
+        )
+        .join('');
+
+      cenas.forEach((_, i) => {
+        renderizarQuadroArrastavel(document.getElementById(`ugc-cena-fotos-canvas-${i}`), ugcModalCenasFotos[i], renderizarCenasFotosLeve, 24);
+        renderizarControlesReferencias(document.getElementById(`ugc-cena-fotos-lista-${i}`), ugcModalCenasFotos[i], renderizarCenasFotosLeve);
+      });
+
+      cont.querySelectorAll('.ugc-cena-fotos-anexar').forEach((btn) => {
+        btn.addEventListener('click', () => cont.querySelector(`.ugc-cena-fotos-input[data-indice="${btn.dataset.indice}"]`).click());
+      });
+      cont.querySelectorAll('.ugc-cena-fotos-input').forEach((input) => {
+        input.addEventListener('change', async (e) => {
+          const indice = Number(input.dataset.indice);
+          for (const arquivo of Array.from(e.target.files)) {
+            await anexarCenaFotoImagem(indice, arquivo);
+          }
+          input.value = '';
+          renderizarCenasFotosLeve();
+        });
+      });
+    }
+
+    // Reaproveita o canvas/controles já montados sem reconstruir os cards
+    // inteiros (arrastar/redimensionar chama isso a cada movimento) — só
+    // reconstrução completa (renderizarCenasFotosModal) precisa reler o
+    // texto do roteiro de novo.
+    function renderizarCenasFotosLeve() {
+      ugcModalCenasFotos.forEach((imagens, i) => {
+        const canvas = document.getElementById(`ugc-cena-fotos-canvas-${i}`);
+        const lista = document.getElementById(`ugc-cena-fotos-lista-${i}`);
+        if (!canvas || !lista) return;
+        renderizarQuadroArrastavel(canvas, imagens, renderizarCenasFotosLeve, 24);
+        renderizarControlesReferencias(lista, imagens, renderizarCenasFotosLeve);
+      });
+    }
+
+    async function anexarCenaFotoImagem(indice, arquivo) {
+      try {
+        const caminho = `cena/${Date.now()}-${arquivo.name}`;
+        const { error } = await Auth.sb.storage.from('ugc-roteiro-referencias').upload(caminho, arquivo);
+        if (error) throw error;
+        const { data } = Auth.sb.storage.from('ugc-roteiro-referencias').getPublicUrl(caminho);
+        ugcModalCenasFotos[indice].push({ url: data.publicUrl, rotulo: '', ...posicaoInicialReferencia(ugcModalCenasFotos[indice].length) });
+      } catch (err) {
+        console.error('Erro ao anexar foto de cena:', err);
+        alert(tr('ugc_erro_anexar_arquivo'));
+      }
+    }
+
+    // ---- Paleta de cores do roteiro ----
+    function renderizarCoresModal() {
+      const cont = document.getElementById('ugc-roteiro-cores-lista');
+      cont.innerHTML = ugcModalCores
+        .map(
+          (c, i) => `
+            <div class="ugc-roteiro-cor-item">
+              <input type="color" data-indice="${i}" class="ugc-roteiro-cor-hex" value="${escapeHtml(c.hex || '#9cbbd8')}">
+              <input type="text" data-indice="${i}" class="ugc-roteiro-cor-rotulo" placeholder="Nome da cor" maxlength="40" value="${escapeHtml(c.rotulo || '')}">
+              <button type="button" class="ugc-roteiro-cor-remover" data-indice="${i}" aria-label="Remover cor">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+          `
+        )
+        .join('');
+      cont.querySelectorAll('.ugc-roteiro-cor-hex').forEach((el) => {
+        el.addEventListener('input', () => { ugcModalCores[Number(el.dataset.indice)].hex = el.value; });
+      });
+      cont.querySelectorAll('.ugc-roteiro-cor-rotulo').forEach((el) => {
+        el.addEventListener('input', () => { ugcModalCores[Number(el.dataset.indice)].rotulo = el.value; });
+      });
+      cont.querySelectorAll('.ugc-roteiro-cor-remover').forEach((el) => {
+        el.addEventListener('click', () => {
+          ugcModalCores.splice(Number(el.dataset.indice), 1);
+          renderizarCoresModal();
+        });
+      });
+    }
+
     function abrirModalRoteiro(roteiro) {
       ugcRoteiroAbertoId = roteiro ? roteiro.id : null;
       document.getElementById('ugc-roteiro-status').value = roteiro ? roteiro.status || 'Rascunho' : 'Rascunho';
@@ -19184,6 +19439,8 @@
       document.getElementById('ugc-roteiro-produto').value = roteiro ? roteiro.produto || '' : '';
       document.getElementById('ugc-roteiro-duracao').value = roteiro ? roteiro.duracao_prevista || '' : '';
       document.getElementById('ugc-roteiro-categoria').value = roteiro ? roteiro.categoria || '' : '';
+      document.getElementById('ugc-roteiro-conceito').value = roteiro ? roteiro.conceito || '' : '';
+      document.getElementById('ugc-roteiro-direcao-cena').value = roteiro ? roteiro.direcao_cena || '' : '';
       // roteiro novo já nasce no nicho que estiver filtrado na lista
       ugcRoteiroNicho = roteiro ? roteiro.nicho || '' : filtroRoteirosNicho && filtroRoteirosNicho !== '__sem__' ? filtroRoteirosNicho : '';
       ugcRenderizarNichoOpcoes();
@@ -19194,6 +19451,12 @@
       areaConteudo.innerHTML = roteiro ? roteiro.conteudo || '' : '';
       areaConteudo.setAttribute('data-placeholder', tr('ugc_roteiro_conteudo_placeholder'));
       prepararEstiloPadraoRoteiro(areaConteudo);
+
+      ugcModalCenasFotos = fotosDasCenasSalvas(roteiro ? roteiro.id : null);
+      renderizarCenasFotosModal();
+
+      ugcModalCores = roteiro && roteiro.cores ? roteiro.cores.map((c) => ({ ...c })) : [];
+      renderizarCoresModal();
 
       const corAtiva = !!(roteiro && roteiro.marca_cor);
       document.getElementById('ugc-roteiro-marca-cor-ativa').checked = corAtiva;
@@ -19227,12 +19490,16 @@
         trabalho: document.getElementById('ugc-roteiro-trabalho').value,
         duracao: document.getElementById('ugc-roteiro-duracao').value,
         categoria: document.getElementById('ugc-roteiro-categoria').value,
+        conceito: document.getElementById('ugc-roteiro-conceito').value,
+        direcao_cena: document.getElementById('ugc-roteiro-direcao-cena').value,
         nicho: ugcRoteiroNicho,
         formato_video: ugcRoteiroFormato,
         conteudo: document.getElementById('ugc-roteiro-conteudo').innerHTML,
         corAtiva: document.getElementById('ugc-roteiro-marca-cor-ativa').checked,
         cor: document.getElementById('ugc-roteiro-marca-cor').value,
         moodboard: ugcModalMoodboard,
+        cores: ugcModalCores,
+        cenasFotos: ugcModalCenasFotos,
       });
     }
 
@@ -19303,6 +19570,8 @@
         trabalho_id: document.getElementById('ugc-roteiro-trabalho').value || null,
         duracao_prevista: document.getElementById('ugc-roteiro-duracao').value.trim() || null,
         categoria: document.getElementById('ugc-roteiro-categoria').value.trim() || null,
+        conceito: document.getElementById('ugc-roteiro-conceito').value.trim() || null,
+        direcao_cena: document.getElementById('ugc-roteiro-direcao-cena').value.trim() || null,
         ...(ugcRoteiroNichoOk ? { nicho: ugcRoteiroNicho || null } : {}),
         ...(ugcFormatoColunaOk ? { formato_video: ugcRoteiroFormato || null } : {}),
         conteudo: conteudoRoteiroVazio(document.getElementById('ugc-roteiro-conteudo')) ? null : document.getElementById('ugc-roteiro-conteudo').innerHTML,
@@ -19310,6 +19579,7 @@
           ? document.getElementById('ugc-roteiro-marca-cor').value
           : null,
         moodboard_imagens: ugcModalMoodboard,
+        cores: ugcModalCores.filter((c) => c.rotulo || c.hex),
       };
 
       const btn = document.getElementById('ugc-modal-roteiro-salvar');
@@ -19324,6 +19594,21 @@
           if (error) throw error;
           roteiroId = data[0].id;
         }
+
+        // Sincroniza ugc_roteiro_cenas com o que foi reconhecido no texto do
+        // roteiro (ver extrairCenasDeTextoRoteiro) — apaga e reinsere tudo,
+        // sempre (mesmo lista vazia), senão cenas de uma versão anterior do
+        // texto ficam presas no banco e o link público mostra algo
+        // desatualizado em vez de cair pro documento corrido.
+        const cenasParaSalvar = extrairCenasDoConteudoRoteiro(linha.conteudo || '').map((c, i) => ({
+          ordem: i,
+          fala: c.fala || null,
+          descricao_cena: c.descricao_cena || null,
+          funcao_cena: c.funcao_cena || null,
+          referencias_imagens: ugcModalCenasFotos[i] || [],
+        }));
+        const { error: erroCenas } = await Auth.sb.rpc('ugc_substituir_cenas', { p_roteiro_id: roteiroId, p_cenas: cenasParaSalvar });
+        if (erroCenas) console.error('Erro ao sincronizar cenas do roteiro:', erroCenas);
 
         // Se o roteiro está vinculado a um Trabalho que ainda não chegou na
         // etapa "Roteiro" (ex: "Aguardando briefing"), avança o status
